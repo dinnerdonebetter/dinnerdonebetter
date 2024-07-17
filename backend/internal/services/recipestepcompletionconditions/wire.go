@@ -1,4 +1,4 @@
-package recipestepingredients
+package recipestepcompletionconditions
 
 import (
 	"github.com/google/wire"

@@ -41,7 +41,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
 	"github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	"github.com/dinnerdonebetter/backend/internal/services/recipes"
-	recipestepingredients2 "github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
+	"github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
 	"github.com/dinnerdonebetter/backend/internal/services/recipestepingredients"
 	"github.com/dinnerdonebetter/backend/internal/services/recipestepinstruments"
 	"github.com/dinnerdonebetter/backend/internal/services/recipestepproducts"
@@ -284,9 +284,9 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	if err != nil {
 		return nil, err
 	}
-	config14 := &servicesConfig.RecipeStepCompletionConditions
+	recipestepcompletionconditionsConfig := &servicesConfig.RecipeStepCompletionConditions
 	recipeStepCompletionConditionDataManager := database.ProvideRecipeStepCompletionConditionDataManager(dataManager)
-	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config14, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepCompletionConditionDataService, err := recipestepcompletionconditions.ProvideService(logger, recipestepcompletionconditionsConfig, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
