@@ -12,7 +12,7 @@ export default function Web(): JSX.Element {
       <AppLayout title="The best dang lil' cookin' app on the internet">
         <Container size="xl">
           <Center>
-            <Button onClick={() => router.push('https://app.dinnerdonebetter.dev/')}>Try the app</Button>
+            <Button onClick={() => router.push('https://app.dinnerdonebetter.dev/')}>Try the app, if you'd like!</Button>
           </Center>
         </Container>
       </AppLayout>

@@ -14,6 +14,8 @@ const (
 	serviceAdminRoleName = "service_admin"
 	serviceUserRoleName  = "service_user"
 
+	invalidServiceRoleWarning = "INVALID_SERVICE_ROLE"
+
 	// invalidServiceRole is a service role to apply for non-admin users to have one.
 	invalidServiceRole ServiceRole = iota
 	// ServiceUserRole is a service role to apply for non-admin users to have one.
@@ -49,7 +51,7 @@ type (
 func (r ServiceRole) String() string {
 	switch r {
 	case invalidServiceRole:
-		return "INVALID_SERVICE_ROLE"
+		return invalidServiceRoleWarning
 	case ServiceUserRole:
 		return serviceUserRoleName
 	case ServiceAdminRole:

@@ -32,8 +32,7 @@ const formatInstrumentList = (
     const elementIsProduct = stepElementIsProduct(instrument);
     const checkboxDisabled = recipeStepCanBePerformed(stepIndex, recipeGraph, stepsNeedingCompletion);
 
-    const dump = JSON.parse(JSON.stringify(instrument));
-    const displayInSummaryLists = dump.hasOwnProperty('vessel')
+    const displayInSummaryLists = JSON.parse(JSON.stringify(instrument)).hasOwnProperty('vessel')
       ? (instrument as RecipeStepVessel).vessel?.displayInSummaryLists
       : (instrument as RecipeStepInstrument).instrument?.displayInSummaryLists;
 

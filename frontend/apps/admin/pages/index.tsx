@@ -8,7 +8,7 @@ export default function Web(): JSX.Element {
     <StrictMode>
       <AppLayout title="">
         <Container size="xs">
-          <Title order={5}>Obligatory home page</Title>
+          <Title order={5}>Welcome</Title>
         </Container>
       </AppLayout>
     </StrictMode>
