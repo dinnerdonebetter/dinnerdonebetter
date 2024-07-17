@@ -95,6 +95,7 @@ jobs:
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push API server container
+        working-directory: backend/
         run: |
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }} --file backend/environments/dev/dockerfiles/api_server.Dockerfile .
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file backend/environments/dev/dockerfiles/api_server.Dockerfile .
@@ -128,6 +129,7 @@ jobs:
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push search data index scheduler container
+        working-directory: backend/
         run: |
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file backend/environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest --file backend/environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
@@ -153,6 +155,7 @@ jobs:
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push email prober container
+        working-directory: backend/
         run: |
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }} --file backend/environments/dev/dockerfiles/email_prober.Dockerfile .
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest --file backend/environments/dev/dockerfiles/email_prober.Dockerfile .
@@ -178,6 +181,7 @@ jobs:
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push meal plan finalizer container
+        working-directory: backend/
         run: |
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }} --file backend/environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest --file backend/environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
@@ -203,6 +207,7 @@ jobs:
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push meal plan grocery list initializer container
+        working-directory: backend/
         run: |
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }} --file backend/environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest --file backend/environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
@@ -228,6 +233,7 @@ jobs:
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push meal plan task creator container
+        working-directory: backend/
         run: |
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }} --file backend/environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest --file backend/environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .

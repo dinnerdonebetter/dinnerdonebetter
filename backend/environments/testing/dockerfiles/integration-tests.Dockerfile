@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM golang:1.22-bullseye
 
-WORKDIR /go/src/github.com/dinnerdonebetter/backend/backend
+WORKDIR /go/src/github.com/dinnerdonebetter/backend
 COPY . .
 
 # to debug a specific test:

@@ -1,11 +1,11 @@
 # build stage
 FROM golang:1.22-bullseye AS build-stage
 
-WORKDIR /go/src/github.com/dinnerdonebetter/backend/backend
+WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-RUN go build -trimpath -o /action github.com/dinnerdonebetter/backend/backend/cmd/jobs/search_data_index_scheduler
+RUN go build -trimpath -o /action github.com/dinnerdonebetter/backend/cmd/jobs/search_data_index_scheduler
 
 # final stage
 FROM debian:bullseye
