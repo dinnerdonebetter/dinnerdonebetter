@@ -6,7 +6,7 @@ on: [pull_request]
 #    branches:
 #      - dev
 
-name: deploy
+name: backend - deploy
 jobs:
   infrastructure:
     timeout-minutes: 35

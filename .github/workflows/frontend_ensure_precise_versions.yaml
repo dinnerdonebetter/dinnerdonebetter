@@ -9,6 +9,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+name: frontend - ensure strict dependency version
 jobs:
   dependency_versioning:
     runs-on: ubuntu-latest

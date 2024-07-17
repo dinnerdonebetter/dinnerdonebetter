@@ -9,7 +9,7 @@ on: [pull_request]
 #      - frontend/apps/admin/**
 #      - frontend/packages/**
 
-name: deploy admin app to dev
+name: frontend - deploy admin app to dev
 jobs:
   deploy:
     runs-on: ubuntu-latest

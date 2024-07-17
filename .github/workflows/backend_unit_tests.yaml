@@ -10,7 +10,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-name: unit tests
+name: backend - unit tests
 jobs:
   run:
     timeout-minutes: 25

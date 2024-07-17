@@ -9,7 +9,7 @@ on: [pull_request]
 #      - frontend/apps/landing/**
 #      - frontend/packages/**
 
-name: deploy landing to dev
+name: frontend - deploy landing to dev
 jobs:
   deploy:
     runs-on: ubuntu-latest

@@ -9,7 +9,7 @@ on: [pull_request]
 #      - frontend/apps/web/**
 #      - frontend/packages/**
 
-name: deploy webapp to dev
+name: frontend - deploy webapp to dev
 jobs:
   deploy:
     runs-on: ubuntu-latest

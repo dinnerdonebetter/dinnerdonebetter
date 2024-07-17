@@ -9,7 +9,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-name: generated_files
+name: backend - generated files
 jobs:
   queries:
     timeout-minutes: 10
