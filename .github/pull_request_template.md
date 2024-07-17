@@ -1,8 +1,12 @@
 ## What does this PR aim to accomplish?
 _PR description goes here_
 
+<!-- delete this section if there aren't any addressed issues --> 
+## Issues addressed
+- [ ]
+
 <!-- delete this section if what is being completed is not part of a new feature --> 
-## New Feature Checklist
+## Backend Feature Checklist
   - [ ] Migration
   - [ ] Queries
   - [ ] Observability keys
