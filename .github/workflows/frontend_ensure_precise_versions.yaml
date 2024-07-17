@@ -1,9 +1,9 @@
-on: [pull_request]
-#  pull_request:
-#    paths:
-#      - frontend/package.json
-#      - frontend/packages/**/package.json
-#      - frontend/apps/**/package.json
+on:
+  pull_request:
+    paths:
+      - frontend/package.json
+      - frontend/packages/**/package.json
+      - frontend/apps/**/package.json
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

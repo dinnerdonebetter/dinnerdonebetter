@@ -1,7 +1,7 @@
-on: [pull_request]
-#  pull_request:
-#    paths:
-#      - frontend/environments/dev/admin/terraform/**
+on:
+  pull_request:
+    paths:
+      - frontend/environments/dev/admin/terraform/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
