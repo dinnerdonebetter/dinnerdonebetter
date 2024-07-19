@@ -107,8 +107,7 @@ resource "google_secret_manager_secret_version" "cookie_block_key" {
   secret_data = random_string.cookie_block_key.result
 }
 
-# External API services
-
+### External API services ###
 
 # Sendgrid token
 
@@ -181,7 +180,6 @@ resource "google_secret_manager_secret_version" "posthog_personal_api_key" {
 
   secret_data = var.POSTHOG_PERSONAL_API_KEY
 }
-
 
 # Algolia app ID
 

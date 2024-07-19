@@ -15,6 +15,46 @@ import (
 	servertiming "github.com/mitchellh/go-server-timing"
 )
 
+const (
+	zuckModeUserHeader      = "X-DDB-Zuck-Mode-User"
+	zuckModeHouseholdHeader = "X-DDB-Zuck-Mode-Household"
+)
+
+var (
+	// ErrUserNotAuthorizedToImpersonateOthers is returned when a user is not authorized to impersonate others.
+	ErrUserNotAuthorizedToImpersonateOthers = errors.New("user not authorized to impersonate others")
+)
+
+func (s *service) determineZuckMode(ctx context.Context, req *http.Request, sessionContextData *types.SessionContextData) (userID, householdID string, err error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithRequest(req).WithSpan(span)
+
+	if !sessionContextData.ServiceRolePermissionChecker().CanImpersonateUsers() {
+		return "", "", ErrUserNotAuthorizedToImpersonateOthers
+	}
+
+	if zuckUserID := req.Header.Get(zuckModeUserHeader); zuckUserID != "" {
+		if _, err = s.userDataManager.GetUser(ctx, zuckUserID); err != nil {
+			observability.AcknowledgeError(err, logger, span, "fetching user info for zuck mode")
+			return "", "", err
+		}
+
+		if zuckHouseholdID := req.Header.Get(zuckModeHouseholdHeader); zuckHouseholdID == "" {
+			householdID, err = s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, zuckUserID)
+			if err != nil {
+				observability.AcknowledgeError(err, logger, span, "fetching household info for zuck mode")
+				return "", "", err
+			}
+		}
+
+		return zuckUserID, householdID, nil
+	}
+
+	return "", "", nil
+}
+
 // CookieRequirementMiddleware requires every request have a valid cookie.
 func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
@@ -78,8 +118,22 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
-			s.overrideSessionContextDataValuesWithSessionData(ctx, sessionCtxData)
+			zuckUserID, zuckHouseholdID, zuckErr := s.determineZuckMode(ctx, req, sessionCtxData)
+			if zuckErr != nil {
+				observability.AcknowledgeError(zuckErr, logger, span, "fetching user info for zuck mode")
+				errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+				return
+			}
 
+			if zuckUserID != "" {
+				sessionCtxData.ActiveHouseholdID = zuckUserID
+			}
+			if zuckHouseholdID != "" {
+				sessionCtxData.ActiveHouseholdID = zuckHouseholdID
+			}
+
+			s.overrideSessionContextDataValuesWithSessionData(ctx, sessionCtxData)
 			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
 			return
 		}
@@ -102,8 +156,22 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 					s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 					return
 				}
-				userAttributionTimer.Stop()
+				zuckUserID, zuckHouseholdID, zuckErr := s.determineZuckMode(ctx, req, sessionCtxData)
+				if zuckErr != nil {
+					observability.AcknowledgeError(zuckErr, logger, span, "fetching user info for zuck mode")
+					errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+					s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+					return
+				}
 
+				if zuckUserID != "" {
+					sessionCtxData.ActiveHouseholdID = zuckUserID
+				}
+				if zuckHouseholdID != "" {
+					sessionCtxData.ActiveHouseholdID = zuckHouseholdID
+				}
+
+				userAttributionTimer.Stop()
 				if sessionCtxData != nil {
 					next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
 					return

@@ -36,10 +36,10 @@ services:
         ports:
             - '8000:8000'
         build:
-            context: '../../../..'
-            dockerfile: '../dockerfiles/integration-server.Dockerfile'
+            context: '../../../'
+            dockerfile: 'environments/testing/dockerfiles/integration-server.Dockerfile'
         volumes:
-            - source: '../../../environments/testing/config_files/integration-tests-config.json'
+            - source: '../config_files/integration-tests-config.json'
               target: '/etc/config'
               type: 'bind'
     test:
@@ -53,6 +53,6 @@ services:
             - postgres
             - api_server
         build:
-            context: '../../../..'
-            dockerfile: '../dockerfiles/integration-tests.Dockerfile'
+            context: '../../../'
+            dockerfile: 'environments/testing/dockerfiles/integration-tests.Dockerfile'
         container_name: 'integration_tests'

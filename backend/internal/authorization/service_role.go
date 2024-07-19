@@ -41,6 +41,7 @@ type (
 		IsServiceAdmin() bool
 		CanCycleCookieSecrets() bool
 		CanUpdateUserAccountStatuses() bool
+		CanImpersonateUsers() bool
 	}
 
 	serviceRoleCollection struct {
@@ -88,12 +89,17 @@ func (r serviceRoleCollection) IsServiceAdmin() bool {
 	return false
 }
 
-// CanCycleCookieSecrets returns whether a user can cycle cookie secrets or not.
+// CanCycleCookieSecrets returns whether a user can cycle cookie secrets.
 func (r serviceRoleCollection) CanCycleCookieSecrets() bool {
 	return hasPermission(CycleCookieSecretPermission, r.Roles...)
 }
 
-// CanUpdateUserAccountStatuses returns whether a user can update user account statuses or not.
+// CanUpdateUserAccountStatuses returns whether a user can update user account statuses.
 func (r serviceRoleCollection) CanUpdateUserAccountStatuses() bool {
 	return hasPermission(UpdateUserStatusPermission, r.Roles...)
+}
+
+// CanImpersonateUsers returns whether a user can impersonate others.
+func (r serviceRoleCollection) CanImpersonateUsers() bool {
+	return hasPermission(ImpersonateUserPermission, r.Roles...)
 }
