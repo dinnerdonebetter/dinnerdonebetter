@@ -42,7 +42,7 @@ services:
             - source: '../config_files/integration-tests-config.json'
               target: '/etc/config'
               type: 'bind'
-    test:
+    tests:
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable'

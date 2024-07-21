@@ -231,13 +231,15 @@ integration_tests_postgres:
 	$(CONTAINER_RUNNER) compose \
 	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
 	--build \
+	--pull always \
 	--force-recreate \
 	--remove-orphans \
+	--renew-anon-volumes \
 	--attach-dependencies \
-	--pull always \
 	--always-recreate-deps \
 	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--abort-on-container-exit) \
-	--renew-anon-volumes
+	--attach api_server \
+	--attach tests
 
 ## Running
 

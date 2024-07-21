@@ -31,11 +31,11 @@ func (s *service) determineZuckMode(ctx context.Context, req *http.Request, sess
 
 	logger := s.logger.WithRequest(req).WithSpan(span)
 
-	if !sessionContextData.ServiceRolePermissionChecker().CanImpersonateUsers() {
-		return "", "", ErrUserNotAuthorizedToImpersonateOthers
-	}
-
 	if zuckUserID := req.Header.Get(zuckModeUserHeader); zuckUserID != "" {
+		if !sessionContextData.ServiceRolePermissionChecker().CanImpersonateUsers() {
+			return "", "", ErrUserNotAuthorizedToImpersonateOthers
+		}
+
 		if _, err = s.userDataManager.GetUser(ctx, zuckUserID); err != nil {
 			observability.AcknowledgeError(err, logger, span, "fetching user info for zuck mode")
 			return "", "", err

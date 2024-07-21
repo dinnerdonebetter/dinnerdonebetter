@@ -3,6 +3,7 @@ package workers
 import (
 	"context"
 	"fmt"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -80,6 +81,7 @@ func ProvideService(
 		mealPlanFinalizationWorker:     mealPlanFinalizationWorker,
 		mealPlanGroceryListInitializer: mealPlanGroceryListInitializer,
 		mealPlanTaskCreatorWorker:      mealPlanTaskCreatorWorker,
+		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		tracer:                         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
