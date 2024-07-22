@@ -8,7 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
-	testutils "github.com/dinnerdonebetter/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 
 	"github.com/gorilla/securecookie"
 	"github.com/stretchr/testify/assert"

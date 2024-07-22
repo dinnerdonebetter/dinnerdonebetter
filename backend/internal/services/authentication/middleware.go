@@ -47,6 +47,8 @@ func (s *service) determineZuckMode(ctx context.Context, req *http.Request, sess
 				observability.AcknowledgeError(err, logger, span, "fetching household info for zuck mode")
 				return "", "", err
 			}
+		} else {
+			return zuckUserID, zuckHouseholdID, nil
 		}
 
 		return zuckUserID, householdID, nil
@@ -105,7 +107,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		cookieContext, userID, err := s.getUserIDFromCookie(ctx, req)
 		cookieTimer.Stop()
 		if err == nil && userID != "" {
-			ctx = cookieContext
+			ctx = cookieContext // don't delete this, nothing works without it
 
 			tracing.AttachToSpan(span, keys.RequesterIDKey, userID)
 			logger = logger.WithValue(keys.RequesterIDKey, userID)
@@ -118,6 +120,8 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
+			s.overrideSessionContextDataValuesWithSessionData(ctx, sessionCtxData)
+
 			zuckUserID, zuckHouseholdID, zuckErr := s.determineZuckMode(ctx, req, sessionCtxData)
 			if zuckErr != nil {
 				observability.AcknowledgeError(zuckErr, logger, span, "fetching user info for zuck mode")
@@ -127,22 +131,28 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			}
 
 			if zuckUserID != "" {
-				sessionCtxData.ActiveHouseholdID = zuckUserID
-			}
-			if zuckHouseholdID != "" {
-				sessionCtxData.ActiveHouseholdID = zuckHouseholdID
+				logger.WithValue("zuckUserID", zuckUserID).Info("setting user ID for zuck mode")
+				sessionCtxData.Requester.UserID = zuckUserID
 			}
 
-			s.overrideSessionContextDataValuesWithSessionData(ctx, sessionCtxData)
-			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
-			return
+			if zuckHouseholdID != "" {
+				logger.WithValue("zuckHouseholdID", zuckHouseholdID).Info("setting household ID for zuck mode")
+				sessionCtxData.ActiveHouseholdID = zuckHouseholdID
+				sessionCtxData.HouseholdPermissions[zuckHouseholdID] = authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String())
+			}
+
+			if sessionCtxData != nil {
+				logger.WithValue("user_id", sessionCtxData.Requester.UserID).WithValue("household_id", sessionCtxData.ActiveHouseholdID).Info("writing session context data in UserAttributionMiddleware cookie flow")
+				next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
+				return
+			}
 		}
 
 		// validate bearer token.
 		tokenTimer := timing.NewMetric("token validation").WithDesc("validating bearer token from request").Start()
 		token, err := s.oauth2Server.ValidationBearerToken(req)
 		if err != nil {
-			s.logger.Error(err, "determining user ID")
+			logger.Error(err, "determining user ID")
 		}
 		tokenTimer.Stop()
 
@@ -156,6 +166,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 					s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 					return
 				}
+
 				zuckUserID, zuckHouseholdID, zuckErr := s.determineZuckMode(ctx, req, sessionCtxData)
 				if zuckErr != nil {
 					observability.AcknowledgeError(zuckErr, logger, span, "fetching user info for zuck mode")
@@ -165,14 +176,19 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 				}
 
 				if zuckUserID != "" {
-					sessionCtxData.ActiveHouseholdID = zuckUserID
+					logger.WithValue("zuckUserID", zuckUserID).Info("setting user ID for zuck mode")
+					sessionCtxData.Requester.UserID = zuckUserID
 				}
+
 				if zuckHouseholdID != "" {
+					logger.WithValue("zuckHouseholdID", zuckHouseholdID).Info("setting household ID for zuck mode")
 					sessionCtxData.ActiveHouseholdID = zuckHouseholdID
+					sessionCtxData.HouseholdPermissions[zuckHouseholdID] = authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String())
 				}
 
 				userAttributionTimer.Stop()
 				if sessionCtxData != nil {
+					logger.WithValue("user_id", sessionCtxData.Requester.UserID).WithValue("household_id", sessionCtxData.ActiveHouseholdID).Info("writing session context data in UserAttributionMiddleware token flow")
 					next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
 					return
 				}
@@ -202,7 +218,9 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
-			if _, authorizedForHousehold := sessionCtxData.HouseholdPermissions[sessionCtxData.ActiveHouseholdID]; !authorizedForHousehold {
+			canImpersonateUsers := sessionCtxData.ServiceRolePermissionChecker().CanImpersonateUsers()
+
+			if _, authorizedForHousehold := sessionCtxData.HouseholdPermissions[sessionCtxData.ActiveHouseholdID]; !authorizedForHousehold && !canImpersonateUsers {
 				logger.Info("user trying to access household they are not authorized for")
 				http.Redirect(res, req, "/", http.StatusUnauthorized)
 				return

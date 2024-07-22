@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
-	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

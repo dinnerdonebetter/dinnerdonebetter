@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -43,7 +44,6 @@ import (
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
-	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	"github.com/googleapis/gax-go/v2"

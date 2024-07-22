@@ -26,6 +26,14 @@ func (c *Client) GetWebhook(ctx context.Context, webhookID string) (*types.Webho
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get webhook request")
 	}
 
+	// DELETEME: one-off
+	if c.impersonatedUserID != "" {
+		req.Header.Set(zuckModeUserHeader, c.impersonatedUserID)
+	}
+	if c.impersonatedHouseholdID != "" {
+		req.Header.Set(zuckModeHouseholdHeader, c.impersonatedHouseholdID)
+	}
+
 	var apiResponse *types.APIResponse[*types.Webhook]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving webhook")

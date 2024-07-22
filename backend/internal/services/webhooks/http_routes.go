@@ -198,6 +198,8 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 
+	logger.Info("fetching webhook")
+
 	// fetch the webhook from the database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	webhook, err := s.webhookDataManager.GetWebhook(ctx, webhookID, sessionCtxData.ActiveHouseholdID)

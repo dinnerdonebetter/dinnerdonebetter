@@ -77,7 +77,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_GetMealPlanGroceryListIte
 		assert.Error(t, err)
 	})
 
-	s.Run("with invalid meal plan option ID", func() {
+	s.Run("with invalid meal plan ClientOption ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
@@ -283,7 +283,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_ArchiveMealPlanGroceryLis
 		assert.Error(t, err)
 	})
 
-	s.Run("with invalid meal plan option ID", func() {
+	s.Run("with invalid meal plan ClientOption ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)

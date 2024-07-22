@@ -5,11 +5,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
@@ -264,8 +264,8 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			require.True(t, found)
 			require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
 
-			_, err = c.GetWebhook(ctx, createdWebhook.ID)
-			require.NoError(t, err)
+			webhook, err := c.GetWebhook(ctx, createdWebhook.ID)
+			requireNotNilAndNoProblems(t, webhook, err)
 		}
 	})
 }

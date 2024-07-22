@@ -3,7 +3,6 @@ package workers
 import (
 	"context"
 	"fmt"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -13,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )

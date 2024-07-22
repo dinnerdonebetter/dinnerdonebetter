@@ -23,6 +23,9 @@ import (
 const (
 	defaultTimeout = 30 * time.Second
 	clientName     = "ddb_api_client_v1"
+
+	zuckModeUserHeader      = "X-DDB-Zuck-Mode-User"
+	zuckModeHouseholdHeader = "X-DDB-Zuck-Mode-Household"
 )
 
 type authMethod struct{}
@@ -37,15 +40,17 @@ var (
 
 // Client is a client for interacting with v1 of our HTTP API.
 type Client struct {
-	logger                logging.Logger
-	tracer                tracing.Tracer
-	url                   *url.URL
-	requestBuilder        *requests.Builder
-	encoder               encoding.ClientEncoder
-	unauthenticatedClient *http.Client
-	authedClient          *http.Client
-	authMethod            *authMethod
-	debug                 bool
+	logger                  logging.Logger
+	tracer                  tracing.Tracer
+	encoder                 encoding.ClientEncoder
+	url                     *url.URL
+	requestBuilder          *requests.Builder
+	unauthenticatedClient   *http.Client
+	authedClient            *http.Client
+	authMethod              *authMethod
+	impersonatedUserID      string
+	impersonatedHouseholdID string
+	debug                   bool
 }
 
 // AuthenticatedClient returns the authenticated *apiclient.Client that we use to make most requests.
@@ -69,7 +74,7 @@ func (c *Client) RequestBuilder() *requests.Builder {
 }
 
 // NewClient builds a new API client for us.
-func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...option) (*Client, error) {
+func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...ClientOption) (*Client, error) {
 	l := logging.NewNoopLogger()
 
 	c := &Client{
@@ -88,14 +93,13 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...opt
 	}
 
 	c.requestBuilder = requestBuilder
-
 	for _, opt := range options {
-		if optionSetErr := opt(c); optionSetErr != nil {
-			return nil, optionSetErr
+		if err = opt(c); err != nil {
+			return nil, err
 		}
 	}
 
-	if c.url == nil {
+	if c.url == nil || c.url.String() == "" {
 		return nil, ErrNoURLProvided
 	}
 

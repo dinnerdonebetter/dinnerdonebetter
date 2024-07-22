@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 )
 
 type capitalismServiceHTTPRoutesTestHelper struct {
