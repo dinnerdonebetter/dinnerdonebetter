@@ -12,11 +12,23 @@ concurrency:
 name: backend - integration tests
 jobs:
   run:
+    strategy:
+      matrix:
+        go-version: [ '1.22.x' ]
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: vendor dependencies
+        working-directory: backend
+        run: make vendor
 
       - name: run integration tests
         working-directory: backend
