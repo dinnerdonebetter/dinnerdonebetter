@@ -126,8 +126,9 @@ func UsingCookie(cookie *http.Cookie) func(*Client) error {
 			return ErrCookieRequired
 		}
 
-		crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, cookie)
+		crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, cookie, c.impersonatedUserID, c.impersonatedHouseholdID)
 		c.authMethod = cookieAuthMethod
+		c.cookie = cookie
 		c.authedClient.Transport = crt
 		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
 
@@ -165,8 +166,9 @@ func UsingLogin(ctx context.Context, input *types.UserLoginInput) func(*Client) 
 			return closeErr
 		}
 
-		crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, cookie)
+		crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, cookie, c.impersonatedUserID, c.impersonatedHouseholdID)
 		c.authMethod = cookieAuthMethod
+		c.cookie = cookie
 		c.authedClient.Transport = crt
 		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
 
@@ -249,8 +251,8 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, cookie *htt
 			Base:   otelhttp.DefaultClient.Transport,
 		}
 
-		// TODO: set authHeaderBuilder
 		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
+		c.cookie = nil
 
 		c.logger.Debug("set client oauth2 token")
 
@@ -263,6 +265,13 @@ func ImpersonatingUser(userID string) func(*Client) error {
 	return func(c *Client) error {
 		c.impersonatedUserID = userID
 
+		// impersonation not supported over oauth2
+		if c.authMethod == cookieAuthMethod {
+			crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, c.cookie, c.impersonatedUserID, c.impersonatedHouseholdID)
+			c.authedClient.Transport = crt
+			c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
+		}
+
 		return nil
 	}
 }
@@ -271,6 +280,13 @@ func ImpersonatingUser(userID string) func(*Client) error {
 func ImpersonatingHousehold(householdID string) func(*Client) error {
 	return func(c *Client) error {
 		c.impersonatedHouseholdID = householdID
+
+		// impersonation not supported over oauth2
+		if c.authMethod == cookieAuthMethod {
+			crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, c.cookie, c.impersonatedUserID, c.impersonatedHouseholdID)
+			c.authedClient.Transport = crt
+			c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
+		}
 
 		return nil
 	}
@@ -281,6 +297,13 @@ func WithoutImpersonating() func(*Client) error {
 	return func(c *Client) error {
 		c.impersonatedUserID = ""
 		c.impersonatedHouseholdID = ""
+
+		// impersonation not supported over oauth2
+		if c.authMethod == cookieAuthMethod {
+			crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, c.cookie, c.impersonatedUserID, c.impersonatedHouseholdID)
+			c.authedClient.Transport = crt
+			c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
+		}
 
 		return nil
 	}

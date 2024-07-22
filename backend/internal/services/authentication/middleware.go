@@ -131,18 +131,15 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			}
 
 			if zuckUserID != "" {
-				logger.WithValue("zuckUserID", zuckUserID).Info("setting user ID for zuck mode")
 				sessionCtxData.Requester.UserID = zuckUserID
 			}
 
 			if zuckHouseholdID != "" {
-				logger.WithValue("zuckHouseholdID", zuckHouseholdID).Info("setting household ID for zuck mode")
 				sessionCtxData.ActiveHouseholdID = zuckHouseholdID
 				sessionCtxData.HouseholdPermissions[zuckHouseholdID] = authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String())
 			}
 
 			if sessionCtxData != nil {
-				logger.WithValue("user_id", sessionCtxData.Requester.UserID).WithValue("household_id", sessionCtxData.ActiveHouseholdID).Info("writing session context data in UserAttributionMiddleware cookie flow")
 				next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
 				return
 			}
@@ -176,19 +173,16 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 				}
 
 				if zuckUserID != "" {
-					logger.WithValue("zuckUserID", zuckUserID).Info("setting user ID for zuck mode")
 					sessionCtxData.Requester.UserID = zuckUserID
 				}
 
 				if zuckHouseholdID != "" {
-					logger.WithValue("zuckHouseholdID", zuckHouseholdID).Info("setting household ID for zuck mode")
 					sessionCtxData.ActiveHouseholdID = zuckHouseholdID
 					sessionCtxData.HouseholdPermissions[zuckHouseholdID] = authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String())
 				}
 
 				userAttributionTimer.Stop()
 				if sessionCtxData != nil {
-					logger.WithValue("user_id", sessionCtxData.Requester.UserID).WithValue("household_id", sessionCtxData.ActiveHouseholdID).Info("writing session context data in UserAttributionMiddleware token flow")
 					next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
 					return
 				}

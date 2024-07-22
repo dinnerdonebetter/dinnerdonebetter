@@ -61,11 +61,11 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 }
 
 func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
-	s.runForEachClient("should be possible to impersonate users without specifying household ID", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be possible to impersonate users without specifying household ID", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
-			t.SkipNow() // DELETEME: address with new client modifications
+			// t.SkipNow() // DELETEME: address with new client modifications
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
@@ -102,7 +102,7 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 		return func() {
 			t := s.T()
 
-			t.SkipNow() // DELETEME: address with new client modifications
+			// t.SkipNow() // DELETEME: address with new client modifications
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
@@ -136,11 +136,11 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 		}
 	})
 
-	s.runForEachClient("plain user should not be able to impersonate users", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("plain user should not be able to impersonate users", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
-			t.SkipNow() // DELETEME: address with new client modifications
+			// t.SkipNow() // DELETEME: address with new client modifications
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()

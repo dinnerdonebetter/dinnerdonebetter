@@ -51,6 +51,7 @@ type Client struct {
 	impersonatedUserID      string
 	impersonatedHouseholdID string
 	debug                   bool
+	cookie                  *http.Cookie
 }
 
 // AuthenticatedClient returns the authenticated *apiclient.Client that we use to make most requests.

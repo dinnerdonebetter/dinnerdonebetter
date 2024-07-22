@@ -21,13 +21,17 @@ const (
 )
 
 type defaultRoundTripper struct {
-	baseRoundTripper http.RoundTripper
+	baseRoundTripper        http.RoundTripper
+	impersonatedUserID      string
+	impersonatedHouseholdID string
 }
 
 // newDefaultRoundTripper constructs a new http.RoundTripper.
-func newDefaultRoundTripper(timeout time.Duration) http.RoundTripper {
+func newDefaultRoundTripper(timeout time.Duration, impersonatedUserID, impersonatedHouseholdID string) http.RoundTripper {
 	return &defaultRoundTripper{
-		baseRoundTripper: tracing.BuildTracedHTTPTransport(timeout),
+		impersonatedUserID:      impersonatedUserID,
+		impersonatedHouseholdID: impersonatedHouseholdID,
+		baseRoundTripper:        tracing.BuildTracedHTTPTransport(timeout),
 	}
 }
 
@@ -35,7 +39,34 @@ func newDefaultRoundTripper(timeout time.Duration) http.RoundTripper {
 func (t *defaultRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Set(userAgentHeader, userAgent)
 
+	if t.impersonatedUserID != "" {
+		req.Header.Set(zuckModeUserHeader, t.impersonatedUserID)
+	}
+
+	if t.impersonatedHouseholdID != "" {
+		req.Header.Set(zuckModeHouseholdHeader, t.impersonatedHouseholdID)
+	}
+
 	return t.baseRoundTripper.RoundTrip(req)
+}
+
+func buildRetryingClient(client *http.Client, logger logging.Logger, tracer tracing.Tracer) *http.Client {
+	rc := &retryablehttp.Client{
+		HTTPClient:      client,
+		RetryWaitMin:    minRetryWait,
+		RetryWaitMax:    maxRetryWait,
+		RetryMax:        maxRetryCount,
+		RequestLogHook:  buildRequestLogHook(logger),
+		ResponseLogHook: buildResponseLogHook(logger),
+		CheckRetry:      buildCheckRetryFunc(tracer),
+		ErrorHandler:    buildErrorHandler(logger),
+		Backoff:         retryablehttp.DefaultBackoff,
+	}
+
+	c := rc.StandardClient()
+	c.Timeout = defaultTimeout
+
+	return c
 }
 
 func buildRequestLogHook(logger logging.Logger) func(retryablehttp.Logger, *http.Request, int) {
@@ -75,27 +106,8 @@ func buildErrorHandler(logger logging.Logger) func(res *http.Response, err error
 	logger = logging.EnsureLogger(logger)
 
 	return func(res *http.Response, err error, numTries int) (*http.Response, error) {
-		logger.WithValue("try_number", numTries).WithResponse(res).Error(err, "executing request")
+		logger.WithValue("attempt_number", numTries).WithResponse(res).Error(err, "executing request")
 
 		return res, err
 	}
-}
-
-func buildRetryingClient(client *http.Client, logger logging.Logger, tracer tracing.Tracer) *http.Client {
-	rc := &retryablehttp.Client{
-		HTTPClient:      client,
-		RetryWaitMin:    minRetryWait,
-		RetryWaitMax:    maxRetryWait,
-		RetryMax:        maxRetryCount,
-		RequestLogHook:  buildRequestLogHook(logger),
-		ResponseLogHook: buildResponseLogHook(logger),
-		CheckRetry:      buildCheckRetryFunc(tracer),
-		Backoff:         retryablehttp.DefaultBackoff,
-		ErrorHandler:    buildErrorHandler(logger),
-	}
-
-	c := rc.StandardClient()
-	c.Timeout = defaultTimeout
-
-	return c
 }
