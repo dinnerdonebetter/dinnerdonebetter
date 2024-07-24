@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	testutils "github.com/dinnerdonebetter/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"

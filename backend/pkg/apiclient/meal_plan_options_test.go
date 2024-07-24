@@ -80,7 +80,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOption() {
 		assert.Error(t, err)
 	})
 
-	s.Run("with invalid meal plan option ID", func() {
+	s.Run("with invalid meal plan ClientOption ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
@@ -285,7 +285,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_ArchiveMealPlanOption() {
 		assert.Error(t, err)
 	})
 
-	s.Run("with invalid meal plan option ID", func() {
+	s.Run("with invalid meal plan ClientOption ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)

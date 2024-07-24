@@ -21,7 +21,7 @@ type (
 )
 
 func (e *clientEncoder) ContentType() string {
-	return contentTypeToString(e.contentType)
+	return ContentTypeToString(e.contentType)
 }
 
 func buildContentType(s string) *contentType {
@@ -30,7 +30,8 @@ func buildContentType(s string) *contentType {
 	return &ct
 }
 
-func contentTypeToString(c *contentType) string {
+// ContentTypeToString allows a content type to be converted to a string.
+func ContentTypeToString(c ContentType) string {
 	switch c {
 	case ContentTypeJSON:
 		return contentTypeJSON

@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -80,6 +81,7 @@ func ProvideService(
 		mealPlanFinalizationWorker:     mealPlanFinalizationWorker,
 		mealPlanGroceryListInitializer: mealPlanGroceryListInitializer,
 		mealPlanTaskCreatorWorker:      mealPlanTaskCreatorWorker,
+		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		tracer:                         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 

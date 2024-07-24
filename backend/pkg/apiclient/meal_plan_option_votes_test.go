@@ -82,7 +82,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVote() {
 		assert.Error(t, err)
 	})
 
-	s.Run("with invalid meal plan option ID", func() {
+	s.Run("with invalid meal plan ClientOption ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
@@ -92,7 +92,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVote() {
 		assert.Error(t, err)
 	})
 
-	s.Run("with invalid meal plan option vote ID", func() {
+	s.Run("with invalid meal plan ClientOption vote ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
@@ -151,7 +151,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 		assert.Error(t, err)
 	})
 
-	s.Run("with invalid meal plan option ID", func() {
+	s.Run("with invalid meal plan ClientOption ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
@@ -328,7 +328,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_ArchiveMealPlanOptionVote() {
 		assert.Error(t, err)
 	})
 
-	s.Run("with invalid meal plan option ID", func() {
+	s.Run("with invalid meal plan ClientOption ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
@@ -337,7 +337,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_ArchiveMealPlanOptionVote() {
 		assert.Error(t, err)
 	})
 
-	s.Run("with invalid meal plan option vote ID", func() {
+	s.Run("with invalid meal plan ClientOption vote ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)

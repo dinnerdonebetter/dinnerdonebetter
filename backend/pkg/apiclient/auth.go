@@ -72,7 +72,7 @@ func (c *Client) EndSession(ctx context.Context) error {
 		return observability.PrepareError(err, span, "executing logout request")
 	}
 
-	c.authedClient.Transport = newDefaultRoundTripper(c.authedClient.Timeout)
+	c.authedClient.Transport = newDefaultRoundTripper(c.authedClient.Timeout, c.impersonatedUserID, c.impersonatedHouseholdID)
 	c.closeResponseBody(ctx, res)
 
 	return nil

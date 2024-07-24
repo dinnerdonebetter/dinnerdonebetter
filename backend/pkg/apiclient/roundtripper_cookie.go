@@ -21,12 +21,12 @@ type cookieRoundtripper struct {
 	base http.RoundTripper
 }
 
-func newCookieRoundTripper(logger logging.Logger, tracer tracing.Tracer, timeout time.Duration, cookie *http.Cookie) *cookieRoundtripper {
+func newCookieRoundTripper(logger logging.Logger, tracer tracing.Tracer, timeout time.Duration, cookie *http.Cookie, impersonatedUserID, impersonatedHouseholdID string) *cookieRoundtripper {
 	return &cookieRoundtripper{
 		cookie: cookie,
 		logger: logger,
 		tracer: tracer,
-		base:   newDefaultRoundTripper(timeout),
+		base:   newDefaultRoundTripper(timeout, impersonatedUserID, impersonatedHouseholdID),
 	}
 }
 
@@ -44,6 +44,10 @@ func (t *cookieRoundtripper) RoundTrip(req *http.Request) (*http.Response, error
 				}
 			}
 		}()
+	}
+
+	if t.cookie == nil {
+		panic("wtf")
 	}
 
 	if c, err := req.Cookie(t.cookie.Name); c == nil || err != nil {

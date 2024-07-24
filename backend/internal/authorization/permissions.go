@@ -16,6 +16,8 @@ const (
 	CycleCookieSecretPermission Permission = "update.cookie_secret"
 	// UpdateUserStatusPermission is a service admin permission.
 	UpdateUserStatusPermission Permission = "update.user_status"
+	// ImpersonateUserPermission is a service admin permission.
+	ImpersonateUserPermission Permission = "imitate.user"
 	// ReadUserPermission is a service admin permission.
 	ReadUserPermission Permission = "read.user"
 	// SearchUserPermission is a service admin permission.
@@ -463,6 +465,7 @@ var (
 		UpdateValidIngredientStatesPermission,
 		ArchiveValidIngredientStatesPermission,
 		CreateUserNotificationsPermission,
+		ImpersonateUserPermission,
 		// only admins can arbitrarily create these via the API, this is exclusively for integration test purposes.
 		CreateServiceSettingsPermission,
 		CreateMealPlanTasksPermission,

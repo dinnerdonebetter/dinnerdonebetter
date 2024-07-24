@@ -91,7 +91,6 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 
 // DB provides the database object.
 func (q *Querier) DB() *sql.DB {
-	q.logger.Info("closing database connection")
 	return q.db
 }
 

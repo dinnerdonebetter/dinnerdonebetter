@@ -7,7 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	testutils "github.com/dinnerdonebetter/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"

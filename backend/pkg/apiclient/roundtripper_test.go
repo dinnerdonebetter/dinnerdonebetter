@@ -19,7 +19,7 @@ func Test_newDefaultRoundTripper(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		rt := newDefaultRoundTripper(0)
+		rt := newDefaultRoundTripper(0, "", "")
 		assert.NotNil(t, rt)
 	})
 }
@@ -38,7 +38,7 @@ func Test_defaultRoundTripper_RoundTrip(T *testing.T) {
 			},
 		))
 
-		transport := newDefaultRoundTripper(0)
+		transport := newDefaultRoundTripper(0, "", "")
 		assert.NotNil(t, transport)
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, ts.URL, http.NoBody)

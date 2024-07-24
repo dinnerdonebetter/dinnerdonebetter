@@ -17,7 +17,7 @@ func Test_newCookieRoundTripper(T *testing.T) {
 		t.Parallel()
 
 		c, _ := buildSimpleTestClient(t)
-		assert.NotNil(t, newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, &http.Cookie{}))
+		assert.NotNil(t, newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, &http.Cookie{}, "", ""))
 	})
 }
 
@@ -40,7 +40,7 @@ func Test_cookieRoundtripper_RoundTrip(T *testing.T) {
 		spec := newRequestSpec(true, http.MethodPost, "", "")
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
 		exampleCookie := &http.Cookie{Name: "testcookie", Value: t.Name()}
-		rt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, exampleCookie)
+		rt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, exampleCookie, "", "")
 		exampleResponse := &http.Response{
 			Header: map[string][]string{
 				"Set-Cookie": {exampleCookie.String()},
@@ -69,7 +69,7 @@ func Test_cookieRoundtripper_RoundTrip(T *testing.T) {
 		spec := newRequestSpec(true, http.MethodPost, "", "")
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
 		exampleCookie := &http.Cookie{Name: "testcookie", Value: t.Name()}
-		rt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, exampleCookie)
+		rt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, exampleCookie, "", "")
 
 		mrt := &mockRoundTripper{}
 		mrt.On("RoundTrip", mock.IsType(&http.Request{})).Return((*http.Response)(nil), errors.New("blah"))

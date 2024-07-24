@@ -31,25 +31,31 @@ func Test_buildContentType(T *testing.T) {
 	})
 }
 
-func Test_contentTypeToString(T *testing.T) {
+func TestContentTypeToString(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with JSON", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotEmpty(t, contentTypeToString(ContentTypeJSON))
+		assert.NotEmpty(t, ContentTypeToString(ContentTypeJSON))
 	})
 
 	T.Run("with XML", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotEmpty(t, contentTypeToString(ContentTypeXML))
+		assert.NotEmpty(t, ContentTypeToString(ContentTypeXML))
+	})
+
+	T.Run("with Emoji", func(t *testing.T) {
+		t.Parallel()
+
+		assert.NotEmpty(t, ContentTypeToString(ContentTypeEmoji))
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		assert.Empty(t, contentTypeToString(nil))
+		assert.Empty(t, ContentTypeToString(nil))
 	})
 }
 

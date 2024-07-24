@@ -71,10 +71,16 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 	mux := chi.NewRouter()
 	mux.Use(
 		buildTracingMiddleware(tracer),
+		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), tracer, cfg.SilenceRouteLogging),
 		chimiddleware.RequestID,
 		chimiddleware.RealIP,
+		chimiddleware.CleanPath,
 		chimiddleware.Timeout(maxTimeout),
-		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), tracer, cfg.SilenceRouteLogging),
+		// chimiddleware.AllowContentType(
+		// 	encoding.ContentTypeToString(encoding.ContentTypeJSON),
+		// 	encoding.ContentTypeToString(encoding.ContentTypeXML),
+		// 	encoding.ContentTypeToString(encoding.ContentTypeEmoji),
+		// ),
 		corsHandler.Handler,
 		func(next http.Handler) http.Handler {
 			return servertiming.Middleware(next, nil)
