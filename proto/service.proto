@@ -1,0 +1,13 @@
+package dinnerdonebetter;
+
+import "types.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/proto/service;service";
+
+message GetValidIngredientRequest {
+  required string ValidIngredientID = 1;
+}
+
+service DinnerDoneBetter {
+  rpc GetValidIngredient(GetValidIngredientRequest) returns (ValidIngredient);
+}
