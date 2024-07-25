@@ -2,6 +2,7 @@ package converters
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	prototypes "github.com/dinnerdonebetter/backend/internal/proto/types"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -171,47 +172,47 @@ func ConvertValidIngredientToValidIngredientDatabaseCreationInput(x *types.Valid
 	}
 }
 
-// ConvertNullableValidIngredientToValidIngredient converts a NullableValidIngredient to a ValidIngredient.
-func ConvertNullableValidIngredientToValidIngredient(x *types.NullableValidIngredient) *types.ValidIngredient {
-	return &types.ValidIngredient{
-		CreatedAt:                               *x.CreatedAt,
-		LastUpdatedAt:                           x.LastUpdatedAt,
-		ArchivedAt:                              x.ArchivedAt,
-		ID:                                      *x.ID,
-		Warning:                                 *x.Warning,
-		Description:                             *x.Description,
-		IconPath:                                *x.IconPath,
-		PluralName:                              *x.PluralName,
-		StorageInstructions:                     *x.StorageInstructions,
-		Name:                                    *x.Name,
-		MaximumIdealStorageTemperatureInCelsius: x.MaximumIdealStorageTemperatureInCelsius,
-		MinimumIdealStorageTemperatureInCelsius: x.MinimumIdealStorageTemperatureInCelsius,
-		ContainsShellfish:                       *x.ContainsShellfish,
-		ContainsDairy:                           *x.ContainsDairy,
-		AnimalFlesh:                             *x.AnimalFlesh,
-		IsMeasuredVolumetrically:                *x.IsMeasuredVolumetrically,
-		IsLiquid:                                *x.IsLiquid,
-		ContainsPeanut:                          *x.ContainsPeanut,
-		ContainsTreeNut:                         *x.ContainsTreeNut,
-		ContainsEgg:                             *x.ContainsEgg,
-		ContainsWheat:                           *x.ContainsWheat,
-		ContainsSoy:                             *x.ContainsSoy,
-		AnimalDerived:                           *x.AnimalDerived,
-		RestrictToPreparations:                  *x.RestrictToPreparations,
-		ContainsSesame:                          *x.ContainsSesame,
-		ContainsFish:                            *x.ContainsFish,
-		ContainsGluten:                          *x.ContainsGluten,
-		Slug:                                    *x.Slug,
-		ContainsAlcohol:                         *x.ContainsAlcohol,
-		ShoppingSuggestions:                     *x.ShoppingSuggestions,
-		IsStarch:                                *x.IsStarch,
-		IsProtein:                               *x.IsProtein,
-		IsGrain:                                 *x.IsGrain,
-		IsFruit:                                 *x.IsFruit,
-		IsSalt:                                  *x.IsSalt,
-		IsFat:                                   *x.IsFat,
-		IsAcid:                                  *x.IsAcid,
-		IsHeat:                                  *x.IsHeat,
+// ConvertValidIngredientToProtoValidIngredient converts a NullableValidIngredient to a ValidIngredient.
+func ConvertValidIngredientToProtoValidIngredient(x *types.ValidIngredient) *prototypes.ValidIngredient {
+	return &prototypes.ValidIngredient{
+		CreatedAt:                               ConvertTimestampToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt:                           ConvertTimestampPointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:                              ConvertTimestampPointerToPBTimestamp(x.ArchivedAt),
+		ID:                                      x.ID,
+		Warning:                                 x.Warning,
+		Description:                             x.Description,
+		IconPath:                                x.IconPath,
+		PluralName:                              x.PluralName,
+		StorageInstructions:                     x.StorageInstructions,
+		Name:                                    x.Name,
+		MaximumIdealStorageTemperatureInCelsius: float32PointerToFloat64Pointer(x.MaximumIdealStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: float32PointerToFloat64Pointer(x.MinimumIdealStorageTemperatureInCelsius),
+		ContainsShellfish:                       x.ContainsShellfish,
+		ContainsDairy:                           x.ContainsDairy,
+		AnimalFlesh:                             x.AnimalFlesh,
+		IsMeasuredVolumetrically:                x.IsMeasuredVolumetrically,
+		IsLiquid:                                x.IsLiquid,
+		ContainsPeanut:                          x.ContainsPeanut,
+		ContainsTreeNut:                         x.ContainsTreeNut,
+		ContainsEgg:                             x.ContainsEgg,
+		ContainsWheat:                           x.ContainsWheat,
+		ContainsSoy:                             x.ContainsSoy,
+		AnimalDerived:                           x.AnimalDerived,
+		RestrictToPreparations:                  x.RestrictToPreparations,
+		ContainsSesame:                          x.ContainsSesame,
+		ContainsFish:                            x.ContainsFish,
+		ContainsGluten:                          x.ContainsGluten,
+		Slug:                                    x.Slug,
+		ContainsAlcohol:                         x.ContainsAlcohol,
+		ShoppingSuggestions:                     x.ShoppingSuggestions,
+		IsStarch:                                x.IsStarch,
+		IsProtein:                               x.IsProtein,
+		IsGrain:                                 x.IsGrain,
+		IsFruit:                                 x.IsFruit,
+		IsSalt:                                  x.IsSalt,
+		IsFat:                                   x.IsFat,
+		IsAcid:                                  x.IsAcid,
+		IsHeat:                                  x.IsHeat,
 	}
 }
 

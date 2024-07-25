@@ -19,8 +19,6 @@ proto:
 		proto/types.proto
 	mkdir -p $(BACKEND_PROTO_DESTINATION)/service
 	protoc -I=proto \
-		--go_opt=paths=source_relative \
-		--go_out=$(BACKEND_PROTO_DESTINATION)/service \
-		--go_out=plugins=grpc:. \
-		--go-grpc_out=. --go_out=. \
+		--go-grpc_opt=paths=source_relative \
+		--go-grpc_out=$(BACKEND_PROTO_DESTINATION)/service \
 		proto/service.proto

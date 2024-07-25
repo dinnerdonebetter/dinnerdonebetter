@@ -71,8 +71,8 @@ func generateProtoForType[T any](x T) (out string, err error) {
 		}
 
 		fieldType := strings.Replace(strings.TrimPrefix(strings.Replace(field.Type.String(), "[]", "", 1), "*"), "types.", "", 1)
-		//isPointer := field.Type.Kind() == reflect.Ptr
-		//isSlice := field.Type.Kind() == reflect.Slice
+		isPointer := field.Type.Kind() == reflect.Ptr
+		isSlice := field.Type.Kind() == reflect.Slice
 
 		if fieldType == "UserLoginInput" {
 			continue
@@ -84,7 +84,7 @@ func generateProtoForType[T any](x T) (out string, err error) {
 
 		switch fieldType {
 		case timeType:
-			fieldType = stringType
+			fieldType = "google.protobuf.Timestamp"
 		case mapStringToBoolType:
 			fieldType = "map<string, bool>"
 		case boolType:
@@ -105,7 +105,17 @@ func generateProtoForType[T any](x T) (out string, err error) {
 			fieldType = "uint64"
 		}
 
-		output += fmt.Sprintf("\t%s %s = %d;\n", fieldType, field.Name, fieldIndex)
+		var optional string
+		if isPointer {
+			optional = "optional "
+		}
+
+		var repeated string
+		if isSlice {
+			repeated = "repeated "
+		}
+
+		output += fmt.Sprintf("\t%s%s%s %s = %d;\n", optional, repeated, fieldType, field.Name, fieldIndex)
 		fieldIndex++
 
 		if t, ok := codegen.CustomTypeMap[fmt.Sprintf("%s.%s", typ.Name(), field.Name)]; ok {
@@ -124,6 +134,14 @@ func main() {
 		log.Println("artifacts directory already exists")
 	}
 
+	finalOutput := `syntax = "proto3";
+package dinnerdonebetter;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/proto/types;types";
+
+`
 	for _, typesToGenerateFor := range codegen.TypeDefinitionFilesToGenerate {
 		for _, typ := range typesToGenerateFor {
 			output, err := generateProtoForType(typ)
@@ -131,7 +149,11 @@ func main() {
 				log.Fatal(err)
 			}
 
-			println(output)
+			finalOutput += output + "\n"
 		}
+	}
+
+	if err := os.WriteFile("../proto/types.proto", []byte(finalOutput), 0o644); err != nil {
+		log.Fatal(err)
 	}
 }
