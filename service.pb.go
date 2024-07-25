@@ -7,7 +7,11 @@
 package service
 
 import (
+	context "context"
 	types "github.com/dinnerdonebetter/backend/internal/proto/types"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -157,4 +161,84 @@ func file_service_proto_init() {
 	file_service_proto_rawDesc = nil
 	file_service_proto_goTypes = nil
 	file_service_proto_depIdxs = nil
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConnInterface
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion6
+
+// DinnerDoneBetterClient is the client API for DinnerDoneBetter service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type DinnerDoneBetterClient interface {
+	GetValidIngredient(ctx context.Context, in *GetValidIngredientRequest, opts ...grpc.CallOption) (*types.ValidIngredient, error)
+}
+
+type dinnerDoneBetterClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewDinnerDoneBetterClient(cc grpc.ClientConnInterface) DinnerDoneBetterClient {
+	return &dinnerDoneBetterClient{cc}
+}
+
+func (c *dinnerDoneBetterClient) GetValidIngredient(ctx context.Context, in *GetValidIngredientRequest, opts ...grpc.CallOption) (*types.ValidIngredient, error) {
+	out := new(types.ValidIngredient)
+	err := c.cc.Invoke(ctx, "/dinnerdonebetter.DinnerDoneBetter/GetValidIngredient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// DinnerDoneBetterServer is the server API for DinnerDoneBetter service.
+type DinnerDoneBetterServer interface {
+	GetValidIngredient(context.Context, *GetValidIngredientRequest) (*types.ValidIngredient, error)
+}
+
+// UnimplementedDinnerDoneBetterServer can be embedded to have forward compatible implementations.
+type UnimplementedDinnerDoneBetterServer struct {
+}
+
+func (*UnimplementedDinnerDoneBetterServer) GetValidIngredient(context.Context, *GetValidIngredientRequest) (*types.ValidIngredient, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredient not implemented")
+}
+
+func RegisterDinnerDoneBetterServer(s *grpc.Server, srv DinnerDoneBetterServer) {
+	s.RegisterService(&_DinnerDoneBetter_serviceDesc, srv)
+}
+
+func _DinnerDoneBetter_GetValidIngredient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetValidIngredientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DinnerDoneBetterServer).GetValidIngredient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dinnerdonebetter.DinnerDoneBetter/GetValidIngredient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DinnerDoneBetterServer).GetValidIngredient(ctx, req.(*GetValidIngredientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _DinnerDoneBetter_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "dinnerdonebetter.DinnerDoneBetter",
+	HandlerType: (*DinnerDoneBetterServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetValidIngredient",
+			Handler:    _DinnerDoneBetter_GetValidIngredient_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "service.proto",
 }

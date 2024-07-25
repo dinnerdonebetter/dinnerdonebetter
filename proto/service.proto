@@ -9,5 +9,5 @@ message GetValidIngredientRequest {
 }
 
 service DinnerDoneBetter {
-  rpc GetValidIngredient(GetValidIngredientRequest) returns (ValidIngredient);
+  rpc GetValidIngredient(GetValidIngredientRequest) returns (ValidIngredient) {};
 }
