@@ -26,6 +26,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/algolia"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
+	"github.com/dinnerdonebetter/backend/internal/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -74,7 +75,8 @@ import (
 )
 
 const (
-	defaultPort         = 8000
+	defaultHTTPPort     = 8000
+	defaultGRPCPort     = 8001
 	defaultCookieDomain = ".whatever.gov"
 	/* #nosec G101 */
 	debugCookieSecret = "HEREISA32CHARSECRETWHICHISMADEUP"
@@ -120,9 +122,15 @@ var (
 		Provider: logcfg.ProviderSlog,
 	}
 
-	localServer = http.Config{
+	localHTTPServer = http.Config{
 		Debug:           true,
-		HTTPPort:        defaultPort,
+		Port:            defaultHTTPPort,
+		StartupDeadline: time.Minute,
+	}
+
+	localGRPCServer = grpc.Config{
+		Debug:           true,
+		Port:            defaultGRPCPort,
 		StartupDeadline: time.Minute,
 	}
 
@@ -223,9 +231,9 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		},
 		Email:     emailConfig,
 		Analytics: analyticsConfig,
-		Server: http.Config{
+		HTTPServer: http.Config{
 			Debug:           true,
-			HTTPPort:        defaultPort,
+			Port:            defaultHTTPPort,
 			StartupDeadline: time.Minute,
 		},
 		Search: searchcfg.Config{
@@ -375,7 +383,8 @@ func buildDevConfig() *config.InstanceConfig {
 			Algolia:  &algolia.Config{},
 			Provider: searchcfg.AlgoliaProvider,
 		},
-		Server: localServer,
+		HTTPServer: localHTTPServer,
+		GRPCServer: localGRPCServer,
 		Database: dbconfig.Config{
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
 			Debug:                    true,
@@ -612,9 +621,14 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Encoding: encoding.Config{
 			ContentType: contentTypeJSON,
 		},
-		Server: http.Config{
+		HTTPServer: http.Config{
 			Debug:           false,
-			HTTPPort:        defaultPort,
+			Port:            defaultHTTPPort,
+			StartupDeadline: time.Minute,
+		},
+		GRPCServer: grpc.Config{
+			Debug:           false,
+			Port:            defaultGRPCPort,
 			StartupDeadline: time.Minute,
 		},
 		Database: dbconfig.Config{

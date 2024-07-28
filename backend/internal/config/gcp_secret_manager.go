@@ -98,7 +98,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	if err != nil {
 		return nil, fmt.Errorf("parsing port: %w", err)
 	}
-	cfg.Server.HTTPPort = uint16(port)
+	cfg.HTTPServer.Port = uint16(port)
 
 	// fetch supplementary data from env vars
 	dbURI := buildDatabaseURIFromGCPEnvVars()

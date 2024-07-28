@@ -83,7 +83,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 			Database: dbconfig.Config{},
 			Meta:     MetaSettings{},
 			Events:   msgconfig.Config{},
-			Server: http.Config{
+			HTTPServer: http.Config{
 				StartupDeadline: time.Second,
 			},
 			Services: ServicesConfig{

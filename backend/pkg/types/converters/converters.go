@@ -1,8 +1,9 @@
 package converters
 
 import (
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func ConvertTimestampToPBTimestamp(t time.Time) *timestamppb.Timestamp {

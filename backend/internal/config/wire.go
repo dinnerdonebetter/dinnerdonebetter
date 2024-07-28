@@ -19,7 +19,7 @@ var (
 			"Meta",
 			"Events",
 			"Search",
-			"Server",
+			"HTTPServer",
 			"Services",
 		),
 		wire.FieldsOf(

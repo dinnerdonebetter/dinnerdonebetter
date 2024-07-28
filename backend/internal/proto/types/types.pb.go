@@ -22,24 +22,23 @@ const (
 )
 
 type HouseholdInvitation struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt            *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt           *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ToUser               *string                `protobuf:"bytes,4,opt,name=ToUser,proto3,oneof" json:"ToUser,omitempty"`
-	Status               string                 `protobuf:"bytes,5,opt,name=Status,proto3" json:"Status,omitempty"`
-	ToEmail              string                 `protobuf:"bytes,6,opt,name=ToEmail,proto3" json:"ToEmail,omitempty"`
-	StatusNote           string                 `protobuf:"bytes,7,opt,name=StatusNote,proto3" json:"StatusNote,omitempty"`
-	Token                string                 `protobuf:"bytes,8,opt,name=Token,proto3" json:"Token,omitempty"`
-	ID                   string                 `protobuf:"bytes,9,opt,name=ID,proto3" json:"ID,omitempty"`
-	Note                 string                 `protobuf:"bytes,10,opt,name=Note,proto3" json:"Note,omitempty"`
-	ToName               string                 `protobuf:"bytes,11,opt,name=ToName,proto3" json:"ToName,omitempty"`
-	ExpiresAt            *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=ExpiresAt,proto3" json:"ExpiresAt,omitempty"`
-	DestinationHousehold *Household             `protobuf:"bytes,13,opt,name=DestinationHousehold,proto3" json:"DestinationHousehold,omitempty"`
-	FromUser             *User                  `protobuf:"bytes,14,opt,name=FromUser,proto3" json:"FromUser,omitempty"`
+	state                protoimpl.MessageState
+	FromUser             *User                  `json:"FromUser,omitempty"             protobuf:"bytes,14,opt,name=FromUser,proto3"`
+	DestinationHousehold *Household             `json:"DestinationHousehold,omitempty" protobuf:"bytes,13,opt,name=DestinationHousehold,proto3"`
+	CreatedAt            *timestamppb.Timestamp `json:"CreatedAt,omitempty"            protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt        *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"        protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt           *timestamppb.Timestamp `json:"ArchivedAt,omitempty"           protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	ToUser               *string                `json:"ToUser,omitempty"               protobuf:"bytes,4,opt,name=ToUser,proto3,oneof"`
+	ExpiresAt            *timestamppb.Timestamp `json:"ExpiresAt,omitempty"            protobuf:"bytes,12,opt,name=ExpiresAt,proto3"`
+	ToEmail              string                 `json:"ToEmail,omitempty"              protobuf:"bytes,6,opt,name=ToEmail,proto3"`
+	StatusNote           string                 `json:"StatusNote,omitempty"           protobuf:"bytes,7,opt,name=StatusNote,proto3"`
+	Token                string                 `json:"Token,omitempty"                protobuf:"bytes,8,opt,name=Token,proto3"`
+	ID                   string                 `json:"ID,omitempty"                   protobuf:"bytes,9,opt,name=ID,proto3"`
+	Note                 string                 `json:"Note,omitempty"                 protobuf:"bytes,10,opt,name=Note,proto3"`
+	ToName               string                 `json:"ToName,omitempty"               protobuf:"bytes,11,opt,name=ToName,proto3"`
+	Status               string                 `json:"Status,omitempty"               protobuf:"bytes,5,opt,name=Status,proto3"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *HouseholdInvitation) Reset() {
@@ -174,11 +173,10 @@ func (x *HouseholdInvitation) GetFromUser() *User {
 
 type HouseholdInvitationUpdateRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Token         string `json:"Token,omitempty" protobuf:"bytes,1,opt,name=Token,proto3"`
+	Note          string `json:"Note,omitempty"  protobuf:"bytes,2,opt,name=Note,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Token string `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
-	Note  string `protobuf:"bytes,2,opt,name=Note,proto3" json:"Note,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HouseholdInvitationUpdateRequestInput) Reset() {
@@ -229,13 +227,12 @@ func (x *HouseholdInvitationUpdateRequestInput) GetNote() string {
 
 type HouseholdInvitationCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	ExpiresAt     *timestamppb.Timestamp `json:"ExpiresAt,omitempty" protobuf:"bytes,1,opt,name=ExpiresAt,proto3,oneof"`
+	Note          string                 `json:"Note,omitempty"      protobuf:"bytes,2,opt,name=Note,proto3"`
+	ToEmail       string                 `json:"ToEmail,omitempty"   protobuf:"bytes,3,opt,name=ToEmail,proto3"`
+	ToName        string                 `json:"ToName,omitempty"    protobuf:"bytes,4,opt,name=ToName,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	ExpiresAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=ExpiresAt,proto3,oneof" json:"ExpiresAt,omitempty"`
-	Note      string                 `protobuf:"bytes,2,opt,name=Note,proto3" json:"Note,omitempty"`
-	ToEmail   string                 `protobuf:"bytes,3,opt,name=ToEmail,proto3" json:"ToEmail,omitempty"`
-	ToName    string                 `protobuf:"bytes,4,opt,name=ToName,proto3" json:"ToName,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HouseholdInvitationCreationRequestInput) Reset() {
@@ -299,20 +296,19 @@ func (x *HouseholdInvitationCreationRequestInput) GetToName() string {
 }
 
 type MealPlanEvent struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	StartsAt          *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=StartsAt,proto3" json:"StartsAt,omitempty"`
-	EndsAt            *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=EndsAt,proto3" json:"EndsAt,omitempty"`
-	ArchivedAt        *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	MealName          string                 `protobuf:"bytes,6,opt,name=MealName,proto3" json:"MealName,omitempty"`
-	Notes             string                 `protobuf:"bytes,7,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	BelongsToMealPlan string                 `protobuf:"bytes,8,opt,name=BelongsToMealPlan,proto3" json:"BelongsToMealPlan,omitempty"`
-	ID                string                 `protobuf:"bytes,9,opt,name=ID,proto3" json:"ID,omitempty"`
-	Options           []*MealPlanOption      `protobuf:"bytes,10,rep,name=Options,proto3" json:"Options,omitempty"`
+	ArchivedAt        *timestamppb.Timestamp `json:"ArchivedAt,omitempty" protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof"`
+	CreatedAt         *timestamppb.Timestamp `json:"CreatedAt,omitempty"  protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	StartsAt          *timestamppb.Timestamp `json:"StartsAt,omitempty"   protobuf:"bytes,2,opt,name=StartsAt,proto3"`
+	EndsAt            *timestamppb.Timestamp `json:"EndsAt,omitempty"     protobuf:"bytes,3,opt,name=EndsAt,proto3"`
+	state             protoimpl.MessageState
+	LastUpdatedAt     *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"     protobuf:"bytes,5,opt,name=LastUpdatedAt,proto3,oneof"`
+	MealName          string                 `json:"MealName,omitempty"          protobuf:"bytes,6,opt,name=MealName,proto3"`
+	Notes             string                 `json:"Notes,omitempty"             protobuf:"bytes,7,opt,name=Notes,proto3"`
+	BelongsToMealPlan string                 `json:"BelongsToMealPlan,omitempty" protobuf:"bytes,8,opt,name=BelongsToMealPlan,proto3"`
+	ID                string                 `json:"ID,omitempty"                protobuf:"bytes,9,opt,name=ID,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	Options           []*MealPlanOption `json:"Options,omitempty" protobuf:"bytes,10,rep,name=Options,proto3"`
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *MealPlanEvent) Reset() {
@@ -419,14 +415,13 @@ func (x *MealPlanEvent) GetOptions() []*MealPlanOption {
 
 type MealPlanEventCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	EndsAt        *timestamppb.Timestamp `json:"EndsAt,omitempty"   protobuf:"bytes,1,opt,name=EndsAt,proto3"`
+	StartsAt      *timestamppb.Timestamp `json:"StartsAt,omitempty" protobuf:"bytes,2,opt,name=StartsAt,proto3"`
+	Notes         string                 `json:"Notes,omitempty"    protobuf:"bytes,3,opt,name=Notes,proto3"`
+	MealName      string                 `json:"MealName,omitempty" protobuf:"bytes,4,opt,name=MealName,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	EndsAt   *timestamppb.Timestamp                `protobuf:"bytes,1,opt,name=EndsAt,proto3" json:"EndsAt,omitempty"`
-	StartsAt *timestamppb.Timestamp                `protobuf:"bytes,2,opt,name=StartsAt,proto3" json:"StartsAt,omitempty"`
-	Notes    string                                `protobuf:"bytes,3,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	MealName string                                `protobuf:"bytes,4,opt,name=MealName,proto3" json:"MealName,omitempty"`
-	Options  []*MealPlanOptionCreationRequestInput `protobuf:"bytes,5,rep,name=Options,proto3" json:"Options,omitempty"`
+	Options       []*MealPlanOptionCreationRequestInput `json:"Options,omitempty" protobuf:"bytes,5,rep,name=Options,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MealPlanEventCreationRequestInput) Reset() {
@@ -498,13 +493,12 @@ func (x *MealPlanEventCreationRequestInput) GetOptions() []*MealPlanOptionCreati
 
 type MealPlanEventUpdateRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Notes         *string                `json:"Notes,omitempty"    protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	StartsAt      *timestamppb.Timestamp `json:"StartsAt,omitempty" protobuf:"bytes,2,opt,name=StartsAt,proto3,oneof"`
+	MealName      *string                `json:"MealName,omitempty" protobuf:"bytes,3,opt,name=MealName,proto3,oneof"`
+	EndsAt        *timestamppb.Timestamp `json:"EndsAt,omitempty"   protobuf:"bytes,4,opt,name=EndsAt,proto3,oneof"`
 	unknownFields protoimpl.UnknownFields
-
-	Notes    *string                `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	StartsAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=StartsAt,proto3,oneof" json:"StartsAt,omitempty"`
-	MealName *string                `protobuf:"bytes,3,opt,name=MealName,proto3,oneof" json:"MealName,omitempty"`
-	EndsAt   *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=EndsAt,proto3,oneof" json:"EndsAt,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MealPlanEventUpdateRequestInput) Reset() {
@@ -568,20 +562,19 @@ func (x *MealPlanEventUpdateRequestInput) GetEndsAt() *timestamppb.Timestamp {
 }
 
 type MealPlanTask struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	RecipePrepTask      *RecipePrepTask        `protobuf:"bytes,1,opt,name=RecipePrepTask,proto3" json:"RecipePrepTask,omitempty"`
-	CreatedAt           *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt       *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	CompletedAt         *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=CompletedAt,proto3,oneof" json:"CompletedAt,omitempty"`
-	AssignedToUser      *string                `protobuf:"bytes,5,opt,name=AssignedToUser,proto3,oneof" json:"AssignedToUser,omitempty"`
-	ID                  string                 `protobuf:"bytes,6,opt,name=ID,proto3" json:"ID,omitempty"`
-	Status              string                 `protobuf:"bytes,7,opt,name=Status,proto3" json:"Status,omitempty"`
-	CreationExplanation string                 `protobuf:"bytes,8,opt,name=CreationExplanation,proto3" json:"CreationExplanation,omitempty"`
-	StatusExplanation   string                 `protobuf:"bytes,9,opt,name=StatusExplanation,proto3" json:"StatusExplanation,omitempty"`
-	MealPlanOption      *MealPlanOption        `protobuf:"bytes,10,opt,name=MealPlanOption,proto3" json:"MealPlanOption,omitempty"`
+	CompletedAt         *timestamppb.Timestamp `json:"CompletedAt,omitempty"    protobuf:"bytes,4,opt,name=CompletedAt,proto3,oneof"`
+	RecipePrepTask      *RecipePrepTask        `json:"RecipePrepTask,omitempty" protobuf:"bytes,1,opt,name=RecipePrepTask,proto3"`
+	CreatedAt           *timestamppb.Timestamp `json:"CreatedAt,omitempty"      protobuf:"bytes,2,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt       *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"  protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	state               protoimpl.MessageState
+	AssignedToUser      *string         `json:"AssignedToUser,omitempty"      protobuf:"bytes,5,opt,name=AssignedToUser,proto3,oneof"`
+	MealPlanOption      *MealPlanOption `json:"MealPlanOption,omitempty"      protobuf:"bytes,10,opt,name=MealPlanOption,proto3"`
+	ID                  string          `json:"ID,omitempty"                  protobuf:"bytes,6,opt,name=ID,proto3"`
+	Status              string          `json:"Status,omitempty"              protobuf:"bytes,7,opt,name=Status,proto3"`
+	CreationExplanation string          `json:"CreationExplanation,omitempty" protobuf:"bytes,8,opt,name=CreationExplanation,proto3"`
+	StatusExplanation   string          `json:"StatusExplanation,omitempty"   protobuf:"bytes,9,opt,name=StatusExplanation,proto3"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *MealPlanTask) Reset() {
@@ -687,16 +680,15 @@ func (x *MealPlanTask) GetMealPlanOption() *MealPlanOption {
 }
 
 type MealPlanTaskCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	AssignedToUser      *string `protobuf:"bytes,1,opt,name=AssignedToUser,proto3,oneof" json:"AssignedToUser,omitempty"`
-	Status              string  `protobuf:"bytes,2,opt,name=Status,proto3" json:"Status,omitempty"`
-	CreationExplanation string  `protobuf:"bytes,3,opt,name=CreationExplanation,proto3" json:"CreationExplanation,omitempty"`
-	StatusExplanation   string  `protobuf:"bytes,4,opt,name=StatusExplanation,proto3" json:"StatusExplanation,omitempty"`
-	MealPlanOptionID    string  `protobuf:"bytes,5,opt,name=MealPlanOptionID,proto3" json:"MealPlanOptionID,omitempty"`
-	RecipePrepTaskID    string  `protobuf:"bytes,6,opt,name=RecipePrepTaskID,proto3" json:"RecipePrepTaskID,omitempty"`
+	state               protoimpl.MessageState
+	AssignedToUser      *string `json:"AssignedToUser,omitempty"      protobuf:"bytes,1,opt,name=AssignedToUser,proto3,oneof"`
+	Status              string  `json:"Status,omitempty"              protobuf:"bytes,2,opt,name=Status,proto3"`
+	CreationExplanation string  `json:"CreationExplanation,omitempty" protobuf:"bytes,3,opt,name=CreationExplanation,proto3"`
+	StatusExplanation   string  `json:"StatusExplanation,omitempty"   protobuf:"bytes,4,opt,name=StatusExplanation,proto3"`
+	MealPlanOptionID    string  `json:"MealPlanOptionID,omitempty"    protobuf:"bytes,5,opt,name=MealPlanOptionID,proto3"`
+	RecipePrepTaskID    string  `json:"RecipePrepTaskID,omitempty"    protobuf:"bytes,6,opt,name=RecipePrepTaskID,proto3"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *MealPlanTaskCreationRequestInput) Reset() {
@@ -774,13 +766,12 @@ func (x *MealPlanTaskCreationRequestInput) GetRecipePrepTaskID() string {
 }
 
 type MealPlanTaskStatusChangeRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Status            *string `protobuf:"bytes,1,opt,name=Status,proto3,oneof" json:"Status,omitempty"`
-	StatusExplanation string  `protobuf:"bytes,2,opt,name=StatusExplanation,proto3" json:"StatusExplanation,omitempty"`
-	AssignedToUser    *string `protobuf:"bytes,3,opt,name=AssignedToUser,proto3,oneof" json:"AssignedToUser,omitempty"`
+	state             protoimpl.MessageState
+	Status            *string `json:"Status,omitempty"            protobuf:"bytes,1,opt,name=Status,proto3,oneof"`
+	AssignedToUser    *string `json:"AssignedToUser,omitempty"    protobuf:"bytes,3,opt,name=AssignedToUser,proto3,oneof"`
+	StatusExplanation string  `json:"StatusExplanation,omitempty" protobuf:"bytes,2,opt,name=StatusExplanation,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *MealPlanTaskStatusChangeRequestInput) Reset() {
@@ -837,26 +828,25 @@ func (x *MealPlanTaskStatusChangeRequestInput) GetAssignedToUser() string {
 }
 
 type RecipePrepTask struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                              *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float64               `protobuf:"fixed64,2,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof" json:"MaximumStorageTemperatureInCelsius,omitempty"`
-	ArchivedAt                             *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt                          *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float64               `protobuf:"fixed64,5,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof" json:"MinimumStorageTemperatureInCelsius,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *uint32                `protobuf:"varint,6,opt,name=MaximumTimeBufferBeforeRecipeInSeconds,proto3,oneof" json:"MaximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	ID                                     string                 `protobuf:"bytes,7,opt,name=ID,proto3" json:"ID,omitempty"`
-	StorageType                            string                 `protobuf:"bytes,8,opt,name=StorageType,proto3" json:"StorageType,omitempty"`
-	BelongsToRecipe                        string                 `protobuf:"bytes,9,opt,name=BelongsToRecipe,proto3" json:"BelongsToRecipe,omitempty"`
-	ExplicitStorageInstructions            string                 `protobuf:"bytes,10,opt,name=ExplicitStorageInstructions,proto3" json:"ExplicitStorageInstructions,omitempty"`
-	Notes                                  string                 `protobuf:"bytes,11,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Name                                   string                 `protobuf:"bytes,12,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description                            string                 `protobuf:"bytes,13,opt,name=Description,proto3" json:"Description,omitempty"`
-	TaskSteps                              []*RecipePrepTaskStep  `protobuf:"bytes,14,rep,name=TaskSteps,proto3" json:"TaskSteps,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds uint32                 `protobuf:"varint,15,opt,name=MinimumTimeBufferBeforeRecipeInSeconds,proto3" json:"MinimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Optional                               bool                   `protobuf:"varint,16,opt,name=Optional,proto3" json:"Optional,omitempty"`
+	MaximumTimeBufferBeforeRecipeInSeconds *uint32  `json:"MaximumTimeBufferBeforeRecipeInSeconds,omitempty" protobuf:"varint,6,opt,name=MaximumTimeBufferBeforeRecipeInSeconds,proto3,oneof"`
+	MinimumStorageTemperatureInCelsius     *float64 `json:"MinimumStorageTemperatureInCelsius,omitempty"     protobuf:"fixed64,5,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof"`
+	state                                  protoimpl.MessageState
+	CreatedAt                              *timestamppb.Timestamp `json:"CreatedAt,omitempty"                          protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	MaximumStorageTemperatureInCelsius     *float64               `json:"MaximumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,2,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof"`
+	ArchivedAt                             *timestamppb.Timestamp `json:"ArchivedAt,omitempty"                         protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	LastUpdatedAt                          *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"                      protobuf:"bytes,4,opt,name=LastUpdatedAt,proto3,oneof"`
+	Notes                                  string                 `json:"Notes,omitempty"                              protobuf:"bytes,11,opt,name=Notes,proto3"`
+	BelongsToRecipe                        string                 `json:"BelongsToRecipe,omitempty"                    protobuf:"bytes,9,opt,name=BelongsToRecipe,proto3"`
+	StorageType                            string                 `json:"StorageType,omitempty"                        protobuf:"bytes,8,opt,name=StorageType,proto3"`
+	ExplicitStorageInstructions            string                 `json:"ExplicitStorageInstructions,omitempty"        protobuf:"bytes,10,opt,name=ExplicitStorageInstructions,proto3"`
+	Name                                   string                 `json:"Name,omitempty"                               protobuf:"bytes,12,opt,name=Name,proto3"`
+	Description                            string                 `json:"Description,omitempty"                        protobuf:"bytes,13,opt,name=Description,proto3"`
+	ID                                     string                 `json:"ID,omitempty"                                 protobuf:"bytes,7,opt,name=ID,proto3"`
+	unknownFields                          protoimpl.UnknownFields
+	TaskSteps                              []*RecipePrepTaskStep `json:"TaskSteps,omitempty" protobuf:"bytes,14,rep,name=TaskSteps,proto3"`
+	sizeCache                              protoimpl.SizeCache
+	MinimumTimeBufferBeforeRecipeInSeconds uint32 `json:"MinimumTimeBufferBeforeRecipeInSeconds,omitempty" protobuf:"varint,15,opt,name=MinimumTimeBufferBeforeRecipeInSeconds,proto3"`
+	Optional                               bool   `json:"Optional,omitempty"                               protobuf:"varint,16,opt,name=Optional,proto3"`
 }
 
 func (x *RecipePrepTask) Reset() {
@@ -1004,22 +994,21 @@ func (x *RecipePrepTask) GetOptional() bool {
 }
 
 type RecipePrepTaskCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MaximumTimeBufferBeforeRecipeInSeconds *uint32                                   `protobuf:"varint,1,opt,name=MaximumTimeBufferBeforeRecipeInSeconds,proto3,oneof" json:"MaximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float64                                  `protobuf:"fixed64,2,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof" json:"MinimumStorageTemperatureInCelsius,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float64                                  `protobuf:"fixed64,3,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof" json:"MaximumStorageTemperatureInCelsius,omitempty"`
-	StorageType                            string                                    `protobuf:"bytes,4,opt,name=StorageType,proto3" json:"StorageType,omitempty"`
-	ExplicitStorageInstructions            string                                    `protobuf:"bytes,5,opt,name=ExplicitStorageInstructions,proto3" json:"ExplicitStorageInstructions,omitempty"`
-	Notes                                  string                                    `protobuf:"bytes,6,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Name                                   string                                    `protobuf:"bytes,7,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description                            string                                    `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description,omitempty"`
-	BelongsToRecipe                        string                                    `protobuf:"bytes,9,opt,name=BelongsToRecipe,proto3" json:"BelongsToRecipe,omitempty"`
-	TaskSteps                              []*RecipePrepTaskStepCreationRequestInput `protobuf:"bytes,10,rep,name=TaskSteps,proto3" json:"TaskSteps,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds uint32                                    `protobuf:"varint,11,opt,name=MinimumTimeBufferBeforeRecipeInSeconds,proto3" json:"MinimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Optional                               bool                                      `protobuf:"varint,12,opt,name=Optional,proto3" json:"Optional,omitempty"`
+	MinimumStorageTemperatureInCelsius     *float64 `json:"MinimumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,2,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof"`
+	state                                  protoimpl.MessageState
+	MaximumStorageTemperatureInCelsius     *float64 `json:"MaximumStorageTemperatureInCelsius,omitempty"     protobuf:"fixed64,3,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof"`
+	MaximumTimeBufferBeforeRecipeInSeconds *uint32  `json:"MaximumTimeBufferBeforeRecipeInSeconds,omitempty" protobuf:"varint,1,opt,name=MaximumTimeBufferBeforeRecipeInSeconds,proto3,oneof"`
+	StorageType                            string   `json:"StorageType,omitempty"                            protobuf:"bytes,4,opt,name=StorageType,proto3"`
+	ExplicitStorageInstructions            string   `json:"ExplicitStorageInstructions,omitempty"            protobuf:"bytes,5,opt,name=ExplicitStorageInstructions,proto3"`
+	Notes                                  string   `json:"Notes,omitempty"                                  protobuf:"bytes,6,opt,name=Notes,proto3"`
+	Name                                   string   `json:"Name,omitempty"                                   protobuf:"bytes,7,opt,name=Name,proto3"`
+	Description                            string   `json:"Description,omitempty"                            protobuf:"bytes,8,opt,name=Description,proto3"`
+	BelongsToRecipe                        string   `json:"BelongsToRecipe,omitempty"                        protobuf:"bytes,9,opt,name=BelongsToRecipe,proto3"`
+	unknownFields                          protoimpl.UnknownFields
+	TaskSteps                              []*RecipePrepTaskStepCreationRequestInput `json:"TaskSteps,omitempty" protobuf:"bytes,10,rep,name=TaskSteps,proto3"`
+	sizeCache                              protoimpl.SizeCache
+	MinimumTimeBufferBeforeRecipeInSeconds uint32 `json:"MinimumTimeBufferBeforeRecipeInSeconds,omitempty" protobuf:"varint,11,opt,name=MinimumTimeBufferBeforeRecipeInSeconds,proto3"`
+	Optional                               bool   `json:"Optional,omitempty"                               protobuf:"varint,12,opt,name=Optional,proto3"`
 }
 
 func (x *RecipePrepTaskCreationRequestInput) Reset() {
@@ -1139,22 +1128,21 @@ func (x *RecipePrepTaskCreationRequestInput) GetOptional() bool {
 }
 
 type RecipePrepTaskWithinRecipeCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MaximumTimeBufferBeforeRecipeInSeconds *uint32                                               `protobuf:"varint,1,opt,name=MaximumTimeBufferBeforeRecipeInSeconds,proto3,oneof" json:"MaximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float64                                              `protobuf:"fixed64,2,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof" json:"MinimumStorageTemperatureInCelsius,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float64                                              `protobuf:"fixed64,3,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof" json:"MaximumStorageTemperatureInCelsius,omitempty"`
-	StorageType                            string                                                `protobuf:"bytes,4,opt,name=StorageType,proto3" json:"StorageType,omitempty"`
-	Name                                   string                                                `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description                            string                                                `protobuf:"bytes,6,opt,name=Description,proto3" json:"Description,omitempty"`
-	ExplicitStorageInstructions            string                                                `protobuf:"bytes,7,opt,name=ExplicitStorageInstructions,proto3" json:"ExplicitStorageInstructions,omitempty"`
-	Notes                                  string                                                `protobuf:"bytes,8,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	BelongsToRecipe                        string                                                `protobuf:"bytes,9,opt,name=BelongsToRecipe,proto3" json:"BelongsToRecipe,omitempty"`
-	TaskSteps                              []*RecipePrepTaskStepWithinRecipeCreationRequestInput `protobuf:"bytes,10,rep,name=TaskSteps,proto3" json:"TaskSteps,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds uint32                                                `protobuf:"varint,11,opt,name=MinimumTimeBufferBeforeRecipeInSeconds,proto3" json:"MinimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Optional                               bool                                                  `protobuf:"varint,12,opt,name=Optional,proto3" json:"Optional,omitempty"`
+	MinimumStorageTemperatureInCelsius     *float64 `json:"MinimumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,2,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof"`
+	state                                  protoimpl.MessageState
+	MaximumStorageTemperatureInCelsius     *float64 `json:"MaximumStorageTemperatureInCelsius,omitempty"     protobuf:"fixed64,3,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof"`
+	MaximumTimeBufferBeforeRecipeInSeconds *uint32  `json:"MaximumTimeBufferBeforeRecipeInSeconds,omitempty" protobuf:"varint,1,opt,name=MaximumTimeBufferBeforeRecipeInSeconds,proto3,oneof"`
+	StorageType                            string   `json:"StorageType,omitempty"                            protobuf:"bytes,4,opt,name=StorageType,proto3"`
+	Name                                   string   `json:"Name,omitempty"                                   protobuf:"bytes,5,opt,name=Name,proto3"`
+	Description                            string   `json:"Description,omitempty"                            protobuf:"bytes,6,opt,name=Description,proto3"`
+	ExplicitStorageInstructions            string   `json:"ExplicitStorageInstructions,omitempty"            protobuf:"bytes,7,opt,name=ExplicitStorageInstructions,proto3"`
+	Notes                                  string   `json:"Notes,omitempty"                                  protobuf:"bytes,8,opt,name=Notes,proto3"`
+	BelongsToRecipe                        string   `json:"BelongsToRecipe,omitempty"                        protobuf:"bytes,9,opt,name=BelongsToRecipe,proto3"`
+	unknownFields                          protoimpl.UnknownFields
+	TaskSteps                              []*RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"TaskSteps,omitempty" protobuf:"bytes,10,rep,name=TaskSteps,proto3"`
+	sizeCache                              protoimpl.SizeCache
+	MinimumTimeBufferBeforeRecipeInSeconds uint32 `json:"MinimumTimeBufferBeforeRecipeInSeconds,omitempty" protobuf:"varint,11,opt,name=MinimumTimeBufferBeforeRecipeInSeconds,proto3"`
+	Optional                               bool   `json:"Optional,omitempty"                               protobuf:"varint,12,opt,name=Optional,proto3"`
 }
 
 func (x *RecipePrepTaskWithinRecipeCreationRequestInput) Reset() {
@@ -1274,22 +1262,21 @@ func (x *RecipePrepTaskWithinRecipeCreationRequestInput) GetOptional() bool {
 }
 
 type RecipePrepTaskUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes                                  *string                                 `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	ExplicitStorageInstructions            *string                                 `protobuf:"bytes,2,opt,name=ExplicitStorageInstructions,proto3,oneof" json:"ExplicitStorageInstructions,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds *uint32                                 `protobuf:"varint,3,opt,name=MinimumTimeBufferBeforeRecipeInSeconds,proto3,oneof" json:"MinimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *uint32                                 `protobuf:"varint,4,opt,name=MaximumTimeBufferBeforeRecipeInSeconds,proto3,oneof" json:"MaximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	StorageType                            *string                                 `protobuf:"bytes,5,opt,name=StorageType,proto3,oneof" json:"StorageType,omitempty"`
-	Name                                   *string                                 `protobuf:"bytes,6,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Optional                               *bool                                   `protobuf:"varint,7,opt,name=Optional,proto3,oneof" json:"Optional,omitempty"`
-	Description                            *string                                 `protobuf:"bytes,8,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float64                                `protobuf:"fixed64,9,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof" json:"MinimumStorageTemperatureInCelsius,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float64                                `protobuf:"fixed64,10,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof" json:"MaximumStorageTemperatureInCelsius,omitempty"`
-	BelongsToRecipe                        *string                                 `protobuf:"bytes,11,opt,name=BelongsToRecipe,proto3,oneof" json:"BelongsToRecipe,omitempty"`
-	TaskSteps                              []*RecipePrepTaskStepUpdateRequestInput `protobuf:"bytes,12,rep,name=TaskSteps,proto3" json:"TaskSteps,omitempty"`
+	MaximumTimeBufferBeforeRecipeInSeconds *uint32  `json:"MaximumTimeBufferBeforeRecipeInSeconds,omitempty" protobuf:"varint,4,opt,name=MaximumTimeBufferBeforeRecipeInSeconds,proto3,oneof"`
+	Name                                   *string  `json:"Name,omitempty"                                   protobuf:"bytes,6,opt,name=Name,proto3,oneof"`
+	BelongsToRecipe                        *string  `json:"BelongsToRecipe,omitempty"                        protobuf:"bytes,11,opt,name=BelongsToRecipe,proto3,oneof"`
+	Notes                                  *string  `json:"Notes,omitempty"                                  protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	ExplicitStorageInstructions            *string  `json:"ExplicitStorageInstructions,omitempty"            protobuf:"bytes,2,opt,name=ExplicitStorageInstructions,proto3,oneof"`
+	MinimumTimeBufferBeforeRecipeInSeconds *uint32  `json:"MinimumTimeBufferBeforeRecipeInSeconds,omitempty" protobuf:"varint,3,opt,name=MinimumTimeBufferBeforeRecipeInSeconds,proto3,oneof"`
+	MaximumStorageTemperatureInCelsius     *float64 `json:"MaximumStorageTemperatureInCelsius,omitempty"     protobuf:"fixed64,10,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof"`
+	StorageType                            *string  `json:"StorageType,omitempty"                            protobuf:"bytes,5,opt,name=StorageType,proto3,oneof"`
+	state                                  protoimpl.MessageState
+	Optional                               *bool    `json:"Optional,omitempty"                           protobuf:"varint,7,opt,name=Optional,proto3,oneof"`
+	Description                            *string  `json:"Description,omitempty"                        protobuf:"bytes,8,opt,name=Description,proto3,oneof"`
+	MinimumStorageTemperatureInCelsius     *float64 `json:"MinimumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,9,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof"`
+	unknownFields                          protoimpl.UnknownFields
+	TaskSteps                              []*RecipePrepTaskStepUpdateRequestInput `json:"TaskSteps,omitempty" protobuf:"bytes,12,rep,name=TaskSteps,proto3"`
+	sizeCache                              protoimpl.SizeCache
 }
 
 func (x *RecipePrepTaskUpdateRequestInput) Reset() {
@@ -1409,11 +1396,10 @@ func (x *RecipePrepTaskUpdateRequestInput) GetTaskSteps() []*RecipePrepTaskStepU
 }
 
 type GetValidIngredientRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ValidIngredientID string `protobuf:"bytes,1,opt,name=ValidIngredientID,proto3" json:"ValidIngredientID,omitempty"`
+	state             protoimpl.MessageState
+	ValidIngredientID string `json:"ValidIngredientID,omitempty" protobuf:"bytes,1,opt,name=ValidIngredientID,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *GetValidIngredientRequest) Reset() {
@@ -1456,48 +1442,47 @@ func (x *GetValidIngredientRequest) GetValidIngredientID() string {
 }
 
 type ValidIngredient struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                               *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt                           *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt                              *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	MaximumIdealStorageTemperatureInCelsius *float64               `protobuf:"fixed64,4,opt,name=MaximumIdealStorageTemperatureInCelsius,proto3,oneof" json:"MaximumIdealStorageTemperatureInCelsius,omitempty"`
-	MinimumIdealStorageTemperatureInCelsius *float64               `protobuf:"fixed64,5,opt,name=MinimumIdealStorageTemperatureInCelsius,proto3,oneof" json:"MinimumIdealStorageTemperatureInCelsius,omitempty"`
-	IconPath                                string                 `protobuf:"bytes,6,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	Warning                                 string                 `protobuf:"bytes,7,opt,name=Warning,proto3" json:"Warning,omitempty"`
-	PluralName                              string                 `protobuf:"bytes,8,opt,name=PluralName,proto3" json:"PluralName,omitempty"`
-	StorageInstructions                     string                 `protobuf:"bytes,9,opt,name=StorageInstructions,proto3" json:"StorageInstructions,omitempty"`
-	Name                                    string                 `protobuf:"bytes,10,opt,name=Name,proto3" json:"Name,omitempty"`
-	ID                                      string                 `protobuf:"bytes,11,opt,name=ID,proto3" json:"ID,omitempty"`
-	Description                             string                 `protobuf:"bytes,12,opt,name=Description,proto3" json:"Description,omitempty"`
-	Slug                                    string                 `protobuf:"bytes,13,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	ShoppingSuggestions                     string                 `protobuf:"bytes,14,opt,name=ShoppingSuggestions,proto3" json:"ShoppingSuggestions,omitempty"`
-	ContainsShellfish                       bool                   `protobuf:"varint,15,opt,name=ContainsShellfish,proto3" json:"ContainsShellfish,omitempty"`
-	IsMeasuredVolumetrically                bool                   `protobuf:"varint,16,opt,name=IsMeasuredVolumetrically,proto3" json:"IsMeasuredVolumetrically,omitempty"`
-	IsLiquid                                bool                   `protobuf:"varint,17,opt,name=IsLiquid,proto3" json:"IsLiquid,omitempty"`
-	ContainsPeanut                          bool                   `protobuf:"varint,18,opt,name=ContainsPeanut,proto3" json:"ContainsPeanut,omitempty"`
-	ContainsTreeNut                         bool                   `protobuf:"varint,19,opt,name=ContainsTreeNut,proto3" json:"ContainsTreeNut,omitempty"`
-	ContainsEgg                             bool                   `protobuf:"varint,20,opt,name=ContainsEgg,proto3" json:"ContainsEgg,omitempty"`
-	ContainsWheat                           bool                   `protobuf:"varint,21,opt,name=ContainsWheat,proto3" json:"ContainsWheat,omitempty"`
-	ContainsSoy                             bool                   `protobuf:"varint,22,opt,name=ContainsSoy,proto3" json:"ContainsSoy,omitempty"`
-	AnimalDerived                           bool                   `protobuf:"varint,23,opt,name=AnimalDerived,proto3" json:"AnimalDerived,omitempty"`
-	RestrictToPreparations                  bool                   `protobuf:"varint,24,opt,name=RestrictToPreparations,proto3" json:"RestrictToPreparations,omitempty"`
-	ContainsSesame                          bool                   `protobuf:"varint,25,opt,name=ContainsSesame,proto3" json:"ContainsSesame,omitempty"`
-	ContainsFish                            bool                   `protobuf:"varint,26,opt,name=ContainsFish,proto3" json:"ContainsFish,omitempty"`
-	ContainsGluten                          bool                   `protobuf:"varint,27,opt,name=ContainsGluten,proto3" json:"ContainsGluten,omitempty"`
-	ContainsDairy                           bool                   `protobuf:"varint,28,opt,name=ContainsDairy,proto3" json:"ContainsDairy,omitempty"`
-	ContainsAlcohol                         bool                   `protobuf:"varint,29,opt,name=ContainsAlcohol,proto3" json:"ContainsAlcohol,omitempty"`
-	AnimalFlesh                             bool                   `protobuf:"varint,30,opt,name=AnimalFlesh,proto3" json:"AnimalFlesh,omitempty"`
-	IsStarch                                bool                   `protobuf:"varint,31,opt,name=IsStarch,proto3" json:"IsStarch,omitempty"`
-	IsProtein                               bool                   `protobuf:"varint,32,opt,name=IsProtein,proto3" json:"IsProtein,omitempty"`
-	IsGrain                                 bool                   `protobuf:"varint,33,opt,name=IsGrain,proto3" json:"IsGrain,omitempty"`
-	IsFruit                                 bool                   `protobuf:"varint,34,opt,name=IsFruit,proto3" json:"IsFruit,omitempty"`
-	IsSalt                                  bool                   `protobuf:"varint,35,opt,name=IsSalt,proto3" json:"IsSalt,omitempty"`
-	IsFat                                   bool                   `protobuf:"varint,36,opt,name=IsFat,proto3" json:"IsFat,omitempty"`
-	IsAcid                                  bool                   `protobuf:"varint,37,opt,name=IsAcid,proto3" json:"IsAcid,omitempty"`
-	IsHeat                                  bool                   `protobuf:"varint,38,opt,name=IsHeat,proto3" json:"IsHeat,omitempty"`
+	MaximumIdealStorageTemperatureInCelsius *float64 `json:"MaximumIdealStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,4,opt,name=MaximumIdealStorageTemperatureInCelsius,proto3,oneof"`
+	state                                   protoimpl.MessageState
+	MinimumIdealStorageTemperatureInCelsius *float64               `json:"MinimumIdealStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,5,opt,name=MinimumIdealStorageTemperatureInCelsius,proto3,oneof"`
+	CreatedAt                               *timestamppb.Timestamp `json:"CreatedAt,omitempty"                               protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt                           *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"                           protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt                              *timestamppb.Timestamp `json:"ArchivedAt,omitempty"                              protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	IconPath                                string                 `json:"IconPath,omitempty"                                protobuf:"bytes,6,opt,name=IconPath,proto3"`
+	Warning                                 string                 `json:"Warning,omitempty"                                 protobuf:"bytes,7,opt,name=Warning,proto3"`
+	PluralName                              string                 `json:"PluralName,omitempty"                              protobuf:"bytes,8,opt,name=PluralName,proto3"`
+	StorageInstructions                     string                 `json:"StorageInstructions,omitempty"                     protobuf:"bytes,9,opt,name=StorageInstructions,proto3"`
+	Name                                    string                 `json:"Name,omitempty"                                    protobuf:"bytes,10,opt,name=Name,proto3"`
+	ID                                      string                 `json:"ID,omitempty"                                      protobuf:"bytes,11,opt,name=ID,proto3"`
+	Description                             string                 `json:"Description,omitempty"                             protobuf:"bytes,12,opt,name=Description,proto3"`
+	Slug                                    string                 `json:"Slug,omitempty"                                    protobuf:"bytes,13,opt,name=Slug,proto3"`
+	ShoppingSuggestions                     string                 `json:"ShoppingSuggestions,omitempty"                     protobuf:"bytes,14,opt,name=ShoppingSuggestions,proto3"`
+	unknownFields                           protoimpl.UnknownFields
+	sizeCache                               protoimpl.SizeCache
+	ContainsPeanut                          bool `json:"ContainsPeanut,omitempty"           protobuf:"varint,18,opt,name=ContainsPeanut,proto3"`
+	ContainsFish                            bool `json:"ContainsFish,omitempty"             protobuf:"varint,26,opt,name=ContainsFish,proto3"`
+	IsLiquid                                bool `json:"IsLiquid,omitempty"                 protobuf:"varint,17,opt,name=IsLiquid,proto3"`
+	ContainsShellfish                       bool `json:"ContainsShellfish,omitempty"        protobuf:"varint,15,opt,name=ContainsShellfish,proto3"`
+	ContainsTreeNut                         bool `json:"ContainsTreeNut,omitempty"          protobuf:"varint,19,opt,name=ContainsTreeNut,proto3"`
+	ContainsEgg                             bool `json:"ContainsEgg,omitempty"              protobuf:"varint,20,opt,name=ContainsEgg,proto3"`
+	ContainsWheat                           bool `json:"ContainsWheat,omitempty"            protobuf:"varint,21,opt,name=ContainsWheat,proto3"`
+	ContainsSoy                             bool `json:"ContainsSoy,omitempty"              protobuf:"varint,22,opt,name=ContainsSoy,proto3"`
+	AnimalDerived                           bool `json:"AnimalDerived,omitempty"            protobuf:"varint,23,opt,name=AnimalDerived,proto3"`
+	RestrictToPreparations                  bool `json:"RestrictToPreparations,omitempty"   protobuf:"varint,24,opt,name=RestrictToPreparations,proto3"`
+	ContainsSesame                          bool `json:"ContainsSesame,omitempty"           protobuf:"varint,25,opt,name=ContainsSesame,proto3"`
+	IsMeasuredVolumetrically                bool `json:"IsMeasuredVolumetrically,omitempty" protobuf:"varint,16,opt,name=IsMeasuredVolumetrically,proto3"`
+	ContainsGluten                          bool `json:"ContainsGluten,omitempty"           protobuf:"varint,27,opt,name=ContainsGluten,proto3"`
+	ContainsDairy                           bool `json:"ContainsDairy,omitempty"            protobuf:"varint,28,opt,name=ContainsDairy,proto3"`
+	ContainsAlcohol                         bool `json:"ContainsAlcohol,omitempty"          protobuf:"varint,29,opt,name=ContainsAlcohol,proto3"`
+	AnimalFlesh                             bool `json:"AnimalFlesh,omitempty"              protobuf:"varint,30,opt,name=AnimalFlesh,proto3"`
+	IsStarch                                bool `json:"IsStarch,omitempty"                 protobuf:"varint,31,opt,name=IsStarch,proto3"`
+	IsProtein                               bool `json:"IsProtein,omitempty"                protobuf:"varint,32,opt,name=IsProtein,proto3"`
+	IsGrain                                 bool `json:"IsGrain,omitempty"                  protobuf:"varint,33,opt,name=IsGrain,proto3"`
+	IsFruit                                 bool `json:"IsFruit,omitempty"                  protobuf:"varint,34,opt,name=IsFruit,proto3"`
+	IsSalt                                  bool `json:"IsSalt,omitempty"                   protobuf:"varint,35,opt,name=IsSalt,proto3"`
+	IsFat                                   bool `json:"IsFat,omitempty"                    protobuf:"varint,36,opt,name=IsFat,proto3"`
+	IsAcid                                  bool `json:"IsAcid,omitempty"                   protobuf:"varint,37,opt,name=IsAcid,proto3"`
+	IsHeat                                  bool `json:"IsHeat,omitempty"                   protobuf:"varint,38,opt,name=IsHeat,proto3"`
 }
 
 func (x *ValidIngredient) Reset() {
@@ -1799,44 +1784,43 @@ func (x *ValidIngredient) GetIsHeat() bool {
 }
 
 type ValidIngredientCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MinimumIdealStorageTemperatureInCelsius *float64 `protobuf:"fixed64,1,opt,name=MinimumIdealStorageTemperatureInCelsius,proto3,oneof" json:"MinimumIdealStorageTemperatureInCelsius,omitempty"`
-	MaximumIdealStorageTemperatureInCelsius *float64 `protobuf:"fixed64,2,opt,name=MaximumIdealStorageTemperatureInCelsius,proto3,oneof" json:"MaximumIdealStorageTemperatureInCelsius,omitempty"`
-	Warning                                 string   `protobuf:"bytes,3,opt,name=Warning,proto3" json:"Warning,omitempty"`
-	IconPath                                string   `protobuf:"bytes,4,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	PluralName                              string   `protobuf:"bytes,5,opt,name=PluralName,proto3" json:"PluralName,omitempty"`
-	StorageInstructions                     string   `protobuf:"bytes,6,opt,name=StorageInstructions,proto3" json:"StorageInstructions,omitempty"`
-	Name                                    string   `protobuf:"bytes,7,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description                             string   `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description,omitempty"`
-	Slug                                    string   `protobuf:"bytes,9,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	ShoppingSuggestions                     string   `protobuf:"bytes,10,opt,name=ShoppingSuggestions,proto3" json:"ShoppingSuggestions,omitempty"`
-	IsMeasuredVolumetrically                bool     `protobuf:"varint,11,opt,name=IsMeasuredVolumetrically,proto3" json:"IsMeasuredVolumetrically,omitempty"`
-	ContainsFish                            bool     `protobuf:"varint,12,opt,name=ContainsFish,proto3" json:"ContainsFish,omitempty"`
-	ContainsShellfish                       bool     `protobuf:"varint,13,opt,name=ContainsShellfish,proto3" json:"ContainsShellfish,omitempty"`
-	AnimalFlesh                             bool     `protobuf:"varint,14,opt,name=AnimalFlesh,proto3" json:"AnimalFlesh,omitempty"`
-	ContainsEgg                             bool     `protobuf:"varint,15,opt,name=ContainsEgg,proto3" json:"ContainsEgg,omitempty"`
-	IsLiquid                                bool     `protobuf:"varint,16,opt,name=IsLiquid,proto3" json:"IsLiquid,omitempty"`
-	ContainsSoy                             bool     `protobuf:"varint,17,opt,name=ContainsSoy,proto3" json:"ContainsSoy,omitempty"`
-	ContainsPeanut                          bool     `protobuf:"varint,18,opt,name=ContainsPeanut,proto3" json:"ContainsPeanut,omitempty"`
-	AnimalDerived                           bool     `protobuf:"varint,19,opt,name=AnimalDerived,proto3" json:"AnimalDerived,omitempty"`
-	RestrictToPreparations                  bool     `protobuf:"varint,20,opt,name=RestrictToPreparations,proto3" json:"RestrictToPreparations,omitempty"`
-	ContainsDairy                           bool     `protobuf:"varint,21,opt,name=ContainsDairy,proto3" json:"ContainsDairy,omitempty"`
-	ContainsSesame                          bool     `protobuf:"varint,22,opt,name=ContainsSesame,proto3" json:"ContainsSesame,omitempty"`
-	ContainsTreeNut                         bool     `protobuf:"varint,23,opt,name=ContainsTreeNut,proto3" json:"ContainsTreeNut,omitempty"`
-	ContainsWheat                           bool     `protobuf:"varint,24,opt,name=ContainsWheat,proto3" json:"ContainsWheat,omitempty"`
-	ContainsAlcohol                         bool     `protobuf:"varint,25,opt,name=ContainsAlcohol,proto3" json:"ContainsAlcohol,omitempty"`
-	ContainsGluten                          bool     `protobuf:"varint,26,opt,name=ContainsGluten,proto3" json:"ContainsGluten,omitempty"`
-	IsStarch                                bool     `protobuf:"varint,27,opt,name=IsStarch,proto3" json:"IsStarch,omitempty"`
-	IsProtein                               bool     `protobuf:"varint,28,opt,name=IsProtein,proto3" json:"IsProtein,omitempty"`
-	IsGrain                                 bool     `protobuf:"varint,29,opt,name=IsGrain,proto3" json:"IsGrain,omitempty"`
-	IsFruit                                 bool     `protobuf:"varint,30,opt,name=IsFruit,proto3" json:"IsFruit,omitempty"`
-	IsSalt                                  bool     `protobuf:"varint,31,opt,name=IsSalt,proto3" json:"IsSalt,omitempty"`
-	IsFat                                   bool     `protobuf:"varint,32,opt,name=IsFat,proto3" json:"IsFat,omitempty"`
-	IsAcid                                  bool     `protobuf:"varint,33,opt,name=IsAcid,proto3" json:"IsAcid,omitempty"`
-	IsHeat                                  bool     `protobuf:"varint,34,opt,name=IsHeat,proto3" json:"IsHeat,omitempty"`
+	MinimumIdealStorageTemperatureInCelsius *float64 `json:"MinimumIdealStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,1,opt,name=MinimumIdealStorageTemperatureInCelsius,proto3,oneof"`
+	state                                   protoimpl.MessageState
+	MaximumIdealStorageTemperatureInCelsius *float64 `json:"MaximumIdealStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,2,opt,name=MaximumIdealStorageTemperatureInCelsius,proto3,oneof"`
+	IconPath                                string   `json:"IconPath,omitempty"                                protobuf:"bytes,4,opt,name=IconPath,proto3"`
+	Warning                                 string   `json:"Warning,omitempty"                                 protobuf:"bytes,3,opt,name=Warning,proto3"`
+	PluralName                              string   `json:"PluralName,omitempty"                              protobuf:"bytes,5,opt,name=PluralName,proto3"`
+	StorageInstructions                     string   `json:"StorageInstructions,omitempty"                     protobuf:"bytes,6,opt,name=StorageInstructions,proto3"`
+	Name                                    string   `json:"Name,omitempty"                                    protobuf:"bytes,7,opt,name=Name,proto3"`
+	Description                             string   `json:"Description,omitempty"                             protobuf:"bytes,8,opt,name=Description,proto3"`
+	Slug                                    string   `json:"Slug,omitempty"                                    protobuf:"bytes,9,opt,name=Slug,proto3"`
+	ShoppingSuggestions                     string   `json:"ShoppingSuggestions,omitempty"                     protobuf:"bytes,10,opt,name=ShoppingSuggestions,proto3"`
+	unknownFields                           protoimpl.UnknownFields
+	sizeCache                               protoimpl.SizeCache
+	IsLiquid                                bool `json:"IsLiquid,omitempty"                 protobuf:"varint,16,opt,name=IsLiquid,proto3"`
+	ContainsSesame                          bool `json:"ContainsSesame,omitempty"           protobuf:"varint,22,opt,name=ContainsSesame,proto3"`
+	ContainsShellfish                       bool `json:"ContainsShellfish,omitempty"        protobuf:"varint,13,opt,name=ContainsShellfish,proto3"`
+	AnimalFlesh                             bool `json:"AnimalFlesh,omitempty"              protobuf:"varint,14,opt,name=AnimalFlesh,proto3"`
+	ContainsEgg                             bool `json:"ContainsEgg,omitempty"              protobuf:"varint,15,opt,name=ContainsEgg,proto3"`
+	IsMeasuredVolumetrically                bool `json:"IsMeasuredVolumetrically,omitempty" protobuf:"varint,11,opt,name=IsMeasuredVolumetrically,proto3"`
+	ContainsSoy                             bool `json:"ContainsSoy,omitempty"              protobuf:"varint,17,opt,name=ContainsSoy,proto3"`
+	ContainsPeanut                          bool `json:"ContainsPeanut,omitempty"           protobuf:"varint,18,opt,name=ContainsPeanut,proto3"`
+	AnimalDerived                           bool `json:"AnimalDerived,omitempty"            protobuf:"varint,19,opt,name=AnimalDerived,proto3"`
+	RestrictToPreparations                  bool `json:"RestrictToPreparations,omitempty"   protobuf:"varint,20,opt,name=RestrictToPreparations,proto3"`
+	ContainsDairy                           bool `json:"ContainsDairy,omitempty"            protobuf:"varint,21,opt,name=ContainsDairy,proto3"`
+	ContainsFish                            bool `json:"ContainsFish,omitempty"             protobuf:"varint,12,opt,name=ContainsFish,proto3"`
+	ContainsTreeNut                         bool `json:"ContainsTreeNut,omitempty"          protobuf:"varint,23,opt,name=ContainsTreeNut,proto3"`
+	ContainsWheat                           bool `json:"ContainsWheat,omitempty"            protobuf:"varint,24,opt,name=ContainsWheat,proto3"`
+	ContainsAlcohol                         bool `json:"ContainsAlcohol,omitempty"          protobuf:"varint,25,opt,name=ContainsAlcohol,proto3"`
+	ContainsGluten                          bool `json:"ContainsGluten,omitempty"           protobuf:"varint,26,opt,name=ContainsGluten,proto3"`
+	IsStarch                                bool `json:"IsStarch,omitempty"                 protobuf:"varint,27,opt,name=IsStarch,proto3"`
+	IsProtein                               bool `json:"IsProtein,omitempty"                protobuf:"varint,28,opt,name=IsProtein,proto3"`
+	IsGrain                                 bool `json:"IsGrain,omitempty"                  protobuf:"varint,29,opt,name=IsGrain,proto3"`
+	IsFruit                                 bool `json:"IsFruit,omitempty"                  protobuf:"varint,30,opt,name=IsFruit,proto3"`
+	IsSalt                                  bool `json:"IsSalt,omitempty"                   protobuf:"varint,31,opt,name=IsSalt,proto3"`
+	IsFat                                   bool `json:"IsFat,omitempty"                    protobuf:"varint,32,opt,name=IsFat,proto3"`
+	IsAcid                                  bool `json:"IsAcid,omitempty"                   protobuf:"varint,33,opt,name=IsAcid,proto3"`
+	IsHeat                                  bool `json:"IsHeat,omitempty"                   protobuf:"varint,34,opt,name=IsHeat,proto3"`
 }
 
 func (x *ValidIngredientCreationRequestInput) Reset() {
@@ -2110,44 +2094,43 @@ func (x *ValidIngredientCreationRequestInput) GetIsHeat() bool {
 }
 
 type ValidIngredientUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name                                    *string  `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Description                             *string  `protobuf:"bytes,2,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	Warning                                 *string  `protobuf:"bytes,3,opt,name=Warning,proto3,oneof" json:"Warning,omitempty"`
-	IconPath                                *string  `protobuf:"bytes,4,opt,name=IconPath,proto3,oneof" json:"IconPath,omitempty"`
-	ContainsDairy                           *bool    `protobuf:"varint,5,opt,name=ContainsDairy,proto3,oneof" json:"ContainsDairy,omitempty"`
-	ContainsPeanut                          *bool    `protobuf:"varint,6,opt,name=ContainsPeanut,proto3,oneof" json:"ContainsPeanut,omitempty"`
-	ContainsTreeNut                         *bool    `protobuf:"varint,7,opt,name=ContainsTreeNut,proto3,oneof" json:"ContainsTreeNut,omitempty"`
-	ContainsEgg                             *bool    `protobuf:"varint,8,opt,name=ContainsEgg,proto3,oneof" json:"ContainsEgg,omitempty"`
-	ContainsWheat                           *bool    `protobuf:"varint,9,opt,name=ContainsWheat,proto3,oneof" json:"ContainsWheat,omitempty"`
-	ContainsShellfish                       *bool    `protobuf:"varint,10,opt,name=ContainsShellfish,proto3,oneof" json:"ContainsShellfish,omitempty"`
-	ContainsSesame                          *bool    `protobuf:"varint,11,opt,name=ContainsSesame,proto3,oneof" json:"ContainsSesame,omitempty"`
-	ContainsFish                            *bool    `protobuf:"varint,12,opt,name=ContainsFish,proto3,oneof" json:"ContainsFish,omitempty"`
-	ContainsGluten                          *bool    `protobuf:"varint,13,opt,name=ContainsGluten,proto3,oneof" json:"ContainsGluten,omitempty"`
-	AnimalFlesh                             *bool    `protobuf:"varint,14,opt,name=AnimalFlesh,proto3,oneof" json:"AnimalFlesh,omitempty"`
-	IsMeasuredVolumetrically                *bool    `protobuf:"varint,15,opt,name=IsMeasuredVolumetrically,proto3,oneof" json:"IsMeasuredVolumetrically,omitempty"`
-	IsLiquid                                *bool    `protobuf:"varint,16,opt,name=IsLiquid,proto3,oneof" json:"IsLiquid,omitempty"`
-	ContainsSoy                             *bool    `protobuf:"varint,17,opt,name=ContainsSoy,proto3,oneof" json:"ContainsSoy,omitempty"`
-	PluralName                              *string  `protobuf:"bytes,18,opt,name=PluralName,proto3,oneof" json:"PluralName,omitempty"`
-	AnimalDerived                           *bool    `protobuf:"varint,19,opt,name=AnimalDerived,proto3,oneof" json:"AnimalDerived,omitempty"`
-	RestrictToPreparations                  *bool    `protobuf:"varint,20,opt,name=RestrictToPreparations,proto3,oneof" json:"RestrictToPreparations,omitempty"`
-	MinimumIdealStorageTemperatureInCelsius *float64 `protobuf:"fixed64,21,opt,name=MinimumIdealStorageTemperatureInCelsius,proto3,oneof" json:"MinimumIdealStorageTemperatureInCelsius,omitempty"`
-	MaximumIdealStorageTemperatureInCelsius *float64 `protobuf:"fixed64,22,opt,name=MaximumIdealStorageTemperatureInCelsius,proto3,oneof" json:"MaximumIdealStorageTemperatureInCelsius,omitempty"`
-	StorageInstructions                     *string  `protobuf:"bytes,23,opt,name=StorageInstructions,proto3,oneof" json:"StorageInstructions,omitempty"`
-	Slug                                    *string  `protobuf:"bytes,24,opt,name=Slug,proto3,oneof" json:"Slug,omitempty"`
-	ContainsAlcohol                         *bool    `protobuf:"varint,25,opt,name=ContainsAlcohol,proto3,oneof" json:"ContainsAlcohol,omitempty"`
-	ShoppingSuggestions                     *string  `protobuf:"bytes,26,opt,name=ShoppingSuggestions,proto3,oneof" json:"ShoppingSuggestions,omitempty"`
-	IsStarch                                *bool    `protobuf:"varint,27,opt,name=IsStarch,proto3,oneof" json:"IsStarch,omitempty"`
-	IsProtein                               *bool    `protobuf:"varint,28,opt,name=IsProtein,proto3,oneof" json:"IsProtein,omitempty"`
-	IsGrain                                 *bool    `protobuf:"varint,29,opt,name=IsGrain,proto3,oneof" json:"IsGrain,omitempty"`
-	IsFruit                                 *bool    `protobuf:"varint,30,opt,name=IsFruit,proto3,oneof" json:"IsFruit,omitempty"`
-	IsSalt                                  *bool    `protobuf:"varint,31,opt,name=IsSalt,proto3,oneof" json:"IsSalt,omitempty"`
-	IsFat                                   *bool    `protobuf:"varint,32,opt,name=IsFat,proto3,oneof" json:"IsFat,omitempty"`
-	IsAcid                                  *bool    `protobuf:"varint,33,opt,name=IsAcid,proto3,oneof" json:"IsAcid,omitempty"`
-	IsHeat                                  *bool    `protobuf:"varint,34,opt,name=IsHeat,proto3,oneof" json:"IsHeat,omitempty"`
+	IsLiquid                                *bool `json:"IsLiquid,omitempty" protobuf:"varint,16,opt,name=IsLiquid,proto3,oneof"`
+	IsAcid                                  *bool `json:"IsAcid,omitempty"   protobuf:"varint,33,opt,name=IsAcid,proto3,oneof"`
+	IsHeat                                  *bool `json:"IsHeat,omitempty"   protobuf:"varint,34,opt,name=IsHeat,proto3,oneof"`
+	state                                   protoimpl.MessageState
+	Description                             *string  `json:"Description,omitempty"                             protobuf:"bytes,2,opt,name=Description,proto3,oneof"`
+	Warning                                 *string  `json:"Warning,omitempty"                                 protobuf:"bytes,3,opt,name=Warning,proto3,oneof"`
+	IconPath                                *string  `json:"IconPath,omitempty"                                protobuf:"bytes,4,opt,name=IconPath,proto3,oneof"`
+	ContainsDairy                           *bool    `json:"ContainsDairy,omitempty"                           protobuf:"varint,5,opt,name=ContainsDairy,proto3,oneof"`
+	ContainsPeanut                          *bool    `json:"ContainsPeanut,omitempty"                          protobuf:"varint,6,opt,name=ContainsPeanut,proto3,oneof"`
+	ContainsTreeNut                         *bool    `json:"ContainsTreeNut,omitempty"                         protobuf:"varint,7,opt,name=ContainsTreeNut,proto3,oneof"`
+	ContainsEgg                             *bool    `json:"ContainsEgg,omitempty"                             protobuf:"varint,8,opt,name=ContainsEgg,proto3,oneof"`
+	ContainsWheat                           *bool    `json:"ContainsWheat,omitempty"                           protobuf:"varint,9,opt,name=ContainsWheat,proto3,oneof"`
+	ContainsShellfish                       *bool    `json:"ContainsShellfish,omitempty"                       protobuf:"varint,10,opt,name=ContainsShellfish,proto3,oneof"`
+	ContainsSesame                          *bool    `json:"ContainsSesame,omitempty"                          protobuf:"varint,11,opt,name=ContainsSesame,proto3,oneof"`
+	ContainsFish                            *bool    `json:"ContainsFish,omitempty"                            protobuf:"varint,12,opt,name=ContainsFish,proto3,oneof"`
+	ContainsGluten                          *bool    `json:"ContainsGluten,omitempty"                          protobuf:"varint,13,opt,name=ContainsGluten,proto3,oneof"`
+	AnimalFlesh                             *bool    `json:"AnimalFlesh,omitempty"                             protobuf:"varint,14,opt,name=AnimalFlesh,proto3,oneof"`
+	IsMeasuredVolumetrically                *bool    `json:"IsMeasuredVolumetrically,omitempty"                protobuf:"varint,15,opt,name=IsMeasuredVolumetrically,proto3,oneof"`
+	Name                                    *string  `json:"Name,omitempty"                                    protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	ContainsSoy                             *bool    `json:"ContainsSoy,omitempty"                             protobuf:"varint,17,opt,name=ContainsSoy,proto3,oneof"`
+	AnimalDerived                           *bool    `json:"AnimalDerived,omitempty"                           protobuf:"varint,19,opt,name=AnimalDerived,proto3,oneof"`
+	PluralName                              *string  `json:"PluralName,omitempty"                              protobuf:"bytes,18,opt,name=PluralName,proto3,oneof"`
+	RestrictToPreparations                  *bool    `json:"RestrictToPreparations,omitempty"                  protobuf:"varint,20,opt,name=RestrictToPreparations,proto3,oneof"`
+	MinimumIdealStorageTemperatureInCelsius *float64 `json:"MinimumIdealStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,21,opt,name=MinimumIdealStorageTemperatureInCelsius,proto3,oneof"`
+	MaximumIdealStorageTemperatureInCelsius *float64 `json:"MaximumIdealStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,22,opt,name=MaximumIdealStorageTemperatureInCelsius,proto3,oneof"`
+	StorageInstructions                     *string  `json:"StorageInstructions,omitempty"                     protobuf:"bytes,23,opt,name=StorageInstructions,proto3,oneof"`
+	Slug                                    *string  `json:"Slug,omitempty"                                    protobuf:"bytes,24,opt,name=Slug,proto3,oneof"`
+	ContainsAlcohol                         *bool    `json:"ContainsAlcohol,omitempty"                         protobuf:"varint,25,opt,name=ContainsAlcohol,proto3,oneof"`
+	ShoppingSuggestions                     *string  `json:"ShoppingSuggestions,omitempty"                     protobuf:"bytes,26,opt,name=ShoppingSuggestions,proto3,oneof"`
+	IsStarch                                *bool    `json:"IsStarch,omitempty"                                protobuf:"varint,27,opt,name=IsStarch,proto3,oneof"`
+	IsProtein                               *bool    `json:"IsProtein,omitempty"                               protobuf:"varint,28,opt,name=IsProtein,proto3,oneof"`
+	IsGrain                                 *bool    `json:"IsGrain,omitempty"                                 protobuf:"varint,29,opt,name=IsGrain,proto3,oneof"`
+	IsFruit                                 *bool    `json:"IsFruit,omitempty"                                 protobuf:"varint,30,opt,name=IsFruit,proto3,oneof"`
+	IsSalt                                  *bool    `json:"IsSalt,omitempty"                                  protobuf:"varint,31,opt,name=IsSalt,proto3,oneof"`
+	IsFat                                   *bool    `json:"IsFat,omitempty"                                   protobuf:"varint,32,opt,name=IsFat,proto3,oneof"`
+	unknownFields                           protoimpl.UnknownFields
+	sizeCache                               protoimpl.SizeCache
 }
 
 func (x *ValidIngredientUpdateRequestInput) Reset() {
@@ -2421,22 +2404,21 @@ func (x *ValidIngredientUpdateRequestInput) GetIsHeat() bool {
 }
 
 type ValidInstrument struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                      *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt                  *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt                     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	IconPath                       string                 `protobuf:"bytes,4,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	ID                             string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	Name                           string                 `protobuf:"bytes,6,opt,name=Name,proto3" json:"Name,omitempty"`
-	PluralName                     string                 `protobuf:"bytes,7,opt,name=PluralName,proto3" json:"PluralName,omitempty"`
-	Description                    string                 `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description,omitempty"`
-	Slug                           string                 `protobuf:"bytes,9,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	DisplayInSummaryLists          bool                   `protobuf:"varint,10,opt,name=DisplayInSummaryLists,proto3" json:"DisplayInSummaryLists,omitempty"`
-	IncludeInGeneratedInstructions bool                   `protobuf:"varint,11,opt,name=IncludeInGeneratedInstructions,proto3" json:"IncludeInGeneratedInstructions,omitempty"`
-	UsableForStorage               bool                   `protobuf:"varint,12,opt,name=UsableForStorage,proto3" json:"UsableForStorage,omitempty"`
+	LastUpdatedAt                  *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	state                          protoimpl.MessageState
+	ArchivedAt                     *timestamppb.Timestamp `json:"ArchivedAt,omitempty"  protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	CreatedAt                      *timestamppb.Timestamp `json:"CreatedAt,omitempty"   protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	IconPath                       string                 `json:"IconPath,omitempty"    protobuf:"bytes,4,opt,name=IconPath,proto3"`
+	ID                             string                 `json:"ID,omitempty"          protobuf:"bytes,5,opt,name=ID,proto3"`
+	Name                           string                 `json:"Name,omitempty"        protobuf:"bytes,6,opt,name=Name,proto3"`
+	PluralName                     string                 `json:"PluralName,omitempty"  protobuf:"bytes,7,opt,name=PluralName,proto3"`
+	Description                    string                 `json:"Description,omitempty" protobuf:"bytes,8,opt,name=Description,proto3"`
+	Slug                           string                 `json:"Slug,omitempty"        protobuf:"bytes,9,opt,name=Slug,proto3"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
+	DisplayInSummaryLists          bool `json:"DisplayInSummaryLists,omitempty"          protobuf:"varint,10,opt,name=DisplayInSummaryLists,proto3"`
+	IncludeInGeneratedInstructions bool `json:"IncludeInGeneratedInstructions,omitempty" protobuf:"varint,11,opt,name=IncludeInGeneratedInstructions,proto3"`
+	UsableForStorage               bool `json:"UsableForStorage,omitempty"               protobuf:"varint,12,opt,name=UsableForStorage,proto3"`
 }
 
 func (x *ValidInstrument) Reset() {
@@ -2556,18 +2538,17 @@ func (x *ValidInstrument) GetUsableForStorage() bool {
 }
 
 type ValidInstrumentCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name                           string `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
-	PluralName                     string `protobuf:"bytes,2,opt,name=PluralName,proto3" json:"PluralName,omitempty"`
-	Description                    string `protobuf:"bytes,3,opt,name=Description,proto3" json:"Description,omitempty"`
-	IconPath                       string `protobuf:"bytes,4,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	Slug                           string `protobuf:"bytes,5,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	DisplayInSummaryLists          bool   `protobuf:"varint,6,opt,name=DisplayInSummaryLists,proto3" json:"DisplayInSummaryLists,omitempty"`
-	IncludeInGeneratedInstructions bool   `protobuf:"varint,7,opt,name=IncludeInGeneratedInstructions,proto3" json:"IncludeInGeneratedInstructions,omitempty"`
-	UsableForStorage               bool   `protobuf:"varint,8,opt,name=UsableForStorage,proto3" json:"UsableForStorage,omitempty"`
+	state                          protoimpl.MessageState
+	Name                           string `json:"Name,omitempty"        protobuf:"bytes,1,opt,name=Name,proto3"`
+	PluralName                     string `json:"PluralName,omitempty"  protobuf:"bytes,2,opt,name=PluralName,proto3"`
+	Description                    string `json:"Description,omitempty" protobuf:"bytes,3,opt,name=Description,proto3"`
+	IconPath                       string `json:"IconPath,omitempty"    protobuf:"bytes,4,opt,name=IconPath,proto3"`
+	Slug                           string `json:"Slug,omitempty"        protobuf:"bytes,5,opt,name=Slug,proto3"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
+	DisplayInSummaryLists          bool `json:"DisplayInSummaryLists,omitempty"          protobuf:"varint,6,opt,name=DisplayInSummaryLists,proto3"`
+	IncludeInGeneratedInstructions bool `json:"IncludeInGeneratedInstructions,omitempty" protobuf:"varint,7,opt,name=IncludeInGeneratedInstructions,proto3"`
+	UsableForStorage               bool `json:"UsableForStorage,omitempty"               protobuf:"varint,8,opt,name=UsableForStorage,proto3"`
 }
 
 func (x *ValidInstrumentCreationRequestInput) Reset() {
@@ -2659,18 +2640,17 @@ func (x *ValidInstrumentCreationRequestInput) GetUsableForStorage() bool {
 }
 
 type ValidInstrumentUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name                           *string `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	PluralName                     *string `protobuf:"bytes,2,opt,name=PluralName,proto3,oneof" json:"PluralName,omitempty"`
-	Description                    *string `protobuf:"bytes,3,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	IconPath                       *string `protobuf:"bytes,4,opt,name=IconPath,proto3,oneof" json:"IconPath,omitempty"`
-	Slug                           *string `protobuf:"bytes,5,opt,name=Slug,proto3,oneof" json:"Slug,omitempty"`
-	UsableForStorage               *bool   `protobuf:"varint,6,opt,name=UsableForStorage,proto3,oneof" json:"UsableForStorage,omitempty"`
-	DisplayInSummaryLists          *bool   `protobuf:"varint,7,opt,name=DisplayInSummaryLists,proto3,oneof" json:"DisplayInSummaryLists,omitempty"`
-	IncludeInGeneratedInstructions *bool   `protobuf:"varint,8,opt,name=IncludeInGeneratedInstructions,proto3,oneof" json:"IncludeInGeneratedInstructions,omitempty"`
+	state                          protoimpl.MessageState
+	Name                           *string `json:"Name,omitempty"                           protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	PluralName                     *string `json:"PluralName,omitempty"                     protobuf:"bytes,2,opt,name=PluralName,proto3,oneof"`
+	Description                    *string `json:"Description,omitempty"                    protobuf:"bytes,3,opt,name=Description,proto3,oneof"`
+	IconPath                       *string `json:"IconPath,omitempty"                       protobuf:"bytes,4,opt,name=IconPath,proto3,oneof"`
+	Slug                           *string `json:"Slug,omitempty"                           protobuf:"bytes,5,opt,name=Slug,proto3,oneof"`
+	UsableForStorage               *bool   `json:"UsableForStorage,omitempty"               protobuf:"varint,6,opt,name=UsableForStorage,proto3,oneof"`
+	DisplayInSummaryLists          *bool   `json:"DisplayInSummaryLists,omitempty"          protobuf:"varint,7,opt,name=DisplayInSummaryLists,proto3,oneof"`
+	IncludeInGeneratedInstructions *bool   `json:"IncludeInGeneratedInstructions,omitempty" protobuf:"varint,8,opt,name=IncludeInGeneratedInstructions,proto3,oneof"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *ValidInstrumentUpdateRequestInput) Reset() {
@@ -2763,11 +2743,10 @@ func (x *ValidInstrumentUpdateRequestInput) GetIncludeInGeneratedInstructions() 
 
 type ModifyUserPermissionsInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Reason        string `json:"Reason,omitempty"  protobuf:"bytes,1,opt,name=Reason,proto3"`
+	NewRole       string `json:"NewRole,omitempty" protobuf:"bytes,2,opt,name=NewRole,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Reason  string `protobuf:"bytes,1,opt,name=Reason,proto3" json:"Reason,omitempty"`
-	NewRole string `protobuf:"bytes,2,opt,name=NewRole,proto3" json:"NewRole,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ModifyUserPermissionsInput) Reset() {
@@ -2818,16 +2797,15 @@ func (x *ModifyUserPermissionsInput) GetNewRole() string {
 
 type OAuth2Client struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"    protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty"   protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	Name          string                 `json:"Name,omitempty"         protobuf:"bytes,3,opt,name=Name,proto3"`
+	Description   string                 `json:"Description,omitempty"  protobuf:"bytes,4,opt,name=Description,proto3"`
+	ClientID      string                 `json:"ClientID,omitempty"     protobuf:"bytes,5,opt,name=ClientID,proto3"`
+	ID            string                 `json:"ID,omitempty"           protobuf:"bytes,6,opt,name=ID,proto3"`
+	ClientSecret  string                 `json:"ClientSecret,omitempty" protobuf:"bytes,7,opt,name=ClientSecret,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt    *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt   *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	Name         string                 `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description  string                 `protobuf:"bytes,4,opt,name=Description,proto3" json:"Description,omitempty"`
-	ClientID     string                 `protobuf:"bytes,5,opt,name=ClientID,proto3" json:"ClientID,omitempty"`
-	ID           string                 `protobuf:"bytes,6,opt,name=ID,proto3" json:"ID,omitempty"`
-	ClientSecret string                 `protobuf:"bytes,7,opt,name=ClientSecret,proto3" json:"ClientSecret,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *OAuth2Client) Reset() {
@@ -2913,11 +2891,10 @@ func (x *OAuth2Client) GetClientSecret() string {
 
 type OAuth2ClientCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Name          string `json:"Name,omitempty"        protobuf:"bytes,1,opt,name=Name,proto3"`
+	Description   string `json:"Description,omitempty" protobuf:"bytes,2,opt,name=Description,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Name        string `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description string `protobuf:"bytes,2,opt,name=Description,proto3" json:"Description,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *OAuth2ClientCreationRequestInput) Reset() {
@@ -2968,14 +2945,13 @@ func (x *OAuth2ClientCreationRequestInput) GetDescription() string {
 
 type OAuth2ClientCreationResponse struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	ClientID      string `json:"ClientID,omitempty"     protobuf:"bytes,1,opt,name=ClientID,proto3"`
+	ClientSecret  string `json:"ClientSecret,omitempty" protobuf:"bytes,2,opt,name=ClientSecret,proto3"`
+	Name          string `json:"Name,omitempty"         protobuf:"bytes,3,opt,name=Name,proto3"`
+	Description   string `json:"Description,omitempty"  protobuf:"bytes,4,opt,name=Description,proto3"`
+	ID            string `json:"ID,omitempty"           protobuf:"bytes,5,opt,name=ID,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	ClientID     string `protobuf:"bytes,1,opt,name=ClientID,proto3" json:"ClientID,omitempty"`
-	ClientSecret string `protobuf:"bytes,2,opt,name=ClientSecret,proto3" json:"ClientSecret,omitempty"`
-	Name         string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description  string `protobuf:"bytes,4,opt,name=Description,proto3" json:"Description,omitempty"`
-	ID           string `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *OAuth2ClientCreationResponse) Reset() {
@@ -3046,19 +3022,18 @@ func (x *OAuth2ClientCreationResponse) GetID() string {
 }
 
 type ValidIngredientMeasurementUnit struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt            *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt               *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	MaximumAllowableQuantity *float64               `protobuf:"fixed64,4,opt,name=MaximumAllowableQuantity,proto3,oneof" json:"MaximumAllowableQuantity,omitempty"`
-	Notes                    string                 `protobuf:"bytes,5,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ID                       string                 `protobuf:"bytes,6,opt,name=ID,proto3" json:"ID,omitempty"`
-	MeasurementUnit          *ValidMeasurementUnit  `protobuf:"bytes,7,opt,name=MeasurementUnit,proto3" json:"MeasurementUnit,omitempty"`
-	Ingredient               *ValidIngredient       `protobuf:"bytes,8,opt,name=Ingredient,proto3" json:"Ingredient,omitempty"`
-	MinimumAllowableQuantity float64                `protobuf:"fixed64,9,opt,name=MinimumAllowableQuantity,proto3" json:"MinimumAllowableQuantity,omitempty"`
+	state                    protoimpl.MessageState
+	CreatedAt                *timestamppb.Timestamp `json:"CreatedAt,omitempty"                protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt            *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"            protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt               *timestamppb.Timestamp `json:"ArchivedAt,omitempty"               protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	MaximumAllowableQuantity *float64               `json:"MaximumAllowableQuantity,omitempty" protobuf:"fixed64,4,opt,name=MaximumAllowableQuantity,proto3,oneof"`
+	MeasurementUnit          *ValidMeasurementUnit  `json:"MeasurementUnit,omitempty"          protobuf:"bytes,7,opt,name=MeasurementUnit,proto3"`
+	Ingredient               *ValidIngredient       `json:"Ingredient,omitempty"               protobuf:"bytes,8,opt,name=Ingredient,proto3"`
+	Notes                    string                 `json:"Notes,omitempty"                    protobuf:"bytes,5,opt,name=Notes,proto3"`
+	ID                       string                 `json:"ID,omitempty"                       protobuf:"bytes,6,opt,name=ID,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	MinimumAllowableQuantity float64 `json:"MinimumAllowableQuantity,omitempty" protobuf:"fixed64,9,opt,name=MinimumAllowableQuantity,proto3"`
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *ValidIngredientMeasurementUnit) Reset() {
@@ -3157,15 +3132,14 @@ func (x *ValidIngredientMeasurementUnit) GetMinimumAllowableQuantity() float64 {
 }
 
 type ValidIngredientMeasurementUnitCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MaximumAllowableQuantity *float64 `protobuf:"fixed64,1,opt,name=MaximumAllowableQuantity,proto3,oneof" json:"MaximumAllowableQuantity,omitempty"`
-	Notes                    string   `protobuf:"bytes,2,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ValidMeasurementUnitID   string   `protobuf:"bytes,3,opt,name=ValidMeasurementUnitID,proto3" json:"ValidMeasurementUnitID,omitempty"`
-	ValidIngredientID        string   `protobuf:"bytes,4,opt,name=ValidIngredientID,proto3" json:"ValidIngredientID,omitempty"`
-	MinimumAllowableQuantity float64  `protobuf:"fixed64,5,opt,name=MinimumAllowableQuantity,proto3" json:"MinimumAllowableQuantity,omitempty"`
+	state                    protoimpl.MessageState
+	MaximumAllowableQuantity *float64 `json:"MaximumAllowableQuantity,omitempty" protobuf:"fixed64,1,opt,name=MaximumAllowableQuantity,proto3,oneof"`
+	Notes                    string   `json:"Notes,omitempty"                    protobuf:"bytes,2,opt,name=Notes,proto3"`
+	ValidMeasurementUnitID   string   `json:"ValidMeasurementUnitID,omitempty"   protobuf:"bytes,3,opt,name=ValidMeasurementUnitID,proto3"`
+	ValidIngredientID        string   `json:"ValidIngredientID,omitempty"        protobuf:"bytes,4,opt,name=ValidIngredientID,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	MinimumAllowableQuantity float64 `json:"MinimumAllowableQuantity,omitempty" protobuf:"fixed64,5,opt,name=MinimumAllowableQuantity,proto3"`
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *ValidIngredientMeasurementUnitCreationRequestInput) Reset() {
@@ -3236,15 +3210,14 @@ func (x *ValidIngredientMeasurementUnitCreationRequestInput) GetMinimumAllowable
 }
 
 type ValidIngredientMeasurementUnitUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes                    *string  `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	ValidMeasurementUnitID   *string  `protobuf:"bytes,2,opt,name=ValidMeasurementUnitID,proto3,oneof" json:"ValidMeasurementUnitID,omitempty"`
-	ValidIngredientID        *string  `protobuf:"bytes,3,opt,name=ValidIngredientID,proto3,oneof" json:"ValidIngredientID,omitempty"`
-	MinimumAllowableQuantity *float64 `protobuf:"fixed64,4,opt,name=MinimumAllowableQuantity,proto3,oneof" json:"MinimumAllowableQuantity,omitempty"`
-	MaximumAllowableQuantity *float64 `protobuf:"fixed64,5,opt,name=MaximumAllowableQuantity,proto3,oneof" json:"MaximumAllowableQuantity,omitempty"`
+	state                    protoimpl.MessageState
+	Notes                    *string  `json:"Notes,omitempty"                    protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	ValidMeasurementUnitID   *string  `json:"ValidMeasurementUnitID,omitempty"   protobuf:"bytes,2,opt,name=ValidMeasurementUnitID,proto3,oneof"`
+	ValidIngredientID        *string  `json:"ValidIngredientID,omitempty"        protobuf:"bytes,3,opt,name=ValidIngredientID,proto3,oneof"`
+	MinimumAllowableQuantity *float64 `json:"MinimumAllowableQuantity,omitempty" protobuf:"fixed64,4,opt,name=MinimumAllowableQuantity,proto3,oneof"`
+	MaximumAllowableQuantity *float64 `json:"MaximumAllowableQuantity,omitempty" protobuf:"fixed64,5,opt,name=MaximumAllowableQuantity,proto3,oneof"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *ValidIngredientMeasurementUnitUpdateRequestInput) Reset() {
@@ -3316,17 +3289,16 @@ func (x *ValidIngredientMeasurementUnitUpdateRequestInput) GetMaximumAllowableQu
 
 type ValidIngredientGroup struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty"    protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	ID            string                 `json:"ID,omitempty"            protobuf:"bytes,4,opt,name=ID,proto3"`
+	Name          string                 `json:"Name,omitempty"          protobuf:"bytes,5,opt,name=Name,proto3"`
+	Slug          string                 `json:"Slug,omitempty"          protobuf:"bytes,6,opt,name=Slug,proto3"`
+	Description   string                 `json:"Description,omitempty"   protobuf:"bytes,7,opt,name=Description,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp        `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp        `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp        `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID            string                        `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	Name          string                        `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name,omitempty"`
-	Slug          string                        `protobuf:"bytes,6,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	Description   string                        `protobuf:"bytes,7,opt,name=Description,proto3" json:"Description,omitempty"`
-	Members       []*ValidIngredientGroupMember `protobuf:"bytes,8,rep,name=Members,proto3" json:"Members,omitempty"`
+	Members       []*ValidIngredientGroupMember `json:"Members,omitempty" protobuf:"bytes,8,rep,name=Members,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidIngredientGroup) Reset() {
@@ -3419,13 +3391,12 @@ func (x *ValidIngredientGroup) GetMembers() []*ValidIngredientGroupMember {
 
 type ValidIngredientGroupCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Name          string `json:"Name,omitempty"        protobuf:"bytes,1,opt,name=Name,proto3"`
+	Slug          string `json:"Slug,omitempty"        protobuf:"bytes,2,opt,name=Slug,proto3"`
+	Description   string `json:"Description,omitempty" protobuf:"bytes,3,opt,name=Description,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Name        string                                            `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
-	Slug        string                                            `protobuf:"bytes,2,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	Description string                                            `protobuf:"bytes,3,opt,name=Description,proto3" json:"Description,omitempty"`
-	Members     []*ValidIngredientGroupMemberCreationRequestInput `protobuf:"bytes,4,rep,name=Members,proto3" json:"Members,omitempty"`
+	Members       []*ValidIngredientGroupMemberCreationRequestInput `json:"Members,omitempty" protobuf:"bytes,4,rep,name=Members,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidIngredientGroupCreationRequestInput) Reset() {
@@ -3490,12 +3461,11 @@ func (x *ValidIngredientGroupCreationRequestInput) GetMembers() []*ValidIngredie
 
 type ValidIngredientGroupUpdateRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Name          *string `json:"Name,omitempty"        protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	Slug          *string `json:"Slug,omitempty"        protobuf:"bytes,2,opt,name=Slug,proto3,oneof"`
+	Description   *string `json:"Description,omitempty" protobuf:"bytes,3,opt,name=Description,proto3,oneof"`
 	unknownFields protoimpl.UnknownFields
-
-	Name        *string `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Slug        *string `protobuf:"bytes,2,opt,name=Slug,proto3,oneof" json:"Slug,omitempty"`
-	Description *string `protobuf:"bytes,3,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidIngredientGroupUpdateRequestInput) Reset() {
@@ -3552,15 +3522,14 @@ func (x *ValidIngredientGroupUpdateRequestInput) GetDescription() string {
 }
 
 type ValidIngredientGroupMember struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt      *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID              string                 `protobuf:"bytes,3,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToGroup  string                 `protobuf:"bytes,4,opt,name=BelongsToGroup,proto3" json:"BelongsToGroup,omitempty"`
-	ValidIngredient *ValidIngredient       `protobuf:"bytes,5,opt,name=ValidIngredient,proto3" json:"ValidIngredient,omitempty"`
+	state           protoimpl.MessageState
+	CreatedAt       *timestamppb.Timestamp `json:"CreatedAt,omitempty"       protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt      *timestamppb.Timestamp `json:"ArchivedAt,omitempty"      protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	ValidIngredient *ValidIngredient       `json:"ValidIngredient,omitempty" protobuf:"bytes,5,opt,name=ValidIngredient,proto3"`
+	ID              string                 `json:"ID,omitempty"              protobuf:"bytes,3,opt,name=ID,proto3"`
+	BelongsToGroup  string                 `json:"BelongsToGroup,omitempty"  protobuf:"bytes,4,opt,name=BelongsToGroup,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *ValidIngredientGroupMember) Reset() {
@@ -3631,11 +3600,10 @@ func (x *ValidIngredientGroupMember) GetValidIngredient() *ValidIngredient {
 }
 
 type ValidIngredientGroupMemberCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ValidIngredientID string `protobuf:"bytes,1,opt,name=ValidIngredientID,proto3" json:"ValidIngredientID,omitempty"`
+	state             protoimpl.MessageState
+	ValidIngredientID string `json:"ValidIngredientID,omitempty" protobuf:"bytes,1,opt,name=ValidIngredientID,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ValidIngredientGroupMemberCreationRequestInput) Reset() {
@@ -3678,20 +3646,19 @@ func (x *ValidIngredientGroupMemberCreationRequestInput) GetValidIngredientID() 
 }
 
 type Webhook struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt         *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	Name               string                 `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
-	URL                string                 `protobuf:"bytes,5,opt,name=URL,proto3" json:"URL,omitempty"`
-	Method             string                 `protobuf:"bytes,6,opt,name=Method,proto3" json:"Method,omitempty"`
-	ID                 string                 `protobuf:"bytes,7,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToHousehold string                 `protobuf:"bytes,8,opt,name=BelongsToHousehold,proto3" json:"BelongsToHousehold,omitempty"`
-	ContentType        string                 `protobuf:"bytes,9,opt,name=ContentType,proto3" json:"ContentType,omitempty"`
-	Events             []*WebhookTriggerEvent `protobuf:"bytes,10,rep,name=Events,proto3" json:"Events,omitempty"`
+	ArchivedAt         *timestamppb.Timestamp `json:"ArchivedAt,omitempty" protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	state              protoimpl.MessageState
+	LastUpdatedAt      *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"      protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	CreatedAt          *timestamppb.Timestamp `json:"CreatedAt,omitempty"          protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	Name               string                 `json:"Name,omitempty"               protobuf:"bytes,4,opt,name=Name,proto3"`
+	URL                string                 `json:"URL,omitempty"                protobuf:"bytes,5,opt,name=URL,proto3"`
+	Method             string                 `json:"Method,omitempty"             protobuf:"bytes,6,opt,name=Method,proto3"`
+	ID                 string                 `json:"ID,omitempty"                 protobuf:"bytes,7,opt,name=ID,proto3"`
+	BelongsToHousehold string                 `json:"BelongsToHousehold,omitempty" protobuf:"bytes,8,opt,name=BelongsToHousehold,proto3"`
+	ContentType        string                 `json:"ContentType,omitempty"        protobuf:"bytes,9,opt,name=ContentType,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	Events             []*WebhookTriggerEvent `json:"Events,omitempty" protobuf:"bytes,10,rep,name=Events,proto3"`
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *Webhook) Reset() {
@@ -3797,15 +3764,14 @@ func (x *Webhook) GetEvents() []*WebhookTriggerEvent {
 }
 
 type WebhookTriggerEvent struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID               string                 `protobuf:"bytes,3,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToWebhook string                 `protobuf:"bytes,4,opt,name=BelongsToWebhook,proto3" json:"BelongsToWebhook,omitempty"`
-	TriggerEvent     string                 `protobuf:"bytes,5,opt,name=TriggerEvent,proto3" json:"TriggerEvent,omitempty"`
+	state            protoimpl.MessageState
+	CreatedAt        *timestamppb.Timestamp `json:"CreatedAt,omitempty"        protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt       *timestamppb.Timestamp `json:"ArchivedAt,omitempty"       protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	ID               string                 `json:"ID,omitempty"               protobuf:"bytes,3,opt,name=ID,proto3"`
+	BelongsToWebhook string                 `json:"BelongsToWebhook,omitempty" protobuf:"bytes,4,opt,name=BelongsToWebhook,proto3"`
+	TriggerEvent     string                 `json:"TriggerEvent,omitempty"     protobuf:"bytes,5,opt,name=TriggerEvent,proto3"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *WebhookTriggerEvent) Reset() {
@@ -3877,14 +3843,13 @@ func (x *WebhookTriggerEvent) GetTriggerEvent() string {
 
 type WebhookCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Name          string `json:"Name,omitempty"        protobuf:"bytes,1,opt,name=Name,proto3"`
+	ContentType   string `json:"ContentType,omitempty" protobuf:"bytes,2,opt,name=ContentType,proto3"`
+	URL           string `json:"URL,omitempty"         protobuf:"bytes,3,opt,name=URL,proto3"`
+	Method        string `json:"Method,omitempty"      protobuf:"bytes,4,opt,name=Method,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Name        string   `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
-	ContentType string   `protobuf:"bytes,2,opt,name=ContentType,proto3" json:"ContentType,omitempty"`
-	URL         string   `protobuf:"bytes,3,opt,name=URL,proto3" json:"URL,omitempty"`
-	Method      string   `protobuf:"bytes,4,opt,name=Method,proto3" json:"Method,omitempty"`
-	Events      []string `protobuf:"bytes,5,rep,name=Events,proto3" json:"Events,omitempty"`
+	Events        []string `json:"Events,omitempty" protobuf:"bytes,5,rep,name=Events,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *WebhookCreationRequestInput) Reset() {
@@ -3955,21 +3920,20 @@ func (x *WebhookCreationRequestInput) GetEvents() []string {
 }
 
 type Meal struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt               *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt            *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	MaximumEstimatedPortions *float64               `protobuf:"fixed64,4,opt,name=MaximumEstimatedPortions,proto3,oneof" json:"MaximumEstimatedPortions,omitempty"`
-	ID                       string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	Description              string                 `protobuf:"bytes,6,opt,name=Description,proto3" json:"Description,omitempty"`
-	CreatedByUser            string                 `protobuf:"bytes,7,opt,name=CreatedByUser,proto3" json:"CreatedByUser,omitempty"`
-	Name                     string                 `protobuf:"bytes,8,opt,name=Name,proto3" json:"Name,omitempty"`
-	Components               []*MealComponent       `protobuf:"bytes,9,rep,name=Components,proto3" json:"Components,omitempty"`
-	MinimumEstimatedPortions float64                `protobuf:"fixed64,10,opt,name=MinimumEstimatedPortions,proto3" json:"MinimumEstimatedPortions,omitempty"`
-	EligibleForMealPlans     bool                   `protobuf:"varint,11,opt,name=EligibleForMealPlans,proto3" json:"EligibleForMealPlans,omitempty"`
+	MaximumEstimatedPortions *float64 `json:"MaximumEstimatedPortions,omitempty" protobuf:"fixed64,4,opt,name=MaximumEstimatedPortions,proto3,oneof"`
+	state                    protoimpl.MessageState
+	LastUpdatedAt            *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	CreatedAt                *timestamppb.Timestamp `json:"CreatedAt,omitempty"     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt               *timestamppb.Timestamp `json:"ArchivedAt,omitempty"    protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	ID                       string                 `json:"ID,omitempty"            protobuf:"bytes,5,opt,name=ID,proto3"`
+	Name                     string                 `json:"Name,omitempty"          protobuf:"bytes,8,opt,name=Name,proto3"`
+	CreatedByUser            string                 `json:"CreatedByUser,omitempty" protobuf:"bytes,7,opt,name=CreatedByUser,proto3"`
+	Description              string                 `json:"Description,omitempty"   protobuf:"bytes,6,opt,name=Description,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	Components               []*MealComponent `json:"Components,omitempty"               protobuf:"bytes,9,rep,name=Components,proto3"`
+	MinimumEstimatedPortions float64          `json:"MinimumEstimatedPortions,omitempty" protobuf:"fixed64,10,opt,name=MinimumEstimatedPortions,proto3"`
+	sizeCache                protoimpl.SizeCache
+	EligibleForMealPlans     bool `json:"EligibleForMealPlans,omitempty" protobuf:"varint,11,opt,name=EligibleForMealPlans,proto3"`
 }
 
 func (x *Meal) Reset() {
@@ -4082,16 +4046,15 @@ func (x *Meal) GetEligibleForMealPlans() bool {
 }
 
 type MealCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MaximumEstimatedPortions *float64                             `protobuf:"fixed64,1,opt,name=MaximumEstimatedPortions,proto3,oneof" json:"MaximumEstimatedPortions,omitempty"`
-	Name                     string                               `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description              string                               `protobuf:"bytes,3,opt,name=Description,proto3" json:"Description,omitempty"`
-	Components               []*MealComponentCreationRequestInput `protobuf:"bytes,4,rep,name=Components,proto3" json:"Components,omitempty"`
-	MinimumEstimatedPortions float64                              `protobuf:"fixed64,5,opt,name=MinimumEstimatedPortions,proto3" json:"MinimumEstimatedPortions,omitempty"`
-	EligibleForMealPlans     bool                                 `protobuf:"varint,6,opt,name=EligibleForMealPlans,proto3" json:"EligibleForMealPlans,omitempty"`
+	state                    protoimpl.MessageState
+	MaximumEstimatedPortions *float64 `json:"MaximumEstimatedPortions,omitempty" protobuf:"fixed64,1,opt,name=MaximumEstimatedPortions,proto3,oneof"`
+	Name                     string   `json:"Name,omitempty"                     protobuf:"bytes,2,opt,name=Name,proto3"`
+	Description              string   `json:"Description,omitempty"              protobuf:"bytes,3,opt,name=Description,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	Components               []*MealComponentCreationRequestInput `json:"Components,omitempty"               protobuf:"bytes,4,rep,name=Components,proto3"`
+	MinimumEstimatedPortions float64                              `json:"MinimumEstimatedPortions,omitempty" protobuf:"fixed64,5,opt,name=MinimumEstimatedPortions,proto3"`
+	sizeCache                protoimpl.SizeCache
+	EligibleForMealPlans     bool `json:"EligibleForMealPlans,omitempty" protobuf:"varint,6,opt,name=EligibleForMealPlans,proto3"`
 }
 
 func (x *MealCreationRequestInput) Reset() {
@@ -4169,16 +4132,15 @@ func (x *MealCreationRequestInput) GetEligibleForMealPlans() bool {
 }
 
 type MealUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name                     *string                            `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Description              *string                            `protobuf:"bytes,2,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	MinimumEstimatedPortions *float64                           `protobuf:"fixed64,3,opt,name=MinimumEstimatedPortions,proto3,oneof" json:"MinimumEstimatedPortions,omitempty"`
-	MaximumEstimatedPortions *float64                           `protobuf:"fixed64,4,opt,name=MaximumEstimatedPortions,proto3,oneof" json:"MaximumEstimatedPortions,omitempty"`
-	EligibleForMealPlans     *bool                              `protobuf:"varint,5,opt,name=EligibleForMealPlans,proto3,oneof" json:"EligibleForMealPlans,omitempty"`
-	Components               []*MealComponentUpdateRequestInput `protobuf:"bytes,6,rep,name=Components,proto3" json:"Components,omitempty"`
+	state                    protoimpl.MessageState
+	Name                     *string  `json:"Name,omitempty"                     protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	Description              *string  `json:"Description,omitempty"              protobuf:"bytes,2,opt,name=Description,proto3,oneof"`
+	MinimumEstimatedPortions *float64 `json:"MinimumEstimatedPortions,omitempty" protobuf:"fixed64,3,opt,name=MinimumEstimatedPortions,proto3,oneof"`
+	MaximumEstimatedPortions *float64 `json:"MaximumEstimatedPortions,omitempty" protobuf:"fixed64,4,opt,name=MaximumEstimatedPortions,proto3,oneof"`
+	EligibleForMealPlans     *bool    `json:"EligibleForMealPlans,omitempty"     protobuf:"varint,5,opt,name=EligibleForMealPlans,proto3,oneof"`
+	unknownFields            protoimpl.UnknownFields
+	Components               []*MealComponentUpdateRequestInput `json:"Components,omitempty" protobuf:"bytes,6,rep,name=Components,proto3"`
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *MealUpdateRequestInput) Reset() {
@@ -4256,22 +4218,21 @@ func (x *MealUpdateRequestInput) GetComponents() []*MealComponentUpdateRequestIn
 }
 
 type RecipeRating struct {
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty" protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"  protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	Notes         string                 `json:"Notes,omitempty"      protobuf:"bytes,4,opt,name=Notes,proto3"`
+	ID            string                 `json:"ID,omitempty"         protobuf:"bytes,5,opt,name=ID,proto3"`
+	RecipeID      string                 `json:"RecipeID,omitempty"   protobuf:"bytes,6,opt,name=RecipeID,proto3"`
+	ByUser        string                 `json:"ByUser,omitempty"     protobuf:"bytes,7,opt,name=ByUser,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	Notes         string                 `protobuf:"bytes,4,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ID            string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	RecipeID      string                 `protobuf:"bytes,6,opt,name=RecipeID,proto3" json:"RecipeID,omitempty"`
-	ByUser        string                 `protobuf:"bytes,7,opt,name=ByUser,proto3" json:"ByUser,omitempty"`
-	Taste         float64                `protobuf:"fixed64,8,opt,name=Taste,proto3" json:"Taste,omitempty"`
-	Instructions  float64                `protobuf:"fixed64,9,opt,name=Instructions,proto3" json:"Instructions,omitempty"`
-	Overall       float64                `protobuf:"fixed64,10,opt,name=Overall,proto3" json:"Overall,omitempty"`
-	Cleanup       float64                `protobuf:"fixed64,11,opt,name=Cleanup,proto3" json:"Cleanup,omitempty"`
-	Difficulty    float64                `protobuf:"fixed64,12,opt,name=Difficulty,proto3" json:"Difficulty,omitempty"`
+	Taste         float64 `json:"Taste,omitempty"        protobuf:"fixed64,8,opt,name=Taste,proto3"`
+	Instructions  float64 `json:"Instructions,omitempty" protobuf:"fixed64,9,opt,name=Instructions,proto3"`
+	Overall       float64 `json:"Overall,omitempty"      protobuf:"fixed64,10,opt,name=Overall,proto3"`
+	Cleanup       float64 `json:"Cleanup,omitempty"      protobuf:"fixed64,11,opt,name=Cleanup,proto3"`
+	Difficulty    float64 `json:"Difficulty,omitempty"   protobuf:"fixed64,12,opt,name=Difficulty,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *RecipeRating) Reset() {
@@ -4392,17 +4353,16 @@ func (x *RecipeRating) GetDifficulty() float64 {
 
 type RecipeRatingCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	RecipeID      string `json:"RecipeID,omitempty" protobuf:"bytes,1,opt,name=RecipeID,proto3"`
+	Notes         string `json:"Notes,omitempty"    protobuf:"bytes,2,opt,name=Notes,proto3"`
+	ByUser        string `json:"ByUser,omitempty"   protobuf:"bytes,3,opt,name=ByUser,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	RecipeID     string  `protobuf:"bytes,1,opt,name=RecipeID,proto3" json:"RecipeID,omitempty"`
-	Notes        string  `protobuf:"bytes,2,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ByUser       string  `protobuf:"bytes,3,opt,name=ByUser,proto3" json:"ByUser,omitempty"`
-	Taste        float64 `protobuf:"fixed64,4,opt,name=Taste,proto3" json:"Taste,omitempty"`
-	Difficulty   float64 `protobuf:"fixed64,5,opt,name=Difficulty,proto3" json:"Difficulty,omitempty"`
-	Cleanup      float64 `protobuf:"fixed64,6,opt,name=Cleanup,proto3" json:"Cleanup,omitempty"`
-	Instructions float64 `protobuf:"fixed64,7,opt,name=Instructions,proto3" json:"Instructions,omitempty"`
-	Overall      float64 `protobuf:"fixed64,8,opt,name=Overall,proto3" json:"Overall,omitempty"`
+	Taste         float64 `json:"Taste,omitempty"        protobuf:"fixed64,4,opt,name=Taste,proto3"`
+	Difficulty    float64 `json:"Difficulty,omitempty"   protobuf:"fixed64,5,opt,name=Difficulty,proto3"`
+	Cleanup       float64 `json:"Cleanup,omitempty"      protobuf:"fixed64,6,opt,name=Cleanup,proto3"`
+	Instructions  float64 `json:"Instructions,omitempty" protobuf:"fixed64,7,opt,name=Instructions,proto3"`
+	Overall       float64 `json:"Overall,omitempty"      protobuf:"fixed64,8,opt,name=Overall,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *RecipeRatingCreationRequestInput) Reset() {
@@ -4495,17 +4455,16 @@ func (x *RecipeRatingCreationRequestInput) GetOverall() float64 {
 
 type RecipeRatingUpdateRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	RecipeID      *string  `json:"RecipeID,omitempty"     protobuf:"bytes,1,opt,name=RecipeID,proto3,oneof"`
+	Taste         *float64 `json:"Taste,omitempty"        protobuf:"fixed64,2,opt,name=Taste,proto3,oneof"`
+	Difficulty    *float64 `json:"Difficulty,omitempty"   protobuf:"fixed64,3,opt,name=Difficulty,proto3,oneof"`
+	Cleanup       *float64 `json:"Cleanup,omitempty"      protobuf:"fixed64,4,opt,name=Cleanup,proto3,oneof"`
+	Instructions  *float64 `json:"Instructions,omitempty" protobuf:"fixed64,5,opt,name=Instructions,proto3,oneof"`
+	Overall       *float64 `json:"Overall,omitempty"      protobuf:"fixed64,6,opt,name=Overall,proto3,oneof"`
+	Notes         *string  `json:"Notes,omitempty"        protobuf:"bytes,7,opt,name=Notes,proto3,oneof"`
+	ByUser        *string  `json:"ByUser,omitempty"       protobuf:"bytes,8,opt,name=ByUser,proto3,oneof"`
 	unknownFields protoimpl.UnknownFields
-
-	RecipeID     *string  `protobuf:"bytes,1,opt,name=RecipeID,proto3,oneof" json:"RecipeID,omitempty"`
-	Taste        *float64 `protobuf:"fixed64,2,opt,name=Taste,proto3,oneof" json:"Taste,omitempty"`
-	Difficulty   *float64 `protobuf:"fixed64,3,opt,name=Difficulty,proto3,oneof" json:"Difficulty,omitempty"`
-	Cleanup      *float64 `protobuf:"fixed64,4,opt,name=Cleanup,proto3,oneof" json:"Cleanup,omitempty"`
-	Instructions *float64 `protobuf:"fixed64,5,opt,name=Instructions,proto3,oneof" json:"Instructions,omitempty"`
-	Overall      *float64 `protobuf:"fixed64,6,opt,name=Overall,proto3,oneof" json:"Overall,omitempty"`
-	Notes        *string  `protobuf:"bytes,7,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	ByUser       *string  `protobuf:"bytes,8,opt,name=ByUser,proto3,oneof" json:"ByUser,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *RecipeRatingUpdateRequestInput) Reset() {
@@ -4597,17 +4556,16 @@ func (x *RecipeRatingUpdateRequestInput) GetByUser() string {
 }
 
 type ValidIngredientStateIngredient struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt      *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	Notes           string                 `protobuf:"bytes,4,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ID              string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	IngredientState *ValidIngredientState  `protobuf:"bytes,6,opt,name=IngredientState,proto3" json:"IngredientState,omitempty"`
-	Ingredient      *ValidIngredient       `protobuf:"bytes,7,opt,name=Ingredient,proto3" json:"Ingredient,omitempty"`
+	state           protoimpl.MessageState
+	CreatedAt       *timestamppb.Timestamp `json:"CreatedAt,omitempty"       protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt   *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"   protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt      *timestamppb.Timestamp `json:"ArchivedAt,omitempty"      protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	IngredientState *ValidIngredientState  `json:"IngredientState,omitempty" protobuf:"bytes,6,opt,name=IngredientState,proto3"`
+	Ingredient      *ValidIngredient       `json:"Ingredient,omitempty"      protobuf:"bytes,7,opt,name=Ingredient,proto3"`
+	Notes           string                 `json:"Notes,omitempty"           protobuf:"bytes,4,opt,name=Notes,proto3"`
+	ID              string                 `json:"ID,omitempty"              protobuf:"bytes,5,opt,name=ID,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *ValidIngredientStateIngredient) Reset() {
@@ -4692,13 +4650,12 @@ func (x *ValidIngredientStateIngredient) GetIngredient() *ValidIngredient {
 }
 
 type ValidIngredientStateIngredientCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes                  string `protobuf:"bytes,1,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ValidIngredientStateID string `protobuf:"bytes,2,opt,name=ValidIngredientStateID,proto3" json:"ValidIngredientStateID,omitempty"`
-	ValidIngredientID      string `protobuf:"bytes,3,opt,name=ValidIngredientID,proto3" json:"ValidIngredientID,omitempty"`
+	state                  protoimpl.MessageState
+	Notes                  string `json:"Notes,omitempty"                  protobuf:"bytes,1,opt,name=Notes,proto3"`
+	ValidIngredientStateID string `json:"ValidIngredientStateID,omitempty" protobuf:"bytes,2,opt,name=ValidIngredientStateID,proto3"`
+	ValidIngredientID      string `json:"ValidIngredientID,omitempty"      protobuf:"bytes,3,opt,name=ValidIngredientID,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ValidIngredientStateIngredientCreationRequestInput) Reset() {
@@ -4755,13 +4712,12 @@ func (x *ValidIngredientStateIngredientCreationRequestInput) GetValidIngredientI
 }
 
 type ValidIngredientStateIngredientUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes                  *string `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	ValidIngredientStateID *string `protobuf:"bytes,2,opt,name=ValidIngredientStateID,proto3,oneof" json:"ValidIngredientStateID,omitempty"`
-	ValidIngredientID      *string `protobuf:"bytes,3,opt,name=ValidIngredientID,proto3,oneof" json:"ValidIngredientID,omitempty"`
+	state                  protoimpl.MessageState
+	Notes                  *string `json:"Notes,omitempty"                  protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	ValidIngredientStateID *string `json:"ValidIngredientStateID,omitempty" protobuf:"bytes,2,opt,name=ValidIngredientStateID,proto3,oneof"`
+	ValidIngredientID      *string `json:"ValidIngredientID,omitempty"      protobuf:"bytes,3,opt,name=ValidIngredientID,proto3,oneof"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ValidIngredientStateIngredientUpdateRequestInput) Reset() {
@@ -4818,32 +4774,31 @@ func (x *ValidIngredientStateIngredientUpdateRequestInput) GetValidIngredientID(
 }
 
 type RecipeStep struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                     *timestamppb.Timestamp           `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	MinimumEstimatedTimeInSeconds *uint32                          `protobuf:"varint,2,opt,name=MinimumEstimatedTimeInSeconds,proto3,oneof" json:"MinimumEstimatedTimeInSeconds,omitempty"`
-	ArchivedAt                    *timestamppb.Timestamp           `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt                 *timestamppb.Timestamp           `protobuf:"bytes,4,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	MinimumTemperatureInCelsius   *float64                         `protobuf:"fixed64,5,opt,name=MinimumTemperatureInCelsius,proto3,oneof" json:"MinimumTemperatureInCelsius,omitempty"`
-	MaximumTemperatureInCelsius   *float64                         `protobuf:"fixed64,6,opt,name=MaximumTemperatureInCelsius,proto3,oneof" json:"MaximumTemperatureInCelsius,omitempty"`
-	MaximumEstimatedTimeInSeconds *uint32                          `protobuf:"varint,7,opt,name=MaximumEstimatedTimeInSeconds,proto3,oneof" json:"MaximumEstimatedTimeInSeconds,omitempty"`
-	BelongsToRecipe               string                           `protobuf:"bytes,8,opt,name=BelongsToRecipe,proto3" json:"BelongsToRecipe,omitempty"`
-	ConditionExpression           string                           `protobuf:"bytes,9,opt,name=ConditionExpression,proto3" json:"ConditionExpression,omitempty"`
-	ID                            string                           `protobuf:"bytes,10,opt,name=ID,proto3" json:"ID,omitempty"`
-	Notes                         string                           `protobuf:"bytes,11,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ExplicitInstructions          string                           `protobuf:"bytes,12,opt,name=ExplicitInstructions,proto3" json:"ExplicitInstructions,omitempty"`
-	Media                         []*RecipeMedia                   `protobuf:"bytes,13,rep,name=Media,proto3" json:"Media,omitempty"`
-	Products                      []*RecipeStepProduct             `protobuf:"bytes,14,rep,name=Products,proto3" json:"Products,omitempty"`
-	Instruments                   []*RecipeStepInstrument          `protobuf:"bytes,15,rep,name=Instruments,proto3" json:"Instruments,omitempty"`
-	Vessels                       []*RecipeStepVessel              `protobuf:"bytes,16,rep,name=Vessels,proto3" json:"Vessels,omitempty"`
-	CompletionConditions          []*RecipeStepCompletionCondition `protobuf:"bytes,17,rep,name=CompletionConditions,proto3" json:"CompletionConditions,omitempty"`
-	Ingredients                   []*RecipeStepIngredient          `protobuf:"bytes,18,rep,name=Ingredients,proto3" json:"Ingredients,omitempty"`
-	Preparation                   *ValidPreparation                `protobuf:"bytes,19,opt,name=Preparation,proto3" json:"Preparation,omitempty"`
-	Index                         uint32                           `protobuf:"varint,20,opt,name=Index,proto3" json:"Index,omitempty"`
-	Optional                      bool                             `protobuf:"varint,21,opt,name=Optional,proto3" json:"Optional,omitempty"`
-	StartTimerAutomatically       bool                             `protobuf:"varint,22,opt,name=StartTimerAutomatically,proto3" json:"StartTimerAutomatically,omitempty"`
+	MaximumEstimatedTimeInSeconds *uint32           `json:"MaximumEstimatedTimeInSeconds,omitempty" protobuf:"varint,7,opt,name=MaximumEstimatedTimeInSeconds,proto3,oneof"`
+	Preparation                   *ValidPreparation `json:"Preparation,omitempty"                   protobuf:"bytes,19,opt,name=Preparation,proto3"`
+	state                         protoimpl.MessageState
+	CreatedAt                     *timestamppb.Timestamp `json:"CreatedAt,omitempty"                     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	MinimumEstimatedTimeInSeconds *uint32                `json:"MinimumEstimatedTimeInSeconds,omitempty" protobuf:"varint,2,opt,name=MinimumEstimatedTimeInSeconds,proto3,oneof"`
+	ArchivedAt                    *timestamppb.Timestamp `json:"ArchivedAt,omitempty"                    protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	LastUpdatedAt                 *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"                 protobuf:"bytes,4,opt,name=LastUpdatedAt,proto3,oneof"`
+	MinimumTemperatureInCelsius   *float64               `json:"MinimumTemperatureInCelsius,omitempty"   protobuf:"fixed64,5,opt,name=MinimumTemperatureInCelsius,proto3,oneof"`
+	MaximumTemperatureInCelsius   *float64               `json:"MaximumTemperatureInCelsius,omitempty"   protobuf:"fixed64,6,opt,name=MaximumTemperatureInCelsius,proto3,oneof"`
+	ID                            string                 `json:"ID,omitempty"                            protobuf:"bytes,10,opt,name=ID,proto3"`
+	ExplicitInstructions          string                 `json:"ExplicitInstructions,omitempty"          protobuf:"bytes,12,opt,name=ExplicitInstructions,proto3"`
+	ConditionExpression           string                 `json:"ConditionExpression,omitempty"           protobuf:"bytes,9,opt,name=ConditionExpression,proto3"`
+	BelongsToRecipe               string                 `json:"BelongsToRecipe,omitempty"               protobuf:"bytes,8,opt,name=BelongsToRecipe,proto3"`
+	Notes                         string                 `json:"Notes,omitempty"                         protobuf:"bytes,11,opt,name=Notes,proto3"`
+	Products                      []*RecipeStepProduct   `json:"Products,omitempty"                      protobuf:"bytes,14,rep,name=Products,proto3"`
+	Media                         []*RecipeMedia         `json:"Media,omitempty"                         protobuf:"bytes,13,rep,name=Media,proto3"`
+	unknownFields                 protoimpl.UnknownFields
+	Instruments                   []*RecipeStepInstrument          `json:"Instruments,omitempty"          protobuf:"bytes,15,rep,name=Instruments,proto3"`
+	Vessels                       []*RecipeStepVessel              `json:"Vessels,omitempty"              protobuf:"bytes,16,rep,name=Vessels,proto3"`
+	CompletionConditions          []*RecipeStepCompletionCondition `json:"CompletionConditions,omitempty" protobuf:"bytes,17,rep,name=CompletionConditions,proto3"`
+	Ingredients                   []*RecipeStepIngredient          `json:"Ingredients,omitempty"          protobuf:"bytes,18,rep,name=Ingredients,proto3"`
+	sizeCache                     protoimpl.SizeCache
+	Index                         uint32 `json:"Index,omitempty"                   protobuf:"varint,20,opt,name=Index,proto3"`
+	Optional                      bool   `json:"Optional,omitempty"                protobuf:"varint,21,opt,name=Optional,proto3"`
+	StartTimerAutomatically       bool   `json:"StartTimerAutomatically,omitempty" protobuf:"varint,22,opt,name=StartTimerAutomatically,proto3"`
 }
 
 func (x *RecipeStep) Reset() {
@@ -5033,26 +4988,25 @@ func (x *RecipeStep) GetStartTimerAutomatically() bool {
 }
 
 type RecipeStepCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MaximumTemperatureInCelsius   *float64                                             `protobuf:"fixed64,1,opt,name=MaximumTemperatureInCelsius,proto3,oneof" json:"MaximumTemperatureInCelsius,omitempty"`
-	MinimumTemperatureInCelsius   *float64                                             `protobuf:"fixed64,2,opt,name=MinimumTemperatureInCelsius,proto3,oneof" json:"MinimumTemperatureInCelsius,omitempty"`
-	MaximumEstimatedTimeInSeconds *uint32                                              `protobuf:"varint,3,opt,name=MaximumEstimatedTimeInSeconds,proto3,oneof" json:"MaximumEstimatedTimeInSeconds,omitempty"`
-	MinimumEstimatedTimeInSeconds *uint32                                              `protobuf:"varint,4,opt,name=MinimumEstimatedTimeInSeconds,proto3,oneof" json:"MinimumEstimatedTimeInSeconds,omitempty"`
-	PreparationID                 string                                               `protobuf:"bytes,5,opt,name=PreparationID,proto3" json:"PreparationID,omitempty"`
-	Notes                         string                                               `protobuf:"bytes,6,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ConditionExpression           string                                               `protobuf:"bytes,7,opt,name=ConditionExpression,proto3" json:"ConditionExpression,omitempty"`
-	ExplicitInstructions          string                                               `protobuf:"bytes,8,opt,name=ExplicitInstructions,proto3" json:"ExplicitInstructions,omitempty"`
-	Instruments                   []*RecipeStepInstrumentCreationRequestInput          `protobuf:"bytes,9,rep,name=Instruments,proto3" json:"Instruments,omitempty"`
-	Vessels                       []*RecipeStepVesselCreationRequestInput              `protobuf:"bytes,10,rep,name=Vessels,proto3" json:"Vessels,omitempty"`
-	Products                      []*RecipeStepProductCreationRequestInput             `protobuf:"bytes,11,rep,name=Products,proto3" json:"Products,omitempty"`
-	Ingredients                   []*RecipeStepIngredientCreationRequestInput          `protobuf:"bytes,12,rep,name=Ingredients,proto3" json:"Ingredients,omitempty"`
-	CompletionConditions          []*RecipeStepCompletionConditionCreationRequestInput `protobuf:"bytes,13,rep,name=CompletionConditions,proto3" json:"CompletionConditions,omitempty"`
-	Index                         uint32                                               `protobuf:"varint,14,opt,name=Index,proto3" json:"Index,omitempty"`
-	Optional                      bool                                                 `protobuf:"varint,15,opt,name=Optional,proto3" json:"Optional,omitempty"`
-	StartTimerAutomatically       bool                                                 `protobuf:"varint,16,opt,name=StartTimerAutomatically,proto3" json:"StartTimerAutomatically,omitempty"`
+	MaximumEstimatedTimeInSeconds *uint32 `json:"MaximumEstimatedTimeInSeconds,omitempty" protobuf:"varint,3,opt,name=MaximumEstimatedTimeInSeconds,proto3,oneof"`
+	state                         protoimpl.MessageState
+	MinimumEstimatedTimeInSeconds *uint32                                     `json:"MinimumEstimatedTimeInSeconds,omitempty" protobuf:"varint,4,opt,name=MinimumEstimatedTimeInSeconds,proto3,oneof"`
+	MaximumTemperatureInCelsius   *float64                                    `json:"MaximumTemperatureInCelsius,omitempty"   protobuf:"fixed64,1,opt,name=MaximumTemperatureInCelsius,proto3,oneof"`
+	MinimumTemperatureInCelsius   *float64                                    `json:"MinimumTemperatureInCelsius,omitempty"   protobuf:"fixed64,2,opt,name=MinimumTemperatureInCelsius,proto3,oneof"`
+	Notes                         string                                      `json:"Notes,omitempty"                         protobuf:"bytes,6,opt,name=Notes,proto3"`
+	ConditionExpression           string                                      `json:"ConditionExpression,omitempty"           protobuf:"bytes,7,opt,name=ConditionExpression,proto3"`
+	PreparationID                 string                                      `json:"PreparationID,omitempty"                 protobuf:"bytes,5,opt,name=PreparationID,proto3"`
+	ExplicitInstructions          string                                      `json:"ExplicitInstructions,omitempty"          protobuf:"bytes,8,opt,name=ExplicitInstructions,proto3"`
+	Vessels                       []*RecipeStepVesselCreationRequestInput     `json:"Vessels,omitempty"                       protobuf:"bytes,10,rep,name=Vessels,proto3"`
+	Instruments                   []*RecipeStepInstrumentCreationRequestInput `json:"Instruments,omitempty"                   protobuf:"bytes,9,rep,name=Instruments,proto3"`
+	unknownFields                 protoimpl.UnknownFields
+	Products                      []*RecipeStepProductCreationRequestInput             `json:"Products,omitempty"             protobuf:"bytes,11,rep,name=Products,proto3"`
+	Ingredients                   []*RecipeStepIngredientCreationRequestInput          `json:"Ingredients,omitempty"          protobuf:"bytes,12,rep,name=Ingredients,proto3"`
+	CompletionConditions          []*RecipeStepCompletionConditionCreationRequestInput `json:"CompletionConditions,omitempty" protobuf:"bytes,13,rep,name=CompletionConditions,proto3"`
+	sizeCache                     protoimpl.SizeCache
+	Index                         uint32 `json:"Index,omitempty"                   protobuf:"varint,14,opt,name=Index,proto3"`
+	Optional                      bool   `json:"Optional,omitempty"                protobuf:"varint,15,opt,name=Optional,proto3"`
+	StartTimerAutomatically       bool   `json:"StartTimerAutomatically,omitempty" protobuf:"varint,16,opt,name=StartTimerAutomatically,proto3"`
 }
 
 func (x *RecipeStepCreationRequestInput) Reset() {
@@ -5200,22 +5154,21 @@ func (x *RecipeStepCreationRequestInput) GetStartTimerAutomatically() bool {
 }
 
 type RecipeStepUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MinimumEstimatedTimeInSeconds *uint32           `protobuf:"varint,1,opt,name=MinimumEstimatedTimeInSeconds,proto3,oneof" json:"MinimumEstimatedTimeInSeconds,omitempty"`
-	MaximumTemperatureInCelsius   *float64          `protobuf:"fixed64,2,opt,name=MaximumTemperatureInCelsius,proto3,oneof" json:"MaximumTemperatureInCelsius,omitempty"`
-	Notes                         *string           `protobuf:"bytes,3,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	Preparation                   *ValidPreparation `protobuf:"bytes,4,opt,name=Preparation,proto3,oneof" json:"Preparation,omitempty"`
-	Index                         *uint32           `protobuf:"varint,5,opt,name=Index,proto3,oneof" json:"Index,omitempty"`
-	MinimumTemperatureInCelsius   *float64          `protobuf:"fixed64,6,opt,name=MinimumTemperatureInCelsius,proto3,oneof" json:"MinimumTemperatureInCelsius,omitempty"`
-	MaximumEstimatedTimeInSeconds *uint32           `protobuf:"varint,7,opt,name=MaximumEstimatedTimeInSeconds,proto3,oneof" json:"MaximumEstimatedTimeInSeconds,omitempty"`
-	Optional                      *bool             `protobuf:"varint,8,opt,name=Optional,proto3,oneof" json:"Optional,omitempty"`
-	ExplicitInstructions          *string           `protobuf:"bytes,9,opt,name=ExplicitInstructions,proto3,oneof" json:"ExplicitInstructions,omitempty"`
-	ConditionExpression           *string           `protobuf:"bytes,10,opt,name=ConditionExpression,proto3,oneof" json:"ConditionExpression,omitempty"`
-	StartTimerAutomatically       *bool             `protobuf:"varint,11,opt,name=StartTimerAutomatically,proto3,oneof" json:"StartTimerAutomatically,omitempty"`
-	BelongsToRecipe               string            `protobuf:"bytes,12,opt,name=BelongsToRecipe,proto3" json:"BelongsToRecipe,omitempty"`
+	Preparation                   *ValidPreparation `json:"Preparation,omitempty"                   protobuf:"bytes,4,opt,name=Preparation,proto3,oneof"`
+	MinimumTemperatureInCelsius   *float64          `json:"MinimumTemperatureInCelsius,omitempty"   protobuf:"fixed64,6,opt,name=MinimumTemperatureInCelsius,proto3,oneof"`
+	StartTimerAutomatically       *bool             `json:"StartTimerAutomatically,omitempty"       protobuf:"varint,11,opt,name=StartTimerAutomatically,proto3,oneof"`
+	MinimumEstimatedTimeInSeconds *uint32           `json:"MinimumEstimatedTimeInSeconds,omitempty" protobuf:"varint,1,opt,name=MinimumEstimatedTimeInSeconds,proto3,oneof"`
+	MaximumTemperatureInCelsius   *float64          `json:"MaximumTemperatureInCelsius,omitempty"   protobuf:"fixed64,2,opt,name=MaximumTemperatureInCelsius,proto3,oneof"`
+	Notes                         *string           `json:"Notes,omitempty"                         protobuf:"bytes,3,opt,name=Notes,proto3,oneof"`
+	ConditionExpression           *string           `json:"ConditionExpression,omitempty"           protobuf:"bytes,10,opt,name=ConditionExpression,proto3,oneof"`
+	Index                         *uint32           `json:"Index,omitempty"                         protobuf:"varint,5,opt,name=Index,proto3,oneof"`
+	state                         protoimpl.MessageState
+	MaximumEstimatedTimeInSeconds *uint32 `json:"MaximumEstimatedTimeInSeconds,omitempty" protobuf:"varint,7,opt,name=MaximumEstimatedTimeInSeconds,proto3,oneof"`
+	Optional                      *bool   `json:"Optional,omitempty"                      protobuf:"varint,8,opt,name=Optional,proto3,oneof"`
+	ExplicitInstructions          *string `json:"ExplicitInstructions,omitempty"          protobuf:"bytes,9,opt,name=ExplicitInstructions,proto3,oneof"`
+	BelongsToRecipe               string  `json:"BelongsToRecipe,omitempty"               protobuf:"bytes,12,opt,name=BelongsToRecipe,proto3"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
 }
 
 func (x *RecipeStepUpdateRequestInput) Reset() {
@@ -5335,15 +5288,14 @@ func (x *RecipeStepUpdateRequestInput) GetBelongsToRecipe() string {
 }
 
 type UserStatusResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	UserID                   string `protobuf:"bytes,1,opt,name=UserID,proto3" json:"UserID,omitempty"`
-	AccountStatus            string `protobuf:"bytes,2,opt,name=AccountStatus,proto3" json:"AccountStatus,omitempty"`
-	AccountStatusExplanation string `protobuf:"bytes,3,opt,name=AccountStatusExplanation,proto3" json:"AccountStatusExplanation,omitempty"`
-	ActiveHousehold          string `protobuf:"bytes,4,opt,name=ActiveHousehold,proto3" json:"ActiveHousehold,omitempty"`
-	UserIsAuthenticated      bool   `protobuf:"varint,5,opt,name=UserIsAuthenticated,proto3" json:"UserIsAuthenticated,omitempty"`
+	state                    protoimpl.MessageState
+	UserID                   string `json:"UserID,omitempty"                   protobuf:"bytes,1,opt,name=UserID,proto3"`
+	AccountStatus            string `json:"AccountStatus,omitempty"            protobuf:"bytes,2,opt,name=AccountStatus,proto3"`
+	AccountStatusExplanation string `json:"AccountStatusExplanation,omitempty" protobuf:"bytes,3,opt,name=AccountStatusExplanation,proto3"`
+	ActiveHousehold          string `json:"ActiveHousehold,omitempty"          protobuf:"bytes,4,opt,name=ActiveHousehold,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+	UserIsAuthenticated      bool `json:"UserIsAuthenticated,omitempty" protobuf:"varint,5,opt,name=UserIsAuthenticated,proto3"`
 }
 
 func (x *UserStatusResponse) Reset() {
@@ -5414,29 +5366,28 @@ func (x *UserStatusResponse) GetUserIsAuthenticated() bool {
 }
 
 type User struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                  *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	PasswordLastChangedAt      *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=PasswordLastChangedAt,proto3,oneof" json:"PasswordLastChangedAt,omitempty"`
-	LastUpdatedAt              *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	LastAcceptedTermsOfService *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=LastAcceptedTermsOfService,proto3,oneof" json:"LastAcceptedTermsOfService,omitempty"`
-	LastAcceptedPrivacyPolicy  *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=LastAcceptedPrivacyPolicy,proto3,oneof" json:"LastAcceptedPrivacyPolicy,omitempty"`
-	TwoFactorSecretVerifiedAt  *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=TwoFactorSecretVerifiedAt,proto3,oneof" json:"TwoFactorSecretVerifiedAt,omitempty"`
-	AvatarSrc                  *string                `protobuf:"bytes,7,opt,name=AvatarSrc,proto3,oneof" json:"AvatarSrc,omitempty"`
-	Birthday                   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=Birthday,proto3,oneof" json:"Birthday,omitempty"`
-	ArchivedAt                 *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	AccountStatusExplanation   string                 `protobuf:"bytes,10,opt,name=AccountStatusExplanation,proto3" json:"AccountStatusExplanation,omitempty"`
-	ID                         string                 `protobuf:"bytes,11,opt,name=ID,proto3" json:"ID,omitempty"`
-	AccountStatus              string                 `protobuf:"bytes,12,opt,name=AccountStatus,proto3" json:"AccountStatus,omitempty"`
-	Username                   string                 `protobuf:"bytes,13,opt,name=Username,proto3" json:"Username,omitempty"`
-	FirstName                  string                 `protobuf:"bytes,14,opt,name=FirstName,proto3" json:"FirstName,omitempty"`
-	LastName                   string                 `protobuf:"bytes,15,opt,name=LastName,proto3" json:"LastName,omitempty"`
-	EmailAddress               string                 `protobuf:"bytes,16,opt,name=EmailAddress,proto3" json:"EmailAddress,omitempty"`
-	EmailAddressVerifiedAt     *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=EmailAddressVerifiedAt,proto3,oneof" json:"EmailAddressVerifiedAt,omitempty"`
-	ServiceRole                string                 `protobuf:"bytes,18,opt,name=ServiceRole,proto3" json:"ServiceRole,omitempty"`
-	RequiresPasswordChange     bool                   `protobuf:"varint,19,opt,name=RequiresPasswordChange,proto3" json:"RequiresPasswordChange,omitempty"`
+	Birthday                   *timestamppb.Timestamp `json:"Birthday,omitempty"                   protobuf:"bytes,8,opt,name=Birthday,proto3,oneof"`
+	TwoFactorSecretVerifiedAt  *timestamppb.Timestamp `json:"TwoFactorSecretVerifiedAt,omitempty"  protobuf:"bytes,6,opt,name=TwoFactorSecretVerifiedAt,proto3,oneof"`
+	ArchivedAt                 *timestamppb.Timestamp `json:"ArchivedAt,omitempty"                 protobuf:"bytes,9,opt,name=ArchivedAt,proto3,oneof"`
+	CreatedAt                  *timestamppb.Timestamp `json:"CreatedAt,omitempty"                  protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	PasswordLastChangedAt      *timestamppb.Timestamp `json:"PasswordLastChangedAt,omitempty"      protobuf:"bytes,2,opt,name=PasswordLastChangedAt,proto3,oneof"`
+	LastUpdatedAt              *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"              protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	LastAcceptedTermsOfService *timestamppb.Timestamp `json:"LastAcceptedTermsOfService,omitempty" protobuf:"bytes,4,opt,name=LastAcceptedTermsOfService,proto3,oneof"`
+	LastAcceptedPrivacyPolicy  *timestamppb.Timestamp `json:"LastAcceptedPrivacyPolicy,omitempty"  protobuf:"bytes,5,opt,name=LastAcceptedPrivacyPolicy,proto3,oneof"`
+	state                      protoimpl.MessageState
+	AvatarSrc                  *string                `json:"AvatarSrc,omitempty"                protobuf:"bytes,7,opt,name=AvatarSrc,proto3,oneof"`
+	EmailAddressVerifiedAt     *timestamppb.Timestamp `json:"EmailAddressVerifiedAt,omitempty"   protobuf:"bytes,17,opt,name=EmailAddressVerifiedAt,proto3,oneof"`
+	FirstName                  string                 `json:"FirstName,omitempty"                protobuf:"bytes,14,opt,name=FirstName,proto3"`
+	ID                         string                 `json:"ID,omitempty"                       protobuf:"bytes,11,opt,name=ID,proto3"`
+	AccountStatus              string                 `json:"AccountStatus,omitempty"            protobuf:"bytes,12,opt,name=AccountStatus,proto3"`
+	Username                   string                 `json:"Username,omitempty"                 protobuf:"bytes,13,opt,name=Username,proto3"`
+	LastName                   string                 `json:"LastName,omitempty"                 protobuf:"bytes,15,opt,name=LastName,proto3"`
+	EmailAddress               string                 `json:"EmailAddress,omitempty"             protobuf:"bytes,16,opt,name=EmailAddress,proto3"`
+	ServiceRole                string                 `json:"ServiceRole,omitempty"              protobuf:"bytes,18,opt,name=ServiceRole,proto3"`
+	AccountStatusExplanation   string                 `json:"AccountStatusExplanation,omitempty" protobuf:"bytes,10,opt,name=AccountStatusExplanation,proto3"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
+	RequiresPasswordChange     bool `json:"RequiresPasswordChange,omitempty" protobuf:"varint,19,opt,name=RequiresPasswordChange,proto3"`
 }
 
 func (x *User) Reset() {
@@ -5605,21 +5556,20 @@ func (x *User) GetRequiresPasswordChange() bool {
 }
 
 type UserRegistrationInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Birthday              *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=Birthday,proto3,oneof" json:"Birthday,omitempty"`
-	Password              string                 `protobuf:"bytes,2,opt,name=Password,proto3" json:"Password,omitempty"`
-	EmailAddress          string                 `protobuf:"bytes,3,opt,name=EmailAddress,proto3" json:"EmailAddress,omitempty"`
-	InvitationToken       string                 `protobuf:"bytes,4,opt,name=InvitationToken,proto3" json:"InvitationToken,omitempty"`
-	InvitationID          string                 `protobuf:"bytes,5,opt,name=InvitationID,proto3" json:"InvitationID,omitempty"`
-	Username              string                 `protobuf:"bytes,6,opt,name=Username,proto3" json:"Username,omitempty"`
-	FirstName             string                 `protobuf:"bytes,7,opt,name=FirstName,proto3" json:"FirstName,omitempty"`
-	LastName              string                 `protobuf:"bytes,8,opt,name=LastName,proto3" json:"LastName,omitempty"`
-	HouseholdName         string                 `protobuf:"bytes,9,opt,name=HouseholdName,proto3" json:"HouseholdName,omitempty"`
-	AcceptedTOS           bool                   `protobuf:"varint,10,opt,name=AcceptedTOS,proto3" json:"AcceptedTOS,omitempty"`
-	AcceptedPrivacyPolicy bool                   `protobuf:"varint,11,opt,name=AcceptedPrivacyPolicy,proto3" json:"AcceptedPrivacyPolicy,omitempty"`
+	Birthday              *timestamppb.Timestamp `json:"Birthday,omitempty" protobuf:"bytes,1,opt,name=Birthday,proto3,oneof"`
+	state                 protoimpl.MessageState
+	InvitationToken       string `json:"InvitationToken,omitempty" protobuf:"bytes,4,opt,name=InvitationToken,proto3"`
+	Password              string `json:"Password,omitempty"        protobuf:"bytes,2,opt,name=Password,proto3"`
+	EmailAddress          string `json:"EmailAddress,omitempty"    protobuf:"bytes,3,opt,name=EmailAddress,proto3"`
+	InvitationID          string `json:"InvitationID,omitempty"    protobuf:"bytes,5,opt,name=InvitationID,proto3"`
+	Username              string `json:"Username,omitempty"        protobuf:"bytes,6,opt,name=Username,proto3"`
+	FirstName             string `json:"FirstName,omitempty"       protobuf:"bytes,7,opt,name=FirstName,proto3"`
+	LastName              string `json:"LastName,omitempty"        protobuf:"bytes,8,opt,name=LastName,proto3"`
+	HouseholdName         string `json:"HouseholdName,omitempty"   protobuf:"bytes,9,opt,name=HouseholdName,proto3"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+	AcceptedTOS           bool `json:"AcceptedTOS,omitempty"           protobuf:"varint,10,opt,name=AcceptedTOS,proto3"`
+	AcceptedPrivacyPolicy bool `json:"AcceptedPrivacyPolicy,omitempty" protobuf:"varint,11,opt,name=AcceptedPrivacyPolicy,proto3"`
 }
 
 func (x *UserRegistrationInput) Reset() {
@@ -5732,22 +5682,21 @@ func (x *UserRegistrationInput) GetAcceptedPrivacyPolicy() bool {
 }
 
 type UserCreationResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	Birthday        *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=Birthday,proto3,oneof" json:"Birthday,omitempty"`
-	AvatarSrc       *string                `protobuf:"bytes,3,opt,name=AvatarSrc,proto3,oneof" json:"AvatarSrc,omitempty"`
-	Username        string                 `protobuf:"bytes,4,opt,name=Username,proto3" json:"Username,omitempty"`
-	EmailAddress    string                 `protobuf:"bytes,5,opt,name=EmailAddress,proto3" json:"EmailAddress,omitempty"`
-	TwoFactorQRCode string                 `protobuf:"bytes,6,opt,name=TwoFactorQRCode,proto3" json:"TwoFactorQRCode,omitempty"`
-	CreatedUserID   string                 `protobuf:"bytes,7,opt,name=CreatedUserID,proto3" json:"CreatedUserID,omitempty"`
-	AccountStatus   string                 `protobuf:"bytes,8,opt,name=AccountStatus,proto3" json:"AccountStatus,omitempty"`
-	TwoFactorSecret string                 `protobuf:"bytes,9,opt,name=TwoFactorSecret,proto3" json:"TwoFactorSecret,omitempty"`
-	FirstName       string                 `protobuf:"bytes,10,opt,name=FirstName,proto3" json:"FirstName,omitempty"`
-	LastName        string                 `protobuf:"bytes,11,opt,name=LastName,proto3" json:"LastName,omitempty"`
-	IsAdmin         bool                   `protobuf:"varint,12,opt,name=IsAdmin,proto3" json:"IsAdmin,omitempty"`
+	Birthday        *timestamppb.Timestamp `json:"Birthday,omitempty" protobuf:"bytes,2,opt,name=Birthday,proto3,oneof"`
+	state           protoimpl.MessageState
+	AvatarSrc       *string                `json:"AvatarSrc,omitempty"       protobuf:"bytes,3,opt,name=AvatarSrc,proto3,oneof"`
+	CreatedAt       *timestamppb.Timestamp `json:"CreatedAt,omitempty"       protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	Username        string                 `json:"Username,omitempty"        protobuf:"bytes,4,opt,name=Username,proto3"`
+	EmailAddress    string                 `json:"EmailAddress,omitempty"    protobuf:"bytes,5,opt,name=EmailAddress,proto3"`
+	TwoFactorQRCode string                 `json:"TwoFactorQRCode,omitempty" protobuf:"bytes,6,opt,name=TwoFactorQRCode,proto3"`
+	CreatedUserID   string                 `json:"CreatedUserID,omitempty"   protobuf:"bytes,7,opt,name=CreatedUserID,proto3"`
+	AccountStatus   string                 `json:"AccountStatus,omitempty"   protobuf:"bytes,8,opt,name=AccountStatus,proto3"`
+	TwoFactorSecret string                 `json:"TwoFactorSecret,omitempty" protobuf:"bytes,9,opt,name=TwoFactorSecret,proto3"`
+	FirstName       string                 `json:"FirstName,omitempty"       protobuf:"bytes,10,opt,name=FirstName,proto3"`
+	LastName        string                 `json:"LastName,omitempty"        protobuf:"bytes,11,opt,name=LastName,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+	IsAdmin         bool `json:"IsAdmin,omitempty" protobuf:"varint,12,opt,name=IsAdmin,proto3"`
 }
 
 func (x *UserCreationResponse) Reset() {
@@ -5868,12 +5817,11 @@ func (x *UserCreationResponse) GetIsAdmin() bool {
 
 type UserLoginInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Username      string `json:"Username,omitempty"  protobuf:"bytes,1,opt,name=Username,proto3"`
+	Password      string `json:"Password,omitempty"  protobuf:"bytes,2,opt,name=Password,proto3"`
+	TOTPToken     string `json:"TOTPToken,omitempty" protobuf:"bytes,3,opt,name=TOTPToken,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Username  string `protobuf:"bytes,1,opt,name=Username,proto3" json:"Username,omitempty"`
-	Password  string `protobuf:"bytes,2,opt,name=Password,proto3" json:"Password,omitempty"`
-	TOTPToken string `protobuf:"bytes,3,opt,name=TOTPToken,proto3" json:"TOTPToken,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UserLoginInput) Reset() {
@@ -5931,10 +5879,9 @@ func (x *UserLoginInput) GetTOTPToken() string {
 
 type UsernameReminderRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	EmailAddress  string `json:"EmailAddress,omitempty" protobuf:"bytes,1,opt,name=EmailAddress,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	EmailAddress string `protobuf:"bytes,1,opt,name=EmailAddress,proto3" json:"EmailAddress,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UsernameReminderRequestInput) Reset() {
@@ -5978,12 +5925,11 @@ func (x *UsernameReminderRequestInput) GetEmailAddress() string {
 
 type UserAccountStatusUpdateInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	NewStatus     string `json:"NewStatus,omitempty"    protobuf:"bytes,1,opt,name=NewStatus,proto3"`
+	Reason        string `json:"Reason,omitempty"       protobuf:"bytes,2,opt,name=Reason,proto3"`
+	TargetUserID  string `json:"TargetUserID,omitempty" protobuf:"bytes,3,opt,name=TargetUserID,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	NewStatus    string `protobuf:"bytes,1,opt,name=NewStatus,proto3" json:"NewStatus,omitempty"`
-	Reason       string `protobuf:"bytes,2,opt,name=Reason,proto3" json:"Reason,omitempty"`
-	TargetUserID string `protobuf:"bytes,3,opt,name=TargetUserID,proto3" json:"TargetUserID,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UserAccountStatusUpdateInput) Reset() {
@@ -6041,10 +5987,9 @@ func (x *UserAccountStatusUpdateInput) GetTargetUserID() string {
 
 type EmailAddressVerificationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Token         string `json:"Token,omitempty" protobuf:"bytes,1,opt,name=Token,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Token string `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EmailAddressVerificationRequestInput) Reset() {
@@ -6087,11 +6032,10 @@ func (x *EmailAddressVerificationRequestInput) GetToken() string {
 }
 
 type AvatarUpdateInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Base64EncodedData string `protobuf:"bytes,1,opt,name=Base64EncodedData,proto3" json:"Base64EncodedData,omitempty"`
+	state             protoimpl.MessageState
+	Base64EncodedData string `json:"Base64EncodedData,omitempty" protobuf:"bytes,1,opt,name=Base64EncodedData,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *AvatarUpdateInput) Reset() {
@@ -6135,10 +6079,9 @@ func (x *AvatarUpdateInput) GetBase64EncodedData() string {
 
 type UserPermissionsRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	Permissions []string `protobuf:"bytes,1,rep,name=Permissions,proto3" json:"Permissions,omitempty"`
+	Permissions   []string `json:"Permissions,omitempty" protobuf:"bytes,1,rep,name=Permissions,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UserPermissionsRequestInput) Reset() {
@@ -6182,10 +6125,9 @@ func (x *UserPermissionsRequestInput) GetPermissions() []string {
 
 type UserPermissionsResponse struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Permissions   map[string]bool `json:"Permissions,omitempty" protobuf:"bytes,1,rep,name=Permissions,proto3" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Permissions map[string]bool `protobuf:"bytes,1,rep,name=Permissions,proto3" json:"Permissions,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UserPermissionsResponse) Reset() {
@@ -6228,24 +6170,23 @@ func (x *UserPermissionsResponse) GetPermissions() map[string]bool {
 }
 
 type RecipeStepInstrument struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt           *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	Instrument          *ValidInstrument       `protobuf:"bytes,2,opt,name=Instrument,proto3,oneof" json:"Instrument,omitempty"`
-	LastUpdatedAt       *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	RecipeStepProductID *string                `protobuf:"bytes,4,opt,name=RecipeStepProductID,proto3,oneof" json:"RecipeStepProductID,omitempty"`
-	ArchivedAt          *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	MaximumQuantity     *uint32                `protobuf:"varint,6,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	Notes               string                 `protobuf:"bytes,7,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Name                string                 `protobuf:"bytes,8,opt,name=Name,proto3" json:"Name,omitempty"`
-	BelongsToRecipeStep string                 `protobuf:"bytes,9,opt,name=BelongsToRecipeStep,proto3" json:"BelongsToRecipeStep,omitempty"`
-	ID                  string                 `protobuf:"bytes,10,opt,name=ID,proto3" json:"ID,omitempty"`
-	MinimumQuantity     uint32                 `protobuf:"varint,11,opt,name=MinimumQuantity,proto3" json:"MinimumQuantity,omitempty"`
-	OptionIndex         uint32                 `protobuf:"varint,12,opt,name=OptionIndex,proto3" json:"OptionIndex,omitempty"`
-	PreferenceRank      uint32                 `protobuf:"varint,13,opt,name=PreferenceRank,proto3" json:"PreferenceRank,omitempty"`
-	Optional            bool                   `protobuf:"varint,14,opt,name=Optional,proto3" json:"Optional,omitempty"`
+	MaximumQuantity     *uint32          `json:"MaximumQuantity,omitempty" protobuf:"varint,6,opt,name=MaximumQuantity,proto3,oneof"`
+	Instrument          *ValidInstrument `json:"Instrument,omitempty"      protobuf:"bytes,2,opt,name=Instrument,proto3,oneof"`
+	state               protoimpl.MessageState
+	CreatedAt           *timestamppb.Timestamp `json:"CreatedAt,omitempty"           protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt          *timestamppb.Timestamp `json:"ArchivedAt,omitempty"          protobuf:"bytes,5,opt,name=ArchivedAt,proto3,oneof"`
+	LastUpdatedAt       *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"       protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	RecipeStepProductID *string                `json:"RecipeStepProductID,omitempty" protobuf:"bytes,4,opt,name=RecipeStepProductID,proto3,oneof"`
+	Name                string                 `json:"Name,omitempty"                protobuf:"bytes,8,opt,name=Name,proto3"`
+	Notes               string                 `json:"Notes,omitempty"               protobuf:"bytes,7,opt,name=Notes,proto3"`
+	BelongsToRecipeStep string                 `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,9,opt,name=BelongsToRecipeStep,proto3"`
+	ID                  string                 `json:"ID,omitempty"                  protobuf:"bytes,10,opt,name=ID,proto3"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+	MinimumQuantity     uint32 `json:"MinimumQuantity,omitempty" protobuf:"varint,11,opt,name=MinimumQuantity,proto3"`
+	OptionIndex         uint32 `json:"OptionIndex,omitempty"     protobuf:"varint,12,opt,name=OptionIndex,proto3"`
+	PreferenceRank      uint32 `json:"PreferenceRank,omitempty"  protobuf:"varint,13,opt,name=PreferenceRank,proto3"`
+	Optional            bool   `json:"Optional,omitempty"        protobuf:"varint,14,opt,name=Optional,proto3"`
 }
 
 func (x *RecipeStepInstrument) Reset() {
@@ -6379,21 +6320,20 @@ func (x *RecipeStepInstrument) GetOptional() bool {
 }
 
 type RecipeStepInstrumentCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	InstrumentID                    *string `protobuf:"bytes,1,opt,name=InstrumentID,proto3,oneof" json:"InstrumentID,omitempty"`
-	RecipeStepProductID             *string `protobuf:"bytes,2,opt,name=RecipeStepProductID,proto3,oneof" json:"RecipeStepProductID,omitempty"`
-	ProductOfRecipeStepIndex        *uint64 `protobuf:"varint,3,opt,name=ProductOfRecipeStepIndex,proto3,oneof" json:"ProductOfRecipeStepIndex,omitempty"`
-	ProductOfRecipeStepProductIndex *uint64 `protobuf:"varint,4,opt,name=ProductOfRecipeStepProductIndex,proto3,oneof" json:"ProductOfRecipeStepProductIndex,omitempty"`
-	MaximumQuantity                 *uint32 `protobuf:"varint,5,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	Notes                           string  `protobuf:"bytes,6,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Name                            string  `protobuf:"bytes,7,opt,name=Name,proto3" json:"Name,omitempty"`
-	MinimumQuantity                 uint32  `protobuf:"varint,8,opt,name=MinimumQuantity,proto3" json:"MinimumQuantity,omitempty"`
-	OptionIndex                     uint32  `protobuf:"varint,9,opt,name=OptionIndex,proto3" json:"OptionIndex,omitempty"`
-	Optional                        bool    `protobuf:"varint,10,opt,name=Optional,proto3" json:"Optional,omitempty"`
-	PreferenceRank                  uint32  `protobuf:"varint,11,opt,name=PreferenceRank,proto3" json:"PreferenceRank,omitempty"`
+	ProductOfRecipeStepProductIndex *uint64 `json:"ProductOfRecipeStepProductIndex,omitempty" protobuf:"varint,4,opt,name=ProductOfRecipeStepProductIndex,proto3,oneof"`
+	state                           protoimpl.MessageState
+	MaximumQuantity                 *uint32 `json:"MaximumQuantity,omitempty"          protobuf:"varint,5,opt,name=MaximumQuantity,proto3,oneof"`
+	InstrumentID                    *string `json:"InstrumentID,omitempty"             protobuf:"bytes,1,opt,name=InstrumentID,proto3,oneof"`
+	RecipeStepProductID             *string `json:"RecipeStepProductID,omitempty"      protobuf:"bytes,2,opt,name=RecipeStepProductID,proto3,oneof"`
+	ProductOfRecipeStepIndex        *uint64 `json:"ProductOfRecipeStepIndex,omitempty" protobuf:"varint,3,opt,name=ProductOfRecipeStepIndex,proto3,oneof"`
+	Name                            string  `json:"Name,omitempty"                     protobuf:"bytes,7,opt,name=Name,proto3"`
+	Notes                           string  `json:"Notes,omitempty"                    protobuf:"bytes,6,opt,name=Notes,proto3"`
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
+	MinimumQuantity                 uint32 `json:"MinimumQuantity,omitempty" protobuf:"varint,8,opt,name=MinimumQuantity,proto3"`
+	OptionIndex                     uint32 `json:"OptionIndex,omitempty"     protobuf:"varint,9,opt,name=OptionIndex,proto3"`
+	PreferenceRank                  uint32 `json:"PreferenceRank,omitempty"  protobuf:"varint,11,opt,name=PreferenceRank,proto3"`
+	Optional                        bool   `json:"Optional,omitempty"        protobuf:"varint,10,opt,name=Optional,proto3"`
 }
 
 func (x *RecipeStepInstrumentCreationRequestInput) Reset() {
@@ -6506,20 +6446,19 @@ func (x *RecipeStepInstrumentCreationRequestInput) GetPreferenceRank() uint32 {
 }
 
 type RecipeStepInstrumentUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	InstrumentID        *string `protobuf:"bytes,1,opt,name=InstrumentID,proto3,oneof" json:"InstrumentID,omitempty"`
-	RecipeStepProductID *string `protobuf:"bytes,2,opt,name=RecipeStepProductID,proto3,oneof" json:"RecipeStepProductID,omitempty"`
-	Notes               *string `protobuf:"bytes,3,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	PreferenceRank      *uint32 `protobuf:"varint,4,opt,name=PreferenceRank,proto3,oneof" json:"PreferenceRank,omitempty"`
-	BelongsToRecipeStep *string `protobuf:"bytes,5,opt,name=BelongsToRecipeStep,proto3,oneof" json:"BelongsToRecipeStep,omitempty"`
-	Name                *string `protobuf:"bytes,6,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Optional            *bool   `protobuf:"varint,7,opt,name=Optional,proto3,oneof" json:"Optional,omitempty"`
-	OptionIndex         *uint32 `protobuf:"varint,8,opt,name=OptionIndex,proto3,oneof" json:"OptionIndex,omitempty"`
-	MinimumQuantity     *uint32 `protobuf:"varint,9,opt,name=MinimumQuantity,proto3,oneof" json:"MinimumQuantity,omitempty"`
-	MaximumQuantity     *uint32 `protobuf:"varint,10,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
+	PreferenceRank      *uint32 `json:"PreferenceRank,omitempty"      protobuf:"varint,4,opt,name=PreferenceRank,proto3,oneof"`
+	InstrumentID        *string `json:"InstrumentID,omitempty"        protobuf:"bytes,1,opt,name=InstrumentID,proto3,oneof"`
+	RecipeStepProductID *string `json:"RecipeStepProductID,omitempty" protobuf:"bytes,2,opt,name=RecipeStepProductID,proto3,oneof"`
+	Notes               *string `json:"Notes,omitempty"               protobuf:"bytes,3,opt,name=Notes,proto3,oneof"`
+	state               protoimpl.MessageState
+	BelongsToRecipeStep *string `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,5,opt,name=BelongsToRecipeStep,proto3,oneof"`
+	Name                *string `json:"Name,omitempty"                protobuf:"bytes,6,opt,name=Name,proto3,oneof"`
+	Optional            *bool   `json:"Optional,omitempty"            protobuf:"varint,7,opt,name=Optional,proto3,oneof"`
+	OptionIndex         *uint32 `json:"OptionIndex,omitempty"         protobuf:"varint,8,opt,name=OptionIndex,proto3,oneof"`
+	MinimumQuantity     *uint32 `json:"MinimumQuantity,omitempty"     protobuf:"varint,9,opt,name=MinimumQuantity,proto3,oneof"`
+	MaximumQuantity     *uint32 `json:"MaximumQuantity,omitempty"     protobuf:"varint,10,opt,name=MaximumQuantity,proto3,oneof"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *RecipeStepInstrumentUpdateRequestInput) Reset() {
@@ -6626,16 +6565,15 @@ func (x *RecipeStepInstrumentUpdateRequestInput) GetMaximumQuantity() uint32 {
 
 type ValidIngredientPreparation struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty"    protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	Ingredient    *ValidIngredient       `json:"Ingredient,omitempty"    protobuf:"bytes,6,opt,name=Ingredient,proto3"`
+	Preparation   *ValidPreparation      `json:"Preparation,omitempty"   protobuf:"bytes,7,opt,name=Preparation,proto3"`
+	Notes         string                 `json:"Notes,omitempty"         protobuf:"bytes,4,opt,name=Notes,proto3"`
+	ID            string                 `json:"ID,omitempty"            protobuf:"bytes,5,opt,name=ID,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	Notes         string                 `protobuf:"bytes,4,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ID            string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	Ingredient    *ValidIngredient       `protobuf:"bytes,6,opt,name=Ingredient,proto3" json:"Ingredient,omitempty"`
-	Preparation   *ValidPreparation      `protobuf:"bytes,7,opt,name=Preparation,proto3" json:"Preparation,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidIngredientPreparation) Reset() {
@@ -6720,13 +6658,12 @@ func (x *ValidIngredientPreparation) GetPreparation() *ValidPreparation {
 }
 
 type ValidIngredientPreparationCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes              string `protobuf:"bytes,1,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ValidPreparationID string `protobuf:"bytes,2,opt,name=ValidPreparationID,proto3" json:"ValidPreparationID,omitempty"`
-	ValidIngredientID  string `protobuf:"bytes,3,opt,name=ValidIngredientID,proto3" json:"ValidIngredientID,omitempty"`
+	state              protoimpl.MessageState
+	Notes              string `json:"Notes,omitempty"              protobuf:"bytes,1,opt,name=Notes,proto3"`
+	ValidPreparationID string `json:"ValidPreparationID,omitempty" protobuf:"bytes,2,opt,name=ValidPreparationID,proto3"`
+	ValidIngredientID  string `json:"ValidIngredientID,omitempty"  protobuf:"bytes,3,opt,name=ValidIngredientID,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ValidIngredientPreparationCreationRequestInput) Reset() {
@@ -6783,13 +6720,12 @@ func (x *ValidIngredientPreparationCreationRequestInput) GetValidIngredientID() 
 }
 
 type ValidIngredientPreparationUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes              *string `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	ValidPreparationID *string `protobuf:"bytes,2,opt,name=ValidPreparationID,proto3,oneof" json:"ValidPreparationID,omitempty"`
-	ValidIngredientID  *string `protobuf:"bytes,3,opt,name=ValidIngredientID,proto3,oneof" json:"ValidIngredientID,omitempty"`
+	state              protoimpl.MessageState
+	Notes              *string `json:"Notes,omitempty"              protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	ValidPreparationID *string `json:"ValidPreparationID,omitempty" protobuf:"bytes,2,opt,name=ValidPreparationID,proto3,oneof"`
+	ValidIngredientID  *string `json:"ValidIngredientID,omitempty"  protobuf:"bytes,3,opt,name=ValidIngredientID,proto3,oneof"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ValidIngredientPreparationUpdateRequestInput) Reset() {
@@ -6846,20 +6782,19 @@ func (x *ValidIngredientPreparationUpdateRequestInput) GetValidIngredientID() st
 }
 
 type ValidIngredientState struct {
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty" protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	PastTense     string                 `json:"PastTense,omitempty"     protobuf:"bytes,4,opt,name=PastTense,proto3"`
+	Description   string                 `json:"Description,omitempty"   protobuf:"bytes,5,opt,name=Description,proto3"`
+	IconPath      string                 `json:"IconPath,omitempty"      protobuf:"bytes,6,opt,name=IconPath,proto3"`
+	ID            string                 `json:"ID,omitempty"            protobuf:"bytes,7,opt,name=ID,proto3"`
+	Name          string                 `json:"Name,omitempty"          protobuf:"bytes,8,opt,name=Name,proto3"`
+	AttributeType string                 `json:"AttributeType,omitempty" protobuf:"bytes,9,opt,name=AttributeType,proto3"`
+	Slug          string                 `json:"Slug,omitempty"          protobuf:"bytes,10,opt,name=Slug,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	PastTense     string                 `protobuf:"bytes,4,opt,name=PastTense,proto3" json:"PastTense,omitempty"`
-	Description   string                 `protobuf:"bytes,5,opt,name=Description,proto3" json:"Description,omitempty"`
-	IconPath      string                 `protobuf:"bytes,6,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	ID            string                 `protobuf:"bytes,7,opt,name=ID,proto3" json:"ID,omitempty"`
-	Name          string                 `protobuf:"bytes,8,opt,name=Name,proto3" json:"Name,omitempty"`
-	AttributeType string                 `protobuf:"bytes,9,opt,name=AttributeType,proto3" json:"AttributeType,omitempty"`
-	Slug          string                 `protobuf:"bytes,10,opt,name=Slug,proto3" json:"Slug,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidIngredientState) Reset() {
@@ -6966,15 +6901,14 @@ func (x *ValidIngredientState) GetSlug() string {
 
 type ValidIngredientStateCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Name          string `json:"Name,omitempty"          protobuf:"bytes,1,opt,name=Name,proto3"`
+	Slug          string `json:"Slug,omitempty"          protobuf:"bytes,2,opt,name=Slug,proto3"`
+	PastTense     string `json:"PastTense,omitempty"     protobuf:"bytes,3,opt,name=PastTense,proto3"`
+	Description   string `json:"Description,omitempty"   protobuf:"bytes,4,opt,name=Description,proto3"`
+	AttributeType string `json:"AttributeType,omitempty" protobuf:"bytes,5,opt,name=AttributeType,proto3"`
+	IconPath      string `json:"IconPath,omitempty"      protobuf:"bytes,6,opt,name=IconPath,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Name          string `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
-	Slug          string `protobuf:"bytes,2,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	PastTense     string `protobuf:"bytes,3,opt,name=PastTense,proto3" json:"PastTense,omitempty"`
-	Description   string `protobuf:"bytes,4,opt,name=Description,proto3" json:"Description,omitempty"`
-	AttributeType string `protobuf:"bytes,5,opt,name=AttributeType,proto3" json:"AttributeType,omitempty"`
-	IconPath      string `protobuf:"bytes,6,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidIngredientStateCreationRequestInput) Reset() {
@@ -7053,15 +6987,14 @@ func (x *ValidIngredientStateCreationRequestInput) GetIconPath() string {
 
 type ValidIngredientStateUpdateRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Name          *string `json:"Name,omitempty"          protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	Slug          *string `json:"Slug,omitempty"          protobuf:"bytes,2,opt,name=Slug,proto3,oneof"`
+	PastTense     *string `json:"PastTense,omitempty"     protobuf:"bytes,3,opt,name=PastTense,proto3,oneof"`
+	Description   *string `json:"Description,omitempty"   protobuf:"bytes,4,opt,name=Description,proto3,oneof"`
+	AttributeType *string `json:"AttributeType,omitempty" protobuf:"bytes,5,opt,name=AttributeType,proto3,oneof"`
+	IconPath      *string `json:"IconPath,omitempty"      protobuf:"bytes,6,opt,name=IconPath,proto3,oneof"`
 	unknownFields protoimpl.UnknownFields
-
-	Name          *string `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Slug          *string `protobuf:"bytes,2,opt,name=Slug,proto3,oneof" json:"Slug,omitempty"`
-	PastTense     *string `protobuf:"bytes,3,opt,name=PastTense,proto3,oneof" json:"PastTense,omitempty"`
-	Description   *string `protobuf:"bytes,4,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	AttributeType *string `protobuf:"bytes,5,opt,name=AttributeType,proto3,oneof" json:"AttributeType,omitempty"`
-	IconPath      *string `protobuf:"bytes,6,opt,name=IconPath,proto3,oneof" json:"IconPath,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidIngredientStateUpdateRequestInput) Reset() {
@@ -7139,23 +7072,22 @@ func (x *ValidIngredientStateUpdateRequestInput) GetIconPath() string {
 }
 
 type ValidMeasurementUnit struct {
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty"  protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"   protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ID            string                 `json:"ID,omitempty"          protobuf:"bytes,6,opt,name=ID,proto3"`
+	Name          string                 `json:"Name,omitempty"        protobuf:"bytes,4,opt,name=Name,proto3"`
+	IconPath      string                 `json:"IconPath,omitempty"    protobuf:"bytes,5,opt,name=IconPath,proto3"`
+	Description   string                 `json:"Description,omitempty" protobuf:"bytes,7,opt,name=Description,proto3"`
+	PluralName    string                 `json:"PluralName,omitempty"  protobuf:"bytes,8,opt,name=PluralName,proto3"`
+	Slug          string                 `json:"Slug,omitempty"        protobuf:"bytes,9,opt,name=Slug,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	Name          string                 `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
-	IconPath      string                 `protobuf:"bytes,5,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	ID            string                 `protobuf:"bytes,6,opt,name=ID,proto3" json:"ID,omitempty"`
-	Description   string                 `protobuf:"bytes,7,opt,name=Description,proto3" json:"Description,omitempty"`
-	PluralName    string                 `protobuf:"bytes,8,opt,name=PluralName,proto3" json:"PluralName,omitempty"`
-	Slug          string                 `protobuf:"bytes,9,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	Volumetric    bool                   `protobuf:"varint,10,opt,name=Volumetric,proto3" json:"Volumetric,omitempty"`
-	Universal     bool                   `protobuf:"varint,11,opt,name=Universal,proto3" json:"Universal,omitempty"`
-	Metric        bool                   `protobuf:"varint,12,opt,name=Metric,proto3" json:"Metric,omitempty"`
-	Imperial      bool                   `protobuf:"varint,13,opt,name=Imperial,proto3" json:"Imperial,omitempty"`
+	sizeCache     protoimpl.SizeCache
+	Volumetric    bool `json:"Volumetric,omitempty" protobuf:"varint,10,opt,name=Volumetric,proto3"`
+	Universal     bool `json:"Universal,omitempty"  protobuf:"varint,11,opt,name=Universal,proto3"`
+	Metric        bool `json:"Metric,omitempty"     protobuf:"varint,12,opt,name=Metric,proto3"`
+	Imperial      bool `json:"Imperial,omitempty"   protobuf:"varint,13,opt,name=Imperial,proto3"`
 }
 
 func (x *ValidMeasurementUnit) Reset() {
@@ -7283,18 +7215,17 @@ func (x *ValidMeasurementUnit) GetImperial() bool {
 
 type ValidMeasurementUnitCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Name          string `json:"Name,omitempty"        protobuf:"bytes,1,opt,name=Name,proto3"`
+	Description   string `json:"Description,omitempty" protobuf:"bytes,2,opt,name=Description,proto3"`
+	IconPath      string `json:"IconPath,omitempty"    protobuf:"bytes,3,opt,name=IconPath,proto3"`
+	PluralName    string `json:"PluralName,omitempty"  protobuf:"bytes,4,opt,name=PluralName,proto3"`
+	Slug          string `json:"Slug,omitempty"        protobuf:"bytes,5,opt,name=Slug,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Name        string `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description string `protobuf:"bytes,2,opt,name=Description,proto3" json:"Description,omitempty"`
-	IconPath    string `protobuf:"bytes,3,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	PluralName  string `protobuf:"bytes,4,opt,name=PluralName,proto3" json:"PluralName,omitempty"`
-	Slug        string `protobuf:"bytes,5,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	Volumetric  bool   `protobuf:"varint,6,opt,name=Volumetric,proto3" json:"Volumetric,omitempty"`
-	Universal   bool   `protobuf:"varint,7,opt,name=Universal,proto3" json:"Universal,omitempty"`
-	Metric      bool   `protobuf:"varint,8,opt,name=Metric,proto3" json:"Metric,omitempty"`
-	Imperial    bool   `protobuf:"varint,9,opt,name=Imperial,proto3" json:"Imperial,omitempty"`
+	sizeCache     protoimpl.SizeCache
+	Volumetric    bool `json:"Volumetric,omitempty" protobuf:"varint,6,opt,name=Volumetric,proto3"`
+	Universal     bool `json:"Universal,omitempty"  protobuf:"varint,7,opt,name=Universal,proto3"`
+	Metric        bool `json:"Metric,omitempty"     protobuf:"varint,8,opt,name=Metric,proto3"`
+	Imperial      bool `json:"Imperial,omitempty"   protobuf:"varint,9,opt,name=Imperial,proto3"`
 }
 
 func (x *ValidMeasurementUnitCreationRequestInput) Reset() {
@@ -7394,18 +7325,17 @@ func (x *ValidMeasurementUnitCreationRequestInput) GetImperial() bool {
 
 type ValidMeasurementUnitUpdateRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Name          *string `json:"Name,omitempty"        protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	Description   *string `json:"Description,omitempty" protobuf:"bytes,2,opt,name=Description,proto3,oneof"`
+	IconPath      *string `json:"IconPath,omitempty"    protobuf:"bytes,3,opt,name=IconPath,proto3,oneof"`
+	Volumetric    *bool   `json:"Volumetric,omitempty"  protobuf:"varint,4,opt,name=Volumetric,proto3,oneof"`
+	Universal     *bool   `json:"Universal,omitempty"   protobuf:"varint,5,opt,name=Universal,proto3,oneof"`
+	Metric        *bool   `json:"Metric,omitempty"      protobuf:"varint,6,opt,name=Metric,proto3,oneof"`
+	Imperial      *bool   `json:"Imperial,omitempty"    protobuf:"varint,7,opt,name=Imperial,proto3,oneof"`
+	PluralName    *string `json:"PluralName,omitempty"  protobuf:"bytes,8,opt,name=PluralName,proto3,oneof"`
+	Slug          *string `json:"Slug,omitempty"        protobuf:"bytes,9,opt,name=Slug,proto3,oneof"`
 	unknownFields protoimpl.UnknownFields
-
-	Name        *string `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Description *string `protobuf:"bytes,2,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	IconPath    *string `protobuf:"bytes,3,opt,name=IconPath,proto3,oneof" json:"IconPath,omitempty"`
-	Volumetric  *bool   `protobuf:"varint,4,opt,name=Volumetric,proto3,oneof" json:"Volumetric,omitempty"`
-	Universal   *bool   `protobuf:"varint,5,opt,name=Universal,proto3,oneof" json:"Universal,omitempty"`
-	Metric      *bool   `protobuf:"varint,6,opt,name=Metric,proto3,oneof" json:"Metric,omitempty"`
-	Imperial    *bool   `protobuf:"varint,7,opt,name=Imperial,proto3,oneof" json:"Imperial,omitempty"`
-	PluralName  *string `protobuf:"bytes,8,opt,name=PluralName,proto3,oneof" json:"PluralName,omitempty"`
-	Slug        *string `protobuf:"bytes,9,opt,name=Slug,proto3,oneof" json:"Slug,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidMeasurementUnitUpdateRequestInput) Reset() {
@@ -7504,18 +7434,17 @@ func (x *ValidMeasurementUnitUpdateRequestInput) GetSlug() string {
 }
 
 type HouseholdUserMembership struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt         *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID                 string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToUser      string                 `protobuf:"bytes,5,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
-	BelongsToHousehold string                 `protobuf:"bytes,6,opt,name=BelongsToHousehold,proto3" json:"BelongsToHousehold,omitempty"`
-	HouseholdRole      string                 `protobuf:"bytes,7,opt,name=HouseholdRole,proto3" json:"HouseholdRole,omitempty"`
-	DefaultHousehold   bool                   `protobuf:"varint,8,opt,name=DefaultHousehold,proto3" json:"DefaultHousehold,omitempty"`
+	state              protoimpl.MessageState
+	CreatedAt          *timestamppb.Timestamp `json:"CreatedAt,omitempty"          protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt      *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"      protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt         *timestamppb.Timestamp `json:"ArchivedAt,omitempty"         protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	ID                 string                 `json:"ID,omitempty"                 protobuf:"bytes,4,opt,name=ID,proto3"`
+	BelongsToUser      string                 `json:"BelongsToUser,omitempty"      protobuf:"bytes,5,opt,name=BelongsToUser,proto3"`
+	BelongsToHousehold string                 `json:"BelongsToHousehold,omitempty" protobuf:"bytes,6,opt,name=BelongsToHousehold,proto3"`
+	HouseholdRole      string                 `json:"HouseholdRole,omitempty"      protobuf:"bytes,7,opt,name=HouseholdRole,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+	DefaultHousehold   bool `json:"DefaultHousehold,omitempty" protobuf:"varint,8,opt,name=DefaultHousehold,proto3"`
 }
 
 func (x *HouseholdUserMembership) Reset() {
@@ -7607,18 +7536,17 @@ func (x *HouseholdUserMembership) GetDefaultHousehold() bool {
 }
 
 type HouseholdUserMembershipWithUser struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	BelongsToUser      *User                  `protobuf:"bytes,3,opt,name=BelongsToUser,proto3,oneof" json:"BelongsToUser,omitempty"`
-	ArchivedAt         *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID                 string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToHousehold string                 `protobuf:"bytes,6,opt,name=BelongsToHousehold,proto3" json:"BelongsToHousehold,omitempty"`
-	HouseholdRole      string                 `protobuf:"bytes,7,opt,name=HouseholdRole,proto3" json:"HouseholdRole,omitempty"`
-	DefaultHousehold   bool                   `protobuf:"varint,8,opt,name=DefaultHousehold,proto3" json:"DefaultHousehold,omitempty"`
+	state              protoimpl.MessageState
+	CreatedAt          *timestamppb.Timestamp `json:"CreatedAt,omitempty"          protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt      *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"      protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	BelongsToUser      *User                  `json:"BelongsToUser,omitempty"      protobuf:"bytes,3,opt,name=BelongsToUser,proto3,oneof"`
+	ArchivedAt         *timestamppb.Timestamp `json:"ArchivedAt,omitempty"         protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof"`
+	ID                 string                 `json:"ID,omitempty"                 protobuf:"bytes,5,opt,name=ID,proto3"`
+	BelongsToHousehold string                 `json:"BelongsToHousehold,omitempty" protobuf:"bytes,6,opt,name=BelongsToHousehold,proto3"`
+	HouseholdRole      string                 `json:"HouseholdRole,omitempty"      protobuf:"bytes,7,opt,name=HouseholdRole,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+	DefaultHousehold   bool `json:"DefaultHousehold,omitempty" protobuf:"varint,8,opt,name=DefaultHousehold,proto3"`
 }
 
 func (x *HouseholdUserMembershipWithUser) Reset() {
@@ -7711,11 +7639,10 @@ func (x *HouseholdUserMembershipWithUser) GetDefaultHousehold() bool {
 
 type HouseholdUserMembershipCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Reason        string `json:"Reason,omitempty" protobuf:"bytes,1,opt,name=Reason,proto3"`
+	UserID        string `json:"UserID,omitempty" protobuf:"bytes,2,opt,name=UserID,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Reason string `protobuf:"bytes,1,opt,name=Reason,proto3" json:"Reason,omitempty"`
-	UserID string `protobuf:"bytes,2,opt,name=UserID,proto3" json:"UserID,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HouseholdUserMembershipCreationRequestInput) Reset() {
@@ -7765,18 +7692,17 @@ func (x *HouseholdUserMembershipCreationRequestInput) GetUserID() string {
 }
 
 type HouseholdInstrumentOwnership struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt         *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ID                 string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	Notes              string                 `protobuf:"bytes,5,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	BelongsToHousehold string                 `protobuf:"bytes,6,opt,name=BelongsToHousehold,proto3" json:"BelongsToHousehold,omitempty"`
-	Instrument         *ValidInstrument       `protobuf:"bytes,7,opt,name=Instrument,proto3" json:"Instrument,omitempty"`
-	Quantity           uint32                 `protobuf:"varint,8,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
+	state              protoimpl.MessageState
+	CreatedAt          *timestamppb.Timestamp `json:"CreatedAt,omitempty"          protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt         *timestamppb.Timestamp `json:"ArchivedAt,omitempty"         protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	LastUpdatedAt      *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"      protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	Instrument         *ValidInstrument       `json:"Instrument,omitempty"         protobuf:"bytes,7,opt,name=Instrument,proto3"`
+	ID                 string                 `json:"ID,omitempty"                 protobuf:"bytes,4,opt,name=ID,proto3"`
+	Notes              string                 `json:"Notes,omitempty"              protobuf:"bytes,5,opt,name=Notes,proto3"`
+	BelongsToHousehold string                 `json:"BelongsToHousehold,omitempty" protobuf:"bytes,6,opt,name=BelongsToHousehold,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+	Quantity           uint32 `json:"Quantity,omitempty" protobuf:"varint,8,opt,name=Quantity,proto3"`
 }
 
 func (x *HouseholdInstrumentOwnership) Reset() {
@@ -7868,14 +7794,13 @@ func (x *HouseholdInstrumentOwnership) GetQuantity() uint32 {
 }
 
 type HouseholdInstrumentOwnershipCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes              string `protobuf:"bytes,1,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ValidInstrumentID  string `protobuf:"bytes,2,opt,name=ValidInstrumentID,proto3" json:"ValidInstrumentID,omitempty"`
-	BelongsToHousehold string `protobuf:"bytes,3,opt,name=BelongsToHousehold,proto3" json:"BelongsToHousehold,omitempty"`
-	Quantity           uint32 `protobuf:"varint,4,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
+	state              protoimpl.MessageState
+	Notes              string `json:"Notes,omitempty"              protobuf:"bytes,1,opt,name=Notes,proto3"`
+	ValidInstrumentID  string `json:"ValidInstrumentID,omitempty"  protobuf:"bytes,2,opt,name=ValidInstrumentID,proto3"`
+	BelongsToHousehold string `json:"BelongsToHousehold,omitempty" protobuf:"bytes,3,opt,name=BelongsToHousehold,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+	Quantity           uint32 `json:"Quantity,omitempty" protobuf:"varint,4,opt,name=Quantity,proto3"`
 }
 
 func (x *HouseholdInstrumentOwnershipCreationRequestInput) Reset() {
@@ -7939,13 +7864,12 @@ func (x *HouseholdInstrumentOwnershipCreationRequestInput) GetQuantity() uint32 
 }
 
 type HouseholdInstrumentOwnershipUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes             *string `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	Quantity          *uint32 `protobuf:"varint,2,opt,name=Quantity,proto3,oneof" json:"Quantity,omitempty"`
-	ValidInstrumentID *string `protobuf:"bytes,3,opt,name=ValidInstrumentID,proto3,oneof" json:"ValidInstrumentID,omitempty"`
+	state             protoimpl.MessageState
+	Notes             *string `json:"Notes,omitempty"             protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	Quantity          *uint32 `json:"Quantity,omitempty"          protobuf:"varint,2,opt,name=Quantity,proto3,oneof"`
+	ValidInstrumentID *string `json:"ValidInstrumentID,omitempty" protobuf:"bytes,3,opt,name=ValidInstrumentID,proto3,oneof"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *HouseholdInstrumentOwnershipUpdateRequestInput) Reset() {
@@ -8003,12 +7927,11 @@ func (x *HouseholdInstrumentOwnershipUpdateRequestInput) GetValidInstrumentID() 
 
 type MealComponent struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Recipe        *Recipe `json:"Recipe,omitempty"        protobuf:"bytes,2,opt,name=Recipe,proto3"`
+	ComponentType string  `json:"ComponentType,omitempty" protobuf:"bytes,1,opt,name=ComponentType,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	ComponentType string  `protobuf:"bytes,1,opt,name=ComponentType,proto3" json:"ComponentType,omitempty"`
-	Recipe        *Recipe `protobuf:"bytes,2,opt,name=Recipe,proto3" json:"Recipe,omitempty"`
-	RecipeScale   float64 `protobuf:"fixed64,3,opt,name=RecipeScale,proto3" json:"RecipeScale,omitempty"`
+	RecipeScale   float64 `json:"RecipeScale,omitempty" protobuf:"fixed64,3,opt,name=RecipeScale,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MealComponent) Reset() {
@@ -8066,12 +7989,11 @@ func (x *MealComponent) GetRecipeScale() float64 {
 
 type MealComponentCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	RecipeID      string `json:"RecipeID,omitempty"      protobuf:"bytes,1,opt,name=RecipeID,proto3"`
+	ComponentType string `json:"ComponentType,omitempty" protobuf:"bytes,2,opt,name=ComponentType,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	RecipeID      string  `protobuf:"bytes,1,opt,name=RecipeID,proto3" json:"RecipeID,omitempty"`
-	ComponentType string  `protobuf:"bytes,2,opt,name=ComponentType,proto3" json:"ComponentType,omitempty"`
-	RecipeScale   float64 `protobuf:"fixed64,3,opt,name=RecipeScale,proto3" json:"RecipeScale,omitempty"`
+	RecipeScale   float64 `json:"RecipeScale,omitempty" protobuf:"fixed64,3,opt,name=RecipeScale,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MealComponentCreationRequestInput) Reset() {
@@ -8129,12 +8051,11 @@ func (x *MealComponentCreationRequestInput) GetRecipeScale() float64 {
 
 type MealComponentUpdateRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	RecipeID      *string  `json:"RecipeID,omitempty"      protobuf:"bytes,1,opt,name=RecipeID,proto3,oneof"`
+	ComponentType *string  `json:"ComponentType,omitempty" protobuf:"bytes,2,opt,name=ComponentType,proto3,oneof"`
+	RecipeScale   *float64 `json:"RecipeScale,omitempty"   protobuf:"fixed64,3,opt,name=RecipeScale,proto3,oneof"`
 	unknownFields protoimpl.UnknownFields
-
-	RecipeID      *string  `protobuf:"bytes,1,opt,name=RecipeID,proto3,oneof" json:"RecipeID,omitempty"`
-	ComponentType *string  `protobuf:"bytes,2,opt,name=ComponentType,proto3,oneof" json:"ComponentType,omitempty"`
-	RecipeScale   *float64 `protobuf:"fixed64,3,opt,name=RecipeScale,proto3,oneof" json:"RecipeScale,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MealComponentUpdateRequestInput) Reset() {
@@ -8191,14 +8112,13 @@ func (x *MealComponentUpdateRequestInput) GetRecipeScale() float64 {
 }
 
 type RecipePrepTaskStep struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ID                      string `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToRecipeStep     string `protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3" json:"BelongsToRecipeStep,omitempty"`
-	BelongsToRecipePrepTask string `protobuf:"bytes,3,opt,name=BelongsToRecipePrepTask,proto3" json:"BelongsToRecipePrepTask,omitempty"`
-	SatisfiesRecipeStep     bool   `protobuf:"varint,4,opt,name=SatisfiesRecipeStep,proto3" json:"SatisfiesRecipeStep,omitempty"`
+	state                   protoimpl.MessageState
+	ID                      string `json:"ID,omitempty"                      protobuf:"bytes,1,opt,name=ID,proto3"`
+	BelongsToRecipeStep     string `json:"BelongsToRecipeStep,omitempty"     protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3"`
+	BelongsToRecipePrepTask string `json:"BelongsToRecipePrepTask,omitempty" protobuf:"bytes,3,opt,name=BelongsToRecipePrepTask,proto3"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+	SatisfiesRecipeStep     bool `json:"SatisfiesRecipeStep,omitempty" protobuf:"varint,4,opt,name=SatisfiesRecipeStep,proto3"`
 }
 
 func (x *RecipePrepTaskStep) Reset() {
@@ -8262,12 +8182,11 @@ func (x *RecipePrepTaskStep) GetSatisfiesRecipeStep() bool {
 }
 
 type RecipePrepTaskStepWithinRecipeCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	BelongsToRecipeStepIndex uint32 `protobuf:"varint,1,opt,name=BelongsToRecipeStepIndex,proto3" json:"BelongsToRecipeStepIndex,omitempty"`
-	SatisfiesRecipeStep      bool   `protobuf:"varint,2,opt,name=SatisfiesRecipeStep,proto3" json:"SatisfiesRecipeStep,omitempty"`
+	state                    protoimpl.MessageState
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+	BelongsToRecipeStepIndex uint32 `json:"BelongsToRecipeStepIndex,omitempty" protobuf:"varint,1,opt,name=BelongsToRecipeStepIndex,proto3"`
+	SatisfiesRecipeStep      bool   `json:"SatisfiesRecipeStep,omitempty"      protobuf:"varint,2,opt,name=SatisfiesRecipeStep,proto3"`
 }
 
 func (x *RecipePrepTaskStepWithinRecipeCreationRequestInput) Reset() {
@@ -8317,12 +8236,11 @@ func (x *RecipePrepTaskStepWithinRecipeCreationRequestInput) GetSatisfiesRecipeS
 }
 
 type RecipePrepTaskStepCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	BelongsToRecipeStep string `protobuf:"bytes,1,opt,name=BelongsToRecipeStep,proto3" json:"BelongsToRecipeStep,omitempty"`
-	SatisfiesRecipeStep bool   `protobuf:"varint,2,opt,name=SatisfiesRecipeStep,proto3" json:"SatisfiesRecipeStep,omitempty"`
+	state               protoimpl.MessageState
+	BelongsToRecipeStep string `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,1,opt,name=BelongsToRecipeStep,proto3"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+	SatisfiesRecipeStep bool `json:"SatisfiesRecipeStep,omitempty" protobuf:"varint,2,opt,name=SatisfiesRecipeStep,proto3"`
 }
 
 func (x *RecipePrepTaskStepCreationRequestInput) Reset() {
@@ -8372,13 +8290,12 @@ func (x *RecipePrepTaskStepCreationRequestInput) GetSatisfiesRecipeStep() bool {
 }
 
 type RecipePrepTaskStepUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	SatisfiesRecipeStep     *bool   `protobuf:"varint,1,opt,name=SatisfiesRecipeStep,proto3,oneof" json:"SatisfiesRecipeStep,omitempty"`
-	BelongsToRecipeStep     *string `protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3,oneof" json:"BelongsToRecipeStep,omitempty"`
-	BelongsToRecipePrepTask *string `protobuf:"bytes,3,opt,name=BelongsToRecipePrepTask,proto3,oneof" json:"BelongsToRecipePrepTask,omitempty"`
+	state                   protoimpl.MessageState
+	SatisfiesRecipeStep     *bool   `json:"SatisfiesRecipeStep,omitempty"     protobuf:"varint,1,opt,name=SatisfiesRecipeStep,proto3,oneof"`
+	BelongsToRecipeStep     *string `json:"BelongsToRecipeStep,omitempty"     protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3,oneof"`
+	BelongsToRecipePrepTask *string `json:"BelongsToRecipePrepTask,omitempty" protobuf:"bytes,3,opt,name=BelongsToRecipePrepTask,proto3,oneof"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *RecipePrepTaskStepUpdateRequestInput) Reset() {
@@ -8435,23 +8352,22 @@ func (x *RecipePrepTaskStepUpdateRequestInput) GetBelongsToRecipePrepTask() stri
 }
 
 type RecipeStepVessel struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt            *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	MaximumQuantity      *uint32                `protobuf:"varint,2,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	LastUpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt           *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	RecipeStepProductID  *string                `protobuf:"bytes,5,opt,name=RecipeStepProductID,proto3,oneof" json:"RecipeStepProductID,omitempty"`
-	Vessel               *ValidVessel           `protobuf:"bytes,6,opt,name=Vessel,proto3,oneof" json:"Vessel,omitempty"`
-	ID                   string                 `protobuf:"bytes,7,opt,name=ID,proto3" json:"ID,omitempty"`
-	Notes                string                 `protobuf:"bytes,8,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	BelongsToRecipeStep  string                 `protobuf:"bytes,9,opt,name=BelongsToRecipeStep,proto3" json:"BelongsToRecipeStep,omitempty"`
-	VesselPreposition    string                 `protobuf:"bytes,10,opt,name=VesselPreposition,proto3" json:"VesselPreposition,omitempty"`
-	Name                 string                 `protobuf:"bytes,11,opt,name=Name,proto3" json:"Name,omitempty"`
-	MinimumQuantity      uint32                 `protobuf:"varint,12,opt,name=MinimumQuantity,proto3" json:"MinimumQuantity,omitempty"`
-	UnavailableAfterStep bool                   `protobuf:"varint,13,opt,name=UnavailableAfterStep,proto3" json:"UnavailableAfterStep,omitempty"`
+	Vessel               *ValidVessel           `json:"Vessel,omitempty"          protobuf:"bytes,6,opt,name=Vessel,proto3,oneof"`
+	ArchivedAt           *timestamppb.Timestamp `json:"ArchivedAt,omitempty"      protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof"`
+	MaximumQuantity      *uint32                `json:"MaximumQuantity,omitempty" protobuf:"varint,2,opt,name=MaximumQuantity,proto3,oneof"`
+	CreatedAt            *timestamppb.Timestamp `json:"CreatedAt,omitempty"       protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	state                protoimpl.MessageState
+	LastUpdatedAt        *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"       protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	RecipeStepProductID  *string                `json:"RecipeStepProductID,omitempty" protobuf:"bytes,5,opt,name=RecipeStepProductID,proto3,oneof"`
+	ID                   string                 `json:"ID,omitempty"                  protobuf:"bytes,7,opt,name=ID,proto3"`
+	Notes                string                 `json:"Notes,omitempty"               protobuf:"bytes,8,opt,name=Notes,proto3"`
+	BelongsToRecipeStep  string                 `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,9,opt,name=BelongsToRecipeStep,proto3"`
+	VesselPreposition    string                 `json:"VesselPreposition,omitempty"   protobuf:"bytes,10,opt,name=VesselPreposition,proto3"`
+	Name                 string                 `json:"Name,omitempty"                protobuf:"bytes,11,opt,name=Name,proto3"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+	MinimumQuantity      uint32 `json:"MinimumQuantity,omitempty"      protobuf:"varint,12,opt,name=MinimumQuantity,proto3"`
+	UnavailableAfterStep bool   `json:"UnavailableAfterStep,omitempty" protobuf:"varint,13,opt,name=UnavailableAfterStep,proto3"`
 }
 
 func (x *RecipeStepVessel) Reset() {
@@ -8578,20 +8494,19 @@ func (x *RecipeStepVessel) GetUnavailableAfterStep() bool {
 }
 
 type RecipeStepVesselCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	RecipeStepProductID             *string `protobuf:"bytes,1,opt,name=RecipeStepProductID,proto3,oneof" json:"RecipeStepProductID,omitempty"`
-	ProductOfRecipeStepIndex        *uint64 `protobuf:"varint,2,opt,name=ProductOfRecipeStepIndex,proto3,oneof" json:"ProductOfRecipeStepIndex,omitempty"`
-	ProductOfRecipeStepProductIndex *uint64 `protobuf:"varint,3,opt,name=ProductOfRecipeStepProductIndex,proto3,oneof" json:"ProductOfRecipeStepProductIndex,omitempty"`
-	VesselID                        *string `protobuf:"bytes,4,opt,name=VesselID,proto3,oneof" json:"VesselID,omitempty"`
-	MaximumQuantity                 *uint32 `protobuf:"varint,5,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	Name                            string  `protobuf:"bytes,6,opt,name=Name,proto3" json:"Name,omitempty"`
-	Notes                           string  `protobuf:"bytes,7,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	VesselPreposition               string  `protobuf:"bytes,8,opt,name=VesselPreposition,proto3" json:"VesselPreposition,omitempty"`
-	MinimumQuantity                 uint32  `protobuf:"varint,9,opt,name=MinimumQuantity,proto3" json:"MinimumQuantity,omitempty"`
-	UnavailableAfterStep            bool    `protobuf:"varint,10,opt,name=UnavailableAfterStep,proto3" json:"UnavailableAfterStep,omitempty"`
+	VesselID                        *string `json:"VesselID,omitempty"                        protobuf:"bytes,4,opt,name=VesselID,proto3,oneof"`
+	RecipeStepProductID             *string `json:"RecipeStepProductID,omitempty"             protobuf:"bytes,1,opt,name=RecipeStepProductID,proto3,oneof"`
+	ProductOfRecipeStepIndex        *uint64 `json:"ProductOfRecipeStepIndex,omitempty"        protobuf:"varint,2,opt,name=ProductOfRecipeStepIndex,proto3,oneof"`
+	ProductOfRecipeStepProductIndex *uint64 `json:"ProductOfRecipeStepProductIndex,omitempty" protobuf:"varint,3,opt,name=ProductOfRecipeStepProductIndex,proto3,oneof"`
+	state                           protoimpl.MessageState
+	MaximumQuantity                 *uint32 `json:"MaximumQuantity,omitempty"   protobuf:"varint,5,opt,name=MaximumQuantity,proto3,oneof"`
+	Name                            string  `json:"Name,omitempty"              protobuf:"bytes,6,opt,name=Name,proto3"`
+	Notes                           string  `json:"Notes,omitempty"             protobuf:"bytes,7,opt,name=Notes,proto3"`
+	VesselPreposition               string  `json:"VesselPreposition,omitempty" protobuf:"bytes,8,opt,name=VesselPreposition,proto3"`
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
+	MinimumQuantity                 uint32 `json:"MinimumQuantity,omitempty"      protobuf:"varint,9,opt,name=MinimumQuantity,proto3"`
+	UnavailableAfterStep            bool   `json:"UnavailableAfterStep,omitempty" protobuf:"varint,10,opt,name=UnavailableAfterStep,proto3"`
 }
 
 func (x *RecipeStepVesselCreationRequestInput) Reset() {
@@ -8697,19 +8612,18 @@ func (x *RecipeStepVesselCreationRequestInput) GetUnavailableAfterStep() bool {
 }
 
 type RecipeStepVesselUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	RecipeStepProductID  *string `protobuf:"bytes,1,opt,name=RecipeStepProductID,proto3,oneof" json:"RecipeStepProductID,omitempty"`
-	Name                 *string `protobuf:"bytes,2,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Notes                *string `protobuf:"bytes,3,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	BelongsToRecipeStep  *string `protobuf:"bytes,4,opt,name=BelongsToRecipeStep,proto3,oneof" json:"BelongsToRecipeStep,omitempty"`
-	VesselID             *string `protobuf:"bytes,5,opt,name=VesselID,proto3,oneof" json:"VesselID,omitempty"`
-	MinimumQuantity      *uint32 `protobuf:"varint,6,opt,name=MinimumQuantity,proto3,oneof" json:"MinimumQuantity,omitempty"`
-	MaximumQuantity      *uint32 `protobuf:"varint,7,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	VesselPreposition    *string `protobuf:"bytes,8,opt,name=VesselPreposition,proto3,oneof" json:"VesselPreposition,omitempty"`
-	UnavailableAfterStep *bool   `protobuf:"varint,9,opt,name=UnavailableAfterStep,proto3,oneof" json:"UnavailableAfterStep,omitempty"`
+	state                protoimpl.MessageState
+	RecipeStepProductID  *string `json:"RecipeStepProductID,omitempty"  protobuf:"bytes,1,opt,name=RecipeStepProductID,proto3,oneof"`
+	Name                 *string `json:"Name,omitempty"                 protobuf:"bytes,2,opt,name=Name,proto3,oneof"`
+	Notes                *string `json:"Notes,omitempty"                protobuf:"bytes,3,opt,name=Notes,proto3,oneof"`
+	BelongsToRecipeStep  *string `json:"BelongsToRecipeStep,omitempty"  protobuf:"bytes,4,opt,name=BelongsToRecipeStep,proto3,oneof"`
+	VesselID             *string `json:"VesselID,omitempty"             protobuf:"bytes,5,opt,name=VesselID,proto3,oneof"`
+	MinimumQuantity      *uint32 `json:"MinimumQuantity,omitempty"      protobuf:"varint,6,opt,name=MinimumQuantity,proto3,oneof"`
+	MaximumQuantity      *uint32 `json:"MaximumQuantity,omitempty"      protobuf:"varint,7,opt,name=MaximumQuantity,proto3,oneof"`
+	VesselPreposition    *string `json:"VesselPreposition,omitempty"    protobuf:"bytes,8,opt,name=VesselPreposition,proto3,oneof"`
+	UnavailableAfterStep *bool   `json:"UnavailableAfterStep,omitempty" protobuf:"varint,9,opt,name=UnavailableAfterStep,proto3,oneof"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *RecipeStepVesselUpdateRequestInput) Reset() {
@@ -8808,30 +8722,29 @@ func (x *RecipeStepVesselUpdateRequestInput) GetUnavailableAfterStep() bool {
 }
 
 type RecipeStepProduct struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                          *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	MaximumStorageTemperatureInCelsius *float64               `protobuf:"fixed64,2,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof" json:"MaximumStorageTemperatureInCelsius,omitempty"`
-	MaximumStorageDurationInSeconds    *uint32                `protobuf:"varint,3,opt,name=MaximumStorageDurationInSeconds,proto3,oneof" json:"MaximumStorageDurationInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius *float64               `protobuf:"fixed64,4,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof" json:"MinimumStorageTemperatureInCelsius,omitempty"`
-	ArchivedAt                         *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt                      *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	MinimumQuantity                    *float64               `protobuf:"fixed64,7,opt,name=MinimumQuantity,proto3,oneof" json:"MinimumQuantity,omitempty"`
-	MeasurementUnit                    *ValidMeasurementUnit  `protobuf:"bytes,8,opt,name=MeasurementUnit,proto3,oneof" json:"MeasurementUnit,omitempty"`
-	MaximumQuantity                    *float64               `protobuf:"fixed64,9,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	ContainedInVesselIndex             *uint32                `protobuf:"varint,10,opt,name=ContainedInVesselIndex,proto3,oneof" json:"ContainedInVesselIndex,omitempty"`
-	Name                               string                 `protobuf:"bytes,11,opt,name=Name,proto3" json:"Name,omitempty"`
-	BelongsToRecipeStep                string                 `protobuf:"bytes,12,opt,name=BelongsToRecipeStep,proto3" json:"BelongsToRecipeStep,omitempty"`
-	Type                               string                 `protobuf:"bytes,13,opt,name=Type,proto3" json:"Type,omitempty"`
-	ID                                 string                 `protobuf:"bytes,14,opt,name=ID,proto3" json:"ID,omitempty"`
-	StorageInstructions                string                 `protobuf:"bytes,15,opt,name=StorageInstructions,proto3" json:"StorageInstructions,omitempty"`
-	QuantityNotes                      string                 `protobuf:"bytes,16,opt,name=QuantityNotes,proto3" json:"QuantityNotes,omitempty"`
-	Index                              uint32                 `protobuf:"varint,17,opt,name=Index,proto3" json:"Index,omitempty"`
-	IsWaste                            bool                   `protobuf:"varint,18,opt,name=IsWaste,proto3" json:"IsWaste,omitempty"`
-	IsLiquid                           bool                   `protobuf:"varint,19,opt,name=IsLiquid,proto3" json:"IsLiquid,omitempty"`
-	Compostable                        bool                   `protobuf:"varint,20,opt,name=Compostable,proto3" json:"Compostable,omitempty"`
+	MeasurementUnit                    *ValidMeasurementUnit `json:"MeasurementUnit,omitempty" protobuf:"bytes,8,opt,name=MeasurementUnit,proto3,oneof"`
+	MinimumQuantity                    *float64              `json:"MinimumQuantity,omitempty" protobuf:"fixed64,7,opt,name=MinimumQuantity,proto3,oneof"`
+	state                              protoimpl.MessageState
+	CreatedAt                          *timestamppb.Timestamp `json:"CreatedAt,omitempty"                          protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	MaximumStorageTemperatureInCelsius *float64               `json:"MaximumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,2,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof"`
+	MaximumStorageDurationInSeconds    *uint32                `json:"MaximumStorageDurationInSeconds,omitempty"    protobuf:"varint,3,opt,name=MaximumStorageDurationInSeconds,proto3,oneof"`
+	MinimumStorageTemperatureInCelsius *float64               `json:"MinimumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,4,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof"`
+	ArchivedAt                         *timestamppb.Timestamp `json:"ArchivedAt,omitempty"                         protobuf:"bytes,5,opt,name=ArchivedAt,proto3,oneof"`
+	LastUpdatedAt                      *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"                      protobuf:"bytes,6,opt,name=LastUpdatedAt,proto3,oneof"`
+	ContainedInVesselIndex             *uint32                `json:"ContainedInVesselIndex,omitempty"             protobuf:"varint,10,opt,name=ContainedInVesselIndex,proto3,oneof"`
+	MaximumQuantity                    *float64               `json:"MaximumQuantity,omitempty"                    protobuf:"fixed64,9,opt,name=MaximumQuantity,proto3,oneof"`
+	ID                                 string                 `json:"ID,omitempty"                                 protobuf:"bytes,14,opt,name=ID,proto3"`
+	Name                               string                 `json:"Name,omitempty"                               protobuf:"bytes,11,opt,name=Name,proto3"`
+	BelongsToRecipeStep                string                 `json:"BelongsToRecipeStep,omitempty"                protobuf:"bytes,12,opt,name=BelongsToRecipeStep,proto3"`
+	Type                               string                 `json:"Type,omitempty"                               protobuf:"bytes,13,opt,name=Type,proto3"`
+	StorageInstructions                string                 `json:"StorageInstructions,omitempty"                protobuf:"bytes,15,opt,name=StorageInstructions,proto3"`
+	QuantityNotes                      string                 `json:"QuantityNotes,omitempty"                      protobuf:"bytes,16,opt,name=QuantityNotes,proto3"`
+	unknownFields                      protoimpl.UnknownFields
+	sizeCache                          protoimpl.SizeCache
+	Index                              uint32 `json:"Index,omitempty"       protobuf:"varint,17,opt,name=Index,proto3"`
+	Compostable                        bool   `json:"Compostable,omitempty" protobuf:"varint,20,opt,name=Compostable,proto3"`
+	IsWaste                            bool   `json:"IsWaste,omitempty"     protobuf:"varint,18,opt,name=IsWaste,proto3"`
+	IsLiquid                           bool   `json:"IsLiquid,omitempty"    protobuf:"varint,19,opt,name=IsLiquid,proto3"`
 }
 
 func (x *RecipeStepProduct) Reset() {
@@ -9007,25 +8920,24 @@ func (x *RecipeStepProduct) GetCompostable() bool {
 }
 
 type RecipeStepProductCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MinimumQuantity                    *float64 `protobuf:"fixed64,1,opt,name=MinimumQuantity,proto3,oneof" json:"MinimumQuantity,omitempty"`
-	MinimumStorageTemperatureInCelsius *float64 `protobuf:"fixed64,2,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof" json:"MinimumStorageTemperatureInCelsius,omitempty"`
-	MaximumStorageDurationInSeconds    *uint32  `protobuf:"varint,3,opt,name=MaximumStorageDurationInSeconds,proto3,oneof" json:"MaximumStorageDurationInSeconds,omitempty"`
-	MeasurementUnitID                  *string  `protobuf:"bytes,4,opt,name=MeasurementUnitID,proto3,oneof" json:"MeasurementUnitID,omitempty"`
-	MaximumStorageTemperatureInCelsius *float64 `protobuf:"fixed64,5,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof" json:"MaximumStorageTemperatureInCelsius,omitempty"`
-	MaximumQuantity                    *float64 `protobuf:"fixed64,6,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	ContainedInVesselIndex             *uint32  `protobuf:"varint,7,opt,name=ContainedInVesselIndex,proto3,oneof" json:"ContainedInVesselIndex,omitempty"`
-	QuantityNotes                      string   `protobuf:"bytes,8,opt,name=QuantityNotes,proto3" json:"QuantityNotes,omitempty"`
-	Name                               string   `protobuf:"bytes,9,opt,name=Name,proto3" json:"Name,omitempty"`
-	StorageInstructions                string   `protobuf:"bytes,10,opt,name=StorageInstructions,proto3" json:"StorageInstructions,omitempty"`
-	Type                               string   `protobuf:"bytes,11,opt,name=Type,proto3" json:"Type,omitempty"`
-	Index                              uint32   `protobuf:"varint,12,opt,name=Index,proto3" json:"Index,omitempty"`
-	Compostable                        bool     `protobuf:"varint,13,opt,name=Compostable,proto3" json:"Compostable,omitempty"`
-	IsLiquid                           bool     `protobuf:"varint,14,opt,name=IsLiquid,proto3" json:"IsLiquid,omitempty"`
-	IsWaste                            bool     `protobuf:"varint,15,opt,name=IsWaste,proto3" json:"IsWaste,omitempty"`
+	MaximumQuantity                    *float64 `json:"MaximumQuantity,omitempty"        protobuf:"fixed64,6,opt,name=MaximumQuantity,proto3,oneof"`
+	MinimumQuantity                    *float64 `json:"MinimumQuantity,omitempty"        protobuf:"fixed64,1,opt,name=MinimumQuantity,proto3,oneof"`
+	ContainedInVesselIndex             *uint32  `json:"ContainedInVesselIndex,omitempty" protobuf:"varint,7,opt,name=ContainedInVesselIndex,proto3,oneof"`
+	state                              protoimpl.MessageState
+	MinimumStorageTemperatureInCelsius *float64 `json:"MinimumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,2,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof"`
+	MaximumStorageDurationInSeconds    *uint32  `json:"MaximumStorageDurationInSeconds,omitempty"    protobuf:"varint,3,opt,name=MaximumStorageDurationInSeconds,proto3,oneof"`
+	MeasurementUnitID                  *string  `json:"MeasurementUnitID,omitempty"                  protobuf:"bytes,4,opt,name=MeasurementUnitID,proto3,oneof"`
+	MaximumStorageTemperatureInCelsius *float64 `json:"MaximumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,5,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof"`
+	Type                               string   `json:"Type,omitempty"                               protobuf:"bytes,11,opt,name=Type,proto3"`
+	Name                               string   `json:"Name,omitempty"                               protobuf:"bytes,9,opt,name=Name,proto3"`
+	StorageInstructions                string   `json:"StorageInstructions,omitempty"                protobuf:"bytes,10,opt,name=StorageInstructions,proto3"`
+	QuantityNotes                      string   `json:"QuantityNotes,omitempty"                      protobuf:"bytes,8,opt,name=QuantityNotes,proto3"`
+	unknownFields                      protoimpl.UnknownFields
+	sizeCache                          protoimpl.SizeCache
+	Index                              uint32 `json:"Index,omitempty"       protobuf:"varint,12,opt,name=Index,proto3"`
+	IsWaste                            bool   `json:"IsWaste,omitempty"     protobuf:"varint,15,opt,name=IsWaste,proto3"`
+	Compostable                        bool   `json:"Compostable,omitempty" protobuf:"varint,13,opt,name=Compostable,proto3"`
+	IsLiquid                           bool   `json:"IsLiquid,omitempty"    protobuf:"varint,14,opt,name=IsLiquid,proto3"`
 }
 
 func (x *RecipeStepProductCreationRequestInput) Reset() {
@@ -9166,26 +9078,25 @@ func (x *RecipeStepProductCreationRequestInput) GetIsWaste() bool {
 }
 
 type RecipeStepProductUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name                               *string  `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Type                               *string  `protobuf:"bytes,2,opt,name=Type,proto3,oneof" json:"Type,omitempty"`
-	MeasurementUnitID                  *string  `protobuf:"bytes,3,opt,name=MeasurementUnitID,proto3,oneof" json:"MeasurementUnitID,omitempty"`
-	QuantityNotes                      *string  `protobuf:"bytes,4,opt,name=QuantityNotes,proto3,oneof" json:"QuantityNotes,omitempty"`
-	BelongsToRecipeStep                *string  `protobuf:"bytes,5,opt,name=BelongsToRecipeStep,proto3,oneof" json:"BelongsToRecipeStep,omitempty"`
-	MinimumQuantity                    *float64 `protobuf:"fixed64,6,opt,name=MinimumQuantity,proto3,oneof" json:"MinimumQuantity,omitempty"`
-	MaximumQuantity                    *float64 `protobuf:"fixed64,7,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	Compostable                        *bool    `protobuf:"varint,8,opt,name=Compostable,proto3,oneof" json:"Compostable,omitempty"`
-	MaximumStorageDurationInSeconds    *uint32  `protobuf:"varint,9,opt,name=MaximumStorageDurationInSeconds,proto3,oneof" json:"MaximumStorageDurationInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius *float64 `protobuf:"fixed64,10,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof" json:"MinimumStorageTemperatureInCelsius,omitempty"`
-	MaximumStorageTemperatureInCelsius *float64 `protobuf:"fixed64,11,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof" json:"MaximumStorageTemperatureInCelsius,omitempty"`
-	StorageInstructions                *string  `protobuf:"bytes,12,opt,name=StorageInstructions,proto3,oneof" json:"StorageInstructions,omitempty"`
-	IsLiquid                           *bool    `protobuf:"varint,13,opt,name=IsLiquid,proto3,oneof" json:"IsLiquid,omitempty"`
-	IsWaste                            *bool    `protobuf:"varint,14,opt,name=IsWaste,proto3,oneof" json:"IsWaste,omitempty"`
-	Index                              *uint32  `protobuf:"varint,15,opt,name=Index,proto3,oneof" json:"Index,omitempty"`
-	ContainedInVesselIndex             *uint32  `protobuf:"varint,16,opt,name=ContainedInVesselIndex,proto3,oneof" json:"ContainedInVesselIndex,omitempty"`
+	MinimumQuantity                    *float64 `json:"MinimumQuantity,omitempty"        protobuf:"fixed64,6,opt,name=MinimumQuantity,proto3,oneof"`
+	ContainedInVesselIndex             *uint32  `json:"ContainedInVesselIndex,omitempty" protobuf:"varint,16,opt,name=ContainedInVesselIndex,proto3,oneof"`
+	state                              protoimpl.MessageState
+	Name                               *string  `json:"Name,omitempty"                               protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	Type                               *string  `json:"Type,omitempty"                               protobuf:"bytes,2,opt,name=Type,proto3,oneof"`
+	MeasurementUnitID                  *string  `json:"MeasurementUnitID,omitempty"                  protobuf:"bytes,3,opt,name=MeasurementUnitID,proto3,oneof"`
+	QuantityNotes                      *string  `json:"QuantityNotes,omitempty"                      protobuf:"bytes,4,opt,name=QuantityNotes,proto3,oneof"`
+	BelongsToRecipeStep                *string  `json:"BelongsToRecipeStep,omitempty"                protobuf:"bytes,5,opt,name=BelongsToRecipeStep,proto3,oneof"`
+	MaximumQuantity                    *float64 `json:"MaximumQuantity,omitempty"                    protobuf:"fixed64,7,opt,name=MaximumQuantity,proto3,oneof"`
+	Index                              *uint32  `json:"Index,omitempty"                              protobuf:"varint,15,opt,name=Index,proto3,oneof"`
+	MaximumStorageDurationInSeconds    *uint32  `json:"MaximumStorageDurationInSeconds,omitempty"    protobuf:"varint,9,opt,name=MaximumStorageDurationInSeconds,proto3,oneof"`
+	Compostable                        *bool    `json:"Compostable,omitempty"                        protobuf:"varint,8,opt,name=Compostable,proto3,oneof"`
+	MinimumStorageTemperatureInCelsius *float64 `json:"MinimumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,10,opt,name=MinimumStorageTemperatureInCelsius,proto3,oneof"`
+	MaximumStorageTemperatureInCelsius *float64 `json:"MaximumStorageTemperatureInCelsius,omitempty" protobuf:"fixed64,11,opt,name=MaximumStorageTemperatureInCelsius,proto3,oneof"`
+	StorageInstructions                *string  `json:"StorageInstructions,omitempty"                protobuf:"bytes,12,opt,name=StorageInstructions,proto3,oneof"`
+	IsLiquid                           *bool    `json:"IsLiquid,omitempty"                           protobuf:"varint,13,opt,name=IsLiquid,proto3,oneof"`
+	IsWaste                            *bool    `json:"IsWaste,omitempty"                            protobuf:"varint,14,opt,name=IsWaste,proto3,oneof"`
+	unknownFields                      protoimpl.UnknownFields
+	sizeCache                          protoimpl.SizeCache
 }
 
 func (x *RecipeStepProductUpdateRequestInput) Reset() {
@@ -9333,31 +9244,30 @@ func (x *RecipeStepProductUpdateRequestInput) GetContainedInVesselIndex() uint32
 }
 
 type Recipe struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	InspiredByRecipeID       *string                `protobuf:"bytes,2,opt,name=InspiredByRecipeID,proto3,oneof" json:"InspiredByRecipeID,omitempty"`
-	LastUpdatedAt            *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt               *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	MaximumEstimatedPortions *float64               `protobuf:"fixed64,5,opt,name=MaximumEstimatedPortions,proto3,oneof" json:"MaximumEstimatedPortions,omitempty"`
-	PluralPortionName        string                 `protobuf:"bytes,6,opt,name=PluralPortionName,proto3" json:"PluralPortionName,omitempty"`
-	Description              string                 `protobuf:"bytes,7,opt,name=Description,proto3" json:"Description,omitempty"`
-	Name                     string                 `protobuf:"bytes,8,opt,name=Name,proto3" json:"Name,omitempty"`
-	PortionName              string                 `protobuf:"bytes,9,opt,name=PortionName,proto3" json:"PortionName,omitempty"`
-	ID                       string                 `protobuf:"bytes,10,opt,name=ID,proto3" json:"ID,omitempty"`
-	CreatedByUser            string                 `protobuf:"bytes,11,opt,name=CreatedByUser,proto3" json:"CreatedByUser,omitempty"`
-	Source                   string                 `protobuf:"bytes,12,opt,name=Source,proto3" json:"Source,omitempty"`
-	Slug                     string                 `protobuf:"bytes,13,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	YieldsComponentType      string                 `protobuf:"bytes,14,opt,name=YieldsComponentType,proto3" json:"YieldsComponentType,omitempty"`
-	PrepTasks                []*RecipePrepTask      `protobuf:"bytes,15,rep,name=PrepTasks,proto3" json:"PrepTasks,omitempty"`
-	Steps                    []*RecipeStep          `protobuf:"bytes,16,rep,name=Steps,proto3" json:"Steps,omitempty"`
-	Media                    []*RecipeMedia         `protobuf:"bytes,17,rep,name=Media,proto3" json:"Media,omitempty"`
-	SupportingRecipes        []*Recipe              `protobuf:"bytes,18,rep,name=SupportingRecipes,proto3" json:"SupportingRecipes,omitempty"`
-	MinimumEstimatedPortions float64                `protobuf:"fixed64,19,opt,name=MinimumEstimatedPortions,proto3" json:"MinimumEstimatedPortions,omitempty"`
-	SealOfApproval           bool                   `protobuf:"varint,20,opt,name=SealOfApproval,proto3" json:"SealOfApproval,omitempty"`
-	EligibleForMeals         bool                   `protobuf:"varint,21,opt,name=EligibleForMeals,proto3" json:"EligibleForMeals,omitempty"`
+	ArchivedAt               *timestamppb.Timestamp `json:"ArchivedAt,omitempty" protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof"`
+	state                    protoimpl.MessageState
+	MaximumEstimatedPortions *float64               `json:"MaximumEstimatedPortions,omitempty" protobuf:"fixed64,5,opt,name=MaximumEstimatedPortions,proto3,oneof"`
+	CreatedAt                *timestamppb.Timestamp `json:"CreatedAt,omitempty"                protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	InspiredByRecipeID       *string                `json:"InspiredByRecipeID,omitempty"       protobuf:"bytes,2,opt,name=InspiredByRecipeID,proto3,oneof"`
+	LastUpdatedAt            *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"            protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	ID                       string                 `json:"ID,omitempty"                       protobuf:"bytes,10,opt,name=ID,proto3"`
+	Slug                     string                 `json:"Slug,omitempty"                     protobuf:"bytes,13,opt,name=Slug,proto3"`
+	PluralPortionName        string                 `json:"PluralPortionName,omitempty"        protobuf:"bytes,6,opt,name=PluralPortionName,proto3"`
+	Description              string                 `json:"Description,omitempty"              protobuf:"bytes,7,opt,name=Description,proto3"`
+	Name                     string                 `json:"Name,omitempty"                     protobuf:"bytes,8,opt,name=Name,proto3"`
+	PortionName              string                 `json:"PortionName,omitempty"              protobuf:"bytes,9,opt,name=PortionName,proto3"`
+	YieldsComponentType      string                 `json:"YieldsComponentType,omitempty"      protobuf:"bytes,14,opt,name=YieldsComponentType,proto3"`
+	CreatedByUser            string                 `json:"CreatedByUser,omitempty"            protobuf:"bytes,11,opt,name=CreatedByUser,proto3"`
+	Source                   string                 `json:"Source,omitempty"                   protobuf:"bytes,12,opt,name=Source,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	PrepTasks                []*RecipePrepTask `json:"PrepTasks,omitempty"                protobuf:"bytes,15,rep,name=PrepTasks,proto3"`
+	Steps                    []*RecipeStep     `json:"Steps,omitempty"                    protobuf:"bytes,16,rep,name=Steps,proto3"`
+	Media                    []*RecipeMedia    `json:"Media,omitempty"                    protobuf:"bytes,17,rep,name=Media,proto3"`
+	SupportingRecipes        []*Recipe         `json:"SupportingRecipes,omitempty"        protobuf:"bytes,18,rep,name=SupportingRecipes,proto3"`
+	MinimumEstimatedPortions float64           `json:"MinimumEstimatedPortions,omitempty" protobuf:"fixed64,19,opt,name=MinimumEstimatedPortions,proto3"`
+	sizeCache                protoimpl.SizeCache
+	SealOfApproval           bool `json:"SealOfApproval,omitempty"   protobuf:"varint,20,opt,name=SealOfApproval,proto3"`
+	EligibleForMeals         bool `json:"EligibleForMeals,omitempty" protobuf:"varint,21,opt,name=EligibleForMeals,proto3"`
 }
 
 func (x *Recipe) Reset() {
@@ -9540,25 +9450,24 @@ func (x *Recipe) GetEligibleForMeals() bool {
 }
 
 type RecipeCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	InspiredByRecipeID       *string                                           `protobuf:"bytes,1,opt,name=InspiredByRecipeID,proto3,oneof" json:"InspiredByRecipeID,omitempty"`
-	MaximumEstimatedPortions *float64                                          `protobuf:"fixed64,2,opt,name=MaximumEstimatedPortions,proto3,oneof" json:"MaximumEstimatedPortions,omitempty"`
-	PortionName              string                                            `protobuf:"bytes,3,opt,name=PortionName,proto3" json:"PortionName,omitempty"`
-	Source                   string                                            `protobuf:"bytes,4,opt,name=Source,proto3" json:"Source,omitempty"`
-	Description              string                                            `protobuf:"bytes,5,opt,name=Description,proto3" json:"Description,omitempty"`
-	PluralPortionName        string                                            `protobuf:"bytes,6,opt,name=PluralPortionName,proto3" json:"PluralPortionName,omitempty"`
-	Name                     string                                            `protobuf:"bytes,7,opt,name=Name,proto3" json:"Name,omitempty"`
-	Slug                     string                                            `protobuf:"bytes,8,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	YieldsComponentType      string                                            `protobuf:"bytes,9,opt,name=YieldsComponentType,proto3" json:"YieldsComponentType,omitempty"`
-	PrepTasks                []*RecipePrepTaskWithinRecipeCreationRequestInput `protobuf:"bytes,10,rep,name=PrepTasks,proto3" json:"PrepTasks,omitempty"`
-	Steps                    []*RecipeStepCreationRequestInput                 `protobuf:"bytes,11,rep,name=Steps,proto3" json:"Steps,omitempty"`
-	MinimumEstimatedPortions float64                                           `protobuf:"fixed64,12,opt,name=MinimumEstimatedPortions,proto3" json:"MinimumEstimatedPortions,omitempty"`
-	AlsoCreateMeal           bool                                              `protobuf:"varint,13,opt,name=AlsoCreateMeal,proto3" json:"AlsoCreateMeal,omitempty"`
-	SealOfApproval           bool                                              `protobuf:"varint,14,opt,name=SealOfApproval,proto3" json:"SealOfApproval,omitempty"`
-	EligibleForMeals         bool                                              `protobuf:"varint,15,opt,name=EligibleForMeals,proto3" json:"EligibleForMeals,omitempty"`
+	InspiredByRecipeID       *string `json:"InspiredByRecipeID,omitempty" protobuf:"bytes,1,opt,name=InspiredByRecipeID,proto3,oneof"`
+	state                    protoimpl.MessageState
+	MaximumEstimatedPortions *float64 `json:"MaximumEstimatedPortions,omitempty" protobuf:"fixed64,2,opt,name=MaximumEstimatedPortions,proto3,oneof"`
+	PluralPortionName        string   `json:"PluralPortionName,omitempty"        protobuf:"bytes,6,opt,name=PluralPortionName,proto3"`
+	Slug                     string   `json:"Slug,omitempty"                     protobuf:"bytes,8,opt,name=Slug,proto3"`
+	PortionName              string   `json:"PortionName,omitempty"              protobuf:"bytes,3,opt,name=PortionName,proto3"`
+	Source                   string   `json:"Source,omitempty"                   protobuf:"bytes,4,opt,name=Source,proto3"`
+	Description              string   `json:"Description,omitempty"              protobuf:"bytes,5,opt,name=Description,proto3"`
+	YieldsComponentType      string   `json:"YieldsComponentType,omitempty"      protobuf:"bytes,9,opt,name=YieldsComponentType,proto3"`
+	Name                     string   `json:"Name,omitempty"                     protobuf:"bytes,7,opt,name=Name,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	PrepTasks                []*RecipePrepTaskWithinRecipeCreationRequestInput `json:"PrepTasks,omitempty"                protobuf:"bytes,10,rep,name=PrepTasks,proto3"`
+	Steps                    []*RecipeStepCreationRequestInput                 `json:"Steps,omitempty"                    protobuf:"bytes,11,rep,name=Steps,proto3"`
+	MinimumEstimatedPortions float64                                           `json:"MinimumEstimatedPortions,omitempty" protobuf:"fixed64,12,opt,name=MinimumEstimatedPortions,proto3"`
+	sizeCache                protoimpl.SizeCache
+	AlsoCreateMeal           bool `json:"AlsoCreateMeal,omitempty"   protobuf:"varint,13,opt,name=AlsoCreateMeal,proto3"`
+	SealOfApproval           bool `json:"SealOfApproval,omitempty"   protobuf:"varint,14,opt,name=SealOfApproval,proto3"`
+	EligibleForMeals         bool `json:"EligibleForMeals,omitempty" protobuf:"varint,15,opt,name=EligibleForMeals,proto3"`
 }
 
 func (x *RecipeCreationRequestInput) Reset() {
@@ -9699,22 +9608,21 @@ func (x *RecipeCreationRequestInput) GetEligibleForMeals() bool {
 }
 
 type RecipeUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name                     *string  `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Slug                     *string  `protobuf:"bytes,2,opt,name=Slug,proto3,oneof" json:"Slug,omitempty"`
-	Source                   *string  `protobuf:"bytes,3,opt,name=Source,proto3,oneof" json:"Source,omitempty"`
-	Description              *string  `protobuf:"bytes,4,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	InspiredByRecipeID       *string  `protobuf:"bytes,5,opt,name=InspiredByRecipeID,proto3,oneof" json:"InspiredByRecipeID,omitempty"`
-	SealOfApproval           *bool    `protobuf:"varint,6,opt,name=SealOfApproval,proto3,oneof" json:"SealOfApproval,omitempty"`
-	MinimumEstimatedPortions *float64 `protobuf:"fixed64,7,opt,name=MinimumEstimatedPortions,proto3,oneof" json:"MinimumEstimatedPortions,omitempty"`
-	MaximumEstimatedPortions *float64 `protobuf:"fixed64,8,opt,name=MaximumEstimatedPortions,proto3,oneof" json:"MaximumEstimatedPortions,omitempty"`
-	PortionName              *string  `protobuf:"bytes,9,opt,name=PortionName,proto3,oneof" json:"PortionName,omitempty"`
-	PluralPortionName        *string  `protobuf:"bytes,10,opt,name=PluralPortionName,proto3,oneof" json:"PluralPortionName,omitempty"`
-	EligibleForMeals         *bool    `protobuf:"varint,11,opt,name=EligibleForMeals,proto3,oneof" json:"EligibleForMeals,omitempty"`
-	YieldsComponentType      *string  `protobuf:"bytes,12,opt,name=YieldsComponentType,proto3,oneof" json:"YieldsComponentType,omitempty"`
+	Description              *string `json:"Description,omitempty"         protobuf:"bytes,4,opt,name=Description,proto3,oneof"`
+	SealOfApproval           *bool   `json:"SealOfApproval,omitempty"      protobuf:"varint,6,opt,name=SealOfApproval,proto3,oneof"`
+	YieldsComponentType      *string `json:"YieldsComponentType,omitempty" protobuf:"bytes,12,opt,name=YieldsComponentType,proto3,oneof"`
+	Name                     *string `json:"Name,omitempty"                protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	Slug                     *string `json:"Slug,omitempty"                protobuf:"bytes,2,opt,name=Slug,proto3,oneof"`
+	Source                   *string `json:"Source,omitempty"              protobuf:"bytes,3,opt,name=Source,proto3,oneof"`
+	EligibleForMeals         *bool   `json:"EligibleForMeals,omitempty"    protobuf:"varint,11,opt,name=EligibleForMeals,proto3,oneof"`
+	InspiredByRecipeID       *string `json:"InspiredByRecipeID,omitempty"  protobuf:"bytes,5,opt,name=InspiredByRecipeID,proto3,oneof"`
+	state                    protoimpl.MessageState
+	MinimumEstimatedPortions *float64 `json:"MinimumEstimatedPortions,omitempty" protobuf:"fixed64,7,opt,name=MinimumEstimatedPortions,proto3,oneof"`
+	MaximumEstimatedPortions *float64 `json:"MaximumEstimatedPortions,omitempty" protobuf:"fixed64,8,opt,name=MaximumEstimatedPortions,proto3,oneof"`
+	PortionName              *string  `json:"PortionName,omitempty"              protobuf:"bytes,9,opt,name=PortionName,proto3,oneof"`
+	PluralPortionName        *string  `json:"PluralPortionName,omitempty"        protobuf:"bytes,10,opt,name=PluralPortionName,proto3,oneof"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *RecipeUpdateRequestInput) Reset() {
@@ -9835,18 +9743,17 @@ func (x *RecipeUpdateRequestInput) GetYieldsComponentType() string {
 
 type UserIngredientPreference struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty"    protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	Ingredient    *ValidIngredient       `json:"Ingredient,omitempty"    protobuf:"bytes,7,opt,name=Ingredient,proto3"`
+	ID            string                 `json:"ID,omitempty"            protobuf:"bytes,4,opt,name=ID,proto3"`
+	Notes         string                 `json:"Notes,omitempty"         protobuf:"bytes,5,opt,name=Notes,proto3"`
+	BelongsToUser string                 `json:"BelongsToUser,omitempty" protobuf:"bytes,6,opt,name=BelongsToUser,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID            string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	Notes         string                 `protobuf:"bytes,5,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	BelongsToUser string                 `protobuf:"bytes,6,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
-	Ingredient    *ValidIngredient       `protobuf:"bytes,7,opt,name=Ingredient,proto3" json:"Ingredient,omitempty"`
-	Rating        int32                  `protobuf:"varint,8,opt,name=Rating,proto3" json:"Rating,omitempty"`
-	Allergy       bool                   `protobuf:"varint,9,opt,name=Allergy,proto3" json:"Allergy,omitempty"`
+	sizeCache     protoimpl.SizeCache
+	Rating        int32 `json:"Rating,omitempty"  protobuf:"varint,8,opt,name=Rating,proto3"`
+	Allergy       bool  `json:"Allergy,omitempty" protobuf:"varint,9,opt,name=Allergy,proto3"`
 }
 
 func (x *UserIngredientPreference) Reset() {
@@ -9945,15 +9852,14 @@ func (x *UserIngredientPreference) GetAllergy() bool {
 }
 
 type UserIngredientPreferenceCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ValidIngredientGroupID string `protobuf:"bytes,1,opt,name=ValidIngredientGroupID,proto3" json:"ValidIngredientGroupID,omitempty"`
-	ValidIngredientID      string `protobuf:"bytes,2,opt,name=ValidIngredientID,proto3" json:"ValidIngredientID,omitempty"`
-	Notes                  string `protobuf:"bytes,3,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Rating                 int32  `protobuf:"varint,4,opt,name=Rating,proto3" json:"Rating,omitempty"`
-	Allergy                bool   `protobuf:"varint,5,opt,name=Allergy,proto3" json:"Allergy,omitempty"`
+	state                  protoimpl.MessageState
+	ValidIngredientGroupID string `json:"ValidIngredientGroupID,omitempty" protobuf:"bytes,1,opt,name=ValidIngredientGroupID,proto3"`
+	ValidIngredientID      string `json:"ValidIngredientID,omitempty"      protobuf:"bytes,2,opt,name=ValidIngredientID,proto3"`
+	Notes                  string `json:"Notes,omitempty"                  protobuf:"bytes,3,opt,name=Notes,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+	Rating                 int32 `json:"Rating,omitempty"  protobuf:"varint,4,opt,name=Rating,proto3"`
+	Allergy                bool  `json:"Allergy,omitempty" protobuf:"varint,5,opt,name=Allergy,proto3"`
 }
 
 func (x *UserIngredientPreferenceCreationRequestInput) Reset() {
@@ -10025,13 +9931,12 @@ func (x *UserIngredientPreferenceCreationRequestInput) GetAllergy() bool {
 
 type UserIngredientPreferenceUpdateRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Notes         *string `json:"Notes,omitempty"        protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	IngredientID  *string `json:"IngredientID,omitempty" protobuf:"bytes,2,opt,name=IngredientID,proto3,oneof"`
+	Rating        *int32  `json:"Rating,omitempty"       protobuf:"varint,3,opt,name=Rating,proto3,oneof"`
+	Allergy       *bool   `json:"Allergy,omitempty"      protobuf:"varint,4,opt,name=Allergy,proto3,oneof"`
 	unknownFields protoimpl.UnknownFields
-
-	Notes        *string `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	IngredientID *string `protobuf:"bytes,2,opt,name=IngredientID,proto3,oneof" json:"IngredientID,omitempty"`
-	Rating       *int32  `protobuf:"varint,3,opt,name=Rating,proto3,oneof" json:"Rating,omitempty"`
-	Allergy      *bool   `protobuf:"varint,4,opt,name=Allergy,proto3,oneof" json:"Allergy,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UserIngredientPreferenceUpdateRequestInput) Reset() {
@@ -10095,25 +10000,24 @@ func (x *UserIngredientPreferenceUpdateRequestInput) GetAllergy() bool {
 }
 
 type MealPlanGroceryListItem struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	MaximumQuantityNeeded    *float64               `protobuf:"fixed64,2,opt,name=MaximumQuantityNeeded,proto3,oneof" json:"MaximumQuantityNeeded,omitempty"`
-	LastUpdatedAt            *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	PurchasePrice            *float64               `protobuf:"fixed64,4,opt,name=PurchasePrice,proto3,oneof" json:"PurchasePrice,omitempty"`
-	PurchasedUPC             *string                `protobuf:"bytes,5,opt,name=PurchasedUPC,proto3,oneof" json:"PurchasedUPC,omitempty"`
-	ArchivedAt               *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	QuantityPurchased        *float64               `protobuf:"fixed64,7,opt,name=QuantityPurchased,proto3,oneof" json:"QuantityPurchased,omitempty"`
-	PurchasedMeasurementUnit *ValidMeasurementUnit  `protobuf:"bytes,8,opt,name=PurchasedMeasurementUnit,proto3,oneof" json:"PurchasedMeasurementUnit,omitempty"`
-	BelongsToMealPlan        string                 `protobuf:"bytes,9,opt,name=BelongsToMealPlan,proto3" json:"BelongsToMealPlan,omitempty"`
-	Status                   string                 `protobuf:"bytes,10,opt,name=Status,proto3" json:"Status,omitempty"`
-	StatusExplanation        string                 `protobuf:"bytes,11,opt,name=StatusExplanation,proto3" json:"StatusExplanation,omitempty"`
-	ID                       string                 `protobuf:"bytes,12,opt,name=ID,proto3" json:"ID,omitempty"`
-	MeasurementUnit          *ValidMeasurementUnit  `protobuf:"bytes,13,opt,name=MeasurementUnit,proto3" json:"MeasurementUnit,omitempty"`
-	Ingredient               *ValidIngredient       `protobuf:"bytes,14,opt,name=Ingredient,proto3" json:"Ingredient,omitempty"`
-	MinimumQuantityNeeded    float64                `protobuf:"fixed64,15,opt,name=MinimumQuantityNeeded,proto3" json:"MinimumQuantityNeeded,omitempty"`
+	ArchivedAt               *timestamppb.Timestamp `json:"ArchivedAt,omitempty"               protobuf:"bytes,6,opt,name=ArchivedAt,proto3,oneof"`
+	MeasurementUnit          *ValidMeasurementUnit  `json:"MeasurementUnit,omitempty"          protobuf:"bytes,13,opt,name=MeasurementUnit,proto3"`
+	QuantityPurchased        *float64               `json:"QuantityPurchased,omitempty"        protobuf:"fixed64,7,opt,name=QuantityPurchased,proto3,oneof"`
+	PurchasedMeasurementUnit *ValidMeasurementUnit  `json:"PurchasedMeasurementUnit,omitempty" protobuf:"bytes,8,opt,name=PurchasedMeasurementUnit,proto3,oneof"`
+	MaximumQuantityNeeded    *float64               `json:"MaximumQuantityNeeded,omitempty"    protobuf:"fixed64,2,opt,name=MaximumQuantityNeeded,proto3,oneof"`
+	LastUpdatedAt            *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"            protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	PurchasePrice            *float64               `json:"PurchasePrice,omitempty"            protobuf:"fixed64,4,opt,name=PurchasePrice,proto3,oneof"`
+	PurchasedUPC             *string                `json:"PurchasedUPC,omitempty"             protobuf:"bytes,5,opt,name=PurchasedUPC,proto3,oneof"`
+	state                    protoimpl.MessageState
+	Ingredient               *ValidIngredient       `json:"Ingredient,omitempty"        protobuf:"bytes,14,opt,name=Ingredient,proto3"`
+	CreatedAt                *timestamppb.Timestamp `json:"CreatedAt,omitempty"         protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	StatusExplanation        string                 `json:"StatusExplanation,omitempty" protobuf:"bytes,11,opt,name=StatusExplanation,proto3"`
+	Status                   string                 `json:"Status,omitempty"            protobuf:"bytes,10,opt,name=Status,proto3"`
+	ID                       string                 `json:"ID,omitempty"                protobuf:"bytes,12,opt,name=ID,proto3"`
+	BelongsToMealPlan        string                 `json:"BelongsToMealPlan,omitempty" protobuf:"bytes,9,opt,name=BelongsToMealPlan,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	MinimumQuantityNeeded    float64 `json:"MinimumQuantityNeeded,omitempty" protobuf:"fixed64,15,opt,name=MinimumQuantityNeeded,proto3"`
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *MealPlanGroceryListItem) Reset() {
@@ -10254,21 +10158,20 @@ func (x *MealPlanGroceryListItem) GetMinimumQuantityNeeded() float64 {
 }
 
 type MealPlanGroceryListItemCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	PurchasedMeasurementUnitID *string  `protobuf:"bytes,1,opt,name=PurchasedMeasurementUnitID,proto3,oneof" json:"PurchasedMeasurementUnitID,omitempty"`
-	PurchasedUPC               *string  `protobuf:"bytes,2,opt,name=PurchasedUPC,proto3,oneof" json:"PurchasedUPC,omitempty"`
-	PurchasePrice              *float64 `protobuf:"fixed64,3,opt,name=PurchasePrice,proto3,oneof" json:"PurchasePrice,omitempty"`
-	QuantityPurchased          *float64 `protobuf:"fixed64,4,opt,name=QuantityPurchased,proto3,oneof" json:"QuantityPurchased,omitempty"`
-	MaximumQuantityNeeded      *float64 `protobuf:"fixed64,5,opt,name=MaximumQuantityNeeded,proto3,oneof" json:"MaximumQuantityNeeded,omitempty"`
-	Status                     string   `protobuf:"bytes,6,opt,name=Status,proto3" json:"Status,omitempty"`
-	BelongsToMealPlan          string   `protobuf:"bytes,7,opt,name=BelongsToMealPlan,proto3" json:"BelongsToMealPlan,omitempty"`
-	ValidIngredientID          string   `protobuf:"bytes,8,opt,name=ValidIngredientID,proto3" json:"ValidIngredientID,omitempty"`
-	ValidMeasurementUnitID     string   `protobuf:"bytes,9,opt,name=ValidMeasurementUnitID,proto3" json:"ValidMeasurementUnitID,omitempty"`
-	StatusExplanation          string   `protobuf:"bytes,10,opt,name=StatusExplanation,proto3" json:"StatusExplanation,omitempty"`
-	MinimumQuantityNeeded      float64  `protobuf:"fixed64,11,opt,name=MinimumQuantityNeeded,proto3" json:"MinimumQuantityNeeded,omitempty"`
+	QuantityPurchased          *float64 `json:"QuantityPurchased,omitempty" protobuf:"fixed64,4,opt,name=QuantityPurchased,proto3,oneof"`
+	state                      protoimpl.MessageState
+	MaximumQuantityNeeded      *float64 `json:"MaximumQuantityNeeded,omitempty"      protobuf:"fixed64,5,opt,name=MaximumQuantityNeeded,proto3,oneof"`
+	PurchasedMeasurementUnitID *string  `json:"PurchasedMeasurementUnitID,omitempty" protobuf:"bytes,1,opt,name=PurchasedMeasurementUnitID,proto3,oneof"`
+	PurchasedUPC               *string  `json:"PurchasedUPC,omitempty"               protobuf:"bytes,2,opt,name=PurchasedUPC,proto3,oneof"`
+	PurchasePrice              *float64 `json:"PurchasePrice,omitempty"              protobuf:"fixed64,3,opt,name=PurchasePrice,proto3,oneof"`
+	ValidIngredientID          string   `json:"ValidIngredientID,omitempty"          protobuf:"bytes,8,opt,name=ValidIngredientID,proto3"`
+	BelongsToMealPlan          string   `json:"BelongsToMealPlan,omitempty"          protobuf:"bytes,7,opt,name=BelongsToMealPlan,proto3"`
+	Status                     string   `json:"Status,omitempty"                     protobuf:"bytes,6,opt,name=Status,proto3"`
+	ValidMeasurementUnitID     string   `json:"ValidMeasurementUnitID,omitempty"     protobuf:"bytes,9,opt,name=ValidMeasurementUnitID,proto3"`
+	StatusExplanation          string   `json:"StatusExplanation,omitempty"          protobuf:"bytes,10,opt,name=StatusExplanation,proto3"`
+	unknownFields              protoimpl.UnknownFields
+	MinimumQuantityNeeded      float64 `json:"MinimumQuantityNeeded,omitempty" protobuf:"fixed64,11,opt,name=MinimumQuantityNeeded,proto3"`
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *MealPlanGroceryListItemCreationRequestInput) Reset() {
@@ -10381,21 +10284,20 @@ func (x *MealPlanGroceryListItemCreationRequestInput) GetMinimumQuantityNeeded()
 }
 
 type MealPlanGroceryListItemUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MaximumQuantityNeeded      *float64 `protobuf:"fixed64,1,opt,name=MaximumQuantityNeeded,proto3,oneof" json:"MaximumQuantityNeeded,omitempty"`
-	BelongsToMealPlan          *string  `protobuf:"bytes,2,opt,name=BelongsToMealPlan,proto3,oneof" json:"BelongsToMealPlan,omitempty"`
-	ValidIngredientID          *string  `protobuf:"bytes,3,opt,name=ValidIngredientID,proto3,oneof" json:"ValidIngredientID,omitempty"`
-	ValidMeasurementUnitID     *string  `protobuf:"bytes,4,opt,name=ValidMeasurementUnitID,proto3,oneof" json:"ValidMeasurementUnitID,omitempty"`
-	MinimumQuantityNeeded      *float64 `protobuf:"fixed64,5,opt,name=MinimumQuantityNeeded,proto3,oneof" json:"MinimumQuantityNeeded,omitempty"`
-	StatusExplanation          *string  `protobuf:"bytes,6,opt,name=StatusExplanation,proto3,oneof" json:"StatusExplanation,omitempty"`
-	QuantityPurchased          *float64 `protobuf:"fixed64,7,opt,name=QuantityPurchased,proto3,oneof" json:"QuantityPurchased,omitempty"`
-	PurchasedMeasurementUnitID *string  `protobuf:"bytes,8,opt,name=PurchasedMeasurementUnitID,proto3,oneof" json:"PurchasedMeasurementUnitID,omitempty"`
-	PurchasedUPC               *string  `protobuf:"bytes,9,opt,name=PurchasedUPC,proto3,oneof" json:"PurchasedUPC,omitempty"`
-	PurchasePrice              *float64 `protobuf:"fixed64,10,opt,name=PurchasePrice,proto3,oneof" json:"PurchasePrice,omitempty"`
-	Status                     *string  `protobuf:"bytes,11,opt,name=Status,proto3,oneof" json:"Status,omitempty"`
+	ValidMeasurementUnitID     *string `json:"ValidMeasurementUnitID,omitempty" protobuf:"bytes,4,opt,name=ValidMeasurementUnitID,proto3,oneof"`
+	state                      protoimpl.MessageState
+	Status                     *string  `json:"Status,omitempty"                     protobuf:"bytes,11,opt,name=Status,proto3,oneof"`
+	MaximumQuantityNeeded      *float64 `json:"MaximumQuantityNeeded,omitempty"      protobuf:"fixed64,1,opt,name=MaximumQuantityNeeded,proto3,oneof"`
+	BelongsToMealPlan          *string  `json:"BelongsToMealPlan,omitempty"          protobuf:"bytes,2,opt,name=BelongsToMealPlan,proto3,oneof"`
+	ValidIngredientID          *string  `json:"ValidIngredientID,omitempty"          protobuf:"bytes,3,opt,name=ValidIngredientID,proto3,oneof"`
+	PurchasePrice              *float64 `json:"PurchasePrice,omitempty"              protobuf:"fixed64,10,opt,name=PurchasePrice,proto3,oneof"`
+	MinimumQuantityNeeded      *float64 `json:"MinimumQuantityNeeded,omitempty"      protobuf:"fixed64,5,opt,name=MinimumQuantityNeeded,proto3,oneof"`
+	PurchasedMeasurementUnitID *string  `json:"PurchasedMeasurementUnitID,omitempty" protobuf:"bytes,8,opt,name=PurchasedMeasurementUnitID,proto3,oneof"`
+	QuantityPurchased          *float64 `json:"QuantityPurchased,omitempty"          protobuf:"fixed64,7,opt,name=QuantityPurchased,proto3,oneof"`
+	StatusExplanation          *string  `json:"StatusExplanation,omitempty"          protobuf:"bytes,6,opt,name=StatusExplanation,proto3,oneof"`
+	PurchasedUPC               *string  `json:"PurchasedUPC,omitempty"               protobuf:"bytes,9,opt,name=PurchasedUPC,proto3,oneof"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *MealPlanGroceryListItemUpdateRequestInput) Reset() {
@@ -10508,23 +10410,22 @@ func (x *MealPlanGroceryListItemUpdateRequestInput) GetStatus() string {
 }
 
 type MealPlan struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt              *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	VotingDeadline         *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=VotingDeadline,proto3" json:"VotingDeadline,omitempty"`
-	ArchivedAt             *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt          *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ID                     string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	Status                 string                 `protobuf:"bytes,6,opt,name=Status,proto3" json:"Status,omitempty"`
-	Notes                  string                 `protobuf:"bytes,7,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ElectionMethod         string                 `protobuf:"bytes,8,opt,name=ElectionMethod,proto3" json:"ElectionMethod,omitempty"`
-	BelongsToHousehold     string                 `protobuf:"bytes,9,opt,name=BelongsToHousehold,proto3" json:"BelongsToHousehold,omitempty"`
-	CreatedByUser          string                 `protobuf:"bytes,10,opt,name=CreatedByUser,proto3" json:"CreatedByUser,omitempty"`
-	Events                 []*MealPlanEvent       `protobuf:"bytes,11,rep,name=Events,proto3" json:"Events,omitempty"`
-	GroceryListInitialized bool                   `protobuf:"varint,12,opt,name=GroceryListInitialized,proto3" json:"GroceryListInitialized,omitempty"`
-	TasksCreated           bool                   `protobuf:"varint,13,opt,name=TasksCreated,proto3" json:"TasksCreated,omitempty"`
+	ArchivedAt             *timestamppb.Timestamp `json:"ArchivedAt,omitempty" protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	state                  protoimpl.MessageState
+	LastUpdatedAt          *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"      protobuf:"bytes,4,opt,name=LastUpdatedAt,proto3,oneof"`
+	CreatedAt              *timestamppb.Timestamp `json:"CreatedAt,omitempty"          protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	VotingDeadline         *timestamppb.Timestamp `json:"VotingDeadline,omitempty"     protobuf:"bytes,2,opt,name=VotingDeadline,proto3"`
+	Status                 string                 `json:"Status,omitempty"             protobuf:"bytes,6,opt,name=Status,proto3"`
+	ID                     string                 `json:"ID,omitempty"                 protobuf:"bytes,5,opt,name=ID,proto3"`
+	Notes                  string                 `json:"Notes,omitempty"              protobuf:"bytes,7,opt,name=Notes,proto3"`
+	ElectionMethod         string                 `json:"ElectionMethod,omitempty"     protobuf:"bytes,8,opt,name=ElectionMethod,proto3"`
+	BelongsToHousehold     string                 `json:"BelongsToHousehold,omitempty" protobuf:"bytes,9,opt,name=BelongsToHousehold,proto3"`
+	CreatedByUser          string                 `json:"CreatedByUser,omitempty"      protobuf:"bytes,10,opt,name=CreatedByUser,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	Events                 []*MealPlanEvent `json:"Events,omitempty" protobuf:"bytes,11,rep,name=Events,proto3"`
+	sizeCache              protoimpl.SizeCache
+	GroceryListInitialized bool `json:"GroceryListInitialized,omitempty" protobuf:"varint,12,opt,name=GroceryListInitialized,proto3"`
+	TasksCreated           bool `json:"TasksCreated,omitempty"           protobuf:"varint,13,opt,name=TasksCreated,proto3"`
 }
 
 func (x *MealPlan) Reset() {
@@ -10651,14 +10552,13 @@ func (x *MealPlan) GetTasksCreated() bool {
 }
 
 type MealPlanCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	VotingDeadline *timestamppb.Timestamp               `protobuf:"bytes,1,opt,name=VotingDeadline,proto3" json:"VotingDeadline,omitempty"`
-	Notes          string                               `protobuf:"bytes,2,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ElectionMethod string                               `protobuf:"bytes,3,opt,name=ElectionMethod,proto3" json:"ElectionMethod,omitempty"`
-	Events         []*MealPlanEventCreationRequestInput `protobuf:"bytes,4,rep,name=Events,proto3" json:"Events,omitempty"`
+	state          protoimpl.MessageState
+	VotingDeadline *timestamppb.Timestamp `json:"VotingDeadline,omitempty" protobuf:"bytes,1,opt,name=VotingDeadline,proto3"`
+	Notes          string                 `json:"Notes,omitempty"          protobuf:"bytes,2,opt,name=Notes,proto3"`
+	ElectionMethod string                 `json:"ElectionMethod,omitempty" protobuf:"bytes,3,opt,name=ElectionMethod,proto3"`
+	unknownFields  protoimpl.UnknownFields
+	Events         []*MealPlanEventCreationRequestInput `json:"Events,omitempty" protobuf:"bytes,4,rep,name=Events,proto3"`
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *MealPlanCreationRequestInput) Reset() {
@@ -10722,12 +10622,11 @@ func (x *MealPlanCreationRequestInput) GetEvents() []*MealPlanEventCreationReque
 }
 
 type MealPlanUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes          *string                `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	VotingDeadline *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=VotingDeadline,proto3,oneof" json:"VotingDeadline,omitempty"`
+	state          protoimpl.MessageState
+	Notes          *string                `json:"Notes,omitempty"          protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	VotingDeadline *timestamppb.Timestamp `json:"VotingDeadline,omitempty" protobuf:"bytes,2,opt,name=VotingDeadline,proto3,oneof"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *MealPlanUpdateRequestInput) Reset() {
@@ -10777,19 +10676,18 @@ func (x *MealPlanUpdateRequestInput) GetVotingDeadline() *timestamppb.Timestamp 
 }
 
 type ValidMeasurementUnitConversion struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt        *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	OnlyForIngredient *ValidIngredient       `protobuf:"bytes,4,opt,name=OnlyForIngredient,proto3,oneof" json:"OnlyForIngredient,omitempty"`
-	Notes             string                 `protobuf:"bytes,5,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ID                string                 `protobuf:"bytes,6,opt,name=ID,proto3" json:"ID,omitempty"`
-	From              *ValidMeasurementUnit  `protobuf:"bytes,7,opt,name=From,proto3" json:"From,omitempty"`
-	To                *ValidMeasurementUnit  `protobuf:"bytes,8,opt,name=To,proto3" json:"To,omitempty"`
-	Modifier          float64                `protobuf:"fixed64,9,opt,name=Modifier,proto3" json:"Modifier,omitempty"`
+	state             protoimpl.MessageState
+	CreatedAt         *timestamppb.Timestamp `json:"CreatedAt,omitempty"         protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt     *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"     protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt        *timestamppb.Timestamp `json:"ArchivedAt,omitempty"        protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	OnlyForIngredient *ValidIngredient       `json:"OnlyForIngredient,omitempty" protobuf:"bytes,4,opt,name=OnlyForIngredient,proto3,oneof"`
+	From              *ValidMeasurementUnit  `json:"From,omitempty"              protobuf:"bytes,7,opt,name=From,proto3"`
+	To                *ValidMeasurementUnit  `json:"To,omitempty"                protobuf:"bytes,8,opt,name=To,proto3"`
+	Notes             string                 `json:"Notes,omitempty"             protobuf:"bytes,5,opt,name=Notes,proto3"`
+	ID                string                 `json:"ID,omitempty"                protobuf:"bytes,6,opt,name=ID,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	Modifier          float64 `json:"Modifier,omitempty" protobuf:"fixed64,9,opt,name=Modifier,proto3"`
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ValidMeasurementUnitConversion) Reset() {
@@ -10888,15 +10786,14 @@ func (x *ValidMeasurementUnitConversion) GetModifier() float64 {
 }
 
 type ValidMeasurementUnitConversionCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	OnlyForIngredient *string `protobuf:"bytes,1,opt,name=OnlyForIngredient,proto3,oneof" json:"OnlyForIngredient,omitempty"`
-	From              string  `protobuf:"bytes,2,opt,name=From,proto3" json:"From,omitempty"`
-	To                string  `protobuf:"bytes,3,opt,name=To,proto3" json:"To,omitempty"`
-	Notes             string  `protobuf:"bytes,4,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Modifier          float64 `protobuf:"fixed64,5,opt,name=Modifier,proto3" json:"Modifier,omitempty"`
+	state             protoimpl.MessageState
+	OnlyForIngredient *string `json:"OnlyForIngredient,omitempty" protobuf:"bytes,1,opt,name=OnlyForIngredient,proto3,oneof"`
+	From              string  `json:"From,omitempty"              protobuf:"bytes,2,opt,name=From,proto3"`
+	To                string  `json:"To,omitempty"                protobuf:"bytes,3,opt,name=To,proto3"`
+	Notes             string  `json:"Notes,omitempty"             protobuf:"bytes,4,opt,name=Notes,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	Modifier          float64 `json:"Modifier,omitempty" protobuf:"fixed64,5,opt,name=Modifier,proto3"`
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ValidMeasurementUnitConversionCreationRequestInput) Reset() {
@@ -10967,15 +10864,14 @@ func (x *ValidMeasurementUnitConversionCreationRequestInput) GetModifier() float
 }
 
 type ValidMeasurementUnitConversionUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	From              *string  `protobuf:"bytes,1,opt,name=From,proto3,oneof" json:"From,omitempty"`
-	To                *string  `protobuf:"bytes,2,opt,name=To,proto3,oneof" json:"To,omitempty"`
-	OnlyForIngredient *string  `protobuf:"bytes,3,opt,name=OnlyForIngredient,proto3,oneof" json:"OnlyForIngredient,omitempty"`
-	Modifier          *float64 `protobuf:"fixed64,4,opt,name=Modifier,proto3,oneof" json:"Modifier,omitempty"`
-	Notes             *string  `protobuf:"bytes,5,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
+	state             protoimpl.MessageState
+	From              *string  `json:"From,omitempty"              protobuf:"bytes,1,opt,name=From,proto3,oneof"`
+	To                *string  `json:"To,omitempty"                protobuf:"bytes,2,opt,name=To,proto3,oneof"`
+	OnlyForIngredient *string  `json:"OnlyForIngredient,omitempty" protobuf:"bytes,3,opt,name=OnlyForIngredient,proto3,oneof"`
+	Modifier          *float64 `json:"Modifier,omitempty"          protobuf:"fixed64,4,opt,name=Modifier,proto3,oneof"`
+	Notes             *string  `json:"Notes,omitempty"             protobuf:"bytes,5,opt,name=Notes,proto3,oneof"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ValidMeasurementUnitConversionUpdateRequestInput) Reset() {
@@ -11046,28 +10942,27 @@ func (x *ValidMeasurementUnitConversionUpdateRequestInput) GetNotes() string {
 }
 
 type ValidVessel struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                      *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt                     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt                  *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	CapacityUnit                   *ValidMeasurementUnit  `protobuf:"bytes,4,opt,name=CapacityUnit,proto3,oneof" json:"CapacityUnit,omitempty"`
-	IconPath                       string                 `protobuf:"bytes,5,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	PluralName                     string                 `protobuf:"bytes,6,opt,name=PluralName,proto3" json:"PluralName,omitempty"`
-	Description                    string                 `protobuf:"bytes,7,opt,name=Description,proto3" json:"Description,omitempty"`
-	Name                           string                 `protobuf:"bytes,8,opt,name=Name,proto3" json:"Name,omitempty"`
-	Slug                           string                 `protobuf:"bytes,9,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	Shape                          string                 `protobuf:"bytes,10,opt,name=Shape,proto3" json:"Shape,omitempty"`
-	ID                             string                 `protobuf:"bytes,11,opt,name=ID,proto3" json:"ID,omitempty"`
-	WidthInMillimeters             float64                `protobuf:"fixed64,12,opt,name=WidthInMillimeters,proto3" json:"WidthInMillimeters,omitempty"`
-	LengthInMillimeters            float64                `protobuf:"fixed64,13,opt,name=LengthInMillimeters,proto3" json:"LengthInMillimeters,omitempty"`
-	HeightInMillimeters            float64                `protobuf:"fixed64,14,opt,name=HeightInMillimeters,proto3" json:"HeightInMillimeters,omitempty"`
-	Capacity                       float64                `protobuf:"fixed64,15,opt,name=Capacity,proto3" json:"Capacity,omitempty"`
-	IncludeInGeneratedInstructions bool                   `protobuf:"varint,16,opt,name=IncludeInGeneratedInstructions,proto3" json:"IncludeInGeneratedInstructions,omitempty"`
-	DisplayInSummaryLists          bool                   `protobuf:"varint,17,opt,name=DisplayInSummaryLists,proto3" json:"DisplayInSummaryLists,omitempty"`
-	UsableForStorage               bool                   `protobuf:"varint,18,opt,name=UsableForStorage,proto3" json:"UsableForStorage,omitempty"`
+	LastUpdatedAt                  *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	state                          protoimpl.MessageState
+	CapacityUnit                   *ValidMeasurementUnit  `json:"CapacityUnit,omitempty" protobuf:"bytes,4,opt,name=CapacityUnit,proto3,oneof"`
+	CreatedAt                      *timestamppb.Timestamp `json:"CreatedAt,omitempty"    protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt                     *timestamppb.Timestamp `json:"ArchivedAt,omitempty"   protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	Name                           string                 `json:"Name,omitempty"         protobuf:"bytes,8,opt,name=Name,proto3"`
+	Shape                          string                 `json:"Shape,omitempty"        protobuf:"bytes,10,opt,name=Shape,proto3"`
+	IconPath                       string                 `json:"IconPath,omitempty"     protobuf:"bytes,5,opt,name=IconPath,proto3"`
+	PluralName                     string                 `json:"PluralName,omitempty"   protobuf:"bytes,6,opt,name=PluralName,proto3"`
+	Description                    string                 `json:"Description,omitempty"  protobuf:"bytes,7,opt,name=Description,proto3"`
+	ID                             string                 `json:"ID,omitempty"           protobuf:"bytes,11,opt,name=ID,proto3"`
+	Slug                           string                 `json:"Slug,omitempty"         protobuf:"bytes,9,opt,name=Slug,proto3"`
+	unknownFields                  protoimpl.UnknownFields
+	WidthInMillimeters             float64 `json:"WidthInMillimeters,omitempty"  protobuf:"fixed64,12,opt,name=WidthInMillimeters,proto3"`
+	LengthInMillimeters            float64 `json:"LengthInMillimeters,omitempty" protobuf:"fixed64,13,opt,name=LengthInMillimeters,proto3"`
+	HeightInMillimeters            float64 `json:"HeightInMillimeters,omitempty" protobuf:"fixed64,14,opt,name=HeightInMillimeters,proto3"`
+	Capacity                       float64 `json:"Capacity,omitempty"            protobuf:"fixed64,15,opt,name=Capacity,proto3"`
+	sizeCache                      protoimpl.SizeCache
+	IncludeInGeneratedInstructions bool `json:"IncludeInGeneratedInstructions,omitempty" protobuf:"varint,16,opt,name=IncludeInGeneratedInstructions,proto3"`
+	DisplayInSummaryLists          bool `json:"DisplayInSummaryLists,omitempty"          protobuf:"varint,17,opt,name=DisplayInSummaryLists,proto3"`
+	UsableForStorage               bool `json:"UsableForStorage,omitempty"               protobuf:"varint,18,opt,name=UsableForStorage,proto3"`
 }
 
 func (x *ValidVessel) Reset() {
@@ -11229,24 +11124,23 @@ func (x *ValidVessel) GetUsableForStorage() bool {
 }
 
 type ValidVesselCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CapacityUnitID                 *string `protobuf:"bytes,1,opt,name=CapacityUnitID,proto3,oneof" json:"CapacityUnitID,omitempty"`
-	Shape                          string  `protobuf:"bytes,2,opt,name=Shape,proto3" json:"Shape,omitempty"`
-	IconPath                       string  `protobuf:"bytes,3,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	PluralName                     string  `protobuf:"bytes,4,opt,name=PluralName,proto3" json:"PluralName,omitempty"`
-	Name                           string  `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description                    string  `protobuf:"bytes,6,opt,name=Description,proto3" json:"Description,omitempty"`
-	Slug                           string  `protobuf:"bytes,7,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	LengthInMillimeters            float64 `protobuf:"fixed64,8,opt,name=LengthInMillimeters,proto3" json:"LengthInMillimeters,omitempty"`
-	HeightInMillimeters            float64 `protobuf:"fixed64,9,opt,name=HeightInMillimeters,proto3" json:"HeightInMillimeters,omitempty"`
-	Capacity                       float64 `protobuf:"fixed64,10,opt,name=Capacity,proto3" json:"Capacity,omitempty"`
-	WidthInMillimeters             float64 `protobuf:"fixed64,11,opt,name=WidthInMillimeters,proto3" json:"WidthInMillimeters,omitempty"`
-	UsableForStorage               bool    `protobuf:"varint,12,opt,name=UsableForStorage,proto3" json:"UsableForStorage,omitempty"`
-	IncludeInGeneratedInstructions bool    `protobuf:"varint,13,opt,name=IncludeInGeneratedInstructions,proto3" json:"IncludeInGeneratedInstructions,omitempty"`
-	DisplayInSummaryLists          bool    `protobuf:"varint,14,opt,name=DisplayInSummaryLists,proto3" json:"DisplayInSummaryLists,omitempty"`
+	CapacityUnitID                 *string `json:"CapacityUnitID,omitempty" protobuf:"bytes,1,opt,name=CapacityUnitID,proto3,oneof"`
+	state                          protoimpl.MessageState
+	Description                    string `json:"Description,omitempty" protobuf:"bytes,6,opt,name=Description,proto3"`
+	Slug                           string `json:"Slug,omitempty"        protobuf:"bytes,7,opt,name=Slug,proto3"`
+	Shape                          string `json:"Shape,omitempty"       protobuf:"bytes,2,opt,name=Shape,proto3"`
+	IconPath                       string `json:"IconPath,omitempty"    protobuf:"bytes,3,opt,name=IconPath,proto3"`
+	PluralName                     string `json:"PluralName,omitempty"  protobuf:"bytes,4,opt,name=PluralName,proto3"`
+	Name                           string `json:"Name,omitempty"        protobuf:"bytes,5,opt,name=Name,proto3"`
+	unknownFields                  protoimpl.UnknownFields
+	LengthInMillimeters            float64 `json:"LengthInMillimeters,omitempty" protobuf:"fixed64,8,opt,name=LengthInMillimeters,proto3"`
+	HeightInMillimeters            float64 `json:"HeightInMillimeters,omitempty" protobuf:"fixed64,9,opt,name=HeightInMillimeters,proto3"`
+	Capacity                       float64 `json:"Capacity,omitempty"            protobuf:"fixed64,10,opt,name=Capacity,proto3"`
+	WidthInMillimeters             float64 `json:"WidthInMillimeters,omitempty"  protobuf:"fixed64,11,opt,name=WidthInMillimeters,proto3"`
+	sizeCache                      protoimpl.SizeCache
+	UsableForStorage               bool `json:"UsableForStorage,omitempty"               protobuf:"varint,12,opt,name=UsableForStorage,proto3"`
+	IncludeInGeneratedInstructions bool `json:"IncludeInGeneratedInstructions,omitempty" protobuf:"varint,13,opt,name=IncludeInGeneratedInstructions,proto3"`
+	DisplayInSummaryLists          bool `json:"DisplayInSummaryLists,omitempty"          protobuf:"varint,14,opt,name=DisplayInSummaryLists,proto3"`
 }
 
 func (x *ValidVesselCreationRequestInput) Reset() {
@@ -11380,24 +11274,23 @@ func (x *ValidVesselCreationRequestInput) GetDisplayInSummaryLists() bool {
 }
 
 type ValidVesselUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name                           *string  `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	PluralName                     *string  `protobuf:"bytes,2,opt,name=PluralName,proto3,oneof" json:"PluralName,omitempty"`
-	Description                    *string  `protobuf:"bytes,3,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	IconPath                       *string  `protobuf:"bytes,4,opt,name=IconPath,proto3,oneof" json:"IconPath,omitempty"`
-	UsableForStorage               *bool    `protobuf:"varint,5,opt,name=UsableForStorage,proto3,oneof" json:"UsableForStorage,omitempty"`
-	Slug                           *string  `protobuf:"bytes,6,opt,name=Slug,proto3,oneof" json:"Slug,omitempty"`
-	DisplayInSummaryLists          *bool    `protobuf:"varint,7,opt,name=DisplayInSummaryLists,proto3,oneof" json:"DisplayInSummaryLists,omitempty"`
-	IncludeInGeneratedInstructions *bool    `protobuf:"varint,8,opt,name=IncludeInGeneratedInstructions,proto3,oneof" json:"IncludeInGeneratedInstructions,omitempty"`
-	Capacity                       *float64 `protobuf:"fixed64,9,opt,name=Capacity,proto3,oneof" json:"Capacity,omitempty"`
-	CapacityUnitID                 *string  `protobuf:"bytes,10,opt,name=CapacityUnitID,proto3,oneof" json:"CapacityUnitID,omitempty"`
-	WidthInMillimeters             *float64 `protobuf:"fixed64,11,opt,name=WidthInMillimeters,proto3,oneof" json:"WidthInMillimeters,omitempty"`
-	LengthInMillimeters            *float64 `protobuf:"fixed64,12,opt,name=LengthInMillimeters,proto3,oneof" json:"LengthInMillimeters,omitempty"`
-	HeightInMillimeters            *float64 `protobuf:"fixed64,13,opt,name=HeightInMillimeters,proto3,oneof" json:"HeightInMillimeters,omitempty"`
-	Shape                          *string  `protobuf:"bytes,14,opt,name=Shape,proto3,oneof" json:"Shape,omitempty"`
+	Slug                           *string `json:"Slug,omitempty"       protobuf:"bytes,6,opt,name=Slug,proto3,oneof"`
+	PluralName                     *string `json:"PluralName,omitempty" protobuf:"bytes,2,opt,name=PluralName,proto3,oneof"`
+	state                          protoimpl.MessageState
+	Name                           *string  `json:"Name,omitempty"                           protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	DisplayInSummaryLists          *bool    `json:"DisplayInSummaryLists,omitempty"          protobuf:"varint,7,opt,name=DisplayInSummaryLists,proto3,oneof"`
+	Description                    *string  `json:"Description,omitempty"                    protobuf:"bytes,3,opt,name=Description,proto3,oneof"`
+	IconPath                       *string  `json:"IconPath,omitempty"                       protobuf:"bytes,4,opt,name=IconPath,proto3,oneof"`
+	IncludeInGeneratedInstructions *bool    `json:"IncludeInGeneratedInstructions,omitempty" protobuf:"varint,8,opt,name=IncludeInGeneratedInstructions,proto3,oneof"`
+	Shape                          *string  `json:"Shape,omitempty"                          protobuf:"bytes,14,opt,name=Shape,proto3,oneof"`
+	HeightInMillimeters            *float64 `json:"HeightInMillimeters,omitempty"            protobuf:"fixed64,13,opt,name=HeightInMillimeters,proto3,oneof"`
+	UsableForStorage               *bool    `json:"UsableForStorage,omitempty"               protobuf:"varint,5,opt,name=UsableForStorage,proto3,oneof"`
+	Capacity                       *float64 `json:"Capacity,omitempty"                       protobuf:"fixed64,9,opt,name=Capacity,proto3,oneof"`
+	CapacityUnitID                 *string  `json:"CapacityUnitID,omitempty"                 protobuf:"bytes,10,opt,name=CapacityUnitID,proto3,oneof"`
+	WidthInMillimeters             *float64 `json:"WidthInMillimeters,omitempty"             protobuf:"fixed64,11,opt,name=WidthInMillimeters,proto3,oneof"`
+	LengthInMillimeters            *float64 `json:"LengthInMillimeters,omitempty"            protobuf:"fixed64,12,opt,name=LengthInMillimeters,proto3,oneof"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *ValidVesselUpdateRequestInput) Reset() {
@@ -11532,16 +11425,15 @@ func (x *ValidVesselUpdateRequestInput) GetShape() string {
 
 type ValidPreparationInstrument struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty"    protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	Instrument    *ValidInstrument       `json:"Instrument,omitempty"    protobuf:"bytes,6,opt,name=Instrument,proto3"`
+	Preparation   *ValidPreparation      `json:"Preparation,omitempty"   protobuf:"bytes,7,opt,name=Preparation,proto3"`
+	ID            string                 `json:"ID,omitempty"            protobuf:"bytes,4,opt,name=ID,proto3"`
+	Notes         string                 `json:"Notes,omitempty"         protobuf:"bytes,5,opt,name=Notes,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID            string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	Notes         string                 `protobuf:"bytes,5,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Instrument    *ValidInstrument       `protobuf:"bytes,6,opt,name=Instrument,proto3" json:"Instrument,omitempty"`
-	Preparation   *ValidPreparation      `protobuf:"bytes,7,opt,name=Preparation,proto3" json:"Preparation,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidPreparationInstrument) Reset() {
@@ -11626,13 +11518,12 @@ func (x *ValidPreparationInstrument) GetPreparation() *ValidPreparation {
 }
 
 type ValidPreparationInstrumentCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes              string `protobuf:"bytes,1,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ValidPreparationID string `protobuf:"bytes,2,opt,name=ValidPreparationID,proto3" json:"ValidPreparationID,omitempty"`
-	ValidInstrumentID  string `protobuf:"bytes,3,opt,name=ValidInstrumentID,proto3" json:"ValidInstrumentID,omitempty"`
+	state              protoimpl.MessageState
+	Notes              string `json:"Notes,omitempty"              protobuf:"bytes,1,opt,name=Notes,proto3"`
+	ValidPreparationID string `json:"ValidPreparationID,omitempty" protobuf:"bytes,2,opt,name=ValidPreparationID,proto3"`
+	ValidInstrumentID  string `json:"ValidInstrumentID,omitempty"  protobuf:"bytes,3,opt,name=ValidInstrumentID,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ValidPreparationInstrumentCreationRequestInput) Reset() {
@@ -11689,13 +11580,12 @@ func (x *ValidPreparationInstrumentCreationRequestInput) GetValidInstrumentID() 
 }
 
 type ValidPreparationInstrumentUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes              *string `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	ValidPreparationID *string `protobuf:"bytes,2,opt,name=ValidPreparationID,proto3,oneof" json:"ValidPreparationID,omitempty"`
-	ValidInstrumentID  *string `protobuf:"bytes,3,opt,name=ValidInstrumentID,proto3,oneof" json:"ValidInstrumentID,omitempty"`
+	state              protoimpl.MessageState
+	Notes              *string `json:"Notes,omitempty"              protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	ValidPreparationID *string `json:"ValidPreparationID,omitempty" protobuf:"bytes,2,opt,name=ValidPreparationID,proto3,oneof"`
+	ValidInstrumentID  *string `json:"ValidInstrumentID,omitempty"  protobuf:"bytes,3,opt,name=ValidInstrumentID,proto3,oneof"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ValidPreparationInstrumentUpdateRequestInput) Reset() {
@@ -11753,10 +11643,9 @@ func (x *ValidPreparationInstrumentUpdateRequestInput) GetValidInstrumentID() st
 
 type ChangeActiveHouseholdInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	HouseholdID   string `json:"HouseholdID,omitempty" protobuf:"bytes,1,opt,name=HouseholdID,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	HouseholdID string `protobuf:"bytes,1,opt,name=HouseholdID,proto3" json:"HouseholdID,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ChangeActiveHouseholdInput) Reset() {
@@ -11800,16 +11689,15 @@ func (x *ChangeActiveHouseholdInput) GetHouseholdID() string {
 
 type PasswordResetToken struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ExpiresAt     *timestamppb.Timestamp `json:"ExpiresAt,omitempty"     protobuf:"bytes,2,opt,name=ExpiresAt,proto3"`
+	RedeemedAt    *timestamppb.Timestamp `json:"RedeemedAt,omitempty"    protobuf:"bytes,3,opt,name=RedeemedAt,proto3,oneof"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,4,opt,name=LastUpdatedAt,proto3,oneof"`
+	ID            string                 `json:"ID,omitempty"            protobuf:"bytes,5,opt,name=ID,proto3"`
+	Token         string                 `json:"Token,omitempty"         protobuf:"bytes,6,opt,name=Token,proto3"`
+	BelongsToUser string                 `json:"BelongsToUser,omitempty" protobuf:"bytes,7,opt,name=BelongsToUser,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ExpiresAt,proto3" json:"ExpiresAt,omitempty"`
-	RedeemedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=RedeemedAt,proto3,oneof" json:"RedeemedAt,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ID            string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	Token         string                 `protobuf:"bytes,6,opt,name=Token,proto3" json:"Token,omitempty"`
-	BelongsToUser string                 `protobuf:"bytes,7,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PasswordResetToken) Reset() {
@@ -11895,10 +11783,9 @@ func (x *PasswordResetToken) GetBelongsToUser() string {
 
 type PasswordResetTokenCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	EmailAddress  string `json:"EmailAddress,omitempty" protobuf:"bytes,1,opt,name=EmailAddress,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	EmailAddress string `protobuf:"bytes,1,opt,name=EmailAddress,proto3" json:"EmailAddress,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PasswordResetTokenCreationRequestInput) Reset() {
@@ -11942,11 +11829,10 @@ func (x *PasswordResetTokenCreationRequestInput) GetEmailAddress() string {
 
 type PasswordResetTokenRedemptionRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Token         string `json:"Token,omitempty"       protobuf:"bytes,1,opt,name=Token,proto3"`
+	NewPassword   string `json:"NewPassword,omitempty" protobuf:"bytes,2,opt,name=NewPassword,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Token       string `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
-	NewPassword string `protobuf:"bytes,2,opt,name=NewPassword,proto3" json:"NewPassword,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PasswordResetTokenRedemptionRequestInput) Reset() {
@@ -11996,12 +11882,11 @@ func (x *PasswordResetTokenRedemptionRequestInput) GetNewPassword() string {
 }
 
 type TOTPSecretRefreshInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CurrentPassword string `protobuf:"bytes,1,opt,name=CurrentPassword,proto3" json:"CurrentPassword,omitempty"`
-	TOTPToken       string `protobuf:"bytes,2,opt,name=TOTPToken,proto3" json:"TOTPToken,omitempty"`
+	state           protoimpl.MessageState
+	CurrentPassword string `json:"CurrentPassword,omitempty" protobuf:"bytes,1,opt,name=CurrentPassword,proto3"`
+	TOTPToken       string `json:"TOTPToken,omitempty"       protobuf:"bytes,2,opt,name=TOTPToken,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *TOTPSecretRefreshInput) Reset() {
@@ -12052,11 +11937,10 @@ func (x *TOTPSecretRefreshInput) GetTOTPToken() string {
 
 type TOTPSecretVerificationInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	TOTPToken     string `json:"TOTPToken,omitempty" protobuf:"bytes,1,opt,name=TOTPToken,proto3"`
+	UserID        string `json:"UserID,omitempty"    protobuf:"bytes,2,opt,name=UserID,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	TOTPToken string `protobuf:"bytes,1,opt,name=TOTPToken,proto3" json:"TOTPToken,omitempty"`
-	UserID    string `protobuf:"bytes,2,opt,name=UserID,proto3" json:"UserID,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *TOTPSecretVerificationInput) Reset() {
@@ -12106,12 +11990,11 @@ func (x *TOTPSecretVerificationInput) GetUserID() string {
 }
 
 type TOTPSecretRefreshResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	TwoFactorQRCode string `protobuf:"bytes,1,opt,name=TwoFactorQRCode,proto3" json:"TwoFactorQRCode,omitempty"`
-	TwoFactorSecret string `protobuf:"bytes,2,opt,name=TwoFactorSecret,proto3" json:"TwoFactorSecret,omitempty"`
+	state           protoimpl.MessageState
+	TwoFactorQRCode string `json:"TwoFactorQRCode,omitempty" protobuf:"bytes,1,opt,name=TwoFactorQRCode,proto3"`
+	TwoFactorSecret string `json:"TwoFactorSecret,omitempty" protobuf:"bytes,2,opt,name=TwoFactorSecret,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *TOTPSecretRefreshResponse) Reset() {
@@ -12161,13 +12044,12 @@ func (x *TOTPSecretRefreshResponse) GetTwoFactorSecret() string {
 }
 
 type PasswordUpdateInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	NewPassword     string `protobuf:"bytes,1,opt,name=NewPassword,proto3" json:"NewPassword,omitempty"`
-	CurrentPassword string `protobuf:"bytes,2,opt,name=CurrentPassword,proto3" json:"CurrentPassword,omitempty"`
-	TOTPToken       string `protobuf:"bytes,3,opt,name=TOTPToken,proto3" json:"TOTPToken,omitempty"`
+	state           protoimpl.MessageState
+	NewPassword     string `json:"NewPassword,omitempty"     protobuf:"bytes,1,opt,name=NewPassword,proto3"`
+	CurrentPassword string `json:"CurrentPassword,omitempty" protobuf:"bytes,2,opt,name=CurrentPassword,proto3"`
+	TOTPToken       string `json:"TOTPToken,omitempty"       protobuf:"bytes,3,opt,name=TOTPToken,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *PasswordUpdateInput) Reset() {
@@ -12224,19 +12106,18 @@ func (x *PasswordUpdateInput) GetTOTPToken() string {
 }
 
 type RecipeStepCompletionCondition struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt           *timestamppb.Timestamp                     `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt          *timestamppb.Timestamp                     `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt       *timestamppb.Timestamp                     `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	IngredientState     *ValidIngredientState                      `protobuf:"bytes,4,opt,name=IngredientState,proto3" json:"IngredientState,omitempty"`
-	ID                  string                                     `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToRecipeStep string                                     `protobuf:"bytes,6,opt,name=BelongsToRecipeStep,proto3" json:"BelongsToRecipeStep,omitempty"`
-	Notes               string                                     `protobuf:"bytes,7,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Ingredients         []*RecipeStepCompletionConditionIngredient `protobuf:"bytes,8,rep,name=Ingredients,proto3" json:"Ingredients,omitempty"`
-	Optional            bool                                       `protobuf:"varint,9,opt,name=Optional,proto3" json:"Optional,omitempty"`
+	state               protoimpl.MessageState
+	CreatedAt           *timestamppb.Timestamp `json:"CreatedAt,omitempty"           protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt          *timestamppb.Timestamp `json:"ArchivedAt,omitempty"          protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	LastUpdatedAt       *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"       protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	IngredientState     *ValidIngredientState  `json:"IngredientState,omitempty"     protobuf:"bytes,4,opt,name=IngredientState,proto3"`
+	ID                  string                 `json:"ID,omitempty"                  protobuf:"bytes,5,opt,name=ID,proto3"`
+	BelongsToRecipeStep string                 `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,6,opt,name=BelongsToRecipeStep,proto3"`
+	Notes               string                 `json:"Notes,omitempty"               protobuf:"bytes,7,opt,name=Notes,proto3"`
+	unknownFields       protoimpl.UnknownFields
+	Ingredients         []*RecipeStepCompletionConditionIngredient `json:"Ingredients,omitempty" protobuf:"bytes,8,rep,name=Ingredients,proto3"`
+	sizeCache           protoimpl.SizeCache
+	Optional            bool `json:"Optional,omitempty" protobuf:"varint,9,opt,name=Optional,proto3"`
 }
 
 func (x *RecipeStepCompletionCondition) Reset() {
@@ -12335,16 +12216,15 @@ func (x *RecipeStepCompletionCondition) GetOptional() bool {
 }
 
 type RecipeStepCompletionConditionIngredient struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                              *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt                             *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt                          *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ID                                     string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToRecipeStepCompletionCondition string                 `protobuf:"bytes,5,opt,name=BelongsToRecipeStepCompletionCondition,proto3" json:"BelongsToRecipeStepCompletionCondition,omitempty"`
-	RecipeStepIngredient                   string                 `protobuf:"bytes,6,opt,name=RecipeStepIngredient,proto3" json:"RecipeStepIngredient,omitempty"`
+	state                                  protoimpl.MessageState
+	CreatedAt                              *timestamppb.Timestamp `json:"CreatedAt,omitempty"                              protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt                             *timestamppb.Timestamp `json:"ArchivedAt,omitempty"                             protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	LastUpdatedAt                          *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"                          protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	ID                                     string                 `json:"ID,omitempty"                                     protobuf:"bytes,4,opt,name=ID,proto3"`
+	BelongsToRecipeStepCompletionCondition string                 `json:"BelongsToRecipeStepCompletionCondition,omitempty" protobuf:"bytes,5,opt,name=BelongsToRecipeStepCompletionCondition,proto3"`
+	RecipeStepIngredient                   string                 `json:"RecipeStepIngredient,omitempty"                   protobuf:"bytes,6,opt,name=RecipeStepIngredient,proto3"`
+	unknownFields                          protoimpl.UnknownFields
+	sizeCache                              protoimpl.SizeCache
 }
 
 func (x *RecipeStepCompletionConditionIngredient) Reset() {
@@ -12422,15 +12302,14 @@ func (x *RecipeStepCompletionConditionIngredient) GetRecipeStepIngredient() stri
 }
 
 type RecipeStepCompletionConditionCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	IngredientStateID   string   `protobuf:"bytes,1,opt,name=IngredientStateID,proto3" json:"IngredientStateID,omitempty"`
-	BelongsToRecipeStep string   `protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3" json:"BelongsToRecipeStep,omitempty"`
-	Notes               string   `protobuf:"bytes,3,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Ingredients         []uint64 `protobuf:"varint,4,rep,packed,name=Ingredients,proto3" json:"Ingredients,omitempty"`
-	Optional            bool     `protobuf:"varint,5,opt,name=Optional,proto3" json:"Optional,omitempty"`
+	state               protoimpl.MessageState
+	IngredientStateID   string `json:"IngredientStateID,omitempty"   protobuf:"bytes,1,opt,name=IngredientStateID,proto3"`
+	BelongsToRecipeStep string `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3"`
+	Notes               string `json:"Notes,omitempty"               protobuf:"bytes,3,opt,name=Notes,proto3"`
+	unknownFields       protoimpl.UnknownFields
+	Ingredients         []uint64 `json:"Ingredients,omitempty" protobuf:"varint,4,rep,packed,name=Ingredients,proto3"`
+	sizeCache           protoimpl.SizeCache
+	Optional            bool `json:"Optional,omitempty" protobuf:"varint,5,opt,name=Optional,proto3"`
 }
 
 func (x *RecipeStepCompletionConditionCreationRequestInput) Reset() {
@@ -12501,11 +12380,10 @@ func (x *RecipeStepCompletionConditionCreationRequestInput) GetOptional() bool {
 }
 
 type RecipeStepCompletionConditionIngredientCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	RecipeStepIngredient string `protobuf:"bytes,1,opt,name=RecipeStepIngredient,proto3" json:"RecipeStepIngredient,omitempty"`
+	state                protoimpl.MessageState
+	RecipeStepIngredient string `json:"RecipeStepIngredient,omitempty" protobuf:"bytes,1,opt,name=RecipeStepIngredient,proto3"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *RecipeStepCompletionConditionIngredientCreationRequestInput) Reset() {
@@ -12548,14 +12426,13 @@ func (x *RecipeStepCompletionConditionIngredientCreationRequestInput) GetRecipeS
 }
 
 type RecipeStepCompletionConditionUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	IngredientStateID   *string `protobuf:"bytes,1,opt,name=IngredientStateID,proto3,oneof" json:"IngredientStateID,omitempty"`
-	BelongsToRecipeStep *string `protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3,oneof" json:"BelongsToRecipeStep,omitempty"`
-	Notes               *string `protobuf:"bytes,3,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	Optional            *bool   `protobuf:"varint,4,opt,name=Optional,proto3,oneof" json:"Optional,omitempty"`
+	state               protoimpl.MessageState
+	IngredientStateID   *string `json:"IngredientStateID,omitempty"   protobuf:"bytes,1,opt,name=IngredientStateID,proto3,oneof"`
+	BelongsToRecipeStep *string `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3,oneof"`
+	Notes               *string `json:"Notes,omitempty"               protobuf:"bytes,3,opt,name=Notes,proto3,oneof"`
+	Optional            *bool   `json:"Optional,omitempty"            protobuf:"varint,4,opt,name=Optional,proto3,oneof"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *RecipeStepCompletionConditionUpdateRequestInput) Reset() {
@@ -12619,23 +12496,22 @@ func (x *RecipeStepCompletionConditionUpdateRequestInput) GetOptional() bool {
 }
 
 type MealPlanOption struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt              *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt          *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	AssignedCook           *string                `protobuf:"bytes,3,opt,name=AssignedCook,proto3,oneof" json:"AssignedCook,omitempty"`
-	ArchivedAt             *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	AssignedDishwasher     *string                `protobuf:"bytes,5,opt,name=AssignedDishwasher,proto3,oneof" json:"AssignedDishwasher,omitempty"`
-	Notes                  string                 `protobuf:"bytes,6,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	BelongsToMealPlanEvent string                 `protobuf:"bytes,7,opt,name=BelongsToMealPlanEvent,proto3" json:"BelongsToMealPlanEvent,omitempty"`
-	ID                     string                 `protobuf:"bytes,8,opt,name=ID,proto3" json:"ID,omitempty"`
-	Votes                  []*MealPlanOptionVote  `protobuf:"bytes,9,rep,name=Votes,proto3" json:"Votes,omitempty"`
-	Meal                   *Meal                  `protobuf:"bytes,10,opt,name=Meal,proto3" json:"Meal,omitempty"`
-	MealScale              float64                `protobuf:"fixed64,11,opt,name=MealScale,proto3" json:"MealScale,omitempty"`
-	Chosen                 bool                   `protobuf:"varint,12,opt,name=Chosen,proto3" json:"Chosen,omitempty"`
-	TieBroken              bool                   `protobuf:"varint,13,opt,name=TieBroken,proto3" json:"TieBroken,omitempty"`
+	Meal                   *Meal                  `json:"Meal,omitempty"       protobuf:"bytes,10,opt,name=Meal,proto3"`
+	ArchivedAt             *timestamppb.Timestamp `json:"ArchivedAt,omitempty" protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof"`
+	state                  protoimpl.MessageState
+	CreatedAt              *timestamppb.Timestamp `json:"CreatedAt,omitempty"              protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	AssignedDishwasher     *string                `json:"AssignedDishwasher,omitempty"     protobuf:"bytes,5,opt,name=AssignedDishwasher,proto3,oneof"`
+	AssignedCook           *string                `json:"AssignedCook,omitempty"           protobuf:"bytes,3,opt,name=AssignedCook,proto3,oneof"`
+	LastUpdatedAt          *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"          protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	Notes                  string                 `json:"Notes,omitempty"                  protobuf:"bytes,6,opt,name=Notes,proto3"`
+	BelongsToMealPlanEvent string                 `json:"BelongsToMealPlanEvent,omitempty" protobuf:"bytes,7,opt,name=BelongsToMealPlanEvent,proto3"`
+	ID                     string                 `json:"ID,omitempty"                     protobuf:"bytes,8,opt,name=ID,proto3"`
+	Votes                  []*MealPlanOptionVote  `json:"Votes,omitempty"                  protobuf:"bytes,9,rep,name=Votes,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	MealScale              float64 `json:"MealScale,omitempty" protobuf:"fixed64,11,opt,name=MealScale,proto3"`
+	sizeCache              protoimpl.SizeCache
+	Chosen                 bool `json:"Chosen,omitempty"    protobuf:"varint,12,opt,name=Chosen,proto3"`
+	TieBroken              bool `json:"TieBroken,omitempty" protobuf:"varint,13,opt,name=TieBroken,proto3"`
 }
 
 func (x *MealPlanOption) Reset() {
@@ -12762,15 +12638,14 @@ func (x *MealPlanOption) GetTieBroken() bool {
 }
 
 type MealPlanOptionCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	AssignedCook       *string `protobuf:"bytes,1,opt,name=AssignedCook,proto3,oneof" json:"AssignedCook,omitempty"`
-	AssignedDishwasher *string `protobuf:"bytes,2,opt,name=AssignedDishwasher,proto3,oneof" json:"AssignedDishwasher,omitempty"`
-	MealID             string  `protobuf:"bytes,3,opt,name=MealID,proto3" json:"MealID,omitempty"`
-	Notes              string  `protobuf:"bytes,4,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	MealScale          float64 `protobuf:"fixed64,5,opt,name=MealScale,proto3" json:"MealScale,omitempty"`
+	state              protoimpl.MessageState
+	AssignedCook       *string `json:"AssignedCook,omitempty"       protobuf:"bytes,1,opt,name=AssignedCook,proto3,oneof"`
+	AssignedDishwasher *string `json:"AssignedDishwasher,omitempty" protobuf:"bytes,2,opt,name=AssignedDishwasher,proto3,oneof"`
+	MealID             string  `json:"MealID,omitempty"             protobuf:"bytes,3,opt,name=MealID,proto3"`
+	Notes              string  `json:"Notes,omitempty"              protobuf:"bytes,4,opt,name=Notes,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	MealScale          float64 `json:"MealScale,omitempty" protobuf:"fixed64,5,opt,name=MealScale,proto3"`
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *MealPlanOptionCreationRequestInput) Reset() {
@@ -12841,15 +12716,14 @@ func (x *MealPlanOptionCreationRequestInput) GetMealScale() float64 {
 }
 
 type MealPlanOptionUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MealID             *string  `protobuf:"bytes,1,opt,name=MealID,proto3,oneof" json:"MealID,omitempty"`
-	Notes              *string  `protobuf:"bytes,2,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	AssignedCook       *string  `protobuf:"bytes,3,opt,name=AssignedCook,proto3,oneof" json:"AssignedCook,omitempty"`
-	AssignedDishwasher *string  `protobuf:"bytes,4,opt,name=AssignedDishwasher,proto3,oneof" json:"AssignedDishwasher,omitempty"`
-	MealScale          *float64 `protobuf:"fixed64,5,opt,name=MealScale,proto3,oneof" json:"MealScale,omitempty"`
+	state              protoimpl.MessageState
+	MealID             *string  `json:"MealID,omitempty"             protobuf:"bytes,1,opt,name=MealID,proto3,oneof"`
+	Notes              *string  `json:"Notes,omitempty"              protobuf:"bytes,2,opt,name=Notes,proto3,oneof"`
+	AssignedCook       *string  `json:"AssignedCook,omitempty"       protobuf:"bytes,3,opt,name=AssignedCook,proto3,oneof"`
+	AssignedDishwasher *string  `json:"AssignedDishwasher,omitempty" protobuf:"bytes,4,opt,name=AssignedDishwasher,proto3,oneof"`
+	MealScale          *float64 `json:"MealScale,omitempty"          protobuf:"fixed64,5,opt,name=MealScale,proto3,oneof"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *MealPlanOptionUpdateRequestInput) Reset() {
@@ -12920,19 +12794,18 @@ func (x *MealPlanOptionUpdateRequestInput) GetMealScale() float64 {
 }
 
 type MealPlanOptionVote struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt               *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt              *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt           *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ID                      string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	Notes                   string                 `protobuf:"bytes,5,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	BelongsToMealPlanOption string                 `protobuf:"bytes,6,opt,name=BelongsToMealPlanOption,proto3" json:"BelongsToMealPlanOption,omitempty"`
-	ByUser                  string                 `protobuf:"bytes,7,opt,name=ByUser,proto3" json:"ByUser,omitempty"`
-	Rank                    uint32                 `protobuf:"varint,8,opt,name=Rank,proto3" json:"Rank,omitempty"`
-	Abstain                 bool                   `protobuf:"varint,9,opt,name=Abstain,proto3" json:"Abstain,omitempty"`
+	state                   protoimpl.MessageState
+	CreatedAt               *timestamppb.Timestamp `json:"CreatedAt,omitempty"               protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt              *timestamppb.Timestamp `json:"ArchivedAt,omitempty"              protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	LastUpdatedAt           *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"           protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	ID                      string                 `json:"ID,omitempty"                      protobuf:"bytes,4,opt,name=ID,proto3"`
+	Notes                   string                 `json:"Notes,omitempty"                   protobuf:"bytes,5,opt,name=Notes,proto3"`
+	BelongsToMealPlanOption string                 `json:"BelongsToMealPlanOption,omitempty" protobuf:"bytes,6,opt,name=BelongsToMealPlanOption,proto3"`
+	ByUser                  string                 `json:"ByUser,omitempty"                  protobuf:"bytes,7,opt,name=ByUser,proto3"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+	Rank                    uint32 `json:"Rank,omitempty"    protobuf:"varint,8,opt,name=Rank,proto3"`
+	Abstain                 bool   `json:"Abstain,omitempty" protobuf:"varint,9,opt,name=Abstain,proto3"`
 }
 
 func (x *MealPlanOptionVote) Reset() {
@@ -13031,14 +12904,13 @@ func (x *MealPlanOptionVote) GetAbstain() bool {
 }
 
 type MealPlanOptionVoteCreationInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes                   string `protobuf:"bytes,1,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	BelongsToMealPlanOption string `protobuf:"bytes,2,opt,name=BelongsToMealPlanOption,proto3" json:"BelongsToMealPlanOption,omitempty"`
-	Rank                    uint32 `protobuf:"varint,3,opt,name=Rank,proto3" json:"Rank,omitempty"`
-	Abstain                 bool   `protobuf:"varint,4,opt,name=Abstain,proto3" json:"Abstain,omitempty"`
+	state                   protoimpl.MessageState
+	Notes                   string `json:"Notes,omitempty"                   protobuf:"bytes,1,opt,name=Notes,proto3"`
+	BelongsToMealPlanOption string `json:"BelongsToMealPlanOption,omitempty" protobuf:"bytes,2,opt,name=BelongsToMealPlanOption,proto3"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+	Rank                    uint32 `json:"Rank,omitempty"    protobuf:"varint,3,opt,name=Rank,proto3"`
+	Abstain                 bool   `json:"Abstain,omitempty" protobuf:"varint,4,opt,name=Abstain,proto3"`
 }
 
 func (x *MealPlanOptionVoteCreationInput) Reset() {
@@ -13103,10 +12975,9 @@ func (x *MealPlanOptionVoteCreationInput) GetAbstain() bool {
 
 type MealPlanOptionVoteCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	Votes []*MealPlanOptionVoteCreationInput `protobuf:"bytes,1,rep,name=Votes,proto3" json:"Votes,omitempty"`
+	Votes         []*MealPlanOptionVoteCreationInput `json:"Votes,omitempty" protobuf:"bytes,1,rep,name=Votes,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MealPlanOptionVoteCreationRequestInput) Reset() {
@@ -13149,14 +13020,13 @@ func (x *MealPlanOptionVoteCreationRequestInput) GetVotes() []*MealPlanOptionVot
 }
 
 type MealPlanOptionVoteUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes                   *string `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	Rank                    *uint32 `protobuf:"varint,2,opt,name=Rank,proto3,oneof" json:"Rank,omitempty"`
-	Abstain                 *bool   `protobuf:"varint,3,opt,name=Abstain,proto3,oneof" json:"Abstain,omitempty"`
-	BelongsToMealPlanOption string  `protobuf:"bytes,4,opt,name=BelongsToMealPlanOption,proto3" json:"BelongsToMealPlanOption,omitempty"`
+	state                   protoimpl.MessageState
+	Notes                   *string `json:"Notes,omitempty"                   protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	Rank                    *uint32 `json:"Rank,omitempty"                    protobuf:"varint,2,opt,name=Rank,proto3,oneof"`
+	Abstain                 *bool   `json:"Abstain,omitempty"                 protobuf:"varint,3,opt,name=Abstain,proto3,oneof"`
+	BelongsToMealPlanOption string  `json:"BelongsToMealPlanOption,omitempty" protobuf:"bytes,4,opt,name=BelongsToMealPlanOption,proto3"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *MealPlanOptionVoteUpdateRequestInput) Reset() {
@@ -13220,20 +13090,19 @@ func (x *MealPlanOptionVoteUpdateRequestInput) GetBelongsToMealPlanOption() stri
 }
 
 type RecipeMedia struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt           *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	ArchivedAt          *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	LastUpdatedAt       *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ID                  string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToRecipe     *string                `protobuf:"bytes,5,opt,name=BelongsToRecipe,proto3,oneof" json:"BelongsToRecipe,omitempty"`
-	BelongsToRecipeStep *string                `protobuf:"bytes,6,opt,name=BelongsToRecipeStep,proto3,oneof" json:"BelongsToRecipeStep,omitempty"`
-	MimeType            string                 `protobuf:"bytes,7,opt,name=MimeType,proto3" json:"MimeType,omitempty"`
-	InternalPath        string                 `protobuf:"bytes,8,opt,name=InternalPath,proto3" json:"InternalPath,omitempty"`
-	ExternalPath        string                 `protobuf:"bytes,9,opt,name=ExternalPath,proto3" json:"ExternalPath,omitempty"`
-	Index               uint32                 `protobuf:"varint,10,opt,name=Index,proto3" json:"Index,omitempty"`
+	state               protoimpl.MessageState
+	BelongsToRecipeStep *string                `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,6,opt,name=BelongsToRecipeStep,proto3,oneof"`
+	BelongsToRecipe     *string                `json:"BelongsToRecipe,omitempty"     protobuf:"bytes,5,opt,name=BelongsToRecipe,proto3,oneof"`
+	CreatedAt           *timestamppb.Timestamp `json:"CreatedAt,omitempty"           protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	ArchivedAt          *timestamppb.Timestamp `json:"ArchivedAt,omitempty"          protobuf:"bytes,2,opt,name=ArchivedAt,proto3,oneof"`
+	LastUpdatedAt       *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"       protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	ID                  string                 `json:"ID,omitempty"                  protobuf:"bytes,4,opt,name=ID,proto3"`
+	MimeType            string                 `json:"MimeType,omitempty"            protobuf:"bytes,7,opt,name=MimeType,proto3"`
+	InternalPath        string                 `json:"InternalPath,omitempty"        protobuf:"bytes,8,opt,name=InternalPath,proto3"`
+	ExternalPath        string                 `json:"ExternalPath,omitempty"        protobuf:"bytes,9,opt,name=ExternalPath,proto3"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+	Index               uint32 `json:"Index,omitempty" protobuf:"varint,10,opt,name=Index,proto3"`
 }
 
 func (x *RecipeMedia) Reset() {
@@ -13339,16 +13208,15 @@ func (x *RecipeMedia) GetIndex() uint32 {
 }
 
 type RecipeMediaCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	BelongsToRecipe     *string `protobuf:"bytes,1,opt,name=BelongsToRecipe,proto3,oneof" json:"BelongsToRecipe,omitempty"`
-	BelongsToRecipeStep *string `protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3,oneof" json:"BelongsToRecipeStep,omitempty"`
-	MimeType            string  `protobuf:"bytes,3,opt,name=MimeType,proto3" json:"MimeType,omitempty"`
-	InternalPath        string  `protobuf:"bytes,4,opt,name=InternalPath,proto3" json:"InternalPath,omitempty"`
-	ExternalPath        string  `protobuf:"bytes,5,opt,name=ExternalPath,proto3" json:"ExternalPath,omitempty"`
-	Index               uint32  `protobuf:"varint,6,opt,name=Index,proto3" json:"Index,omitempty"`
+	state               protoimpl.MessageState
+	BelongsToRecipe     *string `json:"BelongsToRecipe,omitempty"     protobuf:"bytes,1,opt,name=BelongsToRecipe,proto3,oneof"`
+	BelongsToRecipeStep *string `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3,oneof"`
+	MimeType            string  `json:"MimeType,omitempty"            protobuf:"bytes,3,opt,name=MimeType,proto3"`
+	InternalPath        string  `json:"InternalPath,omitempty"        protobuf:"bytes,4,opt,name=InternalPath,proto3"`
+	ExternalPath        string  `json:"ExternalPath,omitempty"        protobuf:"bytes,5,opt,name=ExternalPath,proto3"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+	Index               uint32 `json:"Index,omitempty" protobuf:"varint,6,opt,name=Index,proto3"`
 }
 
 func (x *RecipeMediaCreationRequestInput) Reset() {
@@ -13426,16 +13294,15 @@ func (x *RecipeMediaCreationRequestInput) GetIndex() uint32 {
 }
 
 type RecipeMediaUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	BelongsToRecipe     *string `protobuf:"bytes,1,opt,name=BelongsToRecipe,proto3,oneof" json:"BelongsToRecipe,omitempty"`
-	BelongsToRecipeStep *string `protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3,oneof" json:"BelongsToRecipeStep,omitempty"`
-	MimeType            *string `protobuf:"bytes,3,opt,name=MimeType,proto3,oneof" json:"MimeType,omitempty"`
-	InternalPath        *string `protobuf:"bytes,4,opt,name=InternalPath,proto3,oneof" json:"InternalPath,omitempty"`
-	ExternalPath        *string `protobuf:"bytes,5,opt,name=ExternalPath,proto3,oneof" json:"ExternalPath,omitempty"`
-	Index               *uint32 `protobuf:"varint,6,opt,name=Index,proto3,oneof" json:"Index,omitempty"`
+	state               protoimpl.MessageState
+	BelongsToRecipe     *string `json:"BelongsToRecipe,omitempty"     protobuf:"bytes,1,opt,name=BelongsToRecipe,proto3,oneof"`
+	BelongsToRecipeStep *string `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,2,opt,name=BelongsToRecipeStep,proto3,oneof"`
+	MimeType            *string `json:"MimeType,omitempty"            protobuf:"bytes,3,opt,name=MimeType,proto3,oneof"`
+	InternalPath        *string `json:"InternalPath,omitempty"        protobuf:"bytes,4,opt,name=InternalPath,proto3,oneof"`
+	ExternalPath        *string `json:"ExternalPath,omitempty"        protobuf:"bytes,5,opt,name=ExternalPath,proto3,oneof"`
+	Index               *uint32 `json:"Index,omitempty"               protobuf:"varint,6,opt,name=Index,proto3,oneof"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *RecipeMediaUpdateRequestInput) Reset() {
@@ -13513,29 +13380,28 @@ func (x *RecipeMediaUpdateRequestInput) GetIndex() uint32 {
 }
 
 type RecipeStepIngredient struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                 *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	RecipeStepProductID       *string                `protobuf:"bytes,2,opt,name=RecipeStepProductID,proto3,oneof" json:"RecipeStepProductID,omitempty"`
-	ArchivedAt                *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	Ingredient                *ValidIngredient       `protobuf:"bytes,4,opt,name=Ingredient,proto3,oneof" json:"Ingredient,omitempty"`
-	LastUpdatedAt             *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	MaximumQuantity           *float64               `protobuf:"fixed64,6,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	VesselIndex               *uint32                `protobuf:"varint,7,opt,name=VesselIndex,proto3,oneof" json:"VesselIndex,omitempty"`
-	ProductPercentageToUse    *float64               `protobuf:"fixed64,8,opt,name=ProductPercentageToUse,proto3,oneof" json:"ProductPercentageToUse,omitempty"`
-	RecipeStepProductRecipeID *string                `protobuf:"bytes,9,opt,name=RecipeStepProductRecipeID,proto3,oneof" json:"RecipeStepProductRecipeID,omitempty"`
-	QuantityNotes             string                 `protobuf:"bytes,10,opt,name=QuantityNotes,proto3" json:"QuantityNotes,omitempty"`
-	ID                        string                 `protobuf:"bytes,11,opt,name=ID,proto3" json:"ID,omitempty"`
-	BelongsToRecipeStep       string                 `protobuf:"bytes,12,opt,name=BelongsToRecipeStep,proto3" json:"BelongsToRecipeStep,omitempty"`
-	IngredientNotes           string                 `protobuf:"bytes,13,opt,name=IngredientNotes,proto3" json:"IngredientNotes,omitempty"`
-	Name                      string                 `protobuf:"bytes,14,opt,name=Name,proto3" json:"Name,omitempty"`
-	MeasurementUnit           *ValidMeasurementUnit  `protobuf:"bytes,15,opt,name=MeasurementUnit,proto3" json:"MeasurementUnit,omitempty"`
-	MinimumQuantity           float64                `protobuf:"fixed64,16,opt,name=MinimumQuantity,proto3" json:"MinimumQuantity,omitempty"`
-	OptionIndex               uint32                 `protobuf:"varint,17,opt,name=OptionIndex,proto3" json:"OptionIndex,omitempty"`
-	Optional                  bool                   `protobuf:"varint,18,opt,name=Optional,proto3" json:"Optional,omitempty"`
-	ToTaste                   bool                   `protobuf:"varint,19,opt,name=ToTaste,proto3" json:"ToTaste,omitempty"`
+	ProductPercentageToUse    *float64               `json:"ProductPercentageToUse,omitempty"    protobuf:"fixed64,8,opt,name=ProductPercentageToUse,proto3,oneof"`
+	MaximumQuantity           *float64               `json:"MaximumQuantity,omitempty"           protobuf:"fixed64,6,opt,name=MaximumQuantity,proto3,oneof"`
+	RecipeStepProductRecipeID *string                `json:"RecipeStepProductRecipeID,omitempty" protobuf:"bytes,9,opt,name=RecipeStepProductRecipeID,proto3,oneof"`
+	CreatedAt                 *timestamppb.Timestamp `json:"CreatedAt,omitempty"                 protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	RecipeStepProductID       *string                `json:"RecipeStepProductID,omitempty"       protobuf:"bytes,2,opt,name=RecipeStepProductID,proto3,oneof"`
+	ArchivedAt                *timestamppb.Timestamp `json:"ArchivedAt,omitempty"                protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	Ingredient                *ValidIngredient       `json:"Ingredient,omitempty"                protobuf:"bytes,4,opt,name=Ingredient,proto3,oneof"`
+	LastUpdatedAt             *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"             protobuf:"bytes,5,opt,name=LastUpdatedAt,proto3,oneof"`
+	state                     protoimpl.MessageState
+	VesselIndex               *uint32               `json:"VesselIndex,omitempty"         protobuf:"varint,7,opt,name=VesselIndex,proto3,oneof"`
+	MeasurementUnit           *ValidMeasurementUnit `json:"MeasurementUnit,omitempty"     protobuf:"bytes,15,opt,name=MeasurementUnit,proto3"`
+	Name                      string                `json:"Name,omitempty"                protobuf:"bytes,14,opt,name=Name,proto3"`
+	ID                        string                `json:"ID,omitempty"                  protobuf:"bytes,11,opt,name=ID,proto3"`
+	BelongsToRecipeStep       string                `json:"BelongsToRecipeStep,omitempty" protobuf:"bytes,12,opt,name=BelongsToRecipeStep,proto3"`
+	IngredientNotes           string                `json:"IngredientNotes,omitempty"     protobuf:"bytes,13,opt,name=IngredientNotes,proto3"`
+	QuantityNotes             string                `json:"QuantityNotes,omitempty"       protobuf:"bytes,10,opt,name=QuantityNotes,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	MinimumQuantity           float64 `json:"MinimumQuantity,omitempty" protobuf:"fixed64,16,opt,name=MinimumQuantity,proto3"`
+	sizeCache                 protoimpl.SizeCache
+	OptionIndex               uint32 `json:"OptionIndex,omitempty" protobuf:"varint,17,opt,name=OptionIndex,proto3"`
+	ToTaste                   bool   `json:"ToTaste,omitempty"     protobuf:"varint,19,opt,name=ToTaste,proto3"`
+	Optional                  bool   `json:"Optional,omitempty"    protobuf:"varint,18,opt,name=Optional,proto3"`
 }
 
 func (x *RecipeStepIngredient) Reset() {
@@ -13704,25 +13570,24 @@ func (x *RecipeStepIngredient) GetToTaste() bool {
 }
 
 type RecipeStepIngredientCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	IngredientID                    *string  `protobuf:"bytes,1,opt,name=IngredientID,proto3,oneof" json:"IngredientID,omitempty"`
-	ProductOfRecipeStepIndex        *uint64  `protobuf:"varint,2,opt,name=ProductOfRecipeStepIndex,proto3,oneof" json:"ProductOfRecipeStepIndex,omitempty"`
-	ProductOfRecipeStepProductIndex *uint64  `protobuf:"varint,3,opt,name=ProductOfRecipeStepProductIndex,proto3,oneof" json:"ProductOfRecipeStepProductIndex,omitempty"`
-	MaximumQuantity                 *float64 `protobuf:"fixed64,4,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	VesselIndex                     *uint32  `protobuf:"varint,5,opt,name=VesselIndex,proto3,oneof" json:"VesselIndex,omitempty"`
-	ProductPercentageToUse          *float64 `protobuf:"fixed64,6,opt,name=ProductPercentageToUse,proto3,oneof" json:"ProductPercentageToUse,omitempty"`
-	RecipeStepProductRecipeID       *string  `protobuf:"bytes,7,opt,name=RecipeStepProductRecipeID,proto3,oneof" json:"RecipeStepProductRecipeID,omitempty"`
-	IngredientNotes                 string   `protobuf:"bytes,8,opt,name=IngredientNotes,proto3" json:"IngredientNotes,omitempty"`
-	MeasurementUnitID               string   `protobuf:"bytes,9,opt,name=MeasurementUnitID,proto3" json:"MeasurementUnitID,omitempty"`
-	Name                            string   `protobuf:"bytes,10,opt,name=Name,proto3" json:"Name,omitempty"`
-	QuantityNotes                   string   `protobuf:"bytes,11,opt,name=QuantityNotes,proto3" json:"QuantityNotes,omitempty"`
-	MinimumQuantity                 float64  `protobuf:"fixed64,12,opt,name=MinimumQuantity,proto3" json:"MinimumQuantity,omitempty"`
-	OptionIndex                     uint32   `protobuf:"varint,13,opt,name=OptionIndex,proto3" json:"OptionIndex,omitempty"`
-	Optional                        bool     `protobuf:"varint,14,opt,name=Optional,proto3" json:"Optional,omitempty"`
-	ToTaste                         bool     `protobuf:"varint,15,opt,name=ToTaste,proto3" json:"ToTaste,omitempty"`
+	ProductPercentageToUse          *float64 `json:"ProductPercentageToUse,omitempty"    protobuf:"fixed64,6,opt,name=ProductPercentageToUse,proto3,oneof"`
+	IngredientID                    *string  `json:"IngredientID,omitempty"              protobuf:"bytes,1,opt,name=IngredientID,proto3,oneof"`
+	RecipeStepProductRecipeID       *string  `json:"RecipeStepProductRecipeID,omitempty" protobuf:"bytes,7,opt,name=RecipeStepProductRecipeID,proto3,oneof"`
+	state                           protoimpl.MessageState
+	ProductOfRecipeStepIndex        *uint64  `json:"ProductOfRecipeStepIndex,omitempty"        protobuf:"varint,2,opt,name=ProductOfRecipeStepIndex,proto3,oneof"`
+	ProductOfRecipeStepProductIndex *uint64  `json:"ProductOfRecipeStepProductIndex,omitempty" protobuf:"varint,3,opt,name=ProductOfRecipeStepProductIndex,proto3,oneof"`
+	MaximumQuantity                 *float64 `json:"MaximumQuantity,omitempty"                 protobuf:"fixed64,4,opt,name=MaximumQuantity,proto3,oneof"`
+	VesselIndex                     *uint32  `json:"VesselIndex,omitempty"                     protobuf:"varint,5,opt,name=VesselIndex,proto3,oneof"`
+	QuantityNotes                   string   `json:"QuantityNotes,omitempty"                   protobuf:"bytes,11,opt,name=QuantityNotes,proto3"`
+	MeasurementUnitID               string   `json:"MeasurementUnitID,omitempty"               protobuf:"bytes,9,opt,name=MeasurementUnitID,proto3"`
+	Name                            string   `json:"Name,omitempty"                            protobuf:"bytes,10,opt,name=Name,proto3"`
+	IngredientNotes                 string   `json:"IngredientNotes,omitempty"                 protobuf:"bytes,8,opt,name=IngredientNotes,proto3"`
+	unknownFields                   protoimpl.UnknownFields
+	MinimumQuantity                 float64 `json:"MinimumQuantity,omitempty" protobuf:"fixed64,12,opt,name=MinimumQuantity,proto3"`
+	sizeCache                       protoimpl.SizeCache
+	OptionIndex                     uint32 `json:"OptionIndex,omitempty" protobuf:"varint,13,opt,name=OptionIndex,proto3"`
+	ToTaste                         bool   `json:"ToTaste,omitempty"     protobuf:"varint,15,opt,name=ToTaste,proto3"`
+	Optional                        bool   `json:"Optional,omitempty"    protobuf:"varint,14,opt,name=Optional,proto3"`
 }
 
 func (x *RecipeStepIngredientCreationRequestInput) Reset() {
@@ -13863,25 +13728,24 @@ func (x *RecipeStepIngredientCreationRequestInput) GetToTaste() bool {
 }
 
 type RecipeStepIngredientUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	IngredientID              *string  `protobuf:"bytes,1,opt,name=IngredientID,proto3,oneof" json:"IngredientID,omitempty"`
-	RecipeStepProductID       *string  `protobuf:"bytes,2,opt,name=RecipeStepProductID,proto3,oneof" json:"RecipeStepProductID,omitempty"`
-	Name                      *string  `protobuf:"bytes,3,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Optional                  *bool    `protobuf:"varint,4,opt,name=Optional,proto3,oneof" json:"Optional,omitempty"`
-	MeasurementUnitID         *string  `protobuf:"bytes,5,opt,name=MeasurementUnitID,proto3,oneof" json:"MeasurementUnitID,omitempty"`
-	QuantityNotes             *string  `protobuf:"bytes,6,opt,name=QuantityNotes,proto3,oneof" json:"QuantityNotes,omitempty"`
-	IngredientNotes           *string  `protobuf:"bytes,7,opt,name=IngredientNotes,proto3,oneof" json:"IngredientNotes,omitempty"`
-	BelongsToRecipeStep       *string  `protobuf:"bytes,8,opt,name=BelongsToRecipeStep,proto3,oneof" json:"BelongsToRecipeStep,omitempty"`
-	MinimumQuantity           *float64 `protobuf:"fixed64,9,opt,name=MinimumQuantity,proto3,oneof" json:"MinimumQuantity,omitempty"`
-	MaximumQuantity           *float64 `protobuf:"fixed64,10,opt,name=MaximumQuantity,proto3,oneof" json:"MaximumQuantity,omitempty"`
-	OptionIndex               *uint32  `protobuf:"varint,11,opt,name=OptionIndex,proto3,oneof" json:"OptionIndex,omitempty"`
-	VesselIndex               *uint32  `protobuf:"varint,12,opt,name=VesselIndex,proto3,oneof" json:"VesselIndex,omitempty"`
-	ToTaste                   *bool    `protobuf:"varint,13,opt,name=ToTaste,proto3,oneof" json:"ToTaste,omitempty"`
-	ProductPercentageToUse    *float64 `protobuf:"fixed64,14,opt,name=ProductPercentageToUse,proto3,oneof" json:"ProductPercentageToUse,omitempty"`
-	RecipeStepProductRecipeID *string  `protobuf:"bytes,15,opt,name=RecipeStepProductRecipeID,proto3,oneof" json:"RecipeStepProductRecipeID,omitempty"`
+	QuantityNotes             *string `json:"QuantityNotes,omitempty"             protobuf:"bytes,6,opt,name=QuantityNotes,proto3,oneof"`
+	OptionIndex               *uint32 `json:"OptionIndex,omitempty"               protobuf:"varint,11,opt,name=OptionIndex,proto3,oneof"`
+	IngredientNotes           *string `json:"IngredientNotes,omitempty"           protobuf:"bytes,7,opt,name=IngredientNotes,proto3,oneof"`
+	BelongsToRecipeStep       *string `json:"BelongsToRecipeStep,omitempty"       protobuf:"bytes,8,opt,name=BelongsToRecipeStep,proto3,oneof"`
+	RecipeStepProductID       *string `json:"RecipeStepProductID,omitempty"       protobuf:"bytes,2,opt,name=RecipeStepProductID,proto3,oneof"`
+	Name                      *string `json:"Name,omitempty"                      protobuf:"bytes,3,opt,name=Name,proto3,oneof"`
+	Optional                  *bool   `json:"Optional,omitempty"                  protobuf:"varint,4,opt,name=Optional,proto3,oneof"`
+	MeasurementUnitID         *string `json:"MeasurementUnitID,omitempty"         protobuf:"bytes,5,opt,name=MeasurementUnitID,proto3,oneof"`
+	RecipeStepProductRecipeID *string `json:"RecipeStepProductRecipeID,omitempty" protobuf:"bytes,15,opt,name=RecipeStepProductRecipeID,proto3,oneof"`
+	state                     protoimpl.MessageState
+	IngredientID              *string  `json:"IngredientID,omitempty"           protobuf:"bytes,1,opt,name=IngredientID,proto3,oneof"`
+	MinimumQuantity           *float64 `json:"MinimumQuantity,omitempty"        protobuf:"fixed64,9,opt,name=MinimumQuantity,proto3,oneof"`
+	MaximumQuantity           *float64 `json:"MaximumQuantity,omitempty"        protobuf:"fixed64,10,opt,name=MaximumQuantity,proto3,oneof"`
+	ProductPercentageToUse    *float64 `json:"ProductPercentageToUse,omitempty" protobuf:"fixed64,14,opt,name=ProductPercentageToUse,proto3,oneof"`
+	VesselIndex               *uint32  `json:"VesselIndex,omitempty"            protobuf:"varint,12,opt,name=VesselIndex,proto3,oneof"`
+	ToTaste                   *bool    `json:"ToTaste,omitempty"                protobuf:"varint,13,opt,name=ToTaste,proto3,oneof"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *RecipeStepIngredientUpdateRequestInput) Reset() {
@@ -14023,16 +13887,15 @@ func (x *RecipeStepIngredientUpdateRequestInput) GetRecipeStepProductRecipeID() 
 
 type ValidPreparationVessel struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty"    protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	Vessel        *ValidVessel           `json:"Vessel,omitempty"        protobuf:"bytes,6,opt,name=Vessel,proto3"`
+	Preparation   *ValidPreparation      `json:"Preparation,omitempty"   protobuf:"bytes,7,opt,name=Preparation,proto3"`
+	ID            string                 `json:"ID,omitempty"            protobuf:"bytes,4,opt,name=ID,proto3"`
+	Notes         string                 `json:"Notes,omitempty"         protobuf:"bytes,5,opt,name=Notes,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID            string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	Notes         string                 `protobuf:"bytes,5,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	Vessel        *ValidVessel           `protobuf:"bytes,6,opt,name=Vessel,proto3" json:"Vessel,omitempty"`
-	Preparation   *ValidPreparation      `protobuf:"bytes,7,opt,name=Preparation,proto3" json:"Preparation,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidPreparationVessel) Reset() {
@@ -14117,13 +13980,12 @@ func (x *ValidPreparationVessel) GetPreparation() *ValidPreparation {
 }
 
 type ValidPreparationVesselCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes              string `protobuf:"bytes,1,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ValidPreparationID string `protobuf:"bytes,2,opt,name=ValidPreparationID,proto3" json:"ValidPreparationID,omitempty"`
-	ValidVesselID      string `protobuf:"bytes,3,opt,name=ValidVesselID,proto3" json:"ValidVesselID,omitempty"`
+	state              protoimpl.MessageState
+	Notes              string `json:"Notes,omitempty"              protobuf:"bytes,1,opt,name=Notes,proto3"`
+	ValidPreparationID string `json:"ValidPreparationID,omitempty" protobuf:"bytes,2,opt,name=ValidPreparationID,proto3"`
+	ValidVesselID      string `json:"ValidVesselID,omitempty"      protobuf:"bytes,3,opt,name=ValidVesselID,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ValidPreparationVesselCreationRequestInput) Reset() {
@@ -14180,13 +14042,12 @@ func (x *ValidPreparationVesselCreationRequestInput) GetValidVesselID() string {
 }
 
 type ValidPreparationVesselUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Notes              *string `protobuf:"bytes,1,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	ValidPreparationID *string `protobuf:"bytes,2,opt,name=ValidPreparationID,proto3,oneof" json:"ValidPreparationID,omitempty"`
-	ValidVesselID      *string `protobuf:"bytes,3,opt,name=ValidVesselID,proto3,oneof" json:"ValidVesselID,omitempty"`
+	state              protoimpl.MessageState
+	Notes              *string `json:"Notes,omitempty"              protobuf:"bytes,1,opt,name=Notes,proto3,oneof"`
+	ValidPreparationID *string `json:"ValidPreparationID,omitempty" protobuf:"bytes,2,opt,name=ValidPreparationID,proto3,oneof"`
+	ValidVesselID      *string `json:"ValidVesselID,omitempty"      protobuf:"bytes,3,opt,name=ValidVesselID,proto3,oneof"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ValidPreparationVesselUpdateRequestInput) Reset() {
@@ -14244,11 +14105,10 @@ func (x *ValidPreparationVesselUpdateRequestInput) GetValidVesselID() string {
 
 type APIError struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Message       string `json:"Message,omitempty" protobuf:"bytes,1,opt,name=Message,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Message string `protobuf:"bytes,1,opt,name=Message,proto3" json:"Message,omitempty"`
-	Code    uint64 `protobuf:"varint,2,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code          uint64 `json:"Code,omitempty" protobuf:"varint,2,opt,name=Code,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *APIError) Reset() {
@@ -14298,29 +14158,28 @@ func (x *APIError) GetCode() uint64 {
 }
 
 type Household struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                  *timestamppb.Timestamp             `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	SubscriptionPlanID         *string                            `protobuf:"bytes,2,opt,name=SubscriptionPlanID,proto3,oneof" json:"SubscriptionPlanID,omitempty"`
-	LastUpdatedAt              *timestamppb.Timestamp             `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt                 *timestamppb.Timestamp             `protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	Longitude                  *float64                           `protobuf:"fixed64,5,opt,name=Longitude,proto3,oneof" json:"Longitude,omitempty"`
-	Latitude                   *float64                           `protobuf:"fixed64,6,opt,name=Latitude,proto3,oneof" json:"Latitude,omitempty"`
-	State                      string                             `protobuf:"bytes,7,opt,name=State,proto3" json:"State,omitempty"`
-	ContactPhone               string                             `protobuf:"bytes,8,opt,name=ContactPhone,proto3" json:"ContactPhone,omitempty"`
-	City                       string                             `protobuf:"bytes,9,opt,name=City,proto3" json:"City,omitempty"`
-	AddressLine1               string                             `protobuf:"bytes,10,opt,name=AddressLine1,proto3" json:"AddressLine1,omitempty"`
-	ZipCode                    string                             `protobuf:"bytes,11,opt,name=ZipCode,proto3" json:"ZipCode,omitempty"`
-	Country                    string                             `protobuf:"bytes,12,opt,name=Country,proto3" json:"Country,omitempty"`
-	BillingStatus              string                             `protobuf:"bytes,13,opt,name=BillingStatus,proto3" json:"BillingStatus,omitempty"`
-	AddressLine2               string                             `protobuf:"bytes,14,opt,name=AddressLine2,proto3" json:"AddressLine2,omitempty"`
-	PaymentProcessorCustomerID string                             `protobuf:"bytes,15,opt,name=PaymentProcessorCustomerID,proto3" json:"PaymentProcessorCustomerID,omitempty"`
-	BelongsToUser              string                             `protobuf:"bytes,16,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
-	ID                         string                             `protobuf:"bytes,17,opt,name=ID,proto3" json:"ID,omitempty"`
-	Name                       string                             `protobuf:"bytes,18,opt,name=Name,proto3" json:"Name,omitempty"`
-	Members                    []*HouseholdUserMembershipWithUser `protobuf:"bytes,19,rep,name=Members,proto3" json:"Members,omitempty"`
+	Longitude                  *float64 `json:"Longitude,omitempty" protobuf:"fixed64,5,opt,name=Longitude,proto3,oneof"`
+	state                      protoimpl.MessageState
+	Latitude                   *float64               `json:"Latitude,omitempty"                   protobuf:"fixed64,6,opt,name=Latitude,proto3,oneof"`
+	CreatedAt                  *timestamppb.Timestamp `json:"CreatedAt,omitempty"                  protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	SubscriptionPlanID         *string                `json:"SubscriptionPlanID,omitempty"         protobuf:"bytes,2,opt,name=SubscriptionPlanID,proto3,oneof"`
+	LastUpdatedAt              *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"              protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt                 *timestamppb.Timestamp `json:"ArchivedAt,omitempty"                 protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof"`
+	ContactPhone               string                 `json:"ContactPhone,omitempty"               protobuf:"bytes,8,opt,name=ContactPhone,proto3"`
+	Country                    string                 `json:"Country,omitempty"                    protobuf:"bytes,12,opt,name=Country,proto3"`
+	State                      string                 `json:"State,omitempty"                      protobuf:"bytes,7,opt,name=State,proto3"`
+	Name                       string                 `json:"Name,omitempty"                       protobuf:"bytes,18,opt,name=Name,proto3"`
+	City                       string                 `json:"City,omitempty"                       protobuf:"bytes,9,opt,name=City,proto3"`
+	AddressLine1               string                 `json:"AddressLine1,omitempty"               protobuf:"bytes,10,opt,name=AddressLine1,proto3"`
+	ZipCode                    string                 `json:"ZipCode,omitempty"                    protobuf:"bytes,11,opt,name=ZipCode,proto3"`
+	ID                         string                 `json:"ID,omitempty"                         protobuf:"bytes,17,opt,name=ID,proto3"`
+	BillingStatus              string                 `json:"BillingStatus,omitempty"              protobuf:"bytes,13,opt,name=BillingStatus,proto3"`
+	AddressLine2               string                 `json:"AddressLine2,omitempty"               protobuf:"bytes,14,opt,name=AddressLine2,proto3"`
+	PaymentProcessorCustomerID string                 `json:"PaymentProcessorCustomerID,omitempty" protobuf:"bytes,15,opt,name=PaymentProcessorCustomerID,proto3"`
+	BelongsToUser              string                 `json:"BelongsToUser,omitempty"              protobuf:"bytes,16,opt,name=BelongsToUser,proto3"`
+	unknownFields              protoimpl.UnknownFields
+	Members                    []*HouseholdUserMembershipWithUser `json:"Members,omitempty" protobuf:"bytes,19,rep,name=Members,proto3"`
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *Household) Reset() {
@@ -14489,20 +14348,19 @@ func (x *Household) GetMembers() []*HouseholdUserMembershipWithUser {
 }
 
 type HouseholdCreationRequestInput struct {
+	Latitude      *float64 `json:"Latitude,omitempty" protobuf:"fixed64,1,opt,name=Latitude,proto3,oneof"`
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Longitude     *float64 `json:"Longitude,omitempty"    protobuf:"fixed64,2,opt,name=Longitude,proto3,oneof"`
+	ContactPhone  string   `json:"ContactPhone,omitempty" protobuf:"bytes,4,opt,name=ContactPhone,proto3"`
+	Name          string   `json:"Name,omitempty"         protobuf:"bytes,3,opt,name=Name,proto3"`
+	AddressLine1  string   `json:"AddressLine1,omitempty" protobuf:"bytes,5,opt,name=AddressLine1,proto3"`
+	AddressLine2  string   `json:"AddressLine2,omitempty" protobuf:"bytes,6,opt,name=AddressLine2,proto3"`
+	City          string   `json:"City,omitempty"         protobuf:"bytes,7,opt,name=City,proto3"`
+	State         string   `json:"State,omitempty"        protobuf:"bytes,8,opt,name=State,proto3"`
+	ZipCode       string   `json:"ZipCode,omitempty"      protobuf:"bytes,9,opt,name=ZipCode,proto3"`
+	Country       string   `json:"Country,omitempty"      protobuf:"bytes,10,opt,name=Country,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Latitude     *float64 `protobuf:"fixed64,1,opt,name=Latitude,proto3,oneof" json:"Latitude,omitempty"`
-	Longitude    *float64 `protobuf:"fixed64,2,opt,name=Longitude,proto3,oneof" json:"Longitude,omitempty"`
-	Name         string   `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
-	ContactPhone string   `protobuf:"bytes,4,opt,name=ContactPhone,proto3" json:"ContactPhone,omitempty"`
-	AddressLine1 string   `protobuf:"bytes,5,opt,name=AddressLine1,proto3" json:"AddressLine1,omitempty"`
-	AddressLine2 string   `protobuf:"bytes,6,opt,name=AddressLine2,proto3" json:"AddressLine2,omitempty"`
-	City         string   `protobuf:"bytes,7,opt,name=City,proto3" json:"City,omitempty"`
-	State        string   `protobuf:"bytes,8,opt,name=State,proto3" json:"State,omitempty"`
-	ZipCode      string   `protobuf:"bytes,9,opt,name=ZipCode,proto3" json:"ZipCode,omitempty"`
-	Country      string   `protobuf:"bytes,10,opt,name=Country,proto3" json:"Country,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HouseholdCreationRequestInput) Reset() {
@@ -14608,20 +14466,19 @@ func (x *HouseholdCreationRequestInput) GetCountry() string {
 }
 
 type HouseholdUpdateRequestInput struct {
+	AddressLine2  *string `json:"AddressLine2,omitempty" protobuf:"bytes,4,opt,name=AddressLine2,proto3,oneof"`
+	Name          *string `json:"Name,omitempty"         protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	ContactPhone  *string `json:"ContactPhone,omitempty" protobuf:"bytes,2,opt,name=ContactPhone,proto3,oneof"`
+	AddressLine1  *string `json:"AddressLine1,omitempty" protobuf:"bytes,3,opt,name=AddressLine1,proto3,oneof"`
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	City          *string  `json:"City,omitempty"      protobuf:"bytes,5,opt,name=City,proto3,oneof"`
+	State         *string  `json:"State,omitempty"     protobuf:"bytes,6,opt,name=State,proto3,oneof"`
+	ZipCode       *string  `json:"ZipCode,omitempty"   protobuf:"bytes,7,opt,name=ZipCode,proto3,oneof"`
+	Country       *string  `json:"Country,omitempty"   protobuf:"bytes,8,opt,name=Country,proto3,oneof"`
+	Latitude      *float64 `json:"Latitude,omitempty"  protobuf:"fixed64,9,opt,name=Latitude,proto3,oneof"`
+	Longitude     *float64 `json:"Longitude,omitempty" protobuf:"fixed64,10,opt,name=Longitude,proto3,oneof"`
 	unknownFields protoimpl.UnknownFields
-
-	Name         *string  `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	ContactPhone *string  `protobuf:"bytes,2,opt,name=ContactPhone,proto3,oneof" json:"ContactPhone,omitempty"`
-	AddressLine1 *string  `protobuf:"bytes,3,opt,name=AddressLine1,proto3,oneof" json:"AddressLine1,omitempty"`
-	AddressLine2 *string  `protobuf:"bytes,4,opt,name=AddressLine2,proto3,oneof" json:"AddressLine2,omitempty"`
-	City         *string  `protobuf:"bytes,5,opt,name=City,proto3,oneof" json:"City,omitempty"`
-	State        *string  `protobuf:"bytes,6,opt,name=State,proto3,oneof" json:"State,omitempty"`
-	ZipCode      *string  `protobuf:"bytes,7,opt,name=ZipCode,proto3,oneof" json:"ZipCode,omitempty"`
-	Country      *string  `protobuf:"bytes,8,opt,name=Country,proto3,oneof" json:"Country,omitempty"`
-	Latitude     *float64 `protobuf:"fixed64,9,opt,name=Latitude,proto3,oneof" json:"Latitude,omitempty"`
-	Longitude    *float64 `protobuf:"fixed64,10,opt,name=Longitude,proto3,oneof" json:"Longitude,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HouseholdUpdateRequestInput) Reset() {
@@ -14728,12 +14585,11 @@ func (x *HouseholdUpdateRequestInput) GetLongitude() float64 {
 
 type HouseholdOwnershipTransferInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Reason        string `json:"Reason,omitempty"       protobuf:"bytes,1,opt,name=Reason,proto3"`
+	CurrentOwner  string `json:"CurrentOwner,omitempty" protobuf:"bytes,2,opt,name=CurrentOwner,proto3"`
+	NewOwner      string `json:"NewOwner,omitempty"     protobuf:"bytes,3,opt,name=NewOwner,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	Reason       string `protobuf:"bytes,1,opt,name=Reason,proto3" json:"Reason,omitempty"`
-	CurrentOwner string `protobuf:"bytes,2,opt,name=CurrentOwner,proto3" json:"CurrentOwner,omitempty"`
-	NewOwner     string `protobuf:"bytes,3,opt,name=NewOwner,proto3" json:"NewOwner,omitempty"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HouseholdOwnershipTransferInput) Reset() {
@@ -14790,19 +14646,18 @@ func (x *HouseholdOwnershipTransferInput) GetNewOwner() string {
 }
 
 type ServiceSettingConfiguration struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	LastUpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt         *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID                 string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
-	Value              string                 `protobuf:"bytes,5,opt,name=Value,proto3" json:"Value,omitempty"`
-	Notes              string                 `protobuf:"bytes,6,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	BelongsToUser      string                 `protobuf:"bytes,7,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
-	BelongsToHousehold string                 `protobuf:"bytes,8,opt,name=BelongsToHousehold,proto3" json:"BelongsToHousehold,omitempty"`
-	ServiceSetting     *ServiceSetting        `protobuf:"bytes,9,opt,name=ServiceSetting,proto3" json:"ServiceSetting,omitempty"`
+	state              protoimpl.MessageState
+	CreatedAt          *timestamppb.Timestamp `json:"CreatedAt,omitempty"          protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	LastUpdatedAt      *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty"      protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3,oneof"`
+	ArchivedAt         *timestamppb.Timestamp `json:"ArchivedAt,omitempty"         protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	ServiceSetting     *ServiceSetting        `json:"ServiceSetting,omitempty"     protobuf:"bytes,9,opt,name=ServiceSetting,proto3"`
+	ID                 string                 `json:"ID,omitempty"                 protobuf:"bytes,4,opt,name=ID,proto3"`
+	Value              string                 `json:"Value,omitempty"              protobuf:"bytes,5,opt,name=Value,proto3"`
+	Notes              string                 `json:"Notes,omitempty"              protobuf:"bytes,6,opt,name=Notes,proto3"`
+	BelongsToUser      string                 `json:"BelongsToUser,omitempty"      protobuf:"bytes,7,opt,name=BelongsToUser,proto3"`
+	BelongsToHousehold string                 `json:"BelongsToHousehold,omitempty" protobuf:"bytes,8,opt,name=BelongsToHousehold,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ServiceSettingConfiguration) Reset() {
@@ -14901,15 +14756,14 @@ func (x *ServiceSettingConfiguration) GetServiceSetting() *ServiceSetting {
 }
 
 type ServiceSettingConfigurationCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Value              string `protobuf:"bytes,1,opt,name=Value,proto3" json:"Value,omitempty"`
-	Notes              string `protobuf:"bytes,2,opt,name=Notes,proto3" json:"Notes,omitempty"`
-	ServiceSettingID   string `protobuf:"bytes,3,opt,name=ServiceSettingID,proto3" json:"ServiceSettingID,omitempty"`
-	BelongsToUser      string `protobuf:"bytes,4,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
-	BelongsToHousehold string `protobuf:"bytes,5,opt,name=BelongsToHousehold,proto3" json:"BelongsToHousehold,omitempty"`
+	state              protoimpl.MessageState
+	Value              string `json:"Value,omitempty"              protobuf:"bytes,1,opt,name=Value,proto3"`
+	Notes              string `json:"Notes,omitempty"              protobuf:"bytes,2,opt,name=Notes,proto3"`
+	ServiceSettingID   string `json:"ServiceSettingID,omitempty"   protobuf:"bytes,3,opt,name=ServiceSettingID,proto3"`
+	BelongsToUser      string `json:"BelongsToUser,omitempty"      protobuf:"bytes,4,opt,name=BelongsToUser,proto3"`
+	BelongsToHousehold string `json:"BelongsToHousehold,omitempty" protobuf:"bytes,5,opt,name=BelongsToHousehold,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ServiceSettingConfigurationCreationRequestInput) Reset() {
@@ -14980,15 +14834,14 @@ func (x *ServiceSettingConfigurationCreationRequestInput) GetBelongsToHousehold(
 }
 
 type ServiceSettingConfigurationUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Value              *string `protobuf:"bytes,1,opt,name=Value,proto3,oneof" json:"Value,omitempty"`
-	Notes              *string `protobuf:"bytes,2,opt,name=Notes,proto3,oneof" json:"Notes,omitempty"`
-	ServiceSettingID   *string `protobuf:"bytes,3,opt,name=ServiceSettingID,proto3,oneof" json:"ServiceSettingID,omitempty"`
-	BelongsToUser      *string `protobuf:"bytes,4,opt,name=BelongsToUser,proto3,oneof" json:"BelongsToUser,omitempty"`
-	BelongsToHousehold *string `protobuf:"bytes,5,opt,name=BelongsToHousehold,proto3,oneof" json:"BelongsToHousehold,omitempty"`
+	state              protoimpl.MessageState
+	Value              *string `json:"Value,omitempty"              protobuf:"bytes,1,opt,name=Value,proto3,oneof"`
+	Notes              *string `json:"Notes,omitempty"              protobuf:"bytes,2,opt,name=Notes,proto3,oneof"`
+	ServiceSettingID   *string `json:"ServiceSettingID,omitempty"   protobuf:"bytes,3,opt,name=ServiceSettingID,proto3,oneof"`
+	BelongsToUser      *string `json:"BelongsToUser,omitempty"      protobuf:"bytes,4,opt,name=BelongsToUser,proto3,oneof"`
+	BelongsToHousehold *string `json:"BelongsToHousehold,omitempty" protobuf:"bytes,5,opt,name=BelongsToHousehold,proto3,oneof"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ServiceSettingConfigurationUpdateRequestInput) Reset() {
@@ -15059,32 +14912,31 @@ func (x *ServiceSettingConfigurationUpdateRequestInput) GetBelongsToHousehold() 
 }
 
 type ValidPreparation struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CreatedAt                   *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	MaximumInstrumentCount      *int32                 `protobuf:"varint,2,opt,name=MaximumInstrumentCount,proto3,oneof" json:"MaximumInstrumentCount,omitempty"`
-	ArchivedAt                  *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	MaximumIngredientCount      *int32                 `protobuf:"varint,4,opt,name=MaximumIngredientCount,proto3,oneof" json:"MaximumIngredientCount,omitempty"`
-	LastUpdatedAt               *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	MaximumVesselCount          *int32                 `protobuf:"varint,6,opt,name=MaximumVesselCount,proto3,oneof" json:"MaximumVesselCount,omitempty"`
-	IconPath                    string                 `protobuf:"bytes,7,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	PastTense                   string                 `protobuf:"bytes,8,opt,name=PastTense,proto3" json:"PastTense,omitempty"`
-	ID                          string                 `protobuf:"bytes,9,opt,name=ID,proto3" json:"ID,omitempty"`
-	Name                        string                 `protobuf:"bytes,10,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description                 string                 `protobuf:"bytes,11,opt,name=Description,proto3" json:"Description,omitempty"`
-	Slug                        string                 `protobuf:"bytes,12,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	MinimumIngredientCount      int32                  `protobuf:"varint,13,opt,name=MinimumIngredientCount,proto3" json:"MinimumIngredientCount,omitempty"`
-	MinimumInstrumentCount      int32                  `protobuf:"varint,14,opt,name=MinimumInstrumentCount,proto3" json:"MinimumInstrumentCount,omitempty"`
-	MinimumVesselCount          int32                  `protobuf:"varint,15,opt,name=MinimumVesselCount,proto3" json:"MinimumVesselCount,omitempty"`
-	RestrictToIngredients       bool                   `protobuf:"varint,16,opt,name=RestrictToIngredients,proto3" json:"RestrictToIngredients,omitempty"`
-	TemperatureRequired         bool                   `protobuf:"varint,17,opt,name=TemperatureRequired,proto3" json:"TemperatureRequired,omitempty"`
-	TimeEstimateRequired        bool                   `protobuf:"varint,18,opt,name=TimeEstimateRequired,proto3" json:"TimeEstimateRequired,omitempty"`
-	ConditionExpressionRequired bool                   `protobuf:"varint,19,opt,name=ConditionExpressionRequired,proto3" json:"ConditionExpressionRequired,omitempty"`
-	ConsumesVessel              bool                   `protobuf:"varint,20,opt,name=ConsumesVessel,proto3" json:"ConsumesVessel,omitempty"`
-	OnlyForVessels              bool                   `protobuf:"varint,21,opt,name=OnlyForVessels,proto3" json:"OnlyForVessels,omitempty"`
-	YieldsNothing               bool                   `protobuf:"varint,22,opt,name=YieldsNothing,proto3" json:"YieldsNothing,omitempty"`
+	LastUpdatedAt               *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,5,opt,name=LastUpdatedAt,proto3,oneof"`
+	state                       protoimpl.MessageState
+	MaximumVesselCount          *int32                 `json:"MaximumVesselCount,omitempty"     protobuf:"varint,6,opt,name=MaximumVesselCount,proto3,oneof"`
+	CreatedAt                   *timestamppb.Timestamp `json:"CreatedAt,omitempty"              protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	MaximumInstrumentCount      *int32                 `json:"MaximumInstrumentCount,omitempty" protobuf:"varint,2,opt,name=MaximumInstrumentCount,proto3,oneof"`
+	ArchivedAt                  *timestamppb.Timestamp `json:"ArchivedAt,omitempty"             protobuf:"bytes,3,opt,name=ArchivedAt,proto3,oneof"`
+	MaximumIngredientCount      *int32                 `json:"MaximumIngredientCount,omitempty" protobuf:"varint,4,opt,name=MaximumIngredientCount,proto3,oneof"`
+	Name                        string                 `json:"Name,omitempty"                   protobuf:"bytes,10,opt,name=Name,proto3"`
+	Slug                        string                 `json:"Slug,omitempty"                   protobuf:"bytes,12,opt,name=Slug,proto3"`
+	IconPath                    string                 `json:"IconPath,omitempty"               protobuf:"bytes,7,opt,name=IconPath,proto3"`
+	PastTense                   string                 `json:"PastTense,omitempty"              protobuf:"bytes,8,opt,name=PastTense,proto3"`
+	ID                          string                 `json:"ID,omitempty"                     protobuf:"bytes,9,opt,name=ID,proto3"`
+	Description                 string                 `json:"Description,omitempty"            protobuf:"bytes,11,opt,name=Description,proto3"`
+	unknownFields               protoimpl.UnknownFields
+	MinimumInstrumentCount      int32 `json:"MinimumInstrumentCount,omitempty" protobuf:"varint,14,opt,name=MinimumInstrumentCount,proto3"`
+	MinimumIngredientCount      int32 `json:"MinimumIngredientCount,omitempty" protobuf:"varint,13,opt,name=MinimumIngredientCount,proto3"`
+	sizeCache                   protoimpl.SizeCache
+	MinimumVesselCount          int32 `json:"MinimumVesselCount,omitempty"          protobuf:"varint,15,opt,name=MinimumVesselCount,proto3"`
+	RestrictToIngredients       bool  `json:"RestrictToIngredients,omitempty"       protobuf:"varint,16,opt,name=RestrictToIngredients,proto3"`
+	TemperatureRequired         bool  `json:"TemperatureRequired,omitempty"         protobuf:"varint,17,opt,name=TemperatureRequired,proto3"`
+	TimeEstimateRequired        bool  `json:"TimeEstimateRequired,omitempty"        protobuf:"varint,18,opt,name=TimeEstimateRequired,proto3"`
+	ConditionExpressionRequired bool  `json:"ConditionExpressionRequired,omitempty" protobuf:"varint,19,opt,name=ConditionExpressionRequired,proto3"`
+	ConsumesVessel              bool  `json:"ConsumesVessel,omitempty"              protobuf:"varint,20,opt,name=ConsumesVessel,proto3"`
+	OnlyForVessels              bool  `json:"OnlyForVessels,omitempty"              protobuf:"varint,21,opt,name=OnlyForVessels,proto3"`
+	YieldsNothing               bool  `json:"YieldsNothing,omitempty"               protobuf:"varint,22,opt,name=YieldsNothing,proto3"`
 }
 
 func (x *ValidPreparation) Reset() {
@@ -15274,28 +15126,27 @@ func (x *ValidPreparation) GetYieldsNothing() bool {
 }
 
 type ValidPreparationCreationRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	MaximumInstrumentCount      *int32 `protobuf:"varint,1,opt,name=MaximumInstrumentCount,proto3,oneof" json:"MaximumInstrumentCount,omitempty"`
-	MaximumIngredientCount      *int32 `protobuf:"varint,2,opt,name=MaximumIngredientCount,proto3,oneof" json:"MaximumIngredientCount,omitempty"`
-	MaximumVesselCount          *int32 `protobuf:"varint,3,opt,name=MaximumVesselCount,proto3,oneof" json:"MaximumVesselCount,omitempty"`
-	IconPath                    string `protobuf:"bytes,4,opt,name=IconPath,proto3" json:"IconPath,omitempty"`
-	PastTense                   string `protobuf:"bytes,5,opt,name=PastTense,proto3" json:"PastTense,omitempty"`
-	Slug                        string `protobuf:"bytes,6,opt,name=Slug,proto3" json:"Slug,omitempty"`
-	Name                        string `protobuf:"bytes,7,opt,name=Name,proto3" json:"Name,omitempty"`
-	Description                 string `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description,omitempty"`
-	MinimumIngredientCount      int32  `protobuf:"varint,9,opt,name=MinimumIngredientCount,proto3" json:"MinimumIngredientCount,omitempty"`
-	MinimumVesselCount          int32  `protobuf:"varint,10,opt,name=MinimumVesselCount,proto3" json:"MinimumVesselCount,omitempty"`
-	MinimumInstrumentCount      int32  `protobuf:"varint,11,opt,name=MinimumInstrumentCount,proto3" json:"MinimumInstrumentCount,omitempty"`
-	TemperatureRequired         bool   `protobuf:"varint,12,opt,name=TemperatureRequired,proto3" json:"TemperatureRequired,omitempty"`
-	TimeEstimateRequired        bool   `protobuf:"varint,13,opt,name=TimeEstimateRequired,proto3" json:"TimeEstimateRequired,omitempty"`
-	ConditionExpressionRequired bool   `protobuf:"varint,14,opt,name=ConditionExpressionRequired,proto3" json:"ConditionExpressionRequired,omitempty"`
-	ConsumesVessel              bool   `protobuf:"varint,15,opt,name=ConsumesVessel,proto3" json:"ConsumesVessel,omitempty"`
-	OnlyForVessels              bool   `protobuf:"varint,16,opt,name=OnlyForVessels,proto3" json:"OnlyForVessels,omitempty"`
-	RestrictToIngredients       bool   `protobuf:"varint,17,opt,name=RestrictToIngredients,proto3" json:"RestrictToIngredients,omitempty"`
-	YieldsNothing               bool   `protobuf:"varint,18,opt,name=YieldsNothing,proto3" json:"YieldsNothing,omitempty"`
+	MaximumIngredientCount      *int32 `json:"MaximumIngredientCount,omitempty" protobuf:"varint,2,opt,name=MaximumIngredientCount,proto3,oneof"`
+	state                       protoimpl.MessageState
+	MaximumVesselCount          *int32 `json:"MaximumVesselCount,omitempty"     protobuf:"varint,3,opt,name=MaximumVesselCount,proto3,oneof"`
+	MaximumInstrumentCount      *int32 `json:"MaximumInstrumentCount,omitempty" protobuf:"varint,1,opt,name=MaximumInstrumentCount,proto3,oneof"`
+	Description                 string `json:"Description,omitempty"            protobuf:"bytes,8,opt,name=Description,proto3"`
+	IconPath                    string `json:"IconPath,omitempty"               protobuf:"bytes,4,opt,name=IconPath,proto3"`
+	PastTense                   string `json:"PastTense,omitempty"              protobuf:"bytes,5,opt,name=PastTense,proto3"`
+	Slug                        string `json:"Slug,omitempty"                   protobuf:"bytes,6,opt,name=Slug,proto3"`
+	Name                        string `json:"Name,omitempty"                   protobuf:"bytes,7,opt,name=Name,proto3"`
+	unknownFields               protoimpl.UnknownFields
+	MinimumInstrumentCount      int32 `json:"MinimumInstrumentCount,omitempty" protobuf:"varint,11,opt,name=MinimumInstrumentCount,proto3"`
+	MinimumIngredientCount      int32 `json:"MinimumIngredientCount,omitempty" protobuf:"varint,9,opt,name=MinimumIngredientCount,proto3"`
+	MinimumVesselCount          int32 `json:"MinimumVesselCount,omitempty"     protobuf:"varint,10,opt,name=MinimumVesselCount,proto3"`
+	sizeCache                   protoimpl.SizeCache
+	TemperatureRequired         bool `json:"TemperatureRequired,omitempty"         protobuf:"varint,12,opt,name=TemperatureRequired,proto3"`
+	TimeEstimateRequired        bool `json:"TimeEstimateRequired,omitempty"        protobuf:"varint,13,opt,name=TimeEstimateRequired,proto3"`
+	ConditionExpressionRequired bool `json:"ConditionExpressionRequired,omitempty" protobuf:"varint,14,opt,name=ConditionExpressionRequired,proto3"`
+	ConsumesVessel              bool `json:"ConsumesVessel,omitempty"              protobuf:"varint,15,opt,name=ConsumesVessel,proto3"`
+	OnlyForVessels              bool `json:"OnlyForVessels,omitempty"              protobuf:"varint,16,opt,name=OnlyForVessels,proto3"`
+	RestrictToIngredients       bool `json:"RestrictToIngredients,omitempty"       protobuf:"varint,17,opt,name=RestrictToIngredients,proto3"`
+	YieldsNothing               bool `json:"YieldsNothing,omitempty"               protobuf:"varint,18,opt,name=YieldsNothing,proto3"`
 }
 
 func (x *ValidPreparationCreationRequestInput) Reset() {
@@ -15457,28 +15308,27 @@ func (x *ValidPreparationCreationRequestInput) GetYieldsNothing() bool {
 }
 
 type ValidPreparationUpdateRequestInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name                        *string `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Description                 *string `protobuf:"bytes,2,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	IconPath                    *string `protobuf:"bytes,3,opt,name=IconPath,proto3,oneof" json:"IconPath,omitempty"`
-	YieldsNothing               *bool   `protobuf:"varint,4,opt,name=YieldsNothing,proto3,oneof" json:"YieldsNothing,omitempty"`
-	Slug                        *string `protobuf:"bytes,5,opt,name=Slug,proto3,oneof" json:"Slug,omitempty"`
-	RestrictToIngredients       *bool   `protobuf:"varint,6,opt,name=RestrictToIngredients,proto3,oneof" json:"RestrictToIngredients,omitempty"`
-	PastTense                   *string `protobuf:"bytes,7,opt,name=PastTense,proto3,oneof" json:"PastTense,omitempty"`
-	MinimumInstrumentCount      *int32  `protobuf:"varint,8,opt,name=MinimumInstrumentCount,proto3,oneof" json:"MinimumInstrumentCount,omitempty"`
-	MaximumInstrumentCount      *int32  `protobuf:"varint,9,opt,name=MaximumInstrumentCount,proto3,oneof" json:"MaximumInstrumentCount,omitempty"`
-	MinimumIngredientCount      *int32  `protobuf:"varint,10,opt,name=MinimumIngredientCount,proto3,oneof" json:"MinimumIngredientCount,omitempty"`
-	MaximumIngredientCount      *int32  `protobuf:"varint,11,opt,name=MaximumIngredientCount,proto3,oneof" json:"MaximumIngredientCount,omitempty"`
-	TemperatureRequired         *bool   `protobuf:"varint,12,opt,name=TemperatureRequired,proto3,oneof" json:"TemperatureRequired,omitempty"`
-	TimeEstimateRequired        *bool   `protobuf:"varint,13,opt,name=TimeEstimateRequired,proto3,oneof" json:"TimeEstimateRequired,omitempty"`
-	ConditionExpressionRequired *bool   `protobuf:"varint,14,opt,name=ConditionExpressionRequired,proto3,oneof" json:"ConditionExpressionRequired,omitempty"`
-	ConsumesVessel              *bool   `protobuf:"varint,15,opt,name=ConsumesVessel,proto3,oneof" json:"ConsumesVessel,omitempty"`
-	OnlyForVessels              *bool   `protobuf:"varint,16,opt,name=OnlyForVessels,proto3,oneof" json:"OnlyForVessels,omitempty"`
-	MinimumVesselCount          *int32  `protobuf:"varint,17,opt,name=MinimumVesselCount,proto3,oneof" json:"MinimumVesselCount,omitempty"`
-	MaximumVesselCount          *int32  `protobuf:"varint,18,opt,name=MaximumVesselCount,proto3,oneof" json:"MaximumVesselCount,omitempty"`
+	MinimumInstrumentCount      *int32  `json:"MinimumInstrumentCount,omitempty" protobuf:"varint,8,opt,name=MinimumInstrumentCount,proto3,oneof"`
+	Description                 *string `json:"Description,omitempty"            protobuf:"bytes,2,opt,name=Description,proto3,oneof"`
+	state                       protoimpl.MessageState
+	MinimumIngredientCount      *int32  `json:"MinimumIngredientCount,omitempty"      protobuf:"varint,10,opt,name=MinimumIngredientCount,proto3,oneof"`
+	MaximumInstrumentCount      *int32  `json:"MaximumInstrumentCount,omitempty"      protobuf:"varint,9,opt,name=MaximumInstrumentCount,proto3,oneof"`
+	IconPath                    *string `json:"IconPath,omitempty"                    protobuf:"bytes,3,opt,name=IconPath,proto3,oneof"`
+	YieldsNothing               *bool   `json:"YieldsNothing,omitempty"               protobuf:"varint,4,opt,name=YieldsNothing,proto3,oneof"`
+	Slug                        *string `json:"Slug,omitempty"                        protobuf:"bytes,5,opt,name=Slug,proto3,oneof"`
+	RestrictToIngredients       *bool   `json:"RestrictToIngredients,omitempty"       protobuf:"varint,6,opt,name=RestrictToIngredients,proto3,oneof"`
+	PastTense                   *string `json:"PastTense,omitempty"                   protobuf:"bytes,7,opt,name=PastTense,proto3,oneof"`
+	MaximumVesselCount          *int32  `json:"MaximumVesselCount,omitempty"          protobuf:"varint,18,opt,name=MaximumVesselCount,proto3,oneof"`
+	MinimumVesselCount          *int32  `json:"MinimumVesselCount,omitempty"          protobuf:"varint,17,opt,name=MinimumVesselCount,proto3,oneof"`
+	Name                        *string `json:"Name,omitempty"                        protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	MaximumIngredientCount      *int32  `json:"MaximumIngredientCount,omitempty"      protobuf:"varint,11,opt,name=MaximumIngredientCount,proto3,oneof"`
+	TemperatureRequired         *bool   `json:"TemperatureRequired,omitempty"         protobuf:"varint,12,opt,name=TemperatureRequired,proto3,oneof"`
+	TimeEstimateRequired        *bool   `json:"TimeEstimateRequired,omitempty"        protobuf:"varint,13,opt,name=TimeEstimateRequired,proto3,oneof"`
+	ConditionExpressionRequired *bool   `json:"ConditionExpressionRequired,omitempty" protobuf:"varint,14,opt,name=ConditionExpressionRequired,proto3,oneof"`
+	ConsumesVessel              *bool   `json:"ConsumesVessel,omitempty"              protobuf:"varint,15,opt,name=ConsumesVessel,proto3,oneof"`
+	OnlyForVessels              *bool   `json:"OnlyForVessels,omitempty"              protobuf:"varint,16,opt,name=OnlyForVessels,proto3,oneof"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *ValidPreparationUpdateRequestInput) Reset() {
@@ -15640,20 +15490,19 @@ func (x *ValidPreparationUpdateRequestInput) GetMaximumVesselCount() int32 {
 }
 
 type ServiceSetting struct {
+	ArchivedAt    *timestamppb.Timestamp `json:"ArchivedAt,omitempty"    protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof"`
+	CreatedAt     *timestamppb.Timestamp `json:"CreatedAt,omitempty"     protobuf:"bytes,1,opt,name=CreatedAt,proto3"`
+	DefaultValue  *string                `json:"DefaultValue,omitempty"  protobuf:"bytes,2,opt,name=DefaultValue,proto3,oneof"`
+	LastUpdatedAt *timestamppb.Timestamp `json:"LastUpdatedAt,omitempty" protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof"`
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	ID            string `json:"ID,omitempty"          protobuf:"bytes,5,opt,name=ID,proto3"`
+	Name          string `json:"Name,omitempty"        protobuf:"bytes,6,opt,name=Name,proto3"`
+	Type          string `json:"Type,omitempty"        protobuf:"bytes,7,opt,name=Type,proto3"`
+	Description   string `json:"Description,omitempty" protobuf:"bytes,8,opt,name=Description,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	DefaultValue  *string                `protobuf:"bytes,2,opt,name=DefaultValue,proto3,oneof" json:"DefaultValue,omitempty"`
-	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3,oneof" json:"LastUpdatedAt,omitempty"`
-	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=ArchivedAt,proto3,oneof" json:"ArchivedAt,omitempty"`
-	ID            string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	Name          string                 `protobuf:"bytes,6,opt,name=Name,proto3" json:"Name,omitempty"`
-	Type          string                 `protobuf:"bytes,7,opt,name=Type,proto3" json:"Type,omitempty"`
-	Description   string                 `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description,omitempty"`
-	Enumeration   []string               `protobuf:"bytes,9,rep,name=Enumeration,proto3" json:"Enumeration,omitempty"`
-	AdminsOnly    bool                   `protobuf:"varint,10,opt,name=AdminsOnly,proto3" json:"AdminsOnly,omitempty"`
+	Enumeration   []string `json:"Enumeration,omitempty" protobuf:"bytes,9,rep,name=Enumeration,proto3"`
+	sizeCache     protoimpl.SizeCache
+	AdminsOnly    bool `json:"AdminsOnly,omitempty" protobuf:"varint,10,opt,name=AdminsOnly,proto3"`
 }
 
 func (x *ServiceSetting) Reset() {
@@ -15760,15 +15609,14 @@ func (x *ServiceSetting) GetAdminsOnly() bool {
 
 type ServiceSettingCreationRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	DefaultValue  *string `json:"DefaultValue,omitempty" protobuf:"bytes,1,opt,name=DefaultValue,proto3,oneof"`
+	Name          string  `json:"Name,omitempty"         protobuf:"bytes,2,opt,name=Name,proto3"`
+	Type          string  `json:"Type,omitempty"         protobuf:"bytes,3,opt,name=Type,proto3"`
+	Description   string  `json:"Description,omitempty"  protobuf:"bytes,4,opt,name=Description,proto3"`
 	unknownFields protoimpl.UnknownFields
-
-	DefaultValue *string  `protobuf:"bytes,1,opt,name=DefaultValue,proto3,oneof" json:"DefaultValue,omitempty"`
-	Name         string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	Type         string   `protobuf:"bytes,3,opt,name=Type,proto3" json:"Type,omitempty"`
-	Description  string   `protobuf:"bytes,4,opt,name=Description,proto3" json:"Description,omitempty"`
-	Enumeration  []string `protobuf:"bytes,5,rep,name=Enumeration,proto3" json:"Enumeration,omitempty"`
-	AdminsOnly   bool     `protobuf:"varint,6,opt,name=AdminsOnly,proto3" json:"AdminsOnly,omitempty"`
+	Enumeration   []string `json:"Enumeration,omitempty" protobuf:"bytes,5,rep,name=Enumeration,proto3"`
+	sizeCache     protoimpl.SizeCache
+	AdminsOnly    bool `json:"AdminsOnly,omitempty" protobuf:"varint,6,opt,name=AdminsOnly,proto3"`
 }
 
 func (x *ServiceSettingCreationRequestInput) Reset() {
@@ -15847,15 +15695,14 @@ func (x *ServiceSettingCreationRequestInput) GetAdminsOnly() bool {
 
 type ServiceSettingUpdateRequestInput struct {
 	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
+	Name          *string `json:"Name,omitempty"         protobuf:"bytes,1,opt,name=Name,proto3,oneof"`
+	Type          *string `json:"Type,omitempty"         protobuf:"bytes,2,opt,name=Type,proto3,oneof"`
+	Description   *string `json:"Description,omitempty"  protobuf:"bytes,3,opt,name=Description,proto3,oneof"`
+	DefaultValue  *string `json:"DefaultValue,omitempty" protobuf:"bytes,4,opt,name=DefaultValue,proto3,oneof"`
+	AdminsOnly    *bool   `json:"AdminsOnly,omitempty"   protobuf:"varint,5,opt,name=AdminsOnly,proto3,oneof"`
 	unknownFields protoimpl.UnknownFields
-
-	Name         *string  `protobuf:"bytes,1,opt,name=Name,proto3,oneof" json:"Name,omitempty"`
-	Type         *string  `protobuf:"bytes,2,opt,name=Type,proto3,oneof" json:"Type,omitempty"`
-	Description  *string  `protobuf:"bytes,3,opt,name=Description,proto3,oneof" json:"Description,omitempty"`
-	DefaultValue *string  `protobuf:"bytes,4,opt,name=DefaultValue,proto3,oneof" json:"DefaultValue,omitempty"`
-	AdminsOnly   *bool    `protobuf:"varint,5,opt,name=AdminsOnly,proto3,oneof" json:"AdminsOnly,omitempty"`
-	Enumeration  []string `protobuf:"bytes,6,rep,name=Enumeration,proto3" json:"Enumeration,omitempty"`
+	Enumeration   []string `json:"Enumeration,omitempty" protobuf:"bytes,6,rep,name=Enumeration,proto3"`
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ServiceSettingUpdateRequestInput) Reset() {

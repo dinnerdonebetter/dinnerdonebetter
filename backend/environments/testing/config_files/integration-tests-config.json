@@ -78,9 +78,14 @@
 			}
 		}
 	},
-	"server": {
+	"httpServer": {
 		"startupDeadline": 60000000000,
-		"httpPort": 8000,
+		"port": 8000,
+		"debug": false
+	},
+	"grpcServer": {
+		"startupDeadline": 60000000000,
+		"port": 8001,
 		"debug": false
 	},
 	"database": {

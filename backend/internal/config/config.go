@@ -16,6 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
+	"github.com/dinnerdonebetter/backend/internal/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 
 	"github.com/hashicorp/go-multierror"
@@ -39,7 +40,8 @@ type (
 
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
-		_             struct{}                  `json:"-"`
+		_ struct{} `json:"-"`
+
 		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
 		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
 		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
@@ -49,7 +51,8 @@ type (
 		Meta          MetaSettings              `json:"meta"          toml:"meta,omitempty"`
 		Routing       routing.Config            `json:"routing"       toml:"routing,omitempty"`
 		Events        msgconfig.Config          `json:"events"        toml:"events,omitempty"`
-		Server        http.Config               `json:"server"        toml:"server,omitempty"`
+		HTTPServer    http.Config               `json:"httpServer"    toml:"http_server,omitempty"`
+		GRPCServer    grpc.Config               `json:"grpcServer"    toml:"grpc_server,omitempty"`
 		Database      dbconfig.Config           `json:"database"      toml:"database,omitempty"`
 		Services      ServicesConfig            `json:"services"      toml:"services,omitempty"`
 	}
@@ -80,7 +83,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		"Analytics":     cfg.Analytics.ValidateWithContext,
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Database":      cfg.Database.ValidateWithContext,
-		"Server":        cfg.Server.ValidateWithContext,
+		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
 		"Email":         cfg.Email.ValidateWithContext,
 		"FeatureFlags":  cfg.FeatureFlags.ValidateWithContext,
 		"Search":        cfg.Search.ValidateWithContext,

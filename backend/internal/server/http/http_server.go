@@ -147,7 +147,7 @@ func ProvideHTTPServer(
 		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(loggerName)),
 		logger:         logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:       panicking.NewProductionPanicker(),
-		httpServer:     provideStdLibHTTPServer(serverSettings.HTTPPort),
+		httpServer:     provideStdLibHTTPServer(serverSettings.Port),
 		dataManager:    dataManager,
 		tracerProvider: tracerProvider,
 

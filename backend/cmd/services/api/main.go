@@ -78,7 +78,7 @@ func main() {
 	}
 
 	// only allow initialization to take so long.
-	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
+	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.HTTPServer.StartupDeadline)
 
 	// build our server struct.
 	srv, err := build.Build(buildCtx, cfg)

@@ -74,7 +74,7 @@ import (
 
 // Build builds a server.
 func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error) {
-	httpConfig := cfg.Server
+	httpConfig := cfg.HTTPServer
 	observabilityConfig := &cfg.Observability
 	configConfig := &observabilityConfig.Logging
 	logger := config2.ProvideLogger(configConfig)
