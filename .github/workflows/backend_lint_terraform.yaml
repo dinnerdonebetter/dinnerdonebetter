@@ -53,7 +53,7 @@ jobs:
         working-directory: backend/
         run: ./scripts/build_cloud_function.sh meal_plan_grocery_list_initializer
 
-      - name: Build meal plan grocery list initializer cloud function directory
+      - name: Build search indexer cloud function directory
         working-directory: backend/
         run: ./scripts/build_cloud_function.sh search_indexer
 
