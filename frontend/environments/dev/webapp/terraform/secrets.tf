@@ -5,7 +5,7 @@ resource "google_secret_manager_secret" "segment_api_token" {
   secret_id = "webapp_segment_api_token"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
