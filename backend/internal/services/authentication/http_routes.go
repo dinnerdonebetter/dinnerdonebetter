@@ -555,14 +555,14 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	if loadErr != nil {
 		// this can literally never happen in this version of scs, because the token is empty
 		observability.AcknowledgeError(loadErr, logger, span, "loading token")
-		errRes := types.NewAPIErrorResponse("error", types.ErrMisbehavingDependency, responseDetails)
+		errRes := types.NewAPIErrorResponse("error", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	if destroyErr := s.sessionManager.Destroy(ctx); destroyErr != nil {
 		observability.AcknowledgeError(destroyErr, logger, span, "destroying session")
-		errRes := types.NewAPIErrorResponse("error", types.ErrMisbehavingDependency, responseDetails)
+		errRes := types.NewAPIErrorResponse("error", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -575,7 +575,7 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	newCookie, cookieBuildingErr := s.buildLogoutCookie(ctx, req)
 	if cookieBuildingErr != nil || newCookie == nil {
 		observability.AcknowledgeError(cookieBuildingErr, logger, span, "building cookie")
-		errRes := types.NewAPIErrorResponse("building cookie", types.ErrMisbehavingDependency, responseDetails)
+		errRes := types.NewAPIErrorResponse("building cookie", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}

@@ -33,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async (
   await apiClient
     .getOAuth2Clients(qf)
     .then((res: QueryFilteredResult<OAuth2Client>) => {
-      span.addEvent('valid preparations retrieved');
+      span.addEvent('oauth2 clients retrieved');
       props = { props: { pageLoadOAuth2Clients: res } };
     })
     .catch((error: AxiosError) => {
@@ -82,19 +82,19 @@ function OAuth2ClientsPage(props: OAuth2ClientsPageProps) {
     return x ? formatRelative(new Date(x), new Date()) : 'never';
   };
 
-  const rows = (oauth2Clients.data || []).map((preparation) => (
+  const rows = (oauth2Clients.data || []).map((oauth2Client) => (
     <tr
-      key={preparation.id}
-      onClick={() => router.push(`/oauth2_clients/${preparation.id}`)}
+      key={oauth2Client.id}
+      onClick={() => router.push(`/oauth2_clients/${oauth2Client.id}`)}
       style={{ cursor: 'pointer' }}
     >
-      <td>{preparation.name}</td>
-      <td>{formatDate(preparation.createdAt)}</td>
+      <td>{oauth2Client.name}</td>
+      <td>{formatDate(oauth2Client.createdAt)}</td>
     </tr>
   ));
 
   return (
-    <AppLayout title="Valid Preparations">
+    <AppLayout title="OAuth2 Clients">
       <Stack>
         <Grid justify="space-between">
           <Grid.Col md="content" sm={12}>

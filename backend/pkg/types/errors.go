@@ -48,9 +48,9 @@ const (
 	ErrDataNotFound ErrorCode = "E104"
 	// ErrTalkingToDatabase is returned when we fail to interact with a database.
 	ErrTalkingToDatabase ErrorCode = "E105"
-	// ErrMisbehavingDependency is returned when we fail to interact with a database.
+	// ErrMisbehavingDependency is returned when we fail to interact with a third party.
 	ErrMisbehavingDependency ErrorCode = "E106"
-	// ErrTalkingToSearchProvider is returned when we fail to interact with a database.
+	// ErrTalkingToSearchProvider is returned when we fail to interact with the search provider.
 	ErrTalkingToSearchProvider ErrorCode = "E107"
 	// ErrSecretGeneration is returned when a user is not authorized.
 	ErrSecretGeneration ErrorCode = "E108"
