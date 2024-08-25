@@ -346,7 +346,7 @@ function RecipeCreator() {
         ({
           value: x.instrument?.name || x.name || 'UNKNOWN',
           label: x.instrument?.name || x.name || 'UNKNOWN',
-        } as SelectItem),
+        }) as SelectItem,
     );
   };
 
