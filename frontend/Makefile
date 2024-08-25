@@ -1,5 +1,6 @@
 NODE_PACKAGE_MANAGER = yarn
 CONTAINER_RUNNER     = docker
+APPS                 = admin web landing
 
 regit:
 	(rm -rf .git && cd ../ && rm -rf frontend2 && git clone git@github.com:dinnerdonebetter/frontend frontend2 && cp -rf frontend2/.git frontend/.git && rm -rf frontend2)
@@ -13,6 +14,9 @@ clean:
 .PHONY: setup
 setup:
 	$(NODE_PACKAGE_MANAGER) install
+	for thing in $(APPS); do \
+  		(cd apps/$$thing && $(NODE_PACKAGE_MANAGER) install) \
+	done
 
 .PHONY: lint
 lint:
