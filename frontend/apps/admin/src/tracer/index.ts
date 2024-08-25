@@ -26,4 +26,4 @@ provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
 
 opentelemetry.trace.setGlobalTracerProvider(provider);
 
-export const serverSideTracer: Tracer = opentelemetry.trace.getTracer('web-app-server');
+export const serverSideTracer: Tracer = opentelemetry.trace.getTracer('admin-server');

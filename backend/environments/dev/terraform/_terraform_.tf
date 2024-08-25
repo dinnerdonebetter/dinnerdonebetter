@@ -1,5 +1,5 @@
 terraform {
-  required_version = "1.5.7"
+  required_version = "1.8.3"
 
   backend "remote" {
     organization = "dinnerdonebetter"
@@ -11,15 +11,15 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.3.0"
+      version = "4.40.0"
     }
     google = {
       source  = "hashicorp/google"
-      version = "4.73.1"
+      version = "5.41.0"
     }
     archive = {
       source  = "hashicorp/archive"
-      version = "2.2.0"
+      version = "2.5.0"
     }
     algolia = {
       source  = "philippe-vandermoere/algolia"

@@ -22,7 +22,7 @@ resource "google_sql_database_instance" "dev" {
     }
 
     ip_configuration {
-      require_ssl = false
+      ssl_mode = "ENCRYPTED_ONLY"
     }
 
     maintenance_window {

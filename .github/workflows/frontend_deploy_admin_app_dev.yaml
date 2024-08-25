@@ -33,12 +33,11 @@ jobs:
         working-directory: frontend/
         run: |
           docker build --tag gcr.io/dinner-done-better-dev/admin_app_server:${{ github.sha }} --file apps/admin/Dockerfile .
-          docker build --tag gcr.io/dinner-done-better-dev/admin_app_server:latest --file apps/admin/Dockerfile .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.4.6
+          terraform_version: 1.8.3
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
       - name: Terraform Init

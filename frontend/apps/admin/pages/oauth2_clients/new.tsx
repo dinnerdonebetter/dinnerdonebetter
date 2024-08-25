@@ -19,20 +19,6 @@ export default function OAuth2ClientCreator(): JSX.Element {
     initialValues: {
       name: '',
       description: '',
-      yieldsNothing: false,
-      restrictToIngredients: true,
-      pastTense: '',
-      slug: '',
-      minimumIngredientCount: 1,
-      maximumIngredientCount: undefined,
-      minimumInstrumentCount: 1,
-      maximumInstrumentCount: undefined,
-      temperatureRequired: false,
-      timeEstimateRequired: false,
-      consumesVessel: false,
-      onlyForVessels: false,
-      minimumVesselCount: 1,
-      maximumVesselCount: undefined,
     },
     validate: zodResolver(oauth2ClientCreationFormSchema),
   });
@@ -64,7 +50,7 @@ export default function OAuth2ClientCreator(): JSX.Element {
   };
 
   return (
-    <AppLayout title="Create New Valid Preparation">
+    <AppLayout title="Create New OAuth2 Client">
       <Container size="sm">
         <form onSubmit={creationForm.onSubmit(submit)}>
           <TextInput label="Name" placeholder="thing" {...creationForm.getInputProps('name')} />

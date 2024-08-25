@@ -18,9 +18,9 @@ func BuildFakeUserNotification() *types.UserNotification {
 
 // BuildFakeUserNotificationList builds a faked UserNotificationList.
 func BuildFakeUserNotificationList() *types.QueryFilteredResult[types.UserNotification] {
-	var examples []*types.UserNotification
+	var notifications []*types.UserNotification
 	for i := 0; i < exampleQuantity; i++ {
-		examples = append(examples, BuildFakeUserNotification())
+		notifications = append(notifications, BuildFakeUserNotification())
 	}
 
 	return &types.QueryFilteredResult[types.UserNotification]{
@@ -30,18 +30,18 @@ func BuildFakeUserNotificationList() *types.QueryFilteredResult[types.UserNotifi
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		Data: examples,
+		Data: notifications,
 	}
 }
 
 // BuildFakeUserNotificationUpdateRequestInput builds a faked UserNotificationUpdateRequestInput.
 func BuildFakeUserNotificationUpdateRequestInput() *types.UserNotificationUpdateRequestInput {
-	validIngredient := BuildFakeUserNotification()
-	return converters.ConvertUserNotificationToUserNotificationUpdateRequestInput(validIngredient)
+	userNotification := BuildFakeUserNotification()
+	return converters.ConvertUserNotificationToUserNotificationUpdateRequestInput(userNotification)
 }
 
 // BuildFakeUserNotificationCreationRequestInput builds a faked UserNotificationCreationRequestInput.
 func BuildFakeUserNotificationCreationRequestInput() *types.UserNotificationCreationRequestInput {
-	validIngredient := BuildFakeUserNotification()
-	return converters.ConvertUserNotificationToUserNotificationCreationRequestInput(validIngredient)
+	userNotification := BuildFakeUserNotification()
+	return converters.ConvertUserNotificationToUserNotificationCreationRequestInput(userNotification)
 }

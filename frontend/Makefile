@@ -1,4 +1,5 @@
 NODE_PACKAGE_MANAGER = yarn
+CONTAINER_RUNNER     = docker
 
 regit:
 	(rm -rf .git && cd ../ && rm -rf frontend2 && git clone git@github.com:dinnerdonebetter/frontend frontend2 && cp -rf frontend2/.git frontend/.git && rm -rf frontend2)
@@ -52,3 +53,19 @@ format:
 .PHONY: format-check
 format-check:
 	$(NODE_PACKAGE_MANAGER) format-check
+
+.PHONY: build_containers
+build_containers: build_admin_container build_landing_container build_web_container
+	@echo ""
+
+.PHONY: build_admin_container
+build_admin_container:
+	$(CONTAINER_RUNNER) build --tag ddb_admin:latest --file apps/admin/Dockerfile .
+
+.PHONY: build_landing_container
+build_landing_container:
+	$(CONTAINER_RUNNER) build --tag ddb_landing:latest --file apps/landing/Dockerfile .
+
+.PHONY: build_web_container
+build_web_container:
+	$(CONTAINER_RUNNER) build --tag ddb_web:latest --file apps/web/Dockerfile .
