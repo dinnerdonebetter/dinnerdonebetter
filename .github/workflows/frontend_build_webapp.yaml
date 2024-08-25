@@ -41,4 +41,3 @@ jobs:
         working-directory: frontend/
         run: |
           docker build --tag gcr.io/dinner-done-better-dev/webapp_server:${{  github.sha }} --file apps/web/Dockerfile .
-          docker build --tag gcr.io/dinner-done-better-dev/webapp_server:latest --file apps/web/Dockerfile .

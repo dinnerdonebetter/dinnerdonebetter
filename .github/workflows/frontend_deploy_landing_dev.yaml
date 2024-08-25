@@ -33,7 +33,6 @@ jobs:
         working-directory: frontend
         run: |
           docker build --tag gcr.io/dinner-done-better-dev/landing_server:${{ github.sha }} --build-arg SEGMENT_API_TOKEN=${{ secrets.DEV_SEGMENT_API_TOKEN }} --build-arg ENVIRONMENT=dev --file apps/landing/Dockerfile .
-          docker build --tag gcr.io/dinner-done-better-dev/landing_server:latest --build-arg SEGMENT_API_TOKEN=${{ secrets.DEV_SEGMENT_API_TOKEN }} --build-arg ENVIRONMENT=dev --file apps/landing/Dockerfile .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2

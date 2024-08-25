@@ -1,4 +1,4 @@
-FROM node:alpine AS builder
+FROM node:19-alpine3.15 AS builder
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
@@ -11,7 +11,7 @@ COPY . .
 RUN turbo prune --scope=web --docker
 
 # Add lockfile and package.json's of isolated subworkspace
-FROM node:alpine AS installer
+FROM node:19-alpine3.15 AS installer
 RUN apk add --no-cache libc6-compat
 RUN apk update
 WORKDIR /app
@@ -26,12 +26,13 @@ RUN yarn install
 COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json
 
-ARG SEGMENT_API_TOKEN # you could give this a default value as well
+# you could give this a default value as well
+ARG SEGMENT_API_TOKEN
 ENV NEXT_PUBLIC_SEGMENT_API_TOKEN=$SEGMENT_API_TOKEN
 
 RUN yarn turbo run build --filter=web...
 
-FROM node:alpine AS runner
+FROM node:19-alpine3.15 AS runner
 WORKDIR /app
 
 # Don't run production as root
