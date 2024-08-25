@@ -1,7 +1,9 @@
+.PHONY: setup
 setup:
 	(cd backend && make setup)
 	(cd frontend && make setup)
 
+.PHONY: format
 format:
 	(cd backend && make format)
 	(cd frontend && make format)
