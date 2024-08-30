@@ -86,8 +86,8 @@ type (
 		FirstName             string     `json:"firstName"`
 		LastName              string     `json:"lastName"`
 		HouseholdName         string     `json:"householdName"`
-		AcceptedTOS           bool       `json:"acceptedTOS"`
-		AcceptedPrivacyPolicy bool       `json:"acceptedPrivacyPolicy"`
+		AcceptedTOS           bool       `json:"acceptedTOS"`           // REMOVEME
+		AcceptedPrivacyPolicy bool       `json:"acceptedPrivacyPolicy"` // REMOVEME
 	}
 
 	// UserDatabaseCreationInput is used by the User creation route to communicate with the data store.

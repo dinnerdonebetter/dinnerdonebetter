@@ -240,6 +240,17 @@ integration_tests_postgres:
 	--attach api_server \
 	--attach tests
 
+## Load testing
+
+.PHONY: load_test
+load_test:
+	$(CONTAINER_RUNNER) run \
+		--rm \
+		--volume $(PWD):/src \
+		--workdir /src \
+		--user $(MYSELF):$(MY_GROUP) \
+		 grafana/k6:latest-with-browser run tests/load/script.js
+
 ## Running
 
 .PHONY: dev
