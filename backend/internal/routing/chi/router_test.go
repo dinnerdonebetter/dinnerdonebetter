@@ -177,7 +177,7 @@ func Test_router_LogRoutes(T *testing.T) {
 
 		assert.NoError(t, r.AddRoute(http.MethodGet, "/path", nil))
 
-		r.LogRoutes()
+		r.Routes()
 	})
 }
 

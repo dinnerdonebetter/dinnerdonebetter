@@ -22,12 +22,12 @@ const (
 var (
 	_ email.Emailer = (*Emailer)(nil)
 
-	// ErrNilConfig indicates an empty API token was provided.
+	// ErrNilConfig indicates a nil config was provided.
 	ErrNilConfig = errors.New("mailjet config is nil")
-	// ErrEmptySecretKey indicates an empty API token was provided.
+	// ErrEmptySecretKey indicates an empty domain was provided.
 	ErrEmptySecretKey = errors.New("empty domain")
 	// ErrEmptyPrivateAPIKey indicates an empty API token was provided.
-	ErrEmptyPrivateAPIKey = errors.New("empty API token")
+	ErrEmptyPrivateAPIKey = errors.New("empty Mailjet API token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
 	ErrNilHTTPClient = errors.New("nil HTTP client")
 )

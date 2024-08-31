@@ -128,9 +128,9 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 	}
 
 	switch strings.ToLower(params.Get(sortByQueryKey)) {
-	case "asc":
+	case sortAscendingString:
 		qf.SortBy = SortAscending
-	case "desc":
+	case sortDescendingString:
 		qf.SortBy = SortDescending
 	}
 }

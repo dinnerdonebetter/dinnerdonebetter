@@ -22,12 +22,12 @@ const (
 var (
 	_ email.Emailer = (*Emailer)(nil)
 
-	// ErrNilConfig indicates an empty API token was provided.
+	// ErrNilConfig indicates a nil config was provided.
 	ErrNilConfig = errors.New("mailgun config is nil")
-	// ErrEmptyDomain indicates an empty API token was provided.
+	// ErrEmptyDomain indicates an empty domain was provided.
 	ErrEmptyDomain = errors.New("empty domain")
 	// ErrEmptyPrivateAPIKey indicates an empty API token was provided.
-	ErrEmptyPrivateAPIKey = errors.New("empty API token")
+	ErrEmptyPrivateAPIKey = errors.New("empty Mailgun API token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
 	ErrNilHTTPClient = errors.New("nil HTTP client")
 )

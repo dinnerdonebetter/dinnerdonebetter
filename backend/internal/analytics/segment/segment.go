@@ -19,7 +19,7 @@ const (
 
 var (
 	// ErrEmptyAPIToken indicates an empty API token was provided.
-	ErrEmptyAPIToken = errors.New("empty API token")
+	ErrEmptyAPIToken = errors.New("empty Segment API token")
 )
 
 type (

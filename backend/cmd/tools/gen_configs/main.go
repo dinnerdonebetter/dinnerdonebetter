@@ -77,9 +77,9 @@ const (
 	defaultPort         = 8000
 	defaultCookieDomain = ".whatever.gov"
 	/* #nosec G101 */
-	debugCookieSecret = "HEREISA32CHARSECRETWHICHISMADEUP"
+	debugCookieHashKey = "HEREISA32CHARSECRETWHICHISMADEUP"
 	/* #nosec G101 */
-	debugCookieSigningKey    = "DIFFERENT32CHARSECRETTHATIMADEUP"
+	debugCookieBlockKey      = "DIFFERENT32CHARSECRETTHATIMADEUP"
 	devPostgresDBConnDetails = "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable"
 	defaultCookieName        = authservice.DefaultCookieName
 
@@ -94,7 +94,7 @@ const (
 
 	contentTypeJSON               = "application/json"
 	workerQueueAddress            = "worker_queue:6379"
-	localOAuth2TokenEncryptionKey = debugCookieSecret
+	localOAuth2TokenEncryptionKey = debugCookieHashKey
 )
 
 var (
@@ -129,8 +129,8 @@ var (
 	localCookies = authservice.CookieConfig{
 		Name:       defaultCookieName,
 		Domain:     defaultCookieDomain,
-		HashKey:    debugCookieSecret,
-		BlockKey:   debugCookieSigningKey,
+		HashKey:    debugCookieHashKey,
+		BlockKey:   debugCookieBlockKey,
 		Lifetime:   authservice.DefaultCookieLifetime,
 		SecureOnly: false,
 	}
@@ -645,8 +645,8 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				Cookies: authservice.CookieConfig{
 					Name:       defaultCookieName,
 					Domain:     defaultCookieDomain,
-					HashKey:    debugCookieSecret,
-					BlockKey:   debugCookieSigningKey,
+					HashKey:    debugCookieHashKey,
+					BlockKey:   debugCookieBlockKey,
 					Lifetime:   authservice.DefaultCookieLifetime,
 					SecureOnly: false,
 				},

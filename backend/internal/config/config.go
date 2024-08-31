@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"os"
 	"runtime/debug"
 
@@ -28,6 +29,11 @@ const (
 	TestingRunMode runMode = "testing"
 	// ProductionRunMode is the run mode for a production environment.
 	ProductionRunMode runMode = "production"
+
+	/* #nosec G101 */
+	debugCookieHashKey = "HEREISA32CHARSECRETWHICHISMADEUP"
+	/* #nosec G101 */
+	debugCookieBlockKey = "DIFFERENT32CHARSECRETTHATIMADEUP"
 )
 
 type (
@@ -111,4 +117,65 @@ func (cfg *InstanceConfig) Commit() string {
 	}
 
 	return ""
+}
+
+func (cfg *InstanceConfig) Neutralize() {
+	if err := os.Setenv("GOOGLE_CLOUD_PROJECT_ID", "something"); err != nil {
+		panic(err)
+	}
+
+	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = "BLAHBLAHBLAHBLAHBLAHBLAHBLAHBLAH"
+	cfg.Services.Auth.Cookies.HashKey = debugCookieHashKey
+	cfg.Services.Auth.Cookies.BlockKey = debugCookieBlockKey
+	cfg.Services.Auth.SSO.Google.ClientID = "blah blah blah blah"
+	cfg.Services.Auth.SSO.Google.ClientSecret = "blah blah blah blah"
+	cfg.Email.Sendgrid.APIToken = "blah blah blah blah"
+	cfg.Analytics.Provider = ""
+	cfg.Services.Recipes.Uploads.Storage.GCPConfig = nil
+	cfg.Services.Recipes.Uploads.Storage.Provider = objectstorage.FilesystemProvider
+	cfg.Services.Recipes.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
+	cfg.Services.RecipeSteps.Uploads.Storage.GCPConfig = nil
+	cfg.Services.RecipeSteps.Uploads.Storage.Provider = objectstorage.FilesystemProvider
+	cfg.Services.RecipeSteps.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
+	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidInstruments.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidIngredients.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidPreparations.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidIngredientPreparations.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidPreparationInstruments.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidInstrumentMeasurementUnits.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.Recipes.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.RecipeSteps.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.RecipeStepProducts.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.RecipeStepInstruments.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.RecipeStepIngredients.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.Meals.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.MealPlans.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.MealPlanEvents.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.MealPlanOptions.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.MealPlanOptionVotes.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.MealPlanTasks.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.Households.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.HouseholdInvitations.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.Users.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidIngredientGroups.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.Webhooks.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.Auth.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.RecipePrepTasks.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.MealPlanGroceryListItems.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidMeasurementUnitConversions.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidIngredientStates.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.RecipeStepCompletionConditions.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidIngredientStateIngredients.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.RecipeStepVessels.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ServiceSettings.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ServiceSettingConfigurations.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.UserIngredientPreferences.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.RecipeRatings.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.HouseholdInstrumentOwnerships.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidVessels.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidPreparationVessels.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.Workers.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.UserNotifications.DataChangesTopicName = "dataChangesTopicName"
 }
