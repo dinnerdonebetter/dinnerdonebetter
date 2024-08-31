@@ -8,16 +8,21 @@ GO_FORMAT              := gofmt -s -w
 THIS                   := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST     := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST  := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)'`
+SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
+LINTER_IMAGE           := golangci/golangci-lint:v1.59.1
+CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 ENVIRONMENTS_DIR       := environments
-TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
-GENERATED_QUERIES_DIR  := internal/database/postgres/generated
 CLOUD_JOBS             := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
 CLOUD_FUNCTIONS        := data_changes outbound_emailer search_indexer webhook_executor
 WIRE_TARGETS           := server/http/build
 CONTAINER_RUNNER       := docker
-SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
-LINTER_IMAGE           := golangci/golangci-lint:v1.59.1
-CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
+RUN_CONTAINER          := $(CONTAINER_RUNNER) run \
+	--rm \
+	--tty \
+	--interactive \
+	--volume $(PWD):$(PWD) \
+	--workdir $(PWD) \
+	--user $(MYSELF):$(MY_GROUP)
 
 ## non-PHONY folders/files
 
@@ -135,29 +140,18 @@ pre_lint:
 .PHONY: lint_containers
 lint_containers:
 	@$(CONTAINER_RUNNER) pull --quiet $(CONTAINER_LINTER_IMAGE)
-	$(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy containers.rego `find . -type f -name "*.Dockerfile"`
+	$(RUN_CONTAINER) $(CONTAINER_LINTER_IMAGE) test --policy containers.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:
 	@$(CONTAINER_RUNNER) pull --quiet $(SQL_GENERATOR_IMAGE)
-	$(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE) compile --no-remote
-	$(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE) vet --no-remote
+	$(RUN_CONTAINER) $(SQL_GENERATOR_IMAGE) compile --no-remote
+	$(RUN_CONTAINER) $(SQL_GENERATOR_IMAGE) vet --no-remote
 
 .PHONY: golang_lint
 golang_lint:
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
-	$(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):$(PWD) \
-		--workdir=$(PWD) \
-		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
+	$(RUN_CONTAINER) $(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
 lint: lint_containers queries_lint golang_lint
@@ -198,14 +192,9 @@ typescript: clean_ts
 	(cd ../frontend && make format)
 
 .PHONY: querier
-querier: queries queries_lint  ## TODO: This target is broken
+querier: queries queries_lint  ## FIXME: This target is broken
 	rm --recursive --force internal/database/postgres/generated/*.go
-	$(CONTAINER_RUNNER) run \
-		--rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE) generate --no-remote
+	$(RUN_CONTAINER) $(SQL_GENERATOR_IMAGE) generate --no-remote
 
 .PHONY: sqlc_struct_check
 sqlc_struct_check:
@@ -229,7 +218,7 @@ integration_tests: integration_tests_postgres
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
 	$(CONTAINER_RUNNER) compose \
-	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
+	--file $(ENVIRONMENTS_DIR)/testing/compose_files/integration-tests.yaml up \
 	--build \
 	--pull always \
 	--force-recreate \
@@ -244,17 +233,12 @@ integration_tests_postgres:
 
 .PHONY: load_test
 load_test:
-	$(CONTAINER_RUNNER) run \
-		--rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-		 grafana/k6:latest-with-browser run tests/load/script.js
+	$(RUN_CONTAINER) grafana/k6:latest-with-browser run tests/load/script.js
 
 ## Running
 
 .PHONY: dev
-dev: $(ARTIFACTS_DIR)
+dev: $(ARTIFACTS_DIR)  # FIXME: this target is broken
 	$(CONTAINER_RUNNER) compose \
 	--file $(ENVIRONMENTS_DIR)/local/compose_files/dev.yaml up \
 	--quiet-pull \
