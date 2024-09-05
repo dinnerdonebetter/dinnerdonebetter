@@ -38,7 +38,7 @@ paths:
     get:
       tags:
         - recipes
-      summary: Add a new pet
+      summary: Get a list of recipes
       security:
         - oAuth2:
         - cookieAuth:
@@ -87,6 +87,51 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/Recipe'
+        400:
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+        401:
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+        500:
+          description: internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+  /api/v1/recipes/{recipeID}:
+    get:
+      tags:
+        - recipes
+      summary: Get a singular recipe
+      security:
+        - oAuth2:
+        - cookieAuth:
+      parameters:
+        - in: path
+          name: recipeID
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: successful retrieval
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/APIResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        $ref: '#/components/schemas/Recipe'
         400:
           description: bad request
           content:
