@@ -7,7 +7,37 @@ import (
 )
 
 func baseSpec() *openapi.Spec {
-	spec := &openapi.Spec{}
+	spec := &openapi.Spec{
+		Openapi: "3.1.0",
+		Components: &openapi.Components{
+			SecuritySchemes: map[string]openapi.SecuritySchemeOrReference{
+				"cookieAuth": {
+					SecurityScheme: &openapi.SecurityScheme{
+						Description: nil,
+						APIKey:      nil,
+						HTTP:        nil,
+						HTTPBearer:  nil,
+						Oauth2: &openapi.SecuritySchemeOauth2{Flows: openapi.OauthFlows{
+							Implicit: &openapi.OauthFlowsDefsImplicit{
+								AuthorizationURL: "/oauth2/authorize",
+								RefreshURL:       nil,
+								Scopes:           nil,
+								MapOfAnything:    nil,
+							},
+						}},
+						Oidc:      nil,
+						MutualTLS: nil,
+						MapOfAnything: map[string]any{
+							"type": "apiKey",
+							"in":   "cookie",
+							"name": "ddb_api_cookie",
+						},
+					},
+				},
+			},
+			Schemas: map[string]map[string]any{},
+		},
+	}
 
 	spec = spec.WithInfo(openapi.Info{
 		Title:          "Dinner Done Better API",

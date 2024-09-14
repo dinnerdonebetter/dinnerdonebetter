@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/internal/server/http/build"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 	openapi "github.com/swaggest/openapi-go/openapi31"
 	"log"
 	"net/http"
@@ -58,6 +59,10 @@ func main() {
 
 	routeDefinitions := []RouteDefinition{}
 	for _, route := range srv.Router().Routes() {
+		if strings.Contains(route.Path, "_meta_") {
+			continue
+		}
+
 		pathArgs := []string{}
 		for _, pathArg := range routeParamRegex.FindAllString(route.Path, -1) {
 			pathArgs = append(pathArgs, strings.TrimPrefix(strings.TrimSuffix(pathArg, "}"), "{"))
@@ -80,7 +85,7 @@ func main() {
 		}
 
 		if routeInfo.InputType != nil {
-			routeDef.InputType = getTypeName(routeInfo.InputTypeName)
+			routeDef.InputType = getTypeName(routeInfo.InputType)
 		}
 
 		for _, part := range strings.Split(route.Path, "/") {
@@ -104,9 +109,11 @@ func main() {
 
 	for _, rd := range routeDefinitions {
 		op := rd.ToOperation()
+
 		if _, ok := paths.MapOfPathItemValues[rd.Path]; ok {
 			// path already present
 			item := paths.MapOfPathItemValues[rd.Path]
+
 			switch rd.Method {
 			case http.MethodGet:
 				item.Get = op
@@ -140,41 +147,39 @@ func main() {
 
 	spec.Paths = paths
 
+	typeSchemas := map[string]map[string]any{
+		getTypeName(&types.ResponseDetails{}): SchemaFromInstance(&types.ResponseDetails{}).RenderSchema(),
+	}
+	for _, v := range routeInfoMap {
+		if v.InputType != nil {
+			if _, ok := typeSchemas[getTypeName(v.InputType)]; ok {
+				continue
+			}
+
+			typeSchemas[getTypeName(v.InputType)] = v.InputTypeSchema.RenderSchema()
+		}
+	}
+
+	for _, v := range routeInfoMap {
+		if v.ResponseType != nil {
+			if _, ok := typeSchemas[getTypeName(v.ResponseType)]; ok {
+				continue
+			}
+
+			typeSchemas[getTypeName(v.ResponseType)] = v.ResponseTypeSchema.RenderSchema()
+		}
+	}
+
+	for name, schema := range typeSchemas {
+		spec.Components.Schemas[name] = schema
+	}
+
 	output, err := spec.MarshalYAML()
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println(string(output))
-
-	//	typeSchemas := map[string]*OpenAPISchema{
-	//		getTypeName(&types.ResponseDetails{}): SchemaFromInstance(&types.ResponseDetails{}),
-	//	}
-	//	for _, v := range routeInfoMap {
-	//		if v.InputType != nil {
-	//			if _, ok := typeSchemas[getTypeName(v.InputType)]; ok {
-	//				continue
-	//			}
-	//
-	//			typeSchemas[getTypeName(v.InputType)] = SchemaFromInstance(&v.InputType)
-	//		}
-	//	}
-	//
-	//	for _, v := range routeInfoMap {
-	//		if v.ResponseType != nil {
-	//			if _, ok := typeSchemas[getTypeName(v.ResponseType)]; ok {
-	//				continue
-	//			}
-	//
-	//			typeSchemas[getTypeName(v.ResponseType)] = SchemaFromInstance(&v.ResponseType)
-	//		}
-	//	}
-	//
-	//	for _, v := range typeSchemas {
-	//		outputSchemaTemplate += v.Render(0)
-	//	}
-	//
-	//	fmt.Println(outputSchemaTemplate)
 }
 
 func buildQueryFilterPathParams() []openapi.ParameterOrReference {
