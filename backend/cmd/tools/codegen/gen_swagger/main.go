@@ -12,17 +12,9 @@ import (
 	"net/http"
 	"os"
 	"reflect"
-	"regexp"
+	"slices"
 	"strings"
 )
-
-var routeParamRegex = regexp.MustCompile("\\{[a-zA-Z]+\\}")
-
-var tagReplacements = map[string]string{
-	"steps":                 "recipe_steps",
-	"prep_tasks":            "recipe_prep_tasks",
-	"completion_conditions": "recipe_step_completion_conditions",
-}
 
 func getTypeName(input any) string {
 	t := reflect.TypeOf(input)
@@ -43,6 +35,16 @@ func main() {
 		log.Fatal(err)
 	}
 
+	slices.SortFunc(schemas, func(a, b *openapiSchema) int {
+		if a.name < b.name {
+			return -1
+		} else if a.name == b.name {
+			return 0
+		} else {
+			return 1
+		}
+	})
+
 	rawCfg, err := os.ReadFile("environments/dev/config_files/service-config.json")
 	if err != nil {
 		log.Fatal(err)
@@ -60,6 +62,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	allTags := map[string]struct{}{}
 
 	routeDefinitions := []RouteDefinition{}
 	for _, route := range srv.Router().Routes() {
@@ -85,19 +89,30 @@ func main() {
 		}
 
 		if routeInfo.ResponseType != nil {
-			routeInfo.ResponseType = getTypeName(routeInfo.ResponseType)
+			routeDef.ResponseType = getTypeName(routeInfo.ResponseType)
 		}
 
 		if routeInfo.InputType != nil {
 			routeDef.InputType = getTypeName(routeInfo.InputType)
 		}
 
-		for _, part := range strings.Split(route.Path, "/") {
+		pathParts := strings.Split(route.Path, "/")
+		for i, part := range pathParts {
 			if strings.TrimSpace(part) != "" && !strings.HasPrefix(part, "{") && part != "api" && part != "v1" {
-				if rep, ok := tagReplacements[part]; ok {
-					routeDef.Tags = append(routeDef.Tags, rep)
-				} else {
-					routeDef.Tags = append(routeDef.Tags, part)
+				if i != len(pathParts)-1 {
+					if rep, ok := tagReplacements[part]; ok {
+						if _, ok2 := tagDescriptions[rep]; !ok2 {
+							continue
+						}
+						routeDef.Tags = append(routeDef.Tags, rep)
+						allTags[rep] = struct{}{}
+					} else {
+						if _, ok2 := tagDescriptions[part]; !ok2 {
+							continue
+						}
+						routeDef.Tags = append(routeDef.Tags, part)
+						allTags[part] = struct{}{}
+					}
 				}
 			}
 		}
@@ -106,6 +121,32 @@ func main() {
 	}
 
 	spec := baseSpec()
+
+	tags := []openapi.Tag{}
+	for tag, _ := range allTags {
+		rawDescription := tagDescriptions[tag]
+
+		var description *string
+		if rawDescription != "" {
+			description = &rawDescription
+		}
+
+		tags = append(tags, openapi.Tag{
+			Name:        tag,
+			Description: description,
+		})
+	}
+
+	slices.SortFunc(tags, func(a, b openapi.Tag) int {
+		if a.Name < b.Name {
+			return -1
+		} else if a.Name == b.Name {
+			return 0
+		} else {
+			return 1
+		}
+	})
+	spec.Tags = tags
 
 	paths := &openapi.Paths{
 		MapOfPathItemValues: map[string]openapi.PathItem{},
@@ -155,7 +196,7 @@ func main() {
 
 	convertedMap := map[string]map[string]any{}
 
-	for name, schema := range schemas {
+	for _, schema := range schemas {
 		tcm := map[string]any{
 			"type": schema.Type,
 		}
@@ -166,7 +207,7 @@ func main() {
 		}
 		tcm["properties"] = propertiesMap
 
-		convertedMap[name] = tcm
+		convertedMap[schema.name] = tcm
 	}
 	spec.Components.Schemas = convertedMap
 

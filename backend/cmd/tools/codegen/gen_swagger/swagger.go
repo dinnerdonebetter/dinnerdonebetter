@@ -1,12 +1,57 @@
 package main
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"strings"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
 
+func gatherScopes() map[string]string {
+	allScopes := map[string]string{}
+	for _, scope := range authorization.ServiceAdminPermissions {
+		rawPerm := scope.ID()
+
+		rawPermParts := strings.Split(rawPerm, ".")
+		moddedPermParts := make([]string, len(rawPermParts))
+		for i, part := range rawPermParts {
+			moddedPermParts[i] = strings.ReplaceAll(part, "_", " ")
+		}
+
+		allScopes[scope.ID()] = strings.Join(moddedPermParts, " ")
+	}
+
+	for _, scope := range authorization.HouseholdAdminPermissions {
+		rawPerm := scope.ID()
+
+		rawPermParts := strings.Split(rawPerm, ".")
+		moddedPermParts := make([]string, len(rawPermParts))
+		for i, part := range rawPermParts {
+			moddedPermParts[i] = strings.ReplaceAll(part, "_", " ")
+		}
+
+		allScopes[scope.ID()] = strings.Join(moddedPermParts, " ")
+	}
+
+	for _, scope := range authorization.HouseholdMemberPermissions {
+		rawPerm := scope.ID()
+
+		rawPermParts := strings.Split(rawPerm, ".")
+		moddedPermParts := make([]string, len(rawPermParts))
+		for i, part := range rawPermParts {
+			moddedPermParts[i] = strings.ReplaceAll(part, "_", " ")
+		}
+
+		allScopes[scope.ID()] = strings.Join(moddedPermParts, " ")
+	}
+
+	return allScopes
+}
+
 func baseSpec() *openapi.Spec {
+	allScopes := gatherScopes()
+
 	spec := &openapi.Spec{
 		Openapi: "3.1.0",
 		Components: &openapi.Components{
@@ -14,23 +59,30 @@ func baseSpec() *openapi.Spec {
 				"cookieAuth": {
 					SecurityScheme: &openapi.SecurityScheme{
 						Description: nil,
-						APIKey:      nil,
-						HTTP:        nil,
-						HTTPBearer:  nil,
-						Oauth2: &openapi.SecuritySchemeOauth2{Flows: openapi.OauthFlows{
-							Implicit: &openapi.OauthFlowsDefsImplicit{
-								AuthorizationURL: "/oauth2/authorize",
-								RefreshURL:       nil,
-								Scopes:           nil,
-								MapOfAnything:    nil,
-							},
-						}},
-						Oidc:      nil,
-						MutualTLS: nil,
 						MapOfAnything: map[string]any{
 							"type": "apiKey",
 							"in":   "cookie",
 							"name": "ddb_api_cookie",
+						},
+					},
+				},
+				"oauth2": {
+					SecurityScheme: &openapi.SecurityScheme{
+						Description: nil,
+						Oauth2: &openapi.SecuritySchemeOauth2{Flows: openapi.OauthFlows{
+							Implicit: &openapi.OauthFlowsDefsImplicit{
+								AuthorizationURL: "/oauth2/authorize",
+								Scopes:           map[string]string{},
+							},
+						}},
+						MapOfAnything: map[string]any{
+							"type": "oauth2",
+							"flows": map[string]any{
+								"authorizationCode": map[string]any{
+									"authorizationUrl": "/oauth2/authorize",
+									"scopes":           allScopes,
+								},
+							},
 						},
 					},
 				},

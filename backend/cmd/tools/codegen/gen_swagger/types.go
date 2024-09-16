@@ -27,6 +27,7 @@ var nativeTypesMap = map[string]struct{}{
 	"string":  {},
 	"bool":    {},
 	// these are actually openapi types
+	"object":  {},
 	"integer": {},
 	"number":  {},
 	"boolean": {},
@@ -48,6 +49,7 @@ type openapiProperty struct {
 }
 
 type openapiSchema struct {
+	name       string
 	Type       string                     `json:"type" yaml:"type"`
 	Properties map[string]openapiProperty `json:"properties" yaml:"properties"`
 }
@@ -67,7 +69,7 @@ func getJSONTagForField(field *ast.Field) string {
 	return jsonTag.Name
 }
 
-func parseTypes(pkgDir string) (map[string]*openapiSchema, error) {
+func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 	fileset := token.NewFileSet()
 
 	astPkg, err := parser.ParseDir(fileset, pkgDir, nil, parser.AllErrors)
@@ -79,7 +81,9 @@ func parseTypes(pkgDir string) (map[string]*openapiSchema, error) {
 		return nil, errors.New("no go files found")
 	}
 
-	declaredStructs := map[string]*openapiSchema{}
+	declaredStructs := []*openapiSchema{
+		{},
+	}
 
 	for _, file := range astPkg {
 		// Traverse the AST
@@ -115,6 +119,7 @@ func parseTypes(pkgDir string) (map[string]*openapiSchema, error) {
 				}
 
 				schema := &openapiSchema{
+					name:       typeName,
 					Type:       "object",
 					Properties: map[string]openapiProperty{},
 				}
@@ -133,6 +138,10 @@ func parseTypes(pkgDir string) (map[string]*openapiSchema, error) {
 						}
 					}
 
+					if fieldName == "data" && typeName == "APIResponse" {
+						continue
+					}
+
 					fieldType := deriveNameForFieldType(field)
 					property := openapiProperty{
 						Type: fieldType,
@@ -146,7 +155,7 @@ func parseTypes(pkgDir string) (map[string]*openapiSchema, error) {
 					schema.Properties[fieldName] = property
 				}
 
-				declaredStructs[typeName] = schema
+				declaredStructs = append(declaredStructs, schema)
 			}
 
 			return true
@@ -157,7 +166,10 @@ func parseTypes(pkgDir string) (map[string]*openapiSchema, error) {
 }
 
 var typeAliases = map[string]string{
-	"time.Time": "string",
+	"time.Time":              "string",
+	"time.Duration":          "string",
+	"AuditLogEntryEventType": "string",
+	"ErrorCode":              "string",
 }
 
 var openAPITypeMap = map[string]string{

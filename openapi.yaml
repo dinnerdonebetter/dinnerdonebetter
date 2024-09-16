@@ -13,16 +13,6 @@ tags:
   - name: recipes
     description: Recipe-oriented routes
 paths:
-  /url:
-    get:
-      description: New endpoint
-      responses:
-        200:
-          description: New response
-          content:
-            application/json:
-              schema:
-                :
   /users/login:
     post:
       summary: Logs in and returns the authentication cookie

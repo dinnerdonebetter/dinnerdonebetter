@@ -17,23 +17,34 @@ type RouteDefinition struct {
 	MainResponseCode int
 	RequestBody      string
 	InputType        string
+	OAuth2Scopes     []string
+}
+
+var routesWithoutAuth = map[string]struct{}{
+	"/users/login":                 {},
+	"/users/login/admin":           {},
+	"/users/username/reminder":     {},
+	"/users/password/reset":        {},
+	"/users/password/reset/redeem": {},
+	"/users/email_address/verify":  {},
+	"/users/totp_secret/verify":    {},
+	"oauth2/authorize":             {},
+	"oauth2/token":                 {},
 }
 
 func (d *RouteDefinition) ToOperation() *openapi.Operation {
 	op := &openapi.Operation{
-		Tags:          nil,
-		Summary:       nil,
-		Description:   nil,
-		ExternalDocs:  nil,
-		ID:            nil,
-		Parameters:    nil,
-		RequestBody:   nil,
-		Responses:     nil,
-		Callbacks:     nil,
-		Deprecated:    nil,
-		Security:      nil,
-		Servers:       nil,
-		MapOfAnything: nil,
+		Tags:        []string{},
+		Summary:     nil,
+		Description: nil,
+		Parameters:  []openapi.ParameterOrReference{},
+	}
+
+	if _, ok := routesWithoutAuth[d.Path]; !ok {
+		op.Security = []map[string][]string{
+			// {"oAuth2": d.OAuth2Scopes},
+			{"cookieAuth": []string{}},
+		}
 	}
 
 	if d.ListRoute {
@@ -56,8 +67,22 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 
 	if d.InputType != "" {
 		op.RequestBody = &openapi.RequestBodyOrReference{
-			Reference: &openapi.Reference{
-				Ref: fmt.Sprintf("#/components/schemas/%s", d.InputType),
+			RequestBody: &openapi.RequestBody{
+				Description: nil,
+				Content: map[string]openapi.MediaType{
+					"application/json": {
+						Schema: map[string]any{
+							"$ref": fmt.Sprintf("#/components/schemas/%s", d.InputType),
+						},
+					},
+					"application/xml": {
+						Schema: map[string]any{
+							"$ref": fmt.Sprintf("#/components/schemas/%s", d.InputType),
+						},
+					},
+				},
+				Required:      pointer.To(true),
+				MapOfAnything: nil,
 			},
 		}
 	}
@@ -116,6 +141,10 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 				},
 			},
 		}
+	}
+
+	for _, tag := range d.Tags {
+		op.Tags = append(op.Tags, tag)
 	}
 
 	return op
