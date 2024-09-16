@@ -49,7 +49,6 @@ type authServiceHTTPRoutesTestHelper struct {
 	service             *service
 	exampleUser         *types.User
 	exampleHousehold    *types.Household
-	examplePerms        map[string]*types.UserHouseholdMembershipInfo
 	examplePermCheckers map[string]authorization.HouseholdRolePermissionsChecker
 	exampleLoginInput   *types.UserLoginInput
 }
@@ -86,12 +85,6 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleLoginInput = fakes.BuildFakeUserLoginInputFromUser(helper.exampleUser)
 
-	helper.examplePerms = map[string]*types.UserHouseholdMembershipInfo{
-		helper.exampleHousehold.ID: {
-			HouseholdName: helper.exampleHousehold.Name,
-			HouseholdRole: authorization.HouseholdMemberRole.String(),
-		},
-	}
 	helper.examplePermCheckers = map[string]authorization.HouseholdRolePermissionsChecker{
 		helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 	}

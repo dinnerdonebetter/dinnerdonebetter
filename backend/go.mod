@@ -21,6 +21,7 @@ require (
 	github.com/cristalhq/builq v0.15.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/elastic/go-elasticsearch/v8 v8.14.0
+	github.com/fatih/structtag v1.2.0
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/cors v1.2.1
 	github.com/go-oauth2/oauth2/v4 v4.5.2
@@ -86,7 +87,6 @@ require (
 	google.golang.org/api v0.188.0
 	google.golang.org/grpc v1.65.0
 	gopkg.in/matryer/try.v1 v1.0.0-20150601225556-312d2599e12e
-	gopkg.in/yaml.v2 v2.4.0
 	resenje.org/schulze v0.6.1
 )
 
@@ -259,5 +259,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240711142825-46eb208f015d // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240711142825-46eb208f015d // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

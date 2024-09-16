@@ -36,6 +36,10 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 		MapOfAnything: nil,
 	}
 
+	if d.ListRoute {
+		op.Parameters = append(op.Parameters, buildQueryFilterPathParams()...)
+	}
+
 	for _, arg := range d.PathArguments {
 		op.Parameters = append(op.Parameters, openapi.ParameterOrReference{
 			Parameter: &openapi.Parameter{

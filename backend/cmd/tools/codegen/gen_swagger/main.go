@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/internal/server/http/build"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	openapi "github.com/swaggest/openapi-go/openapi31"
 	"log"
 	"net/http"
@@ -38,6 +37,11 @@ func getTypeName(input any) string {
 
 func main() {
 	ctx := context.Background()
+
+	schemas, err := parseTypes("pkg/types")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	rawCfg, err := os.ReadFile("environments/dev/config_files/service-config.json")
 	if err != nil {
@@ -147,39 +151,37 @@ func main() {
 
 	spec.Paths = paths
 
-	typeSchemas := map[string]map[string]any{
-		getTypeName(&types.ResponseDetails{}): SchemaFromInstance(&types.ResponseDetails{}).RenderSchema(),
-	}
-	for _, v := range routeInfoMap {
-		if v.InputType != nil {
-			if _, ok := typeSchemas[getTypeName(v.InputType)]; ok {
-				continue
-			}
+	// TODO: type schema generation goes here
 
-			typeSchemas[getTypeName(v.InputType)] = v.InputTypeSchema.RenderSchema()
+	convertedMap := map[string]map[string]any{}
+
+	for name, schema := range schemas {
+		tcm := map[string]any{
+			"type": schema.Type,
 		}
-	}
 
-	for _, v := range routeInfoMap {
-		if v.ResponseType != nil {
-			if _, ok := typeSchemas[getTypeName(v.ResponseType)]; ok {
-				continue
-			}
-
-			typeSchemas[getTypeName(v.ResponseType)] = v.ResponseTypeSchema.RenderSchema()
+		propertiesMap := map[string]any{}
+		for k, v := range schema.Properties {
+			propertiesMap[k] = v
 		}
-	}
+		tcm["properties"] = propertiesMap
 
-	for name, schema := range typeSchemas {
-		spec.Components.Schemas[name] = schema
+		convertedMap[name] = tcm
 	}
+	spec.Components.Schemas = convertedMap
 
 	output, err := spec.MarshalYAML()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	fmt.Println(string(output))
+	if err = os.Remove("../openapi_spec.yaml"); err != nil {
+		log.Fatal(err)
+	}
+
+	if err = os.WriteFile("../openapi_spec.yaml", output, 0o600); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func buildQueryFilterPathParams() []openapi.ParameterOrReference {

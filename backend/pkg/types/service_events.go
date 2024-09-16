@@ -86,11 +86,4 @@ type (
 		OAuth2ClientID                   string                          `json:"oauth2ClientID,omitempty"`
 		UserIngredientPreferences        []*UserIngredientPreference     `json:"userIngredientPreference,omitempty"`
 	}
-
-	// ChoreMessage represents an event that asks a worker to perform a chore.
-	ChoreMessage struct {
-		_ struct{} `json:"-"`
-
-		ChoreType string `json:"choreType"`
-	}
 )

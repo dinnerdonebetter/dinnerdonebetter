@@ -10,10 +10,10 @@ format:
 
 .PHONY: regit
 regit:
-	echo "cd ../"
-	echo "git clone git@github.com:dinnerdonebetter/dinnerdonebetter tempdir"
+	cd ../
+	git clone git@github.com:dinnerdonebetter/dinnerdonebetter tempdir
 	@if [ -n "$(BRANCH)" ]; then \
-	  echo "(cd tempdir && git checkout $(BRANCH))"; \
+	  (cd tempdir && git checkout $(BRANCH)); \
 	fi
-	echo "cp -rf tempdir/.git dinnerdonebetter/"
-	echo "rm -rf tempdir"
+	cp -rf tempdir/.git .
+	rm -rf tempdir

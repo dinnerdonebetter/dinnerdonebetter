@@ -62,15 +62,6 @@ func init() {
 }
 
 type (
-	// UserHouseholdMembershipInfo represents key information about a household membership.
-	UserHouseholdMembershipInfo struct {
-		_ struct{} `json:"-"`
-
-		HouseholdName string
-		HouseholdID   string
-		HouseholdRole string
-	}
-
 	// SessionContextData represents what we encode in our passwords cookies.
 	SessionContextData struct {
 		_ struct{} `json:"-"`
