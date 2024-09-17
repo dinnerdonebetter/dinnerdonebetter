@@ -11035,20 +11035,6 @@ paths:
       - cookieAuth: []
       tags:
       - workers
-  /auth/{auth_provider}:
-    get:
-      security:
-      - oauth2: null
-      - cookieAuth: []
-      tags:
-      - auth
-  /auth/{auth_provider}/callback:
-    get:
-      security:
-      - oauth2: null
-      - cookieAuth: []
-      tags:
-      - auth
   /auth/status:
     get:
       responses:
@@ -11410,9 +11396,6 @@ paths:
       - users
 components:
   schemas:
-    "":
-      properties: {}
-      type: ""
     APIError:
       properties:
         code:

@@ -73,6 +73,10 @@ func main() {
 			continue
 		}
 
+		if route.Path == "/auth/{auth_provider}" || route.Path == "/auth/{auth_provider}/callback" {
+			continue
+		}
+
 		pathArgs := []string{}
 		for _, pathArg := range routeParamRegex.FindAllString(route.Path, -1) {
 			pathArgs = append(pathArgs, strings.TrimPrefix(strings.TrimSuffix(pathArg, "}"), "{"))
@@ -200,6 +204,10 @@ func main() {
 	convertedMap := map[string]map[string]any{}
 
 	for _, schema := range schemas {
+		if schema.name == "" {
+			continue
+		}
+
 		tcm := map[string]any{
 			"type": schema.Type,
 		}
