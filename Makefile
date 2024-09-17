@@ -22,3 +22,4 @@ regit:
 	fi
 	cp -rf tempdir/.git .
 	rm -rf tempdir
+	cd dinnerdonebetter
