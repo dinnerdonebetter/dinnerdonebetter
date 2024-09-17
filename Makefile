@@ -8,6 +8,11 @@ format:
 	(cd backend && make format)
 	(cd frontend && make format)
 
+.PHONY: swagger
+swagger:
+	(cd backend && make swagger)
+	npx openapi-typescript-codegen@0.29.0 --input openapi_spec.yaml --output artifacts/generated
+
 .PHONY: regit
 regit:
 	cd ../
