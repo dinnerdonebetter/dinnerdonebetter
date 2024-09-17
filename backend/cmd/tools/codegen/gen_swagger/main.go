@@ -4,16 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
-	"github.com/dinnerdonebetter/backend/internal/server/http/build"
-	openapi "github.com/swaggest/openapi-go/openapi31"
 	"log"
 	"net/http"
 	"os"
 	"reflect"
 	"slices"
 	"strings"
+
+	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/internal/server/http/build"
+
+	openapi "github.com/swaggest/openapi-go/openapi31"
 )
 
 func getTypeName(input any) string {
@@ -86,6 +88,7 @@ func main() {
 			Path:          route.Path,
 			PathArguments: pathArgs,
 			ListRoute:     routeInfo.ListRoute,
+			OAuth2Scopes:  routeInfo.OAuth2Scopes,
 		}
 
 		if routeInfo.ResponseType != nil {
@@ -290,7 +293,7 @@ func buildQueryFilterPathParams() []openapi.ParameterOrReference {
 				Required:    pointer.To(true),
 				Schema: map[string]any{
 					"type": "string",
-					"enum": []string{"1", "t", "T", "true", "TRUE", "True", "0", "f", "F", "false", "FALSE", "False"},
+					"enum": []string{"true", "false"},
 				},
 			},
 		},

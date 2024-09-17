@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
 
@@ -42,7 +44,7 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 
 	if _, ok := routesWithoutAuth[d.Path]; !ok {
 		op.Security = []map[string][]string{
-			// {"oAuth2": d.OAuth2Scopes},
+			{"oauth2": d.OAuth2Scopes},
 			{"cookieAuth": []string{}},
 		}
 	}
@@ -89,7 +91,7 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 
 	if d.ResponseType != "" {
 		baseResponseSchema := map[string]any{
-			"$ref": fmt.Sprintf("#/components/schemas/%s", d.ResponseType),
+			"$ref": "#/components/schemas/APIResponse",
 		}
 
 		secondResponseSchema := map[string]any{}

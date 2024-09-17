@@ -1,57 +1,12 @@
 package main
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
-	"strings"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
 
-func gatherScopes() map[string]string {
-	allScopes := map[string]string{}
-	for _, scope := range authorization.ServiceAdminPermissions {
-		rawPerm := scope.ID()
-
-		rawPermParts := strings.Split(rawPerm, ".")
-		moddedPermParts := make([]string, len(rawPermParts))
-		for i, part := range rawPermParts {
-			moddedPermParts[i] = strings.ReplaceAll(part, "_", " ")
-		}
-
-		allScopes[scope.ID()] = strings.Join(moddedPermParts, " ")
-	}
-
-	for _, scope := range authorization.HouseholdAdminPermissions {
-		rawPerm := scope.ID()
-
-		rawPermParts := strings.Split(rawPerm, ".")
-		moddedPermParts := make([]string, len(rawPermParts))
-		for i, part := range rawPermParts {
-			moddedPermParts[i] = strings.ReplaceAll(part, "_", " ")
-		}
-
-		allScopes[scope.ID()] = strings.Join(moddedPermParts, " ")
-	}
-
-	for _, scope := range authorization.HouseholdMemberPermissions {
-		rawPerm := scope.ID()
-
-		rawPermParts := strings.Split(rawPerm, ".")
-		moddedPermParts := make([]string, len(rawPermParts))
-		for i, part := range rawPermParts {
-			moddedPermParts[i] = strings.ReplaceAll(part, "_", " ")
-		}
-
-		allScopes[scope.ID()] = strings.Join(moddedPermParts, " ")
-	}
-
-	return allScopes
-}
-
 func baseSpec() *openapi.Spec {
-	allScopes := gatherScopes()
-
 	spec := &openapi.Spec{
 		Openapi: "3.1.0",
 		Components: &openapi.Components{
@@ -72,17 +27,15 @@ func baseSpec() *openapi.Spec {
 						Oauth2: &openapi.SecuritySchemeOauth2{Flows: openapi.OauthFlows{
 							Implicit: &openapi.OauthFlowsDefsImplicit{
 								AuthorizationURL: "/oauth2/authorize",
-								Scopes:           map[string]string{},
+								Scopes: map[string]string{
+									serviceAdmin:    "service-level administrator capabilities",
+									householdAdmin:  "household-level administrator capabilities",
+									householdMember: "household-level user capabilities",
+								},
 							},
 						}},
 						MapOfAnything: map[string]any{
 							"type": "oauth2",
-							"flows": map[string]any{
-								"authorizationCode": map[string]any{
-									"authorizationUrl": "/oauth2/authorize",
-									"scopes":           allScopes,
-								},
-							},
 						},
 					},
 				},
@@ -103,19 +56,6 @@ func baseSpec() *openapi.Spec {
 		},
 		License: nil,
 		Version: "1.0.0",
-		MapOfAnything: map[string]interface{}{
-			"servers": []map[string]string{
-				{
-					"url": "https://api.dinnerdonebetter.dev",
-				},
-			},
-			"tags": []map[string]string{
-				{
-					"name":        "recipes",
-					"description": "Recipe-oriented routes",
-				},
-			},
-		},
 	})
 
 	return spec

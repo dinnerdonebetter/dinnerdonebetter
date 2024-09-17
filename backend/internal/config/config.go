@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"os"
 	"runtime/debug"
 
@@ -18,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
 	"github.com/hashicorp/go-multierror"
 )

@@ -189,7 +189,7 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, cookie *htt
 		oauth2Config := oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
-			Scopes:       []string{"household_member"},
+			Scopes:       []string{},
 			RedirectURL:  c.url.String(),
 			Endpoint: oauth2.Endpoint{
 				AuthStyle: oauth2.AuthStyleAutoDetect,
