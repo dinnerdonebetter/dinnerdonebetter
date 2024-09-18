@@ -43,7 +43,7 @@ var skipTypes = map[string]bool{
 }
 
 type openapiProperty struct {
-	Type     string   `json:"type"               yaml:"type"`
+	Type     string   `json:"type,omitempty"     yaml:"type,omitempty"`
 	Ref      string   `json:"$ref,omitempty"     yaml:"$ref,omitempty"`
 	Examples []string `json:"examples,omitempty" yaml:"examples,omitempty"`
 }
