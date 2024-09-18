@@ -14,7 +14,7 @@ type (
 
 	// Router defines the contract between routing library and caller.
 	Router interface {
-		Routes() []Route
+		Routes() []*Route
 		Handler() http.Handler
 		Handle(pattern string, handler http.Handler)
 		HandleFunc(pattern string, handler http.HandlerFunc)

@@ -43,15 +43,15 @@ var skipTypes = map[string]bool{
 }
 
 type openapiProperty struct {
-	Type     string   `json:"type,omitempty" yaml:"type,omitempty"`
+	Type     string   `json:"type"               yaml:"type"`
+	Ref      string   `json:"$ref,omitempty"     yaml:"$ref,omitempty"`
 	Examples []string `json:"examples,omitempty" yaml:"examples,omitempty"`
-	Ref      string   `json:"$ref,omitempty" yaml:"$ref,omitempty"`
 }
 
 type openapiSchema struct {
+	Properties map[string]*openapiProperty `json:"properties" yaml:"properties"`
 	name       string
-	Type       string                     `json:"type" yaml:"type"`
-	Properties map[string]openapiProperty `json:"properties" yaml:"properties"`
+	Type       string `json:"type" yaml:"type"`
 }
 
 func getJSONTagForField(field *ast.Field) string {
@@ -96,13 +96,13 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 
 			// Process each type spec (we're interested in struct types)
 			for _, spec := range genDecl.Specs {
-				typeSpec, ok := spec.(*ast.TypeSpec)
-				if !ok {
+				typeSpec, ok1 := spec.(*ast.TypeSpec)
+				if !ok1 {
 					continue
 				}
 
 				typeName := typeSpec.Name.Name
-				if _, ok := skipTypes[typeName]; ok {
+				if _, ok2 := skipTypes[typeName]; ok2 {
 					continue
 				}
 
@@ -113,15 +113,15 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 				}
 
 				// Check if it's a struct type
-				structType, ok := typeSpec.Type.(*ast.StructType)
-				if !ok {
+				structType, ok1 := typeSpec.Type.(*ast.StructType)
+				if !ok1 {
 					continue
 				}
 
 				schema := &openapiSchema{
 					name:       typeName,
 					Type:       "object",
-					Properties: map[string]openapiProperty{},
+					Properties: map[string]*openapiProperty{},
 				}
 				for _, field := range structType.Fields.List {
 					fieldName := field.Names[0].Name
@@ -143,7 +143,7 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 					}
 
 					fieldType := deriveNameForFieldType(field)
-					property := openapiProperty{
+					property := &openapiProperty{
 						Type: fieldType,
 					}
 

@@ -7,9 +7,9 @@ import (
 type routeDetails struct {
 	ResponseType  any
 	InputType     any
-	ListRoute     bool
 	InputTypeName string
 	OAuth2Scopes  []string
+	ListRoute     bool
 }
 
 const (

@@ -140,11 +140,11 @@ func (r *router) WithMiddleware(middleware ...routing.Middleware) routing.Router
 }
 
 // Routes returns the described routes.
-func (r *router) Routes() []routing.Route {
-	output := []routing.Route{}
+func (r *router) Routes() []*routing.Route {
+	output := []*routing.Route{}
 
 	routerWalkFunc := func(method, route string, _ http.Handler, _ ...func(http.Handler) http.Handler) error {
-		output = append(output, routing.Route{
+		output = append(output, &routing.Route{
 			Method: method,
 			Path:   route,
 		})

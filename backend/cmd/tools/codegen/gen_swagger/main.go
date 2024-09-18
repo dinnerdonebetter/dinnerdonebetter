@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/internal/server/http/build"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
@@ -39,11 +39,12 @@ func main() {
 	}
 
 	slices.SortFunc(schemas, func(a, b *openapiSchema) int {
-		if a.name < b.name {
+		switch {
+		case a.name < b.name:
 			return -1
-		} else if a.name == b.name {
+		case a.name == b.name:
 			return 0
-		} else {
+		default:
 			return 1
 		}
 	})
@@ -68,7 +69,7 @@ func main() {
 
 	allTags := map[string]struct{}{}
 
-	routeDefinitions := []RouteDefinition{}
+	routeDefinitions := []*RouteDefinition{}
 	for _, route := range srv.Router().Routes() {
 		if strings.Contains(route.Path, "_meta_") {
 			continue
@@ -88,7 +89,7 @@ func main() {
 			panic("unknown route")
 		}
 
-		routeDef := RouteDefinition{
+		routeDef := &RouteDefinition{
 			Method:        route.Method,
 			Path:          route.Path,
 			PathArguments: pathArgs,
@@ -108,7 +109,7 @@ func main() {
 		for i, part := range pathParts {
 			if strings.TrimSpace(part) != "" && !strings.HasPrefix(part, "{") && part != "api" && part != "v1" {
 				if i != len(pathParts)-1 {
-					if rep, ok := tagReplacements[part]; ok {
+					if rep, ok1 := tagReplacements[part]; ok1 {
 						if _, ok2 := tagDescriptions[rep]; !ok2 {
 							continue
 						}
@@ -131,7 +132,7 @@ func main() {
 	spec := baseSpec()
 
 	tags := []openapi.Tag{}
-	for tag, _ := range allTags {
+	for tag := range allTags {
 		rawDescription := tagDescriptions[tag]
 
 		var description *string
@@ -146,11 +147,12 @@ func main() {
 	}
 
 	slices.SortFunc(tags, func(a, b openapi.Tag) int {
-		if a.Name < b.Name {
+		switch {
+		case a.Name < b.Name:
 			return -1
-		} else if a.Name == b.Name {
+		case a.Name == b.Name:
 			return 0
-		} else {
+		default:
 			return 1
 		}
 	})
@@ -325,7 +327,8 @@ const (
 	/* #nosec G101 */
 	debugCookieHashKey = "HEREISA32CHARSECRETWHICHISMADEUP"
 	/* #nosec G101 */
-	debugCookieBlockKey = "DIFFERENT32CHARSECRETTHATIMADEUP"
+	debugCookieBlockKey  = "DIFFERENT32CHARSECRETTHATIMADEUP"
+	dataChangesTopicName = "dataChangesTopicName"
 )
 
 func neutralizeConfig(cfg *config.InstanceConfig) {
@@ -339,7 +342,6 @@ func neutralizeConfig(cfg *config.InstanceConfig) {
 	cfg.Services.Auth.Cookies.BlockKey = debugCookieBlockKey
 	cfg.Services.Auth.SSO.Google.ClientID = "blah blah blah blah"
 	cfg.Services.Auth.SSO.Google.ClientSecret = "blah blah blah blah"
-	// cfg.Email.Sendgrid.APIToken = "blah blah blah blah"
 	cfg.Analytics.Provider = ""
 	cfg.Services.Recipes.Uploads.Storage.GCPConfig = nil
 	cfg.Services.Recipes.Uploads.Storage.Provider = objectstorage.FilesystemProvider
@@ -347,44 +349,44 @@ func neutralizeConfig(cfg *config.InstanceConfig) {
 	cfg.Services.RecipeSteps.Uploads.Storage.GCPConfig = nil
 	cfg.Services.RecipeSteps.Uploads.Storage.Provider = objectstorage.FilesystemProvider
 	cfg.Services.RecipeSteps.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
-	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidInstruments.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidIngredients.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidPreparations.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidIngredientPreparations.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidPreparationInstruments.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidInstrumentMeasurementUnits.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.Recipes.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.RecipeSteps.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.RecipeStepProducts.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.RecipeStepInstruments.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.RecipeStepIngredients.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.Meals.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.MealPlans.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.MealPlanEvents.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.MealPlanOptions.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.MealPlanOptionVotes.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.MealPlanTasks.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.Households.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.HouseholdInvitations.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.Users.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidIngredientGroups.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.Webhooks.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.Auth.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.RecipePrepTasks.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.MealPlanGroceryListItems.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidMeasurementUnitConversions.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidIngredientStates.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.RecipeStepCompletionConditions.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidIngredientStateIngredients.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.RecipeStepVessels.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ServiceSettings.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ServiceSettingConfigurations.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.UserIngredientPreferences.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.RecipeRatings.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.HouseholdInstrumentOwnerships.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidVessels.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.ValidPreparationVessels.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.Workers.DataChangesTopicName = "dataChangesTopicName"
-	cfg.Services.UserNotifications.DataChangesTopicName = "dataChangesTopicName"
+	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidPreparations.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidIngredientPreparations.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidPreparationInstruments.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidInstrumentMeasurementUnits.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Recipes.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeSteps.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeStepProducts.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeStepInstruments.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeStepIngredients.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Meals.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlans.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlanEvents.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlanOptions.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlanOptionVotes.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlanTasks.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Households.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Users.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidIngredientGroups.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Auth.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipePrepTasks.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlanGroceryListItems.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidMeasurementUnitConversions.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidIngredientStates.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeStepCompletionConditions.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidIngredientStateIngredients.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeStepVessels.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ServiceSettings.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ServiceSettingConfigurations.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.UserIngredientPreferences.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeRatings.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.HouseholdInstrumentOwnerships.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidVessels.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidPreparationVessels.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Workers.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.UserNotifications.DataChangesTopicName = dataChangesTopicName
 }

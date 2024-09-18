@@ -12,14 +12,14 @@ type RouteDefinition struct {
 	Method           string
 	Summary          string
 	Path             string
-	PathArguments    []string
-	ListRoute        bool
-	Tags             []string
 	ResponseType     string
-	MainResponseCode int
 	RequestBody      string
 	InputType        string
+	PathArguments    []string
+	Tags             []string
 	OAuth2Scopes     []string
+	MainResponseCode int
+	ListRoute        bool
 }
 
 var routesWithoutAuth = map[string]struct{}{
@@ -94,7 +94,7 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 			"$ref": "#/components/schemas/APIResponse",
 		}
 
-		secondResponseSchema := map[string]any{}
+		var secondResponseSchema map[string]any
 		if d.ListRoute {
 			secondResponseSchema = map[string]any{
 				"type": "object",
@@ -145,9 +145,7 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 		}
 	}
 
-	for _, tag := range d.Tags {
-		op.Tags = append(op.Tags, tag)
-	}
+	op.Tags = append(op.Tags, d.Tags...)
 
 	return op
 }

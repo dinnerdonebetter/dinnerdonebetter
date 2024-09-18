@@ -48,10 +48,10 @@ type Client struct {
 	unauthenticatedClient   *http.Client
 	authedClient            *http.Client
 	authMethod              *authMethod
+	cookie                  *http.Cookie
 	impersonatedUserID      string
 	impersonatedHouseholdID string
 	debug                   bool
-	cookie                  *http.Cookie
 }
 
 // AuthenticatedClient returns the authenticated *apiclient.Client that we use to make most requests.
