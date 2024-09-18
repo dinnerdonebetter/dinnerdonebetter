@@ -9,7 +9,7 @@ export interface IHouseholdUserMembership {
   id: NonNullable<string>;
   belongsToUser: NonNullable<string>;
   belongsToHousehold: NonNullable<string>;
-  householdRoles: NonNullable<string>;
+  householdRole: NonNullable<string>;
   defaultHousehold: NonNullable<boolean>;
 }
 
@@ -20,7 +20,7 @@ export class HouseholdUserMembership implements IHouseholdUserMembership {
   id: NonNullable<string> = '';
   belongsToUser: NonNullable<string> = '';
   belongsToHousehold: NonNullable<string> = '';
-  householdRoles: NonNullable<string> = '';
+  householdRole: NonNullable<string> = '';
   defaultHousehold: NonNullable<boolean> = false;
 
   constructor(input: Partial<HouseholdUserMembership> = {}) {
@@ -30,7 +30,7 @@ export class HouseholdUserMembership implements IHouseholdUserMembership {
     this.id = input.id ?? '';
     this.belongsToUser = input.belongsToUser ?? '';
     this.belongsToHousehold = input.belongsToHousehold ?? '';
-    this.householdRoles = input.householdRoles ?? '';
+    this.householdRole = input.householdRole ?? '';
     this.defaultHousehold = input.defaultHousehold ?? false;
   }
 }
@@ -42,7 +42,7 @@ export interface IHouseholdUserMembershipWithUser {
   archivedAt?: string;
   id: NonNullable<string>;
   belongsToHousehold: NonNullable<string>;
-  householdRoles: NonNullable<string>;
+  householdRole: NonNullable<string>;
   defaultHousehold: NonNullable<boolean>;
 }
 
@@ -53,7 +53,7 @@ export class HouseholdUserMembershipWithUser implements IHouseholdUserMembership
   archivedAt?: string;
   id: NonNullable<string> = '';
   belongsToHousehold: NonNullable<string> = '';
-  householdRoles: NonNullable<string> = '';
+  householdRole: NonNullable<string> = '';
   defaultHousehold: NonNullable<boolean> = false;
 
   constructor(input: Partial<HouseholdUserMembershipWithUser> = {}) {
@@ -63,22 +63,7 @@ export class HouseholdUserMembershipWithUser implements IHouseholdUserMembership
     this.archivedAt = input.archivedAt;
     this.id = input.id ?? '';
     this.belongsToHousehold = input.belongsToHousehold ?? '';
-    this.householdRoles = input.householdRoles ?? '';
+    this.householdRole = input.householdRole ?? '';
     this.defaultHousehold = input.defaultHousehold ?? false;
-  }
-}
-
-export interface IHouseholdUserMembershipCreationRequestInput {
-  reason: NonNullable<string>;
-  userID: NonNullable<string>;
-}
-
-export class HouseholdUserMembershipCreationRequestInput implements IHouseholdUserMembershipCreationRequestInput {
-  reason: NonNullable<string> = '';
-  userID: NonNullable<string> = '';
-
-  constructor(input: Partial<HouseholdUserMembershipCreationRequestInput> = {}) {
-    this.reason = input.reason ?? '';
-    this.userID = input.userID ?? '';
   }
 }

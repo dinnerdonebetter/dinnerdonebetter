@@ -13,7 +13,7 @@ export interface IMeal {
   name: NonNullable<string>;
   components: NonNullable<Array<MealComponent>>;
   minimumEstimatedPortions: NonNullable<number>;
-  elibigleForMealPlans: NonNullable<boolean>;
+  eligibleForMealPlans: NonNullable<boolean>;
 }
 
 export class Meal implements IMeal {
@@ -27,7 +27,7 @@ export class Meal implements IMeal {
   name: NonNullable<string> = '';
   components: NonNullable<Array<MealComponent>> = [];
   minimumEstimatedPortions: NonNullable<number> = 0;
-  elibigleForMealPlans: NonNullable<boolean> = false;
+  eligibleForMealPlans: NonNullable<boolean> = false;
 
   constructor(input: Partial<Meal> = {}) {
     this.createdAt = input.createdAt ?? '1970-01-01T00:00:00Z';
@@ -40,7 +40,7 @@ export class Meal implements IMeal {
     this.name = input.name ?? '';
     this.components = input.components ?? [];
     this.minimumEstimatedPortions = input.minimumEstimatedPortions ?? 0;
-    this.elibigleForMealPlans = input.elibigleForMealPlans ?? false;
+    this.eligibleForMealPlans = input.eligibleForMealPlans ?? false;
   }
 }
 
@@ -50,7 +50,7 @@ export interface IMealCreationRequestInput {
   description: NonNullable<string>;
   recipes: NonNullable<Array<MealComponentCreationRequestInput>>;
   minimumEstimatedPortions: NonNullable<number>;
-  elibigleForMealPlans: NonNullable<boolean>;
+  eligibleForMealPlans: NonNullable<boolean>;
 }
 
 export class MealCreationRequestInput implements IMealCreationRequestInput {
@@ -59,7 +59,7 @@ export class MealCreationRequestInput implements IMealCreationRequestInput {
   description: NonNullable<string> = '';
   recipes: NonNullable<Array<MealComponentCreationRequestInput>> = [];
   minimumEstimatedPortions: NonNullable<number> = 0;
-  elibigleForMealPlans: NonNullable<boolean> = false;
+  eligibleForMealPlans: NonNullable<boolean> = false;
 
   constructor(input: Partial<MealCreationRequestInput> = {}) {
     this.maximumEstimatedPortions = input.maximumEstimatedPortions;
@@ -67,7 +67,7 @@ export class MealCreationRequestInput implements IMealCreationRequestInput {
     this.description = input.description ?? '';
     this.recipes = input.recipes ?? [];
     this.minimumEstimatedPortions = input.minimumEstimatedPortions ?? 0;
-    this.elibigleForMealPlans = input.elibigleForMealPlans ?? false;
+    this.eligibleForMealPlans = input.eligibleForMealPlans ?? false;
   }
 }
 
@@ -76,7 +76,7 @@ export interface IMealUpdateRequestInput {
   description?: string;
   minimumEstimatedPortions?: number;
   maximumEstimatedPortions?: number;
-  elibigleForMealPlans?: boolean;
+  eligibleForMealPlans?: boolean;
   recipes: NonNullable<Array<MealComponentUpdateRequestInput>>;
 }
 
@@ -85,7 +85,7 @@ export class MealUpdateRequestInput implements IMealUpdateRequestInput {
   description?: string;
   minimumEstimatedPortions?: number;
   maximumEstimatedPortions?: number;
-  elibigleForMealPlans?: boolean = false;
+  eligibleForMealPlans?: boolean = false;
   recipes: NonNullable<Array<MealComponentUpdateRequestInput>> = [];
 
   constructor(input: Partial<MealUpdateRequestInput> = {}) {
@@ -93,7 +93,7 @@ export class MealUpdateRequestInput implements IMealUpdateRequestInput {
     this.description = input.description;
     this.minimumEstimatedPortions = input.minimumEstimatedPortions;
     this.maximumEstimatedPortions = input.maximumEstimatedPortions;
-    this.elibigleForMealPlans = input.elibigleForMealPlans ?? false;
+    this.eligibleForMealPlans = input.eligibleForMealPlans ?? false;
     this.recipes = input.recipes ?? [];
   }
 }
