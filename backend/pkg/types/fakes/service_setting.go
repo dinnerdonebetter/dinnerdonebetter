@@ -40,12 +40,6 @@ func BuildFakeServiceSettingList() *types.QueryFilteredResult[types.ServiceSetti
 	}
 }
 
-// BuildFakeServiceSettingUpdateRequestInput builds a faked ServiceSettingUpdateRequestInput.
-func BuildFakeServiceSettingUpdateRequestInput() *types.ServiceSettingUpdateRequestInput {
-	serviceSetting := BuildFakeServiceSetting()
-	return converters.ConvertServiceSettingToServiceSettingUpdateRequestInput(serviceSetting)
-}
-
 // BuildFakeServiceSettingCreationRequestInput builds a faked ServiceSettingCreationRequestInput.
 func BuildFakeServiceSettingCreationRequestInput() *types.ServiceSettingCreationRequestInput {
 	serviceSetting := BuildFakeServiceSetting()

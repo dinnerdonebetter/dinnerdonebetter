@@ -5,20 +5,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// ConvertServiceSettingToServiceSettingUpdateRequestInput creates a ServiceSettingUpdateRequestInput from a ServiceSetting.
-func ConvertServiceSettingToServiceSettingUpdateRequestInput(input *types.ServiceSetting) *types.ServiceSettingUpdateRequestInput {
-	x := &types.ServiceSettingUpdateRequestInput{
-		Name:         &input.Name,
-		Type:         &input.Type,
-		Description:  &input.Description,
-		DefaultValue: input.DefaultValue,
-		AdminsOnly:   &input.AdminsOnly,
-		Enumeration:  input.Enumeration,
-	}
-
-	return x
-}
-
 // ConvertServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput creates a ServiceSettingDatabaseCreationInput from a ServiceSettingCreationRequestInput.
 func ConvertServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput(input *types.ServiceSettingCreationRequestInput) *types.ServiceSettingDatabaseCreationInput {
 	x := &types.ServiceSettingDatabaseCreationInput{

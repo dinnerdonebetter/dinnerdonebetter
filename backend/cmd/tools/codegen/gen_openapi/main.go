@@ -168,33 +168,22 @@ func main() {
 
 		var item openapi.PathItem
 		if _, ok := paths.MapOfPathItemValues[path]; ok {
-			// path already present
 			item = paths.MapOfPathItemValues[path]
-
-			switch rd.Method {
-			case http.MethodGet:
-				item.Get = op
-			case http.MethodPut:
-				item.Put = op
-			case http.MethodPost:
-				item.Post = op
-			case http.MethodDelete:
-				item.Delete = op
-			}
 		} else {
-			// path is not yet present
 			item = openapi.PathItem{}
+		}
 
-			switch rd.Method {
-			case http.MethodGet:
-				item.Get = op
-			case http.MethodPut:
-				item.Put = op
-			case http.MethodPost:
-				item.Post = op
-			case http.MethodDelete:
-				item.Delete = op
-			}
+		switch rd.Method {
+		case http.MethodGet:
+			item.Get = op
+		case http.MethodPut:
+			item.Put = op
+		case http.MethodPost:
+			item.Post = op
+		case http.MethodPatch:
+			item.Patch = op
+		case http.MethodDelete:
+			item.Delete = op
 		}
 
 		paths.MapOfPathItemValues[path] = item

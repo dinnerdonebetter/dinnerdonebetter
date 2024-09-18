@@ -5,19 +5,33 @@ info:
   description: This is the spec for the Dinner Done Better API.
   title: Dinner Done Better API
   version: 1.0.0
+servers:
+- description: dev API server
+  url: https://api.dinnerdonebetter.dev
 paths:
   /api/v1/admin/cycle_cookie_secret:
     post:
+      description: Operation for creating
       operationId: POST_admin_cycle_cookie_secret
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - admin
   /api/v1/admin/users/status:
     post:
+      description: Operation for creating UserStatusResponse
       operationId: POST_admin_users_status
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAccountStatusUpdateInput'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UserAccountStatusUpdateInput'
+        required: true
       responses:
         "201":
           content:
@@ -68,14 +82,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - admin
       - users
   /api/v1/audit_log_entries/{auditLogEntryID}:
     get:
+      description: Operation for fetching AuditLogEntry
       operationId: GET_audit_log_entries_auditLogEntryID
       parameters:
       - in: path
@@ -133,13 +148,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - audit_log_entries
   /api/v1/audit_log_entries/for_household:
     get:
+      description: Operation for fetching AuditLogEntry
       operationId: GET_audit_log_entries_for_household
       responses:
         "200":
@@ -191,13 +207,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - audit_log_entries
   /api/v1/audit_log_entries/for_user:
     get:
+      description: Operation for fetching AuditLogEntry
       operationId: GET_audit_log_entries_for_user
       responses:
         "200":
@@ -249,13 +266,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - audit_log_entries
   /api/v1/household_invitations/{householdInvitationID}:
     get:
+      description: Operation for fetching HouseholdInvitation
       operationId: GET_household_invitations_householdInvitationID
       parameters:
       - in: path
@@ -313,13 +331,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - household_invitations
   /api/v1/household_invitations/{householdInvitationID}/accept:
     put:
+      description: Operation for updating HouseholdInvitation
       operationId: PUT_household_invitations_householdInvitationID_accept
       parameters:
       - in: path
@@ -386,13 +405,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - household_invitations
   /api/v1/household_invitations/{householdInvitationID}/cancel:
     put:
+      description: Operation for updating HouseholdInvitation
       operationId: PUT_household_invitations_householdInvitationID_cancel
       parameters:
       - in: path
@@ -459,13 +479,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - household_invitations
   /api/v1/household_invitations/{householdInvitationID}/reject:
     put:
+      description: Operation for updating HouseholdInvitation
       operationId: PUT_household_invitations_householdInvitationID_reject
       parameters:
       - in: path
@@ -532,13 +553,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - household_invitations
   /api/v1/household_invitations/received:
     get:
+      description: Operation for fetching HouseholdInvitation
       operationId: GET_household_invitations_received
       responses:
         "200":
@@ -590,13 +612,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - household_invitations
   /api/v1/household_invitations/sent:
     get:
+      description: Operation for fetching HouseholdInvitation
       operationId: GET_household_invitations_sent
       responses:
         "200":
@@ -648,13 +671,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - household_invitations
   /api/v1/households:
     get:
+      description: Operation for fetching Household
       operationId: GET_households
       parameters:
       - in: query
@@ -750,12 +774,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - households
     post:
+      description: Operation for creating Household
       operationId: POST_households
       requestBody:
         content:
@@ -816,13 +841,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - households
   /api/v1/households/{householdID}:
     delete:
+      description: Operation for archiving Household
       operationId: DELETE_households_householdID
       parameters:
       - in: path
@@ -880,12 +906,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - households
     get:
+      description: Operation for fetching Household
       operationId: GET_households_householdID
       parameters:
       - in: path
@@ -943,12 +970,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - households
     put:
+      description: Operation for updating Household
       operationId: PUT_households_householdID
       parameters:
       - in: path
@@ -960,10 +988,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdCreationRequestInput'
+              $ref: '#/components/schemas/HouseholdUpdateRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdCreationRequestInput'
+              $ref: '#/components/schemas/HouseholdUpdateRequestInput'
         required: true
       responses:
         "200":
@@ -1015,13 +1043,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - households
   /api/v1/households/{householdID}/default:
     post:
+      description: Operation for creating Household
       operationId: POST_households_householdID_default
       parameters:
       - in: path
@@ -1079,13 +1108,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - households
   /api/v1/households/{householdID}/invitations:
     post:
+      description: Operation for creating HouseholdInvitation
       operationId: POST_households_householdID_invitations
       parameters:
       - in: path
@@ -1152,14 +1182,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - households
       - invitations
   /api/v1/households/{householdID}/invitations/{householdInvitationID}:
     get:
+      description: Operation for fetching HouseholdInvitation
       operationId: GET_households_householdID_invitations_householdInvitationID
       parameters:
       - in: path
@@ -1222,14 +1253,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - households
       - invitations
   /api/v1/households/{householdID}/invite:
     post:
+      description: Operation for creating HouseholdInvitation
       operationId: POST_households_householdID_invite
       parameters:
       - in: path
@@ -1296,13 +1328,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - households
   /api/v1/households/{householdID}/members/{userID}:
     delete:
+      description: Operation for archiving HouseholdUserMembership
       operationId: DELETE_households_householdID_members_userID
       parameters:
       - in: path
@@ -1365,15 +1398,95 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - households
       - household_members
-  /api/v1/households/{householdID}/members/{userID}/permissions: {}
+  /api/v1/households/{householdID}/members/{userID}/permissions:
+    patch:
+      description: Operation for updating UserPermissionsResponse
+      operationId: PATCH_households_householdID_members_userID_permissions
+      parameters:
+      - in: path
+        name: householdID
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: userID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyUserPermissionsInput'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ModifyUserPermissionsInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserPermissionsResponse'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserPermissionsResponse'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+      security:
+      - cookieAuth: []
+      - oauth2:
+        - household_admin
+      tags:
+      - households
+      - household_members
   /api/v1/households/{householdID}/transfer:
     post:
+      description: Operation for creating Household
       operationId: POST_households_householdID_transfer
       parameters:
       - in: path
@@ -1440,13 +1553,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - households
   /api/v1/households/current:
     get:
+      description: Operation for fetching Household
       operationId: GET_households_current
       responses:
         "200":
@@ -1498,13 +1612,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - households
   /api/v1/households/instruments:
     get:
+      description: Operation for fetching HouseholdInstrumentOwnership
       operationId: GET_households_instruments
       parameters:
       - in: query
@@ -1600,13 +1715,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - households
       - household_instrument_ownerships
     post:
+      description: Operation for creating HouseholdInstrumentOwnership
       operationId: POST_households_instruments
       requestBody:
         content:
@@ -1667,14 +1783,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - households
       - household_instrument_ownerships
   /api/v1/households/instruments/{householdInstrumentOwnershipID}:
     delete:
+      description: Operation for archiving HouseholdInstrumentOwnership
       operationId: DELETE_households_instruments_householdInstrumentOwnershipID
       parameters:
       - in: path
@@ -1732,13 +1849,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - households
       - household_instrument_ownerships
     get:
+      description: Operation for fetching HouseholdInstrumentOwnership
       operationId: GET_households_instruments_householdInstrumentOwnershipID
       parameters:
       - in: path
@@ -1796,13 +1914,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - households
       - household_instrument_ownerships
     put:
+      description: Operation for updating HouseholdInstrumentOwnership
       operationId: PUT_households_instruments_householdInstrumentOwnershipID
       parameters:
       - in: path
@@ -1869,14 +1988,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - households
       - household_instrument_ownerships
   /api/v1/meal_plans:
     get:
+      description: Operation for fetching MealPlan
       operationId: GET_meal_plans
       parameters:
       - in: query
@@ -1972,12 +2092,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
     post:
+      description: Operation for creating MealPlan
       operationId: POST_meal_plans
       requestBody:
         content:
@@ -2038,13 +2159,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
   /api/v1/meal_plans/{mealPlanID}:
     delete:
+      description: Operation for archiving MealPlan
       operationId: DELETE_meal_plans_mealPlanID
       parameters:
       - in: path
@@ -2102,12 +2224,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
     get:
+      description: Operation for fetching MealPlan
       operationId: GET_meal_plans_mealPlanID
       parameters:
       - in: path
@@ -2165,12 +2288,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
     put:
+      description: Operation for updating MealPlan
       operationId: PUT_meal_plans_mealPlanID
       parameters:
       - in: path
@@ -2237,13 +2361,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
   /api/v1/meal_plans/{mealPlanID}/events:
     get:
+      description: Operation for fetching MealPlanEvent
       operationId: GET_meal_plans_mealPlanID_events
       parameters:
       - in: query
@@ -2344,13 +2469,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
     post:
+      description: Operation for creating MealPlanEvent
       operationId: POST_meal_plans_mealPlanID_events
       parameters:
       - in: path
@@ -2417,14 +2543,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}:
     delete:
+      description: Operation for archiving MealPlanEvent
       operationId: DELETE_meal_plans_mealPlanID_events_mealPlanEventID
       parameters:
       - in: path
@@ -2487,13 +2614,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
     get:
+      description: Operation for fetching MealPlanEvent
       operationId: GET_meal_plans_mealPlanID_events_mealPlanEventID
       parameters:
       - in: path
@@ -2556,13 +2684,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
     put:
+      description: Operation for updating MealPlanEvent
       operationId: PUT_meal_plans_mealPlanID_events_mealPlanEventID
       parameters:
       - in: path
@@ -2634,14 +2763,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/options:
     get:
+      description: Operation for fetching MealPlanOption
       operationId: GET_meal_plans_mealPlanID_events_mealPlanEventID_options
       parameters:
       - in: query
@@ -2747,14 +2877,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
       - meal_plan_options
     post:
+      description: Operation for creating MealPlanOption
       operationId: POST_meal_plans_mealPlanID_events_mealPlanEventID_options
       parameters:
       - in: path
@@ -2826,15 +2957,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
       - meal_plan_options
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/options/{mealPlanOptionID}:
     delete:
+      description: Operation for archiving MealPlanOption
       operationId: DELETE_meal_plans_mealPlanID_events_mealPlanEventID_options_mealPlanOptionID
       parameters:
       - in: path
@@ -2902,14 +3034,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
       - meal_plan_options
     get:
+      description: Operation for fetching MealPlanOption
       operationId: GET_meal_plans_mealPlanID_events_mealPlanEventID_options_mealPlanOptionID
       parameters:
       - in: path
@@ -2977,14 +3110,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
       - meal_plan_options
     put:
+      description: Operation for updating MealPlanOption
       operationId: PUT_meal_plans_mealPlanID_events_mealPlanEventID_options_mealPlanOptionID
       parameters:
       - in: path
@@ -3061,15 +3195,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
       - meal_plan_options
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/options/{mealPlanOptionID}/votes:
     get:
+      description: Operation for fetching MealPlanOptionVote
       operationId: GET_meal_plans_mealPlanID_events_mealPlanEventID_options_mealPlanOptionID_votes
       parameters:
       - in: query
@@ -3180,9 +3315,9 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
@@ -3190,6 +3325,7 @@ paths:
       - meal_plan_option_votes
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/options/{mealPlanOptionID}/votes/{mealPlanOptionVoteID}:
     delete:
+      description: Operation for archiving MealPlanOptionVote
       operationId: DELETE_meal_plans_mealPlanID_events_mealPlanEventID_options_mealPlanOptionID_votes_mealPlanOptionVoteID
       parameters:
       - in: path
@@ -3262,15 +3398,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
       - meal_plan_options
       - meal_plan_option_votes
     get:
+      description: Operation for fetching MealPlanOptionVote
       operationId: GET_meal_plans_mealPlanID_events_mealPlanEventID_options_mealPlanOptionID_votes_mealPlanOptionVoteID
       parameters:
       - in: path
@@ -3343,15 +3480,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
       - meal_plan_options
       - meal_plan_option_votes
     put:
+      description: Operation for updating MealPlanOptionVote
       operationId: PUT_meal_plans_mealPlanID_events_mealPlanEventID_options_mealPlanOptionID_votes_mealPlanOptionVoteID
       parameters:
       - in: path
@@ -3433,9 +3571,9 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
@@ -3443,6 +3581,7 @@ paths:
       - meal_plan_option_votes
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/vote:
     post:
+      description: Operation for creating MealPlanOptionVote
       operationId: POST_meal_plans_mealPlanID_events_mealPlanEventID_vote
       parameters:
       - in: path
@@ -3514,14 +3653,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_events
   /api/v1/meal_plans/{mealPlanID}/finalize:
     post:
+      description: Operation for creating FinalizeMealPlansResponse
       operationId: POST_meal_plans_mealPlanID_finalize
       parameters:
       - in: path
@@ -3538,7 +3678,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/MealPlan'
+                      $ref: '#/components/schemas/FinalizeMealPlansResponse'
                       type: object
                   type: object
             application/xml:
@@ -3547,7 +3687,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/MealPlan'
+                      $ref: '#/components/schemas/FinalizeMealPlansResponse'
                       type: object
                   type: object
           description: ""
@@ -3579,13 +3719,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - meal_plans
   /api/v1/meal_plans/{mealPlanID}/grocery_list_items:
     get:
+      description: Operation for fetching MealPlanGroceryListItem
       operationId: GET_meal_plans_mealPlanID_grocery_list_items
       parameters:
       - in: query
@@ -3686,13 +3827,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - grocery_list_items
     post:
+      description: Operation for creating MealPlanGroceryListItem
       operationId: POST_meal_plans_mealPlanID_grocery_list_items
       parameters:
       - in: path
@@ -3759,14 +3901,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - meal_plans
       - grocery_list_items
   /api/v1/meal_plans/{mealPlanID}/grocery_list_items/{mealPlanGroceryListItemID}:
     delete:
+      description: Operation for archiving MealPlanGroceryListItem
       operationId: DELETE_meal_plans_mealPlanID_grocery_list_items_mealPlanGroceryListItemID
       parameters:
       - in: path
@@ -3829,13 +3972,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - grocery_list_items
     get:
+      description: Operation for fetching MealPlanGroceryListItem
       operationId: GET_meal_plans_mealPlanID_grocery_list_items_mealPlanGroceryListItemID
       parameters:
       - in: path
@@ -3898,13 +4042,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - grocery_list_items
     put:
+      description: Operation for updating MealPlanGroceryListItem
       operationId: PUT_meal_plans_mealPlanID_grocery_list_items_mealPlanGroceryListItemID
       parameters:
       - in: path
@@ -3976,14 +4121,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - grocery_list_items
   /api/v1/meal_plans/{mealPlanID}/tasks:
     get:
+      description: Operation for fetching MealPlanTask
       operationId: GET_meal_plans_mealPlanID_tasks
       parameters:
       - in: query
@@ -4084,13 +4230,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_tasks
     post:
+      description: Operation for creating MealPlanTask
       operationId: POST_meal_plans_mealPlanID_tasks
       parameters:
       - in: path
@@ -4157,14 +4304,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - meal_plans
       - meal_plan_tasks
   /api/v1/meal_plans/{mealPlanID}/tasks/{mealPlanTaskID}:
     get:
+      description: Operation for fetching MealPlanTask
       operationId: GET_meal_plans_mealPlanID_tasks_mealPlanTaskID
       parameters:
       - in: path
@@ -4227,14 +4375,94 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
+      tags:
+      - meal_plans
+      - meal_plan_tasks
+    patch:
+      description: Operation for updating MealPlanTask
+      operationId: PATCH_meal_plans_mealPlanID_tasks_mealPlanTaskID
+      parameters:
+      - in: path
+        name: mealPlanID
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: mealPlanTaskID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealPlanTaskStatusChangeRequestInput'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MealPlanTaskStatusChangeRequestInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/MealPlanTask'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/MealPlanTask'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+      security:
       - cookieAuth: []
+      - oauth2:
+        - household_member
       tags:
       - meal_plans
       - meal_plan_tasks
   /api/v1/meals:
     get:
+      description: Operation for fetching Meal
       operationId: GET_meals
       parameters:
       - in: query
@@ -4330,12 +4558,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meals
     post:
+      description: Operation for creating Meal
       operationId: POST_meals
       requestBody:
         content:
@@ -4396,13 +4625,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meals
   /api/v1/meals/{mealID}:
     delete:
+      description: Operation for archiving Meal
       operationId: DELETE_meals_mealID
       parameters:
       - in: path
@@ -4460,12 +4690,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meals
     get:
+      description: Operation for fetching Meal
       operationId: GET_meals_mealID
       parameters:
       - in: path
@@ -4523,13 +4754,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meals
   /api/v1/meals/search:
     get:
+      description: Operation for fetching Meal
       operationId: GET_meals_search
       responses:
         "200":
@@ -4581,13 +4813,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - meals
   /api/v1/oauth2_clients:
     get:
+      description: Operation for fetching OAuth2Client
       operationId: GET_oauth2_clients
       parameters:
       - in: query
@@ -4683,12 +4916,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - oauth2
     post:
+      description: Operation for creating OAuth2ClientCreationResponse
       operationId: POST_oauth2_clients
       requestBody:
         content:
@@ -4708,7 +4942,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/OAuth2Client'
+                      $ref: '#/components/schemas/OAuth2ClientCreationResponse'
                       type: object
                   type: object
             application/xml:
@@ -4717,7 +4951,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/OAuth2Client'
+                      $ref: '#/components/schemas/OAuth2ClientCreationResponse'
                       type: object
                   type: object
           description: ""
@@ -4749,13 +4983,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - oauth2
   /api/v1/oauth2_clients/{oauth2ClientID}:
     delete:
+      description: Operation for archiving OAuth2Client
       operationId: DELETE_oauth2_clients_oauth2ClientID
       parameters:
       - in: path
@@ -4813,12 +5048,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - oauth2
     get:
+      description: Operation for fetching OAuth2Client
       operationId: GET_oauth2_clients_oauth2ClientID
       parameters:
       - in: path
@@ -4876,13 +5112,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - oauth2
   /api/v1/recipes:
     get:
+      description: Operation for fetching Recipe
       operationId: GET_recipes
       parameters:
       - in: query
@@ -4978,12 +5215,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
     post:
+      description: Operation for creating Recipe
       operationId: POST_recipes
       requestBody:
         content:
@@ -5044,13 +5282,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
   /api/v1/recipes/{recipeID}:
     delete:
+      description: Operation for archiving Recipe
       operationId: DELETE_recipes_recipeID
       parameters:
       - in: path
@@ -5108,12 +5347,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
     get:
+      description: Operation for fetching Recipe
       operationId: GET_recipes_recipeID
       parameters:
       - in: path
@@ -5171,12 +5411,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
     put:
+      description: Operation for updating Recipe
       operationId: PUT_recipes_recipeID
       parameters:
       - in: path
@@ -5243,13 +5484,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/clone:
     post:
+      description: Operation for creating Recipe
       operationId: POST_recipes_recipeID_clone
       parameters:
       - in: path
@@ -5307,13 +5549,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/dag:
     get:
+      description: Operation for fetching APIError
       operationId: GET_recipes_recipeID_dag
       parameters:
       - in: path
@@ -5371,13 +5614,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/images:
     post:
+      description: Operation for creating
       operationId: POST_recipes_recipeID_images
       parameters:
       - in: path
@@ -5386,12 +5630,12 @@ paths:
         schema:
           type: string
       security:
-      - oauth2: null
       - cookieAuth: []
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/mermaid:
     get:
+      description: Operation for fetching
       operationId: GET_recipes_recipeID_mermaid
       parameters:
       - in: path
@@ -5400,12 +5644,12 @@ paths:
         schema:
           type: string
       security:
-      - oauth2: null
       - cookieAuth: []
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/prep_steps:
     get:
+      description: Operation for fetching RecipePrepTaskStep
       operationId: GET_recipes_recipeID_prep_steps
       parameters:
       - in: path
@@ -5463,13 +5707,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/prep_tasks:
     get:
+      description: Operation for fetching RecipePrepTask
       operationId: GET_recipes_recipeID_prep_tasks
       parameters:
       - in: query
@@ -5570,13 +5815,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_prep_tasks
     post:
+      description: Operation for creating RecipePrepTask
       operationId: POST_recipes_recipeID_prep_tasks
       parameters:
       - in: path
@@ -5643,14 +5889,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_prep_tasks
   /api/v1/recipes/{recipeID}/prep_tasks/{recipePrepTaskID}:
     delete:
+      description: Operation for archiving RecipePrepTask
       operationId: DELETE_recipes_recipeID_prep_tasks_recipePrepTaskID
       parameters:
       - in: path
@@ -5713,13 +5960,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_prep_tasks
     get:
+      description: Operation for fetching RecipePrepTask
       operationId: GET_recipes_recipeID_prep_tasks_recipePrepTaskID
       parameters:
       - in: path
@@ -5782,13 +6030,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_prep_tasks
     put:
+      description: Operation for updating RecipePrepTask
       operationId: PUT_recipes_recipeID_prep_tasks_recipePrepTaskID
       parameters:
       - in: path
@@ -5860,14 +6109,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_prep_tasks
   /api/v1/recipes/{recipeID}/ratings:
     get:
+      description: Operation for fetching RecipeRating
       operationId: GET_recipes_recipeID_ratings
       parameters:
       - in: query
@@ -5968,13 +6218,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_ratings
     post:
+      description: Operation for creating RecipeRating
       operationId: POST_recipes_recipeID_ratings
       parameters:
       - in: path
@@ -6041,14 +6292,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_ratings
   /api/v1/recipes/{recipeID}/ratings/{recipeRatingID}:
     delete:
+      description: Operation for archiving RecipeRating
       operationId: DELETE_recipes_recipeID_ratings_recipeRatingID
       parameters:
       - in: path
@@ -6111,13 +6363,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_ratings
     get:
+      description: Operation for fetching RecipeRating
       operationId: GET_recipes_recipeID_ratings_recipeRatingID
       parameters:
       - in: path
@@ -6180,13 +6433,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_ratings
     put:
+      description: Operation for updating RecipeRating
       operationId: PUT_recipes_recipeID_ratings_recipeRatingID
       parameters:
       - in: path
@@ -6258,14 +6512,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_ratings
   /api/v1/recipes/{recipeID}/steps:
     get:
+      description: Operation for fetching RecipeStep
       operationId: GET_recipes_recipeID_steps
       parameters:
       - in: query
@@ -6366,13 +6621,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
     post:
+      description: Operation for creating RecipeStep
       operationId: POST_recipes_recipeID_steps
       parameters:
       - in: path
@@ -6439,14 +6695,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}:
     delete:
+      description: Operation for archiving RecipeStep
       operationId: DELETE_recipes_recipeID_steps_recipeStepID
       parameters:
       - in: path
@@ -6509,13 +6766,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
     get:
+      description: Operation for fetching RecipeStep
       operationId: GET_recipes_recipeID_steps_recipeStepID
       parameters:
       - in: path
@@ -6578,13 +6836,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
     put:
+      description: Operation for updating RecipeStep
       operationId: PUT_recipes_recipeID_steps_recipeStepID
       parameters:
       - in: path
@@ -6656,14 +6915,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/completion_conditions:
     get:
+      description: Operation for fetching RecipeStepCompletionCondition
       operationId: GET_recipes_recipeID_steps_recipeStepID_completion_conditions
       parameters:
       - in: query
@@ -6769,14 +7029,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_completion_conditions
     post:
+      description: Operation for creating RecipeStepCompletionCondition
       operationId: POST_recipes_recipeID_steps_recipeStepID_completion_conditions
       parameters:
       - in: path
@@ -6793,10 +7054,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RecipeStepCompletionConditionCreationRequestInput'
+              $ref: '#/components/schemas/RecipeStepCompletionConditionForExistingRecipeCreationRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/RecipeStepCompletionConditionCreationRequestInput'
+              $ref: '#/components/schemas/RecipeStepCompletionConditionForExistingRecipeCreationRequestInput'
         required: true
       responses:
         "201":
@@ -6848,15 +7109,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_completion_conditions
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/completion_conditions/{recipeStepCompletionConditionID}:
     delete:
+      description: Operation for archiving RecipeStepCompletionCondition
       operationId: DELETE_recipes_recipeID_steps_recipeStepID_completion_conditions_recipeStepCompletionConditionID
       parameters:
       - in: path
@@ -6924,14 +7186,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_completion_conditions
     get:
+      description: Operation for fetching RecipeStepCompletionCondition
       operationId: GET_recipes_recipeID_steps_recipeStepID_completion_conditions_recipeStepCompletionConditionID
       parameters:
       - in: path
@@ -6999,14 +7262,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_completion_conditions
     put:
+      description: Operation for updating RecipeStepCompletionCondition
       operationId: PUT_recipes_recipeID_steps_recipeStepID_completion_conditions_recipeStepCompletionConditionID
       parameters:
       - in: path
@@ -7083,15 +7347,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_completion_conditions
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/images:
     post:
+      description: Operation for creating
       operationId: POST_recipes_recipeID_steps_recipeStepID_images
       parameters:
       - in: path
@@ -7105,13 +7370,13 @@ paths:
         schema:
           type: string
       security:
-      - oauth2: null
       - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/ingredients:
     get:
+      description: Operation for fetching RecipeStepIngredient
       operationId: GET_recipes_recipeID_steps_recipeStepID_ingredients
       parameters:
       - in: query
@@ -7217,14 +7482,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_ingredients
     post:
+      description: Operation for creating RecipeStepIngredient
       operationId: POST_recipes_recipeID_steps_recipeStepID_ingredients
       parameters:
       - in: path
@@ -7296,15 +7562,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_ingredients
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/ingredients/{recipeStepIngredientID}:
     delete:
+      description: Operation for archiving RecipeStepIngredient
       operationId: DELETE_recipes_recipeID_steps_recipeStepID_ingredients_recipeStepIngredientID
       parameters:
       - in: path
@@ -7372,14 +7639,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_ingredients
     get:
+      description: Operation for fetching RecipeStepIngredient
       operationId: GET_recipes_recipeID_steps_recipeStepID_ingredients_recipeStepIngredientID
       parameters:
       - in: path
@@ -7447,14 +7715,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_ingredients
     put:
+      description: Operation for updating RecipeStepIngredient
       operationId: PUT_recipes_recipeID_steps_recipeStepID_ingredients_recipeStepIngredientID
       parameters:
       - in: path
@@ -7531,15 +7800,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_ingredients
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/instruments:
     get:
+      description: Operation for fetching RecipeStepInstrument
       operationId: GET_recipes_recipeID_steps_recipeStepID_instruments
       parameters:
       - in: query
@@ -7645,14 +7915,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - household_instrument_ownerships
     post:
+      description: Operation for creating RecipeStepInstrument
       operationId: POST_recipes_recipeID_steps_recipeStepID_instruments
       parameters:
       - in: path
@@ -7724,15 +7995,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - household_instrument_ownerships
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/instruments/{recipeStepInstrumentID}:
     delete:
+      description: Operation for archiving RecipeStepInstrument
       operationId: DELETE_recipes_recipeID_steps_recipeStepID_instruments_recipeStepInstrumentID
       parameters:
       - in: path
@@ -7800,14 +8072,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - household_instrument_ownerships
     get:
+      description: Operation for fetching RecipeStepInstrument
       operationId: GET_recipes_recipeID_steps_recipeStepID_instruments_recipeStepInstrumentID
       parameters:
       - in: path
@@ -7875,14 +8148,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - household_instrument_ownerships
     put:
+      description: Operation for updating RecipeStepInstrument
       operationId: PUT_recipes_recipeID_steps_recipeStepID_instruments_recipeStepInstrumentID
       parameters:
       - in: path
@@ -7959,15 +8233,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - household_instrument_ownerships
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/products:
     get:
+      description: Operation for fetching RecipeStepProduct
       operationId: GET_recipes_recipeID_steps_recipeStepID_products
       parameters:
       - in: query
@@ -8073,14 +8348,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_products
     post:
+      description: Operation for creating RecipeStepProduct
       operationId: POST_recipes_recipeID_steps_recipeStepID_products
       parameters:
       - in: path
@@ -8152,15 +8428,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_products
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/products/{recipeStepProductID}:
     delete:
+      description: Operation for archiving RecipeStepProduct
       operationId: DELETE_recipes_recipeID_steps_recipeStepID_products_recipeStepProductID
       parameters:
       - in: path
@@ -8228,14 +8505,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_products
     get:
+      description: Operation for fetching RecipeStepProduct
       operationId: GET_recipes_recipeID_steps_recipeStepID_products_recipeStepProductID
       parameters:
       - in: path
@@ -8303,14 +8581,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_products
     put:
+      description: Operation for updating RecipeStepProduct
       operationId: PUT_recipes_recipeID_steps_recipeStepID_products_recipeStepProductID
       parameters:
       - in: path
@@ -8387,15 +8666,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_products
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/vessels:
     get:
+      description: Operation for fetching RecipeStepVessel
       operationId: GET_recipes_recipeID_steps_recipeStepID_vessels
       parameters:
       - in: query
@@ -8501,14 +8781,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_vessels
     post:
+      description: Operation for creating RecipeStepVessel
       operationId: POST_recipes_recipeID_steps_recipeStepID_vessels
       parameters:
       - in: path
@@ -8580,15 +8861,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_vessels
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/vessels/{recipeStepVesselID}:
     delete:
+      description: Operation for archiving RecipeStepVessel
       operationId: DELETE_recipes_recipeID_steps_recipeStepID_vessels_recipeStepVesselID
       parameters:
       - in: path
@@ -8656,14 +8938,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_vessels
     get:
+      description: Operation for fetching RecipeStepVessel
       operationId: GET_recipes_recipeID_steps_recipeStepID_vessels_recipeStepVesselID
       parameters:
       - in: path
@@ -8731,14 +9014,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_vessels
     put:
+      description: Operation for updating RecipeStepVessel
       operationId: PUT_recipes_recipeID_steps_recipeStepID_vessels_recipeStepVesselID
       parameters:
       - in: path
@@ -8815,15 +9099,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
       - recipe_steps
       - recipe_step_vessels
   /api/v1/recipes/search:
     get:
+      description: Operation for fetching Recipe
       operationId: GET_recipes_search
       responses:
         "200":
@@ -8875,13 +9160,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - recipes
   /api/v1/settings:
     get:
+      description: Operation for fetching ServiceSetting
       operationId: GET_settings
       parameters:
       - in: query
@@ -8977,12 +9263,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - service_settings
     post:
+      description: Operation for creating ServiceSetting
       operationId: POST_settings
       requestBody:
         content:
@@ -9043,13 +9330,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - service_settings
   /api/v1/settings/{serviceSettingID}:
     delete:
+      description: Operation for archiving ServiceSetting
       operationId: DELETE_settings_serviceSettingID
       parameters:
       - in: path
@@ -9107,12 +9395,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - service_settings
     get:
+      description: Operation for fetching ServiceSetting
       operationId: GET_settings_serviceSettingID
       parameters:
       - in: path
@@ -9170,13 +9459,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - service_settings
   /api/v1/settings/configurations:
     post:
+      description: Operation for creating ServiceSettingConfiguration
       operationId: POST_settings_configurations
       requestBody:
         content:
@@ -9237,14 +9527,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - service_settings
       - service_setting_configurations
   /api/v1/settings/configurations/{serviceSettingConfigurationID}:
     delete:
+      description: Operation for archiving ServiceSettingConfiguration
       operationId: DELETE_settings_configurations_serviceSettingConfigurationID
       parameters:
       - in: path
@@ -9302,13 +9593,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - service_settings
       - service_setting_configurations
     put:
+      description: Operation for updating ServiceSettingConfiguration
       operationId: PUT_settings_configurations_serviceSettingConfigurationID
       parameters:
       - in: path
@@ -9375,14 +9667,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - service_settings
       - service_setting_configurations
   /api/v1/settings/configurations/household:
     get:
+      description: Operation for fetching ServiceSettingConfiguration
       operationId: GET_settings_configurations_household
       responses:
         "200":
@@ -9434,14 +9727,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - service_settings
       - service_setting_configurations
   /api/v1/settings/configurations/user:
     get:
+      description: Operation for fetching ServiceSettingConfiguration
       operationId: GET_settings_configurations_user
       responses:
         "200":
@@ -9493,14 +9787,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - service_settings
       - service_setting_configurations
   /api/v1/settings/configurations/user/{serviceSettingConfigurationName}:
     get:
+      description: Operation for fetching ServiceSettingConfiguration
       operationId: GET_settings_configurations_user_serviceSettingConfigurationName
       parameters:
       - in: path
@@ -9558,15 +9853,16 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - service_settings
       - service_setting_configurations
       - user
   /api/v1/settings/search:
     get:
+      description: Operation for fetching ServiceSetting
       operationId: GET_settings_search
       responses:
         "200":
@@ -9618,13 +9914,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - service_settings
   /api/v1/user_ingredient_preferences:
     get:
+      description: Operation for fetching UserIngredientPreference
       operationId: GET_user_ingredient_preferences
       parameters:
       - in: query
@@ -9720,12 +10017,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - user_ingredient_preferences
     post:
+      description: Operation for creating UserIngredientPreference
       operationId: POST_user_ingredient_preferences
       requestBody:
         content:
@@ -9786,13 +10084,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - user_ingredient_preferences
   /api/v1/user_ingredient_preferences/{userIngredientPreferenceID}:
     delete:
+      description: Operation for archiving UserIngredientPreference
       operationId: DELETE_user_ingredient_preferences_userIngredientPreferenceID
       parameters:
       - in: path
@@ -9850,12 +10149,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - user_ingredient_preferences
     put:
+      description: Operation for updating UserIngredientPreference
       operationId: PUT_user_ingredient_preferences_userIngredientPreferenceID
       parameters:
       - in: path
@@ -9922,13 +10222,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - user_ingredient_preferences
   /api/v1/user_notifications:
     get:
+      description: Operation for fetching UserNotification
       operationId: GET_user_notifications
       parameters:
       - in: query
@@ -10024,12 +10325,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - user_notifications
     post:
+      description: Operation for creating UserNotification
       operationId: POST_user_notifications
       requestBody:
         content:
@@ -10090,13 +10392,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - user_notifications
   /api/v1/user_notifications/{userNotificationID}:
     get:
+      description: Operation for fetching UserNotification
       operationId: GET_user_notifications_userNotificationID
       parameters:
       - in: path
@@ -10154,13 +10457,87 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
+      tags:
+      - user_notifications
+    patch:
+      description: Operation for updating UserNotification
+      operationId: PATCH_user_notifications_userNotificationID
+      parameters:
+      - in: path
+        name: userNotificationID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserNotificationUpdateRequestInput'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UserNotificationUpdateRequestInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserNotification'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserNotification'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+      security:
       - cookieAuth: []
+      - oauth2:
+        - household_member
       tags:
       - user_notifications
   /api/v1/users:
     get:
+      description: Operation for fetching User
       operationId: GET_users
       parameters:
       - in: query
@@ -10256,13 +10633,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
   /api/v1/users/{userID}:
     delete:
+      description: Operation for archiving User
       operationId: DELETE_users_userID
       parameters:
       - in: path
@@ -10320,12 +10698,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
     get:
+      description: Operation for fetching User
       operationId: GET_users_userID
       parameters:
       - in: path
@@ -10383,13 +10762,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
   /api/v1/users/avatar/upload:
     post:
+      description: Operation for creating User
       operationId: POST_users_avatar_upload
       requestBody:
         content:
@@ -10450,13 +10830,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
   /api/v1/users/details:
     put:
+      description: Operation for updating User
       operationId: PUT_users_details
       requestBody:
         content:
@@ -10517,13 +10898,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
   /api/v1/users/email_address:
     put:
+      description: Operation for updating User
       operationId: PUT_users_email_address
       requestBody:
         content:
@@ -10584,13 +10966,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
   /api/v1/users/email_address_verification:
     post:
+      description: Operation for creating User
       operationId: POST_users_email_address_verification
       requestBody:
         content:
@@ -10651,13 +11034,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
   /api/v1/users/household/select:
     post:
+      description: Operation for creating Household
       operationId: POST_users_household_select
       requestBody:
         content:
@@ -10718,24 +11102,35 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
       - household
   /api/v1/users/password/new:
     put:
+      description: Operation for updating
       operationId: PUT_users_password_new
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordUpdateInput'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/PasswordUpdateInput'
+        required: true
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
       - password
   /api/v1/users/permissions/check:
     post:
+      description: Operation for creating UserPermissionsResponse
       operationId: POST_users_permissions_check
       requestBody:
         content:
@@ -10796,14 +11191,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
       - permissions
   /api/v1/users/search:
     get:
+      description: Operation for fetching User
       operationId: GET_users_search
       parameters:
       - in: query
@@ -10899,13 +11295,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
   /api/v1/users/self:
     get:
+      description: Operation for fetching User
       operationId: GET_users_self
       responses:
         "200":
@@ -10957,13 +11354,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
   /api/v1/users/totp_secret/new:
     post:
+      description: Operation for creating TOTPSecretRefreshResponse
       operationId: POST_users_totp_secret_new
       requestBody:
         content:
@@ -10983,7 +11381,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/APIError'
+                      $ref: '#/components/schemas/TOTPSecretRefreshResponse'
                       type: object
                   type: object
             application/xml:
@@ -10992,7 +11390,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/APIError'
+                      $ref: '#/components/schemas/TOTPSecretRefreshResponse'
                       type: object
                   type: object
           description: ""
@@ -11024,14 +11422,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
       - totp_secret
   /api/v1/users/username:
     put:
+      description: Operation for updating User
       operationId: PUT_users_username
       requestBody:
         content:
@@ -11092,13 +11491,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - users
   /api/v1/valid_ingredient_groups:
     get:
+      description: Operation for fetching ValidIngredientGroup
       operationId: GET_valid_ingredient_groups
       parameters:
       - in: query
@@ -11194,12 +11594,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_groups
     post:
+      description: Operation for creating ValidIngredientGroup
       operationId: POST_valid_ingredient_groups
       requestBody:
         content:
@@ -11260,13 +11661,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_groups
   /api/v1/valid_ingredient_groups/{validIngredientGroupID}:
     delete:
+      description: Operation for archiving ValidIngredientGroup
       operationId: DELETE_valid_ingredient_groups_validIngredientGroupID
       parameters:
       - in: path
@@ -11324,12 +11726,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_groups
     get:
+      description: Operation for fetching ValidIngredientGroup
       operationId: GET_valid_ingredient_groups_validIngredientGroupID
       parameters:
       - in: path
@@ -11387,12 +11790,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_groups
     put:
+      description: Operation for updating ValidIngredientGroup
       operationId: PUT_valid_ingredient_groups_validIngredientGroupID
       parameters:
       - in: path
@@ -11459,13 +11863,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_groups
   /api/v1/valid_ingredient_groups/search:
     get:
+      description: Operation for fetching ValidIngredientGroup
       operationId: GET_valid_ingredient_groups_search
       responses:
         "200":
@@ -11517,13 +11922,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_groups
   /api/v1/valid_ingredient_measurement_units:
     get:
+      description: Operation for fetching ValidIngredientMeasurementUnit
       operationId: GET_valid_ingredient_measurement_units
       parameters:
       - in: query
@@ -11619,12 +12025,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_measurement_units
     post:
+      description: Operation for creating ValidIngredientMeasurementUnit
       operationId: POST_valid_ingredient_measurement_units
       requestBody:
         content:
@@ -11685,13 +12092,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_measurement_units
   /api/v1/valid_ingredient_measurement_units/{validIngredientMeasurementUnitID}:
     delete:
+      description: Operation for archiving ValidIngredientMeasurementUnit
       operationId: DELETE_valid_ingredient_measurement_units_validIngredientMeasurementUnitID
       parameters:
       - in: path
@@ -11749,12 +12157,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_measurement_units
     get:
+      description: Operation for fetching ValidIngredientMeasurementUnit
       operationId: GET_valid_ingredient_measurement_units_validIngredientMeasurementUnitID
       parameters:
       - in: path
@@ -11812,12 +12221,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_measurement_units
     put:
+      description: Operation for updating ValidIngredientMeasurementUnit
       operationId: PUT_valid_ingredient_measurement_units_validIngredientMeasurementUnitID
       parameters:
       - in: path
@@ -11884,13 +12294,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_measurement_units
   /api/v1/valid_ingredient_measurement_units/by_ingredient/{validIngredientID}:
     get:
+      description: Operation for fetching ValidIngredientMeasurementUnit
       operationId: GET_valid_ingredient_measurement_units_by_ingredient_validIngredientID
       parameters:
       - in: path
@@ -11948,13 +12359,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_measurement_units
   /api/v1/valid_ingredient_measurement_units/by_measurement_unit/{validMeasurementUnitID}:
     get:
+      description: Operation for fetching ValidIngredientMeasurementUnit
       operationId: GET_valid_ingredient_measurement_units_by_measurement_unit_validMeasurementUnitID
       parameters:
       - in: path
@@ -12012,13 +12424,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_measurement_units
   /api/v1/valid_ingredient_preparations:
     get:
+      description: Operation for fetching ValidIngredientPreparation
       operationId: GET_valid_ingredient_preparations
       parameters:
       - in: query
@@ -12114,12 +12527,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_preparations
     post:
+      description: Operation for creating ValidIngredientPreparation
       operationId: POST_valid_ingredient_preparations
       requestBody:
         content:
@@ -12180,13 +12594,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_preparations
   /api/v1/valid_ingredient_preparations/{validIngredientPreparationID}:
     delete:
+      description: Operation for archiving ValidIngredientPreparation
       operationId: DELETE_valid_ingredient_preparations_validIngredientPreparationID
       parameters:
       - in: path
@@ -12244,12 +12659,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_preparations
     get:
+      description: Operation for fetching ValidIngredientPreparation
       operationId: GET_valid_ingredient_preparations_validIngredientPreparationID
       parameters:
       - in: path
@@ -12307,12 +12723,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_preparations
     put:
+      description: Operation for updating ValidIngredientPreparation
       operationId: PUT_valid_ingredient_preparations_validIngredientPreparationID
       parameters:
       - in: path
@@ -12379,13 +12796,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_preparations
   /api/v1/valid_ingredient_preparations/by_ingredient/{validIngredientID}:
     get:
+      description: Operation for fetching ValidIngredientPreparation
       operationId: GET_valid_ingredient_preparations_by_ingredient_validIngredientID
       parameters:
       - in: path
@@ -12443,13 +12861,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_preparations
   /api/v1/valid_ingredient_preparations/by_preparation/{validPreparationID}:
     get:
+      description: Operation for fetching ValidIngredientPreparation
       operationId: GET_valid_ingredient_preparations_by_preparation_validPreparationID
       parameters:
       - in: path
@@ -12507,13 +12926,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_preparations
   /api/v1/valid_ingredient_state_ingredients:
     get:
+      description: Operation for fetching ValidIngredientStateIngredient
       operationId: GET_valid_ingredient_state_ingredients
       parameters:
       - in: query
@@ -12609,12 +13029,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_state_ingredients
     post:
+      description: Operation for creating ValidIngredientStateIngredient
       operationId: POST_valid_ingredient_state_ingredients
       requestBody:
         content:
@@ -12675,13 +13096,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_state_ingredients
   /api/v1/valid_ingredient_state_ingredients/{validIngredientStateIngredientID}:
     delete:
+      description: Operation for archiving ValidIngredientStateIngredient
       operationId: DELETE_valid_ingredient_state_ingredients_validIngredientStateIngredientID
       parameters:
       - in: path
@@ -12739,12 +13161,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_state_ingredients
     get:
+      description: Operation for fetching ValidIngredientStateIngredient
       operationId: GET_valid_ingredient_state_ingredients_validIngredientStateIngredientID
       parameters:
       - in: path
@@ -12802,12 +13225,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_state_ingredients
     put:
+      description: Operation for updating ValidIngredientStateIngredient
       operationId: PUT_valid_ingredient_state_ingredients_validIngredientStateIngredientID
       parameters:
       - in: path
@@ -12874,13 +13298,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_state_ingredients
   /api/v1/valid_ingredient_state_ingredients/by_ingredient/{validIngredientID}:
     get:
+      description: Operation for fetching ValidIngredientStateIngredient
       operationId: GET_valid_ingredient_state_ingredients_by_ingredient_validIngredientID
       parameters:
       - in: path
@@ -12938,13 +13363,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_state_ingredients
   /api/v1/valid_ingredient_state_ingredients/by_ingredient_state/{validIngredientStateID}:
     get:
+      description: Operation for fetching ValidIngredientStateIngredient
       operationId: GET_valid_ingredient_state_ingredients_by_ingredient_state_validIngredientStateID
       parameters:
       - in: path
@@ -13002,13 +13428,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_state_ingredients
   /api/v1/valid_ingredient_states:
     get:
+      description: Operation for fetching ValidIngredientState
       operationId: GET_valid_ingredient_states
       parameters:
       - in: query
@@ -13104,12 +13531,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_states
     post:
+      description: Operation for creating ValidIngredientState
       operationId: POST_valid_ingredient_states
       requestBody:
         content:
@@ -13170,13 +13598,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_states
   /api/v1/valid_ingredient_states/{validIngredientStateID}:
     delete:
+      description: Operation for archiving ValidIngredientState
       operationId: DELETE_valid_ingredient_states_validIngredientStateID
       parameters:
       - in: path
@@ -13234,12 +13663,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_states
     get:
+      description: Operation for fetching ValidIngredientState
       operationId: GET_valid_ingredient_states_validIngredientStateID
       parameters:
       - in: path
@@ -13297,12 +13727,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_states
     put:
+      description: Operation for updating ValidIngredientState
       operationId: PUT_valid_ingredient_states_validIngredientStateID
       parameters:
       - in: path
@@ -13369,13 +13800,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredient_states
   /api/v1/valid_ingredient_states/search:
     get:
+      description: Operation for fetching ValidIngredientState
       operationId: GET_valid_ingredient_states_search
       responses:
         "200":
@@ -13427,13 +13859,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredient_states
   /api/v1/valid_ingredients:
     get:
+      description: Operation for fetching ValidIngredient
       operationId: GET_valid_ingredients
       parameters:
       - in: query
@@ -13529,12 +13962,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredients
     post:
+      description: Operation for creating ValidIngredient
       operationId: POST_valid_ingredients
       requestBody:
         content:
@@ -13595,13 +14029,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredients
   /api/v1/valid_ingredients/{validIngredientID}:
     delete:
+      description: Operation for archiving ValidIngredient
       operationId: DELETE_valid_ingredients_validIngredientID
       parameters:
       - in: path
@@ -13659,12 +14094,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredients
     get:
+      description: Operation for fetching ValidIngredient
       operationId: GET_valid_ingredients_validIngredientID
       parameters:
       - in: path
@@ -13722,12 +14158,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredients
     put:
+      description: Operation for updating ValidIngredient
       operationId: PUT_valid_ingredients_validIngredientID
       parameters:
       - in: path
@@ -13794,13 +14231,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_ingredients
   /api/v1/valid_ingredients/by_preparation/{validPreparationID}:
     get:
+      description: Operation for fetching ValidIngredient
       operationId: GET_valid_ingredients_by_preparation_validPreparationID
       parameters:
       - in: path
@@ -13858,13 +14296,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredients
   /api/v1/valid_ingredients/random:
     get:
+      description: Operation for fetching ValidIngredient
       operationId: GET_valid_ingredients_random
       responses:
         "200":
@@ -13916,13 +14355,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredients
   /api/v1/valid_ingredients/search:
     get:
+      description: Operation for fetching ValidIngredient
       operationId: GET_valid_ingredients_search
       responses:
         "200":
@@ -13974,13 +14414,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_ingredients
   /api/v1/valid_instruments:
     get:
+      description: Operation for fetching ValidInstrument
       operationId: GET_valid_instruments
       parameters:
       - in: query
@@ -14076,12 +14517,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_instruments
     post:
+      description: Operation for creating ValidInstrument
       operationId: POST_valid_instruments
       requestBody:
         content:
@@ -14142,13 +14584,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_instruments
   /api/v1/valid_instruments/{validInstrumentID}:
     delete:
+      description: Operation for archiving ValidInstrument
       operationId: DELETE_valid_instruments_validInstrumentID
       parameters:
       - in: path
@@ -14206,12 +14649,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_instruments
     get:
+      description: Operation for fetching ValidInstrument
       operationId: GET_valid_instruments_validInstrumentID
       parameters:
       - in: path
@@ -14269,12 +14713,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_instruments
     put:
+      description: Operation for updating ValidInstrument
       operationId: PUT_valid_instruments_validInstrumentID
       parameters:
       - in: path
@@ -14341,13 +14786,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_instruments
   /api/v1/valid_instruments/random:
     get:
+      description: Operation for fetching ValidInstrument
       operationId: GET_valid_instruments_random
       responses:
         "200":
@@ -14399,13 +14845,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_instruments
   /api/v1/valid_instruments/search:
     get:
+      description: Operation for fetching ValidInstrument
       operationId: GET_valid_instruments_search
       responses:
         "200":
@@ -14457,13 +14904,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_instruments
   /api/v1/valid_measurement_conversions:
     post:
+      description: Operation for creating ValidMeasurementUnitConversion
       operationId: POST_valid_measurement_conversions
       requestBody:
         content:
@@ -14524,13 +14972,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_measurement_conversions
   /api/v1/valid_measurement_conversions/{validMeasurementUnitConversionID}:
     delete:
+      description: Operation for archiving ValidMeasurementUnitConversion
       operationId: DELETE_valid_measurement_conversions_validMeasurementUnitConversionID
       parameters:
       - in: path
@@ -14588,12 +15037,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_measurement_conversions
     get:
+      description: Operation for fetching ValidMeasurementUnitConversion
       operationId: GET_valid_measurement_conversions_validMeasurementUnitConversionID
       parameters:
       - in: path
@@ -14651,12 +15101,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_measurement_conversions
     put:
+      description: Operation for updating ValidMeasurementUnitConversion
       operationId: PUT_valid_measurement_conversions_validMeasurementUnitConversionID
       parameters:
       - in: path
@@ -14723,13 +15174,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_measurement_conversions
   /api/v1/valid_measurement_conversions/from_unit/{validMeasurementUnitID}:
     get:
+      description: Operation for fetching ValidMeasurementUnitConversion
       operationId: GET_valid_measurement_conversions_from_unit_validMeasurementUnitID
       parameters:
       - in: path
@@ -14787,13 +15239,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_measurement_conversions
   /api/v1/valid_measurement_conversions/to_unit/{validMeasurementUnitID}:
     get:
+      description: Operation for fetching ValidMeasurementUnitConversion
       operationId: GET_valid_measurement_conversions_to_unit_validMeasurementUnitID
       parameters:
       - in: path
@@ -14851,13 +15304,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_measurement_conversions
   /api/v1/valid_measurement_units:
     get:
+      description: Operation for fetching ValidMeasurementUnit
       operationId: GET_valid_measurement_units
       parameters:
       - in: query
@@ -14953,12 +15407,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_measurement_units
     post:
+      description: Operation for creating ValidMeasurementUnit
       operationId: POST_valid_measurement_units
       requestBody:
         content:
@@ -15019,13 +15474,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_measurement_units
   /api/v1/valid_measurement_units/{validMeasurementUnitID}:
     delete:
+      description: Operation for archiving ValidMeasurementUnit
       operationId: DELETE_valid_measurement_units_validMeasurementUnitID
       parameters:
       - in: path
@@ -15083,12 +15539,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_measurement_units
     get:
+      description: Operation for fetching ValidMeasurementUnit
       operationId: GET_valid_measurement_units_validMeasurementUnitID
       parameters:
       - in: path
@@ -15146,12 +15603,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_measurement_units
     put:
+      description: Operation for updating ValidMeasurementUnit
       operationId: PUT_valid_measurement_units_validMeasurementUnitID
       parameters:
       - in: path
@@ -15218,13 +15676,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_measurement_units
   /api/v1/valid_measurement_units/by_ingredient/{validIngredientID}:
     get:
+      description: Operation for fetching ValidMeasurementUnit
       operationId: GET_valid_measurement_units_by_ingredient_validIngredientID
       parameters:
       - in: path
@@ -15282,13 +15741,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_measurement_units
   /api/v1/valid_measurement_units/search:
     get:
+      description: Operation for fetching ValidMeasurementUnit
       operationId: GET_valid_measurement_units_search
       responses:
         "200":
@@ -15340,13 +15800,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_measurement_units
   /api/v1/valid_preparation_instruments:
     get:
+      description: Operation for fetching ValidPreparationInstrument
       operationId: GET_valid_preparation_instruments
       parameters:
       - in: query
@@ -15442,12 +15903,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparation_instruments
     post:
+      description: Operation for creating ValidPreparationInstrument
       operationId: POST_valid_preparation_instruments
       requestBody:
         content:
@@ -15508,13 +15970,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_preparation_instruments
   /api/v1/valid_preparation_instruments/{validPreparationVesselID}:
     delete:
+      description: Operation for archiving ValidPreparationInstrument
       operationId: DELETE_valid_preparation_instruments_validPreparationVesselID
       parameters:
       - in: path
@@ -15572,12 +16035,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_preparation_instruments
     get:
+      description: Operation for fetching ValidPreparationInstrument
       operationId: GET_valid_preparation_instruments_validPreparationVesselID
       parameters:
       - in: path
@@ -15635,12 +16099,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparation_instruments
     put:
+      description: Operation for updating ValidPreparationInstrument
       operationId: PUT_valid_preparation_instruments_validPreparationVesselID
       parameters:
       - in: path
@@ -15707,13 +16172,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_preparation_instruments
   /api/v1/valid_preparation_instruments/by_instrument/{validInstrumentID}:
     get:
+      description: Operation for fetching ValidPreparationInstrument
       operationId: GET_valid_preparation_instruments_by_instrument_validInstrumentID
       parameters:
       - in: path
@@ -15771,13 +16237,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparation_instruments
   /api/v1/valid_preparation_instruments/by_preparation/{validPreparationID}:
     get:
+      description: Operation for fetching ValidPreparationInstrument
       operationId: GET_valid_preparation_instruments_by_preparation_validPreparationID
       parameters:
       - in: path
@@ -15835,13 +16302,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparation_instruments
   /api/v1/valid_preparation_vessels:
     get:
+      description: Operation for fetching ValidPreparationVessel
       operationId: GET_valid_preparation_vessels
       parameters:
       - in: query
@@ -15937,12 +16405,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparation_vessels
     post:
+      description: Operation for creating ValidPreparationVessel
       operationId: POST_valid_preparation_vessels
       requestBody:
         content:
@@ -16003,13 +16472,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_preparation_vessels
   /api/v1/valid_preparation_vessels/{validPreparationVesselID}:
     delete:
+      description: Operation for archiving ValidPreparationVessel
       operationId: DELETE_valid_preparation_vessels_validPreparationVesselID
       parameters:
       - in: path
@@ -16067,12 +16537,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_preparation_vessels
     get:
+      description: Operation for fetching ValidPreparationVessel
       operationId: GET_valid_preparation_vessels_validPreparationVesselID
       parameters:
       - in: path
@@ -16130,12 +16601,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparation_vessels
     put:
+      description: Operation for updating ValidPreparationVessel
       operationId: PUT_valid_preparation_vessels_validPreparationVesselID
       parameters:
       - in: path
@@ -16202,13 +16674,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_preparation_vessels
   /api/v1/valid_preparation_vessels/by_preparation/{validPreparationID}:
     get:
+      description: Operation for fetching ValidPreparationVessel
       operationId: GET_valid_preparation_vessels_by_preparation_validPreparationID
       parameters:
       - in: path
@@ -16266,13 +16739,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparation_vessels
   /api/v1/valid_preparation_vessels/by_vessel/{ValidVesselID}:
     get:
+      description: Operation for fetching ValidPreparationVessel
       operationId: GET_valid_preparation_vessels_by_vessel_ValidVesselID
       parameters:
       - in: path
@@ -16330,13 +16804,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparation_vessels
   /api/v1/valid_preparations:
     get:
+      description: Operation for fetching ValidPreparation
       operationId: GET_valid_preparations
       parameters:
       - in: query
@@ -16432,12 +16907,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparations
     post:
+      description: Operation for creating ValidPreparation
       operationId: POST_valid_preparations
       requestBody:
         content:
@@ -16498,13 +16974,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_preparations
   /api/v1/valid_preparations/{validPreparationID}:
     delete:
+      description: Operation for archiving ValidPreparation
       operationId: DELETE_valid_preparations_validPreparationID
       parameters:
       - in: path
@@ -16562,12 +17039,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_preparations
     get:
+      description: Operation for fetching ValidPreparation
       operationId: GET_valid_preparations_validPreparationID
       parameters:
       - in: path
@@ -16625,12 +17103,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparations
     put:
+      description: Operation for updating ValidPreparation
       operationId: PUT_valid_preparations_validPreparationID
       parameters:
       - in: path
@@ -16697,13 +17176,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_preparations
   /api/v1/valid_preparations/random:
     get:
+      description: Operation for fetching ValidPreparation
       operationId: GET_valid_preparations_random
       responses:
         "200":
@@ -16755,13 +17235,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparations
   /api/v1/valid_preparations/search:
     get:
+      description: Operation for fetching ValidPreparation
       operationId: GET_valid_preparations_search
       responses:
         "200":
@@ -16813,13 +17294,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_preparations
   /api/v1/valid_vessels:
     get:
+      description: Operation for fetching ValidVessel
       operationId: GET_valid_vessels
       parameters:
       - in: query
@@ -16915,12 +17397,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_vessels
     post:
+      description: Operation for creating ValidVessel
       operationId: POST_valid_vessels
       requestBody:
         content:
@@ -16981,13 +17464,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_vessels
   /api/v1/valid_vessels/{validVesselID}:
     delete:
+      description: Operation for archiving ValidVessel
       operationId: DELETE_valid_vessels_validVesselID
       parameters:
       - in: path
@@ -17045,12 +17529,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_vessels
     get:
+      description: Operation for fetching ValidVessel
       operationId: GET_valid_vessels_validVesselID
       parameters:
       - in: path
@@ -17108,12 +17593,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_vessels
     put:
+      description: Operation for updating ValidVessel
       operationId: PUT_valid_vessels_validVesselID
       parameters:
       - in: path
@@ -17180,13 +17666,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - service_admin
-      - cookieAuth: []
       tags:
       - valid_vessels
   /api/v1/valid_vessels/random:
     get:
+      description: Operation for fetching ValidVessel
       operationId: GET_valid_vessels_random
       responses:
         "200":
@@ -17238,13 +17725,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_vessels
   /api/v1/valid_vessels/search:
     get:
+      description: Operation for fetching ValidVessel
       operationId: GET_valid_vessels_search
       responses:
         "200":
@@ -17296,13 +17784,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - valid_vessels
   /api/v1/webhooks:
     get:
+      description: Operation for fetching Webhook
       operationId: GET_webhooks
       parameters:
       - in: query
@@ -17398,12 +17887,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - webhooks
     post:
+      description: Operation for creating Webhook
       operationId: POST_webhooks
       requestBody:
         content:
@@ -17464,13 +17954,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - webhooks
   /api/v1/webhooks/{webhookID}:
     delete:
+      description: Operation for archiving Webhook
       operationId: DELETE_webhooks_webhookID
       parameters:
       - in: path
@@ -17528,12 +18019,13 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - webhooks
     get:
+      description: Operation for fetching Webhook
       operationId: GET_webhooks_webhookID
       parameters:
       - in: path
@@ -17591,13 +18083,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_member
-      - cookieAuth: []
       tags:
       - webhooks
   /api/v1/webhooks/{webhookID}/trigger_events:
     post:
+      description: Operation for creating WebhookTriggerEvent
       operationId: POST_webhooks_webhookID_trigger_events
       parameters:
       - in: path
@@ -17664,13 +18157,14 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - webhooks
   /api/v1/webhooks/{webhookID}/trigger_events/{webhookTriggerEventID}:
     delete:
+      description: Operation for archiving WebhookTriggerEvent
       operationId: DELETE_webhooks_webhookID_trigger_events_webhookTriggerEventID
       parameters:
       - in: path
@@ -17733,14 +18227,15 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
+      - cookieAuth: []
       - oauth2:
         - household_admin
-      - cookieAuth: []
       tags:
       - webhooks
       - webhook_trigger_events
   /api/v1/workers/finalize_meal_plans:
     post:
+      description: Operation for creating FinalizeMealPlansRequest
       operationId: POST_workers_finalize_meal_plans
       requestBody:
         content:
@@ -17801,28 +18296,34 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - oauth2: null
       - cookieAuth: []
+      - oauth2:
+        - household_admin
       tags:
       - workers
   /api/v1/workers/meal_plan_grocery_list_init:
     post:
+      description: Operation for creating
       operationId: POST_workers_meal_plan_grocery_list_init
       security:
-      - oauth2: null
       - cookieAuth: []
+      - oauth2:
+        - household_admin
       tags:
       - workers
   /api/v1/workers/meal_plan_tasks:
     post:
+      description: Operation for creating
       operationId: POST_workers_meal_plan_tasks
       security:
-      - oauth2: null
       - cookieAuth: []
+      - oauth2:
+        - household_admin
       tags:
       - workers
   /auth/status:
     get:
+      description: Operation for fetching UserStatusResponse
       operationId: GET_auth_status
       responses:
         "200":
@@ -17874,28 +18375,30 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - oauth2: null
       - cookieAuth: []
+      - oauth2:
+        - household_member
       tags:
       - auth
   /oauth2/authorize:
     get:
+      description: Operation for fetching
       operationId: GET_oauth2_authorize
       security:
-      - oauth2: null
       - cookieAuth: []
       tags:
       - oauth2
   /oauth2/token:
     post:
+      description: Operation for creating
       operationId: POST_oauth2_token
       security:
-      - oauth2: null
       - cookieAuth: []
       tags:
       - oauth2
   /users:
     post:
+      description: Operation for creating UserCreationResponse
       operationId: POST_users
       requestBody:
         content:
@@ -17915,7 +18418,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/User'
+                      $ref: '#/components/schemas/UserCreationResponse'
                       type: object
                   type: object
             application/xml:
@@ -17924,7 +18427,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/User'
+                      $ref: '#/components/schemas/UserCreationResponse'
                       type: object
                   type: object
           description: ""
@@ -17956,12 +18459,12 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - oauth2: null
       - cookieAuth: []
       tags:
       - users
   /users/email_address/verify:
     post:
+      description: Operation for creating User
       operationId: POST_users_email_address_verify
       requestBody:
         content:
@@ -18026,6 +18529,7 @@ paths:
       - email_address
   /users/login:
     post:
+      description: Operation for creating UserStatusResponse
       operationId: POST_users_login
       requestBody:
         content:
@@ -18089,6 +18593,7 @@ paths:
       - users
   /users/login/admin:
     post:
+      description: Operation for creating UserStatusResponse
       operationId: POST_users_login_admin
       requestBody:
         content:
@@ -18152,6 +18657,7 @@ paths:
       - users
   /users/logout:
     post:
+      description: Operation for creating UserStatusResponse
       operationId: POST_users_logout
       responses:
         "201":
@@ -18203,12 +18709,12 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - oauth2: null
       - cookieAuth: []
       tags:
       - users
   /users/password/reset:
     post:
+      description: Operation for creating PasswordResetToken
       operationId: POST_users_password_reset
       requestBody:
         content:
@@ -18273,6 +18779,7 @@ paths:
       - password
   /users/password/reset/redeem:
     post:
+      description: Operation for creating User
       operationId: POST_users_password_reset_redeem
       requestBody:
         content:
@@ -18337,15 +18844,16 @@ paths:
       - password
   /users/totp_secret/verify:
     post:
+      description: Operation for creating User
       operationId: POST_users_totp_secret_verify
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailAddressVerificationRequestInput'
+              $ref: '#/components/schemas/TOTPSecretVerificationInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/EmailAddressVerificationRequestInput'
+              $ref: '#/components/schemas/TOTPSecretVerificationInput'
         required: true
       responses:
         "201":
@@ -18401,6 +18909,7 @@ paths:
       - totp_secret
   /users/username/reminder:
     post:
+      description: Operation for creating User
       operationId: POST_users_username_reminder
       requestBody:
         content:
@@ -18494,7 +19003,7 @@ components:
         belongsToUser:
           type: string
         changes:
-          type: object
+          $ref: '#/components/schemas/ChangeLog'
         createdAt:
           type: string
         eventType:
@@ -18537,19 +19046,6 @@ components:
       properties:
         count:
           type: integer
-      type: object
-    FinalizedMealPlanDatabaseResult:
-      properties:
-        MealID:
-          type: string
-        MealPlanEventID:
-          type: string
-        MealPlanID:
-          type: string
-        MealPlanOptionID:
-          type: string
-        RecipeIDs:
-          type: string
       type: object
     Household:
       properties:
@@ -18754,13 +19250,6 @@ components:
         lastUpdatedAt:
           type: string
       type: object
-    HouseholdUserMembershipCreationRequestInput:
-      properties:
-        reason:
-          type: string
-        userID:
-          type: string
-      type: object
     HouseholdUserMembershipWithUser:
       properties:
         archivedAt:
@@ -18815,15 +19304,6 @@ components:
           type: number
       type: object
     MealComponentCreationRequestInput:
-      properties:
-        componentType:
-          type: string
-        recipeID:
-          type: string
-        recipeScale:
-          type: number
-      type: object
-    MealComponentUpdateRequestInput:
       properties:
         componentType:
           type: string
@@ -19158,11 +19638,6 @@ components:
         statusExplanation:
           type: string
       type: object
-    MealPlanTaskDatabaseCreationEstimate:
-      properties:
-        creationExplanation:
-          type: string
-      type: object
     MealPlanTaskStatusChangeRequestInput:
       properties:
         assignedToUser:
@@ -19179,42 +19654,11 @@ components:
         votingDeadline:
           type: string
       type: object
-    MealUpdateRequestInput:
-      properties:
-        description:
-          type: string
-        eligibleForMealPlans:
-          type: boolean
-        maximumEstimatedPortions:
-          type: number
-        minimumEstimatedPortions:
-          type: number
-        name:
-          type: string
-        recipes:
-          $ref: '#/components/schemas/MealComponentUpdateRequestInput'
-      type: object
-    MissingVote:
-      properties:
-        eventID:
-          type: string
-        optionID:
-          type: string
-        userID:
-          type: string
-      type: object
     ModifyUserPermissionsInput:
       properties:
         newRoles:
           type: string
         reason:
-          type: string
-      type: object
-    NamedID:
-      properties:
-        id:
-          type: string
-        name:
           type: string
       type: object
     OAuth2Client:
@@ -19252,41 +19696,6 @@ components:
         id:
           type: string
         name:
-          type: string
-      type: object
-    OAuth2ClientToken:
-      properties:
-        access:
-          type: string
-        accessCreatedAt:
-          type: string
-        accessExpiresIn:
-          type: string
-        belongsToUser:
-          type: string
-        clientID:
-          type: string
-        code:
-          type: string
-        codeChallenge:
-          type: string
-        codeChallengeMethod:
-          type: string
-        codeCreatedAt:
-          type: string
-        codeExpiresIn:
-          type: string
-        id:
-          type: string
-        redirectURI:
-          type: string
-        refresh:
-          type: string
-        refreshCreatedAt:
-          type: string
-        refreshExpiresIn:
-          type: string
-        scope:
           type: string
       type: object
     Pagination:
@@ -19435,36 +19844,6 @@ components:
         internalPath:
           type: string
         lastUpdatedAt:
-          type: string
-        mimeType:
-          type: string
-      type: object
-    RecipeMediaCreationRequestInput:
-      properties:
-        belongsToRecipe:
-          type: string
-        belongsToRecipeStep:
-          type: string
-        externalPath:
-          type: string
-        index:
-          type: integer
-        internalPath:
-          type: string
-        mimeType:
-          type: string
-      type: object
-    RecipeMediaUpdateRequestInput:
-      properties:
-        belongsToRecipe:
-          type: string
-        belongsToRecipeStep:
-          type: string
-        externalPath:
-          type: string
-        index:
-          type: integer
-        internalPath:
           type: string
         mimeType:
           type: string
@@ -19790,11 +20169,6 @@ components:
           type: string
         lastUpdatedAt:
           type: string
-        recipeStepIngredient:
-          type: string
-      type: object
-    RecipeStepCompletionConditionIngredientCreationRequestInput:
-      properties:
         recipeStepIngredient:
           type: string
       type: object
@@ -20351,21 +20725,6 @@ components:
           type: string
       type: object
     ServiceSettingCreationRequestInput:
-      properties:
-        adminsOnly:
-          type: boolean
-        defaultValue:
-          type: string
-        description:
-          type: string
-        enumeration:
-          type: string
-        name:
-          type: string
-        type:
-          type: string
-      type: object
-    ServiceSettingUpdateRequestInput:
       properties:
         adminsOnly:
           type: boolean

@@ -53,30 +53,6 @@ func TestRecipeStepCompletionConditionCreationRequestInput_Validate(T *testing.T
 	})
 }
 
-func TestRecipeStepCompletionConditionIngredientCreationRequestInput_Validate(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		x := &RecipeStepCompletionConditionIngredientCreationRequestInput{
-			RecipeStepIngredient: t.Name(),
-		}
-
-		actual := x.ValidateWithContext(context.Background())
-		assert.NoError(t, actual)
-	})
-
-	T.Run("with invalid structure", func(t *testing.T) {
-		t.Parallel()
-
-		x := &RecipeStepCompletionConditionIngredientCreationRequestInput{}
-
-		actual := x.ValidateWithContext(context.Background())
-		assert.Error(t, actual)
-	})
-}
-
 func TestRecipeStepCompletionConditionForExistingRecipeCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 

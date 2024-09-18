@@ -16,6 +16,7 @@ type RouteDefinition struct {
 	Path             string
 	ResponseType     string
 	RequestBody      string
+	Description      string
 	InputType        string
 	PathArguments    []string
 	Tags             []string
@@ -45,18 +46,42 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 		operationParts = append(operationParts, strings.TrimSuffix(strings.TrimPrefix(part, "{"), "}"))
 	}
 
+	var description string
+	if d.Description != "" {
+		description = d.Description
+	} else {
+		description = "Operation for "
+		switch d.Method {
+		case http.MethodGet:
+			description += "fetching"
+		case http.MethodPut, http.MethodPatch:
+			description += "updating"
+		case http.MethodPost:
+			description += "creating"
+		case http.MethodDelete:
+			description += "archiving"
+		}
+
+		if d.ResponseType != "" {
+			description += fmt.Sprintf(" %s", d.ResponseType)
+		}
+	}
+
 	op := &openapi.Operation{
 		ID:          pointer.To(strings.Join(operationParts, "_")),
 		Tags:        []string{},
 		Summary:     nil,
-		Description: nil,
+		Description: pointer.To(description),
 		Parameters:  []openapi.ParameterOrReference{},
 	}
 
 	if _, ok := routesWithoutAuth[d.Path]; !ok {
 		op.Security = []map[string][]string{
-			{"oauth2": d.OAuth2Scopes},
 			{"cookieAuth": []string{}},
+		}
+
+		if len(d.OAuth2Scopes) > 0 {
+			op.Security = append(op.Security, map[string][]string{"oauth2": d.OAuth2Scopes})
 		}
 	}
 

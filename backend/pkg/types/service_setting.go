@@ -21,7 +21,6 @@ const (
 func init() {
 	gob.Register(new(ServiceSetting))
 	gob.Register(new(ServiceSettingCreationRequestInput))
-	gob.Register(new(ServiceSettingUpdateRequestInput))
 }
 
 type (
@@ -66,18 +65,6 @@ type (
 		AdminsOnly   bool
 	}
 
-	// ServiceSettingUpdateRequestInput represents what a user could set as input for updating service settings.
-	ServiceSettingUpdateRequestInput struct {
-		_ struct{} `json:"-"`
-
-		Name         *string  `json:"name"`
-		Type         *string  `json:"type"`
-		Description  *string  `json:"description"`
-		DefaultValue *string  `json:"defaultValue"`
-		AdminsOnly   *bool    `json:"adminsOnly"`
-		Enumeration  []string `json:"enumeration"`
-	}
-
 	// ServiceSettingDataManager describes a structure capable of storing settings permanently.
 	ServiceSettingDataManager interface {
 		CreateServiceSetting(ctx context.Context, input *ServiceSettingDatabaseCreationInput) (*ServiceSetting, error)
@@ -97,33 +84,6 @@ type (
 		ArchiveHandler(http.ResponseWriter, *http.Request)
 	}
 )
-
-// Update merges an ServiceSettingUpdateRequestInput with a service setting.
-func (x *ServiceSetting) Update(input *ServiceSettingUpdateRequestInput) {
-	if input.Name != nil && *input.Name != x.Name {
-		x.Name = *input.Name
-	}
-
-	if input.Type != nil && *input.Type != x.Type {
-		x.Type = *input.Type
-	}
-
-	if input.Description != nil && *input.Description != x.Description {
-		x.Description = *input.Description
-	}
-
-	if input.Enumeration != nil {
-		x.Enumeration = input.Enumeration
-	}
-
-	if input.DefaultValue != nil && input.DefaultValue != x.DefaultValue {
-		x.DefaultValue = input.DefaultValue
-	}
-
-	if input.AdminsOnly != nil && *input.AdminsOnly != x.AdminsOnly {
-		x.AdminsOnly = *input.AdminsOnly
-	}
-}
 
 var _ validation.ValidatableWithContext = (*ServiceSettingCreationRequestInput)(nil)
 
@@ -164,26 +124,4 @@ func (x *ServiceSettingDatabaseCreationInput) ValidateWithContext(ctx context.Co
 		validation.Field(&x.Enumeration, validation.When(x.DefaultValue != nil, validation.Required)),
 		validation.Field(&x.DefaultValue, validation.When(len(x.Enumeration) != 0, validation.Required)),
 	)
-}
-
-var _ validation.ValidatableWithContext = (*ServiceSettingUpdateRequestInput)(nil)
-
-// ValidateWithContext validates a ServiceSettingUpdateRequestInput.
-func (x *ServiceSettingUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
-	var result *multierror.Error
-
-	if x.DefaultValue != nil && !slices.Contains(x.Enumeration, *x.DefaultValue) {
-		result = multierror.Append(result, errDefaultValueMustBeEnumerationValue)
-	}
-
-	if err := validation.ValidateStructWithContext(
-		ctx,
-		x,
-		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-	); err != nil {
-		result = multierror.Append(result, err)
-	}
-
-	return result.ErrorOrNil()
 }

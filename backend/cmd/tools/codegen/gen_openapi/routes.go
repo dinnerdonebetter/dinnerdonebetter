@@ -25,6 +25,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{serviceAdmin},
 	},
 	"POST /api/v1/admin/users/status": {
+		InputType:    &types.UserAccountStatusUpdateInput{},
 		ResponseType: &types.UserStatusResponse{},
 		OAuth2Scopes: []string{serviceAdmin},
 	},
@@ -106,7 +107,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"PUT /api/v1/households/{householdID}/": {
 		ResponseType: &types.Household{},
-		InputType:    &types.HouseholdCreationRequestInput{},
+		InputType:    &types.HouseholdUpdateRequestInput{},
 		OAuth2Scopes: []string{householdAdmin},
 	},
 	"DELETE /api/v1/households/{householdID}/": {
@@ -142,6 +143,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"PATCH /api/v1/households/{householdID}/members/{userID}/permissions": {
 		ResponseType: &types.UserPermissionsResponse{},
+		InputType:    &types.ModifyUserPermissionsInput{},
 		OAuth2Scopes: []string{householdAdmin},
 	},
 	"POST /api/v1/households/{householdID}/transfer": {
@@ -257,6 +259,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"PATCH /api/v1/meal_plans/{mealPlanID}/tasks/{mealPlanTaskID}/": {
 		ResponseType: &types.MealPlanTask{},
+		InputType:    &types.MealPlanTaskStatusChangeRequestInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"POST /api/v1/meal_plans/": {
@@ -283,7 +286,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdAdmin},
 	},
 	"POST /api/v1/meal_plans/{mealPlanID}/finalize": {
-		ResponseType: &types.MealPlan{},
+		ResponseType: &types.FinalizeMealPlansResponse{},
 		OAuth2Scopes: []string{householdAdmin},
 		// No input type for this route
 	},
@@ -315,7 +318,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"POST /api/v1/oauth2_clients/": {
-		ResponseType: &types.OAuth2Client{},
+		ResponseType: &types.OAuth2ClientCreationResponse{},
 		InputType:    &types.OAuth2ClientCreationRequestInput{},
 		OAuth2Scopes: []string{serviceAdmin},
 	},
@@ -358,7 +361,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"POST /api/v1/recipes/{recipeID}/steps/{recipeStepID}/completion_conditions/": {
 		ResponseType: &types.RecipeStepCompletionCondition{},
-		InputType:    &types.RecipeStepCompletionConditionCreationRequestInput{},
+		InputType:    &types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PUT /api/v1/recipes/{recipeID}/steps/{recipeStepID}/completion_conditions/{recipeStepCompletionConditionID}/": {
@@ -637,6 +640,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PATCH /api/v1/user_notifications/{userNotificationID}/": {
+		InputType:    &types.UserNotificationUpdateRequestInput{},
 		ResponseType: &types.UserNotification{},
 		OAuth2Scopes: []string{householdMember},
 	},
@@ -671,7 +675,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PUT /api/v1/users/password/new": {
-		// No output type for this route
+		InputType:    &types.PasswordUpdateInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"POST /api/v1/users/permissions/check": {
@@ -689,8 +693,8 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"POST /api/v1/users/totp_secret/new": {
-		ResponseType: &types.APIError{},
 		InputType:    &types.TOTPSecretRefreshInput{},
+		ResponseType: &types.TOTPSecretRefreshResponse{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PUT /api/v1/users/username": {
@@ -1130,15 +1134,19 @@ var routeInfoMap = map[string]routeDetails{
 	"POST /api/v1/workers/finalize_meal_plans": {
 		ResponseType: &types.FinalizeMealPlansRequest{},
 		InputType:    &types.FinalizeMealPlansRequest{},
+		OAuth2Scopes: []string{householdAdmin},
 	},
 	"POST /api/v1/workers/meal_plan_grocery_list_init": {
 		// no input or output types for this route
+		OAuth2Scopes: []string{householdAdmin},
 	},
 	"POST /api/v1/workers/meal_plan_tasks": {
 		// no input or output types for this route
+		OAuth2Scopes: []string{householdAdmin},
 	},
 	"GET /auth/status": {
 		ResponseType: &types.UserStatusResponse{},
+		OAuth2Scopes: []string{householdMember},
 		// no input type for this route
 	},
 	"GET /auth/{auth_provider}": {
@@ -1154,7 +1162,7 @@ var routeInfoMap = map[string]routeDetails{
 		// we don't really have control over this route
 	},
 	"POST /users/": {
-		ResponseType: &types.User{},
+		ResponseType: &types.UserCreationResponse{},
 		InputType:    &types.UserRegistrationInput{},
 	},
 	"POST /users/email_address/verify": {
@@ -1182,7 +1190,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"POST /users/totp_secret/verify": {
 		ResponseType: &types.User{},
-		InputType:    &types.EmailAddressVerificationRequestInput{},
+		InputType:    &types.TOTPSecretVerificationInput{},
 	},
 	"POST /users/username/reminder": {
 		ResponseType: &types.User{},

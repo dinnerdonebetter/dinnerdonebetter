@@ -91,8 +91,8 @@ function MealPlansPage(props: MealPlansPageProps) {
                         new Date(b.votingDeadline) > new Date(a.votingDeadline)
                           ? 1
                           : new Date(a.votingDeadline) > new Date(b.votingDeadline)
-                          ? -1
-                          : 0,
+                            ? -1
+                            : 0,
                       ),
                     )
                   }
@@ -117,8 +117,8 @@ function MealPlansPage(props: MealPlansPageProps) {
                         new Date(getEarliestEvent(b).startsAt) > new Date(getEarliestEvent(a).startsAt)
                           ? 1
                           : new Date(getEarliestEvent(a).startsAt) > new Date(getEarliestEvent(b).startsAt)
-                          ? -1
-                          : 0,
+                            ? -1
+                            : 0,
                       ),
                     )
                   }
@@ -132,8 +132,8 @@ function MealPlansPage(props: MealPlansPageProps) {
                         new Date(getEarliestEvent(b).endsAt) > new Date(getEarliestEvent(a).endsAt)
                           ? 1
                           : new Date(getEarliestEvent(a).endsAt) > new Date(getEarliestEvent(b).endsAt)
-                          ? -1
-                          : 0,
+                            ? -1
+                            : 0,
                       ),
                     )
                   }

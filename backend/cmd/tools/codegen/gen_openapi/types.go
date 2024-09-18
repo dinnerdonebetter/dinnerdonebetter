@@ -34,13 +34,22 @@ var nativeTypesMap = map[string]struct{}{
 }
 
 var skipTypes = map[string]bool{
-	"QueryFilteredResult":     true,
-	"SessionContextData":      true,
-	"RequesterInfo":           true,
-	"DataChangeMessage":       true,
-	"stringDurationValidator": true,
-	"WebhookExecutionRequest": true,
-	"QueryFilter":             true,
+	"QueryFilteredResult":                  true,
+	"SessionContextData":                   true,
+	"RequesterInfo":                        true,
+	"DataChangeMessage":                    true,
+	"stringDurationValidator":              true,
+	"WebhookExecutionRequest":              true,
+	"QueryFilter":                          true,
+	"MealPlanTaskDatabaseCreationEstimate": true,
+	"FinalizedMealPlanDatabaseResult":      true,
+	"MissingVote":                          true,
+	"MealUpdateRequestInput":               true,
+	"NamedID":                              true, // one day...
+	"OAuth2ClientToken":                    true,
+	"MealComponentUpdateRequestInput":      true,
+	"RecipeMediaCreationRequestInput":      true,
+	"RecipeMediaUpdateRequestInput":        true,
 }
 
 type openapiProperty struct {
@@ -83,18 +92,6 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 	}
 
 	declaredStructs := []*openapiSchema{
-		{
-			name: "APIResponseWithError",
-			Type: "object",
-			Properties: map[string]*openapiProperty{
-				"details": {
-					Ref: "#/components/schemas/ResponseDetails",
-				},
-				"error": {
-					Ref: "#/components/schemas/APIError",
-				},
-			},
-		},
 		{
 			name: "APIResponseWithError",
 			Type: "object",
@@ -168,7 +165,7 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 						continue
 					}
 
-					fieldType := deriveNameForFieldType(field)
+					fieldType := deriveNameForFieldType(typeName, fieldName, field)
 					property := &openapiProperty{
 						Type: fieldType,
 					}
@@ -216,7 +213,7 @@ var openAPITypeMap = map[string]string{
 	// Add other mappings as needed
 }
 
-func deriveNameForFieldType(field *ast.Field) string {
+func deriveNameForFieldType(typeName, fieldName string, field *ast.Field) string {
 	value := ""
 
 	switch t := field.Type.(type) {
@@ -252,6 +249,9 @@ func deriveNameForFieldType(field *ast.Field) string {
 		}
 	case *ast.MapType:
 		// TODO: confirm this is being handled correctly
+		if typeName == "AuditLogEntry" && fieldName == "changes" {
+			return "ChangeLog"
+		}
 		value = "object"
 	default:
 		panic("unhandled case")

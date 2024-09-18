@@ -36,14 +36,6 @@ type (
 		DefaultHousehold   bool       `json:"defaultHousehold"`
 	}
 
-	// HouseholdUserMembershipCreationRequestInput represents what a User could set as input for updating household user memberships.
-	HouseholdUserMembershipCreationRequestInput struct {
-		_ struct{} `json:"-"`
-
-		Reason string `json:"reason"`
-		UserID string `json:"userID"`
-	}
-
 	// HouseholdUserMembershipDatabaseCreationInput represents what a User could set as input for updating household user memberships.
 	HouseholdUserMembershipDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
@@ -83,15 +75,6 @@ type (
 		RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error
 	}
 )
-
-var _ validation.ValidatableWithContext = (*HouseholdUserMembershipCreationRequestInput)(nil)
-
-// ValidateWithContext validates an HouseholdUserMembershipCreationRequestInput.
-func (x *HouseholdUserMembershipCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(ctx, x,
-		validation.Field(&x.UserID, validation.Required),
-	)
-}
 
 var _ validation.ValidatableWithContext = (*HouseholdOwnershipTransferInput)(nil)
 

@@ -92,7 +92,6 @@ var (
 		"householdUserMemberships": {
 			types.HouseholdUserMembership{},
 			types.HouseholdUserMembershipWithUser{},
-			types.HouseholdUserMembershipCreationRequestInput{},
 		},
 		"mealPlanEvents": {
 			types.MealPlanEvent{},
@@ -169,9 +168,8 @@ var (
 		"recipeStepCompletionConditions": {
 			types.RecipeStepCompletionCondition{},
 			types.RecipeStepCompletionConditionIngredient{},
-			types.RecipeStepCompletionConditionCreationRequestInput{},
-			types.RecipeStepCompletionConditionIngredientCreationRequestInput{},
 			types.RecipeStepCompletionConditionUpdateRequestInput{},
+			types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{},
 		},
 		"recipeStepIngredients": {
 			types.RecipeStepIngredient{},
@@ -289,7 +287,6 @@ var (
 		"serviceSetting": {
 			types.ServiceSetting{},
 			types.ServiceSettingCreationRequestInput{},
-			types.ServiceSettingUpdateRequestInput{},
 		},
 		"serviceSettingConfiguration": {
 			types.ServiceSettingConfiguration{},
@@ -390,10 +387,6 @@ var (
 		},
 		{
 			Type:        &types.HouseholdUserMembershipWithUser{},
-			Description: "",
-		},
-		{
-			Type:        &types.HouseholdUserMembershipCreationRequestInput{},
 			Description: "",
 		},
 		{
@@ -581,11 +574,7 @@ var (
 			Description: "",
 		},
 		{
-			Type:        &types.RecipeStepCompletionConditionCreationRequestInput{},
-			Description: "",
-		},
-		{
-			Type:        &types.RecipeStepCompletionConditionIngredientCreationRequestInput{},
+			Type:        &types.RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput{},
 			Description: "",
 		},
 		{
@@ -882,10 +871,6 @@ var (
 		},
 		{
 			Type:        &types.ServiceSettingCreationRequestInput{},
-			Description: "",
-		},
-		{
-			Type:        &types.ServiceSettingUpdateRequestInput{},
 			Description: "",
 		},
 		{

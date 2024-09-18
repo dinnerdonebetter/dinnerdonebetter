@@ -25,7 +25,6 @@ type serviceSettingsServiceHTTPRoutesTestHelper struct {
 	exampleHousehold      *types.Household
 	exampleServiceSetting *types.ServiceSetting
 	exampleCreationInput  *types.ServiceSettingCreationRequestInput
-	exampleUpdateInput    *types.ServiceSettingUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *serviceSettingsServiceHTTPRoutesTestHelper {
@@ -40,7 +39,6 @@ func buildTestHelper(t *testing.T) *serviceSettingsServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleServiceSetting = fakes.BuildFakeServiceSetting()
 	helper.exampleCreationInput = converters.ConvertServiceSettingToServiceSettingCreationRequestInput(helper.exampleServiceSetting)
-	helper.exampleUpdateInput = converters.ConvertServiceSettingToServiceSettingUpdateRequestInput(helper.exampleServiceSetting)
 
 	helper.service.serviceSettingIDFetcher = func(*http.Request) string {
 		return helper.exampleServiceSetting.ID

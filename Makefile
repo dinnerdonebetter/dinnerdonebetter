@@ -8,10 +8,24 @@ format:
 	(cd backend && make format)
 	(cd frontend && make format)
 
+.PHONY: lint
+lint:
+	(cd backend && make lint)
+	(cd frontend && make lint)
+
+.PHONY: test
+test:
+	(cd backend && make test)
+	(cd frontend && make test)
+
 .PHONY: openapi
 openapi:
 	(cd backend && make openapi)
 	npx openapi-typescript-codegen@0.29.0 --input openapi_spec.yaml --output artifacts/generated
+
+.PHONY: openapi-lint
+openapi-lint:
+	npx @stoplight/spectral lint openapi_spec.yaml
 
 .PHONY: regit
 regit:

@@ -77,11 +77,3 @@ func ConvertHouseholdToHouseholdDatabaseCreationInput(household *types.Household
 		WebhookEncryptionKey: household.WebhookEncryptionKey,
 	}
 }
-
-// ConvertHouseholdUserMembershipCreationRequestInputToHouseholdUserMembershipDatabaseCreationInput builds a HouseholdUserMembershipDatabaseCreationInput from a HouseholdUserMembershipCreationRequestInput.
-func ConvertHouseholdUserMembershipCreationRequestInputToHouseholdUserMembershipDatabaseCreationInput(input *types.HouseholdUserMembershipCreationRequestInput) *types.HouseholdUserMembershipDatabaseCreationInput {
-	return &types.HouseholdUserMembershipDatabaseCreationInput{
-		Reason: input.Reason,
-		UserID: input.UserID,
-	}
-}

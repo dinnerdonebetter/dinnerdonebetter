@@ -21,7 +21,6 @@ const (
 func init() {
 	gob.Register(new(ServiceSetting))
 	gob.Register(new(ServiceSettingCreationRequestInput))
-	gob.Register(new(ServiceSettingUpdateRequestInput))
 }
 
 type (
