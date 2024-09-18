@@ -40,6 +40,7 @@ var skipTypes = map[string]bool{
 	"DataChangeMessage":       true,
 	"stringDurationValidator": true,
 	"WebhookExecutionRequest": true,
+	"QueryFilter":             true,
 }
 
 type openapiProperty struct {
@@ -82,7 +83,30 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 	}
 
 	declaredStructs := []*openapiSchema{
-		{},
+		{
+			name: "APIResponseWithError",
+			Type: "object",
+			Properties: map[string]*openapiProperty{
+				"details": {
+					Ref: "#/components/schemas/ResponseDetails",
+				},
+				"error": {
+					Ref: "#/components/schemas/APIError",
+				},
+			},
+		},
+		{
+			name: "APIResponseWithError",
+			Type: "object",
+			Properties: map[string]*openapiProperty{
+				"details": {
+					Ref: "#/components/schemas/ResponseDetails",
+				},
+				"error": {
+					Ref: "#/components/schemas/APIError",
+				},
+			},
+		},
 	}
 
 	for _, file := range astPkg {
@@ -107,6 +131,8 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 				}
 
 				if strings.Contains(typeName, "DatabaseCreationInput") ||
+					strings.Contains(typeName, "DatabaseUpdateInput") ||
+					strings.Contains(typeName, "SearchSubset") ||
 					strings.Contains(typeName, "Mock") ||
 					strings.Contains(typeName, "Nullable") {
 					continue

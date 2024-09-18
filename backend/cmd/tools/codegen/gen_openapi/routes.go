@@ -646,6 +646,8 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"POST /api/v1/users/avatar/upload": {
+		InputType:    &types.AvatarUpdateInput{},
+		ResponseType: &types.User{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PUT /api/v1/users/details": {

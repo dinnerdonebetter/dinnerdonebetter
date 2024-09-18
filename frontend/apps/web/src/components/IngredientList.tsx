@@ -26,7 +26,7 @@ export const RecipeIngredientListComponent = ({ recipes, scale }: IngredientList
         let minQty = cleanFloat(scale === 1.0 ? ingredient.minimumQuantity : ingredient.minimumQuantity * scale);
 
         let maxQty = cleanFloat(
-          scale === 1.0 ? (ingredient.maximumQuantity ?? 0) : (ingredient.maximumQuantity ?? 0 * scale),
+          scale === 1.0 ? ingredient.maximumQuantity ?? 0 : ingredient.maximumQuantity ?? 0 * scale,
         );
 
         return (

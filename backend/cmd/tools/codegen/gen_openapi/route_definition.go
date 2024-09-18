@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
@@ -35,7 +37,16 @@ var routesWithoutAuth = map[string]struct{}{
 }
 
 func (d *RouteDefinition) ToOperation() *openapi.Operation {
+	operationParts := []string{d.Method}
+	for _, part := range strings.Split(d.Path, "/") {
+		if part == "api" || part == "v1" || strings.TrimSpace(part) == "" {
+			continue
+		}
+		operationParts = append(operationParts, strings.TrimSuffix(strings.TrimPrefix(part, "{"), "}"))
+	}
+
 	op := &openapi.Operation{
+		ID:          pointer.To(strings.Join(operationParts, "_")),
 		Tags:        []string{},
 		Summary:     nil,
 		Description: nil,
@@ -119,23 +130,83 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 			}
 		}
 
+		var statusCode int
+		switch {
+		case d.Method == http.MethodPost:
+			statusCode = http.StatusCreated
+		case d.Method == http.MethodDelete:
+			statusCode = http.StatusAccepted
+		default:
+			statusCode = http.StatusOK
+		}
+
 		op.Responses = &openapi.Responses{
-			Default: &openapi.ResponseOrReference{
-				Response: &openapi.Response{
-					Content: map[string]openapi.MediaType{
-						"application/json": {
-							Schema: map[string]any{
-								"allOf": []map[string]any{
-									baseResponseSchema,
-									secondResponseSchema,
+			MapOfResponseOrReferenceValues: map[string]openapi.ResponseOrReference{
+				fmt.Sprintf("%d", statusCode): {
+					Response: &openapi.Response{
+						Content: map[string]openapi.MediaType{
+							"application/json": {
+								Schema: map[string]any{
+									"allOf": []map[string]any{
+										baseResponseSchema,
+										secondResponseSchema,
+									},
+								},
+							},
+							"application/xml": {
+								Schema: map[string]any{
+									"allOf": []map[string]any{
+										baseResponseSchema,
+										secondResponseSchema,
+									},
 								},
 							},
 						},
-						"application/xml": {
-							Schema: map[string]any{
-								"allOf": []map[string]any{
-									baseResponseSchema,
-									secondResponseSchema,
+					},
+				},
+				"400": {
+					Response: &openapi.Response{
+						Content: map[string]openapi.MediaType{
+							"application/json": {
+								Schema: map[string]any{
+									"$ref": "#/components/schemas/APIResponseWithError",
+								},
+							},
+							"application/xml": {
+								Schema: map[string]any{
+									"$ref": "#/components/schemas/APIResponseWithError",
+								},
+							},
+						},
+					},
+				},
+				"401": {
+					Response: &openapi.Response{
+						Content: map[string]openapi.MediaType{
+							"application/json": {
+								Schema: map[string]any{
+									"$ref": "#/components/schemas/APIResponseWithError",
+								},
+							},
+							"application/xml": {
+								Schema: map[string]any{
+									"$ref": "#/components/schemas/APIResponseWithError",
+								},
+							},
+						},
+					},
+				},
+				"500": {
+					Response: &openapi.Response{
+						Content: map[string]openapi.MediaType{
+							"application/json": {
+								Schema: map[string]any{
+									"$ref": "#/components/schemas/APIResponseWithError",
+								},
+							},
+							"application/xml": {
+								Schema: map[string]any{
+									"$ref": "#/components/schemas/APIResponseWithError",
 								},
 							},
 						},

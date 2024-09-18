@@ -164,10 +164,12 @@ func main() {
 
 	for _, rd := range routeDefinitions {
 		op := rd.ToOperation()
+		path := strings.TrimSuffix(rd.Path, "/")
 
-		if _, ok := paths.MapOfPathItemValues[rd.Path]; ok {
+		var item openapi.PathItem
+		if _, ok := paths.MapOfPathItemValues[path]; ok {
 			// path already present
-			item := paths.MapOfPathItemValues[rd.Path]
+			item = paths.MapOfPathItemValues[path]
 
 			switch rd.Method {
 			case http.MethodGet:
@@ -179,11 +181,9 @@ func main() {
 			case http.MethodDelete:
 				item.Delete = op
 			}
-
-			paths.MapOfPathItemValues[rd.Path] = item
 		} else {
 			// path is not yet present
-			item := openapi.PathItem{}
+			item = openapi.PathItem{}
 
 			switch rd.Method {
 			case http.MethodGet:
@@ -195,17 +195,14 @@ func main() {
 			case http.MethodDelete:
 				item.Delete = op
 			}
-
-			paths.MapOfPathItemValues[rd.Path] = item
 		}
+
+		paths.MapOfPathItemValues[path] = item
 	}
 
 	spec.Paths = paths
 
-	// TODO: type schema generation goes here
-
 	convertedMap := map[string]map[string]any{}
-
 	for _, schema := range schemas {
 		if schema.name == "" {
 			continue

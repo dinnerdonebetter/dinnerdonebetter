@@ -211,9 +211,9 @@ querier: queries queries_lint  ## TODO: This target is broken
 sqlc_struct_check:
 	go run $(THIS)/cmd/tools/sqlcstructchecker
 
-.PHONY: swagger
-swagger:
-	go run $(THIS)/cmd/tools/codegen/gen_swagger
+.PHONY: openapi
+openapi:
+	go run $(THIS)/cmd/tools/codegen/gen_openapi
 
 ## Integration tests
 

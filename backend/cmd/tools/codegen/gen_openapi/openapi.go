@@ -9,6 +9,12 @@ import (
 func baseSpec() *openapi.Spec {
 	spec := &openapi.Spec{
 		Openapi: "3.1.0",
+		Servers: []openapi.Server{
+			{
+				URL:         "https://api.dinnerdonebetter.dev",
+				Description: pointer.To("dev API server"),
+			},
+		},
 		Components: &openapi.Components{
 			SecuritySchemes: map[string]openapi.SecuritySchemeOrReference{
 				"cookieAuth": {

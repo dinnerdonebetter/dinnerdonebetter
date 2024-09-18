@@ -346,7 +346,7 @@ export const ConvertMealToMealCreationRequestInput = (x: Meal): MealCreationRequ
           recipeID: x.recipe.id,
           componentType: x.componentType,
           recipeScale: x.recipeScale,
-        }) as MealComponentCreationRequestInput,
+        } as MealComponentCreationRequestInput),
     ),
   });
 
