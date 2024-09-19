@@ -71,6 +71,12 @@ ifeq (, $(shell which scc))
 	$(shell go install github.com/boyter/scc@latest)
 endif
 
+.PHONY: ensure_oapi_codegen_installed
+ensure_oapi_codegen_installed:
+ifeq (, $(shell which scc))
+	$(shell go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest)
+endif
+
 .PHONY: clean_vendor
 clean_vendor:
 	rm -rf vendor go.sum
@@ -216,7 +222,7 @@ openapi:
 	go run $(THIS)/cmd/tools/codegen/gen_openapi
 
 .PHONY: openapi-client
-openapi-client:
+openapi-client: ensure_oapi_codegen_installed
 	oapi-codegen --config=oapi-codegen.yaml ../openapi_spec.yaml
 
 ## Integration tests
