@@ -1,9 +1,5 @@
 const path = require('path');
 const withTM = require('next-transpile-modules')([
-  '@dinnerdonebetter/models',
-  '@dinnerdonebetter/api-client',
-  '@dinnerdonebetter/logger',
-  '@dinnerdonebetter/server-timing',
   '@dinnerdonebetter/tracing',
 ]);
 
