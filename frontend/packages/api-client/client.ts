@@ -64,7 +64,6 @@ import {
   ValidIngredientStateIngredientCreationRequestInput,
   QueryFilteredResult,
   ServiceSetting,
-  ServiceSettingUpdateRequestInput,
   ServiceSettingCreationRequestInput,
   ServiceSettingConfigurationCreationRequestInput,
   ServiceSettingConfiguration,
@@ -98,7 +97,6 @@ import {
   createServiceSetting,
   getServiceSetting,
   getServiceSettings,
-  updateServiceSetting,
   deleteServiceSetting,
   searchForServiceSettings,
 } from './service_settings';
@@ -952,13 +950,6 @@ export class DinnerDoneBetterAPIClient {
 
   async getServiceSettings(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<ServiceSetting>> {
     return getServiceSettings(this.client, filter);
-  }
-
-  async updateServiceSetting(
-    serviceSettingID: string,
-    input: ServiceSettingUpdateRequestInput,
-  ): Promise<ServiceSetting> {
-    return updateServiceSetting(this.client, serviceSettingID, input);
   }
 
   async deleteServiceSetting(serviceSettingID: string): Promise<ServiceSetting> {

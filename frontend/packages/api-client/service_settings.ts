@@ -5,7 +5,6 @@ import {
   ServiceSettingCreationRequestInput,
   ServiceSetting,
   QueryFilter,
-  ServiceSettingUpdateRequestInput,
   QueryFilteredResult,
   APIResponse,
 } from '@dinnerdonebetter/models';
@@ -63,25 +62,6 @@ export async function getServiceSettings(
     });
 
     resolve(result);
-  });
-}
-
-export async function updateServiceSetting(
-  client: Axios,
-  serviceSettingID: string,
-  input: ServiceSettingUpdateRequestInput,
-): Promise<ServiceSetting> {
-  return new Promise(async function (resolve, reject) {
-    const response = await client.put<APIResponse<ServiceSetting>>(
-      format(backendRoutes.SERVICE_SETTING, serviceSettingID),
-      input,
-    );
-
-    if (response.data.error) {
-      reject(new Error(response.data.error.message));
-    }
-
-    resolve(response.data.data);
   });
 }
 
