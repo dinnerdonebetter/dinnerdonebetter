@@ -1,10 +1,10 @@
 on:
   pull_request:
     paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
-      - tests/**
+      - backend/pkg/**
+      - backend/cmd/**
+      - backend/internal/**
+      - backend/tests/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

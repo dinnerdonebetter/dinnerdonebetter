@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
 
-import { ServiceSetting, ServiceSettingUpdateRequestInput } from '@dinnerdonebetter/models';
+import { ServiceSetting } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
 import { AppLayout } from '../../../src/layouts';
@@ -59,56 +59,17 @@ function ServiceSettingPage(props: ServiceSettingPageProps) {
   const apiClient = buildLocalClient();
   const { pageLoadServiceSetting } = props;
 
-  const [serviceSetting, setServiceSetting] = useState<ServiceSetting>(pageLoadServiceSetting);
-  const [originalServiceSetting, setOriginalServiceSetting] = useState<ServiceSetting>(pageLoadServiceSetting);
+  const [serviceSetting] = useState<ServiceSetting>(pageLoadServiceSetting);
 
   const updateForm = useForm({
     initialValues: serviceSetting,
     validate: zodResolver(serviceSettingUpdateFormSchema),
   });
 
-  const dataHasChanged = (): boolean => {
-    return (
-      originalServiceSetting.name !== updateForm.values.name ||
-      originalServiceSetting.description !== updateForm.values.description ||
-      originalServiceSetting.type !== updateForm.values.type ||
-      originalServiceSetting.defaultValue !== updateForm.values.defaultValue ||
-      originalServiceSetting.enumeration.join(',') !== updateForm.values.enumeration.join(',')
-    );
-  };
-
-  const submit = async () => {
-    const validation = updateForm.validate();
-    if (validation.hasErrors) {
-      console.error(validation.errors);
-      return;
-    }
-
-    const submission = new ServiceSettingUpdateRequestInput({
-      name: updateForm.values.name,
-      description: updateForm.values.description,
-    });
-
-    const apiClient = buildLocalClient();
-
-    await apiClient
-      .updateServiceSetting(serviceSetting.id, submission)
-      .then((result: ServiceSetting) => {
-        if (result) {
-          updateForm.setValues(result);
-          setServiceSetting(result);
-          setOriginalServiceSetting(result);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-
   return (
     <AppLayout title="Service Setting">
       <Container size="sm">
-        <form onSubmit={updateForm.onSubmit(submit)}>
+        <form>
           <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
           <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
 
@@ -126,9 +87,6 @@ function ServiceSettingPage(props: ServiceSettingPageProps) {
           <TextInput label="Enumeration" placeholder="thing" {...updateForm.getInputProps('enumeration')} />
 
           <Group position="center">
-            <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
-              Submit
-            </Button>
             <Button
               type="submit"
               color="red"

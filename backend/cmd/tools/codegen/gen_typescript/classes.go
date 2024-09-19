@@ -59,6 +59,9 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 					defaultValue = ""
 				}
 			}
+		case errorCodeType:
+			fieldType = "string"
+			defaultValue = "''"
 		case mapStringToBoolType:
 			fieldType = "Record<string, boolean>"
 			defaultValue = "{}"

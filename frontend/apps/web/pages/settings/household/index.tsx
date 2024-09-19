@@ -242,9 +242,8 @@ export default function HouseholdSettingsPage(props: HouseholdSettingsPageProps)
   const [invitationSubmissionError, setInvitationSubmissionError] = useState('');
   const [userIsHouseholdAdmin] = useState(
     user.emailAddressVerifiedAt &&
-      household.members
-        .find((x: HouseholdUserMembershipWithUser) => x.belongsToUser?.id === user.id)
-        ?.householdRoles.includes('household_admin'),
+      household.members.find((x: HouseholdUserMembershipWithUser) => x.belongsToUser?.id === user.id)?.householdRole ===
+        'household_admin',
   );
 
   const outboundPendingInvites = (invitations || []).map((invite: HouseholdInvitation) => {
@@ -379,14 +378,14 @@ export default function HouseholdSettingsPage(props: HouseholdSettingsPageProps)
                           <Grid.Col span={10} mr="-xs">
                             <Select
                               disabled={!userIsHouseholdAdmin}
-                              value={member.householdRoles.includes('household_admin') ? 'Admin' : 'Member'}
+                              value={member.householdRole === 'household_admin' ? 'Admin' : 'Member'}
                               data={['Admin', 'Member']}
                               onChange={async (role: string) => {
-                                if (member.householdRoles.includes('household_admin') && role === 'Member') {
+                                if (member.householdRole === 'household_admin' && role === 'Member') {
                                   if (confirm("Are you sure you want to remove this user's admin privileges?")) {
                                     // TODO: update household membership
                                   }
-                                } else if (!member.householdRoles.includes('household_admin') && role === 'Admin') {
+                                } else if (member.householdRole !== 'household_admin' && role === 'Admin') {
                                   if (confirm('Are you sure you want to grant this user admin privileges?')) {
                                     // TODO: update household membership
                                   }
@@ -397,7 +396,7 @@ export default function HouseholdSettingsPage(props: HouseholdSettingsPageProps)
                           <Grid.Col span={2} ml={3} mt={4}>
                             <Tooltip
                               label={
-                                member.householdRoles.includes('household_admin')
+                                member.householdRole === 'household_admin'
                                   ? `Admins are capable of inviting new members, creating meal plans, and generally managing the household.`
                                   : `Members are capable of participating in meal planning, but can't do things like invite new members or propose meal plans.`
                               }

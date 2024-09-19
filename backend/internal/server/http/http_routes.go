@@ -291,8 +291,8 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateWebhookTriggerEventsPermission)).
 					Post("/trigger_events", s.webhooksService.AddWebhookTriggerEventHandler)
 
-				singleWebhookRouter.Route("/trigger_events"+singleWebhookTriggerEventRoute, func(singleWebhookRouter routing.Router) {
-					singleWebhookRouter.
+				singleWebhookRouter.Route("/trigger_events"+singleWebhookTriggerEventRoute, func(singleWebhookTriggerEventRouter routing.Router) {
+					singleWebhookTriggerEventRouter.
 						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveWebhookTriggerEventsPermission)).
 						Delete(root, s.webhooksService.ArchiveWebhookTriggerEventHandler)
 				})

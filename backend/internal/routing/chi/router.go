@@ -139,13 +139,15 @@ func (r *router) WithMiddleware(middleware ...routing.Middleware) routing.Router
 	return x
 }
 
-// LogRoutes logs the described routes.
-func (r *router) LogRoutes() {
+// Routes returns the described routes.
+func (r *router) Routes() []*routing.Route {
+	output := []*routing.Route{}
+
 	routerWalkFunc := func(method, route string, _ http.Handler, _ ...func(http.Handler) http.Handler) error {
-		r.logger.WithValues(map[string]any{
-			"method": method,
-			"route":  route,
-		}).Info("route found")
+		output = append(output, &routing.Route{
+			Method: method,
+			Path:   route,
+		})
 
 		return nil
 	}
@@ -153,6 +155,8 @@ func (r *router) LogRoutes() {
 	if err := chi.Walk(r.router, routerWalkFunc); err != nil {
 		r.logger.Error(err, "logging routes")
 	}
+
+	return output
 }
 
 // Route lets you apply a set of routes to a subrouter with a provided pattern.

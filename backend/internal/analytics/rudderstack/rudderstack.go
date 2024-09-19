@@ -18,10 +18,10 @@ const (
 )
 
 var (
-	// ErrNilConfig indicates an nil config was provided.
+	// ErrNilConfig indicates a nil config was provided.
 	ErrNilConfig = errors.New("nil config")
 	// ErrEmptyAPIToken indicates an empty API token was provided.
-	ErrEmptyAPIToken = errors.New("empty API token")
+	ErrEmptyAPIToken = errors.New("empty Rudderstack API token")
 	// ErrEmptyDataPlaneURL indicates an empty data plane URL was provided.
 	ErrEmptyDataPlaneURL = errors.New("empty data plane URL")
 )

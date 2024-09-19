@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -55,9 +54,7 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleInput := &types.ChoreMessage{
-			ChoreType: types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType,
-		}
+		exampleInput := map[string]string{}
 		body, err := json.Marshal(exampleInput)
 		require.NoError(t, err)
 

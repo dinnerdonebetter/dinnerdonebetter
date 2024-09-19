@@ -28,6 +28,7 @@ func isCustomType(x string) bool {
 		"uintptr",
 		"float32",
 		"float64",
+		errorCodeType,
 		boolType,
 		mapStringToBoolType,
 		timeType,

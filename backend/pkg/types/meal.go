@@ -59,7 +59,7 @@ type (
 		Name                     string           `json:"name"`
 		Components               []*MealComponent `json:"components"`
 		MinimumEstimatedPortions float32          `json:"minimumEstimatedPortions"`
-		EligibleForMealPlans     bool             `json:"elibigleForMealPlans"`
+		EligibleForMealPlans     bool             `json:"eligibleForMealPlans"`
 	}
 
 	// MealComponent is a recipe with some extra data attached to it.
@@ -80,7 +80,7 @@ type (
 		Description              string                               `json:"description"`
 		Components               []*MealComponentCreationRequestInput `json:"recipes"`
 		MinimumEstimatedPortions float32                              `json:"minimumEstimatedPortions"`
-		EligibleForMealPlans     bool                                 `json:"elibigleForMealPlans"`
+		EligibleForMealPlans     bool                                 `json:"eligibleForMealPlans"`
 	}
 
 	// MealComponentCreationRequestInput represents what a user could set as input for creating meal recipes.
@@ -124,7 +124,7 @@ type (
 		CreatedByUser            *string                            `json:"-"`
 		MinimumEstimatedPortions *float32                           `json:"minimumEstimatedPortions"`
 		MaximumEstimatedPortions *float32                           `json:"maximumEstimatedPortions"`
-		EligibleForMealPlans     *bool                              `json:"elibigleForMealPlans"`
+		EligibleForMealPlans     *bool                              `json:"eligibleForMealPlans"`
 		Components               []*MealComponentUpdateRequestInput `json:"recipes,omitempty"`
 	}
 

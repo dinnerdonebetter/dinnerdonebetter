@@ -42,7 +42,7 @@ func typescriptInterface[T any](x T) (out string, imports []string, err error) {
 		}
 
 		switch fieldType {
-		case timeType:
+		case timeType, errorCodeType:
 			fieldType = stringType
 		case mapStringToBoolType:
 			fieldType = "Record<string, boolean>"

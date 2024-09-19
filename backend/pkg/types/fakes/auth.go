@@ -3,12 +3,11 @@ package fakes
 import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
 
-// BuildFakeSessionContextData builds a faked HouseholdUserMembershipCreationRequestInput.
+// BuildFakeSessionContextData builds a faked SessionContextData.
 func BuildFakeSessionContextData() *types.SessionContextData {
 	return &types.SessionContextData{
 		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{},
@@ -22,21 +21,6 @@ func BuildFakeSessionContextData() *types.SessionContextData {
 		},
 		ActiveHouseholdID: BuildFakeID(),
 	}
-}
-
-// BuildFakeHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.
-func BuildFakeHouseholdUserMembershipCreationRequestInput() *types.HouseholdUserMembershipCreationRequestInput {
-	return &types.HouseholdUserMembershipCreationRequestInput{
-		Reason: fake.Sentence(10),
-		UserID: BuildFakeID(),
-	}
-}
-
-// BuildFakeHouseholdUserMembershipDatabaseCreationInput builds a faked HouseholdUserMembershipCreationRequestInput.
-func BuildFakeHouseholdUserMembershipDatabaseCreationInput() *types.HouseholdUserMembershipDatabaseCreationInput {
-	input := BuildFakeHouseholdUserMembershipCreationRequestInput()
-
-	return converters.ConvertHouseholdUserMembershipCreationRequestInputToHouseholdUserMembershipDatabaseCreationInput(input)
 }
 
 // BuildFakeUserPermissionModificationInput builds a faked ModifyUserPermissionsInput.

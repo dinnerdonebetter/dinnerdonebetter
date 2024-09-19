@@ -59,14 +59,14 @@ type (
 		ContainsDairy                           bool       `json:"containsDairy"`
 		ContainsAlcohol                         bool       `json:"containsAlcohol"`
 		AnimalFlesh                             bool       `json:"animalFlesh"`
-		IsStarch                                bool       `json:"is_starch"`
-		IsProtein                               bool       `json:"is_protein"`
-		IsGrain                                 bool       `json:"is_grain"`
-		IsFruit                                 bool       `json:"is_fruit"`
-		IsSalt                                  bool       `json:"is_salt"`
-		IsFat                                   bool       `json:"is_fat"`
-		IsAcid                                  bool       `json:"is_acid"`
-		IsHeat                                  bool       `json:"is_heat"`
+		IsStarch                                bool       `json:"isStarch"`
+		IsProtein                               bool       `json:"isProtein"`
+		IsGrain                                 bool       `json:"isGrain"`
+		IsFruit                                 bool       `json:"isFruit"`
+		IsSalt                                  bool       `json:"isSalt"`
+		IsFat                                   bool       `json:"isFat"`
+		IsAcid                                  bool       `json:"isAcid"`
+		IsHeat                                  bool       `json:"isHeat"`
 	}
 
 	// NullableValidIngredient represents a nullable valid ingredient.
@@ -143,14 +143,14 @@ type (
 		ContainsWheat                           bool     `json:"containsWheat"`
 		ContainsAlcohol                         bool     `json:"containsAlcohol"`
 		ContainsGluten                          bool     `json:"containsGluten"`
-		IsStarch                                bool     `json:"is_starch"`
-		IsProtein                               bool     `json:"is_protein"`
-		IsGrain                                 bool     `json:"is_grain"`
-		IsFruit                                 bool     `json:"is_fruit"`
-		IsSalt                                  bool     `json:"is_salt"`
-		IsFat                                   bool     `json:"is_fat"`
-		IsAcid                                  bool     `json:"is_acid"`
-		IsHeat                                  bool     `json:"is_heat"`
+		IsStarch                                bool     `json:"isStarch"`
+		IsProtein                               bool     `json:"isProtein"`
+		IsGrain                                 bool     `json:"isGrain"`
+		IsFruit                                 bool     `json:"isFruit"`
+		IsSalt                                  bool     `json:"isSalt"`
+		IsFat                                   bool     `json:"isFat"`
+		IsAcid                                  bool     `json:"isAcid"`
+		IsHeat                                  bool     `json:"isHeat"`
 	}
 
 	// ValidIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredients.
@@ -224,14 +224,14 @@ type (
 		Slug                                    *string  `json:"slug,omitempty"`
 		ContainsAlcohol                         *bool    `json:"containsAlcohol,omitempty"`
 		ShoppingSuggestions                     *string  `json:"shoppingSuggestions,omitempty"`
-		IsStarch                                *bool    `json:"is_starch"`
-		IsProtein                               *bool    `json:"is_protein"`
-		IsGrain                                 *bool    `json:"is_grain"`
-		IsFruit                                 *bool    `json:"is_fruit"`
-		IsSalt                                  *bool    `json:"is_salt"`
-		IsFat                                   *bool    `json:"is_fat"`
-		IsAcid                                  *bool    `json:"is_acid"`
-		IsHeat                                  *bool    `json:"is_heat"`
+		IsStarch                                *bool    `json:"isStarch"`
+		IsProtein                               *bool    `json:"isProtein"`
+		IsGrain                                 *bool    `json:"isGrain"`
+		IsFruit                                 *bool    `json:"isFruit"`
+		IsSalt                                  *bool    `json:"isSalt"`
+		IsFat                                   *bool    `json:"isFat"`
+		IsAcid                                  *bool    `json:"isAcid"`
+		IsHeat                                  *bool    `json:"isHeat"`
 	}
 
 	// ValidIngredientSearchSubset represents the subset of values suitable to index for search.

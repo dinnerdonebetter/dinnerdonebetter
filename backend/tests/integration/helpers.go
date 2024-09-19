@@ -114,7 +114,7 @@ func initializeOAuth2PoweredClient(ctx context.Context, cookie *http.Cookie) (*a
 		apiclient.UsingLogger(logger),
 		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
 		apiclient.UsingURL(urlToUse),
-		apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, cookie),
+		apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, cookie),
 	)
 	if err != nil {
 		return nil, err

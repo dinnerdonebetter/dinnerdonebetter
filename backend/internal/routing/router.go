@@ -14,7 +14,7 @@ type (
 
 	// Router defines the contract between routing library and caller.
 	Router interface {
-		LogRoutes()
+		Routes() []*Route
 		Handler() http.Handler
 		Handle(pattern string, handler http.Handler)
 		HandleFunc(pattern string, handler http.HandlerFunc)
@@ -36,5 +36,10 @@ type (
 	RouteParamManager interface {
 		BuildRouteParamIDFetcher(logger logging.Logger, key, logDescription string) func(req *http.Request) uint64
 		BuildRouteParamStringIDFetcher(key string) func(req *http.Request) string
+	}
+
+	Route struct {
+		Method string
+		Path   string
 	}
 )

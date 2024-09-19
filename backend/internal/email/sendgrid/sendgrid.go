@@ -23,10 +23,10 @@ const (
 
 var (
 	_ email.Emailer = (*Emailer)(nil)
-	// ErrNilConfig indicates an empty API token was provided.
+	// ErrNilConfig indicates a nil config was provided.
 	ErrNilConfig = errors.New("SendGrid config is nil")
 	// ErrEmptyAPIToken indicates an empty API token was provided.
-	ErrEmptyAPIToken = errors.New("empty API token")
+	ErrEmptyAPIToken = errors.New("empty Sendgrid API token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
 	ErrNilHTTPClient = errors.New("nil HTTP client")
 )

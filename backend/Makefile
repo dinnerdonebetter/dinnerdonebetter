@@ -16,7 +16,7 @@ CLOUD_FUNCTIONS        := data_changes outbound_emailer search_indexer webhook_e
 WIRE_TARGETS           := server/http/build
 CONTAINER_RUNNER       := docker
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
-LINTER_IMAGE           := golangci/golangci-lint:v1.59.1
+LINTER_IMAGE           := golangci/golangci-lint:v1.60.1
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 
 ## non-PHONY folders/files
@@ -105,7 +105,7 @@ format: format_golang terraformat
 .PHONY: format_golang
 format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
 	@until fieldalignment -fix ./...; do true; done > /dev/null
-	@until tagalign -fix -sort -order "json,toml" ./...; do true; done > /dev/null
+	@tagalign -fix -sort -order "json,toml,yaml" ./...
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
@@ -210,6 +210,10 @@ querier: queries queries_lint  ## TODO: This target is broken
 .PHONY: sqlc_struct_check
 sqlc_struct_check:
 	go run $(THIS)/cmd/tools/sqlcstructchecker
+
+.PHONY: openapi
+openapi:
+	go run $(THIS)/cmd/tools/codegen/gen_openapi
 
 ## Integration tests
 

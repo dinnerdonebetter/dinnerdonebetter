@@ -179,7 +179,7 @@ func UsingLogin(ctx context.Context, input *types.UserLoginInput) func(*Client) 
 }
 
 // UsingOAuth2 sets the client to use OAuth2.
-func UsingOAuth2(ctx context.Context, clientID, clientSecret string, cookie *http.Cookie) func(*Client) error {
+func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []string, cookie *http.Cookie) func(*Client) error {
 	genCodeChallengeS256 := func(s string) string {
 		s256 := sha256.Sum256([]byte(s))
 		return base64.URLEncoding.EncodeToString(s256[:])
@@ -189,7 +189,7 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, cookie *htt
 		oauth2Config := oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
-			Scopes:       []string{"household_member"},
+			Scopes:       scopes,
 			RedirectURL:  c.url.String(),
 			Endpoint: oauth2.Endpoint{
 				AuthStyle: oauth2.AuthStyleAutoDetect,

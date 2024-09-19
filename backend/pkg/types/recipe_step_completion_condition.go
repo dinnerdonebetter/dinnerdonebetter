@@ -62,13 +62,6 @@ type (
 		Optional            bool     `json:"optional"`
 	}
 
-	// RecipeStepCompletionConditionIngredientCreationRequestInput represents what a user could set as input for creating recipe step completion condition ingredient.
-	RecipeStepCompletionConditionIngredientCreationRequestInput struct {
-		_ struct{} `json:"-"`
-
-		RecipeStepIngredient string `json:"recipeStepIngredient"`
-	}
-
 	// RecipeStepCompletionConditionForExistingRecipeCreationRequestInput represents what a user could set as input for creating recipe step completion conditions for existing recipes.
 	RecipeStepCompletionConditionForExistingRecipeCreationRequestInput struct {
 		_ struct{} `json:"-"`
@@ -165,17 +158,6 @@ func (x *RecipeStepCompletionConditionCreationRequestInput) ValidateWithContext(
 		x,
 		validation.Field(&x.IngredientStateID, validation.Required),
 		validation.Field(&x.Ingredients, validation.Required),
-	)
-}
-
-var _ validation.ValidatableWithContext = (*RecipeStepCompletionConditionIngredientCreationRequestInput)(nil)
-
-// ValidateWithContext validates a RecipeStepCompletionConditionIngredientCreationRequestInput.
-func (x *RecipeStepCompletionConditionIngredientCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
-		ctx,
-		x,
-		validation.Field(&x.RecipeStepIngredient, validation.Required),
 	)
 }
 

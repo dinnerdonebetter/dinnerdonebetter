@@ -226,7 +226,6 @@ linters:
     - nilnil                       # Checks that there is no simultaneous return of nil error and an invalid value.
     - nosprintfhostport            # Checks for misuse of Sprintf to construct a host with port in a URL.
     - reassign                     # Checks that package variables are not reassigned
-    - tenv                         # tenv is analyzer that detects using os.Setenv instead of t.Setenv since Go1.17
     - testableexamples             # linter checks if examples are testable (have an expected output)
     - usestdlibvars                # A linter that detect the possibility to use variables/constants from the Go standard library.
     - gocheckcompilerdirectives    # Checks that go compiler directive comments (//go:) are valid.
@@ -273,6 +272,7 @@ linters:
     - ireturn                      # Accept Interfaces, Return Concrete Types
     - wsl                          # Whitespace Linter - Forces you to use empty lines!
     - tagliatelle                  # Checks the struct tags. Disabled because it expects the `Id` form instead of `ID`.
+    - tenv                         # tenv is analyzer that detects using os.Setenv instead of t.Setenv since Go1.17
 
 issues:
   # List of regexps of issue texts to exclude, empty list by default.

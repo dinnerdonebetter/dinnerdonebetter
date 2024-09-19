@@ -88,12 +88,6 @@ func NewUploadManager(ctx context.Context, logger logging.Logger, tracerProvider
 		return nil, fmt.Errorf("initializing bucket: %w", err)
 	}
 
-	if available, err := u.bucket.IsAccessible(ctx); err != nil {
-		return nil, fmt.Errorf("verifying bucket accessibility: %w", err)
-	} else if !available {
-		return nil, fmt.Errorf("bucket %q is unavailable", cfg.BucketName)
-	}
-
 	return u, nil
 }
 
@@ -124,6 +118,13 @@ func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 		if err != nil {
 			return fmt.Errorf("initializing GCP objectstorage: %w", err)
 		}
+
+		if available, availabilityErr := u.bucket.IsAccessible(ctx); availabilityErr != nil {
+			return fmt.Errorf("verifying bucket accessibility: %w", availabilityErr)
+		} else if !available {
+			return fmt.Errorf("bucket %q is unavailable", cfg.BucketName)
+		}
+
 	case MemoryProvider:
 		u.bucket = memblob.OpenBucket(&memblob.Options{})
 	default:

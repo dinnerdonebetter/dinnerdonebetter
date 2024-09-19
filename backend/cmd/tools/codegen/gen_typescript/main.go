@@ -18,6 +18,7 @@ const (
 	mapStringToBoolType = "map[string]bool"
 	stringType          = "string"
 	boolType            = "bool"
+	errorCodeType       = "ErrorCode"
 )
 
 type CodeLine struct {
@@ -39,7 +40,8 @@ func buildImportMap() map[string]string {
 	for filename, typesToGenerateFor := range codegen.TypeDefinitionFilesToGenerate {
 		fileImports := []string{}
 		for _, typ := range typesToGenerateFor {
-			fileImports = append(fileImports, reflect.TypeOf(typ).Name())
+			typeName := reflect.TypeOf(typ).Name()
+			fileImports = append(fileImports, typeName)
 		}
 
 		for _, imp := range fileImports {
@@ -68,7 +70,7 @@ func main() {
 
 	indexOutput := `
 export * from './_unions';
-export * from './pagination';
+export * from './main';
 `
 
 	importMap := buildImportMap()

@@ -65,30 +65,3 @@ export class ServiceSettingCreationRequestInput implements IServiceSettingCreati
     this.adminsOnly = input.adminsOnly ?? false;
   }
 }
-
-export interface IServiceSettingUpdateRequestInput {
-  name?: string;
-  type?: string;
-  description?: string;
-  defaultValue?: string;
-  adminsOnly?: boolean;
-  enumeration: NonNullable<Array<string>>;
-}
-
-export class ServiceSettingUpdateRequestInput implements IServiceSettingUpdateRequestInput {
-  name?: string;
-  type?: string;
-  description?: string;
-  defaultValue?: string;
-  adminsOnly?: boolean = false;
-  enumeration: NonNullable<Array<string>> = [];
-
-  constructor(input: Partial<ServiceSettingUpdateRequestInput> = {}) {
-    this.name = input.name;
-    this.type = input.type;
-    this.description = input.description;
-    this.defaultValue = input.defaultValue;
-    this.adminsOnly = input.adminsOnly ?? false;
-    this.enumeration = input.enumeration ?? [];
-  }
-}

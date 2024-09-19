@@ -1,5 +1,7 @@
 const path = require('path');
-const withTM = require('next-transpile-modules')();
+const withTM = require('next-transpile-modules')([
+  '@dinnerdonebetter/tracing',
+]);
 
 module.exports = withTM({
   reactStrictMode: true,

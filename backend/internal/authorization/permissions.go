@@ -415,8 +415,8 @@ func (p Permission) Match(perm gorbac.Permission) bool {
 }
 
 var (
-	// service admin permissions.
-	serviceAdminPermissions = []gorbac.Permission{
+	// ServiceAdminPermissions is every service admin permission.
+	ServiceAdminPermissions = []gorbac.Permission{
 		CycleCookieSecretPermission,
 		UpdateUserStatusPermission,
 		ReadUserPermission,
@@ -472,8 +472,8 @@ var (
 		CreateMealPlanGroceryListItemsPermission,
 	}
 
-	// household admin permissions.
-	householdAdminPermissions = []gorbac.Permission{
+	// HouseholdAdminPermissions is every household admin permission.
+	HouseholdAdminPermissions = []gorbac.Permission{
 		UpdateHouseholdPermission,
 		ArchiveHouseholdPermission,
 		TransferHouseholdPermission,
@@ -499,8 +499,8 @@ var (
 		ArchiveWebhookTriggerEventsPermission,
 	}
 
-	// household member permissions.
-	householdMemberPermissions = []gorbac.Permission{
+	// HouseholdMemberPermissions is every household member permission.
+	HouseholdMemberPermissions = []gorbac.Permission{
 		ReadWebhooksPermission,
 		ReadAuditLogEntriesPermission,
 		ReadOAuth2ClientsPermission,
@@ -607,17 +607,17 @@ var (
 
 func init() {
 	// assign service admin permissions.
-	for _, perm := range serviceAdminPermissions {
+	for _, perm := range ServiceAdminPermissions {
 		must(serviceAdmin.Assign(perm))
 	}
 
 	// assign household admin permissions.
-	for _, perm := range householdAdminPermissions {
+	for _, perm := range HouseholdAdminPermissions {
 		must(householdAdmin.Assign(perm))
 	}
 
 	// assign household member permissions.
-	for _, perm := range householdMemberPermissions {
+	for _, perm := range HouseholdMemberPermissions {
 		must(householdMember.Assign(perm))
 	}
 }
