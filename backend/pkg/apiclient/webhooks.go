@@ -6,7 +6,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/jinzhu/copier"
 )
 
 // GetWebhook retrieves a webhook.
@@ -84,14 +87,20 @@ func (c *Client) CreateWebhook(ctx context.Context, input *types.WebhookCreation
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateWebhookRequest(ctx, input)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create webhook request")
+	genInput := generated.POSTWebhooksJSONRequestBody{}
+	if err := copier.Copy(&genInput, input); err != nil {
+		return nil, observability.PrepareError(err, span, "copying input")
 	}
 
-	var apiResponse *types.APIResponse[*types.Webhook]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	res, err := c.authedGeneratedClient.POSTWebhooks(ctx, genInput)
+	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating webhook")
+	}
+	defer c.closeResponseBody(ctx, res)
+
+	var apiResponse *types.APIResponse[*types.Webhook]
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing webhook response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

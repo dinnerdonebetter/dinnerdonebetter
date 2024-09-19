@@ -530,25 +530,25 @@ type FinalizeMealPlansResponse struct {
 
 // Household defines model for Household.
 type Household struct {
-	AddressLine1             *string                          `json:"addressLine1,omitempty"`
-	AddressLine2             *string                          `json:"addressLine2,omitempty"`
-	ArchivedAt               *string                          `json:"archivedAt,omitempty"`
-	BelongsToUser            *string                          `json:"belongsToUser,omitempty"`
-	BillingStatus            *string                          `json:"billingStatus,omitempty"`
-	City                     *string                          `json:"city,omitempty"`
-	ContactPhone             *string                          `json:"contactPhone,omitempty"`
-	Country                  *string                          `json:"country,omitempty"`
-	CreatedAt                *string                          `json:"createdAt,omitempty"`
-	Id                       *string                          `json:"id,omitempty"`
-	LastUpdatedAt            *string                          `json:"lastUpdatedAt,omitempty"`
-	Latitude                 *float32                         `json:"latitude,omitempty"`
-	Longitude                *float32                         `json:"longitude,omitempty"`
-	Members                  *HouseholdUserMembershipWithUser `json:"members,omitempty"`
-	Name                     *string                          `json:"name,omitempty"`
-	PaymentProcessorCustomer *string                          `json:"paymentProcessorCustomer,omitempty"`
-	State                    *string                          `json:"state,omitempty"`
-	SubscriptionPlanID       *string                          `json:"subscriptionPlanID,omitempty"`
-	ZipCode                  *string                          `json:"zipCode,omitempty"`
+	AddressLine1             *string                            `json:"addressLine1,omitempty"`
+	AddressLine2             *string                            `json:"addressLine2,omitempty"`
+	ArchivedAt               *string                            `json:"archivedAt,omitempty"`
+	BelongsToUser            *string                            `json:"belongsToUser,omitempty"`
+	BillingStatus            *string                            `json:"billingStatus,omitempty"`
+	City                     *string                            `json:"city,omitempty"`
+	ContactPhone             *string                            `json:"contactPhone,omitempty"`
+	Country                  *string                            `json:"country,omitempty"`
+	CreatedAt                *string                            `json:"createdAt,omitempty"`
+	Id                       *string                            `json:"id,omitempty"`
+	LastUpdatedAt            *string                            `json:"lastUpdatedAt,omitempty"`
+	Latitude                 *float32                           `json:"latitude,omitempty"`
+	Longitude                *float32                           `json:"longitude,omitempty"`
+	Members                  *[]HouseholdUserMembershipWithUser `json:"members,omitempty"`
+	Name                     *string                            `json:"name,omitempty"`
+	PaymentProcessorCustomer *string                            `json:"paymentProcessorCustomer,omitempty"`
+	State                    *string                            `json:"state,omitempty"`
+	SubscriptionPlanID       *string                            `json:"subscriptionPlanID,omitempty"`
+	ZipCode                  *string                            `json:"zipCode,omitempty"`
 }
 
 // HouseholdCreationRequestInput defines model for HouseholdCreationRequestInput.
@@ -671,17 +671,17 @@ type HouseholdUserMembershipWithUser struct {
 
 // Meal defines model for Meal.
 type Meal struct {
-	ArchivedAt               *string        `json:"archivedAt,omitempty"`
-	Components               *MealComponent `json:"components,omitempty"`
-	CreatedAt                *string        `json:"createdAt,omitempty"`
-	CreatedByUser            *string        `json:"createdByUser,omitempty"`
-	Description              *string        `json:"description,omitempty"`
-	EligibleForMealPlans     *bool          `json:"eligibleForMealPlans,omitempty"`
-	Id                       *string        `json:"id,omitempty"`
-	LastUpdatedAt            *string        `json:"lastUpdatedAt,omitempty"`
-	MaximumEstimatedPortions *float32       `json:"maximumEstimatedPortions,omitempty"`
-	MinimumEstimatedPortions *float32       `json:"minimumEstimatedPortions,omitempty"`
-	Name                     *string        `json:"name,omitempty"`
+	ArchivedAt               *string          `json:"archivedAt,omitempty"`
+	Components               *[]MealComponent `json:"components,omitempty"`
+	CreatedAt                *string          `json:"createdAt,omitempty"`
+	CreatedByUser            *string          `json:"createdByUser,omitempty"`
+	Description              *string          `json:"description,omitempty"`
+	EligibleForMealPlans     *bool            `json:"eligibleForMealPlans,omitempty"`
+	Id                       *string          `json:"id,omitempty"`
+	LastUpdatedAt            *string          `json:"lastUpdatedAt,omitempty"`
+	MaximumEstimatedPortions *float32         `json:"maximumEstimatedPortions,omitempty"`
+	MinimumEstimatedPortions *float32         `json:"minimumEstimatedPortions,omitempty"`
+	Name                     *string          `json:"name,omitempty"`
 }
 
 // MealComponent defines model for MealComponent.
@@ -700,60 +700,60 @@ type MealComponentCreationRequestInput struct {
 
 // MealCreationRequestInput defines model for MealCreationRequestInput.
 type MealCreationRequestInput struct {
-	Description              *string                            `json:"description,omitempty"`
-	EligibleForMealPlans     *bool                              `json:"eligibleForMealPlans,omitempty"`
-	MaximumEstimatedPortions *float32                           `json:"maximumEstimatedPortions,omitempty"`
-	MinimumEstimatedPortions *float32                           `json:"minimumEstimatedPortions,omitempty"`
-	Name                     *string                            `json:"name,omitempty"`
-	Recipes                  *MealComponentCreationRequestInput `json:"recipes,omitempty"`
+	Description              *string                              `json:"description,omitempty"`
+	EligibleForMealPlans     *bool                                `json:"eligibleForMealPlans,omitempty"`
+	MaximumEstimatedPortions *float32                             `json:"maximumEstimatedPortions,omitempty"`
+	MinimumEstimatedPortions *float32                             `json:"minimumEstimatedPortions,omitempty"`
+	Name                     *string                              `json:"name,omitempty"`
+	Recipes                  *[]MealComponentCreationRequestInput `json:"recipes,omitempty"`
 }
 
 // MealPlan defines model for MealPlan.
 type MealPlan struct {
-	ArchivedAt             *string        `json:"archivedAt,omitempty"`
-	BelongsToHousehold     *string        `json:"belongsToHousehold,omitempty"`
-	CreatedAt              *string        `json:"createdAt,omitempty"`
-	CreatedBy              *string        `json:"createdBy,omitempty"`
-	ElectionMethod         *string        `json:"electionMethod,omitempty"`
-	Events                 *MealPlanEvent `json:"events,omitempty"`
-	GroceryListInitialized *bool          `json:"groceryListInitialized,omitempty"`
-	Id                     *string        `json:"id,omitempty"`
-	LastUpdatedAt          *string        `json:"lastUpdatedAt,omitempty"`
-	Notes                  *string        `json:"notes,omitempty"`
-	Status                 *string        `json:"status,omitempty"`
-	TasksCreated           *bool          `json:"tasksCreated,omitempty"`
-	VotingDeadline         *string        `json:"votingDeadline,omitempty"`
+	ArchivedAt             *string          `json:"archivedAt,omitempty"`
+	BelongsToHousehold     *string          `json:"belongsToHousehold,omitempty"`
+	CreatedAt              *string          `json:"createdAt,omitempty"`
+	CreatedBy              *string          `json:"createdBy,omitempty"`
+	ElectionMethod         *string          `json:"electionMethod,omitempty"`
+	Events                 *[]MealPlanEvent `json:"events,omitempty"`
+	GroceryListInitialized *bool            `json:"groceryListInitialized,omitempty"`
+	Id                     *string          `json:"id,omitempty"`
+	LastUpdatedAt          *string          `json:"lastUpdatedAt,omitempty"`
+	Notes                  *string          `json:"notes,omitempty"`
+	Status                 *string          `json:"status,omitempty"`
+	TasksCreated           *bool            `json:"tasksCreated,omitempty"`
+	VotingDeadline         *string          `json:"votingDeadline,omitempty"`
 }
 
 // MealPlanCreationRequestInput defines model for MealPlanCreationRequestInput.
 type MealPlanCreationRequestInput struct {
-	ElectionMethod *string                            `json:"electionMethod,omitempty"`
-	Events         *MealPlanEventCreationRequestInput `json:"events,omitempty"`
-	Notes          *string                            `json:"notes,omitempty"`
-	VotingDeadline *string                            `json:"votingDeadline,omitempty"`
+	ElectionMethod *string                              `json:"electionMethod,omitempty"`
+	Events         *[]MealPlanEventCreationRequestInput `json:"events,omitempty"`
+	Notes          *string                              `json:"notes,omitempty"`
+	VotingDeadline *string                              `json:"votingDeadline,omitempty"`
 }
 
 // MealPlanEvent defines model for MealPlanEvent.
 type MealPlanEvent struct {
-	ArchivedAt        *string         `json:"archivedAt,omitempty"`
-	BelongsToMealPlan *string         `json:"belongsToMealPlan,omitempty"`
-	CreatedAt         *string         `json:"createdAt,omitempty"`
-	EndsAt            *string         `json:"endsAt,omitempty"`
-	Id                *string         `json:"id,omitempty"`
-	LastUpdatedAt     *string         `json:"lastUpdatedAt,omitempty"`
-	MealName          *string         `json:"mealName,omitempty"`
-	Notes             *string         `json:"notes,omitempty"`
-	Options           *MealPlanOption `json:"options,omitempty"`
-	StartsAt          *string         `json:"startsAt,omitempty"`
+	ArchivedAt        *string           `json:"archivedAt,omitempty"`
+	BelongsToMealPlan *string           `json:"belongsToMealPlan,omitempty"`
+	CreatedAt         *string           `json:"createdAt,omitempty"`
+	EndsAt            *string           `json:"endsAt,omitempty"`
+	Id                *string           `json:"id,omitempty"`
+	LastUpdatedAt     *string           `json:"lastUpdatedAt,omitempty"`
+	MealName          *string           `json:"mealName,omitempty"`
+	Notes             *string           `json:"notes,omitempty"`
+	Options           *[]MealPlanOption `json:"options,omitempty"`
+	StartsAt          *string           `json:"startsAt,omitempty"`
 }
 
 // MealPlanEventCreationRequestInput defines model for MealPlanEventCreationRequestInput.
 type MealPlanEventCreationRequestInput struct {
-	EndsAt   *string                             `json:"endsAt,omitempty"`
-	MealName *string                             `json:"mealName,omitempty"`
-	Notes    *string                             `json:"notes,omitempty"`
-	Options  *MealPlanOptionCreationRequestInput `json:"options,omitempty"`
-	StartsAt *string                             `json:"startsAt,omitempty"`
+	EndsAt   *string                               `json:"endsAt,omitempty"`
+	MealName *string                               `json:"mealName,omitempty"`
+	Notes    *string                               `json:"notes,omitempty"`
+	Options  *[]MealPlanOptionCreationRequestInput `json:"options,omitempty"`
+	StartsAt *string                               `json:"startsAt,omitempty"`
 }
 
 // MealPlanEventUpdateRequestInput defines model for MealPlanEventUpdateRequestInput.
@@ -815,19 +815,19 @@ type MealPlanGroceryListItemUpdateRequestInput struct {
 
 // MealPlanOption defines model for MealPlanOption.
 type MealPlanOption struct {
-	ArchivedAt             *string             `json:"archivedAt,omitempty"`
-	AssignedCook           *string             `json:"assignedCook,omitempty"`
-	AssignedDishwasher     *string             `json:"assignedDishwasher,omitempty"`
-	BelongsToMealPlanEvent *string             `json:"belongsToMealPlanEvent,omitempty"`
-	Chosen                 *bool               `json:"chosen,omitempty"`
-	CreatedAt              *string             `json:"createdAt,omitempty"`
-	Id                     *string             `json:"id,omitempty"`
-	LastUpdatedAt          *string             `json:"lastUpdatedAt,omitempty"`
-	Meal                   *Meal               `json:"meal,omitempty"`
-	MealScale              *float32            `json:"mealScale,omitempty"`
-	Notes                  *string             `json:"notes,omitempty"`
-	TieBroken              *bool               `json:"tieBroken,omitempty"`
-	Votes                  *MealPlanOptionVote `json:"votes,omitempty"`
+	ArchivedAt             *string               `json:"archivedAt,omitempty"`
+	AssignedCook           *string               `json:"assignedCook,omitempty"`
+	AssignedDishwasher     *string               `json:"assignedDishwasher,omitempty"`
+	BelongsToMealPlanEvent *string               `json:"belongsToMealPlanEvent,omitempty"`
+	Chosen                 *bool                 `json:"chosen,omitempty"`
+	CreatedAt              *string               `json:"createdAt,omitempty"`
+	Id                     *string               `json:"id,omitempty"`
+	LastUpdatedAt          *string               `json:"lastUpdatedAt,omitempty"`
+	Meal                   *Meal                 `json:"meal,omitempty"`
+	MealScale              *float32              `json:"mealScale,omitempty"`
+	Notes                  *string               `json:"notes,omitempty"`
+	TieBroken              *bool                 `json:"tieBroken,omitempty"`
+	Votes                  *[]MealPlanOptionVote `json:"votes,omitempty"`
 }
 
 // MealPlanOptionCreationRequestInput defines model for MealPlanOptionCreationRequestInput.
@@ -871,7 +871,7 @@ type MealPlanOptionVoteCreationInput struct {
 
 // MealPlanOptionVoteCreationRequestInput defines model for MealPlanOptionVoteCreationRequestInput.
 type MealPlanOptionVoteCreationRequestInput struct {
-	Votes *MealPlanOptionVoteCreationInput `json:"votes,omitempty"`
+	Votes *[]MealPlanOptionVoteCreationInput `json:"votes,omitempty"`
 }
 
 // MealPlanOptionVoteUpdateRequestInput defines model for MealPlanOptionVoteUpdateRequestInput.
@@ -990,46 +990,46 @@ type PasswordUpdateInput struct {
 
 // Recipe defines model for Recipe.
 type Recipe struct {
-	ArchivedAt               *string         `json:"archivedAt,omitempty"`
-	CreatedAt                *string         `json:"createdAt,omitempty"`
-	CreatedByUser            *string         `json:"createdByUser,omitempty"`
-	Description              *string         `json:"description,omitempty"`
-	EligibleForMeals         *bool           `json:"eligibleForMeals,omitempty"`
-	Id                       *string         `json:"id,omitempty"`
-	InspiredByRecipeID       *string         `json:"inspiredByRecipeID,omitempty"`
-	LastUpdatedAt            *string         `json:"lastUpdatedAt,omitempty"`
-	MaximumEstimatedPortions *float32        `json:"maximumEstimatedPortions,omitempty"`
-	Media                    *RecipeMedia    `json:"media,omitempty"`
-	MinimumEstimatedPortions *float32        `json:"minimumEstimatedPortions,omitempty"`
-	Name                     *string         `json:"name,omitempty"`
-	PluralPortionName        *string         `json:"pluralPortionName,omitempty"`
-	PortionName              *string         `json:"portionName,omitempty"`
-	PrepTasks                *RecipePrepTask `json:"prepTasks,omitempty"`
-	SealOfApproval           *bool           `json:"sealOfApproval,omitempty"`
-	Slug                     *string         `json:"slug,omitempty"`
-	Source                   *string         `json:"source,omitempty"`
-	Steps                    *RecipeStep     `json:"steps,omitempty"`
-	SupportingRecipes        *Recipe         `json:"supportingRecipes,omitempty"`
-	YieldsComponentType      *string         `json:"yieldsComponentType,omitempty"`
+	ArchivedAt               *string           `json:"archivedAt,omitempty"`
+	CreatedAt                *string           `json:"createdAt,omitempty"`
+	CreatedByUser            *string           `json:"createdByUser,omitempty"`
+	Description              *string           `json:"description,omitempty"`
+	EligibleForMeals         *bool             `json:"eligibleForMeals,omitempty"`
+	Id                       *string           `json:"id,omitempty"`
+	InspiredByRecipeID       *string           `json:"inspiredByRecipeID,omitempty"`
+	LastUpdatedAt            *string           `json:"lastUpdatedAt,omitempty"`
+	MaximumEstimatedPortions *float32          `json:"maximumEstimatedPortions,omitempty"`
+	Media                    *[]RecipeMedia    `json:"media,omitempty"`
+	MinimumEstimatedPortions *float32          `json:"minimumEstimatedPortions,omitempty"`
+	Name                     *string           `json:"name,omitempty"`
+	PluralPortionName        *string           `json:"pluralPortionName,omitempty"`
+	PortionName              *string           `json:"portionName,omitempty"`
+	PrepTasks                *[]RecipePrepTask `json:"prepTasks,omitempty"`
+	SealOfApproval           *bool             `json:"sealOfApproval,omitempty"`
+	Slug                     *string           `json:"slug,omitempty"`
+	Source                   *string           `json:"source,omitempty"`
+	Steps                    *[]RecipeStep     `json:"steps,omitempty"`
+	SupportingRecipes        *[]Recipe         `json:"supportingRecipes,omitempty"`
+	YieldsComponentType      *string           `json:"yieldsComponentType,omitempty"`
 }
 
 // RecipeCreationRequestInput defines model for RecipeCreationRequestInput.
 type RecipeCreationRequestInput struct {
-	AlsoCreateMeal           *bool                                           `json:"alsoCreateMeal,omitempty"`
-	Description              *string                                         `json:"description,omitempty"`
-	EligibleForMeals         *bool                                           `json:"eligibleForMeals,omitempty"`
-	InspiredByRecipeID       *string                                         `json:"inspiredByRecipeID,omitempty"`
-	MaximumEstimatedPortions *float32                                        `json:"maximumEstimatedPortions,omitempty"`
-	MinimumEstimatedPortions *float32                                        `json:"minimumEstimatedPortions,omitempty"`
-	Name                     *string                                         `json:"name,omitempty"`
-	PluralPortionName        *string                                         `json:"pluralPortionName,omitempty"`
-	PortionName              *string                                         `json:"portionName,omitempty"`
-	PrepTasks                *RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks,omitempty"`
-	SealOfApproval           *bool                                           `json:"sealOfApproval,omitempty"`
-	Slug                     *string                                         `json:"slug,omitempty"`
-	Source                   *string                                         `json:"source,omitempty"`
-	Steps                    *RecipeStepCreationRequestInput                 `json:"steps,omitempty"`
-	YieldsComponentType      *string                                         `json:"yieldsComponentType,omitempty"`
+	AlsoCreateMeal           *bool                                             `json:"alsoCreateMeal,omitempty"`
+	Description              *string                                           `json:"description,omitempty"`
+	EligibleForMeals         *bool                                             `json:"eligibleForMeals,omitempty"`
+	InspiredByRecipeID       *string                                           `json:"inspiredByRecipeID,omitempty"`
+	MaximumEstimatedPortions *float32                                          `json:"maximumEstimatedPortions,omitempty"`
+	MinimumEstimatedPortions *float32                                          `json:"minimumEstimatedPortions,omitempty"`
+	Name                     *string                                           `json:"name,omitempty"`
+	PluralPortionName        *string                                           `json:"pluralPortionName,omitempty"`
+	PortionName              *string                                           `json:"portionName,omitempty"`
+	PrepTasks                *[]RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks,omitempty"`
+	SealOfApproval           *bool                                             `json:"sealOfApproval,omitempty"`
+	Slug                     *string                                           `json:"slug,omitempty"`
+	Source                   *string                                           `json:"source,omitempty"`
+	Steps                    *[]RecipeStepCreationRequestInput                 `json:"steps,omitempty"`
+	YieldsComponentType      *string                                           `json:"yieldsComponentType,omitempty"`
 }
 
 // RecipeMedia defines model for RecipeMedia.
@@ -1048,38 +1048,38 @@ type RecipeMedia struct {
 
 // RecipePrepTask defines model for RecipePrepTask.
 type RecipePrepTask struct {
-	ArchivedAt                             *string             `json:"archivedAt,omitempty"`
-	BelongsToRecipe                        *string             `json:"belongsToRecipe,omitempty"`
-	CreatedAt                              *string             `json:"createdAt,omitempty"`
-	Description                            *string             `json:"description,omitempty"`
-	ExplicitStorageInstructions            *string             `json:"explicitStorageInstructions,omitempty"`
-	Id                                     *string             `json:"id,omitempty"`
-	LastUpdatedAt                          *string             `json:"lastUpdatedAt,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float32            `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *int                `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float32            `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds *int                `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Name                                   *string             `json:"name,omitempty"`
-	Notes                                  *string             `json:"notes,omitempty"`
-	Optional                               *bool               `json:"optional,omitempty"`
-	RecipeSteps                            *RecipePrepTaskStep `json:"recipeSteps,omitempty"`
-	StorageType                            *string             `json:"storageType,omitempty"`
+	ArchivedAt                             *string               `json:"archivedAt,omitempty"`
+	BelongsToRecipe                        *string               `json:"belongsToRecipe,omitempty"`
+	CreatedAt                              *string               `json:"createdAt,omitempty"`
+	Description                            *string               `json:"description,omitempty"`
+	ExplicitStorageInstructions            *string               `json:"explicitStorageInstructions,omitempty"`
+	Id                                     *string               `json:"id,omitempty"`
+	LastUpdatedAt                          *string               `json:"lastUpdatedAt,omitempty"`
+	MaximumStorageTemperatureInCelsius     *float32              `json:"maximumStorageTemperatureInCelsius,omitempty"`
+	MaximumTimeBufferBeforeRecipeInSeconds *int                  `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
+	MinimumStorageTemperatureInCelsius     *float32              `json:"minimumStorageTemperatureInCelsius,omitempty"`
+	MinimumTimeBufferBeforeRecipeInSeconds *int                  `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
+	Name                                   *string               `json:"name,omitempty"`
+	Notes                                  *string               `json:"notes,omitempty"`
+	Optional                               *bool                 `json:"optional,omitempty"`
+	RecipeSteps                            *[]RecipePrepTaskStep `json:"recipeSteps,omitempty"`
+	StorageType                            *string               `json:"storageType,omitempty"`
 }
 
 // RecipePrepTaskCreationRequestInput defines model for RecipePrepTaskCreationRequestInput.
 type RecipePrepTaskCreationRequestInput struct {
-	BelongsToRecipe                        *string                                 `json:"belongsToRecipe,omitempty"`
-	Description                            *string                                 `json:"description,omitempty"`
-	ExplicitStorageInstructions            *string                                 `json:"explicitStorageInstructions,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float32                                `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *int                                    `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float32                                `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds *int                                    `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Name                                   *string                                 `json:"name,omitempty"`
-	Notes                                  *string                                 `json:"notes,omitempty"`
-	Optional                               *bool                                   `json:"optional,omitempty"`
-	RecipeSteps                            *RecipePrepTaskStepCreationRequestInput `json:"recipeSteps,omitempty"`
-	StorageType                            *string                                 `json:"storageType,omitempty"`
+	BelongsToRecipe                        *string                                   `json:"belongsToRecipe,omitempty"`
+	Description                            *string                                   `json:"description,omitempty"`
+	ExplicitStorageInstructions            *string                                   `json:"explicitStorageInstructions,omitempty"`
+	MaximumStorageTemperatureInCelsius     *float32                                  `json:"maximumStorageTemperatureInCelsius,omitempty"`
+	MaximumTimeBufferBeforeRecipeInSeconds *int                                      `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
+	MinimumStorageTemperatureInCelsius     *float32                                  `json:"minimumStorageTemperatureInCelsius,omitempty"`
+	MinimumTimeBufferBeforeRecipeInSeconds *int                                      `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
+	Name                                   *string                                   `json:"name,omitempty"`
+	Notes                                  *string                                   `json:"notes,omitempty"`
+	Optional                               *bool                                     `json:"optional,omitempty"`
+	RecipeSteps                            *[]RecipePrepTaskStepCreationRequestInput `json:"recipeSteps,omitempty"`
+	StorageType                            *string                                   `json:"storageType,omitempty"`
 }
 
 // RecipePrepTaskStep defines model for RecipePrepTaskStep.
@@ -1111,34 +1111,34 @@ type RecipePrepTaskStepWithinRecipeCreationRequestInput struct {
 
 // RecipePrepTaskUpdateRequestInput defines model for RecipePrepTaskUpdateRequestInput.
 type RecipePrepTaskUpdateRequestInput struct {
-	BelongsToRecipe                        *string                               `json:"belongsToRecipe,omitempty"`
-	Description                            *string                               `json:"description,omitempty"`
-	ExplicitStorageInstructions            *string                               `json:"explicitStorageInstructions,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float32                              `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *int                                  `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float32                              `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds *int                                  `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Name                                   *string                               `json:"name,omitempty"`
-	Notes                                  *string                               `json:"notes,omitempty"`
-	Optional                               *bool                                 `json:"optional,omitempty"`
-	RecipeSteps                            *RecipePrepTaskStepUpdateRequestInput `json:"recipeSteps,omitempty"`
-	StorageType                            *string                               `json:"storageType,omitempty"`
+	BelongsToRecipe                        *string                                 `json:"belongsToRecipe,omitempty"`
+	Description                            *string                                 `json:"description,omitempty"`
+	ExplicitStorageInstructions            *string                                 `json:"explicitStorageInstructions,omitempty"`
+	MaximumStorageTemperatureInCelsius     *float32                                `json:"maximumStorageTemperatureInCelsius,omitempty"`
+	MaximumTimeBufferBeforeRecipeInSeconds *int                                    `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
+	MinimumStorageTemperatureInCelsius     *float32                                `json:"minimumStorageTemperatureInCelsius,omitempty"`
+	MinimumTimeBufferBeforeRecipeInSeconds *int                                    `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
+	Name                                   *string                                 `json:"name,omitempty"`
+	Notes                                  *string                                 `json:"notes,omitempty"`
+	Optional                               *bool                                   `json:"optional,omitempty"`
+	RecipeSteps                            *[]RecipePrepTaskStepUpdateRequestInput `json:"recipeSteps,omitempty"`
+	StorageType                            *string                                 `json:"storageType,omitempty"`
 }
 
 // RecipePrepTaskWithinRecipeCreationRequestInput defines model for RecipePrepTaskWithinRecipeCreationRequestInput.
 type RecipePrepTaskWithinRecipeCreationRequestInput struct {
-	BelongsToRecipe                        *string                                             `json:"belongsToRecipe,omitempty"`
-	Description                            *string                                             `json:"description,omitempty"`
-	ExplicitStorageInstructions            *string                                             `json:"explicitStorageInstructions,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float32                                            `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *int                                                `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float32                                            `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds *int                                                `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Name                                   *string                                             `json:"name,omitempty"`
-	Notes                                  *string                                             `json:"notes,omitempty"`
-	Optional                               *bool                                               `json:"optional,omitempty"`
-	RecipeSteps                            *RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps,omitempty"`
-	StorageType                            *string                                             `json:"storageType,omitempty"`
+	BelongsToRecipe                        *string                                               `json:"belongsToRecipe,omitempty"`
+	Description                            *string                                               `json:"description,omitempty"`
+	ExplicitStorageInstructions            *string                                               `json:"explicitStorageInstructions,omitempty"`
+	MaximumStorageTemperatureInCelsius     *float32                                              `json:"maximumStorageTemperatureInCelsius,omitempty"`
+	MaximumTimeBufferBeforeRecipeInSeconds *int                                                  `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
+	MinimumStorageTemperatureInCelsius     *float32                                              `json:"minimumStorageTemperatureInCelsius,omitempty"`
+	MinimumTimeBufferBeforeRecipeInSeconds *int                                                  `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
+	Name                                   *string                                               `json:"name,omitempty"`
+	Notes                                  *string                                               `json:"notes,omitempty"`
+	Optional                               *bool                                                 `json:"optional,omitempty"`
+	RecipeSteps                            *[]RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps,omitempty"`
+	StorageType                            *string                                               `json:"storageType,omitempty"`
 }
 
 // RecipeRating defines model for RecipeRating.
@@ -1183,59 +1183,59 @@ type RecipeRatingUpdateRequestInput struct {
 
 // RecipeStep defines model for RecipeStep.
 type RecipeStep struct {
-	ArchivedAt                    *string                        `json:"archivedAt,omitempty"`
-	BelongsToRecipe               *string                        `json:"belongsToRecipe,omitempty"`
-	CompletionConditions          *RecipeStepCompletionCondition `json:"completionConditions,omitempty"`
-	ConditionExpression           *string                        `json:"conditionExpression,omitempty"`
-	CreatedAt                     *string                        `json:"createdAt,omitempty"`
-	ExplicitInstructions          *string                        `json:"explicitInstructions,omitempty"`
-	Id                            *string                        `json:"id,omitempty"`
-	Index                         *int                           `json:"index,omitempty"`
-	Ingredients                   *RecipeStepIngredient          `json:"ingredients,omitempty"`
-	Instruments                   *RecipeStepInstrument          `json:"instruments,omitempty"`
-	LastUpdatedAt                 *string                        `json:"lastUpdatedAt,omitempty"`
-	MaximumEstimatedTimeInSeconds *int                           `json:"maximumEstimatedTimeInSeconds,omitempty"`
-	MaximumTemperatureInCelsius   *float32                       `json:"maximumTemperatureInCelsius,omitempty"`
-	Media                         *RecipeMedia                   `json:"media,omitempty"`
-	MinimumEstimatedTimeInSeconds *int                           `json:"minimumEstimatedTimeInSeconds,omitempty"`
-	MinimumTemperatureInCelsius   *float32                       `json:"minimumTemperatureInCelsius,omitempty"`
-	Notes                         *string                        `json:"notes,omitempty"`
-	Optional                      *bool                          `json:"optional,omitempty"`
-	Preparation                   *ValidPreparation              `json:"preparation,omitempty"`
-	Products                      *RecipeStepProduct             `json:"products,omitempty"`
-	StartTimerAutomatically       *bool                          `json:"startTimerAutomatically,omitempty"`
-	Vessels                       *RecipeStepVessel              `json:"vessels,omitempty"`
+	ArchivedAt                    *string                          `json:"archivedAt,omitempty"`
+	BelongsToRecipe               *string                          `json:"belongsToRecipe,omitempty"`
+	CompletionConditions          *[]RecipeStepCompletionCondition `json:"completionConditions,omitempty"`
+	ConditionExpression           *string                          `json:"conditionExpression,omitempty"`
+	CreatedAt                     *string                          `json:"createdAt,omitempty"`
+	ExplicitInstructions          *string                          `json:"explicitInstructions,omitempty"`
+	Id                            *string                          `json:"id,omitempty"`
+	Index                         *int                             `json:"index,omitempty"`
+	Ingredients                   *[]RecipeStepIngredient          `json:"ingredients,omitempty"`
+	Instruments                   *[]RecipeStepInstrument          `json:"instruments,omitempty"`
+	LastUpdatedAt                 *string                          `json:"lastUpdatedAt,omitempty"`
+	MaximumEstimatedTimeInSeconds *int                             `json:"maximumEstimatedTimeInSeconds,omitempty"`
+	MaximumTemperatureInCelsius   *float32                         `json:"maximumTemperatureInCelsius,omitempty"`
+	Media                         *[]RecipeMedia                   `json:"media,omitempty"`
+	MinimumEstimatedTimeInSeconds *int                             `json:"minimumEstimatedTimeInSeconds,omitempty"`
+	MinimumTemperatureInCelsius   *float32                         `json:"minimumTemperatureInCelsius,omitempty"`
+	Notes                         *string                          `json:"notes,omitempty"`
+	Optional                      *bool                            `json:"optional,omitempty"`
+	Preparation                   *ValidPreparation                `json:"preparation,omitempty"`
+	Products                      *[]RecipeStepProduct             `json:"products,omitempty"`
+	StartTimerAutomatically       *bool                            `json:"startTimerAutomatically,omitempty"`
+	Vessels                       *[]RecipeStepVessel              `json:"vessels,omitempty"`
 }
 
 // RecipeStepCompletionCondition defines model for RecipeStepCompletionCondition.
 type RecipeStepCompletionCondition struct {
-	ArchivedAt          *string                                  `json:"archivedAt,omitempty"`
-	BelongsToRecipeStep *string                                  `json:"belongsToRecipeStep,omitempty"`
-	CreatedAt           *string                                  `json:"createdAt,omitempty"`
-	Id                  *string                                  `json:"id,omitempty"`
-	IngredientState     *ValidIngredientState                    `json:"ingredientState,omitempty"`
-	Ingredients         *RecipeStepCompletionConditionIngredient `json:"ingredients,omitempty"`
-	LastUpdatedAt       *string                                  `json:"lastUpdatedAt,omitempty"`
-	Notes               *string                                  `json:"notes,omitempty"`
-	Optional            *bool                                    `json:"optional,omitempty"`
+	ArchivedAt          *string                                    `json:"archivedAt,omitempty"`
+	BelongsToRecipeStep *string                                    `json:"belongsToRecipeStep,omitempty"`
+	CreatedAt           *string                                    `json:"createdAt,omitempty"`
+	Id                  *string                                    `json:"id,omitempty"`
+	IngredientState     *ValidIngredientState                      `json:"ingredientState,omitempty"`
+	Ingredients         *[]RecipeStepCompletionConditionIngredient `json:"ingredients,omitempty"`
+	LastUpdatedAt       *string                                    `json:"lastUpdatedAt,omitempty"`
+	Notes               *string                                    `json:"notes,omitempty"`
+	Optional            *bool                                      `json:"optional,omitempty"`
 }
 
 // RecipeStepCompletionConditionCreationRequestInput defines model for RecipeStepCompletionConditionCreationRequestInput.
 type RecipeStepCompletionConditionCreationRequestInput struct {
 	BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`
 	IngredientState     *string `json:"ingredientState,omitempty"`
-	Ingredients         *int    `json:"ingredients,omitempty"`
+	Ingredients         *[]int  `json:"ingredients,omitempty"`
 	Notes               *string `json:"notes,omitempty"`
 	Optional            *bool   `json:"optional,omitempty"`
 }
 
 // RecipeStepCompletionConditionForExistingRecipeCreationRequestInput defines model for RecipeStepCompletionConditionForExistingRecipeCreationRequestInput.
 type RecipeStepCompletionConditionForExistingRecipeCreationRequestInput struct {
-	BelongsToRecipeStep *string                                                                       `json:"belongsToRecipeStep,omitempty"`
-	IngredientState     *string                                                                       `json:"ingredientState,omitempty"`
-	Ingredients         *RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput `json:"ingredients,omitempty"`
-	Notes               *string                                                                       `json:"notes,omitempty"`
-	Optional            *bool                                                                         `json:"optional,omitempty"`
+	BelongsToRecipeStep *string                                                                         `json:"belongsToRecipeStep,omitempty"`
+	IngredientState     *string                                                                         `json:"ingredientState,omitempty"`
+	Ingredients         *[]RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput `json:"ingredients,omitempty"`
+	Notes               *string                                                                         `json:"notes,omitempty"`
+	Optional            *bool                                                                           `json:"optional,omitempty"`
 }
 
 // RecipeStepCompletionConditionIngredient defines model for RecipeStepCompletionConditionIngredient.
@@ -1263,22 +1263,22 @@ type RecipeStepCompletionConditionUpdateRequestInput struct {
 
 // RecipeStepCreationRequestInput defines model for RecipeStepCreationRequestInput.
 type RecipeStepCreationRequestInput struct {
-	CompletionConditions          *RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions,omitempty"`
-	ConditionExpression           *string                                            `json:"conditionExpression,omitempty"`
-	ExplicitInstructions          *string                                            `json:"explicitInstructions,omitempty"`
-	Index                         *int                                               `json:"index,omitempty"`
-	Ingredients                   *RecipeStepIngredientCreationRequestInput          `json:"ingredients,omitempty"`
-	Instruments                   *RecipeStepInstrumentCreationRequestInput          `json:"instruments,omitempty"`
-	MaximumEstimatedTimeInSeconds *int                                               `json:"maximumEstimatedTimeInSeconds,omitempty"`
-	MaximumTemperatureInCelsius   *float32                                           `json:"maximumTemperatureInCelsius,omitempty"`
-	MinimumEstimatedTimeInSeconds *int                                               `json:"minimumEstimatedTimeInSeconds,omitempty"`
-	MinimumTemperatureInCelsius   *float32                                           `json:"minimumTemperatureInCelsius,omitempty"`
-	Notes                         *string                                            `json:"notes,omitempty"`
-	Optional                      *bool                                              `json:"optional,omitempty"`
-	PreparationID                 *string                                            `json:"preparationID,omitempty"`
-	Products                      *RecipeStepProductCreationRequestInput             `json:"products,omitempty"`
-	StartTimerAutomatically       *bool                                              `json:"startTimerAutomatically,omitempty"`
-	Vessels                       *RecipeStepVesselCreationRequestInput              `json:"vessels,omitempty"`
+	CompletionConditions          *[]RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions,omitempty"`
+	ConditionExpression           *string                                              `json:"conditionExpression,omitempty"`
+	ExplicitInstructions          *string                                              `json:"explicitInstructions,omitempty"`
+	Index                         *int                                                 `json:"index,omitempty"`
+	Ingredients                   *[]RecipeStepIngredientCreationRequestInput          `json:"ingredients,omitempty"`
+	Instruments                   *[]RecipeStepInstrumentCreationRequestInput          `json:"instruments,omitempty"`
+	MaximumEstimatedTimeInSeconds *int                                                 `json:"maximumEstimatedTimeInSeconds,omitempty"`
+	MaximumTemperatureInCelsius   *float32                                             `json:"maximumTemperatureInCelsius,omitempty"`
+	MinimumEstimatedTimeInSeconds *int                                                 `json:"minimumEstimatedTimeInSeconds,omitempty"`
+	MinimumTemperatureInCelsius   *float32                                             `json:"minimumTemperatureInCelsius,omitempty"`
+	Notes                         *string                                              `json:"notes,omitempty"`
+	Optional                      *bool                                                `json:"optional,omitempty"`
+	PreparationID                 *string                                              `json:"preparationID,omitempty"`
+	Products                      *[]RecipeStepProductCreationRequestInput             `json:"products,omitempty"`
+	StartTimerAutomatically       *bool                                                `json:"startTimerAutomatically,omitempty"`
+	Vessels                       *[]RecipeStepVesselCreationRequestInput              `json:"vessels,omitempty"`
 }
 
 // RecipeStepIngredient defines model for RecipeStepIngredient.
@@ -1536,16 +1536,16 @@ type ResponseDetails struct {
 
 // ServiceSetting defines model for ServiceSetting.
 type ServiceSetting struct {
-	AdminsOnly    *bool   `json:"adminsOnly,omitempty"`
-	ArchivedAt    *string `json:"archivedAt,omitempty"`
-	CreatedAt     *string `json:"createdAt,omitempty"`
-	DefaultValue  *string `json:"defaultValue,omitempty"`
-	Description   *string `json:"description,omitempty"`
-	Enumeration   *string `json:"enumeration,omitempty"`
-	Id            *string `json:"id,omitempty"`
-	LastUpdatedAt *string `json:"lastUpdatedAt,omitempty"`
-	Name          *string `json:"name,omitempty"`
-	Type          *string `json:"type,omitempty"`
+	AdminsOnly    *bool     `json:"adminsOnly,omitempty"`
+	ArchivedAt    *string   `json:"archivedAt,omitempty"`
+	CreatedAt     *string   `json:"createdAt,omitempty"`
+	DefaultValue  *string   `json:"defaultValue,omitempty"`
+	Description   *string   `json:"description,omitempty"`
+	Enumeration   *[]string `json:"enumeration,omitempty"`
+	Id            *string   `json:"id,omitempty"`
+	LastUpdatedAt *string   `json:"lastUpdatedAt,omitempty"`
+	Name          *string   `json:"name,omitempty"`
+	Type          *string   `json:"type,omitempty"`
 }
 
 // ServiceSettingConfiguration defines model for ServiceSettingConfiguration.
@@ -1581,12 +1581,12 @@ type ServiceSettingConfigurationUpdateRequestInput struct {
 
 // ServiceSettingCreationRequestInput defines model for ServiceSettingCreationRequestInput.
 type ServiceSettingCreationRequestInput struct {
-	AdminsOnly   *bool   `json:"adminsOnly,omitempty"`
-	DefaultValue *string `json:"defaultValue,omitempty"`
-	Description  *string `json:"description,omitempty"`
-	Enumeration  *string `json:"enumeration,omitempty"`
-	Name         *string `json:"name,omitempty"`
-	Type         *string `json:"type,omitempty"`
+	AdminsOnly   *bool     `json:"adminsOnly,omitempty"`
+	DefaultValue *string   `json:"defaultValue,omitempty"`
+	Description  *string   `json:"description,omitempty"`
+	Enumeration  *[]string `json:"enumeration,omitempty"`
+	Name         *string   `json:"name,omitempty"`
+	Type         *string   `json:"type,omitempty"`
 }
 
 // TOTPSecretRefreshInput defines model for TOTPSecretRefreshInput.
@@ -1730,7 +1730,7 @@ type UserNotificationUpdateRequestInput struct {
 
 // UserPermissionsRequestInput defines model for UserPermissionsRequestInput.
 type UserPermissionsRequestInput struct {
-	Permissions *string `json:"permissions,omitempty"`
+	Permissions *[]string `json:"permissions,omitempty"`
 }
 
 // UserPermissionsResponse defines model for UserPermissionsResponse.
@@ -1856,22 +1856,22 @@ type ValidIngredientCreationRequestInput struct {
 
 // ValidIngredientGroup defines model for ValidIngredientGroup.
 type ValidIngredientGroup struct {
-	ArchivedAt    *string                     `json:"archivedAt,omitempty"`
-	CreatedAt     *string                     `json:"createdAt,omitempty"`
-	Description   *string                     `json:"description,omitempty"`
-	Id            *string                     `json:"id,omitempty"`
-	LastUpdatedAt *string                     `json:"lastUpdatedAt,omitempty"`
-	Members       *ValidIngredientGroupMember `json:"members,omitempty"`
-	Name          *string                     `json:"name,omitempty"`
-	Slug          *string                     `json:"slug,omitempty"`
+	ArchivedAt    *string                       `json:"archivedAt,omitempty"`
+	CreatedAt     *string                       `json:"createdAt,omitempty"`
+	Description   *string                       `json:"description,omitempty"`
+	Id            *string                       `json:"id,omitempty"`
+	LastUpdatedAt *string                       `json:"lastUpdatedAt,omitempty"`
+	Members       *[]ValidIngredientGroupMember `json:"members,omitempty"`
+	Name          *string                       `json:"name,omitempty"`
+	Slug          *string                       `json:"slug,omitempty"`
 }
 
 // ValidIngredientGroupCreationRequestInput defines model for ValidIngredientGroupCreationRequestInput.
 type ValidIngredientGroupCreationRequestInput struct {
-	Description *string                                         `json:"description,omitempty"`
-	Members     *ValidIngredientGroupMemberCreationRequestInput `json:"members,omitempty"`
-	Name        *string                                         `json:"name,omitempty"`
-	Slug        *string                                         `json:"slug,omitempty"`
+	Description *string                                           `json:"description,omitempty"`
+	Members     *[]ValidIngredientGroupMemberCreationRequestInput `json:"members,omitempty"`
+	Name        *string                                           `json:"name,omitempty"`
+	Slug        *string                                           `json:"slug,omitempty"`
 }
 
 // ValidIngredientGroupMember defines model for ValidIngredientGroupMember.
@@ -2342,25 +2342,25 @@ type ValidVesselUpdateRequestInput struct {
 
 // Webhook defines model for Webhook.
 type Webhook struct {
-	ArchivedAt         *string              `json:"archivedAt,omitempty"`
-	BelongsToHousehold *string              `json:"belongsToHousehold,omitempty"`
-	ContentType        *string              `json:"contentType,omitempty"`
-	CreatedAt          *string              `json:"createdAt,omitempty"`
-	Events             *WebhookTriggerEvent `json:"events,omitempty"`
-	Id                 *string              `json:"id,omitempty"`
-	LastUpdatedAt      *string              `json:"lastUpdatedAt,omitempty"`
-	Method             *string              `json:"method,omitempty"`
-	Name               *string              `json:"name,omitempty"`
-	Url                *string              `json:"url,omitempty"`
+	ArchivedAt         *string                `json:"archivedAt,omitempty"`
+	BelongsToHousehold *string                `json:"belongsToHousehold,omitempty"`
+	ContentType        *string                `json:"contentType,omitempty"`
+	CreatedAt          *string                `json:"createdAt,omitempty"`
+	Events             *[]WebhookTriggerEvent `json:"events,omitempty"`
+	Id                 *string                `json:"id,omitempty"`
+	LastUpdatedAt      *string                `json:"lastUpdatedAt,omitempty"`
+	Method             *string                `json:"method,omitempty"`
+	Name               *string                `json:"name,omitempty"`
+	Url                *string                `json:"url,omitempty"`
 }
 
 // WebhookCreationRequestInput defines model for WebhookCreationRequestInput.
 type WebhookCreationRequestInput struct {
-	ContentType *string `json:"contentType,omitempty"`
-	Events      *string `json:"events,omitempty"`
-	Method      *string `json:"method,omitempty"`
-	Name        *string `json:"name,omitempty"`
-	Url         *string `json:"url,omitempty"`
+	ContentType *string   `json:"contentType,omitempty"`
+	Events      *[]string `json:"events,omitempty"`
+	Method      *string   `json:"method,omitempty"`
+	Name        *string   `json:"name,omitempty"`
+	Url         *string   `json:"url,omitempty"`
 }
 
 // WebhookTriggerEvent defines model for WebhookTriggerEvent.
@@ -2380,13 +2380,13 @@ type WebhookTriggerEventCreationRequestInput struct {
 
 // GETHouseholdsParams defines parameters for GETHouseholds.
 type GETHouseholdsParams struct {
-	Page            int                                `form:"page" json:"page"`
-	CreatedBefore   string                             `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                             `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                             `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                             `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETHouseholdsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETHouseholdsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                             `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                             `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                             `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                             `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETHouseholdsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETHouseholdsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                `json:"page"            form:"page"`
 }
 
 // GETHouseholdsParamsIncludeArchived defines parameters for GETHouseholds.
@@ -2397,13 +2397,13 @@ type GETHouseholdsParamsSortBy string
 
 // GETHouseholdsInstrumentsParams defines parameters for GETHouseholdsInstruments.
 type GETHouseholdsInstrumentsParams struct {
-	Page            int                                           `form:"page" json:"page"`
-	CreatedBefore   string                                        `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                        `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                        `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                        `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETHouseholdsInstrumentsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETHouseholdsInstrumentsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETHouseholdsInstrumentsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETHouseholdsInstrumentsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // GETHouseholdsInstrumentsParamsIncludeArchived defines parameters for GETHouseholdsInstruments.
@@ -2414,13 +2414,13 @@ type GETHouseholdsInstrumentsParamsSortBy string
 
 // GETMealPlansParams defines parameters for GETMealPlans.
 type GETMealPlansParams struct {
-	Page            int                               `form:"page" json:"page"`
-	CreatedBefore   string                            `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                            `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                            `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                            `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETMealPlansParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETMealPlansParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                            `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                            `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                            `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                            `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETMealPlansParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETMealPlansParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                               `json:"page"            form:"page"`
 }
 
 // GETMealPlansParamsIncludeArchived defines parameters for GETMealPlans.
@@ -2431,13 +2431,13 @@ type GETMealPlansParamsSortBy string
 
 // GETMealPlansMealPlanIDEventsParams defines parameters for GETMealPlansMealPlanIDEvents.
 type GETMealPlansMealPlanIDEventsParams struct {
-	Page            int                                               `form:"page" json:"page"`
-	CreatedBefore   string                                            `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                            `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                            `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                            `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETMealPlansMealPlanIDEventsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETMealPlansMealPlanIDEventsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                            `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                            `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                            `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                            `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETMealPlansMealPlanIDEventsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETMealPlansMealPlanIDEventsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                               `json:"page"            form:"page"`
 }
 
 // GETMealPlansMealPlanIDEventsParamsIncludeArchived defines parameters for GETMealPlansMealPlanIDEvents.
@@ -2448,13 +2448,13 @@ type GETMealPlansMealPlanIDEventsParamsSortBy string
 
 // GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsParams defines parameters for GETMealPlansMealPlanIDEventsMealPlanEventIDOptions.
 type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsParams struct {
-	Page            int                                                                     `form:"page" json:"page"`
-	CreatedBefore   string                                                                  `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                                  `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                                  `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                                  `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                                  `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                                  `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                                  `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                                  `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                                     `json:"page"            form:"page"`
 }
 
 // GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsParamsIncludeArchived defines parameters for GETMealPlansMealPlanIDEventsMealPlanEventIDOptions.
@@ -2465,13 +2465,13 @@ type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsParamsSortBy string
 
 // GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesParams defines parameters for GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotes.
 type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesParams struct {
-	Page            int                                                                                          `form:"page" json:"page"`
-	CreatedBefore   string                                                                                       `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                                                       `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                                                       `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                                                       `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                                                       `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                                                       `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                                                       `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                                                       `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                                                          `json:"page"            form:"page"`
 }
 
 // GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesParamsIncludeArchived defines parameters for GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotes.
@@ -2482,13 +2482,13 @@ type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesPara
 
 // GETMealPlansMealPlanIDGroceryListItemsParams defines parameters for GETMealPlansMealPlanIDGroceryListItems.
 type GETMealPlansMealPlanIDGroceryListItemsParams struct {
-	Page            int                                                         `form:"page" json:"page"`
-	CreatedBefore   string                                                      `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                      `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                      `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                      `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETMealPlansMealPlanIDGroceryListItemsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETMealPlansMealPlanIDGroceryListItemsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                      `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                      `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                      `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                      `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETMealPlansMealPlanIDGroceryListItemsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETMealPlansMealPlanIDGroceryListItemsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                         `json:"page"            form:"page"`
 }
 
 // GETMealPlansMealPlanIDGroceryListItemsParamsIncludeArchived defines parameters for GETMealPlansMealPlanIDGroceryListItems.
@@ -2499,13 +2499,13 @@ type GETMealPlansMealPlanIDGroceryListItemsParamsSortBy string
 
 // GETMealPlansMealPlanIDTasksParams defines parameters for GETMealPlansMealPlanIDTasks.
 type GETMealPlansMealPlanIDTasksParams struct {
-	Page            int                                              `form:"page" json:"page"`
-	CreatedBefore   string                                           `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                           `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                           `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                           `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETMealPlansMealPlanIDTasksParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETMealPlansMealPlanIDTasksParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETMealPlansMealPlanIDTasksParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETMealPlansMealPlanIDTasksParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                              `json:"page"            form:"page"`
 }
 
 // GETMealPlansMealPlanIDTasksParamsIncludeArchived defines parameters for GETMealPlansMealPlanIDTasks.
@@ -2516,13 +2516,13 @@ type GETMealPlansMealPlanIDTasksParamsSortBy string
 
 // GETMealsParams defines parameters for GETMeals.
 type GETMealsParams struct {
-	Page            int                           `form:"page" json:"page"`
-	CreatedBefore   string                        `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                        `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                        `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                        `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETMealsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETMealsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETMealsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETMealsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                           `json:"page"            form:"page"`
 }
 
 // GETMealsParamsIncludeArchived defines parameters for GETMeals.
@@ -2533,13 +2533,13 @@ type GETMealsParamsSortBy string
 
 // GETOauth2ClientsParams defines parameters for GETOauth2Clients.
 type GETOauth2ClientsParams struct {
-	Page            int                                   `form:"page" json:"page"`
-	CreatedBefore   string                                `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETOauth2ClientsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETOauth2ClientsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETOauth2ClientsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETOauth2ClientsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                   `json:"page"            form:"page"`
 }
 
 // GETOauth2ClientsParamsIncludeArchived defines parameters for GETOauth2Clients.
@@ -2550,13 +2550,13 @@ type GETOauth2ClientsParamsSortBy string
 
 // GETRecipesParams defines parameters for GETRecipes.
 type GETRecipesParams struct {
-	Page            int                             `form:"page" json:"page"`
-	CreatedBefore   string                          `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                          `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                          `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                          `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETRecipesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETRecipesParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                          `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                          `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                          `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                          `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETRecipesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETRecipesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                             `json:"page"            form:"page"`
 }
 
 // GETRecipesParamsIncludeArchived defines parameters for GETRecipes.
@@ -2567,13 +2567,13 @@ type GETRecipesParamsSortBy string
 
 // GETRecipesRecipeIDPrepTasksParams defines parameters for GETRecipesRecipeIDPrepTasks.
 type GETRecipesRecipeIDPrepTasksParams struct {
-	Page            int                                              `form:"page" json:"page"`
-	CreatedBefore   string                                           `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                           `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                           `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                           `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETRecipesRecipeIDPrepTasksParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETRecipesRecipeIDPrepTasksParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETRecipesRecipeIDPrepTasksParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETRecipesRecipeIDPrepTasksParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                              `json:"page"            form:"page"`
 }
 
 // GETRecipesRecipeIDPrepTasksParamsIncludeArchived defines parameters for GETRecipesRecipeIDPrepTasks.
@@ -2584,13 +2584,13 @@ type GETRecipesRecipeIDPrepTasksParamsSortBy string
 
 // GETRecipesRecipeIDRatingsParams defines parameters for GETRecipesRecipeIDRatings.
 type GETRecipesRecipeIDRatingsParams struct {
-	Page            int                                            `form:"page" json:"page"`
-	CreatedBefore   string                                         `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                         `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                         `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                         `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETRecipesRecipeIDRatingsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETRecipesRecipeIDRatingsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                         `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                         `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                         `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                         `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETRecipesRecipeIDRatingsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETRecipesRecipeIDRatingsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                            `json:"page"            form:"page"`
 }
 
 // GETRecipesRecipeIDRatingsParamsIncludeArchived defines parameters for GETRecipesRecipeIDRatings.
@@ -2601,13 +2601,13 @@ type GETRecipesRecipeIDRatingsParamsSortBy string
 
 // GETRecipesRecipeIDStepsParams defines parameters for GETRecipesRecipeIDSteps.
 type GETRecipesRecipeIDStepsParams struct {
-	Page            int                                          `form:"page" json:"page"`
-	CreatedBefore   string                                       `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                       `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                       `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                       `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETRecipesRecipeIDStepsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETRecipesRecipeIDStepsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                       `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                       `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                       `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                       `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETRecipesRecipeIDStepsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETRecipesRecipeIDStepsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                          `json:"page"            form:"page"`
 }
 
 // GETRecipesRecipeIDStepsParamsIncludeArchived defines parameters for GETRecipesRecipeIDSteps.
@@ -2618,13 +2618,13 @@ type GETRecipesRecipeIDStepsParamsSortBy string
 
 // GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsParams defines parameters for GETRecipesRecipeIDStepsRecipeStepIDCompletionConditions.
 type GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsParams struct {
-	Page            int                                                                          `form:"page" json:"page"`
-	CreatedBefore   string                                                                       `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                                       `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                                       `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                                       `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                                       `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                                       `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                                       `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                                       `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                                          `json:"page"            form:"page"`
 }
 
 // GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsParamsIncludeArchived defines parameters for GETRecipesRecipeIDStepsRecipeStepIDCompletionConditions.
@@ -2635,13 +2635,13 @@ type GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsParamsSortBy string
 
 // GETRecipesRecipeIDStepsRecipeStepIDIngredientsParams defines parameters for GETRecipesRecipeIDStepsRecipeStepIDIngredients.
 type GETRecipesRecipeIDStepsRecipeStepIDIngredientsParams struct {
-	Page            int                                                                 `form:"page" json:"page"`
-	CreatedBefore   string                                                              `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                              `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                              `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                              `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDIngredientsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETRecipesRecipeIDStepsRecipeStepIDIngredientsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDIngredientsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETRecipesRecipeIDStepsRecipeStepIDIngredientsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                                 `json:"page"            form:"page"`
 }
 
 // GETRecipesRecipeIDStepsRecipeStepIDIngredientsParamsIncludeArchived defines parameters for GETRecipesRecipeIDStepsRecipeStepIDIngredients.
@@ -2652,13 +2652,13 @@ type GETRecipesRecipeIDStepsRecipeStepIDIngredientsParamsSortBy string
 
 // GETRecipesRecipeIDStepsRecipeStepIDInstrumentsParams defines parameters for GETRecipesRecipeIDStepsRecipeStepIDInstruments.
 type GETRecipesRecipeIDStepsRecipeStepIDInstrumentsParams struct {
-	Page            int                                                                 `form:"page" json:"page"`
-	CreatedBefore   string                                                              `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                              `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                              `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                              `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDInstrumentsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETRecipesRecipeIDStepsRecipeStepIDInstrumentsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDInstrumentsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETRecipesRecipeIDStepsRecipeStepIDInstrumentsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                                 `json:"page"            form:"page"`
 }
 
 // GETRecipesRecipeIDStepsRecipeStepIDInstrumentsParamsIncludeArchived defines parameters for GETRecipesRecipeIDStepsRecipeStepIDInstruments.
@@ -2669,13 +2669,13 @@ type GETRecipesRecipeIDStepsRecipeStepIDInstrumentsParamsSortBy string
 
 // GETRecipesRecipeIDStepsRecipeStepIDProductsParams defines parameters for GETRecipesRecipeIDStepsRecipeStepIDProducts.
 type GETRecipesRecipeIDStepsRecipeStepIDProductsParams struct {
-	Page            int                                                              `form:"page" json:"page"`
-	CreatedBefore   string                                                           `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                           `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                           `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                           `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDProductsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETRecipesRecipeIDStepsRecipeStepIDProductsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDProductsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETRecipesRecipeIDStepsRecipeStepIDProductsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                              `json:"page"            form:"page"`
 }
 
 // GETRecipesRecipeIDStepsRecipeStepIDProductsParamsIncludeArchived defines parameters for GETRecipesRecipeIDStepsRecipeStepIDProducts.
@@ -2686,13 +2686,13 @@ type GETRecipesRecipeIDStepsRecipeStepIDProductsParamsSortBy string
 
 // GETRecipesRecipeIDStepsRecipeStepIDVesselsParams defines parameters for GETRecipesRecipeIDStepsRecipeStepIDVessels.
 type GETRecipesRecipeIDStepsRecipeStepIDVesselsParams struct {
-	Page            int                                                             `form:"page" json:"page"`
-	CreatedBefore   string                                                          `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                          `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                          `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                          `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDVesselsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETRecipesRecipeIDStepsRecipeStepIDVesselsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                          `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                          `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                          `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                          `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETRecipesRecipeIDStepsRecipeStepIDVesselsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETRecipesRecipeIDStepsRecipeStepIDVesselsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                             `json:"page"            form:"page"`
 }
 
 // GETRecipesRecipeIDStepsRecipeStepIDVesselsParamsIncludeArchived defines parameters for GETRecipesRecipeIDStepsRecipeStepIDVessels.
@@ -2703,13 +2703,13 @@ type GETRecipesRecipeIDStepsRecipeStepIDVesselsParamsSortBy string
 
 // GETSettingsParams defines parameters for GETSettings.
 type GETSettingsParams struct {
-	Page            int                              `form:"page" json:"page"`
-	CreatedBefore   string                           `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                           `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                           `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                           `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETSettingsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETSettingsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETSettingsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETSettingsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                              `json:"page"            form:"page"`
 }
 
 // GETSettingsParamsIncludeArchived defines parameters for GETSettings.
@@ -2720,13 +2720,13 @@ type GETSettingsParamsSortBy string
 
 // GETUserIngredientPreferencesParams defines parameters for GETUserIngredientPreferences.
 type GETUserIngredientPreferencesParams struct {
-	Page            int                                               `form:"page" json:"page"`
-	CreatedBefore   string                                            `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                            `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                            `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                            `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETUserIngredientPreferencesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETUserIngredientPreferencesParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                            `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                            `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                            `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                            `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETUserIngredientPreferencesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETUserIngredientPreferencesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                               `json:"page"            form:"page"`
 }
 
 // GETUserIngredientPreferencesParamsIncludeArchived defines parameters for GETUserIngredientPreferences.
@@ -2737,13 +2737,13 @@ type GETUserIngredientPreferencesParamsSortBy string
 
 // GETUserNotificationsParams defines parameters for GETUserNotifications.
 type GETUserNotificationsParams struct {
-	Page            int                                       `form:"page" json:"page"`
-	CreatedBefore   string                                    `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                    `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                    `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                    `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETUserNotificationsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETUserNotificationsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                    `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                    `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                    `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                    `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETUserNotificationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETUserNotificationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                       `json:"page"            form:"page"`
 }
 
 // GETUserNotificationsParamsIncludeArchived defines parameters for GETUserNotifications.
@@ -2754,13 +2754,13 @@ type GETUserNotificationsParamsSortBy string
 
 // GETUsersParams defines parameters for GETUsers.
 type GETUsersParams struct {
-	Page            int                           `form:"page" json:"page"`
-	CreatedBefore   string                        `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                        `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                        `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                        `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETUsersParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETUsersParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETUsersParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETUsersParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                           `json:"page"            form:"page"`
 }
 
 // GETUsersParamsIncludeArchived defines parameters for GETUsers.
@@ -2771,13 +2771,13 @@ type GETUsersParamsSortBy string
 
 // GETUsersSearchParams defines parameters for GETUsersSearch.
 type GETUsersSearchParams struct {
-	Page            int                                 `form:"page" json:"page"`
-	CreatedBefore   string                              `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                              `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                              `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                              `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETUsersSearchParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETUsersSearchParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETUsersSearchParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETUsersSearchParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                 `json:"page"            form:"page"`
 }
 
 // GETUsersSearchParamsIncludeArchived defines parameters for GETUsersSearch.
@@ -2788,13 +2788,13 @@ type GETUsersSearchParamsSortBy string
 
 // GETValidIngredientGroupsParams defines parameters for GETValidIngredientGroups.
 type GETValidIngredientGroupsParams struct {
-	Page            int                                           `form:"page" json:"page"`
-	CreatedBefore   string                                        `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                        `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                        `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                        `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidIngredientGroupsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidIngredientGroupsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidIngredientGroupsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidIngredientGroupsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // GETValidIngredientGroupsParamsIncludeArchived defines parameters for GETValidIngredientGroups.
@@ -2805,13 +2805,13 @@ type GETValidIngredientGroupsParamsSortBy string
 
 // GETValidIngredientMeasurementUnitsParams defines parameters for GETValidIngredientMeasurementUnits.
 type GETValidIngredientMeasurementUnitsParams struct {
-	Page            int                                                     `form:"page" json:"page"`
-	CreatedBefore   string                                                  `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                  `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                  `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                  `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidIngredientMeasurementUnitsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidIngredientMeasurementUnitsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                  `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                  `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                  `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                  `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidIngredientMeasurementUnitsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidIngredientMeasurementUnitsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                     `json:"page"            form:"page"`
 }
 
 // GETValidIngredientMeasurementUnitsParamsIncludeArchived defines parameters for GETValidIngredientMeasurementUnits.
@@ -2822,13 +2822,13 @@ type GETValidIngredientMeasurementUnitsParamsSortBy string
 
 // GETValidIngredientPreparationsParams defines parameters for GETValidIngredientPreparations.
 type GETValidIngredientPreparationsParams struct {
-	Page            int                                                 `form:"page" json:"page"`
-	CreatedBefore   string                                              `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                              `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                              `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                              `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidIngredientPreparationsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidIngredientPreparationsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidIngredientPreparationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidIngredientPreparationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                 `json:"page"            form:"page"`
 }
 
 // GETValidIngredientPreparationsParamsIncludeArchived defines parameters for GETValidIngredientPreparations.
@@ -2839,13 +2839,13 @@ type GETValidIngredientPreparationsParamsSortBy string
 
 // GETValidIngredientStateIngredientsParams defines parameters for GETValidIngredientStateIngredients.
 type GETValidIngredientStateIngredientsParams struct {
-	Page            int                                                     `form:"page" json:"page"`
-	CreatedBefore   string                                                  `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                                  `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                                  `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                                  `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidIngredientStateIngredientsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidIngredientStateIngredientsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                  `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                  `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                  `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                  `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidIngredientStateIngredientsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidIngredientStateIngredientsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                     `json:"page"            form:"page"`
 }
 
 // GETValidIngredientStateIngredientsParamsIncludeArchived defines parameters for GETValidIngredientStateIngredients.
@@ -2856,13 +2856,13 @@ type GETValidIngredientStateIngredientsParamsSortBy string
 
 // GETValidIngredientStatesParams defines parameters for GETValidIngredientStates.
 type GETValidIngredientStatesParams struct {
-	Page            int                                           `form:"page" json:"page"`
-	CreatedBefore   string                                        `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                        `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                        `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                        `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidIngredientStatesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidIngredientStatesParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidIngredientStatesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidIngredientStatesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // GETValidIngredientStatesParamsIncludeArchived defines parameters for GETValidIngredientStates.
@@ -2873,13 +2873,13 @@ type GETValidIngredientStatesParamsSortBy string
 
 // GETValidIngredientsParams defines parameters for GETValidIngredients.
 type GETValidIngredientsParams struct {
-	Page            int                                      `form:"page" json:"page"`
-	CreatedBefore   string                                   `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                   `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                   `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                   `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidIngredientsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidIngredientsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                   `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                   `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                   `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                   `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidIngredientsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidIngredientsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                      `json:"page"            form:"page"`
 }
 
 // GETValidIngredientsParamsIncludeArchived defines parameters for GETValidIngredients.
@@ -2890,13 +2890,13 @@ type GETValidIngredientsParamsSortBy string
 
 // GETValidInstrumentsParams defines parameters for GETValidInstruments.
 type GETValidInstrumentsParams struct {
-	Page            int                                      `form:"page" json:"page"`
-	CreatedBefore   string                                   `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                   `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                   `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                   `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidInstrumentsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidInstrumentsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                   `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                   `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                   `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                   `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidInstrumentsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidInstrumentsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                      `json:"page"            form:"page"`
 }
 
 // GETValidInstrumentsParamsIncludeArchived defines parameters for GETValidInstruments.
@@ -2907,13 +2907,13 @@ type GETValidInstrumentsParamsSortBy string
 
 // GETValidMeasurementUnitsParams defines parameters for GETValidMeasurementUnits.
 type GETValidMeasurementUnitsParams struct {
-	Page            int                                           `form:"page" json:"page"`
-	CreatedBefore   string                                        `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                        `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                        `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                        `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidMeasurementUnitsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidMeasurementUnitsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidMeasurementUnitsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidMeasurementUnitsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // GETValidMeasurementUnitsParamsIncludeArchived defines parameters for GETValidMeasurementUnits.
@@ -2924,13 +2924,13 @@ type GETValidMeasurementUnitsParamsSortBy string
 
 // GETValidPreparationInstrumentsParams defines parameters for GETValidPreparationInstruments.
 type GETValidPreparationInstrumentsParams struct {
-	Page            int                                                 `form:"page" json:"page"`
-	CreatedBefore   string                                              `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                              `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                              `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                              `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidPreparationInstrumentsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidPreparationInstrumentsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidPreparationInstrumentsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidPreparationInstrumentsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                                 `json:"page"            form:"page"`
 }
 
 // GETValidPreparationInstrumentsParamsIncludeArchived defines parameters for GETValidPreparationInstruments.
@@ -2941,13 +2941,13 @@ type GETValidPreparationInstrumentsParamsSortBy string
 
 // GETValidPreparationVesselsParams defines parameters for GETValidPreparationVessels.
 type GETValidPreparationVesselsParams struct {
-	Page            int                                             `form:"page" json:"page"`
-	CreatedBefore   string                                          `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                          `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                          `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                          `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidPreparationVesselsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidPreparationVesselsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                          `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                          `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                          `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                          `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidPreparationVesselsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidPreparationVesselsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                             `json:"page"            form:"page"`
 }
 
 // GETValidPreparationVesselsParamsIncludeArchived defines parameters for GETValidPreparationVessels.
@@ -2958,13 +2958,13 @@ type GETValidPreparationVesselsParamsSortBy string
 
 // GETValidPreparationsParams defines parameters for GETValidPreparations.
 type GETValidPreparationsParams struct {
-	Page            int                                       `form:"page" json:"page"`
-	CreatedBefore   string                                    `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                                    `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                                    `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                                    `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidPreparationsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidPreparationsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                    `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                    `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                    `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                    `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidPreparationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidPreparationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                       `json:"page"            form:"page"`
 }
 
 // GETValidPreparationsParamsIncludeArchived defines parameters for GETValidPreparations.
@@ -2975,13 +2975,13 @@ type GETValidPreparationsParamsSortBy string
 
 // GETValidVesselsParams defines parameters for GETValidVessels.
 type GETValidVesselsParams struct {
-	Page            int                                  `form:"page" json:"page"`
-	CreatedBefore   string                               `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                               `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                               `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                               `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETValidVesselsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETValidVesselsParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                               `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                               `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                               `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                               `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETValidVesselsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETValidVesselsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                                  `json:"page"            form:"page"`
 }
 
 // GETValidVesselsParamsIncludeArchived defines parameters for GETValidVessels.
@@ -2992,13 +2992,13 @@ type GETValidVesselsParamsSortBy string
 
 // GETWebhooksParams defines parameters for GETWebhooks.
 type GETWebhooksParams struct {
-	Page            int                              `form:"page" json:"page"`
-	CreatedBefore   string                           `form:"createdBefore" json:"createdBefore"`
-	CreatedAfter    string                           `form:"createdAfter" json:"createdAfter"`
-	UpdatedBefore   string                           `form:"updatedBefore" json:"updatedBefore"`
-	UpdatedAfter    string                           `form:"updatedAfter" json:"updatedAfter"`
-	IncludeArchived GETWebhooksParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-	SortBy          GETWebhooksParamsSortBy          `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GETWebhooksParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GETWebhooksParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Page            int                              `json:"page"            form:"page"`
 }
 
 // GETWebhooksParamsIncludeArchived defines parameters for GETWebhooks.
@@ -23138,8 +23138,8 @@ type ClientWithResponsesInterface interface {
 }
 
 type POSTAdminCycleCookieSecretResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23159,7 +23159,6 @@ func (r POSTAdminCycleCookieSecretResponse) StatusCode() int {
 }
 
 type POSTAdminUsersStatusResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserStatusResponse `json:"data,omitempty"`
@@ -23179,6 +23178,7 @@ type POSTAdminUsersStatusResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23198,7 +23198,6 @@ func (r POSTAdminUsersStatusResponse) StatusCode() int {
 }
 
 type GETAuditLogEntriesForHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *AuditLogEntry   `json:"data,omitempty"`
@@ -23218,6 +23217,7 @@ type GETAuditLogEntriesForHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23237,7 +23237,6 @@ func (r GETAuditLogEntriesForHouseholdResponse) StatusCode() int {
 }
 
 type GETAuditLogEntriesForUserResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *AuditLogEntry   `json:"data,omitempty"`
@@ -23257,6 +23256,7 @@ type GETAuditLogEntriesForUserResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23276,7 +23276,6 @@ func (r GETAuditLogEntriesForUserResponse) StatusCode() int {
 }
 
 type GETAuditLogEntriesAuditLogEntryIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *AuditLogEntry   `json:"data,omitempty"`
@@ -23296,6 +23295,7 @@ type GETAuditLogEntriesAuditLogEntryIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23315,7 +23315,6 @@ func (r GETAuditLogEntriesAuditLogEntryIDResponse) StatusCode() int {
 }
 
 type GETHouseholdInvitationsReceivedResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -23335,6 +23334,7 @@ type GETHouseholdInvitationsReceivedResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23354,7 +23354,6 @@ func (r GETHouseholdInvitationsReceivedResponse) StatusCode() int {
 }
 
 type GETHouseholdInvitationsSentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -23374,6 +23373,7 @@ type GETHouseholdInvitationsSentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23393,7 +23393,6 @@ func (r GETHouseholdInvitationsSentResponse) StatusCode() int {
 }
 
 type GETHouseholdInvitationsHouseholdInvitationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -23413,6 +23412,7 @@ type GETHouseholdInvitationsHouseholdInvitationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23432,7 +23432,6 @@ func (r GETHouseholdInvitationsHouseholdInvitationIDResponse) StatusCode() int {
 }
 
 type PUTHouseholdInvitationsHouseholdInvitationIDAcceptResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -23452,6 +23451,7 @@ type PUTHouseholdInvitationsHouseholdInvitationIDAcceptResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23471,7 +23471,6 @@ func (r PUTHouseholdInvitationsHouseholdInvitationIDAcceptResponse) StatusCode()
 }
 
 type PUTHouseholdInvitationsHouseholdInvitationIDCancelResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -23491,6 +23490,7 @@ type PUTHouseholdInvitationsHouseholdInvitationIDCancelResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23510,7 +23510,6 @@ func (r PUTHouseholdInvitationsHouseholdInvitationIDCancelResponse) StatusCode()
 }
 
 type PUTHouseholdInvitationsHouseholdInvitationIDRejectResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -23530,6 +23529,7 @@ type PUTHouseholdInvitationsHouseholdInvitationIDRejectResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23549,7 +23549,6 @@ func (r PUTHouseholdInvitationsHouseholdInvitationIDRejectResponse) StatusCode()
 }
 
 type GETHouseholdsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Household     `json:"data,omitempty"`
@@ -23569,6 +23568,7 @@ type GETHouseholdsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23588,7 +23588,6 @@ func (r GETHouseholdsResponse) StatusCode() int {
 }
 
 type POSTHouseholdsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -23608,6 +23607,7 @@ type POSTHouseholdsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23627,7 +23627,6 @@ func (r POSTHouseholdsResponse) StatusCode() int {
 }
 
 type GETHouseholdsCurrentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -23647,6 +23646,7 @@ type GETHouseholdsCurrentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23666,7 +23666,6 @@ func (r GETHouseholdsCurrentResponse) StatusCode() int {
 }
 
 type GETHouseholdsInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -23686,6 +23685,7 @@ type GETHouseholdsInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23705,7 +23705,6 @@ func (r GETHouseholdsInstrumentsResponse) StatusCode() int {
 }
 
 type POSTHouseholdsInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -23725,6 +23724,7 @@ type POSTHouseholdsInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23744,7 +23744,6 @@ func (r POSTHouseholdsInstrumentsResponse) StatusCode() int {
 }
 
 type DELETEHouseholdsInstrumentsHouseholdInstrumentOwnershipIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -23764,6 +23763,7 @@ type DELETEHouseholdsInstrumentsHouseholdInstrumentOwnershipIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23783,7 +23783,6 @@ func (r DELETEHouseholdsInstrumentsHouseholdInstrumentOwnershipIDResponse) Statu
 }
 
 type GETHouseholdsInstrumentsHouseholdInstrumentOwnershipIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -23803,6 +23802,7 @@ type GETHouseholdsInstrumentsHouseholdInstrumentOwnershipIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23822,7 +23822,6 @@ func (r GETHouseholdsInstrumentsHouseholdInstrumentOwnershipIDResponse) StatusCo
 }
 
 type PUTHouseholdsInstrumentsHouseholdInstrumentOwnershipIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -23842,6 +23841,7 @@ type PUTHouseholdsInstrumentsHouseholdInstrumentOwnershipIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23861,7 +23861,6 @@ func (r PUTHouseholdsInstrumentsHouseholdInstrumentOwnershipIDResponse) StatusCo
 }
 
 type DELETEHouseholdsHouseholdIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -23881,6 +23880,7 @@ type DELETEHouseholdsHouseholdIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23900,7 +23900,6 @@ func (r DELETEHouseholdsHouseholdIDResponse) StatusCode() int {
 }
 
 type GETHouseholdsHouseholdIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -23920,6 +23919,7 @@ type GETHouseholdsHouseholdIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23939,7 +23939,6 @@ func (r GETHouseholdsHouseholdIDResponse) StatusCode() int {
 }
 
 type PUTHouseholdsHouseholdIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -23959,6 +23958,7 @@ type PUTHouseholdsHouseholdIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -23978,7 +23978,6 @@ func (r PUTHouseholdsHouseholdIDResponse) StatusCode() int {
 }
 
 type POSTHouseholdsHouseholdIDDefaultResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -23998,6 +23997,7 @@ type POSTHouseholdsHouseholdIDDefaultResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24017,7 +24017,6 @@ func (r POSTHouseholdsHouseholdIDDefaultResponse) StatusCode() int {
 }
 
 type POSTHouseholdsHouseholdIDInvitationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -24037,6 +24036,7 @@ type POSTHouseholdsHouseholdIDInvitationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24056,7 +24056,6 @@ func (r POSTHouseholdsHouseholdIDInvitationsResponse) StatusCode() int {
 }
 
 type GETHouseholdsHouseholdIDInvitationsHouseholdInvitationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -24076,6 +24075,7 @@ type GETHouseholdsHouseholdIDInvitationsHouseholdInvitationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24095,7 +24095,6 @@ func (r GETHouseholdsHouseholdIDInvitationsHouseholdInvitationIDResponse) Status
 }
 
 type POSTHouseholdsHouseholdIDInviteResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -24115,6 +24114,7 @@ type POSTHouseholdsHouseholdIDInviteResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24134,7 +24134,6 @@ func (r POSTHouseholdsHouseholdIDInviteResponse) StatusCode() int {
 }
 
 type DELETEHouseholdsHouseholdIDMembersUserIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *HouseholdUserMembership `json:"data,omitempty"`
@@ -24154,6 +24153,7 @@ type DELETEHouseholdsHouseholdIDMembersUserIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24173,7 +24173,6 @@ func (r DELETEHouseholdsHouseholdIDMembersUserIDResponse) StatusCode() int {
 }
 
 type PATCHHouseholdsHouseholdIDMembersUserIDPermissionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserPermissionsResponse `json:"data,omitempty"`
@@ -24193,6 +24192,7 @@ type PATCHHouseholdsHouseholdIDMembersUserIDPermissionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24212,7 +24212,6 @@ func (r PATCHHouseholdsHouseholdIDMembersUserIDPermissionsResponse) StatusCode()
 }
 
 type POSTHouseholdsHouseholdIDTransferResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -24232,6 +24231,7 @@ type POSTHouseholdsHouseholdIDTransferResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24251,7 +24251,6 @@ func (r POSTHouseholdsHouseholdIDTransferResponse) StatusCode() int {
 }
 
 type GETMealPlansResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlan      `json:"data,omitempty"`
@@ -24271,6 +24270,7 @@ type GETMealPlansResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24290,7 +24290,6 @@ func (r GETMealPlansResponse) StatusCode() int {
 }
 
 type POSTMealPlansResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlan        `json:"data,omitempty"`
@@ -24310,6 +24309,7 @@ type POSTMealPlansResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24329,7 +24329,6 @@ func (r POSTMealPlansResponse) StatusCode() int {
 }
 
 type DELETEMealPlansMealPlanIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlan        `json:"data,omitempty"`
@@ -24349,6 +24348,7 @@ type DELETEMealPlansMealPlanIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24368,7 +24368,6 @@ func (r DELETEMealPlansMealPlanIDResponse) StatusCode() int {
 }
 
 type GETMealPlansMealPlanIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlan        `json:"data,omitempty"`
@@ -24388,6 +24387,7 @@ type GETMealPlansMealPlanIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24407,7 +24407,6 @@ func (r GETMealPlansMealPlanIDResponse) StatusCode() int {
 }
 
 type PUTMealPlansMealPlanIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlan        `json:"data,omitempty"`
@@ -24427,6 +24426,7 @@ type PUTMealPlansMealPlanIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24446,7 +24446,6 @@ func (r PUTMealPlansMealPlanIDResponse) StatusCode() int {
 }
 
 type GETMealPlansMealPlanIDEventsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanEvent `json:"data,omitempty"`
@@ -24466,6 +24465,7 @@ type GETMealPlansMealPlanIDEventsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24485,7 +24485,6 @@ func (r GETMealPlansMealPlanIDEventsResponse) StatusCode() int {
 }
 
 type POSTMealPlansMealPlanIDEventsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanEvent   `json:"data,omitempty"`
@@ -24505,6 +24504,7 @@ type POSTMealPlansMealPlanIDEventsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24524,7 +24524,6 @@ func (r POSTMealPlansMealPlanIDEventsResponse) StatusCode() int {
 }
 
 type DELETEMealPlansMealPlanIDEventsMealPlanEventIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlanEvent   `json:"data,omitempty"`
@@ -24544,6 +24543,7 @@ type DELETEMealPlansMealPlanIDEventsMealPlanEventIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24563,7 +24563,6 @@ func (r DELETEMealPlansMealPlanIDEventsMealPlanEventIDResponse) StatusCode() int
 }
 
 type GETMealPlansMealPlanIDEventsMealPlanEventIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanEvent   `json:"data,omitempty"`
@@ -24583,6 +24582,7 @@ type GETMealPlansMealPlanIDEventsMealPlanEventIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24602,7 +24602,6 @@ func (r GETMealPlansMealPlanIDEventsMealPlanEventIDResponse) StatusCode() int {
 }
 
 type PUTMealPlansMealPlanIDEventsMealPlanEventIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanEvent   `json:"data,omitempty"`
@@ -24622,6 +24621,7 @@ type PUTMealPlansMealPlanIDEventsMealPlanEventIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24641,7 +24641,6 @@ func (r PUTMealPlansMealPlanIDEventsMealPlanEventIDResponse) StatusCode() int {
 }
 
 type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanOption `json:"data,omitempty"`
@@ -24661,6 +24660,7 @@ type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24680,7 +24680,6 @@ func (r GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsResponse) StatusCode()
 }
 
 type POSTMealPlansMealPlanIDEventsMealPlanEventIDOptionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanOption  `json:"data,omitempty"`
@@ -24700,6 +24699,7 @@ type POSTMealPlansMealPlanIDEventsMealPlanEventIDOptionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24719,7 +24719,6 @@ func (r POSTMealPlansMealPlanIDEventsMealPlanEventIDOptionsResponse) StatusCode(
 }
 
 type DELETEMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlanOption  `json:"data,omitempty"`
@@ -24739,6 +24738,7 @@ type DELETEMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDRespon
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24758,7 +24758,6 @@ func (r DELETEMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDRes
 }
 
 type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanOption  `json:"data,omitempty"`
@@ -24778,6 +24777,7 @@ type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDResponse 
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24797,7 +24797,6 @@ func (r GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDRespon
 }
 
 type PUTMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanOption  `json:"data,omitempty"`
@@ -24817,6 +24816,7 @@ type PUTMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDResponse 
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24836,7 +24836,6 @@ func (r PUTMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDRespon
 }
 
 type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanOptionVote `json:"data,omitempty"`
@@ -24856,6 +24855,7 @@ type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesResp
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24875,7 +24875,6 @@ func (r GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesR
 }
 
 type DELETEMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesMealPlanOptionVoteIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlanOptionVote `json:"data,omitempty"`
@@ -24895,6 +24894,7 @@ type DELETEMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesM
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24914,7 +24914,6 @@ func (r DELETEMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVot
 }
 
 type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesMealPlanOptionVoteIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanOptionVote `json:"data,omitempty"`
@@ -24934,6 +24933,7 @@ type GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesMeal
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24953,7 +24953,6 @@ func (r GETMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesM
 }
 
 type PUTMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesMealPlanOptionVoteIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanOptionVote `json:"data,omitempty"`
@@ -24973,6 +24972,7 @@ type PUTMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesMeal
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -24992,7 +24992,6 @@ func (r PUTMealPlansMealPlanIDEventsMealPlanEventIDOptionsMealPlanOptionIDVotesM
 }
 
 type POSTMealPlansMealPlanIDEventsMealPlanEventIDVoteResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanOptionVote `json:"data,omitempty"`
@@ -25012,6 +25011,7 @@ type POSTMealPlansMealPlanIDEventsMealPlanEventIDVoteResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25031,7 +25031,6 @@ func (r POSTMealPlansMealPlanIDEventsMealPlanEventIDVoteResponse) StatusCode() i
 }
 
 type POSTMealPlansMealPlanIDFinalizeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *FinalizeMealPlansResponse `json:"data,omitempty"`
@@ -25051,6 +25050,7 @@ type POSTMealPlansMealPlanIDFinalizeResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25070,7 +25070,6 @@ func (r POSTMealPlansMealPlanIDFinalizeResponse) StatusCode() int {
 }
 
 type GETMealPlansMealPlanIDGroceryListItemsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanGroceryListItem `json:"data,omitempty"`
@@ -25090,6 +25089,7 @@ type GETMealPlansMealPlanIDGroceryListItemsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25109,7 +25109,6 @@ func (r GETMealPlansMealPlanIDGroceryListItemsResponse) StatusCode() int {
 }
 
 type POSTMealPlansMealPlanIDGroceryListItemsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanGroceryListItem `json:"data,omitempty"`
@@ -25129,6 +25128,7 @@ type POSTMealPlansMealPlanIDGroceryListItemsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25148,7 +25148,6 @@ func (r POSTMealPlansMealPlanIDGroceryListItemsResponse) StatusCode() int {
 }
 
 type DELETEMealPlansMealPlanIDGroceryListItemsMealPlanGroceryListItemIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlanGroceryListItem `json:"data,omitempty"`
@@ -25168,6 +25167,7 @@ type DELETEMealPlansMealPlanIDGroceryListItemsMealPlanGroceryListItemIDResponse 
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25187,7 +25187,6 @@ func (r DELETEMealPlansMealPlanIDGroceryListItemsMealPlanGroceryListItemIDRespon
 }
 
 type GETMealPlansMealPlanIDGroceryListItemsMealPlanGroceryListItemIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanGroceryListItem `json:"data,omitempty"`
@@ -25207,6 +25206,7 @@ type GETMealPlansMealPlanIDGroceryListItemsMealPlanGroceryListItemIDResponse str
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25226,7 +25226,6 @@ func (r GETMealPlansMealPlanIDGroceryListItemsMealPlanGroceryListItemIDResponse)
 }
 
 type PUTMealPlansMealPlanIDGroceryListItemsMealPlanGroceryListItemIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanGroceryListItem `json:"data,omitempty"`
@@ -25246,6 +25245,7 @@ type PUTMealPlansMealPlanIDGroceryListItemsMealPlanGroceryListItemIDResponse str
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25265,7 +25265,6 @@ func (r PUTMealPlansMealPlanIDGroceryListItemsMealPlanGroceryListItemIDResponse)
 }
 
 type GETMealPlansMealPlanIDTasksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanTask  `json:"data,omitempty"`
@@ -25285,6 +25284,7 @@ type GETMealPlansMealPlanIDTasksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25304,7 +25304,6 @@ func (r GETMealPlansMealPlanIDTasksResponse) StatusCode() int {
 }
 
 type POSTMealPlansMealPlanIDTasksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanTask    `json:"data,omitempty"`
@@ -25324,6 +25323,7 @@ type POSTMealPlansMealPlanIDTasksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25343,7 +25343,6 @@ func (r POSTMealPlansMealPlanIDTasksResponse) StatusCode() int {
 }
 
 type GETMealPlansMealPlanIDTasksMealPlanTaskIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanTask    `json:"data,omitempty"`
@@ -25363,6 +25362,7 @@ type GETMealPlansMealPlanIDTasksMealPlanTaskIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25382,7 +25382,6 @@ func (r GETMealPlansMealPlanIDTasksMealPlanTaskIDResponse) StatusCode() int {
 }
 
 type PATCHMealPlansMealPlanIDTasksMealPlanTaskIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanTask    `json:"data,omitempty"`
@@ -25402,6 +25401,7 @@ type PATCHMealPlansMealPlanIDTasksMealPlanTaskIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25421,7 +25421,6 @@ func (r PATCHMealPlansMealPlanIDTasksMealPlanTaskIDResponse) StatusCode() int {
 }
 
 type GETMealsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Meal          `json:"data,omitempty"`
@@ -25441,6 +25440,7 @@ type GETMealsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25460,7 +25460,6 @@ func (r GETMealsResponse) StatusCode() int {
 }
 
 type POSTMealsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Meal            `json:"data,omitempty"`
@@ -25480,6 +25479,7 @@ type POSTMealsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25499,7 +25499,6 @@ func (r POSTMealsResponse) StatusCode() int {
 }
 
 type GETMealsSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Meal            `json:"data,omitempty"`
@@ -25519,6 +25518,7 @@ type GETMealsSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25538,7 +25538,6 @@ func (r GETMealsSearchResponse) StatusCode() int {
 }
 
 type DELETEMealsMealIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *Meal            `json:"data,omitempty"`
@@ -25558,6 +25557,7 @@ type DELETEMealsMealIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25577,7 +25577,6 @@ func (r DELETEMealsMealIDResponse) StatusCode() int {
 }
 
 type GETMealsMealIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Meal            `json:"data,omitempty"`
@@ -25597,6 +25596,7 @@ type GETMealsMealIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25616,7 +25616,6 @@ func (r GETMealsMealIDResponse) StatusCode() int {
 }
 
 type GETOauth2ClientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]OAuth2Client  `json:"data,omitempty"`
@@ -25636,6 +25635,7 @@ type GETOauth2ClientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25655,7 +25655,6 @@ func (r GETOauth2ClientsResponse) StatusCode() int {
 }
 
 type POSTOauth2ClientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *OAuth2ClientCreationResponse `json:"data,omitempty"`
@@ -25675,6 +25674,7 @@ type POSTOauth2ClientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25694,7 +25694,6 @@ func (r POSTOauth2ClientsResponse) StatusCode() int {
 }
 
 type DELETEOauth2ClientsOauth2ClientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *OAuth2Client    `json:"data,omitempty"`
@@ -25714,6 +25713,7 @@ type DELETEOauth2ClientsOauth2ClientIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25733,7 +25733,6 @@ func (r DELETEOauth2ClientsOauth2ClientIDResponse) StatusCode() int {
 }
 
 type GETOauth2ClientsOauth2ClientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *OAuth2Client    `json:"data,omitempty"`
@@ -25753,6 +25752,7 @@ type GETOauth2ClientsOauth2ClientIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25772,7 +25772,6 @@ func (r GETOauth2ClientsOauth2ClientIDResponse) StatusCode() int {
 }
 
 type GETRecipesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Recipe        `json:"data,omitempty"`
@@ -25792,6 +25791,7 @@ type GETRecipesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25811,7 +25811,6 @@ func (r GETRecipesResponse) StatusCode() int {
 }
 
 type POSTRecipesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -25831,6 +25830,7 @@ type POSTRecipesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25850,7 +25850,6 @@ func (r POSTRecipesResponse) StatusCode() int {
 }
 
 type GETRecipesSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -25870,6 +25869,7 @@ type GETRecipesSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25889,7 +25889,6 @@ func (r GETRecipesSearchResponse) StatusCode() int {
 }
 
 type DELETERecipesRecipeIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -25909,6 +25908,7 @@ type DELETERecipesRecipeIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25928,7 +25928,6 @@ func (r DELETERecipesRecipeIDResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -25948,6 +25947,7 @@ type GETRecipesRecipeIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -25967,7 +25967,6 @@ func (r GETRecipesRecipeIDResponse) StatusCode() int {
 }
 
 type PUTRecipesRecipeIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -25987,6 +25986,7 @@ type PUTRecipesRecipeIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26006,7 +26006,6 @@ func (r PUTRecipesRecipeIDResponse) StatusCode() int {
 }
 
 type POSTRecipesRecipeIDCloneResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -26026,6 +26025,7 @@ type POSTRecipesRecipeIDCloneResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26045,7 +26045,6 @@ func (r POSTRecipesRecipeIDCloneResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDDagResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *APIError        `json:"data,omitempty"`
@@ -26065,6 +26064,7 @@ type GETRecipesRecipeIDDagResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26084,8 +26084,8 @@ func (r GETRecipesRecipeIDDagResponse) StatusCode() int {
 }
 
 type POSTRecipesRecipeIDImagesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26105,8 +26105,8 @@ func (r POSTRecipesRecipeIDImagesResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDMermaidResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26126,7 +26126,6 @@ func (r GETRecipesRecipeIDMermaidResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDPrepStepsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipePrepTaskStep `json:"data,omitempty"`
@@ -26146,6 +26145,7 @@ type GETRecipesRecipeIDPrepStepsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26165,7 +26165,6 @@ func (r GETRecipesRecipeIDPrepStepsResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDPrepTasksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipePrepTask `json:"data,omitempty"`
@@ -26185,6 +26184,7 @@ type GETRecipesRecipeIDPrepTasksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26204,7 +26204,6 @@ func (r GETRecipesRecipeIDPrepTasksResponse) StatusCode() int {
 }
 
 type POSTRecipesRecipeIDPrepTasksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipePrepTask  `json:"data,omitempty"`
@@ -26224,6 +26223,7 @@ type POSTRecipesRecipeIDPrepTasksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26243,7 +26243,6 @@ func (r POSTRecipesRecipeIDPrepTasksResponse) StatusCode() int {
 }
 
 type DELETERecipesRecipeIDPrepTasksRecipePrepTaskIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipePrepTask  `json:"data,omitempty"`
@@ -26263,6 +26262,7 @@ type DELETERecipesRecipeIDPrepTasksRecipePrepTaskIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26282,7 +26282,6 @@ func (r DELETERecipesRecipeIDPrepTasksRecipePrepTaskIDResponse) StatusCode() int
 }
 
 type GETRecipesRecipeIDPrepTasksRecipePrepTaskIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipePrepTask  `json:"data,omitempty"`
@@ -26302,6 +26301,7 @@ type GETRecipesRecipeIDPrepTasksRecipePrepTaskIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26321,7 +26321,6 @@ func (r GETRecipesRecipeIDPrepTasksRecipePrepTaskIDResponse) StatusCode() int {
 }
 
 type PUTRecipesRecipeIDPrepTasksRecipePrepTaskIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipePrepTask  `json:"data,omitempty"`
@@ -26341,6 +26340,7 @@ type PUTRecipesRecipeIDPrepTasksRecipePrepTaskIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26360,7 +26360,6 @@ func (r PUTRecipesRecipeIDPrepTasksRecipePrepTaskIDResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDRatingsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeRating  `json:"data,omitempty"`
@@ -26380,6 +26379,7 @@ type GETRecipesRecipeIDRatingsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26399,7 +26399,6 @@ func (r GETRecipesRecipeIDRatingsResponse) StatusCode() int {
 }
 
 type POSTRecipesRecipeIDRatingsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeRating    `json:"data,omitempty"`
@@ -26419,6 +26418,7 @@ type POSTRecipesRecipeIDRatingsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26438,7 +26438,6 @@ func (r POSTRecipesRecipeIDRatingsResponse) StatusCode() int {
 }
 
 type DELETERecipesRecipeIDRatingsRecipeRatingIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeRating    `json:"data,omitempty"`
@@ -26458,6 +26457,7 @@ type DELETERecipesRecipeIDRatingsRecipeRatingIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26477,7 +26477,6 @@ func (r DELETERecipesRecipeIDRatingsRecipeRatingIDResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDRatingsRecipeRatingIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeRating    `json:"data,omitempty"`
@@ -26497,6 +26496,7 @@ type GETRecipesRecipeIDRatingsRecipeRatingIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26516,7 +26516,6 @@ func (r GETRecipesRecipeIDRatingsRecipeRatingIDResponse) StatusCode() int {
 }
 
 type PUTRecipesRecipeIDRatingsRecipeRatingIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeRating    `json:"data,omitempty"`
@@ -26536,6 +26535,7 @@ type PUTRecipesRecipeIDRatingsRecipeRatingIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26555,7 +26555,6 @@ func (r PUTRecipesRecipeIDRatingsRecipeRatingIDResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDStepsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStep    `json:"data,omitempty"`
@@ -26575,6 +26574,7 @@ type GETRecipesRecipeIDStepsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26594,7 +26594,6 @@ func (r GETRecipesRecipeIDStepsResponse) StatusCode() int {
 }
 
 type POSTRecipesRecipeIDStepsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStep      `json:"data,omitempty"`
@@ -26614,6 +26613,7 @@ type POSTRecipesRecipeIDStepsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26633,7 +26633,6 @@ func (r POSTRecipesRecipeIDStepsResponse) StatusCode() int {
 }
 
 type DELETERecipesRecipeIDStepsRecipeStepIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStep      `json:"data,omitempty"`
@@ -26653,6 +26652,7 @@ type DELETERecipesRecipeIDStepsRecipeStepIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26672,7 +26672,6 @@ func (r DELETERecipesRecipeIDStepsRecipeStepIDResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStep      `json:"data,omitempty"`
@@ -26692,6 +26691,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26711,7 +26711,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDResponse) StatusCode() int {
 }
 
 type PUTRecipesRecipeIDStepsRecipeStepIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStep      `json:"data,omitempty"`
@@ -26731,6 +26730,7 @@ type PUTRecipesRecipeIDStepsRecipeStepIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26750,7 +26750,6 @@ func (r PUTRecipesRecipeIDStepsRecipeStepIDResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -26770,6 +26769,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26789,7 +26789,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsResponse) StatusC
 }
 
 type POSTRecipesRecipeIDStepsRecipeStepIDCompletionConditionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -26809,6 +26808,7 @@ type POSTRecipesRecipeIDStepsRecipeStepIDCompletionConditionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26828,7 +26828,6 @@ func (r POSTRecipesRecipeIDStepsRecipeStepIDCompletionConditionsResponse) Status
 }
 
 type DELETERecipesRecipeIDStepsRecipeStepIDCompletionConditionsRecipeStepCompletionConditionIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -26848,6 +26847,7 @@ type DELETERecipesRecipeIDStepsRecipeStepIDCompletionConditionsRecipeStepComplet
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26867,7 +26867,6 @@ func (r DELETERecipesRecipeIDStepsRecipeStepIDCompletionConditionsRecipeStepComp
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsRecipeStepCompletionConditionIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -26887,6 +26886,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsRecipeStepCompletion
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26906,7 +26906,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDCompletionConditionsRecipeStepComplet
 }
 
 type PUTRecipesRecipeIDStepsRecipeStepIDCompletionConditionsRecipeStepCompletionConditionIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -26926,6 +26925,7 @@ type PUTRecipesRecipeIDStepsRecipeStepIDCompletionConditionsRecipeStepCompletion
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26945,8 +26945,8 @@ func (r PUTRecipesRecipeIDStepsRecipeStepIDCompletionConditionsRecipeStepComplet
 }
 
 type POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -26966,7 +26966,6 @@ func (r POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse) StatusCode() int {
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepIngredient `json:"data,omitempty"`
@@ -26986,6 +26985,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27005,7 +27005,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDIngredientsResponse) StatusCode() int
 }
 
 type POSTRecipesRecipeIDStepsRecipeStepIDIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepIngredient `json:"data,omitempty"`
@@ -27025,6 +27024,7 @@ type POSTRecipesRecipeIDStepsRecipeStepIDIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27044,7 +27044,6 @@ func (r POSTRecipesRecipeIDStepsRecipeStepIDIngredientsResponse) StatusCode() in
 }
 
 type DELETERecipesRecipeIDStepsRecipeStepIDIngredientsRecipeStepIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepIngredient `json:"data,omitempty"`
@@ -27064,6 +27063,7 @@ type DELETERecipesRecipeIDStepsRecipeStepIDIngredientsRecipeStepIngredientIDResp
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27083,7 +27083,6 @@ func (r DELETERecipesRecipeIDStepsRecipeStepIDIngredientsRecipeStepIngredientIDR
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDIngredientsRecipeStepIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepIngredient `json:"data,omitempty"`
@@ -27103,6 +27102,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDIngredientsRecipeStepIngredientIDRespons
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27122,7 +27122,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDIngredientsRecipeStepIngredientIDResp
 }
 
 type PUTRecipesRecipeIDStepsRecipeStepIDIngredientsRecipeStepIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepIngredient `json:"data,omitempty"`
@@ -27142,6 +27141,7 @@ type PUTRecipesRecipeIDStepsRecipeStepIDIngredientsRecipeStepIngredientIDRespons
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27161,7 +27161,6 @@ func (r PUTRecipesRecipeIDStepsRecipeStepIDIngredientsRecipeStepIngredientIDResp
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepInstrument `json:"data,omitempty"`
@@ -27181,6 +27180,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27200,7 +27200,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDInstrumentsResponse) StatusCode() int
 }
 
 type POSTRecipesRecipeIDStepsRecipeStepIDInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepInstrument `json:"data,omitempty"`
@@ -27220,6 +27219,7 @@ type POSTRecipesRecipeIDStepsRecipeStepIDInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27239,7 +27239,6 @@ func (r POSTRecipesRecipeIDStepsRecipeStepIDInstrumentsResponse) StatusCode() in
 }
 
 type DELETERecipesRecipeIDStepsRecipeStepIDInstrumentsRecipeStepInstrumentIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepInstrument `json:"data,omitempty"`
@@ -27259,6 +27258,7 @@ type DELETERecipesRecipeIDStepsRecipeStepIDInstrumentsRecipeStepInstrumentIDResp
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27278,7 +27278,6 @@ func (r DELETERecipesRecipeIDStepsRecipeStepIDInstrumentsRecipeStepInstrumentIDR
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDInstrumentsRecipeStepInstrumentIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepInstrument `json:"data,omitempty"`
@@ -27298,6 +27297,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDInstrumentsRecipeStepInstrumentIDRespons
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27317,7 +27317,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDInstrumentsRecipeStepInstrumentIDResp
 }
 
 type PUTRecipesRecipeIDStepsRecipeStepIDInstrumentsRecipeStepInstrumentIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepInstrument `json:"data,omitempty"`
@@ -27337,6 +27336,7 @@ type PUTRecipesRecipeIDStepsRecipeStepIDInstrumentsRecipeStepInstrumentIDRespons
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27356,7 +27356,6 @@ func (r PUTRecipesRecipeIDStepsRecipeStepIDInstrumentsRecipeStepInstrumentIDResp
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDProductsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepProduct `json:"data,omitempty"`
@@ -27376,6 +27375,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDProductsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27395,7 +27395,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDProductsResponse) StatusCode() int {
 }
 
 type POSTRecipesRecipeIDStepsRecipeStepIDProductsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepProduct `json:"data,omitempty"`
@@ -27415,6 +27414,7 @@ type POSTRecipesRecipeIDStepsRecipeStepIDProductsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27434,7 +27434,6 @@ func (r POSTRecipesRecipeIDStepsRecipeStepIDProductsResponse) StatusCode() int {
 }
 
 type DELETERecipesRecipeIDStepsRecipeStepIDProductsRecipeStepProductIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepProduct `json:"data,omitempty"`
@@ -27454,6 +27453,7 @@ type DELETERecipesRecipeIDStepsRecipeStepIDProductsRecipeStepProductIDResponse s
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27473,7 +27473,6 @@ func (r DELETERecipesRecipeIDStepsRecipeStepIDProductsRecipeStepProductIDRespons
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDProductsRecipeStepProductIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepProduct `json:"data,omitempty"`
@@ -27493,6 +27492,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDProductsRecipeStepProductIDResponse stru
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27512,7 +27512,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDProductsRecipeStepProductIDResponse) 
 }
 
 type PUTRecipesRecipeIDStepsRecipeStepIDProductsRecipeStepProductIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepProduct `json:"data,omitempty"`
@@ -27532,6 +27531,7 @@ type PUTRecipesRecipeIDStepsRecipeStepIDProductsRecipeStepProductIDResponse stru
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27551,7 +27551,6 @@ func (r PUTRecipesRecipeIDStepsRecipeStepIDProductsRecipeStepProductIDResponse) 
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepVessel `json:"data,omitempty"`
@@ -27571,6 +27570,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27590,7 +27590,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDVesselsResponse) StatusCode() int {
 }
 
 type POSTRecipesRecipeIDStepsRecipeStepIDVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepVessel `json:"data,omitempty"`
@@ -27610,6 +27609,7 @@ type POSTRecipesRecipeIDStepsRecipeStepIDVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27629,7 +27629,6 @@ func (r POSTRecipesRecipeIDStepsRecipeStepIDVesselsResponse) StatusCode() int {
 }
 
 type DELETERecipesRecipeIDStepsRecipeStepIDVesselsRecipeStepVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepVessel `json:"data,omitempty"`
@@ -27649,6 +27648,7 @@ type DELETERecipesRecipeIDStepsRecipeStepIDVesselsRecipeStepVesselIDResponse str
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27668,7 +27668,6 @@ func (r DELETERecipesRecipeIDStepsRecipeStepIDVesselsRecipeStepVesselIDResponse)
 }
 
 type GETRecipesRecipeIDStepsRecipeStepIDVesselsRecipeStepVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepVessel `json:"data,omitempty"`
@@ -27688,6 +27687,7 @@ type GETRecipesRecipeIDStepsRecipeStepIDVesselsRecipeStepVesselIDResponse struct
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27707,7 +27707,6 @@ func (r GETRecipesRecipeIDStepsRecipeStepIDVesselsRecipeStepVesselIDResponse) St
 }
 
 type PUTRecipesRecipeIDStepsRecipeStepIDVesselsRecipeStepVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepVessel `json:"data,omitempty"`
@@ -27727,6 +27726,7 @@ type PUTRecipesRecipeIDStepsRecipeStepIDVesselsRecipeStepVesselIDResponse struct
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27746,7 +27746,6 @@ func (r PUTRecipesRecipeIDStepsRecipeStepIDVesselsRecipeStepVesselIDResponse) St
 }
 
 type GETSettingsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ServiceSetting `json:"data,omitempty"`
@@ -27766,6 +27765,7 @@ type GETSettingsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27785,7 +27785,6 @@ func (r GETSettingsResponse) StatusCode() int {
 }
 
 type POSTSettingsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ServiceSetting  `json:"data,omitempty"`
@@ -27805,6 +27804,7 @@ type POSTSettingsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27824,7 +27824,6 @@ func (r POSTSettingsResponse) StatusCode() int {
 }
 
 type POSTSettingsConfigurationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ServiceSettingConfiguration `json:"data,omitempty"`
@@ -27844,6 +27843,7 @@ type POSTSettingsConfigurationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27863,7 +27863,6 @@ func (r POSTSettingsConfigurationsResponse) StatusCode() int {
 }
 
 type GETSettingsConfigurationsHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ServiceSettingConfiguration `json:"data,omitempty"`
@@ -27883,6 +27882,7 @@ type GETSettingsConfigurationsHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27902,7 +27902,6 @@ func (r GETSettingsConfigurationsHouseholdResponse) StatusCode() int {
 }
 
 type GETSettingsConfigurationsUserResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ServiceSettingConfiguration `json:"data,omitempty"`
@@ -27922,6 +27921,7 @@ type GETSettingsConfigurationsUserResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27941,7 +27941,6 @@ func (r GETSettingsConfigurationsUserResponse) StatusCode() int {
 }
 
 type GETSettingsConfigurationsUserServiceSettingConfigurationNameResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ServiceSettingConfiguration `json:"data,omitempty"`
@@ -27961,6 +27960,7 @@ type GETSettingsConfigurationsUserServiceSettingConfigurationNameResponse struct
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -27980,7 +27980,6 @@ func (r GETSettingsConfigurationsUserServiceSettingConfigurationNameResponse) St
 }
 
 type DELETESettingsConfigurationsServiceSettingConfigurationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ServiceSettingConfiguration `json:"data,omitempty"`
@@ -28000,6 +27999,7 @@ type DELETESettingsConfigurationsServiceSettingConfigurationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28019,7 +28019,6 @@ func (r DELETESettingsConfigurationsServiceSettingConfigurationIDResponse) Statu
 }
 
 type PUTSettingsConfigurationsServiceSettingConfigurationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ServiceSettingConfiguration `json:"data,omitempty"`
@@ -28039,6 +28038,7 @@ type PUTSettingsConfigurationsServiceSettingConfigurationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28058,7 +28058,6 @@ func (r PUTSettingsConfigurationsServiceSettingConfigurationIDResponse) StatusCo
 }
 
 type GETSettingsSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ServiceSetting  `json:"data,omitempty"`
@@ -28078,6 +28077,7 @@ type GETSettingsSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28097,7 +28097,6 @@ func (r GETSettingsSearchResponse) StatusCode() int {
 }
 
 type DELETESettingsServiceSettingIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ServiceSetting  `json:"data,omitempty"`
@@ -28117,6 +28116,7 @@ type DELETESettingsServiceSettingIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28136,7 +28136,6 @@ func (r DELETESettingsServiceSettingIDResponse) StatusCode() int {
 }
 
 type GETSettingsServiceSettingIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ServiceSetting  `json:"data,omitempty"`
@@ -28156,6 +28155,7 @@ type GETSettingsServiceSettingIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28175,7 +28175,6 @@ func (r GETSettingsServiceSettingIDResponse) StatusCode() int {
 }
 
 type GETUserIngredientPreferencesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]UserIngredientPreference `json:"data,omitempty"`
@@ -28195,6 +28194,7 @@ type GETUserIngredientPreferencesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28214,7 +28214,6 @@ func (r GETUserIngredientPreferencesResponse) StatusCode() int {
 }
 
 type POSTUserIngredientPreferencesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserIngredientPreference `json:"data,omitempty"`
@@ -28234,6 +28233,7 @@ type POSTUserIngredientPreferencesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28253,7 +28253,6 @@ func (r POSTUserIngredientPreferencesResponse) StatusCode() int {
 }
 
 type DELETEUserIngredientPreferencesUserIngredientPreferenceIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *UserIngredientPreference `json:"data,omitempty"`
@@ -28273,6 +28272,7 @@ type DELETEUserIngredientPreferencesUserIngredientPreferenceIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28292,7 +28292,6 @@ func (r DELETEUserIngredientPreferencesUserIngredientPreferenceIDResponse) Statu
 }
 
 type PUTUserIngredientPreferencesUserIngredientPreferenceIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserIngredientPreference `json:"data,omitempty"`
@@ -28312,6 +28311,7 @@ type PUTUserIngredientPreferencesUserIngredientPreferenceIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28331,7 +28331,6 @@ func (r PUTUserIngredientPreferencesUserIngredientPreferenceIDResponse) StatusCo
 }
 
 type GETUserNotificationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]UserNotification `json:"data,omitempty"`
@@ -28351,6 +28350,7 @@ type GETUserNotificationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28370,7 +28370,6 @@ func (r GETUserNotificationsResponse) StatusCode() int {
 }
 
 type POSTUserNotificationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserNotification `json:"data,omitempty"`
@@ -28390,6 +28389,7 @@ type POSTUserNotificationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28409,7 +28409,6 @@ func (r POSTUserNotificationsResponse) StatusCode() int {
 }
 
 type GETUserNotificationsUserNotificationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserNotification `json:"data,omitempty"`
@@ -28429,6 +28428,7 @@ type GETUserNotificationsUserNotificationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28448,7 +28448,6 @@ func (r GETUserNotificationsUserNotificationIDResponse) StatusCode() int {
 }
 
 type PATCHUserNotificationsUserNotificationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserNotification `json:"data,omitempty"`
@@ -28468,6 +28467,7 @@ type PATCHUserNotificationsUserNotificationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28487,7 +28487,6 @@ func (r PATCHUserNotificationsUserNotificationIDResponse) StatusCode() int {
 }
 
 type GETUsersResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]User          `json:"data,omitempty"`
@@ -28507,6 +28506,7 @@ type GETUsersResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28526,7 +28526,6 @@ func (r GETUsersResponse) StatusCode() int {
 }
 
 type POSTUsersAvatarUploadResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -28546,6 +28545,7 @@ type POSTUsersAvatarUploadResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28565,7 +28565,6 @@ func (r POSTUsersAvatarUploadResponse) StatusCode() int {
 }
 
 type PUTUsersDetailsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -28585,6 +28584,7 @@ type PUTUsersDetailsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28604,7 +28604,6 @@ func (r PUTUsersDetailsResponse) StatusCode() int {
 }
 
 type PUTUsersEmailAddressResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -28624,6 +28623,7 @@ type PUTUsersEmailAddressResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28643,7 +28643,6 @@ func (r PUTUsersEmailAddressResponse) StatusCode() int {
 }
 
 type POSTUsersEmailAddressVerificationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -28663,6 +28662,7 @@ type POSTUsersEmailAddressVerificationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28682,7 +28682,6 @@ func (r POSTUsersEmailAddressVerificationResponse) StatusCode() int {
 }
 
 type POSTUsersHouseholdSelectResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -28702,6 +28701,7 @@ type POSTUsersHouseholdSelectResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28721,8 +28721,8 @@ func (r POSTUsersHouseholdSelectResponse) StatusCode() int {
 }
 
 type PUTUsersPasswordNewResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28742,7 +28742,6 @@ func (r PUTUsersPasswordNewResponse) StatusCode() int {
 }
 
 type POSTUsersPermissionsCheckResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserPermissionsResponse `json:"data,omitempty"`
@@ -28762,6 +28761,7 @@ type POSTUsersPermissionsCheckResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28781,7 +28781,6 @@ func (r POSTUsersPermissionsCheckResponse) StatusCode() int {
 }
 
 type GETUsersSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]User          `json:"data,omitempty"`
@@ -28801,6 +28800,7 @@ type GETUsersSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28820,7 +28820,6 @@ func (r GETUsersSearchResponse) StatusCode() int {
 }
 
 type GETUsersSelfResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -28840,6 +28839,7 @@ type GETUsersSelfResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28859,7 +28859,6 @@ func (r GETUsersSelfResponse) StatusCode() int {
 }
 
 type POSTUsersTotpSecretNewResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *TOTPSecretRefreshResponse `json:"data,omitempty"`
@@ -28879,6 +28878,7 @@ type POSTUsersTotpSecretNewResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28898,7 +28898,6 @@ func (r POSTUsersTotpSecretNewResponse) StatusCode() int {
 }
 
 type PUTUsersUsernameResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -28918,6 +28917,7 @@ type PUTUsersUsernameResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28937,7 +28937,6 @@ func (r PUTUsersUsernameResponse) StatusCode() int {
 }
 
 type DELETEUsersUserIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -28957,6 +28956,7 @@ type DELETEUsersUserIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28976,7 +28976,6 @@ func (r DELETEUsersUserIDResponse) StatusCode() int {
 }
 
 type GETUsersUserIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -28996,6 +28995,7 @@ type GETUsersUserIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29015,7 +29015,6 @@ func (r GETUsersUserIDResponse) StatusCode() int {
 }
 
 type GETValidIngredientGroupsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientGroup `json:"data,omitempty"`
@@ -29035,6 +29034,7 @@ type GETValidIngredientGroupsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29054,7 +29054,6 @@ func (r GETValidIngredientGroupsResponse) StatusCode() int {
 }
 
 type POSTValidIngredientGroupsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientGroup `json:"data,omitempty"`
@@ -29074,6 +29073,7 @@ type POSTValidIngredientGroupsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29093,7 +29093,6 @@ func (r POSTValidIngredientGroupsResponse) StatusCode() int {
 }
 
 type GETValidIngredientGroupsSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientGroup `json:"data,omitempty"`
@@ -29113,6 +29112,7 @@ type GETValidIngredientGroupsSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29132,7 +29132,6 @@ func (r GETValidIngredientGroupsSearchResponse) StatusCode() int {
 }
 
 type DELETEValidIngredientGroupsValidIngredientGroupIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientGroup `json:"data,omitempty"`
@@ -29152,6 +29151,7 @@ type DELETEValidIngredientGroupsValidIngredientGroupIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29171,7 +29171,6 @@ func (r DELETEValidIngredientGroupsValidIngredientGroupIDResponse) StatusCode() 
 }
 
 type GETValidIngredientGroupsValidIngredientGroupIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientGroup `json:"data,omitempty"`
@@ -29191,6 +29190,7 @@ type GETValidIngredientGroupsValidIngredientGroupIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29210,7 +29210,6 @@ func (r GETValidIngredientGroupsValidIngredientGroupIDResponse) StatusCode() int
 }
 
 type PUTValidIngredientGroupsValidIngredientGroupIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientGroup `json:"data,omitempty"`
@@ -29230,6 +29229,7 @@ type PUTValidIngredientGroupsValidIngredientGroupIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29249,7 +29249,6 @@ func (r PUTValidIngredientGroupsValidIngredientGroupIDResponse) StatusCode() int
 }
 
 type GETValidIngredientMeasurementUnitsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -29269,6 +29268,7 @@ type GETValidIngredientMeasurementUnitsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29288,7 +29288,6 @@ func (r GETValidIngredientMeasurementUnitsResponse) StatusCode() int {
 }
 
 type POSTValidIngredientMeasurementUnitsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -29308,6 +29307,7 @@ type POSTValidIngredientMeasurementUnitsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29327,7 +29327,6 @@ func (r POSTValidIngredientMeasurementUnitsResponse) StatusCode() int {
 }
 
 type GETValidIngredientMeasurementUnitsByIngredientValidIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -29347,6 +29346,7 @@ type GETValidIngredientMeasurementUnitsByIngredientValidIngredientIDResponse str
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29366,7 +29366,6 @@ func (r GETValidIngredientMeasurementUnitsByIngredientValidIngredientIDResponse)
 }
 
 type GETValidIngredientMeasurementUnitsByMeasurementUnitValidMeasurementUnitIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -29386,6 +29385,7 @@ type GETValidIngredientMeasurementUnitsByMeasurementUnitValidMeasurementUnitIDRe
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29405,7 +29405,6 @@ func (r GETValidIngredientMeasurementUnitsByMeasurementUnitValidMeasurementUnitI
 }
 
 type DELETEValidIngredientMeasurementUnitsValidIngredientMeasurementUnitIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -29425,6 +29424,7 @@ type DELETEValidIngredientMeasurementUnitsValidIngredientMeasurementUnitIDRespon
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29444,7 +29444,6 @@ func (r DELETEValidIngredientMeasurementUnitsValidIngredientMeasurementUnitIDRes
 }
 
 type GETValidIngredientMeasurementUnitsValidIngredientMeasurementUnitIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -29464,6 +29463,7 @@ type GETValidIngredientMeasurementUnitsValidIngredientMeasurementUnitIDResponse 
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29483,7 +29483,6 @@ func (r GETValidIngredientMeasurementUnitsValidIngredientMeasurementUnitIDRespon
 }
 
 type PUTValidIngredientMeasurementUnitsValidIngredientMeasurementUnitIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -29503,6 +29502,7 @@ type PUTValidIngredientMeasurementUnitsValidIngredientMeasurementUnitIDResponse 
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29522,7 +29522,6 @@ func (r PUTValidIngredientMeasurementUnitsValidIngredientMeasurementUnitIDRespon
 }
 
 type GETValidIngredientPreparationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientPreparation `json:"data,omitempty"`
@@ -29542,6 +29541,7 @@ type GETValidIngredientPreparationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29561,7 +29561,6 @@ func (r GETValidIngredientPreparationsResponse) StatusCode() int {
 }
 
 type POSTValidIngredientPreparationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -29581,6 +29580,7 @@ type POSTValidIngredientPreparationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29600,7 +29600,6 @@ func (r POSTValidIngredientPreparationsResponse) StatusCode() int {
 }
 
 type GETValidIngredientPreparationsByIngredientValidIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -29620,6 +29619,7 @@ type GETValidIngredientPreparationsByIngredientValidIngredientIDResponse struct 
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29639,7 +29639,6 @@ func (r GETValidIngredientPreparationsByIngredientValidIngredientIDResponse) Sta
 }
 
 type GETValidIngredientPreparationsByPreparationValidPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -29659,6 +29658,7 @@ type GETValidIngredientPreparationsByPreparationValidPreparationIDResponse struc
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29678,7 +29678,6 @@ func (r GETValidIngredientPreparationsByPreparationValidPreparationIDResponse) S
 }
 
 type DELETEValidIngredientPreparationsValidIngredientPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -29698,6 +29697,7 @@ type DELETEValidIngredientPreparationsValidIngredientPreparationIDResponse struc
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29717,7 +29717,6 @@ func (r DELETEValidIngredientPreparationsValidIngredientPreparationIDResponse) S
 }
 
 type GETValidIngredientPreparationsValidIngredientPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -29737,6 +29736,7 @@ type GETValidIngredientPreparationsValidIngredientPreparationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29756,7 +29756,6 @@ func (r GETValidIngredientPreparationsValidIngredientPreparationIDResponse) Stat
 }
 
 type PUTValidIngredientPreparationsValidIngredientPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -29776,6 +29775,7 @@ type PUTValidIngredientPreparationsValidIngredientPreparationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29795,7 +29795,6 @@ func (r PUTValidIngredientPreparationsValidIngredientPreparationIDResponse) Stat
 }
 
 type GETValidIngredientStateIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -29815,6 +29814,7 @@ type GETValidIngredientStateIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29834,7 +29834,6 @@ func (r GETValidIngredientStateIngredientsResponse) StatusCode() int {
 }
 
 type POSTValidIngredientStateIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -29854,6 +29853,7 @@ type POSTValidIngredientStateIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29873,7 +29873,6 @@ func (r POSTValidIngredientStateIngredientsResponse) StatusCode() int {
 }
 
 type GETValidIngredientStateIngredientsByIngredientValidIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -29893,6 +29892,7 @@ type GETValidIngredientStateIngredientsByIngredientValidIngredientIDResponse str
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29912,7 +29912,6 @@ func (r GETValidIngredientStateIngredientsByIngredientValidIngredientIDResponse)
 }
 
 type GETValidIngredientStateIngredientsByIngredientStateValidIngredientStateIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -29932,6 +29931,7 @@ type GETValidIngredientStateIngredientsByIngredientStateValidIngredientStateIDRe
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29951,7 +29951,6 @@ func (r GETValidIngredientStateIngredientsByIngredientStateValidIngredientStateI
 }
 
 type DELETEValidIngredientStateIngredientsValidIngredientStateIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -29971,6 +29970,7 @@ type DELETEValidIngredientStateIngredientsValidIngredientStateIngredientIDRespon
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29990,7 +29990,6 @@ func (r DELETEValidIngredientStateIngredientsValidIngredientStateIngredientIDRes
 }
 
 type GETValidIngredientStateIngredientsValidIngredientStateIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -30010,6 +30009,7 @@ type GETValidIngredientStateIngredientsValidIngredientStateIngredientIDResponse 
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30029,7 +30029,6 @@ func (r GETValidIngredientStateIngredientsValidIngredientStateIngredientIDRespon
 }
 
 type PUTValidIngredientStateIngredientsValidIngredientStateIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -30049,6 +30048,7 @@ type PUTValidIngredientStateIngredientsValidIngredientStateIngredientIDResponse 
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30068,7 +30068,6 @@ func (r PUTValidIngredientStateIngredientsValidIngredientStateIngredientIDRespon
 }
 
 type GETValidIngredientStatesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientState `json:"data,omitempty"`
@@ -30088,6 +30087,7 @@ type GETValidIngredientStatesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30107,7 +30107,6 @@ func (r GETValidIngredientStatesResponse) StatusCode() int {
 }
 
 type POSTValidIngredientStatesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientState `json:"data,omitempty"`
@@ -30127,6 +30126,7 @@ type POSTValidIngredientStatesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30146,7 +30146,6 @@ func (r POSTValidIngredientStatesResponse) StatusCode() int {
 }
 
 type GETValidIngredientStatesSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientState `json:"data,omitempty"`
@@ -30166,6 +30165,7 @@ type GETValidIngredientStatesSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30185,7 +30185,6 @@ func (r GETValidIngredientStatesSearchResponse) StatusCode() int {
 }
 
 type DELETEValidIngredientStatesValidIngredientStateIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientState `json:"data,omitempty"`
@@ -30205,6 +30204,7 @@ type DELETEValidIngredientStatesValidIngredientStateIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30224,7 +30224,6 @@ func (r DELETEValidIngredientStatesValidIngredientStateIDResponse) StatusCode() 
 }
 
 type GETValidIngredientStatesValidIngredientStateIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientState `json:"data,omitempty"`
@@ -30244,6 +30243,7 @@ type GETValidIngredientStatesValidIngredientStateIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30263,7 +30263,6 @@ func (r GETValidIngredientStatesValidIngredientStateIDResponse) StatusCode() int
 }
 
 type PUTValidIngredientStatesValidIngredientStateIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientState `json:"data,omitempty"`
@@ -30283,6 +30282,7 @@ type PUTValidIngredientStatesValidIngredientStateIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30302,7 +30302,6 @@ func (r PUTValidIngredientStatesValidIngredientStateIDResponse) StatusCode() int
 }
 
 type GETValidIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredient `json:"data,omitempty"`
@@ -30322,6 +30321,7 @@ type GETValidIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30341,7 +30341,6 @@ func (r GETValidIngredientsResponse) StatusCode() int {
 }
 
 type POSTValidIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -30361,6 +30360,7 @@ type POSTValidIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30380,7 +30380,6 @@ func (r POSTValidIngredientsResponse) StatusCode() int {
 }
 
 type GETValidIngredientsByPreparationValidPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -30400,6 +30399,7 @@ type GETValidIngredientsByPreparationValidPreparationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30419,7 +30419,6 @@ func (r GETValidIngredientsByPreparationValidPreparationIDResponse) StatusCode()
 }
 
 type GETValidIngredientsRandomResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -30439,6 +30438,7 @@ type GETValidIngredientsRandomResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30458,7 +30458,6 @@ func (r GETValidIngredientsRandomResponse) StatusCode() int {
 }
 
 type GETValidIngredientsSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -30478,6 +30477,7 @@ type GETValidIngredientsSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30497,7 +30497,6 @@ func (r GETValidIngredientsSearchResponse) StatusCode() int {
 }
 
 type DELETEValidIngredientsValidIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -30517,6 +30516,7 @@ type DELETEValidIngredientsValidIngredientIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30536,7 +30536,6 @@ func (r DELETEValidIngredientsValidIngredientIDResponse) StatusCode() int {
 }
 
 type GETValidIngredientsValidIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -30556,6 +30555,7 @@ type GETValidIngredientsValidIngredientIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30575,7 +30575,6 @@ func (r GETValidIngredientsValidIngredientIDResponse) StatusCode() int {
 }
 
 type PUTValidIngredientsValidIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -30595,6 +30594,7 @@ type PUTValidIngredientsValidIngredientIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30614,7 +30614,6 @@ func (r PUTValidIngredientsValidIngredientIDResponse) StatusCode() int {
 }
 
 type GETValidInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidInstrument `json:"data,omitempty"`
@@ -30634,6 +30633,7 @@ type GETValidInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30653,7 +30653,6 @@ func (r GETValidInstrumentsResponse) StatusCode() int {
 }
 
 type POSTValidInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -30673,6 +30672,7 @@ type POSTValidInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30692,7 +30692,6 @@ func (r POSTValidInstrumentsResponse) StatusCode() int {
 }
 
 type GETValidInstrumentsRandomResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -30712,6 +30711,7 @@ type GETValidInstrumentsRandomResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30731,7 +30731,6 @@ func (r GETValidInstrumentsRandomResponse) StatusCode() int {
 }
 
 type GETValidInstrumentsSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -30751,6 +30750,7 @@ type GETValidInstrumentsSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30770,7 +30770,6 @@ func (r GETValidInstrumentsSearchResponse) StatusCode() int {
 }
 
 type DELETEValidInstrumentsValidInstrumentIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -30790,6 +30789,7 @@ type DELETEValidInstrumentsValidInstrumentIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30809,7 +30809,6 @@ func (r DELETEValidInstrumentsValidInstrumentIDResponse) StatusCode() int {
 }
 
 type GETValidInstrumentsValidInstrumentIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -30829,6 +30828,7 @@ type GETValidInstrumentsValidInstrumentIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30848,7 +30848,6 @@ func (r GETValidInstrumentsValidInstrumentIDResponse) StatusCode() int {
 }
 
 type PUTValidInstrumentsValidInstrumentIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -30868,6 +30867,7 @@ type PUTValidInstrumentsValidInstrumentIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30887,7 +30887,6 @@ func (r PUTValidInstrumentsValidInstrumentIDResponse) StatusCode() int {
 }
 
 type POSTValidMeasurementConversionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -30907,6 +30906,7 @@ type POSTValidMeasurementConversionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30926,7 +30926,6 @@ func (r POSTValidMeasurementConversionsResponse) StatusCode() int {
 }
 
 type GETValidMeasurementConversionsFromUnitValidMeasurementUnitIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -30946,6 +30945,7 @@ type GETValidMeasurementConversionsFromUnitValidMeasurementUnitIDResponse struct
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30965,7 +30965,6 @@ func (r GETValidMeasurementConversionsFromUnitValidMeasurementUnitIDResponse) St
 }
 
 type GETValidMeasurementConversionsToUnitValidMeasurementUnitIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -30985,6 +30984,7 @@ type GETValidMeasurementConversionsToUnitValidMeasurementUnitIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31004,7 +31004,6 @@ func (r GETValidMeasurementConversionsToUnitValidMeasurementUnitIDResponse) Stat
 }
 
 type DELETEValidMeasurementConversionsValidMeasurementUnitConversionIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -31024,6 +31023,7 @@ type DELETEValidMeasurementConversionsValidMeasurementUnitConversionIDResponse s
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31043,7 +31043,6 @@ func (r DELETEValidMeasurementConversionsValidMeasurementUnitConversionIDRespons
 }
 
 type GETValidMeasurementConversionsValidMeasurementUnitConversionIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -31063,6 +31062,7 @@ type GETValidMeasurementConversionsValidMeasurementUnitConversionIDResponse stru
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31082,7 +31082,6 @@ func (r GETValidMeasurementConversionsValidMeasurementUnitConversionIDResponse) 
 }
 
 type PUTValidMeasurementConversionsValidMeasurementUnitConversionIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -31102,6 +31101,7 @@ type PUTValidMeasurementConversionsValidMeasurementUnitConversionIDResponse stru
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31121,7 +31121,6 @@ func (r PUTValidMeasurementConversionsValidMeasurementUnitConversionIDResponse) 
 }
 
 type GETValidMeasurementUnitsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidMeasurementUnit `json:"data,omitempty"`
@@ -31141,6 +31140,7 @@ type GETValidMeasurementUnitsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31160,7 +31160,6 @@ func (r GETValidMeasurementUnitsResponse) StatusCode() int {
 }
 
 type POSTValidMeasurementUnitsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -31180,6 +31179,7 @@ type POSTValidMeasurementUnitsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31199,7 +31199,6 @@ func (r POSTValidMeasurementUnitsResponse) StatusCode() int {
 }
 
 type GETValidMeasurementUnitsByIngredientValidIngredientIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -31219,6 +31218,7 @@ type GETValidMeasurementUnitsByIngredientValidIngredientIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31238,7 +31238,6 @@ func (r GETValidMeasurementUnitsByIngredientValidIngredientIDResponse) StatusCod
 }
 
 type GETValidMeasurementUnitsSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -31258,6 +31257,7 @@ type GETValidMeasurementUnitsSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31277,7 +31277,6 @@ func (r GETValidMeasurementUnitsSearchResponse) StatusCode() int {
 }
 
 type DELETEValidMeasurementUnitsValidMeasurementUnitIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -31297,6 +31296,7 @@ type DELETEValidMeasurementUnitsValidMeasurementUnitIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31316,7 +31316,6 @@ func (r DELETEValidMeasurementUnitsValidMeasurementUnitIDResponse) StatusCode() 
 }
 
 type GETValidMeasurementUnitsValidMeasurementUnitIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -31336,6 +31335,7 @@ type GETValidMeasurementUnitsValidMeasurementUnitIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31355,7 +31355,6 @@ func (r GETValidMeasurementUnitsValidMeasurementUnitIDResponse) StatusCode() int
 }
 
 type PUTValidMeasurementUnitsValidMeasurementUnitIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -31375,6 +31374,7 @@ type PUTValidMeasurementUnitsValidMeasurementUnitIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31394,7 +31394,6 @@ func (r PUTValidMeasurementUnitsValidMeasurementUnitIDResponse) StatusCode() int
 }
 
 type GETValidPreparationInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparationInstrument `json:"data,omitempty"`
@@ -31414,6 +31413,7 @@ type GETValidPreparationInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31433,7 +31433,6 @@ func (r GETValidPreparationInstrumentsResponse) StatusCode() int {
 }
 
 type POSTValidPreparationInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -31453,6 +31452,7 @@ type POSTValidPreparationInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31472,7 +31472,6 @@ func (r POSTValidPreparationInstrumentsResponse) StatusCode() int {
 }
 
 type GETValidPreparationInstrumentsByInstrumentValidInstrumentIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -31492,6 +31491,7 @@ type GETValidPreparationInstrumentsByInstrumentValidInstrumentIDResponse struct 
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31511,7 +31511,6 @@ func (r GETValidPreparationInstrumentsByInstrumentValidInstrumentIDResponse) Sta
 }
 
 type GETValidPreparationInstrumentsByPreparationValidPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -31531,6 +31530,7 @@ type GETValidPreparationInstrumentsByPreparationValidPreparationIDResponse struc
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31550,7 +31550,6 @@ func (r GETValidPreparationInstrumentsByPreparationValidPreparationIDResponse) S
 }
 
 type DELETEValidPreparationInstrumentsValidPreparationVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -31570,6 +31569,7 @@ type DELETEValidPreparationInstrumentsValidPreparationVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31589,7 +31589,6 @@ func (r DELETEValidPreparationInstrumentsValidPreparationVesselIDResponse) Statu
 }
 
 type GETValidPreparationInstrumentsValidPreparationVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -31609,6 +31608,7 @@ type GETValidPreparationInstrumentsValidPreparationVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31628,7 +31628,6 @@ func (r GETValidPreparationInstrumentsValidPreparationVesselIDResponse) StatusCo
 }
 
 type PUTValidPreparationInstrumentsValidPreparationVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -31648,6 +31647,7 @@ type PUTValidPreparationInstrumentsValidPreparationVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31667,7 +31667,6 @@ func (r PUTValidPreparationInstrumentsValidPreparationVesselIDResponse) StatusCo
 }
 
 type GETValidPreparationVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparationVessel `json:"data,omitempty"`
@@ -31687,6 +31686,7 @@ type GETValidPreparationVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31706,7 +31706,6 @@ func (r GETValidPreparationVesselsResponse) StatusCode() int {
 }
 
 type POSTValidPreparationVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -31726,6 +31725,7 @@ type POSTValidPreparationVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31745,7 +31745,6 @@ func (r POSTValidPreparationVesselsResponse) StatusCode() int {
 }
 
 type GETValidPreparationVesselsByPreparationValidPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -31765,6 +31764,7 @@ type GETValidPreparationVesselsByPreparationValidPreparationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31784,7 +31784,6 @@ func (r GETValidPreparationVesselsByPreparationValidPreparationIDResponse) Statu
 }
 
 type GETValidPreparationVesselsByVesselValidVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -31804,6 +31803,7 @@ type GETValidPreparationVesselsByVesselValidVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31823,7 +31823,6 @@ func (r GETValidPreparationVesselsByVesselValidVesselIDResponse) StatusCode() in
 }
 
 type DELETEValidPreparationVesselsValidPreparationVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -31843,6 +31842,7 @@ type DELETEValidPreparationVesselsValidPreparationVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31862,7 +31862,6 @@ func (r DELETEValidPreparationVesselsValidPreparationVesselIDResponse) StatusCod
 }
 
 type GETValidPreparationVesselsValidPreparationVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -31882,6 +31881,7 @@ type GETValidPreparationVesselsValidPreparationVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31901,7 +31901,6 @@ func (r GETValidPreparationVesselsValidPreparationVesselIDResponse) StatusCode()
 }
 
 type PUTValidPreparationVesselsValidPreparationVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -31921,6 +31920,7 @@ type PUTValidPreparationVesselsValidPreparationVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31940,7 +31940,6 @@ func (r PUTValidPreparationVesselsValidPreparationVesselIDResponse) StatusCode()
 }
 
 type GETValidPreparationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparation `json:"data,omitempty"`
@@ -31960,6 +31959,7 @@ type GETValidPreparationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31979,7 +31979,6 @@ func (r GETValidPreparationsResponse) StatusCode() int {
 }
 
 type POSTValidPreparationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -31999,6 +31998,7 @@ type POSTValidPreparationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32018,7 +32018,6 @@ func (r POSTValidPreparationsResponse) StatusCode() int {
 }
 
 type GETValidPreparationsRandomResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -32038,6 +32037,7 @@ type GETValidPreparationsRandomResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32057,7 +32057,6 @@ func (r GETValidPreparationsRandomResponse) StatusCode() int {
 }
 
 type GETValidPreparationsSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -32077,6 +32076,7 @@ type GETValidPreparationsSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32096,7 +32096,6 @@ func (r GETValidPreparationsSearchResponse) StatusCode() int {
 }
 
 type DELETEValidPreparationsValidPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -32116,6 +32115,7 @@ type DELETEValidPreparationsValidPreparationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32135,7 +32135,6 @@ func (r DELETEValidPreparationsValidPreparationIDResponse) StatusCode() int {
 }
 
 type GETValidPreparationsValidPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -32155,6 +32154,7 @@ type GETValidPreparationsValidPreparationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32174,7 +32174,6 @@ func (r GETValidPreparationsValidPreparationIDResponse) StatusCode() int {
 }
 
 type PUTValidPreparationsValidPreparationIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -32194,6 +32193,7 @@ type PUTValidPreparationsValidPreparationIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32213,7 +32213,6 @@ func (r PUTValidPreparationsValidPreparationIDResponse) StatusCode() int {
 }
 
 type GETValidVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidVessel   `json:"data,omitempty"`
@@ -32233,6 +32232,7 @@ type GETValidVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32252,7 +32252,6 @@ func (r GETValidVesselsResponse) StatusCode() int {
 }
 
 type POSTValidVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -32272,6 +32271,7 @@ type POSTValidVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32291,7 +32291,6 @@ func (r POSTValidVesselsResponse) StatusCode() int {
 }
 
 type GETValidVesselsRandomResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -32311,6 +32310,7 @@ type GETValidVesselsRandomResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32330,7 +32330,6 @@ func (r GETValidVesselsRandomResponse) StatusCode() int {
 }
 
 type GETValidVesselsSearchResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -32350,6 +32349,7 @@ type GETValidVesselsSearchResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32369,7 +32369,6 @@ func (r GETValidVesselsSearchResponse) StatusCode() int {
 }
 
 type DELETEValidVesselsValidVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -32389,6 +32388,7 @@ type DELETEValidVesselsValidVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32408,7 +32408,6 @@ func (r DELETEValidVesselsValidVesselIDResponse) StatusCode() int {
 }
 
 type GETValidVesselsValidVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -32428,6 +32427,7 @@ type GETValidVesselsValidVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32447,7 +32447,6 @@ func (r GETValidVesselsValidVesselIDResponse) StatusCode() int {
 }
 
 type PUTValidVesselsValidVesselIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -32467,6 +32466,7 @@ type PUTValidVesselsValidVesselIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32486,7 +32486,6 @@ func (r PUTValidVesselsValidVesselIDResponse) StatusCode() int {
 }
 
 type GETWebhooksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Webhook       `json:"data,omitempty"`
@@ -32506,6 +32505,7 @@ type GETWebhooksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32525,7 +32525,6 @@ func (r GETWebhooksResponse) StatusCode() int {
 }
 
 type POSTWebhooksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Webhook         `json:"data,omitempty"`
@@ -32545,6 +32544,7 @@ type POSTWebhooksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32564,7 +32564,6 @@ func (r POSTWebhooksResponse) StatusCode() int {
 }
 
 type DELETEWebhooksWebhookIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *Webhook         `json:"data,omitempty"`
@@ -32584,6 +32583,7 @@ type DELETEWebhooksWebhookIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32603,7 +32603,6 @@ func (r DELETEWebhooksWebhookIDResponse) StatusCode() int {
 }
 
 type GETWebhooksWebhookIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Webhook         `json:"data,omitempty"`
@@ -32623,6 +32622,7 @@ type GETWebhooksWebhookIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32642,7 +32642,6 @@ func (r GETWebhooksWebhookIDResponse) StatusCode() int {
 }
 
 type POSTWebhooksWebhookIDTriggerEventsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *WebhookTriggerEvent `json:"data,omitempty"`
@@ -32662,6 +32661,7 @@ type POSTWebhooksWebhookIDTriggerEventsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32681,7 +32681,6 @@ func (r POSTWebhooksWebhookIDTriggerEventsResponse) StatusCode() int {
 }
 
 type DELETEWebhooksWebhookIDTriggerEventsWebhookTriggerEventIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *WebhookTriggerEvent `json:"data,omitempty"`
@@ -32701,6 +32700,7 @@ type DELETEWebhooksWebhookIDTriggerEventsWebhookTriggerEventIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32720,7 +32720,6 @@ func (r DELETEWebhooksWebhookIDTriggerEventsWebhookTriggerEventIDResponse) Statu
 }
 
 type POSTWorkersFinalizeMealPlansResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *FinalizeMealPlansRequest `json:"data,omitempty"`
@@ -32740,6 +32739,7 @@ type POSTWorkersFinalizeMealPlansResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32759,8 +32759,8 @@ func (r POSTWorkersFinalizeMealPlansResponse) StatusCode() int {
 }
 
 type POSTWorkersMealPlanGroceryListInitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32780,8 +32780,8 @@ func (r POSTWorkersMealPlanGroceryListInitResponse) StatusCode() int {
 }
 
 type POSTWorkersMealPlanTasksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32801,7 +32801,6 @@ func (r POSTWorkersMealPlanTasksResponse) StatusCode() int {
 }
 
 type GETAuthStatusResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserStatusResponse `json:"data,omitempty"`
@@ -32821,6 +32820,7 @@ type GETAuthStatusResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32840,8 +32840,8 @@ func (r GETAuthStatusResponse) StatusCode() int {
 }
 
 type GETOauth2AuthorizeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32861,8 +32861,8 @@ func (r GETOauth2AuthorizeResponse) StatusCode() int {
 }
 
 type POSTOauth2TokenResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32882,7 +32882,6 @@ func (r POSTOauth2TokenResponse) StatusCode() int {
 }
 
 type POSTUsersResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserCreationResponse `json:"data,omitempty"`
@@ -32902,6 +32901,7 @@ type POSTUsersResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32921,7 +32921,6 @@ func (r POSTUsersResponse) StatusCode() int {
 }
 
 type POSTUsersEmailAddressVerifyResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -32941,6 +32940,7 @@ type POSTUsersEmailAddressVerifyResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32960,7 +32960,6 @@ func (r POSTUsersEmailAddressVerifyResponse) StatusCode() int {
 }
 
 type POSTUsersLoginResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserStatusResponse `json:"data,omitempty"`
@@ -32980,6 +32979,7 @@ type POSTUsersLoginResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32999,7 +32999,6 @@ func (r POSTUsersLoginResponse) StatusCode() int {
 }
 
 type POSTUsersLoginAdminResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserStatusResponse `json:"data,omitempty"`
@@ -33019,6 +33018,7 @@ type POSTUsersLoginAdminResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33038,7 +33038,6 @@ func (r POSTUsersLoginAdminResponse) StatusCode() int {
 }
 
 type POSTUsersLogoutResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserStatusResponse `json:"data,omitempty"`
@@ -33058,6 +33057,7 @@ type POSTUsersLogoutResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33077,7 +33077,6 @@ func (r POSTUsersLogoutResponse) StatusCode() int {
 }
 
 type POSTUsersPasswordResetResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *PasswordResetToken `json:"data,omitempty"`
@@ -33097,6 +33096,7 @@ type POSTUsersPasswordResetResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33116,7 +33116,6 @@ func (r POSTUsersPasswordResetResponse) StatusCode() int {
 }
 
 type POSTUsersPasswordResetRedeemResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -33136,6 +33135,7 @@ type POSTUsersPasswordResetRedeemResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33155,7 +33155,6 @@ func (r POSTUsersPasswordResetRedeemResponse) StatusCode() int {
 }
 
 type POSTUsersTotpSecretVerifyResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -33175,6 +33174,7 @@ type POSTUsersTotpSecretVerifyResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33194,7 +33194,6 @@ func (r POSTUsersTotpSecretVerifyResponse) StatusCode() int {
 }
 
 type POSTUsersUsernameReminderResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -33214,6 +33213,7 @@ type POSTUsersUsernameReminderResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status

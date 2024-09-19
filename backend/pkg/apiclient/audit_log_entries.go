@@ -26,6 +26,7 @@ func (c *Client) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving audit log entry")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.AuditLogEntry]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

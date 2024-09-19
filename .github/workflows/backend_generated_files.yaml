@@ -115,7 +115,6 @@ jobs:
       - name: Check for changes
         run: git diff --exit-code
 
-
   openapi:
     timeout-minutes: 10
     strategy:
@@ -128,6 +127,27 @@ jobs:
 
       - name: Ensure openapi spec can be generated
         run: make openapi
+
+      - name: Check for changes
+        run: git diff --exit-code
+
+  openapi_client:
+    timeout-minutes: 10
+    strategy:
+     matrix:
+       go-version: [ '1.23.x' ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Ensure openapi spec can be generated
+        run: make openapi-client
 
       - name: Check for changes
         run: git diff --exit-code

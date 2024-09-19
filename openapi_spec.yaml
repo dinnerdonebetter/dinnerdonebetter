@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   contact:
     email: support@dinnerdonebetter.dev
@@ -19076,7 +19076,9 @@ components:
         longitude:
           type: number
         members:
-          $ref: '#/components/schemas/HouseholdUserMembershipWithUser'
+          items:
+            $ref: '#/components/schemas/HouseholdUserMembershipWithUser'
+          type: array
         name:
           type: string
         paymentProcessorCustomer:
@@ -19274,7 +19276,9 @@ components:
         archivedAt:
           type: string
         components:
-          $ref: '#/components/schemas/MealComponent'
+          items:
+            $ref: '#/components/schemas/MealComponent'
+          type: array
         createdAt:
           type: string
         createdByUser:
@@ -19325,7 +19329,9 @@ components:
         name:
           type: string
         recipes:
-          $ref: '#/components/schemas/MealComponentCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/MealComponentCreationRequestInput'
+          type: array
       type: object
     MealPlan:
       properties:
@@ -19340,7 +19346,9 @@ components:
         electionMethod:
           type: string
         events:
-          $ref: '#/components/schemas/MealPlanEvent'
+          items:
+            $ref: '#/components/schemas/MealPlanEvent'
+          type: array
         groceryListInitialized:
           type: boolean
         id:
@@ -19361,7 +19369,9 @@ components:
         electionMethod:
           type: string
         events:
-          $ref: '#/components/schemas/MealPlanEventCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/MealPlanEventCreationRequestInput'
+          type: array
         notes:
           type: string
         votingDeadline:
@@ -19386,7 +19396,9 @@ components:
         notes:
           type: string
         options:
-          $ref: '#/components/schemas/MealPlanOption'
+          items:
+            $ref: '#/components/schemas/MealPlanOption'
+          type: array
         startsAt:
           type: string
       type: object
@@ -19399,7 +19411,9 @@ components:
         notes:
           type: string
         options:
-          $ref: '#/components/schemas/MealPlanOptionCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/MealPlanOptionCreationRequestInput'
+          type: array
         startsAt:
           type: string
       type: object
@@ -19524,7 +19538,9 @@ components:
         tieBroken:
           type: boolean
         votes:
-          $ref: '#/components/schemas/MealPlanOptionVote'
+          items:
+            $ref: '#/components/schemas/MealPlanOptionVote'
+          type: array
       type: object
     MealPlanOptionCreationRequestInput:
       properties:
@@ -19587,7 +19603,9 @@ components:
     MealPlanOptionVoteCreationRequestInput:
       properties:
         votes:
-          $ref: '#/components/schemas/MealPlanOptionVoteCreationInput'
+          items:
+            $ref: '#/components/schemas/MealPlanOptionVoteCreationInput'
+          type: array
       type: object
     MealPlanOptionVoteUpdateRequestInput:
       properties:
@@ -19768,7 +19786,9 @@ components:
         maximumEstimatedPortions:
           type: number
         media:
-          $ref: '#/components/schemas/RecipeMedia'
+          items:
+            $ref: '#/components/schemas/RecipeMedia'
+          type: array
         minimumEstimatedPortions:
           type: number
         name:
@@ -19778,7 +19798,9 @@ components:
         portionName:
           type: string
         prepTasks:
-          $ref: '#/components/schemas/RecipePrepTask'
+          items:
+            $ref: '#/components/schemas/RecipePrepTask'
+          type: array
         sealOfApproval:
           type: boolean
         slug:
@@ -19786,9 +19808,13 @@ components:
         source:
           type: string
         steps:
-          $ref: '#/components/schemas/RecipeStep'
+          items:
+            $ref: '#/components/schemas/RecipeStep'
+          type: array
         supportingRecipes:
-          $ref: '#/components/schemas/Recipe'
+          items:
+            $ref: '#/components/schemas/Recipe'
+          type: array
         yieldsComponentType:
           type: string
       type: object
@@ -19813,7 +19839,9 @@ components:
         portionName:
           type: string
         prepTasks:
-          $ref: '#/components/schemas/RecipePrepTaskWithinRecipeCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipePrepTaskWithinRecipeCreationRequestInput'
+          type: array
         sealOfApproval:
           type: boolean
         slug:
@@ -19821,7 +19849,9 @@ components:
         source:
           type: string
         steps:
-          $ref: '#/components/schemas/RecipeStepCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipeStepCreationRequestInput'
+          type: array
         yieldsComponentType:
           type: string
       type: object
@@ -19879,7 +19909,9 @@ components:
         optional:
           type: boolean
         recipeSteps:
-          $ref: '#/components/schemas/RecipePrepTaskStep'
+          items:
+            $ref: '#/components/schemas/RecipePrepTaskStep'
+          type: array
         storageType:
           type: string
       type: object
@@ -19906,7 +19938,9 @@ components:
         optional:
           type: boolean
         recipeSteps:
-          $ref: '#/components/schemas/RecipePrepTaskStepCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipePrepTaskStepCreationRequestInput'
+          type: array
         storageType:
           type: string
       type: object
@@ -19967,7 +20001,9 @@ components:
         optional:
           type: boolean
         recipeSteps:
-          $ref: '#/components/schemas/RecipePrepTaskStepUpdateRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipePrepTaskStepUpdateRequestInput'
+          type: array
         storageType:
           type: string
       type: object
@@ -19994,7 +20030,9 @@ components:
         optional:
           type: boolean
         recipeSteps:
-          $ref: '#/components/schemas/RecipePrepTaskStepWithinRecipeCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipePrepTaskStepWithinRecipeCreationRequestInput'
+          type: array
         storageType:
           type: string
       type: object
@@ -20070,7 +20108,9 @@ components:
         belongsToRecipe:
           type: string
         completionConditions:
-          $ref: '#/components/schemas/RecipeStepCompletionCondition'
+          items:
+            $ref: '#/components/schemas/RecipeStepCompletionCondition'
+          type: array
         conditionExpression:
           type: string
         createdAt:
@@ -20082,9 +20122,13 @@ components:
         index:
           type: integer
         ingredients:
-          $ref: '#/components/schemas/RecipeStepIngredient'
+          items:
+            $ref: '#/components/schemas/RecipeStepIngredient'
+          type: array
         instruments:
-          $ref: '#/components/schemas/RecipeStepInstrument'
+          items:
+            $ref: '#/components/schemas/RecipeStepInstrument'
+          type: array
         lastUpdatedAt:
           type: string
         maximumEstimatedTimeInSeconds:
@@ -20092,7 +20136,9 @@ components:
         maximumTemperatureInCelsius:
           type: number
         media:
-          $ref: '#/components/schemas/RecipeMedia'
+          items:
+            $ref: '#/components/schemas/RecipeMedia'
+          type: array
         minimumEstimatedTimeInSeconds:
           type: integer
         minimumTemperatureInCelsius:
@@ -20104,11 +20150,15 @@ components:
         preparation:
           $ref: '#/components/schemas/ValidPreparation'
         products:
-          $ref: '#/components/schemas/RecipeStepProduct'
+          items:
+            $ref: '#/components/schemas/RecipeStepProduct'
+          type: array
         startTimerAutomatically:
           type: boolean
         vessels:
-          $ref: '#/components/schemas/RecipeStepVessel'
+          items:
+            $ref: '#/components/schemas/RecipeStepVessel'
+          type: array
       type: object
     RecipeStepCompletionCondition:
       properties:
@@ -20123,7 +20173,9 @@ components:
         ingredientState:
           $ref: '#/components/schemas/ValidIngredientState'
         ingredients:
-          $ref: '#/components/schemas/RecipeStepCompletionConditionIngredient'
+          items:
+            $ref: '#/components/schemas/RecipeStepCompletionConditionIngredient'
+          type: array
         lastUpdatedAt:
           type: string
         notes:
@@ -20138,7 +20190,9 @@ components:
         ingredientState:
           type: string
         ingredients:
-          type: integer
+          items:
+            type: integer
+          type: array
         notes:
           type: string
         optional:
@@ -20151,7 +20205,9 @@ components:
         ingredientState:
           type: string
         ingredients:
-          $ref: '#/components/schemas/RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput'
+          type: array
         notes:
           type: string
         optional:
@@ -20191,7 +20247,9 @@ components:
     RecipeStepCreationRequestInput:
       properties:
         completionConditions:
-          $ref: '#/components/schemas/RecipeStepCompletionConditionCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipeStepCompletionConditionCreationRequestInput'
+          type: array
         conditionExpression:
           type: string
         explicitInstructions:
@@ -20199,9 +20257,13 @@ components:
         index:
           type: integer
         ingredients:
-          $ref: '#/components/schemas/RecipeStepIngredientCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipeStepIngredientCreationRequestInput'
+          type: array
         instruments:
-          $ref: '#/components/schemas/RecipeStepInstrumentCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipeStepInstrumentCreationRequestInput'
+          type: array
         maximumEstimatedTimeInSeconds:
           type: integer
         maximumTemperatureInCelsius:
@@ -20217,11 +20279,15 @@ components:
         preparationID:
           type: string
         products:
-          $ref: '#/components/schemas/RecipeStepProductCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipeStepProductCreationRequestInput'
+          type: array
         startTimerAutomatically:
           type: boolean
         vessels:
-          $ref: '#/components/schemas/RecipeStepVesselCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/RecipeStepVesselCreationRequestInput'
+          type: array
       type: object
     RecipeStepIngredient:
       properties:
@@ -20667,7 +20733,9 @@ components:
         description:
           type: string
         enumeration:
-          type: string
+          items:
+            type: string
+          type: array
         id:
           type: string
         lastUpdatedAt:
@@ -20733,7 +20801,9 @@ components:
         description:
           type: string
         enumeration:
-          type: string
+          items:
+            type: string
+          type: array
         name:
           type: string
         type:
@@ -20945,7 +21015,9 @@ components:
     UserPermissionsRequestInput:
       properties:
         permissions:
-          type: string
+          items:
+            type: string
+          type: array
       type: object
     UserPermissionsResponse:
       properties:
@@ -21167,7 +21239,9 @@ components:
         lastUpdatedAt:
           type: string
         members:
-          $ref: '#/components/schemas/ValidIngredientGroupMember'
+          items:
+            $ref: '#/components/schemas/ValidIngredientGroupMember'
+          type: array
         name:
           type: string
         slug:
@@ -21178,7 +21252,9 @@ components:
         description:
           type: string
         members:
-          $ref: '#/components/schemas/ValidIngredientGroupMemberCreationRequestInput'
+          items:
+            $ref: '#/components/schemas/ValidIngredientGroupMemberCreationRequestInput'
+          type: array
         name:
           type: string
         slug:
@@ -21942,7 +22018,9 @@ components:
         createdAt:
           type: string
         events:
-          $ref: '#/components/schemas/WebhookTriggerEvent'
+          items:
+            $ref: '#/components/schemas/WebhookTriggerEvent'
+          type: array
         id:
           type: string
         lastUpdatedAt:
@@ -21959,7 +22037,9 @@ components:
         contentType:
           type: string
         events:
-          type: string
+          items:
+            type: string
+          type: array
         method:
           type: string
         name:

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"io"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -57,8 +56,8 @@ type (
 	DataManager interface {
 		DB() *sql.DB
 		Close()
-		Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error
-		IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) (ready bool)
+		Migrate(ctx context.Context) error
+		IsReady(ctx context.Context) (ready bool)
 		ProvideSessionStore() scs.Store
 
 		types.MealPlanTaskDataManager

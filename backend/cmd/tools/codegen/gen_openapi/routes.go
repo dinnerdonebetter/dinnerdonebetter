@@ -7,6 +7,8 @@ import (
 type routeDetails struct {
 	ResponseType  any
 	InputType     any
+	ID            string
+	Description   string
 	InputTypeName string
 	OAuth2Scopes  []string
 	ListRoute     bool

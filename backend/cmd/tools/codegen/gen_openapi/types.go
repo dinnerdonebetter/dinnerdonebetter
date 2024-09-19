@@ -31,6 +31,7 @@ var nativeTypesMap = map[string]struct{}{
 	"integer": {},
 	"number":  {},
 	"boolean": {},
+	"array":   {},
 }
 
 var skipTypes = map[string]bool{
@@ -53,9 +54,10 @@ var skipTypes = map[string]bool{
 }
 
 type openapiProperty struct {
-	Type     string   `json:"type,omitempty"     yaml:"type,omitempty"`
-	Ref      string   `json:"$ref,omitempty"     yaml:"$ref,omitempty"`
-	Examples []string `json:"examples,omitempty" yaml:"examples,omitempty"`
+	Items    *openapiProperty `json:"items,omitempty"    yaml:"items,omitempty"`
+	Type     string           `json:"type,omitempty"     yaml:"type,omitempty"`
+	Ref      string           `json:"$ref,omitempty"     yaml:"$ref,omitempty"`
+	Examples []string         `json:"examples,omitempty" yaml:"examples,omitempty"`
 }
 
 type openapiSchema struct {
@@ -165,7 +167,7 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 						continue
 					}
 
-					fieldType := deriveNameForFieldType(typeName, fieldName, field)
+					fieldType, isArray := deriveOpenAPIFieldType(typeName, fieldName, field)
 					property := &openapiProperty{
 						Type: fieldType,
 					}
@@ -173,6 +175,18 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 					if _, nativeType := nativeTypesMap[fieldType]; !nativeType {
 						property.Type = ""
 						property.Ref = fmt.Sprintf("#/components/schemas/%s", fieldType)
+					}
+
+					if isArray {
+						property.Type = "array"
+						property.Ref = ""
+						property.Items = &openapiProperty{
+							Type: fieldType,
+						}
+						if _, nativeType := nativeTypesMap[fieldType]; !nativeType {
+							property.Items.Type = ""
+							property.Items = &openapiProperty{Ref: fmt.Sprintf("#/components/schemas/%s", fieldType)}
+						}
 					}
 
 					schema.Properties[fieldName] = property
@@ -213,8 +227,10 @@ var openAPITypeMap = map[string]string{
 	// Add other mappings as needed
 }
 
-func deriveNameForFieldType(typeName, fieldName string, field *ast.Field) string {
-	value := ""
+func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value string, isArray bool) {
+	if typeName == "WebhookCreationRequestInput" && fieldName == "events" {
+		println("here")
+	}
 
 	switch t := field.Type.(type) {
 	case *ast.SelectorExpr:
@@ -233,6 +249,7 @@ func deriveNameForFieldType(typeName, fieldName string, field *ast.Field) string
 	case *ast.Ident:
 		value = t.Name
 	case *ast.ArrayType:
+		isArray = true
 		// TODO: handle array type here
 		switch u := t.Elt.(type) {
 		case *ast.Ident:
@@ -250,7 +267,7 @@ func deriveNameForFieldType(typeName, fieldName string, field *ast.Field) string
 	case *ast.MapType:
 		// TODO: confirm this is being handled correctly
 		if typeName == "AuditLogEntry" && fieldName == "changes" {
-			return "ChangeLog"
+			return "ChangeLog", isArray
 		}
 		value = "object"
 	default:
@@ -262,12 +279,12 @@ func deriveNameForFieldType(typeName, fieldName string, field *ast.Field) string
 	}
 
 	if x, ok := typeAliases[value]; ok {
-		return x
+		return x, isArray
 	}
 
 	if x, ok := openAPITypeMap[value]; ok {
-		return x
+		return x, isArray
 	}
 
-	return value
+	return value, isArray
 }

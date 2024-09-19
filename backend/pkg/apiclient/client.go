@@ -3,7 +3,6 @@ package apiclient
 import (
 	"context"
 	"errors"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -15,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient/requests"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -44,17 +44,17 @@ type Client struct {
 	logger                  logging.Logger
 	tracer                  tracing.Tracer
 	encoder                 encoding.ClientEncoder
-	url                     *url.URL
+	authedClient            *http.Client
 	requestBuilder          *requests.Builder
 	unauthenticatedClient   *http.Client
-	authedClient            *http.Client
+	url                     *url.URL
 	authMethod              *authMethod
 	cookie                  *http.Cookie
+	authedGeneratedClient   *generated.Client
+	unauthedGeneratedClient *generated.Client
 	impersonatedUserID      string
 	impersonatedHouseholdID string
 	debug                   bool
-	authedGeneratedClient   *generated.Client
-	unauthedGeneratedClient *generated.Client
 }
 
 // AuthenticatedClient returns the authenticated *apiclient.Client that we use to make most requests.
@@ -103,12 +103,12 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...Cli
 		}
 	}
 
-	c.authedGeneratedClient, err = generated.NewClient(u.String(), generated.WithHTTPClient(c.authedClient))
+	c.authedGeneratedClient, err = generated.NewClient(c.url.String(), generated.WithHTTPClient(c.authedClient))
 	if err != nil {
 		return nil, err
 	}
 
-	c.unauthedGeneratedClient, err = generated.NewClient(u.String(), generated.WithHTTPClient(c.unauthenticatedClient))
+	c.unauthedGeneratedClient, err = generated.NewClient(c.url.String(), generated.WithHTTPClient(c.unauthenticatedClient))
 	if err != nil {
 		return nil, err
 	}

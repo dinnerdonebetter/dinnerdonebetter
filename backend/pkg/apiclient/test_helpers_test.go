@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -112,7 +113,7 @@ func buildTestClient(t *testing.T, ts *httptest.Server) *Client {
 	require.NotNil(t, ts)
 
 	client, err := NewClient(
-		mustParseURL("https://whatever.whocares.gov"),
+		mustParseURL(ts.URL),
 		tracing.NewNoopTracerProvider(),
 		UsingLogger(logging.NewNoopLogger()),
 		UsingJSON(),
@@ -120,9 +121,12 @@ func buildTestClient(t *testing.T, ts *httptest.Server) *Client {
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
-	require.NoError(t, client.requestBuilder.SetURL(mustParseURL(ts.URL)))
 	client.unauthenticatedClient = ts.Client()
 	client.authedClient = ts.Client()
+	client.authedGeneratedClient, err = generated.NewClient(ts.URL, generated.WithHTTPClient(ts.Client()))
+	require.NoError(t, err)
+	client.unauthedGeneratedClient, err = generated.NewClient(ts.URL, generated.WithHTTPClient(ts.Client()))
+	require.NoError(t, err)
 
 	return client
 }

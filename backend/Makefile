@@ -111,7 +111,7 @@ format: format_golang terraformat
 .PHONY: format_golang
 format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
 	@until fieldalignment -fix ./...; do true; done > /dev/null
-	@tagalign -fix -sort -order "json,toml,yaml" ./...
+	@until tagalign -fix -sort -order "json,toml,yaml" ./...; do true; done > /dev/null
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports

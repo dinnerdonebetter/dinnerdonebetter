@@ -4,7 +4,6 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 
@@ -29,13 +28,17 @@ func (q *Querier) migrationFunc() {
 }
 
 // Migrate is a simple wrapper around the core querier Migrate call.
-func (q *Querier) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error {
+func (q *Querier) Migrate(ctx context.Context) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if q.config == nil {
+		return ErrNilInputProvided
+	}
+
 	q.logger.Info("migrating db")
 
-	if !q.IsReady(ctx, waitPeriod, maxAttempts) {
+	if !q.IsReady(ctx) {
 		return database.ErrDatabaseNotReady
 	}
 

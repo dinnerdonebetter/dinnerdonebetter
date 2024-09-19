@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -121,8 +120,8 @@ func (m *MockDatabase) ProvideSessionStore() scs.Store {
 }
 
 // Migrate satisfies the DataManager interface.
-func (m *MockDatabase) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error {
-	return m.Called(ctx, waitPeriod, maxAttempts).Error(0)
+func (m *MockDatabase) Migrate(ctx context.Context) error {
+	return m.Called(ctx).Error(0)
 }
 
 // Close satisfies the DataManager interface.
@@ -136,8 +135,8 @@ func (m *MockDatabase) DB() *sql.DB {
 }
 
 // IsReady satisfies the DataManager interface.
-func (m *MockDatabase) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) (ready bool) {
-	return m.Called(ctx, waitPeriod, maxAttempts).Bool(0)
+func (m *MockDatabase) IsReady(ctx context.Context) (ready bool) {
+	return m.Called(ctx).Bool(0)
 }
 
 // BeginTx satisfies the DataManager interface.
