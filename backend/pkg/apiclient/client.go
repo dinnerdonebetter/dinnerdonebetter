@@ -3,6 +3,7 @@ package apiclient
 import (
 	"context"
 	"errors"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -52,6 +53,8 @@ type Client struct {
 	impersonatedUserID      string
 	impersonatedHouseholdID string
 	debug                   bool
+	authedGeneratedClient   *generated.Client
+	unauthedGeneratedClient *generated.Client
 }
 
 // AuthenticatedClient returns the authenticated *apiclient.Client that we use to make most requests.
@@ -98,6 +101,16 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...Cli
 		if err = opt(c); err != nil {
 			return nil, err
 		}
+	}
+
+	c.authedGeneratedClient, err = generated.NewClient(u.String(), generated.WithHTTPClient(c.authedClient))
+	if err != nil {
+		return nil, err
+	}
+
+	c.unauthedGeneratedClient, err = generated.NewClient(u.String(), generated.WithHTTPClient(c.unauthenticatedClient))
+	if err != nil {
+		return nil, err
 	}
 
 	if c.url == nil || c.url.String() == "" {

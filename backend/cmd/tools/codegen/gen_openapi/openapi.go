@@ -8,7 +8,7 @@ import (
 
 func baseSpec() *openapi.Spec {
 	spec := &openapi.Spec{
-		Openapi: "3.1.0",
+		Openapi: "3.0.0",
 		Servers: []openapi.Server{
 			{
 				URL:         "https://api.dinnerdonebetter.dev",

@@ -1,0 +1,9 @@
+# https://pkg.go.dev/github.com/oapi-codegen/oapi-codegen/v2/pkg/codegen#Configuration
+package: 'generated'
+output: pkg/apiclient/generated/client.gen.go
+generate:
+  models: true
+  client: true
+#output-options:
+#import-mapping:
+#additional-imports:

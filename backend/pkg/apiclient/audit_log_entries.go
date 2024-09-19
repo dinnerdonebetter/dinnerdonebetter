@@ -22,14 +22,14 @@ func (c *Client) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (
 	logger = logger.WithValue(keys.AuditLogEntryIDKey, auditLogEntryID)
 	tracing.AttachToSpan(span, keys.AuditLogEntryIDKey, auditLogEntryID)
 
-	req, err := c.requestBuilder.BuildGetAuditLogEntryRequest(ctx, auditLogEntryID)
+	res, err := c.authedGeneratedClient.GETAuditLogEntriesAuditLogEntryID(ctx, auditLogEntryID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building audit log entry request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving audit log entry")
 	}
 
 	var apiResponse *types.APIResponse[*types.AuditLogEntry]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving audit log entry")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "%s %s %d", res.Request.Method, res.Request.URL.Path, res.StatusCode)
 	}
 
 	return apiResponse.Data, nil
