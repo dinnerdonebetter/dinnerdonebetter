@@ -94,6 +94,9 @@ func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetHouseholdsRequest(ctx, filter)

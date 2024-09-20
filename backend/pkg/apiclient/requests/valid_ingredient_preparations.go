@@ -129,7 +129,7 @@ func (b *Builder) BuildGetValidIngredientPreparationsForPreparationAndIngredient
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, preparationID)
 
 	values := filter.ToValues()
-	values.Set(types.SearchQueryKey, query)
+	values.Set(types.QueryKeySearch, query)
 
 	uri := b.BuildURL(
 		ctx,

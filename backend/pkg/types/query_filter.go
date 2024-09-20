@@ -14,25 +14,32 @@ import (
 )
 
 const (
-	// MaxLimit is the maximum value for list queries.
-	MaxLimit = 250
-	// DefaultLimit represents how many results we return in a response by default.
-	DefaultLimit = 50
+	// MaxQueryFilterLimit is the maximum value for list queries.
+	MaxQueryFilterLimit = 250
+	// DefaultQueryFilterLimit represents how many results we return in a response by default.
+	DefaultQueryFilterLimit = 50
 
-	// SearchQueryKey is the query param key to find search queries in requests.
-	SearchQueryKey = "q"
-	// SearchWithDatabaseQueryKey is the query param key to find search queries in requests.
-	SearchWithDatabaseQueryKey = "useDB"
-	// LimitQueryKey is the query param key to specify a limit in a query.
-	LimitQueryKey = "limit"
+	// QueryKeySearch is the query param key to find search queries in requests.
+	QueryKeySearch = "q"
+	// QueryKeySearchWithDatabase is the query param key to find search queries in requests.
+	QueryKeySearchWithDatabase = "useDB"
 
-	pageQueryKey            = "page"
-	createdBeforeQueryKey   = "createdBefore"
-	createdAfterQueryKey    = "createdAfter"
-	updatedBeforeQueryKey   = "updatedBefore"
-	updatedAfterQueryKey    = "updatedAfter"
-	includeArchivedQueryKey = "includeArchived"
-	sortByQueryKey          = "sortBy"
+	// QueryKeyLimit is the query param key to specify a limit in a query.
+	QueryKeyLimit = "limit"
+	// QueryKeyPage is the query param key for specifying which page the user would in a list query.
+	QueryKeyPage = "page"
+	// QueryKeyCreatedBefore is the query param key for a creation time limit in a list query.
+	QueryKeyCreatedBefore = "createdBefore"
+	// QueryKeyCreatedAfter is the query param key for a creation time limit in a list query.
+	QueryKeyCreatedAfter = "createdAfter"
+	// QueryKeyUpdatedBefore is the query param key for a creation time limit in a list query.
+	QueryKeyUpdatedBefore = "updatedBefore"
+	// QueryKeyUpdatedAfter is the query param key for a creation time limit in a list query.
+	QueryKeyUpdatedAfter = "updatedAfter"
+	// QueryKeyIncludeArchived is the query param key for including archived results in a query.
+	QueryKeyIncludeArchived = "includeArchived"
+	// QueryKeySortBy is the query param key for sort order in a query.
+	QueryKeySortBy = "sortBy"
 )
 
 // QueryFilter represents all the filters a User could apply to a list query.
@@ -53,7 +60,7 @@ type QueryFilter struct {
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
 		Page:   pointer.To(uint16(1)),
-		Limit:  pointer.To(uint8(DefaultLimit)),
+		Limit:  pointer.To(uint8(DefaultQueryFilterLimit)),
 		SortBy: SortAscending,
 	}
 }
@@ -67,31 +74,31 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 	}
 
 	if qf.Page != nil {
-		l = l.WithValue(pageQueryKey, qf.Page)
+		l = l.WithValue(QueryKeyPage, qf.Page)
 	}
 
 	if qf.Limit != nil {
-		l = l.WithValue(LimitQueryKey, qf.Limit)
+		l = l.WithValue(QueryKeyLimit, qf.Limit)
 	}
 
 	if qf.SortBy != nil {
-		l = l.WithValue(sortByQueryKey, qf.SortBy)
+		l = l.WithValue(QueryKeySortBy, qf.SortBy)
 	}
 
 	if qf.CreatedBefore != nil {
-		l = l.WithValue(createdBeforeQueryKey, qf.CreatedBefore)
+		l = l.WithValue(QueryKeyCreatedBefore, qf.CreatedBefore)
 	}
 
 	if qf.CreatedAfter != nil {
-		l = l.WithValue(createdAfterQueryKey, qf.CreatedAfter)
+		l = l.WithValue(QueryKeyCreatedAfter, qf.CreatedAfter)
 	}
 
 	if qf.UpdatedBefore != nil {
-		l = l.WithValue(updatedBeforeQueryKey, qf.UpdatedBefore)
+		l = l.WithValue(QueryKeyUpdatedBefore, qf.UpdatedBefore)
 	}
 
 	if qf.UpdatedAfter != nil {
-		l = l.WithValue(updatedAfterQueryKey, qf.UpdatedAfter)
+		l = l.WithValue(QueryKeyUpdatedAfter, qf.UpdatedAfter)
 	}
 
 	return l
@@ -99,35 +106,35 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 
 // FromParams overrides the core QueryFilter values with values retrieved from url.Params.
 func (qf *QueryFilter) FromParams(params url.Values) {
-	if i, err := strconv.ParseUint(params.Get(pageQueryKey), 10, 64); err == nil {
+	if i, err := strconv.ParseUint(params.Get(QueryKeyPage), 10, 64); err == nil {
 		qf.Page = pointer.To(uint16(math.Max(float64(i), 1)))
 	}
 
-	if i, err := strconv.ParseUint(params.Get(LimitQueryKey), 10, 64); err == nil {
-		qf.Limit = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxLimit)))
+	if i, err := strconv.ParseUint(params.Get(QueryKeyLimit), 10, 64); err == nil {
+		qf.Limit = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxQueryFilterLimit)))
 	}
 
-	if t, err := time.Parse(time.RFC3339Nano, params.Get(createdBeforeQueryKey)); err == nil {
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(QueryKeyCreatedBefore)); err == nil {
 		qf.CreatedBefore = &t
 	}
 
-	if t, err := time.Parse(time.RFC3339Nano, params.Get(createdAfterQueryKey)); err == nil {
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(QueryKeyCreatedAfter)); err == nil {
 		qf.CreatedAfter = &t
 	}
 
-	if t, err := time.Parse(time.RFC3339Nano, params.Get(updatedBeforeQueryKey)); err == nil {
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(QueryKeyUpdatedBefore)); err == nil {
 		qf.UpdatedBefore = &t
 	}
 
-	if t, err := time.Parse(time.RFC3339Nano, params.Get(updatedAfterQueryKey)); err == nil {
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(QueryKeyUpdatedAfter)); err == nil {
 		qf.UpdatedAfter = &t
 	}
 
-	if i, err := strconv.ParseBool(params.Get(includeArchivedQueryKey)); err == nil {
+	if i, err := strconv.ParseBool(params.Get(QueryKeyIncludeArchived)); err == nil {
 		qf.IncludeArchived = &i
 	}
 
-	switch strings.ToLower(params.Get(sortByQueryKey)) {
+	switch strings.ToLower(params.Get(QueryKeySortBy)) {
 	case sortAscendingString:
 		qf.SortBy = SortAscending
 	case sortDescendingString:
@@ -159,35 +166,35 @@ func (qf *QueryFilter) ToValues() url.Values {
 	v := url.Values{}
 
 	if qf.Page != nil {
-		v.Set(pageQueryKey, strconv.FormatUint(uint64(*qf.Page), 10))
+		v.Set(QueryKeyPage, strconv.FormatUint(uint64(*qf.Page), 10))
 	}
 
 	if qf.Limit != nil {
-		v.Set(LimitQueryKey, strconv.FormatUint(uint64(*qf.Limit), 10))
+		v.Set(QueryKeyLimit, strconv.FormatUint(uint64(*qf.Limit), 10))
 	}
 
 	if qf.SortBy != nil {
-		v.Set(sortByQueryKey, *qf.SortBy)
+		v.Set(QueryKeySortBy, *qf.SortBy)
 	}
 
 	if qf.CreatedBefore != nil {
-		v.Set(createdBeforeQueryKey, qf.CreatedBefore.Format(time.RFC3339Nano))
+		v.Set(QueryKeyCreatedBefore, qf.CreatedBefore.Format(time.RFC3339Nano))
 	}
 
 	if qf.CreatedAfter != nil {
-		v.Set(createdAfterQueryKey, qf.CreatedAfter.Format(time.RFC3339Nano))
+		v.Set(QueryKeyCreatedAfter, qf.CreatedAfter.Format(time.RFC3339Nano))
 	}
 
 	if qf.UpdatedBefore != nil {
-		v.Set(updatedBeforeQueryKey, qf.UpdatedBefore.Format(time.RFC3339Nano))
+		v.Set(QueryKeyUpdatedBefore, qf.UpdatedBefore.Format(time.RFC3339Nano))
 	}
 
 	if qf.UpdatedAfter != nil {
-		v.Set(updatedAfterQueryKey, qf.UpdatedAfter.Format(time.RFC3339Nano))
+		v.Set(QueryKeyUpdatedAfter, qf.UpdatedAfter.Format(time.RFC3339Nano))
 	}
 
 	if qf.IncludeArchived != nil {
-		v.Set(includeArchivedQueryKey, strconv.FormatBool(*qf.IncludeArchived))
+		v.Set(QueryKeyIncludeArchived, strconv.FormatBool(*qf.IncludeArchived))
 	}
 
 	return v
@@ -219,7 +226,7 @@ func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 
 	if qf.Limit != nil {
 		if *qf.Limit == 0 {
-			qf.Limit = pointer.To(uint8(DefaultLimit))
+			qf.Limit = pointer.To(uint8(DefaultQueryFilterLimit))
 		}
 	}
 

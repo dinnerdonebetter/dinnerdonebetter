@@ -41,6 +41,10 @@ func (c *Client) GetUserNotifications(ctx context.Context, filter *types.QueryFi
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 

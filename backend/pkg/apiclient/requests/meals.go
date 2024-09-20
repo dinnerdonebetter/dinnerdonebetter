@@ -69,7 +69,7 @@ func (b *Builder) BuildSearchForMealsRequest(ctx context.Context, query string, 
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	queryParams := filter.ToValues()
-	queryParams.Set(types.SearchQueryKey, query)
+	queryParams.Set(types.QueryKeySearch, query)
 
 	uri := b.BuildURL(
 		ctx,

@@ -51,7 +51,7 @@ func (c *Client) SearchValidMeasurementUnits(ctx context.Context, query string, 
 	}
 
 	if limit == 0 {
-		limit = types.DefaultLimit
+		limit = types.DefaultQueryFilterLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
@@ -119,6 +119,10 @@ func (c *Client) GetValidMeasurementUnits(ctx context.Context, filter *types.Que
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 

@@ -5,9 +5,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"reflect"
+	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/jinzhu/copier"
 )
 
 // errorFromResponse returns library errors according to a response's status code.
@@ -89,4 +94,46 @@ func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest any
 	}
 
 	return nil
+}
+
+func (c *Client) queryFilterCleaner(ctx context.Context, req *http.Request) error {
+	_, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	oldQuery := req.URL.Query()
+
+	newQuery := url.Values{}
+	for key, values := range oldQuery {
+		switch key {
+		case types.QueryKeyLimit,
+			types.QueryKeyPage:
+			for _, value := range values {
+				if number, err := strconv.ParseUint(value, 10, 64); err == nil && number > 0 {
+					newQuery.Set(key, strconv.Itoa(int(number)))
+				}
+			}
+		case types.QueryKeySearch,
+			types.QueryKeySearchWithDatabase,
+			types.QueryKeyCreatedBefore,
+			types.QueryKeyCreatedAfter,
+			types.QueryKeyUpdatedBefore,
+			types.QueryKeyUpdatedAfter,
+			types.QueryKeyIncludeArchived,
+			types.QueryKeySortBy:
+			for _, value := range values {
+				if value != "" {
+					newQuery.Set(key, value)
+				}
+			}
+		}
+	}
+
+	req.URL.RawQuery = newQuery.Encode()
+	return nil
+}
+
+func (c *Client) copyType(to, from any) {
+	if err := copier.Copy(to, from); err != nil {
+		panic(err)
+	}
 }

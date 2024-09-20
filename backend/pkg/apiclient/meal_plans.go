@@ -45,6 +45,10 @@ func (c *Client) GetMealPlans(ctx context.Context, filter *types.QueryFilter) (*
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 

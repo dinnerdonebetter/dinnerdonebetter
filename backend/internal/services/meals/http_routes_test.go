@@ -416,7 +416,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{types.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
@@ -447,8 +447,8 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		exampleLimit := uint8(123)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -504,7 +504,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{types.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
@@ -530,7 +530,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{types.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(

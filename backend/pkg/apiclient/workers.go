@@ -4,7 +4,10 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/jinzhu/copier"
 )
 
 // RunFinalizeMealPlansWorker runs a worker.
@@ -18,14 +21,20 @@ func (c *Client) RunFinalizeMealPlansWorker(ctx context.Context, input *types.Fi
 		return nil, ErrNilInputProvided
 	}
 
-	req, err := c.requestBuilder.BuildRunFinalizeMealPlansWorkerRequest(ctx, input)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building worker execution request")
+	var body generated.RunFinalizeMealPlanWorkerJSONRequestBody
+	if err := copier.Copy(&body, input); err != nil {
+		return nil, observability.PrepareError(err, span, "copying input")
 	}
 
-	var apiResponse *types.APIResponse[*types.FinalizeMealPlansResponse]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	res, err := c.authedGeneratedClient.RunFinalizeMealPlanWorker(ctx, body)
+	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan")
+	}
+	defer c.closeResponseBody(ctx, res)
+
+	var apiResponse *types.APIResponse[*types.FinalizeMealPlansResponse]
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading finalize meal plan response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -42,13 +51,14 @@ func (c *Client) RunMealPlanGroceryListInitializationWorker(ctx context.Context)
 
 	logger := c.logger.Clone()
 
-	req, err := c.requestBuilder.BuildRunMealPlanGroceryListInitializationWorkerRequest(ctx)
+	res, err := c.authedGeneratedClient.RunMealPlanGroceryListInitializerWorker(ctx)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building worker execution request")
+		return observability.PrepareAndLogError(err, logger, span, "running meal plan grocery list initializer worker")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.FinalizeMealPlansResponse]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "initializing meal plan grocery lists")
 	}
 
@@ -66,13 +76,14 @@ func (c *Client) RunMealPlanTaskCreationWorker(ctx context.Context) error {
 
 	logger := c.logger.Clone()
 
-	req, err := c.requestBuilder.BuildRunMealPlanTaskCreationWorkerRequest(ctx)
+	res, err := c.authedGeneratedClient.RunMealPlanTaskCreatorWorker(ctx)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building worker execution request")
+		return observability.PrepareAndLogError(err, logger, span, "running meal plan task creation worker")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.FinalizeMealPlansResponse]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "creating meal plan tasks")
 	}
 

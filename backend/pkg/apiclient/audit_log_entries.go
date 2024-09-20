@@ -37,6 +37,7 @@ func (c *Client) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (
 }
 
 // GetAuditLogEntriesForUser fetches audit log entries for a user.
+// TODO: add queryFilter as param.
 func (c *Client) GetAuditLogEntriesForUser(ctx context.Context, resourceTypes ...string) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -47,6 +48,7 @@ func (c *Client) GetAuditLogEntriesForUser(ctx context.Context, resourceTypes ..
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user audit log entries")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.AuditLogEntry]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -62,20 +64,22 @@ func (c *Client) GetAuditLogEntriesForUser(ctx context.Context, resourceTypes ..
 }
 
 // GetAuditLogEntriesForHousehold fetches audit log entries for a user's household.
+// TODO: add queryFilter as param.
 func (c *Client) GetAuditLogEntriesForHousehold(ctx context.Context, resourceTypes ...string) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.WithValue(keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
-	req, err := c.requestBuilder.BuildGetAuditLogEntriesForHouseholdRequest(ctx, resourceTypes...)
+	res, err := c.authedGeneratedClient.GetAuditLogEntriesForHousehold(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building household audit log entries request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user audit log entries")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.AuditLogEntry]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving household audit log entries")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading user audit log entries")
 	}
 
 	result := &types.QueryFilteredResult[types.AuditLogEntry]{

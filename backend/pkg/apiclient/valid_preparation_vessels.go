@@ -6,10 +6,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// GetValidPreparationVessel gets a valid ingredient vessel.
+// GetValidPreparationVessel gets a valid preparation vessel.
 func (c *Client) GetValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*types.ValidPreparationVessel, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -22,14 +23,15 @@ func (c *Client) GetValidPreparationVessel(ctx context.Context, validPreparation
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
-	req, err := c.requestBuilder.BuildGetValidPreparationVesselRequest(ctx, validPreparationVesselID)
+	res, err := c.authedGeneratedClient.GetValidPreparationVessel(ctx, validPreparationVesselID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient vessel request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid preparation vessel")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient vessel")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading valid preparation vessel response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -45,16 +47,24 @@ func (c *Client) GetValidPreparationVessels(ctx context.Context, filter *types.Q
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetValidPreparationVesselsRequest(ctx, filter)
+	params := &generated.GetValidPreparationVesselsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidPreparationVessels(ctx, params, c.queryFilterCleaner)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation vessels list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid preparation vessels")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation vessels")
 	}
 
@@ -75,6 +85,10 @@ func (c *Client) GetValidPreparationVesselsForPreparation(ctx context.Context, v
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -84,14 +98,18 @@ func (c *Client) GetValidPreparationVesselsForPreparation(ctx context.Context, v
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
-	req, err := c.requestBuilder.BuildGetValidPreparationVesselsForPreparationRequest(ctx, validPreparationID, filter)
+	params := &generated.GetValidPreparationVesselsByPreparationParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidPreparationVesselsByPreparation(ctx, validPreparationID, params, c.queryFilterCleaner)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation vessels list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation vessels list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation vessels")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading valid preparation vessels list")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -111,6 +129,10 @@ func (c *Client) GetValidPreparationVesselsForVessel(ctx context.Context, validI
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -120,13 +142,17 @@ func (c *Client) GetValidPreparationVesselsForVessel(ctx context.Context, validI
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
-	req, err := c.requestBuilder.BuildGetValidPreparationVesselsForVesselRequest(ctx, validInstrumentID, filter)
+	params := &generated.GetValidPreparationVesselsByVesselParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidPreparationVesselsByVessel(ctx, validInstrumentID, params, c.queryFilterCleaner)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation vessels list request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation vessels")
 	}
 
@@ -142,7 +168,7 @@ func (c *Client) GetValidPreparationVesselsForVessel(ctx context.Context, validI
 	return validPreparationVessels, nil
 }
 
-// CreateValidPreparationVessel creates a valid ingredient vessel.
+// CreateValidPreparationVessel creates a valid preparation vessel.
 func (c *Client) CreateValidPreparationVessel(ctx context.Context, input *types.ValidPreparationVesselCreationRequestInput) (*types.ValidPreparationVessel, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -157,14 +183,18 @@ func (c *Client) CreateValidPreparationVessel(ctx context.Context, input *types.
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidPreparationVesselRequest(ctx, input)
+	body := generated.CreateValidPreparationVesselJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidPreparationVessel(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient vessel request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid preparation vessel request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient vessel")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation vessel")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -174,7 +204,7 @@ func (c *Client) CreateValidPreparationVessel(ctx context.Context, input *types.
 	return apiResponse.Data, nil
 }
 
-// UpdateValidPreparationVessel updates a valid ingredient vessel.
+// UpdateValidPreparationVessel updates a valid preparation vessel.
 func (c *Client) UpdateValidPreparationVessel(ctx context.Context, validPreparationVessel *types.ValidPreparationVessel) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -187,14 +217,18 @@ func (c *Client) UpdateValidPreparationVessel(ctx context.Context, validPreparat
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVessel.ID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVessel.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidPreparationVesselRequest(ctx, validPreparationVessel)
+	body := generated.UpdateValidPreparationVesselJSONRequestBody{}
+	c.copyType(&body, validPreparationVessel)
+
+	res, err := c.authedGeneratedClient.UpdateValidPreparationVessel(ctx, validPreparationVessel.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient vessel request")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient vessel %s", validPreparationVessel.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "parsing valid preparation vessel update response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -204,7 +238,7 @@ func (c *Client) UpdateValidPreparationVessel(ctx context.Context, validPreparat
 	return nil
 }
 
-// ArchiveValidPreparationVessel archives a valid ingredient vessel.
+// ArchiveValidPreparationVessel archives a valid preparation vessel.
 func (c *Client) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -217,14 +251,15 @@ func (c *Client) ArchiveValidPreparationVessel(ctx context.Context, validPrepara
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
-	req, err := c.requestBuilder.BuildArchiveValidPreparationVesselRequest(ctx, validPreparationVesselID)
+	res, err := c.authedGeneratedClient.ArchiveValidPreparationVessel(ctx, validPreparationVesselID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient vessel request")
+		return observability.PrepareAndLogError(err, logger, span, "archiving archive valid preparation vessel")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient vessel %s", validPreparationVesselID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "reading valid preparation vessel archive response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

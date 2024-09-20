@@ -410,8 +410,8 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
@@ -440,8 +440,8 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 		helper.service.cfg.UseSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -499,8 +499,8 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
@@ -527,8 +527,8 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
@@ -564,8 +564,8 @@ func TestValidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) 
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
@@ -610,8 +610,8 @@ func TestValidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) 
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
@@ -639,8 +639,8 @@ func TestValidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) 
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}

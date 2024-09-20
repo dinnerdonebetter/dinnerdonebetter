@@ -47,11 +47,11 @@ func (b *Builder) BuildSearchServiceSettingsRequest(ctx context.Context, query s
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.WithValue(types.SearchQueryKey, query).WithValue(types.LimitQueryKey, limit)
+	logger := b.logger.WithValue(types.QueryKeySearch, query).WithValue(types.QueryKeyLimit, limit)
 
 	params := url.Values{}
-	params.Set(types.SearchQueryKey, query)
-	params.Set(types.LimitQueryKey, strconv.FormatUint(uint64(limit), 10))
+	params.Set(types.QueryKeySearch, query)
+	params.Set(types.QueryKeyLimit, strconv.FormatUint(uint64(limit), 10))
 
 	uri := b.BuildURL(
 		ctx,

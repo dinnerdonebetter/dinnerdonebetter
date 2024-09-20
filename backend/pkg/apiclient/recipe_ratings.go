@@ -47,6 +47,10 @@ func (c *Client) GetRecipeRatings(ctx context.Context, mealID string, filter *ty
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 

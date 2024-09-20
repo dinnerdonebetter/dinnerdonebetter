@@ -23,7 +23,7 @@ func applyFilterToQueryBuilder(qf *types.QueryFilter, tableName string, queryBui
 	if qf.Limit != nil && *qf.Limit != 0 {
 		queryBuilder = queryBuilder.Limit(uint64(*qf.Limit))
 	} else {
-		queryBuilder = queryBuilder.Limit(types.MaxLimit)
+		queryBuilder = queryBuilder.Limit(types.MaxQueryFilterLimit)
 	}
 
 	if qf.CreatedAfter != nil {

@@ -45,6 +45,10 @@ func (c *Client) GetValidIngredientPreparations(ctx context.Context, filter *typ
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 

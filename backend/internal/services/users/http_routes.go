@@ -91,7 +91,7 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	query := req.URL.Query().Get(types.SearchQueryKey)
+	query := req.URL.Query().Get(types.QueryKeySearch)
 
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)

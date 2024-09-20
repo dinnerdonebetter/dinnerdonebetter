@@ -908,11 +908,13 @@ var routeInfoMap = map[string]routeDetails{
 	"GET /api/v1/valid_ingredient_measurement_units/by_ingredient/{validIngredientID}/": {
 		ID:           "GetValidIngredientMeasurementUnitsByIngredient",
 		ResponseType: &types.ValidIngredientMeasurementUnit{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_measurement_units/by_measurement_unit/{validMeasurementUnitID}/": {
 		ID:           "GetValidIngredientMeasurementUnitsByMeasurementUnit",
 		ResponseType: &types.ValidIngredientMeasurementUnit{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_measurement_units/{validIngredientMeasurementUnitID}/": {
@@ -946,11 +948,13 @@ var routeInfoMap = map[string]routeDetails{
 	"GET /api/v1/valid_ingredient_preparations/by_ingredient/{validIngredientID}/": {
 		ID:           "GetValidIngredientPreparationsByIngredient",
 		ResponseType: &types.ValidIngredientPreparation{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_preparations/by_preparation/{validPreparationID}/": {
 		ID:           "GetValidIngredientPreparationsByPreparation",
 		ResponseType: &types.ValidIngredientPreparation{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_preparations/{validIngredientPreparationID}/": {
@@ -984,11 +988,13 @@ var routeInfoMap = map[string]routeDetails{
 	"GET /api/v1/valid_ingredient_state_ingredients/by_ingredient/{validIngredientID}/": {
 		ID:           "GetValidIngredientStateIngredientsByIngredient",
 		ResponseType: &types.ValidIngredientStateIngredient{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_state_ingredients/by_ingredient_state/{validIngredientStateID}/": {
 		ID:           "GetValidIngredientStateIngredientsByIngredientState",
 		ResponseType: &types.ValidIngredientStateIngredient{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_state_ingredients/{validIngredientStateIngredientID}/": {
@@ -1054,6 +1060,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"GET /api/v1/valid_ingredients/by_preparation/{validPreparationID}/": {
 		ID:           "GetValidIngredientsByPreparation",
+		ListRoute:    true,
 		ResponseType: &types.ValidIngredient{},
 		OAuth2Scopes: []string{householdMember},
 	},
@@ -1168,6 +1175,7 @@ var routeInfoMap = map[string]routeDetails{
 	"GET /api/v1/valid_measurement_units/by_ingredient/{validIngredientID}": {
 		ID:           "GetValidMeasurementUnitsByIngredient",
 		ResponseType: &types.ValidMeasurementUnit{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_measurement_units/search": {
@@ -1206,11 +1214,13 @@ var routeInfoMap = map[string]routeDetails{
 	"GET /api/v1/valid_preparation_instruments/by_instrument/{validInstrumentID}/": {
 		ID:           "GetValidPreparationInstrumentsByInstrument",
 		ResponseType: &types.ValidPreparationInstrument{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_preparation_instruments/by_preparation/{validPreparationID}/": {
 		ID:           "GetValidPreparationInstrumentsByPreparation",
 		ResponseType: &types.ValidPreparationInstrument{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"DELETE /api/v1/valid_preparation_instruments/{validPreparationVesselID}/": {
@@ -1244,11 +1254,13 @@ var routeInfoMap = map[string]routeDetails{
 	"GET /api/v1/valid_preparation_vessels/by_preparation/{validPreparationID}/": {
 		ID:           "GetValidPreparationVesselsByPreparation",
 		ResponseType: &types.ValidPreparationVessel{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_preparation_vessels/by_vessel/{ValidVesselID}/": {
 		ID:           "GetValidPreparationVesselsByVessel",
 		ResponseType: &types.ValidPreparationVessel{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PUT /api/v1/valid_preparation_vessels/{validPreparationVesselID}/": {

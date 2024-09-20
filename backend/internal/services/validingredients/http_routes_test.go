@@ -407,8 +407,8 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
@@ -439,8 +439,8 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		helper.service.cfg.UseSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -494,8 +494,8 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
@@ -523,8 +523,8 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
@@ -554,8 +554,8 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		helper.service.cfg.UseSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
@@ -599,7 +599,7 @@ func TestValidIngredientsService_SearchByPreparationAndIngredientNameHandler(T *
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		newQueryParams := helper.req.URL.Query()
-		newQueryParams.Set(types.SearchQueryKey, helper.exampleValidIngredient.Name)
+		newQueryParams.Set(types.QueryKeySearch, helper.exampleValidIngredient.Name)
 		helper.req.URL.RawQuery = newQueryParams.Encode()
 
 		helper.service.SearchByPreparationAndIngredientNameHandler(helper.res, helper.req)
@@ -645,7 +645,7 @@ func TestValidIngredientsService_SearchByPreparationAndIngredientNameHandler(T *
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		newQueryParams := helper.req.URL.Query()
-		newQueryParams.Set(types.SearchQueryKey, helper.exampleValidIngredient.Name)
+		newQueryParams.Set(types.QueryKeySearch, helper.exampleValidIngredient.Name)
 		helper.req.URL.RawQuery = newQueryParams.Encode()
 
 		helper.service.SearchByPreparationAndIngredientNameHandler(helper.res, helper.req)
@@ -680,7 +680,7 @@ func TestValidIngredientsService_ForValidIngredientStateHandler(T *testing.T) {
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		newQueryParams := helper.req.URL.Query()
-		newQueryParams.Set(types.SearchQueryKey, helper.exampleValidIngredient.Name)
+		newQueryParams.Set(types.QueryKeySearch, helper.exampleValidIngredient.Name)
 		helper.req.URL.RawQuery = newQueryParams.Encode()
 
 		helper.service.ForValidIngredientStateHandler(helper.res, helper.req)
@@ -725,7 +725,7 @@ func TestValidIngredientsService_ForValidIngredientStateHandler(T *testing.T) {
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		newQueryParams := helper.req.URL.Query()
-		newQueryParams.Set(types.SearchQueryKey, helper.exampleValidIngredient.Name)
+		newQueryParams.Set(types.QueryKeySearch, helper.exampleValidIngredient.Name)
 		helper.req.URL.RawQuery = newQueryParams.Encode()
 
 		helper.service.ForValidIngredientStateHandler(helper.res, helper.req)
@@ -754,7 +754,7 @@ func TestValidIngredientsService_ForValidIngredientStateHandler(T *testing.T) {
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		newQueryParams := helper.req.URL.Query()
-		newQueryParams.Set(types.SearchQueryKey, helper.exampleValidIngredient.Name)
+		newQueryParams.Set(types.QueryKeySearch, helper.exampleValidIngredient.Name)
 		helper.req.URL.RawQuery = newQueryParams.Encode()
 
 		helper.service.ForValidIngredientStateHandler(helper.res, helper.req)

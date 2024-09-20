@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,14 +23,15 @@ func (c *Client) GetValidPreparation(ctx context.Context, validPreparationID str
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
-	req, err := c.requestBuilder.BuildGetValidPreparationRequest(ctx, validPreparationID)
+	res, err := c.authedGeneratedClient.GetValidPreparation(ctx, validPreparationID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid preparation")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading valid preparation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -46,14 +48,15 @@ func (c *Client) GetRandomValidPreparation(ctx context.Context) (*types.ValidPre
 
 	logger := c.logger.Clone()
 
-	req, err := c.requestBuilder.BuildGetRandomValidPreparationRequest(ctx)
+	res, err := c.authedGeneratedClient.GetRandomValidPreparation(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting random valid preparation")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading random valid preparation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -75,18 +78,24 @@ func (c *Client) SearchValidPreparations(ctx context.Context, query string, limi
 	}
 
 	if limit == 0 {
-		limit = types.DefaultLimit
+		limit = types.DefaultQueryFilterLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
 
-	req, err := c.requestBuilder.BuildSearchValidPreparationsRequest(ctx, query, limit)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid preparations request")
+	params := &generated.SearchForValidPreparationsParams{
+		Q:     query,
+		Limit: int(limit),
 	}
 
+	res, err := c.authedGeneratedClient.SearchForValidPreparations(ctx, params, c.queryFilterCleaner)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid preparations")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[[]*types.ValidPreparation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparations")
 	}
 
@@ -103,16 +112,24 @@ func (c *Client) GetValidPreparations(ctx context.Context, filter *types.QueryFi
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetValidPreparationsRequest(ctx, filter)
+	params := &generated.GetValidPreparationsParams{}
+	c.copyType(&params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidPreparations(ctx, params, c.queryFilterCleaner)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparations list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid preparations")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidPreparation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparations")
 	}
 
@@ -143,14 +160,18 @@ func (c *Client) CreateValidPreparation(ctx context.Context, input *types.ValidP
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidPreparationRequest(ctx, input)
+	body := generated.CreateValidPreparationJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidPreparation(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading valid preparation creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -173,13 +194,16 @@ func (c *Client) UpdateValidPreparation(ctx context.Context, validPreparation *t
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparation.ID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparation.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidPreparationRequest(ctx, validPreparation)
+	input := generated.UpdateValidPreparationJSONRequestBody{}
+	c.copyType(&input, validPreparation)
+	res, err := c.authedGeneratedClient.UpdateValidPreparation(ctx, validPreparation.ID, input)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid preparation request")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation %s", validPreparation.ID)
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation %s", validPreparation.ID)
 	}
 
@@ -203,14 +227,15 @@ func (c *Client) ArchiveValidPreparation(ctx context.Context, validPreparationID
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
-	req, err := c.requestBuilder.BuildArchiveValidPreparationRequest(ctx, validPreparationID)
+	res, err := c.authedGeneratedClient.ArchiveValidPreparation(ctx, validPreparationID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid preparation request")
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation %s", validPreparationID)
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation %s", validPreparationID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "loading valid preparation archive response %s", validPreparationID)
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

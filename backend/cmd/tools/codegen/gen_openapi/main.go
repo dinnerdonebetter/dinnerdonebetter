@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/internal/server/http/build"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
@@ -223,90 +222,6 @@ func main() {
 
 	if err = os.WriteFile("../openapi_spec.yaml", output, 0o600); err != nil {
 		log.Fatal(err)
-	}
-}
-
-func buildQueryFilterPathParams() []openapi.ParameterOrReference {
-	return []openapi.ParameterOrReference{
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "page",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "integer",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "createdBefore",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "createdAfter",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "updatedBefore",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "updatedAfter",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "includeArchived",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-					"enum": []string{"true", "false"},
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "sortBy",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-					"enum": []string{"asc", "desc"},
-				},
-			},
-		},
 	}
 }
 

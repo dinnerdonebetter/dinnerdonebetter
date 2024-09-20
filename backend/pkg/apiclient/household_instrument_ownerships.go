@@ -44,6 +44,10 @@ func (c *Client) GetHouseholdInstrumentOwnerships(ctx context.Context, filter *t
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := c.logger.Clone()
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)

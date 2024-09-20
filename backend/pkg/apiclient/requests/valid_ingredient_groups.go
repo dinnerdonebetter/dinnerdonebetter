@@ -49,8 +49,8 @@ func (b *Builder) BuildSearchValidIngredientGroupsRequest(ctx context.Context, q
 	defer span.End()
 
 	params := url.Values{}
-	params.Set(types.SearchQueryKey, query)
-	params.Set(types.LimitQueryKey, strconv.FormatUint(uint64(limit), 10))
+	params.Set(types.QueryKeySearch, query)
+	params.Set(types.QueryKeyLimit, strconv.FormatUint(uint64(limit), 10))
 
 	uri := b.BuildURL(
 		ctx,

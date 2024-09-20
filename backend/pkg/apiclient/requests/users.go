@@ -81,7 +81,7 @@ func (b *Builder) BuildSearchForUsersByUsernameRequest(ctx context.Context, user
 	u := b.buildAPIV1URL(ctx, nil, usersBasePath, "search")
 	q := u.Query()
 
-	q.Set(types.SearchQueryKey, username)
+	q.Set(types.QueryKeySearch, username)
 	u.RawQuery = q.Encode()
 	uri := u.String()
 

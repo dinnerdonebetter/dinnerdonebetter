@@ -56,6 +56,9 @@ func (c *Client) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeS
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 

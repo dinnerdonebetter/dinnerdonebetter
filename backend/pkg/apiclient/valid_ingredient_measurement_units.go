@@ -45,6 +45,10 @@ func (c *Client) GetValidIngredientMeasurementUnits(ctx context.Context, filter 
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 

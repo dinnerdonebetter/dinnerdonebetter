@@ -51,6 +51,10 @@ func (c *Client) GetMealPlanEvents(ctx context.Context, mealPlanID string, filte
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if mealPlanID == "" {
@@ -65,7 +69,7 @@ func (c *Client) GetMealPlanEvents(ctx context.Context, mealPlanID string, filte
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanEvent]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving meal plan events")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan events")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

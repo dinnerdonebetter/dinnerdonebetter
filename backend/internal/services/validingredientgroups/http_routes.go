@@ -218,7 +218,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	query := req.URL.Query().Get(types.SearchQueryKey)
+	query := req.URL.Query().Get(types.QueryKeySearch)
 	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span).
 		WithValue(keys.SearchQueryKey, query)

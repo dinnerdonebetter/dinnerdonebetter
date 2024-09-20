@@ -67,7 +67,7 @@ func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit
 	}
 
 	if limit == 0 {
-		limit = types.DefaultLimit
+		limit = types.DefaultQueryFilterLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
@@ -96,6 +96,10 @@ func (c *Client) GetValidIngredients(ctx context.Context, filter *types.QueryFil
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
