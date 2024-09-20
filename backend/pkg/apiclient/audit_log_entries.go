@@ -22,7 +22,7 @@ func (c *Client) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (
 	logger = logger.WithValue(keys.AuditLogEntryIDKey, auditLogEntryID)
 	tracing.AttachToSpan(span, keys.AuditLogEntryIDKey, auditLogEntryID)
 
-	res, err := c.authedGeneratedClient.GETAuditLogEntriesAuditLogEntryID(ctx, auditLogEntryID)
+	res, err := c.authedGeneratedClient.GetAuditLogEntryByID(ctx, auditLogEntryID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving audit log entry")
 	}
@@ -43,14 +43,14 @@ func (c *Client) GetAuditLogEntriesForUser(ctx context.Context, resourceTypes ..
 
 	logger := c.logger.WithValue(keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
-	req, err := c.requestBuilder.BuildGetAuditLogEntriesForUserRequest(ctx, resourceTypes...)
+	res, err := c.authedGeneratedClient.GetAuditLogEntriesForUser(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building user audit log entries request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user audit log entries")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.AuditLogEntry]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user audit log entries")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading user audit log entries")
 	}
 
 	result := &types.QueryFilteredResult[types.AuditLogEntry]{

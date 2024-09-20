@@ -13,6 +13,7 @@ import (
 type RouteDefinition struct {
 	Method           string
 	Summary          string
+	ID               string
 	Path             string
 	ResponseType     string
 	RequestBody      string
@@ -67,8 +68,13 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 		}
 	}
 
+	opID := strings.Join(operationParts, "_")
+	if d.ID != "" {
+		opID = d.ID
+	}
+
 	op := &openapi.Operation{
-		ID:          pointer.To(strings.Join(operationParts, "_")),
+		ID:          pointer.To(opID),
 		Tags:        []string{},
 		Summary:     nil,
 		Description: pointer.To(description),

@@ -90,6 +90,7 @@ func main() {
 		}
 
 		routeDef := &RouteDefinition{
+			ID:            routeInfo.ID,
 			Method:        route.Method,
 			Path:          route.Path,
 			PathArguments: pathArgs,

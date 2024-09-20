@@ -87,12 +87,12 @@ func (c *Client) CreateWebhook(ctx context.Context, input *types.WebhookCreation
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	genInput := generated.POSTWebhooksJSONRequestBody{}
+	genInput := generated.CreateWebhookJSONRequestBody{}
 	if err := copier.Copy(&genInput, input); err != nil {
 		return nil, observability.PrepareError(err, span, "copying input")
 	}
 
-	res, err := c.authedGeneratedClient.POSTWebhooks(ctx, genInput)
+	res, err := c.authedGeneratedClient.CreateWebhook(ctx, genInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating webhook")
 	}
