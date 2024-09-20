@@ -114,13 +114,13 @@ func main() {
 						if _, ok2 := tagDescriptions[rep]; !ok2 {
 							continue
 						}
-						routeDef.Tags = append(routeDef.Tags, rep)
+						routeDef.Tags = append(routeDef.Tags, strings.ReplaceAll(rep, "_", " "))
 						allTags[rep] = struct{}{}
 					} else {
 						if _, ok2 := tagDescriptions[part]; !ok2 {
 							continue
 						}
-						routeDef.Tags = append(routeDef.Tags, part)
+						routeDef.Tags = append(routeDef.Tags, strings.ReplaceAll(part, "_", " "))
 						allTags[part] = struct{}{}
 					}
 				}
