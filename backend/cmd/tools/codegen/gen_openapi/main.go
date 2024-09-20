@@ -142,7 +142,7 @@ func main() {
 		}
 
 		tags = append(tags, openapi.Tag{
-			Name:        tag,
+			Name:        strings.ReplaceAll(tag, "_", " "),
 			Description: description,
 		})
 	}

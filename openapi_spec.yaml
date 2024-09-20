@@ -22083,55 +22083,55 @@ components:
       type: oauth2
 tags:
 - name: admin
-- name: audit_log_entries
+- name: audit log entries
 - name: auth
-- name: email_address
-- name: grocery_list_items
+- name: email address
+- name: grocery list items
 - name: household
-- name: household_instrument_ownerships
-- name: household_invitations
-- name: household_members
+- name: household instrument ownerships
+- name: household invitations
+- name: household members
 - name: households
 - name: invitations
-- name: meal_plan_events
-- name: meal_plan_option_votes
-- name: meal_plan_options
-- name: meal_plan_tasks
-- name: meal_plans
+- name: meal plan events
+- name: meal plan option votes
+- name: meal plan options
+- name: meal plan tasks
+- name: meal plans
 - name: meals
 - name: oauth2
 - name: password
 - name: permissions
-- name: recipe_prep_tasks
-- name: recipe_ratings
-- name: recipe_step_completion_conditions
-- name: recipe_step_ingredients
-- name: recipe_step_products
-- name: recipe_step_vessels
-- name: recipe_steps
+- name: recipe prep tasks
+- name: recipe ratings
+- name: recipe step completion conditions
+- name: recipe step ingredients
+- name: recipe step products
+- name: recipe step vessels
+- name: recipe steps
 - name: recipes
 - description: Operations related to configuring service settings
-  name: service_setting_configurations
+  name: service setting configurations
 - description: Operations related to service settings
-  name: service_settings
-- name: totp_secret
+  name: service settings
+- name: totp secret
 - name: user
-- name: user_ingredient_preferences
-- name: user_notifications
+- name: user ingredient preferences
+- name: user notifications
 - name: users
-- name: valid_ingredient_groups
-- name: valid_ingredient_measurement_units
-- name: valid_ingredient_preparations
-- name: valid_ingredient_state_ingredients
-- name: valid_ingredient_states
-- name: valid_ingredients
-- name: valid_instruments
-- name: valid_measurement_conversions
-- name: valid_measurement_units
-- name: valid_preparation_instruments
-- name: valid_preparation_vessels
-- name: valid_preparations
-- name: valid_vessels
-- name: webhook_trigger_events
+- name: valid ingredient groups
+- name: valid ingredient measurement units
+- name: valid ingredient preparations
+- name: valid ingredient state ingredients
+- name: valid ingredient states
+- name: valid ingredients
+- name: valid instruments
+- name: valid measurement conversions
+- name: valid measurement units
+- name: valid preparation instruments
+- name: valid preparation vessels
+- name: valid preparations
+- name: valid vessels
+- name: webhook trigger events
 - name: webhooks
 - name: workers
