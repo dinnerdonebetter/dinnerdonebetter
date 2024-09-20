@@ -121,12 +121,12 @@ func buildTestClient(t *testing.T, ts *httptest.Server) *Client {
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
-	client.unauthenticatedClient = ts.Client()
-	client.authedClient = ts.Client()
-	client.authedGeneratedClient, err = generated.NewClient(ts.URL, generated.WithHTTPClient(ts.Client()))
+	client.unauthenticatedClient, client.authedClient = ts.Client(), ts.Client()
+
+	generatedClient, err := generated.NewClient(ts.URL, generated.WithHTTPClient(ts.Client()), generated.WithRequestEditorFn(client.queryFilterCleaner))
 	require.NoError(t, err)
-	client.unauthedGeneratedClient, err = generated.NewClient(ts.URL, generated.WithHTTPClient(ts.Client()))
-	require.NoError(t, err)
+
+	client.authedGeneratedClient, client.unauthedGeneratedClient = generatedClient, generatedClient
 
 	return client
 }

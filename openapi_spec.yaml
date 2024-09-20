@@ -681,32 +681,45 @@ paths:
       description: Operation for fetching Household
       operationId: GetHouseholds
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -714,7 +727,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -1622,32 +1636,45 @@ paths:
       description: Operation for fetching HouseholdInstrumentOwnership
       operationId: GetHouseholdInstrumentOwnerships
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -1655,7 +1682,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -1999,32 +2027,45 @@ paths:
       description: Operation for fetching MealPlan
       operationId: GetMealPlans
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -2032,7 +2073,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -2371,32 +2413,45 @@ paths:
       description: Operation for fetching MealPlanEvent
       operationId: GetMealPlanEvents
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -2404,7 +2459,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -2774,32 +2830,45 @@ paths:
       description: Operation for fetching MealPlanOption
       operationId: GetMealPlanOptions
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -2807,7 +2876,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -3207,32 +3277,45 @@ paths:
       description: Operation for fetching MealPlanOptionVote
       operationId: GetMealPlanOptionVotes
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -3240,7 +3323,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -3729,32 +3813,45 @@ paths:
       description: Operation for fetching MealPlanGroceryListItem
       operationId: GetMealPlanGroceryListItems
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -3762,7 +3859,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -4132,32 +4230,45 @@ paths:
       description: Operation for fetching MealPlanTask
       operationId: GetMealPlanTasks
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -4165,7 +4276,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -4465,32 +4577,45 @@ paths:
       description: Operation for fetching Meal
       operationId: GetMeals
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -4498,7 +4623,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -4763,6 +4889,68 @@ paths:
     get:
       description: Operation for fetching Meal
       operationId: SearchForMeals
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -4772,8 +4960,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Meal'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/Meal'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -4781,8 +4970,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Meal'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/Meal'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -4823,32 +5013,45 @@ paths:
       description: Operation for fetching OAuth2Client
       operationId: GetOAuth2Clients
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -4856,7 +5059,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -5122,32 +5326,45 @@ paths:
       description: Operation for fetching Recipe
       operationId: GetRecipes
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -5155,7 +5372,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -5717,32 +5935,45 @@ paths:
       description: Operation for fetching RecipePrepTask
       operationId: GetRecipePrepTasks
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -5750,7 +5981,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -6120,32 +6352,45 @@ paths:
       description: Operation for fetching RecipeRating
       operationId: GetRecipeRatings
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -6153,7 +6398,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -6523,32 +6769,45 @@ paths:
       description: Operation for fetching RecipeStep
       operationId: GetRecipeSteps
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -6556,7 +6815,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -6926,32 +7186,45 @@ paths:
       description: Operation for fetching RecipeStepCompletionCondition
       operationId: GetRecipeStepCompletionConditions
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -6959,7 +7232,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -7379,32 +7653,45 @@ paths:
       description: Operation for fetching RecipeStepIngredient
       operationId: GetRecipeStepIngredients
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -7412,7 +7699,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -7812,32 +8100,45 @@ paths:
       description: Operation for fetching RecipeStepInstrument
       operationId: GetRecipeStepInstruments
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -7845,7 +8146,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -8245,32 +8547,45 @@ paths:
       description: Operation for fetching RecipeStepProduct
       operationId: GetRecipeStepProducts
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -8278,7 +8593,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -8678,32 +8994,45 @@ paths:
       description: Operation for fetching RecipeStepVessel
       operationId: GetRecipeStepVessels
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -8711,7 +9040,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -9110,6 +9440,68 @@ paths:
     get:
       description: Operation for fetching Recipe
       operationId: SearchForRecipes
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -9119,8 +9511,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Recipe'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/Recipe'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -9128,8 +9521,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Recipe'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/Recipe'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -9170,32 +9564,45 @@ paths:
       description: Operation for fetching ServiceSetting
       operationId: GetServiceSettings
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -9203,7 +9610,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -9864,6 +10272,68 @@ paths:
     get:
       description: Operation for fetching ServiceSetting
       operationId: SearchForServiceSettings
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -9873,8 +10343,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ServiceSetting'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ServiceSetting'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -9882,8 +10353,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ServiceSetting'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ServiceSetting'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -9924,32 +10396,45 @@ paths:
       description: Operation for fetching UserIngredientPreference
       operationId: GetUserIngredientPreferences
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -9957,7 +10442,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -10232,32 +10718,45 @@ paths:
       description: Operation for fetching UserNotification
       operationId: GetUserNotifications
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -10265,7 +10764,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -10540,32 +11040,45 @@ paths:
       description: Operation for fetching User
       operationId: GetUsers
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -10573,7 +11086,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -11202,32 +11716,51 @@ paths:
       description: Operation for fetching User
       operationId: SearchForUsers
       parameters:
-      - in: query
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -11235,7 +11768,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -11501,32 +12035,45 @@ paths:
       description: Operation for fetching ValidIngredientGroup
       operationId: GetValidIngredientGroups
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -11534,7 +12081,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -11872,6 +12420,68 @@ paths:
     get:
       description: Operation for fetching ValidIngredientGroup
       operationId: SearchForValidIngredientGroups
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -11881,8 +12491,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientGroup'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientGroup'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -11890,8 +12501,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientGroup'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientGroup'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -11932,32 +12544,45 @@ paths:
       description: Operation for fetching ValidIngredientMeasurementUnit
       operationId: GetValidIngredientMeasurementUnits
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -11965,7 +12590,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -12304,6 +12930,61 @@ paths:
       description: Operation for fetching ValidIngredientMeasurementUnit
       operationId: GetValidIngredientMeasurementUnitsByIngredient
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validIngredientID
         required: true
@@ -12318,8 +12999,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientMeasurementUnit'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientMeasurementUnit'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -12327,8 +13009,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientMeasurementUnit'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientMeasurementUnit'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -12369,6 +13052,61 @@ paths:
       description: Operation for fetching ValidIngredientMeasurementUnit
       operationId: GetValidIngredientMeasurementUnitsByMeasurementUnit
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validMeasurementUnitID
         required: true
@@ -12383,8 +13121,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientMeasurementUnit'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientMeasurementUnit'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -12392,8 +13131,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientMeasurementUnit'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientMeasurementUnit'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -12434,32 +13174,45 @@ paths:
       description: Operation for fetching ValidIngredientPreparation
       operationId: GetValidIngredientPreparations
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -12467,7 +13220,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -12806,6 +13560,61 @@ paths:
       description: Operation for fetching ValidIngredientPreparation
       operationId: GetValidIngredientPreparationsByIngredient
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validIngredientID
         required: true
@@ -12820,8 +13629,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientPreparation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientPreparation'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -12829,8 +13639,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientPreparation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientPreparation'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -12871,6 +13682,61 @@ paths:
       description: Operation for fetching ValidIngredientPreparation
       operationId: GetValidIngredientPreparationsByPreparation
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validPreparationID
         required: true
@@ -12885,8 +13751,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientPreparation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientPreparation'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -12894,8 +13761,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientPreparation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientPreparation'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -12936,32 +13804,45 @@ paths:
       description: Operation for fetching ValidIngredientStateIngredient
       operationId: GetValidIngredientStateIngredients
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -12969,7 +13850,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -13308,6 +14190,61 @@ paths:
       description: Operation for fetching ValidIngredientStateIngredient
       operationId: GetValidIngredientStateIngredientsByIngredient
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validIngredientID
         required: true
@@ -13322,8 +14259,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientStateIngredient'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientStateIngredient'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -13331,8 +14269,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientStateIngredient'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientStateIngredient'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -13373,6 +14312,61 @@ paths:
       description: Operation for fetching ValidIngredientStateIngredient
       operationId: GetValidIngredientStateIngredientsByIngredientState
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validIngredientStateID
         required: true
@@ -13387,8 +14381,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientStateIngredient'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientStateIngredient'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -13396,8 +14391,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientStateIngredient'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientStateIngredient'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -13438,32 +14434,45 @@ paths:
       description: Operation for fetching ValidIngredientState
       operationId: GetValidIngredientStates
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -13471,7 +14480,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -13809,6 +14819,68 @@ paths:
     get:
       description: Operation for fetching ValidIngredientState
       operationId: SearchForValidIngredientStates
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -13818,8 +14890,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientState'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientState'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -13827,8 +14900,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredientState'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredientState'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -13869,32 +14943,45 @@ paths:
       description: Operation for fetching ValidIngredient
       operationId: GetValidIngredients
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -13902,7 +14989,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -14241,6 +15329,61 @@ paths:
       description: Operation for fetching ValidIngredient
       operationId: GetValidIngredientsByPreparation
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validPreparationID
         required: true
@@ -14255,8 +15398,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredient'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredient'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -14264,8 +15408,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredient'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredient'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -14364,6 +15509,68 @@ paths:
     get:
       description: Operation for fetching ValidIngredient
       operationId: SearchForValidIngredients
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -14373,8 +15580,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredient'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredient'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -14382,8 +15590,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidIngredient'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidIngredient'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -14424,32 +15633,45 @@ paths:
       description: Operation for fetching ValidInstrument
       operationId: GetValidInstruments
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -14457,7 +15679,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -14854,6 +16077,68 @@ paths:
     get:
       description: Operation for fetching ValidInstrument
       operationId: SearchForValidInstruments
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -14863,8 +16148,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidInstrument'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidInstrument'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -14872,8 +16158,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidInstrument'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidInstrument'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -15314,32 +16601,45 @@ paths:
       description: Operation for fetching ValidMeasurementUnit
       operationId: GetValidMeasurementUnits
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -15347,7 +16647,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -15684,8 +16985,63 @@ paths:
   /api/v1/valid_measurement_units/by_ingredient/{validIngredientID}:
     get:
       description: Operation for fetching ValidMeasurementUnit
-      operationId: GetValidMeasurementUnitsByIngredient
+      operationId: SearchValidMeasurementUnitsByIngredient
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validIngredientID
         required: true
@@ -15700,8 +17056,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnit'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnit'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -15709,8 +17066,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnit'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnit'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -15750,6 +17108,68 @@ paths:
     get:
       description: Operation for fetching ValidMeasurementUnit
       operationId: SearchForValidMeasurementUnits
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -15759,8 +17179,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnit'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnit'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -15768,8 +17189,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnit'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnit'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -15810,32 +17232,45 @@ paths:
       description: Operation for fetching ValidPreparationInstrument
       operationId: GetValidPreparationInstruments
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -15843,7 +17278,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -16182,6 +17618,61 @@ paths:
       description: Operation for fetching ValidPreparationInstrument
       operationId: GetValidPreparationInstrumentsByInstrument
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validInstrumentID
         required: true
@@ -16196,8 +17687,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparationInstrument'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparationInstrument'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -16205,8 +17697,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparationInstrument'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparationInstrument'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -16247,6 +17740,61 @@ paths:
       description: Operation for fetching ValidPreparationInstrument
       operationId: GetValidPreparationInstrumentsByPreparation
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validPreparationID
         required: true
@@ -16261,8 +17809,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparationInstrument'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparationInstrument'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -16270,8 +17819,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparationInstrument'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparationInstrument'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -16312,32 +17862,45 @@ paths:
       description: Operation for fetching ValidPreparationVessel
       operationId: GetValidPreparationVessels
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -16345,7 +17908,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -16684,6 +18248,61 @@ paths:
       description: Operation for fetching ValidPreparationVessel
       operationId: GetValidPreparationVesselsByPreparation
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validPreparationID
         required: true
@@ -16698,8 +18317,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparationVessel'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparationVessel'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -16707,8 +18327,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparationVessel'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparationVessel'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -16749,6 +18370,61 @@ paths:
       description: Operation for fetching ValidPreparationVessel
       operationId: GetValidPreparationVesselsByVessel
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: ValidVesselID
         required: true
@@ -16763,8 +18439,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparationVessel'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparationVessel'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -16772,8 +18449,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparationVessel'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparationVessel'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -16814,32 +18492,45 @@ paths:
       description: Operation for fetching ValidPreparation
       operationId: GetValidPreparations
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -16847,7 +18538,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -17244,6 +18936,68 @@ paths:
     get:
       description: Operation for fetching ValidPreparation
       operationId: SearchForValidPreparations
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -17253,8 +19007,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparation'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -17262,8 +19017,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidPreparation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidPreparation'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -17304,32 +19060,45 @@ paths:
       description: Operation for fetching ValidVessel
       operationId: GetValidVessels
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -17337,7 +19106,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:
@@ -17734,6 +19504,68 @@ paths:
     get:
       description: Operation for fetching ValidVessel
       operationId: SearchForValidVessels
+      parameters:
+      - description: the search query parameter
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -17743,8 +19575,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidVessel'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidVessel'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -17752,8 +19585,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidVessel'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidVessel'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -17794,32 +19628,45 @@ paths:
       description: Operation for fetching Webhook
       operationId: GetWebhooks
       parameters:
-      - in: query
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
         name: page
         required: true
         schema:
           type: integer
-      - in: query
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
         name: createdBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
         name: createdAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
         name: updatedBefore
         required: true
         schema:
           type: string
-      - in: query
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
         name: updatedAfter
         required: true
         schema:
           type: string
-      - in: query
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
         name: includeArchived
         required: true
         schema:
@@ -17827,7 +19674,8 @@ paths:
           - "true"
           - "false"
           type: string
-      - in: query
+      - description: The direction in which results should be sorted.
+        in: query
         name: sortBy
         required: true
         schema:

@@ -103,7 +103,7 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...Cli
 		}
 	}
 
-	c.authedGeneratedClient, err = generated.NewClient(c.url.String(), generated.WithHTTPClient(c.authedClient))
+	c.authedGeneratedClient, err = generated.NewClient(c.url.String(), generated.WithHTTPClient(c.authedClient), generated.WithRequestEditorFn(c.queryFilterCleaner))
 	if err != nil {
 		return nil, err
 	}

@@ -12,6 +12,7 @@ type routeDetails struct {
 	InputTypeName string
 	OAuth2Scopes  []string
 	ListRoute     bool
+	SearchRoute   bool
 }
 
 const (
@@ -363,6 +364,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/meals/search": {
+		SearchRoute:  true,
 		ID:           "SearchForMeals",
 		ResponseType: &types.Meal{},
 		OAuth2Scopes: []string{householdMember},
@@ -609,6 +611,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/recipes/search": {
+		SearchRoute:  true,
 		ID:           "SearchForRecipes",
 		ResponseType: &types.Recipe{},
 		OAuth2Scopes: []string{householdMember},
@@ -720,6 +723,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/settings/search": {
+		SearchRoute:  true,
 		ID:           "SearchForServiceSettings",
 		ResponseType: &types.ServiceSetting{},
 		OAuth2Scopes: []string{householdMember},
@@ -828,6 +832,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/users/search": {
+		SearchRoute:  true,
 		ID:           "SearchForUsers",
 		ResponseType: &types.User{},
 		ListRoute:    true,
@@ -873,6 +878,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_groups/search": {
+		SearchRoute:  true,
 		ID:           "SearchForValidIngredientGroups",
 		ResponseType: &types.ValidIngredientGroup{},
 		OAuth2Scopes: []string{householdMember},
@@ -1026,6 +1032,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_states/search": {
+		SearchRoute:  true,
 		ID:           "SearchForValidIngredientStates",
 		ResponseType: &types.ValidIngredientState{},
 		OAuth2Scopes: []string{householdMember},
@@ -1070,6 +1077,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredients/search": {
+		SearchRoute:  true,
 		ID:           "SearchForValidIngredients",
 		ResponseType: &types.ValidIngredient{},
 		OAuth2Scopes: []string{householdMember},
@@ -1108,6 +1116,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_instruments/search": {
+		SearchRoute:  true,
 		ID:           "SearchForValidInstruments",
 		ResponseType: &types.ValidInstrument{},
 		OAuth2Scopes: []string{householdMember},
@@ -1173,12 +1182,14 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_measurement_units/by_ingredient/{validIngredientID}": {
-		ID:           "GetValidMeasurementUnitsByIngredient",
+		ID:           "SearchValidMeasurementUnitsByIngredient",
 		ResponseType: &types.ValidMeasurementUnit{},
 		ListRoute:    true,
+		SearchRoute:  true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_measurement_units/search": {
+		SearchRoute:  true,
 		ID:           "SearchForValidMeasurementUnits",
 		ResponseType: &types.ValidMeasurementUnit{},
 		OAuth2Scopes: []string{householdMember},
@@ -1297,6 +1308,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_preparations/search": {
+		SearchRoute:  true,
 		ID:           "SearchForValidPreparations",
 		ResponseType: &types.ValidPreparation{},
 		OAuth2Scopes: []string{householdMember},
@@ -1335,6 +1347,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_vessels/search": {
+		SearchRoute:  true,
 		ID:           "SearchForValidVessels",
 		ResponseType: &types.ValidVessel{},
 		OAuth2Scopes: []string{householdMember},

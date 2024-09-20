@@ -56,7 +56,7 @@ func (c *Client) GetWebhooks(ctx context.Context, filter *types.QueryFilter) (*t
 	params := &generated.GetWebhooksParams{}
 	c.copyType(params, filter)
 
-	res, err := c.authedGeneratedClient.GetWebhooks(ctx, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.GetWebhooks(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting webhooks")
 	}

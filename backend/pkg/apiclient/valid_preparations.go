@@ -88,7 +88,7 @@ func (c *Client) SearchValidPreparations(ctx context.Context, query string, limi
 		Limit: int(limit),
 	}
 
-	res, err := c.authedGeneratedClient.SearchForValidPreparations(ctx, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.SearchForValidPreparations(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid preparations")
 	}
@@ -122,7 +122,7 @@ func (c *Client) GetValidPreparations(ctx context.Context, filter *types.QueryFi
 	params := &generated.GetValidPreparationsParams{}
 	c.copyType(&params, filter)
 
-	res, err := c.authedGeneratedClient.GetValidPreparations(ctx, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.GetValidPreparations(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid preparations")
 	}

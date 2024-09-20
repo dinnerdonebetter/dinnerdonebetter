@@ -91,7 +91,7 @@ func (c *Client) SearchValidVessels(ctx context.Context, query string, limit uin
 		Q:     query,
 		Limit: int(limit),
 	}
-	res, err := c.authedGeneratedClient.SearchForValidVessels(ctx, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.SearchForValidVessels(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessel")
 	}
@@ -125,7 +125,7 @@ func (c *Client) GetValidVessels(ctx context.Context, filter *types.QueryFilter)
 	params := &generated.GetValidVesselsParams{}
 	c.copyType(params, filter)
 
-	res, err := c.authedGeneratedClient.GetValidVessels(ctx, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.GetValidVessels(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessels")
 	}

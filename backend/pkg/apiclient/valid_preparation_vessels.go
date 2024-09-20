@@ -57,7 +57,7 @@ func (c *Client) GetValidPreparationVessels(ctx context.Context, filter *types.Q
 	params := &generated.GetValidPreparationVesselsParams{}
 	c.copyType(params, filter)
 
-	res, err := c.authedGeneratedClient.GetValidPreparationVessels(ctx, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.GetValidPreparationVessels(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid preparation vessels")
 	}
@@ -101,7 +101,7 @@ func (c *Client) GetValidPreparationVesselsForPreparation(ctx context.Context, v
 	params := &generated.GetValidPreparationVesselsByPreparationParams{}
 	c.copyType(params, filter)
 
-	res, err := c.authedGeneratedClient.GetValidPreparationVesselsByPreparation(ctx, validPreparationID, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.GetValidPreparationVesselsByPreparation(ctx, validPreparationID, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation vessels list")
 	}
@@ -145,7 +145,7 @@ func (c *Client) GetValidPreparationVesselsForVessel(ctx context.Context, validI
 	params := &generated.GetValidPreparationVesselsByVesselParams{}
 	c.copyType(params, filter)
 
-	res, err := c.authedGeneratedClient.GetValidPreparationVesselsByVessel(ctx, validInstrumentID, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.GetValidPreparationVesselsByVessel(ctx, validInstrumentID, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation vessels list request")
 	}

@@ -57,7 +57,7 @@ func (c *Client) GetValidPreparationInstruments(ctx context.Context, filter *typ
 	params := &generated.GetValidPreparationInstrumentsParams{}
 	c.copyType(params, filter)
 
-	res, err := c.authedGeneratedClient.GetValidPreparationInstruments(ctx, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.GetValidPreparationInstruments(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation instruments list request")
 	}
@@ -101,7 +101,7 @@ func (c *Client) GetValidPreparationInstrumentsForPreparation(ctx context.Contex
 	params := &generated.GetValidPreparationInstrumentsByPreparationParams{}
 	c.copyType(params, filter)
 
-	res, err := c.authedGeneratedClient.GetValidPreparationInstrumentsByPreparation(ctx, validPreparationID, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.GetValidPreparationInstrumentsByPreparation(ctx, validPreparationID, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation instruments list request")
 	}
@@ -145,7 +145,7 @@ func (c *Client) GetValidPreparationInstrumentsForInstrument(ctx context.Context
 	params := &generated.GetValidPreparationInstrumentsByInstrumentParams{}
 	c.copyType(params, filter)
 
-	res, err := c.authedGeneratedClient.GetValidPreparationInstrumentsByInstrument(ctx, validInstrumentID, params, c.queryFilterCleaner)
+	res, err := c.authedGeneratedClient.GetValidPreparationInstrumentsByInstrument(ctx, validInstrumentID, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation instruments list request")
 	}
