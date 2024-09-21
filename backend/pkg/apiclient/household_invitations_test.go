@@ -51,32 +51,19 @@ func (s *householdInvitationsTestSuite) SetupTest() {
 }
 
 func (s *householdInvitationsTestSuite) TestClient_GetHouseholdInvitation() {
-	const expectedPath = "/api/v1/households/%s/invitations/%s"
+	const expectedPath = "/api/v1/household_invitations/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
 
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleHouseholdInvitation.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
-		actual, err := c.GetHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		actual, err := c.GetHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
-	})
-
-	s.Run("with invalid household ID", func() {
-		t := s.T()
-
-		s.exampleHousehold.BelongsToUser = ""
-
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitation)
-
-		actual, err := c.GetHouseholdInvitation(s.ctx, "", s.exampleHouseholdInvitation.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
 	})
 
 	s.Run("with invalid invitation ID", func() {
@@ -84,10 +71,10 @@ func (s *householdInvitationsTestSuite) TestClient_GetHouseholdInvitation() {
 
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleHouseholdInvitation.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitation)
 
-		actual, err := c.GetHouseholdInvitation(s.ctx, s.exampleHousehold.ID, "")
+		actual, err := c.GetHouseholdInvitation(s.ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -99,7 +86,7 @@ func (s *householdInvitationsTestSuite) TestClient_GetHouseholdInvitation() {
 
 		c := buildTestClientWithInvalidURL(t)
 
-		actual, err := c.GetHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		actual, err := c.GetHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -111,7 +98,7 @@ func (s *householdInvitationsTestSuite) TestClient_GetHouseholdInvitation() {
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		actual, err := c.GetHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		actual, err := c.GetHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

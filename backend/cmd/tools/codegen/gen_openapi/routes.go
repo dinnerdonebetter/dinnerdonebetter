@@ -11,6 +11,7 @@ type routeDetails struct {
 	Description   string
 	InputTypeName string
 	OAuth2Scopes  []string
+	Authless      bool
 	ListRoute     bool
 	SearchRoute   bool
 }
@@ -22,8 +23,16 @@ const (
 )
 
 var routeInfoMap = map[string]routeDetails{
-	"GET /_meta_/live":  {},
-	"GET /_meta_/ready": {},
+	"GET /_meta_/live": {
+		ID:          "CheckForLiveness",
+		Description: "checks for service liveness",
+		Authless:    true,
+	},
+	"GET /_meta_/ready": {
+		ID:          "CheckForReadiness",
+		Description: "checks for service readiness",
+		Authless:    true,
+	},
 	"POST /api/v1/admin/cycle_cookie_secret": {
 		ID:           "AdminCycleCookieSecret",
 		OAuth2Scopes: []string{serviceAdmin},
@@ -52,15 +61,17 @@ var routeInfoMap = map[string]routeDetails{
 	"GET /api/v1/household_invitations/received": {
 		ID:           "GetReceivedHouseholdInvitations",
 		ResponseType: &types.HouseholdInvitation{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/household_invitations/sent": {
 		ID:           "GetSentHouseholdInvitations",
 		ResponseType: &types.HouseholdInvitation{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/household_invitations/{householdInvitationID}/": {
-		ID:           "GetHouseholdInvitations",
+		ID:           "GetHouseholdInvitation",
 		ResponseType: &types.HouseholdInvitation{},
 		OAuth2Scopes: []string{householdMember},
 	},

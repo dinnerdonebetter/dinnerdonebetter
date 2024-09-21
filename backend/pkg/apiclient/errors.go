@@ -50,6 +50,9 @@ var (
 
 	// ErrArgumentIsNotPointer indicates we received a non-pointer interface argument.
 	ErrArgumentIsNotPointer = errors.New("value is not a pointer")
+
+	// ErrInvalidPhotoEncodingForUpload indicates the provided photo upload is of the wrong encoding.
+	ErrInvalidPhotoEncodingForUpload = errors.New("invalid photo encoding")
 )
 
 // buildInvalidIDError indicates a required ID was passed in as zero.

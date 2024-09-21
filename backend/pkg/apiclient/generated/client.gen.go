@@ -22,6 +22,30 @@ const (
 	Oauth2Scopes     = "oauth2.Scopes"
 )
 
+// Defines values for GetReceivedHouseholdInvitationsParamsIncludeArchived.
+const (
+	GetReceivedHouseholdInvitationsParamsIncludeArchivedFalse GetReceivedHouseholdInvitationsParamsIncludeArchived = "false"
+	GetReceivedHouseholdInvitationsParamsIncludeArchivedTrue  GetReceivedHouseholdInvitationsParamsIncludeArchived = "true"
+)
+
+// Defines values for GetReceivedHouseholdInvitationsParamsSortBy.
+const (
+	GetReceivedHouseholdInvitationsParamsSortByAsc  GetReceivedHouseholdInvitationsParamsSortBy = "asc"
+	GetReceivedHouseholdInvitationsParamsSortByDesc GetReceivedHouseholdInvitationsParamsSortBy = "desc"
+)
+
+// Defines values for GetSentHouseholdInvitationsParamsIncludeArchived.
+const (
+	GetSentHouseholdInvitationsParamsIncludeArchivedFalse GetSentHouseholdInvitationsParamsIncludeArchived = "false"
+	GetSentHouseholdInvitationsParamsIncludeArchivedTrue  GetSentHouseholdInvitationsParamsIncludeArchived = "true"
+)
+
+// Defines values for GetSentHouseholdInvitationsParamsSortBy.
+const (
+	GetSentHouseholdInvitationsParamsSortByAsc  GetSentHouseholdInvitationsParamsSortBy = "asc"
+	GetSentHouseholdInvitationsParamsSortByDesc GetSentHouseholdInvitationsParamsSortBy = "desc"
+)
+
 // Defines values for GetHouseholdsParamsIncludeArchived.
 const (
 	GetHouseholdsParamsIncludeArchivedFalse GetHouseholdsParamsIncludeArchived = "false"
@@ -2678,6 +2702,42 @@ type WebhookTriggerEventCreationRequestInput struct {
 	TriggerEvent     *string `json:"triggerEvent,omitempty"`
 }
 
+// GetReceivedHouseholdInvitationsParams defines parameters for GetReceivedHouseholdInvitations.
+type GetReceivedHouseholdInvitationsParams struct {
+	CreatedBefore   string                                               `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                               `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                               `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                               `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetReceivedHouseholdInvitationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetReceivedHouseholdInvitationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                  `json:"limit"           form:"limit"`
+	Page            int                                                  `json:"page"            form:"page"`
+}
+
+// GetReceivedHouseholdInvitationsParamsIncludeArchived defines parameters for GetReceivedHouseholdInvitations.
+type GetReceivedHouseholdInvitationsParamsIncludeArchived string
+
+// GetReceivedHouseholdInvitationsParamsSortBy defines parameters for GetReceivedHouseholdInvitations.
+type GetReceivedHouseholdInvitationsParamsSortBy string
+
+// GetSentHouseholdInvitationsParams defines parameters for GetSentHouseholdInvitations.
+type GetSentHouseholdInvitationsParams struct {
+	CreatedBefore   string                                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetSentHouseholdInvitationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetSentHouseholdInvitationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                              `json:"limit"           form:"limit"`
+	Page            int                                              `json:"page"            form:"page"`
+}
+
+// GetSentHouseholdInvitationsParamsIncludeArchived defines parameters for GetSentHouseholdInvitations.
+type GetSentHouseholdInvitationsParamsIncludeArchived string
+
+// GetSentHouseholdInvitationsParamsSortBy defines parameters for GetSentHouseholdInvitations.
+type GetSentHouseholdInvitationsParamsSortBy string
+
 // GetHouseholdsParams defines parameters for GetHouseholds.
 type GetHouseholdsParams struct {
 	CreatedBefore   string                             `json:"createdBefore"   form:"createdBefore"`
@@ -4171,6 +4231,12 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// CheckForLiveness request
+	CheckForLiveness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CheckForReadiness request
+	CheckForReadiness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// AdminCycleCookieSecret request
 	AdminCycleCookieSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -4189,13 +4255,13 @@ type ClientInterface interface {
 	GetAuditLogEntryByID(ctx context.Context, auditLogEntryID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetReceivedHouseholdInvitations request
-	GetReceivedHouseholdInvitations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetReceivedHouseholdInvitations(ctx context.Context, params *GetReceivedHouseholdInvitationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSentHouseholdInvitations request
-	GetSentHouseholdInvitations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetSentHouseholdInvitations(ctx context.Context, params *GetSentHouseholdInvitationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHouseholdInvitations request
-	GetHouseholdInvitations(ctx context.Context, householdInvitationID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetHouseholdInvitation request
+	GetHouseholdInvitation(ctx context.Context, householdInvitationID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// AcceptHouseholdInvitationWithBody request with any body
 	AcceptHouseholdInvitationWithBody(ctx context.Context, householdInvitationID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5155,6 +5221,30 @@ type ClientInterface interface {
 	RequestUsernameReminder(ctx context.Context, body RequestUsernameReminderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
+func (c *Client) CheckForLiveness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCheckForLivenessRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CheckForReadiness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCheckForReadinessRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) AdminCycleCookieSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAdminCycleCookieSecretRequest(c.Server)
 	if err != nil {
@@ -5227,8 +5317,8 @@ func (c *Client) GetAuditLogEntryByID(ctx context.Context, auditLogEntryID strin
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetReceivedHouseholdInvitations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetReceivedHouseholdInvitationsRequest(c.Server)
+func (c *Client) GetReceivedHouseholdInvitations(ctx context.Context, params *GetReceivedHouseholdInvitationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetReceivedHouseholdInvitationsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -5239,8 +5329,8 @@ func (c *Client) GetReceivedHouseholdInvitations(ctx context.Context, reqEditors
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetSentHouseholdInvitations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetSentHouseholdInvitationsRequest(c.Server)
+func (c *Client) GetSentHouseholdInvitations(ctx context.Context, params *GetSentHouseholdInvitationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSentHouseholdInvitationsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -5251,8 +5341,8 @@ func (c *Client) GetSentHouseholdInvitations(ctx context.Context, reqEditors ...
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHouseholdInvitations(ctx context.Context, householdInvitationID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHouseholdInvitationsRequest(c.Server, householdInvitationID)
+func (c *Client) GetHouseholdInvitation(ctx context.Context, householdInvitationID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHouseholdInvitationRequest(c.Server, householdInvitationID)
 	if err != nil {
 		return nil, err
 	}
@@ -9475,6 +9565,60 @@ func (c *Client) RequestUsernameReminder(ctx context.Context, body RequestUserna
 	return c.Client.Do(req)
 }
 
+// NewCheckForLivenessRequest generates requests for CheckForLiveness
+func NewCheckForLivenessRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/_meta_/live")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCheckForReadinessRequest generates requests for CheckForReadiness
+func NewCheckForReadinessRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/_meta_/ready")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewAdminCycleCookieSecretRequest generates requests for AdminCycleCookieSecret
 func NewAdminCycleCookieSecretRequest(server string) (*http.Request, error) {
 	var err error
@@ -9631,7 +9775,7 @@ func NewGetAuditLogEntryByIDRequest(server string, auditLogEntryID string) (*htt
 }
 
 // NewGetReceivedHouseholdInvitationsRequest generates requests for GetReceivedHouseholdInvitations
-func NewGetReceivedHouseholdInvitationsRequest(server string) (*http.Request, error) {
+func NewGetReceivedHouseholdInvitationsRequest(server string, params *GetReceivedHouseholdInvitationsParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -9649,6 +9793,108 @@ func NewGetReceivedHouseholdInvitationsRequest(server string) (*http.Request, er
 		return nil, err
 	}
 
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, params.Limit); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page", runtime.ParamLocationQuery, params.Page); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "createdBefore", runtime.ParamLocationQuery, params.CreatedBefore); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "createdAfter", runtime.ParamLocationQuery, params.CreatedAfter); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "updatedBefore", runtime.ParamLocationQuery, params.UpdatedBefore); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "updatedAfter", runtime.ParamLocationQuery, params.UpdatedAfter); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "includeArchived", runtime.ParamLocationQuery, params.IncludeArchived); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sortBy", runtime.ParamLocationQuery, params.SortBy); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
@@ -9658,7 +9904,7 @@ func NewGetReceivedHouseholdInvitationsRequest(server string) (*http.Request, er
 }
 
 // NewGetSentHouseholdInvitationsRequest generates requests for GetSentHouseholdInvitations
-func NewGetSentHouseholdInvitationsRequest(server string) (*http.Request, error) {
+func NewGetSentHouseholdInvitationsRequest(server string, params *GetSentHouseholdInvitationsParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -9676,6 +9922,108 @@ func NewGetSentHouseholdInvitationsRequest(server string) (*http.Request, error)
 		return nil, err
 	}
 
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, params.Limit); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page", runtime.ParamLocationQuery, params.Page); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "createdBefore", runtime.ParamLocationQuery, params.CreatedBefore); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "createdAfter", runtime.ParamLocationQuery, params.CreatedAfter); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "updatedBefore", runtime.ParamLocationQuery, params.UpdatedBefore); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "updatedAfter", runtime.ParamLocationQuery, params.UpdatedAfter); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "includeArchived", runtime.ParamLocationQuery, params.IncludeArchived); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sortBy", runtime.ParamLocationQuery, params.SortBy); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
@@ -9684,8 +10032,8 @@ func NewGetSentHouseholdInvitationsRequest(server string) (*http.Request, error)
 	return req, nil
 }
 
-// NewGetHouseholdInvitationsRequest generates requests for GetHouseholdInvitations
-func NewGetHouseholdInvitationsRequest(server string, householdInvitationID string) (*http.Request, error) {
+// NewGetHouseholdInvitationRequest generates requests for GetHouseholdInvitation
+func NewGetHouseholdInvitationRequest(server string, householdInvitationID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -26103,6 +26451,12 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// CheckForLivenessWithResponse request
+	CheckForLivenessWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CheckForLivenessResponse, error)
+
+	// CheckForReadinessWithResponse request
+	CheckForReadinessWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CheckForReadinessResponse, error)
+
 	// AdminCycleCookieSecretWithResponse request
 	AdminCycleCookieSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*AdminCycleCookieSecretResponse, error)
 
@@ -26121,13 +26475,13 @@ type ClientWithResponsesInterface interface {
 	GetAuditLogEntryByIDWithResponse(ctx context.Context, auditLogEntryID string, reqEditors ...RequestEditorFn) (*GetAuditLogEntryByIDResponse, error)
 
 	// GetReceivedHouseholdInvitationsWithResponse request
-	GetReceivedHouseholdInvitationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetReceivedHouseholdInvitationsResponse, error)
+	GetReceivedHouseholdInvitationsWithResponse(ctx context.Context, params *GetReceivedHouseholdInvitationsParams, reqEditors ...RequestEditorFn) (*GetReceivedHouseholdInvitationsResponse, error)
 
 	// GetSentHouseholdInvitationsWithResponse request
-	GetSentHouseholdInvitationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSentHouseholdInvitationsResponse, error)
+	GetSentHouseholdInvitationsWithResponse(ctx context.Context, params *GetSentHouseholdInvitationsParams, reqEditors ...RequestEditorFn) (*GetSentHouseholdInvitationsResponse, error)
 
-	// GetHouseholdInvitationsWithResponse request
-	GetHouseholdInvitationsWithResponse(ctx context.Context, householdInvitationID string, reqEditors ...RequestEditorFn) (*GetHouseholdInvitationsResponse, error)
+	// GetHouseholdInvitationWithResponse request
+	GetHouseholdInvitationWithResponse(ctx context.Context, householdInvitationID string, reqEditors ...RequestEditorFn) (*GetHouseholdInvitationResponse, error)
 
 	// AcceptHouseholdInvitationWithBodyWithResponse request with any body
 	AcceptHouseholdInvitationWithBodyWithResponse(ctx context.Context, householdInvitationID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AcceptHouseholdInvitationResponse, error)
@@ -27087,6 +27441,48 @@ type ClientWithResponsesInterface interface {
 	RequestUsernameReminderWithResponse(ctx context.Context, body RequestUsernameReminderJSONRequestBody, reqEditors ...RequestEditorFn) (*RequestUsernameReminderResponse, error)
 }
 
+type CheckForLivenessResponse struct {
+	HTTPResponse *http.Response
+	Body         []byte
+}
+
+// Status returns HTTPResponse.Status
+func (r CheckForLivenessResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CheckForLivenessResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CheckForReadinessResponse struct {
+	HTTPResponse *http.Response
+	Body         []byte
+}
+
+// Status returns HTTPResponse.Status
+func (r CheckForReadinessResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CheckForReadinessResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type AdminCycleCookieSecretResponse struct {
 	HTTPResponse *http.Response
 	Body         []byte
@@ -27267,16 +27663,16 @@ func (r GetAuditLogEntryByIDResponse) StatusCode() int {
 type GetReceivedHouseholdInvitationsResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data       *HouseholdInvitation `json:"data,omitempty"`
-		Details    *ResponseDetails     `json:"details,omitempty"`
-		Error      *APIError            `json:"error,omitempty"`
-		Pagination *Pagination          `json:"pagination,omitempty"`
+		Data       *[]HouseholdInvitation `json:"data,omitempty"`
+		Details    *ResponseDetails       `json:"details,omitempty"`
+		Error      *APIError              `json:"error,omitempty"`
+		Pagination *Pagination            `json:"pagination,omitempty"`
 	}
 	XML200 *struct {
-		Data       *HouseholdInvitation `json:"data,omitempty"`
-		Details    *ResponseDetails     `json:"details,omitempty"`
-		Error      *APIError            `json:"error,omitempty"`
-		Pagination *Pagination          `json:"pagination,omitempty"`
+		Data       *[]HouseholdInvitation `json:"data,omitempty"`
+		Details    *ResponseDetails       `json:"details,omitempty"`
+		Error      *APIError              `json:"error,omitempty"`
+		Pagination *Pagination            `json:"pagination,omitempty"`
 	}
 	JSON400 *APIResponseWithError
 	XML400  *APIResponseWithError
@@ -27306,16 +27702,16 @@ func (r GetReceivedHouseholdInvitationsResponse) StatusCode() int {
 type GetSentHouseholdInvitationsResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data       *HouseholdInvitation `json:"data,omitempty"`
-		Details    *ResponseDetails     `json:"details,omitempty"`
-		Error      *APIError            `json:"error,omitempty"`
-		Pagination *Pagination          `json:"pagination,omitempty"`
+		Data       *[]HouseholdInvitation `json:"data,omitempty"`
+		Details    *ResponseDetails       `json:"details,omitempty"`
+		Error      *APIError              `json:"error,omitempty"`
+		Pagination *Pagination            `json:"pagination,omitempty"`
 	}
 	XML200 *struct {
-		Data       *HouseholdInvitation `json:"data,omitempty"`
-		Details    *ResponseDetails     `json:"details,omitempty"`
-		Error      *APIError            `json:"error,omitempty"`
-		Pagination *Pagination          `json:"pagination,omitempty"`
+		Data       *[]HouseholdInvitation `json:"data,omitempty"`
+		Details    *ResponseDetails       `json:"details,omitempty"`
+		Error      *APIError              `json:"error,omitempty"`
+		Pagination *Pagination            `json:"pagination,omitempty"`
 	}
 	JSON400 *APIResponseWithError
 	XML400  *APIResponseWithError
@@ -27342,7 +27738,7 @@ func (r GetSentHouseholdInvitationsResponse) StatusCode() int {
 	return 0
 }
 
-type GetHouseholdInvitationsResponse struct {
+type GetHouseholdInvitationResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -27366,7 +27762,7 @@ type GetHouseholdInvitationsResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHouseholdInvitationsResponse) Status() string {
+func (r GetHouseholdInvitationResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -27374,7 +27770,7 @@ func (r GetHouseholdInvitationsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHouseholdInvitationsResponse) StatusCode() int {
+func (r GetHouseholdInvitationResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -37182,6 +37578,24 @@ func (r RequestUsernameReminderResponse) StatusCode() int {
 	return 0
 }
 
+// CheckForLivenessWithResponse request returning *CheckForLivenessResponse
+func (c *ClientWithResponses) CheckForLivenessWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CheckForLivenessResponse, error) {
+	rsp, err := c.CheckForLiveness(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCheckForLivenessResponse(rsp)
+}
+
+// CheckForReadinessWithResponse request returning *CheckForReadinessResponse
+func (c *ClientWithResponses) CheckForReadinessWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CheckForReadinessResponse, error) {
+	rsp, err := c.CheckForReadiness(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCheckForReadinessResponse(rsp)
+}
+
 // AdminCycleCookieSecretWithResponse request returning *AdminCycleCookieSecretResponse
 func (c *ClientWithResponses) AdminCycleCookieSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*AdminCycleCookieSecretResponse, error) {
 	rsp, err := c.AdminCycleCookieSecret(ctx, reqEditors...)
@@ -37236,8 +37650,8 @@ func (c *ClientWithResponses) GetAuditLogEntryByIDWithResponse(ctx context.Conte
 }
 
 // GetReceivedHouseholdInvitationsWithResponse request returning *GetReceivedHouseholdInvitationsResponse
-func (c *ClientWithResponses) GetReceivedHouseholdInvitationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetReceivedHouseholdInvitationsResponse, error) {
-	rsp, err := c.GetReceivedHouseholdInvitations(ctx, reqEditors...)
+func (c *ClientWithResponses) GetReceivedHouseholdInvitationsWithResponse(ctx context.Context, params *GetReceivedHouseholdInvitationsParams, reqEditors ...RequestEditorFn) (*GetReceivedHouseholdInvitationsResponse, error) {
+	rsp, err := c.GetReceivedHouseholdInvitations(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -37245,21 +37659,21 @@ func (c *ClientWithResponses) GetReceivedHouseholdInvitationsWithResponse(ctx co
 }
 
 // GetSentHouseholdInvitationsWithResponse request returning *GetSentHouseholdInvitationsResponse
-func (c *ClientWithResponses) GetSentHouseholdInvitationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSentHouseholdInvitationsResponse, error) {
-	rsp, err := c.GetSentHouseholdInvitations(ctx, reqEditors...)
+func (c *ClientWithResponses) GetSentHouseholdInvitationsWithResponse(ctx context.Context, params *GetSentHouseholdInvitationsParams, reqEditors ...RequestEditorFn) (*GetSentHouseholdInvitationsResponse, error) {
+	rsp, err := c.GetSentHouseholdInvitations(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseGetSentHouseholdInvitationsResponse(rsp)
 }
 
-// GetHouseholdInvitationsWithResponse request returning *GetHouseholdInvitationsResponse
-func (c *ClientWithResponses) GetHouseholdInvitationsWithResponse(ctx context.Context, householdInvitationID string, reqEditors ...RequestEditorFn) (*GetHouseholdInvitationsResponse, error) {
-	rsp, err := c.GetHouseholdInvitations(ctx, householdInvitationID, reqEditors...)
+// GetHouseholdInvitationWithResponse request returning *GetHouseholdInvitationResponse
+func (c *ClientWithResponses) GetHouseholdInvitationWithResponse(ctx context.Context, householdInvitationID string, reqEditors ...RequestEditorFn) (*GetHouseholdInvitationResponse, error) {
+	rsp, err := c.GetHouseholdInvitation(ctx, householdInvitationID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHouseholdInvitationsResponse(rsp)
+	return ParseGetHouseholdInvitationResponse(rsp)
 }
 
 // AcceptHouseholdInvitationWithBodyWithResponse request with arbitrary body returning *AcceptHouseholdInvitationResponse
@@ -40325,6 +40739,38 @@ func (c *ClientWithResponses) RequestUsernameReminderWithResponse(ctx context.Co
 	return ParseRequestUsernameReminderResponse(rsp)
 }
 
+// ParseCheckForLivenessResponse parses an HTTP response from a CheckForLivenessWithResponse call
+func ParseCheckForLivenessResponse(rsp *http.Response) (*CheckForLivenessResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CheckForLivenessResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseCheckForReadinessResponse parses an HTTP response from a CheckForReadinessWithResponse call
+func ParseCheckForReadinessResponse(rsp *http.Response) (*CheckForReadinessResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CheckForReadinessResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
 // ParseAdminCycleCookieSecretResponse parses an HTTP response from a AdminCycleCookieSecretWithResponse call
 func ParseAdminCycleCookieSecretResponse(rsp *http.Response) (*AdminCycleCookieSecretResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -40697,10 +41143,10 @@ func ParseGetReceivedHouseholdInvitationsResponse(rsp *http.Response) (*GetRecei
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data       *HouseholdInvitation `json:"data,omitempty"`
-			Details    *ResponseDetails     `json:"details,omitempty"`
-			Error      *APIError            `json:"error,omitempty"`
-			Pagination *Pagination          `json:"pagination,omitempty"`
+			Data       *[]HouseholdInvitation `json:"data,omitempty"`
+			Details    *ResponseDetails       `json:"details,omitempty"`
+			Error      *APIError              `json:"error,omitempty"`
+			Pagination *Pagination            `json:"pagination,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -40730,10 +41176,10 @@ func ParseGetReceivedHouseholdInvitationsResponse(rsp *http.Response) (*GetRecei
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 200:
 		var dest struct {
-			Data       *HouseholdInvitation `json:"data,omitempty"`
-			Details    *ResponseDetails     `json:"details,omitempty"`
-			Error      *APIError            `json:"error,omitempty"`
-			Pagination *Pagination          `json:"pagination,omitempty"`
+			Data       *[]HouseholdInvitation `json:"data,omitempty"`
+			Details    *ResponseDetails       `json:"details,omitempty"`
+			Error      *APIError              `json:"error,omitempty"`
+			Pagination *Pagination            `json:"pagination,omitempty"`
 		}
 		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -40782,10 +41228,10 @@ func ParseGetSentHouseholdInvitationsResponse(rsp *http.Response) (*GetSentHouse
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data       *HouseholdInvitation `json:"data,omitempty"`
-			Details    *ResponseDetails     `json:"details,omitempty"`
-			Error      *APIError            `json:"error,omitempty"`
-			Pagination *Pagination          `json:"pagination,omitempty"`
+			Data       *[]HouseholdInvitation `json:"data,omitempty"`
+			Details    *ResponseDetails       `json:"details,omitempty"`
+			Error      *APIError              `json:"error,omitempty"`
+			Pagination *Pagination            `json:"pagination,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -40815,10 +41261,10 @@ func ParseGetSentHouseholdInvitationsResponse(rsp *http.Response) (*GetSentHouse
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 200:
 		var dest struct {
-			Data       *HouseholdInvitation `json:"data,omitempty"`
-			Details    *ResponseDetails     `json:"details,omitempty"`
-			Error      *APIError            `json:"error,omitempty"`
-			Pagination *Pagination          `json:"pagination,omitempty"`
+			Data       *[]HouseholdInvitation `json:"data,omitempty"`
+			Details    *ResponseDetails       `json:"details,omitempty"`
+			Error      *APIError              `json:"error,omitempty"`
+			Pagination *Pagination            `json:"pagination,omitempty"`
 		}
 		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -40851,15 +41297,15 @@ func ParseGetSentHouseholdInvitationsResponse(rsp *http.Response) (*GetSentHouse
 	return response, nil
 }
 
-// ParseGetHouseholdInvitationsResponse parses an HTTP response from a GetHouseholdInvitationsWithResponse call
-func ParseGetHouseholdInvitationsResponse(rsp *http.Response) (*GetHouseholdInvitationsResponse, error) {
+// ParseGetHouseholdInvitationResponse parses an HTTP response from a GetHouseholdInvitationWithResponse call
+func ParseGetHouseholdInvitationResponse(rsp *http.Response) (*GetHouseholdInvitationResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetHouseholdInvitationsResponse{
+	response := &GetHouseholdInvitationResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

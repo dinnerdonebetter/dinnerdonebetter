@@ -12,18 +12,19 @@ import (
 )
 
 type RouteDefinition struct {
+	RequestBody      string
+	InputType        string
 	Method           string
-	Summary          string
 	ID               string
 	Path             string
 	ResponseType     string
-	RequestBody      string
+	Summary          string
 	Description      string
-	InputType        string
 	PathArguments    []string
 	Tags             []string
 	OAuth2Scopes     []string
 	MainResponseCode int
+	Authless         bool
 	ListRoute        bool
 	SearchRoute      bool
 }
@@ -83,7 +84,7 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 		Parameters:  []openapi.ParameterOrReference{},
 	}
 
-	if _, ok := routesWithoutAuth[d.Path]; !ok {
+	if _, ok := routesWithoutAuth[d.Path]; !ok && !d.Authless {
 		op.Security = []map[string][]string{
 			{"cookieAuth": []string{}},
 		}

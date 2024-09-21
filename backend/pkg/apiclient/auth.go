@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -14,13 +15,14 @@ func (c *Client) UserStatus(ctx context.Context) (*types.UserStatusResponse, err
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	req, err := c.requestBuilder.BuildUserStatusRequest(ctx)
+	res, err := c.authedGeneratedClient.GetAuthStatus(ctx)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "user status")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserStatusResponse]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving user status")
 	}
 
@@ -40,19 +42,16 @@ func (c *Client) BeginSession(ctx context.Context, input *types.UserLoginInput) 
 		return nil, ErrNilInputProvided
 	}
 
-	// validating input here requires settings knowledge, so we do not do it
+	// validating input here requires settings knowledge, so we regrettably don't bother
 
-	req, err := c.requestBuilder.BuildLoginRequest(ctx, input)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "login")
-	}
+	body := generated.LoginJSONRequestBody{}
+	c.copyType(&body, input)
 
-	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
+	res, err := c.unauthedGeneratedClient.Login(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing login request")
 	}
-
-	c.closeResponseBody(ctx, res)
+	defer c.closeResponseBody(ctx, res)
 
 	if cookies := res.Cookies(); len(cookies) > 0 {
 		return cookies[0], nil
@@ -66,18 +65,13 @@ func (c *Client) EndSession(ctx context.Context) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	req, err := c.requestBuilder.BuildLogoutRequest(ctx)
-	if err != nil {
-		return observability.PrepareError(err, span, "logout")
-	}
-
-	res, err := c.fetchResponseToRequest(ctx, c.authedClient, req)
+	res, err := c.authedGeneratedClient.Logout(ctx)
 	if err != nil {
 		return observability.PrepareError(err, span, "executing logout request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	c.authedClient.Transport = newDefaultRoundTripper(c.authedClient.Timeout, c.impersonatedUserID, c.impersonatedHouseholdID)
-	c.closeResponseBody(ctx, res)
 
 	return nil
 }
@@ -97,17 +91,14 @@ func (c *Client) ChangePassword(ctx context.Context, cookie *http.Cookie, input 
 
 	// validating here requires settings knowledge, so we do not do it.
 
-	req, err := c.requestBuilder.BuildChangePasswordRequest(ctx, cookie, input)
-	if err != nil {
-		return observability.PrepareError(err, span, "change password")
-	}
+	body := generated.UpdatePasswordJSONRequestBody{}
+	c.copyType(&body, input)
 
-	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
+	res, err := c.authedGeneratedClient.UpdatePassword(ctx, body)
 	if err != nil {
 		return observability.PrepareError(err, span, "changing password")
 	}
-
-	c.closeResponseBody(ctx, res)
+	defer c.closeResponseBody(ctx, res)
 
 	if res.StatusCode != http.StatusAccepted {
 		return observability.PrepareError(errInvalidResponseCode, span, "invalid response code: %d", res.StatusCode)
@@ -133,13 +124,17 @@ func (c *Client) CycleTwoFactorSecret(ctx context.Context, cookie *http.Cookie, 
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCycleTwoFactorSecretRequest(ctx, cookie, input)
+	body := generated.RefreshTOTPSecretJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.RefreshTOTPSecret(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "cycle two factor secret")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.TOTPSecretRefreshResponse]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "cycling two factor secret")
 	}
 
@@ -163,17 +158,16 @@ func (c *Client) VerifyTOTPSecret(ctx context.Context, userID, token string) err
 		return observability.PrepareError(err, span, "invalid token provided: %q", token)
 	}
 
-	req, err := c.requestBuilder.BuildVerifyTOTPSecretRequest(ctx, userID, token)
-	if err != nil {
-		return observability.PrepareError(err, span, "verify two factor secret")
+	body := generated.VerifyTOTPSecretJSONRequestBody{
+		TotpToken: &token,
+		UserID:    &userID,
 	}
 
-	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
+	res, err := c.authedGeneratedClient.VerifyTOTPSecret(ctx, body)
 	if err != nil {
 		return observability.PrepareError(err, span, "verifying two factor secret")
 	}
-
-	c.closeResponseBody(ctx, res)
+	defer c.closeResponseBody(ctx, res)
 
 	if res.StatusCode == http.StatusBadRequest {
 		return ErrInvalidTOTPToken
@@ -193,17 +187,15 @@ func (c *Client) RequestPasswordResetToken(ctx context.Context, emailAddress str
 		return ErrEmptyEmailAddressProvided
 	}
 
-	req, err := c.requestBuilder.BuildPasswordResetTokenRequest(ctx, emailAddress)
-	if err != nil {
-		return observability.PrepareError(err, span, "password reset token")
+	body := generated.RequestPasswordResetTokenJSONRequestBody{
+		EmailAddress: &emailAddress,
 	}
 
-	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
+	res, err := c.unauthedGeneratedClient.RequestPasswordResetToken(ctx, body)
 	if err != nil {
 		return observability.PrepareError(err, span, "requesting password reset token")
 	}
-
-	c.closeResponseBody(ctx, res)
+	defer c.closeResponseBody(ctx, res)
 
 	if res.StatusCode != http.StatusAccepted {
 		return observability.PrepareError(errInvalidResponseCode, span, "erroneous response code when requesting password reset token: %d", res.StatusCode)
@@ -221,17 +213,14 @@ func (c *Client) RedeemPasswordResetToken(ctx context.Context, input *types.Pass
 		return ErrNilInputProvided
 	}
 
-	req, err := c.requestBuilder.BuildPasswordResetTokenRedemptionRequest(ctx, input)
-	if err != nil {
-		return observability.PrepareError(err, span, "password reset token redemption")
-	}
+	body := generated.RedeemPasswordResetTokenJSONRequestBody{}
+	c.copyType(&body, input)
 
-	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
+	res, err := c.unauthedGeneratedClient.RedeemPasswordResetToken(ctx, body)
 	if err != nil {
 		return observability.PrepareError(err, span, "requesting password reset token redemption")
 	}
-
-	c.closeResponseBody(ctx, res)
+	defer c.closeResponseBody(ctx, res)
 
 	if res.StatusCode != http.StatusAccepted {
 		return observability.PrepareError(errInvalidResponseCode, span, "erroneous response code when redeeming password reset token: %d", res.StatusCode)

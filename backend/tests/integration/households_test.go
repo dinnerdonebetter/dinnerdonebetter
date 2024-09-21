@@ -426,7 +426,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			createdInvitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
-			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitation.ID)
+			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, createdInvitation.ID)
 			requireNotNilAndNoProblems(t, createdInvitation, err)
 
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
@@ -763,7 +763,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			createdInvitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
-			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitation.ID)
+			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, createdInvitation.ID)
 			requireNotNilAndNoProblems(t, createdInvitation, err)
 
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)

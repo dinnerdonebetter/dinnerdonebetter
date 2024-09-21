@@ -1,4 +1,4 @@
-package requests
+package apiclient
 
 import (
 	"bytes"
@@ -11,20 +11,16 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
 const (
-	recipesBasePath = "recipes"
-
 	imagePNG  = "image/png"
 	imageJPEG = "image/jpeg"
 	imageGIF  = "image/gif"
 )
 
-func (b *Builder) prepareUploads(ctx context.Context, files map[string][]byte) (io.Reader, string, error) {
-	_, span := b.tracer.StartSpan(ctx)
+func (c *Client) prepareUploads(ctx context.Context, files map[string][]byte) (io.Reader, string, error) {
+	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if files == nil {
@@ -80,22 +76,15 @@ func (b *Builder) prepareUploads(ctx context.Context, files map[string][]byte) (
 	return body, writer.FormDataContentType(), nil
 }
 
-// BuildMultipleRecipeMediaUploadRequest builds an HTTP request that sets a user's avatar to the provided content.
-func (b *Builder) BuildMultipleRecipeMediaUploadRequest(ctx context.Context, files map[string][]byte, recipeID string) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
+// buildMultipleRecipeMediaUploadRequest builds an HTTP request that sets a user's avatar to the provided content.
+func (c *Client) buildMultipleRecipeMediaUploadRequest(ctx context.Context, uri string, files map[string][]byte) (*http.Request, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-
-	body, formDataContentType, err := b.prepareUploads(ctx, files)
+	body, formDataContentType, err := c.prepareUploads(ctx, files)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "preparing upload request")
 	}
-
-	uri := b.BuildURL(ctx, nil, recipesBasePath, recipeID, "images")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, body)
 	if err != nil {

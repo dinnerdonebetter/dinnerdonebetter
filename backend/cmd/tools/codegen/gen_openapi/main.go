@@ -70,10 +70,6 @@ func main() {
 
 	routeDefinitions := []*RouteDefinition{}
 	for _, route := range srv.Router().Routes() {
-		if strings.Contains(route.Path, "_meta_") {
-			continue
-		}
-
 		if route.Path == "/auth/{auth_provider}" || route.Path == "/auth/{auth_provider}/callback" {
 			continue
 		}
@@ -95,6 +91,8 @@ func main() {
 			SearchRoute:   routeInfo.SearchRoute,
 			PathArguments: pathArgs,
 			ListRoute:     routeInfo.ListRoute,
+			Description:   routeInfo.Description,
+			Authless:      routeInfo.Authless,
 			OAuth2Scopes:  routeInfo.OAuth2Scopes,
 		}
 

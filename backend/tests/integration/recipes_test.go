@@ -390,7 +390,7 @@ func (s *TestSuite) TestRecipes_Updating() {
 	})
 }
 
-func (s *TestSuite) TestRecipes_ContentUploading() {
+func (s *TestSuite) TestRecipes_UploadRecipeMedia() {
 	s.runForEachClient("should be able to upload content for a recipe", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()

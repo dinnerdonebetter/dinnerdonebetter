@@ -69,18 +69,6 @@ func TestNewClient(T *testing.T) {
 	})
 }
 
-func TestClient_RequestBuilder(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		c, _ := buildSimpleTestClient(t)
-
-		assert.NotNil(t, c.RequestBuilder())
-	})
-}
-
 func TestClient_BuildURL(T *testing.T) {
 	T.Parallel()
 

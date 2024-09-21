@@ -10,6 +10,10 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+const (
+	recipeStepsBasePath = "recipe_steps"
+)
+
 // GetRecipeStep gets a recipe step.
 func (c *Client) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
@@ -218,8 +222,9 @@ func (c *Client) UploadRecipeMediaForStep(ctx context.Context, files map[string]
 		return ErrNilInputProvided
 	}
 
-	// TODO: generated client?
-	req, err := c.requestBuilder.BuildMultipleRecipeMediaUploadRequestForRecipeStep(ctx, files, recipeID, recipeStepID)
+	uri := c.BuildURL(ctx, nil, recipesBasePath, recipeID, recipeStepsBasePath, recipeStepID, "images")
+
+	req, err := c.buildMultipleRecipeMediaUploadRequest(ctx, uri, files)
 	if err != nil {
 		return observability.PrepareError(err, span, "media upload")
 	}

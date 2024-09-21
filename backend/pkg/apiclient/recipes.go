@@ -12,6 +12,10 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+const (
+	recipesBasePath = "recipes"
+)
+
 // GetRecipe gets a recipe.
 func (c *Client) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
@@ -254,38 +258,6 @@ func (c *Client) GetMealPlanTasksForRecipe(ctx context.Context, recipeID string)
 	return apiResponse.Data, nil
 }
 
-// UploadRecipeMedia uploads a new avatar.
-func (c *Client) UploadRecipeMedia(ctx context.Context, files map[string][]byte, recipeID string) error {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if recipeID == "" {
-		return buildInvalidIDError("recipe")
-	}
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-
-	if files == nil {
-		return ErrNilInputProvided
-	}
-
-	// TODO: generated client?
-	req, err := c.requestBuilder.BuildMultipleRecipeMediaUploadRequest(ctx, files, recipeID)
-	if err != nil {
-		return observability.PrepareError(err, span, "media upload")
-	}
-
-	var apiResponse *types.APIResponse[[]*types.RecipeMedia]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareError(err, span, "uploading media")
-	}
-
-	if err = apiResponse.Error.AsError(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // GetRecipeDAG gets a recipe.
 func (c *Client) GetRecipeDAG(ctx context.Context, recipeID string) (image.Image, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
@@ -344,4 +316,38 @@ func (c *Client) CloneRecipe(ctx context.Context, recipeID string) (*types.Recip
 	}
 
 	return apiResponse.Data, nil
+}
+
+// UploadRecipeMedia uploads a new avatar.
+// TODO: write unit test for this.
+func (c *Client) UploadRecipeMedia(ctx context.Context, files map[string][]byte, recipeID string) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return buildInvalidIDError("recipe")
+	}
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+
+	if files == nil {
+		return ErrNilInputProvided
+	}
+
+	uri := c.BuildURL(ctx, nil, recipesBasePath, recipeID, "images")
+
+	req, err := c.buildMultipleRecipeMediaUploadRequest(ctx, uri, files)
+	if err != nil {
+		return observability.PrepareError(err, span, "media upload")
+	}
+
+	var apiResponse *types.APIResponse[[]*types.RecipeMedia]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+		return observability.PrepareError(err, span, "uploading media")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -9,6 +9,14 @@ servers:
 - description: dev API server
   url: https://api.dinnerdonebetter.dev
 paths:
+  /_meta_/live:
+    get:
+      description: checks for service liveness
+      operationId: CheckForLiveness
+  /_meta_/ready:
+    get:
+      description: checks for service readiness
+      operationId: CheckForReadiness
   /api/v1/admin/cycle_cookie_secret:
     post:
       description: Operation for creating
@@ -274,7 +282,7 @@ paths:
   /api/v1/household_invitations/{householdInvitationID}:
     get:
       description: Operation for fetching HouseholdInvitation
-      operationId: GetHouseholdInvitations
+      operationId: GetHouseholdInvitation
       parameters:
       - in: path
         name: householdInvitationID
@@ -562,6 +570,62 @@ paths:
     get:
       description: Operation for fetching HouseholdInvitation
       operationId: GetReceivedHouseholdInvitations
+      parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -571,8 +635,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/HouseholdInvitation'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -580,8 +645,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/HouseholdInvitation'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -621,6 +687,62 @@ paths:
     get:
       description: Operation for fetching HouseholdInvitation
       operationId: GetSentHouseholdInvitations
+      parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -630,8 +752,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/HouseholdInvitation'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -639,8 +762,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/HouseholdInvitation'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -20431,7 +20555,7 @@ paths:
       - oauth2
   /users:
     post:
-      description: Operation for creating UserCreationResponse
+      description: Creates a new user
       operationId: CreateUser
       requestBody:
         content:
@@ -20812,7 +20936,7 @@ paths:
       - password
   /users/password/reset/redeem:
     post:
-      description: Operation for creating User
+      description: Operation for redeeming a password reset token
       operationId: RedeemPasswordResetToken
       requestBody:
         content:
