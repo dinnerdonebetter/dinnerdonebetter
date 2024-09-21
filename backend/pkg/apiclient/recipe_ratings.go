@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -28,13 +29,14 @@ func (c *Client) GetRecipeRating(ctx context.Context, mealID, recipeRatingID str
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
-	req, err := c.requestBuilder.BuildGetRecipeRatingRequest(ctx, mealID, recipeRatingID)
+	res, err := c.authedGeneratedClient.GetRecipeRating(ctx, mealID, recipeRatingID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get recipe rating")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeRating]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe rating")
 	}
 
@@ -60,13 +62,17 @@ func (c *Client) GetRecipeRatings(ctx context.Context, mealID string, filter *ty
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
-	req, err := c.requestBuilder.BuildGetRecipeRatingsRequest(ctx, mealID, filter)
+	params := &generated.GetRecipeRatingsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetRecipeRatings(ctx, mealID, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "recipe ratings list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.RecipeRating]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe ratings")
 	}
 
@@ -99,13 +105,17 @@ func (c *Client) CreateRecipeRating(ctx context.Context, mealID string, input *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateRecipeRatingRequest(ctx, mealID, input)
+	body := generated.CreateRecipeRatingJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateRecipeRating(ctx, mealID, body)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create recipe rating")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeRating]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe rating")
 	}
 
@@ -125,14 +135,18 @@ func (c *Client) UpdateRecipeRating(ctx context.Context, recipeRating *types.Rec
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRating.ID)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRating.ID)
 
-	req, err := c.requestBuilder.BuildUpdateRecipeRatingRequest(ctx, recipeRating)
+	body := generated.UpdateRecipeRatingJSONRequestBody{}
+	c.copyType(&body, recipeRating)
+
+	res, err := c.authedGeneratedClient.UpdateRecipeRating(ctx, recipeRating.RecipeID, recipeRating.ID, body)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "update recipe rating")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeRating]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe rating %s", recipeRating.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe rating")
 	}
 
 	return nil
@@ -157,14 +171,15 @@ func (c *Client) ArchiveRecipeRating(ctx context.Context, mealID, recipeRatingID
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
-	req, err := c.requestBuilder.BuildArchiveRecipeRatingRequest(ctx, mealID, recipeRatingID)
+	res, err := c.authedGeneratedClient.ArchiveRecipeRating(ctx, mealID, recipeRatingID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archive recipe rating")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeRating]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating %s", recipeRatingID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating")
 	}
 
 	return nil

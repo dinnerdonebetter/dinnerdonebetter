@@ -142,7 +142,7 @@ func (c *Client) ArchiveMeal(ctx context.Context, mealID string) error {
 
 	var apiResponse *types.APIResponse[*types.Meal]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving meal %s", mealID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal")
 	}
 
 	return nil

@@ -109,7 +109,7 @@ func (c *Client) UpdateUserIngredientPreference(ctx context.Context, userIngredi
 
 	var apiResponse *types.APIResponse[types.UserIngredientPreference]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating user ingredient preference %s", userIngredientPreference.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating user ingredient preference")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -140,7 +140,7 @@ func (c *Client) ArchiveUserIngredientPreference(ctx context.Context, userIngred
 
 	var apiResponse *types.APIResponse[types.UserIngredientPreference]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving user ingredient preference %s", userIngredientPreferenceID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving user ingredient preference")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

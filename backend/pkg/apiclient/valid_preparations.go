@@ -198,13 +198,13 @@ func (c *Client) UpdateValidPreparation(ctx context.Context, validPreparation *t
 	c.copyType(&input, validPreparation)
 	res, err := c.authedGeneratedClient.UpdateValidPreparation(ctx, validPreparation.ID, input)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation %s", validPreparation.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparation]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation %s", validPreparation.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -229,13 +229,13 @@ func (c *Client) ArchiveValidPreparation(ctx context.Context, validPreparationID
 
 	res, err := c.authedGeneratedClient.ArchiveValidPreparation(ctx, validPreparationID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation %s", validPreparationID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation")
 	}
 	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidPreparation]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "loading valid preparation archive response %s", validPreparationID)
+		return observability.PrepareAndLogError(err, logger, span, "loading valid preparation archive response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

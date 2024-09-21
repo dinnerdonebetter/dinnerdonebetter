@@ -185,7 +185,7 @@ func (c *Client) UpdateServiceSettingConfiguration(ctx context.Context, serviceS
 
 	var apiResponse *types.APIResponse[*types.ServiceSettingConfiguration]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating service setting %s", serviceSettingConfiguration.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -216,7 +216,7 @@ func (c *Client) ArchiveServiceSettingConfiguration(ctx context.Context, service
 
 	var apiResponse *types.APIResponse[*types.ServiceSettingConfiguration]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving service setting %s", serviceSettingConfigurationID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving service setting")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

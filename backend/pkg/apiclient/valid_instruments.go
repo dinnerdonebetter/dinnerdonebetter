@@ -205,7 +205,7 @@ func (c *Client) UpdateValidInstrument(ctx context.Context, validInstrument *typ
 
 	var apiResponse *types.APIResponse[*types.ValidInstrument]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument %s", validInstrument.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -236,7 +236,7 @@ func (c *Client) ArchiveValidInstrument(ctx context.Context, validInstrumentID s
 
 	var apiResponse *types.APIResponse[*types.ValidInstrument]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument %s", validInstrumentID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

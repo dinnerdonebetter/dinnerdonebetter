@@ -163,7 +163,7 @@ func (c *Client) UpdateValidMeasurementUnitConversion(ctx context.Context, valid
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnitConversion]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement conversion %s", validMeasurementUnitConversion.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement conversion")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -194,7 +194,7 @@ func (c *Client) ArchiveValidMeasurementUnitConversion(ctx context.Context, vali
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnitConversion]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion %s", validMeasurementUnitConversionID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

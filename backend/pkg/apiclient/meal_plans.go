@@ -126,7 +126,7 @@ func (c *Client) UpdateMealPlan(ctx context.Context, mealPlan *types.MealPlan) e
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating meal plan %s", mealPlan.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -156,7 +156,7 @@ func (c *Client) ArchiveMealPlan(ctx context.Context, mealPlanID string) error {
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan %s", mealPlanID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

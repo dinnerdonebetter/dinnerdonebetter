@@ -184,7 +184,7 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating meal plan ClientOption vote %s", mealPlanOptionVote.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan ClientOption vote")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -232,7 +232,7 @@ func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan ClientOption vote %s", mealPlanOptionVoteID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan ClientOption vote")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

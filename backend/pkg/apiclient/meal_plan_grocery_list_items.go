@@ -173,7 +173,7 @@ func (c *Client) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 
 	var apiResponse *types.APIResponse[*types.MealPlanGroceryListItem]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan %s", mealPlanID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

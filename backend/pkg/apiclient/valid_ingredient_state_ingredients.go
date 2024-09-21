@@ -228,7 +228,7 @@ func (c *Client) UpdateValidIngredientStateIngredient(ctx context.Context, valid
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state ingredient %s", validIngredientStateIngredient.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state ingredient")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -259,7 +259,7 @@ func (c *Client) ArchiveValidIngredientStateIngredient(ctx context.Context, vali
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient %s", validIngredientStateIngredientID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

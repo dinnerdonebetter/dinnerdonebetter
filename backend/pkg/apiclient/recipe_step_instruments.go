@@ -2,11 +2,11 @@ package apiclient
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -39,6 +39,7 @@ func (c *Client) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeSt
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get recipe step instrument")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeStepInstrument]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -82,6 +83,7 @@ func (c *Client) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeS
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "recipe step instruments list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.RecipeStepInstrument]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -134,6 +136,7 @@ func (c *Client) CreateRecipeStepInstrument(ctx context.Context, recipeID, recip
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create recipe step instrument")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeStepInstrument]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -173,10 +176,11 @@ func (c *Client) UpdateRecipeStepInstrument(ctx context.Context, recipeID string
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "update recipe step instrument")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeStepInstrument]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe step instrument %s", recipeStepInstrument.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step instrument")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -215,10 +219,11 @@ func (c *Client) ArchiveRecipeStepInstrument(ctx context.Context, recipeID, reci
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archive recipe step instrument")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeStepInstrument]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step instrument %s", recipeStepInstrumentID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step instrument")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

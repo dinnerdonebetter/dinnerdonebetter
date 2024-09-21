@@ -182,7 +182,7 @@ func (c *Client) UpdateRecipe(ctx context.Context, recipe *types.Recipe) error {
 
 	var apiResponse *types.APIResponse[*types.Recipe]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe %s", recipe.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -213,7 +213,7 @@ func (c *Client) ArchiveRecipe(ctx context.Context, recipeID string) error {
 
 	var apiResponse *types.APIResponse[*types.Recipe]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving recipe %s", recipeID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

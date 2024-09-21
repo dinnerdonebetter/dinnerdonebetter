@@ -126,7 +126,7 @@ func (c *Client) UpdateHouseholdInstrumentOwnership(ctx context.Context, instrum
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership %s", instrumentOwnership.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -156,7 +156,7 @@ func (c *Client) ArchiveHouseholdInstrumentOwnership(ctx context.Context, househ
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving household instrument ownership %s", householdInstrumentOwnershipID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving household instrument ownership")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

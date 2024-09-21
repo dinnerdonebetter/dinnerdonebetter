@@ -156,7 +156,7 @@ func (c *Client) UpdateRecipeStep(ctx context.Context, recipeStep *types.RecipeS
 
 	var apiResponse *types.APIResponse[*types.RecipeStep]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe step %s", recipeStep.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

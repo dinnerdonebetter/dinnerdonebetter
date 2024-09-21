@@ -180,7 +180,7 @@ func (c *Client) UpdateValidIngredientGroup(ctx context.Context, validIngredient
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient group %s", validIngredientGroup.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient group")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -211,7 +211,7 @@ func (c *Client) ArchiveValidIngredientGroup(ctx context.Context, validIngredien
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group %s", validIngredientGroupID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
