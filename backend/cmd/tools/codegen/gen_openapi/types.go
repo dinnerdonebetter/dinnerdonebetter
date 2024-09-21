@@ -46,11 +46,14 @@ var skipTypes = map[string]bool{
 	"FinalizedMealPlanDatabaseResult":      true,
 	"MissingVote":                          true,
 	"MealUpdateRequestInput":               true,
-	"NamedID":                              true, // one day...
 	"OAuth2ClientToken":                    true,
 	"MealComponentUpdateRequestInput":      true,
 	"RecipeMediaCreationRequestInput":      true,
 	"RecipeMediaUpdateRequestInput":        true,
+	// one day...
+	"NamedID":    true,
+	"FloatRange": true,
+	"UintRange":  true,
 }
 
 type openapiProperty struct {
@@ -250,7 +253,6 @@ func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value
 		value = t.Name
 	case *ast.ArrayType:
 		isArray = true
-		// TODO: handle array type here
 		switch u := t.Elt.(type) {
 		case *ast.Ident:
 			value = u.Name

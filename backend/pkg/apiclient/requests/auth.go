@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	authBasePath = "auth"
+	usersBasePath = "users"
+	authBasePath  = "auth"
 )
 
 // BuildUserStatusRequest builds an HTTP request that fetches a user's status.

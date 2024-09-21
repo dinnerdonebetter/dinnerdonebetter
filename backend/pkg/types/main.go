@@ -73,6 +73,16 @@ type (
 		ID   string `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 	}
+
+	FloatRange struct {
+		Min float64 `json:"min"`
+		Max float64 `json:"max"`
+	}
+
+	UintRange struct {
+		Min uint64 `json:"min"`
+		Max uint64 `json:"max"`
+	}
 )
 
 // Error returns the error message.

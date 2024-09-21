@@ -3984,8 +3984,8 @@ type CreateWebhookTriggerEventJSONRequestBody = WebhookTriggerEventCreationReque
 // RunFinalizeMealPlanWorkerJSONRequestBody defines body for RunFinalizeMealPlanWorker for application/json ContentType.
 type RunFinalizeMealPlanWorkerJSONRequestBody = FinalizeMealPlansRequest
 
-// POSTUsersJSONRequestBody defines body for POSTUsers for application/json ContentType.
-type POSTUsersJSONRequestBody = UserRegistrationInput
+// CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
+type CreateUserJSONRequestBody = UserRegistrationInput
 
 // VerifyEmailAddressJSONRequestBody defines body for VerifyEmailAddress for application/json ContentType.
 type VerifyEmailAddressJSONRequestBody = EmailAddressVerificationRequestInput
@@ -5021,10 +5021,10 @@ type ClientInterface interface {
 	// POSTOauth2Token request
 	POSTOauth2Token(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// POSTUsersWithBody request with any body
-	POSTUsersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// CreateUserWithBody request with any body
+	CreateUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	POSTUsers(ctx context.Context, body POSTUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreateUser(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// VerifyEmailAddressWithBody request with any body
 	VerifyEmailAddressWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -9181,8 +9181,8 @@ func (c *Client) POSTOauth2Token(ctx context.Context, reqEditors ...RequestEdito
 	return c.Client.Do(req)
 }
 
-func (c *Client) POSTUsersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPOSTUsersRequestWithBody(c.Server, contentType, body)
+func (c *Client) CreateUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateUserRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -9193,8 +9193,8 @@ func (c *Client) POSTUsersWithBody(ctx context.Context, contentType string, body
 	return c.Client.Do(req)
 }
 
-func (c *Client) POSTUsers(ctx context.Context, body POSTUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPOSTUsersRequest(c.Server, body)
+func (c *Client) CreateUser(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateUserRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -25317,19 +25317,19 @@ func NewPOSTOauth2TokenRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewPOSTUsersRequest calls the generic POSTUsers builder with application/json body
-func NewPOSTUsersRequest(server string, body POSTUsersJSONRequestBody) (*http.Request, error) {
+// NewCreateUserRequest calls the generic CreateUser builder with application/json body
+func NewCreateUserRequest(server string, body CreateUserJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPOSTUsersRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateUserRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewPOSTUsersRequestWithBody generates requests for POSTUsers with any type of body
-func NewPOSTUsersRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewCreateUserRequestWithBody generates requests for CreateUser with any type of body
+func NewCreateUserRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -26647,10 +26647,10 @@ type ClientWithResponsesInterface interface {
 	// POSTOauth2TokenWithResponse request
 	POSTOauth2TokenWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*POSTOauth2TokenResponse, error)
 
-	// POSTUsersWithBodyWithResponse request with any body
-	POSTUsersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*POSTUsersResponse, error)
+	// CreateUserWithBodyWithResponse request with any body
+	CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
 
-	POSTUsersWithResponse(ctx context.Context, body POSTUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*POSTUsersResponse, error)
+	CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
 
 	// VerifyEmailAddressWithBodyWithResponse request with any body
 	VerifyEmailAddressWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*VerifyEmailAddressResponse, error)
@@ -36435,7 +36435,7 @@ func (r POSTOauth2TokenResponse) StatusCode() int {
 	return 0
 }
 
-type POSTUsersResponse struct {
+type CreateUserResponse struct {
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserCreationResponse `json:"data,omitempty"`
@@ -36459,7 +36459,7 @@ type POSTUsersResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r POSTUsersResponse) Status() string {
+func (r CreateUserResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -36467,7 +36467,7 @@ func (r POSTUsersResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r POSTUsersResponse) StatusCode() int {
+func (r CreateUserResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -39784,21 +39784,21 @@ func (c *ClientWithResponses) POSTOauth2TokenWithResponse(ctx context.Context, r
 	return ParsePOSTOauth2TokenResponse(rsp)
 }
 
-// POSTUsersWithBodyWithResponse request with arbitrary body returning *POSTUsersResponse
-func (c *ClientWithResponses) POSTUsersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*POSTUsersResponse, error) {
-	rsp, err := c.POSTUsersWithBody(ctx, contentType, body, reqEditors...)
+// CreateUserWithBodyWithResponse request with arbitrary body returning *CreateUserResponse
+func (c *ClientWithResponses) CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResponse, error) {
+	rsp, err := c.CreateUserWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePOSTUsersResponse(rsp)
+	return ParseCreateUserResponse(rsp)
 }
 
-func (c *ClientWithResponses) POSTUsersWithResponse(ctx context.Context, body POSTUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*POSTUsersResponse, error) {
-	rsp, err := c.POSTUsers(ctx, body, reqEditors...)
+func (c *ClientWithResponses) CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResponse, error) {
+	rsp, err := c.CreateUser(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePOSTUsersResponse(rsp)
+	return ParseCreateUserResponse(rsp)
 }
 
 // VerifyEmailAddressWithBodyWithResponse request with arbitrary body returning *VerifyEmailAddressResponse
@@ -60898,15 +60898,15 @@ func ParsePOSTOauth2TokenResponse(rsp *http.Response) (*POSTOauth2TokenResponse,
 	return response, nil
 }
 
-// ParsePOSTUsersResponse parses an HTTP response from a POSTUsersWithResponse call
-func ParsePOSTUsersResponse(rsp *http.Response) (*POSTUsersResponse, error) {
+// ParseCreateUserResponse parses an HTTP response from a CreateUserWithResponse call
+func ParseCreateUserResponse(rsp *http.Response) (*CreateUserResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &POSTUsersResponse{
+	response := &CreateUserResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

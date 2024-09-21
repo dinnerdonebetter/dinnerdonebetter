@@ -1437,6 +1437,8 @@ var routeInfoMap = map[string]routeDetails{
 		// we don't really have control over this route
 	},
 	"POST /users/": {
+		ID:           "CreateUser",
+		Description:  "Creates a new user",
 		ResponseType: &types.UserCreationResponse{},
 		InputType:    &types.UserRegistrationInput{},
 	},
@@ -1466,6 +1468,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"POST /users/password/reset/redeem": {
 		ID:           "RedeemPasswordResetToken",
+		Description:  "Operation for redeeming a password reset token",
 		ResponseType: &types.User{},
 		InputType:    &types.PasswordResetTokenRedemptionRequestInput{},
 	},

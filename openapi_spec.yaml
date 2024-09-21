@@ -20259,7 +20259,7 @@ paths:
   /users:
     post:
       description: Operation for creating UserCreationResponse
-      operationId: POST_users
+      operationId: CreateUser
       requestBody:
         content:
           application/json:
