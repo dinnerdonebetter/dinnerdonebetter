@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	mealPlansBasePath      = "meal_plans"
 	mealPlanEventsBasePath = "events"
 )
 

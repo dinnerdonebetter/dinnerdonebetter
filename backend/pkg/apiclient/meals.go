@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -22,13 +23,13 @@ func (c *Client) GetMeal(ctx context.Context, mealID string) (*types.Meal, error
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
-	req, err := c.requestBuilder.BuildGetMealRequest(ctx, mealID)
+	res, err := c.authedGeneratedClient.GetMeal(ctx, mealID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get meal")
 	}
 
 	var apiResponse *types.APIResponse[*types.Meal]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal")
 	}
 
@@ -48,13 +49,16 @@ func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*type
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetMealsRequest(ctx, filter)
+	params := &generated.GetMealsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetMeals(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "meals list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.Meal]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meals")
 	}
 
@@ -71,18 +75,26 @@ func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := filter.AttachToLogger(c.logger.Clone())
 
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildSearchForMealsRequest(ctx, query, filter)
+	params := &generated.SearchForMealsParams{}
+	c.copyType(params, filter)
+	params.Q = query
+
+	res, err := c.authedGeneratedClient.SearchForMeals(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "meals list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.Meal]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meals")
 	}
 
@@ -109,13 +121,16 @@ func (c *Client) CreateMeal(ctx context.Context, input *types.MealCreationReques
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateMealRequest(ctx, input)
+	body := generated.CreateMealJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateMeal(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create meal")
 	}
 
 	var apiResponse *types.APIResponse[*types.Meal]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal")
 	}
 
@@ -135,13 +150,13 @@ func (c *Client) ArchiveMeal(ctx context.Context, mealID string) error {
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
-	req, err := c.requestBuilder.BuildArchiveMealRequest(ctx, mealID)
+	res, err := c.authedGeneratedClient.ArchiveMeal(ctx, mealID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archive meal")
 	}
 
 	var apiResponse *types.APIResponse[*types.Meal]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal")
 	}
 

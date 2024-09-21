@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -17,13 +18,13 @@ func (c *Client) GetOAuth2Client(ctx context.Context, oauth2ClientDatabaseID str
 		return nil, ErrInvalidIDProvided
 	}
 
-	req, err := c.requestBuilder.BuildGetOAuth2ClientRequest(ctx, oauth2ClientDatabaseID)
+	res, err := c.authedGeneratedClient.GetOAuth2Client(ctx, oauth2ClientDatabaseID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building retrieve OAuth2 client request")
 	}
 
 	var apiResponse *types.APIResponse[*types.OAuth2Client]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "fetching oauth2 client")
 	}
 
@@ -44,13 +45,16 @@ func (c *Client) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilter
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetOAuth2ClientsRequest(ctx, filter)
+	params := &generated.GetOAuth2ClientsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetOAuth2Clients(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building OAuth2 clients list request")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.OAuth2Client]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "fetching api clients")
 	}
 
@@ -79,13 +83,16 @@ func (c *Client) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Clie
 		return nil, ErrNilInputProvided
 	}
 
-	req, err := c.requestBuilder.BuildCreateOAuth2ClientRequest(ctx, input)
+	body := generated.CreateOAuth2ClientJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateOAuth2Client(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building create OAuth2 client request")
 	}
 
 	var apiResponse *types.APIResponse[*types.OAuth2ClientCreationResponse]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "creating oauth2 client")
 	}
 
@@ -105,13 +112,13 @@ func (c *Client) ArchiveOAuth2Client(ctx context.Context, oauth2ClientDatabaseID
 		return ErrInvalidIDProvided
 	}
 
-	req, err := c.requestBuilder.BuildArchiveOAuth2ClientRequest(ctx, oauth2ClientDatabaseID)
+	res, err := c.authedGeneratedClient.ArchiveOAuth2Client(ctx, oauth2ClientDatabaseID)
 	if err != nil {
 		return observability.PrepareError(err, span, "building archive OAuth2 client request")
 	}
 
 	var apiResponse *types.APIResponse[*types.OAuth2Client]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving oauth2 client")
 	}
 
