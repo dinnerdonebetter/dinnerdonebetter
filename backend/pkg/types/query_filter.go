@@ -44,16 +44,16 @@ const (
 
 // QueryFilter represents all the filters a User could apply to a list query.
 type QueryFilter struct {
-	_ struct{} `json:"-"`
-
-	SortBy          *string    `json:"sortBy"`
-	Page            *uint16    `json:"page"`
+	_               struct{}   `json:"-"`
+	SortBy          *string    `json:"sortBy,omitempty"`
+	Page            *uint16    `json:"page,omitempty"`
 	CreatedAfter    *time.Time `json:"createdBefore,omitempty"`
 	CreatedBefore   *time.Time `json:"createdAfter,omitempty"`
 	UpdatedAfter    *time.Time `json:"updatedBefore,omitempty"`
 	UpdatedBefore   *time.Time `json:"updatedAfter,omitempty"`
-	Limit           *uint8     `json:"limit"`
+	Limit           *uint8     `json:"limit,omitempty"`
 	IncludeArchived *bool      `json:"includeArchived,omitempty"`
+	Query           string     `json:"q,omitempty"`
 }
 
 // DefaultQueryFilter builds the default query filter.
@@ -71,6 +71,10 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 
 	if qf == nil {
 		return l.WithValue(keys.FilterIsNilKey, true)
+	}
+
+	if qf.Query != "" {
+		l = l.WithValue(QueryKeySearch, qf.Query)
 	}
 
 	if qf.Page != nil {
@@ -106,6 +110,10 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 
 // FromParams overrides the core QueryFilter values with values retrieved from url.Params.
 func (qf *QueryFilter) FromParams(params url.Values) {
+	if i := params.Get(QueryKeySearch); i != "" {
+		qf.Query = i
+	}
+
 	if i, err := strconv.ParseUint(params.Get(QueryKeyPage), 10, 64); err == nil {
 		qf.Page = pointer.To(uint16(math.Max(float64(i), 1)))
 	}
@@ -164,6 +172,10 @@ func (qf *QueryFilter) ToValues() url.Values {
 	}
 
 	v := url.Values{}
+
+	if qf.Query != "" {
+		v.Set(QueryKeySearch, qf.Query)
+	}
 
 	if qf.Page != nil {
 		v.Set(QueryKeyPage, strconv.FormatUint(uint64(*qf.Page), 10))

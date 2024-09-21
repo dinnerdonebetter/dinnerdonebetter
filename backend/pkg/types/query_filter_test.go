@@ -24,6 +24,7 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		qf := &QueryFilter{
+			Query:           t.Name(),
 			Page:            pointer.To(uint16(100)),
 			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
@@ -57,6 +58,7 @@ func TestQueryFilter_FromParams(T *testing.T) {
 
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
+			Query:           t.Name(),
 			Page:            pointer.To(uint16(100)),
 			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
@@ -68,6 +70,7 @@ func TestQueryFilter_FromParams(T *testing.T) {
 		}
 
 		exampleInput := url.Values{
+			QueryKeySearch:          []string{t.Name()},
 			QueryKeyPage:            []string{strconv.Itoa(int(*expected.Page))},
 			QueryKeyLimit:           []string{strconv.Itoa(int(*expected.Limit))},
 			QueryKeyCreatedBefore:   []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
@@ -138,6 +141,7 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		require.NoError(t, err)
 
 		qf := &QueryFilter{
+			Query:           t.Name(),
 			Page:            pointer.To(uint16(100)),
 			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
@@ -149,6 +153,7 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		}
 
 		expected := url.Values{
+			QueryKeySearch:          []string{t.Name()},
 			QueryKeyPage:            []string{strconv.Itoa(int(*qf.Page))},
 			QueryKeyLimit:           []string{strconv.Itoa(int(*qf.Limit))},
 			QueryKeyCreatedBefore:   []string{qf.CreatedAfter.Format(time.RFC3339Nano)},
@@ -184,6 +189,7 @@ func TestExtractQueryFilter(T *testing.T) {
 		require.NoError(t, err)
 
 		expected := &QueryFilter{
+			Query:         t.Name(),
 			Page:          pointer.To(uint16(100)),
 			Limit:         pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:  pointer.To(tt),
@@ -193,6 +199,7 @@ func TestExtractQueryFilter(T *testing.T) {
 			SortBy:        SortDescending,
 		}
 		exampleInput := url.Values{
+			QueryKeySearch:        []string{t.Name()},
 			QueryKeyPage:          []string{strconv.Itoa(int(*expected.Page))},
 			QueryKeyLimit:         []string{strconv.Itoa(int(*expected.Limit))},
 			QueryKeyCreatedBefore: []string{expected.CreatedAfter.Format(time.RFC3339Nano)},

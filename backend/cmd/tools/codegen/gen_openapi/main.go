@@ -92,6 +92,7 @@ func main() {
 			ID:            routeInfo.ID,
 			Method:        route.Method,
 			Path:          route.Path,
+			SearchRoute:   routeInfo.SearchRoute,
 			PathArguments: pathArgs,
 			ListRoute:     routeInfo.ListRoute,
 			OAuth2Scopes:  routeInfo.OAuth2Scopes,

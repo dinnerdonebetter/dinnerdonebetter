@@ -25,6 +25,7 @@ type RouteDefinition struct {
 	OAuth2Scopes     []string
 	MainResponseCode int
 	ListRoute        bool
+	SearchRoute      bool
 }
 
 var routesWithoutAuth = map[string]struct{}{
@@ -92,7 +93,7 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 		}
 	}
 
-	if strings.HasSuffix(d.Path, "search") {
+	if strings.HasSuffix(d.Path, "search") || d.SearchRoute {
 		d.ListRoute = true
 		op.Parameters = append(op.Parameters, openapi.ParameterOrReference{
 			Parameter: &openapi.Parameter{
