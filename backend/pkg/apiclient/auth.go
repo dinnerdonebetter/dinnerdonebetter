@@ -36,7 +36,7 @@ func (c *Client) BeginSession(ctx context.Context, input *types.UserLoginInput) 
 		return nil, ErrNilInputProvided
 	}
 
-	// validating here requires settings knowledge, so we do not do it
+	// validating input here requires settings knowledge, so we do not do it
 
 	req, err := c.requestBuilder.BuildLoginRequest(ctx, input)
 	if err != nil {

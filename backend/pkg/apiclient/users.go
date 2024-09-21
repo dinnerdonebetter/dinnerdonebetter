@@ -18,6 +18,7 @@ func (c *Client) GetSelf(ctx context.Context) (*types.User, error) {
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building get self request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -44,6 +45,7 @@ func (c *Client) GetUser(ctx context.Context, userID string) (*types.User, error
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building get user request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -74,6 +76,7 @@ func (c *Client) GetUsers(ctx context.Context, filter *types.QueryFilter) (*type
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building users list request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.User]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -110,6 +113,7 @@ func (c *Client) SearchForUsersByUsername(ctx context.Context, username string) 
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building username search request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.User]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -135,10 +139,11 @@ func (c *Client) CreateUser(ctx context.Context, input *types.UserRegistrationIn
 	body := generated.CreateUserJSONRequestBody{}
 	c.copyType(&body, input)
 
-	res, err := c.authedGeneratedClient.CreateUser(ctx, body)
+	res, err := c.unauthedGeneratedClient.CreateUser(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "creating user")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserCreationResponse]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -165,6 +170,7 @@ func (c *Client) ArchiveUser(ctx context.Context, userID string) error {
 	if err != nil {
 		return observability.PrepareError(err, span, "building archive user request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -194,6 +200,7 @@ func (c *Client) UploadNewAvatar(ctx context.Context, input *types.AvatarUpdateI
 	if err != nil {
 		return observability.PrepareError(err, span, "building avatar upload request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -224,6 +231,7 @@ func (c *Client) CheckUserPermissions(ctx context.Context, permissions ...string
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building permission check request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserPermissionsResponse]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -253,6 +261,7 @@ func (c *Client) UpdateUserEmailAddress(ctx context.Context, input *types.UserEm
 	if err != nil {
 		return observability.PrepareError(err, span, "building archive user request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -282,6 +291,7 @@ func (c *Client) UpdateUserUsername(ctx context.Context, input *types.UsernameUp
 	if err != nil {
 		return observability.PrepareError(err, span, "building archive user request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -311,6 +321,7 @@ func (c *Client) UpdateUserDetails(ctx context.Context, input *types.UserDetails
 	if err != nil {
 		return observability.PrepareError(err, span, "building archive user request")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

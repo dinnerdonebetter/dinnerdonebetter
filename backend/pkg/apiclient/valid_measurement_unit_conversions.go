@@ -25,7 +25,7 @@ func (c *Client) GetValidMeasurementUnitConversion(ctx context.Context, validMea
 
 	res, err := c.authedGeneratedClient.GetValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid measurement conversion")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -56,7 +56,7 @@ func (c *Client) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context,
 
 	res, err := c.authedGeneratedClient.GetValidMeasurementUnitConversionsFromUnit(ctx, validMeasurementUnitID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid measurement conversion")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -87,7 +87,7 @@ func (c *Client) GetValidMeasurementUnitConversionToUnit(ctx context.Context, va
 
 	res, err := c.authedGeneratedClient.ValidMeasurementUnitConversionsToUnit(ctx, validMeasurementUnitID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid measurement conversion")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -123,7 +123,7 @@ func (c *Client) CreateValidMeasurementUnitConversion(ctx context.Context, input
 
 	res, err := c.authedGeneratedClient.CreateValidMeasurementUnitConversion(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid measurement conversion request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid measurement conversion")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -157,7 +157,7 @@ func (c *Client) UpdateValidMeasurementUnitConversion(ctx context.Context, valid
 
 	res, err := c.authedGeneratedClient.UpdateValidMeasurementUnitConversion(ctx, validMeasurementUnitConversion.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid measurement conversion request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid measurement conversion")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -188,7 +188,7 @@ func (c *Client) ArchiveValidMeasurementUnitConversion(ctx context.Context, vali
 
 	res, err := c.authedGeneratedClient.ArchiveValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid measurement conversion request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid measurement conversion")
 	}
 	defer c.closeResponseBody(ctx, res)
 

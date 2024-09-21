@@ -27,7 +27,7 @@ func (c *Client) GetHouseholdInvitation(ctx context.Context, householdID, househ
 
 	req, err := c.requestBuilder.BuildGetHouseholdInvitationRequest(ctx, householdID, householdInvitationID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get invitation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get invitation")
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
@@ -52,7 +52,7 @@ func (c *Client) GetPendingHouseholdInvitationsFromUser(ctx context.Context, fil
 
 	req, err := c.requestBuilder.BuildGetPendingHouseholdInvitationsFromUserRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reject invitation")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.HouseholdInvitation]
@@ -82,7 +82,7 @@ func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filt
 
 	req, err := c.requestBuilder.BuildGetPendingHouseholdInvitationsForUserRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reject invitation")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.HouseholdInvitation]
@@ -120,7 +120,7 @@ func (c *Client) AcceptHouseholdInvitation(ctx context.Context, householdInvitat
 
 	req, err := c.requestBuilder.BuildAcceptHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+		return observability.PrepareAndLogError(err, logger, span, "accept invitation")
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
@@ -153,7 +153,7 @@ func (c *Client) CancelHouseholdInvitation(ctx context.Context, householdInvitat
 
 	req, err := c.requestBuilder.BuildCancelHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+		return observability.PrepareAndLogError(err, logger, span, "cancel invitation")
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
@@ -186,7 +186,7 @@ func (c *Client) RejectHouseholdInvitation(ctx context.Context, householdInvitat
 
 	req, err := c.requestBuilder.BuildRejectHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+		return observability.PrepareAndLogError(err, logger, span, "reject invitation")
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]

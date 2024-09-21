@@ -25,7 +25,7 @@ func (c *Client) GetValidMeasurementUnit(ctx context.Context, validMeasurementUn
 
 	res, err := c.authedGeneratedClient.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement unit request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid measurement unit")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -65,7 +65,7 @@ func (c *Client) SearchValidMeasurementUnits(ctx context.Context, query string, 
 
 	res, err := c.authedGeneratedClient.SearchForValidMeasurementUnits(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid measurement units request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "search for valid measurement units")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -104,7 +104,7 @@ func (c *Client) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, 
 
 	res, err := c.authedGeneratedClient.SearchValidMeasurementUnitsByIngredient(ctx, validIngredientID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid measurement units request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "search for valid measurement units")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -143,7 +143,7 @@ func (c *Client) GetValidMeasurementUnits(ctx context.Context, filter *types.Que
 
 	res, err := c.authedGeneratedClient.GetValidMeasurementUnits(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid measurement units list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid measurement units list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -184,7 +184,7 @@ func (c *Client) CreateValidMeasurementUnit(ctx context.Context, input *types.Va
 
 	res, err := c.authedGeneratedClient.CreateValidMeasurementUnit(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid measurement unit request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid measurement unit")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -218,7 +218,7 @@ func (c *Client) UpdateValidMeasurementUnit(ctx context.Context, validMeasuremen
 
 	res, err := c.authedGeneratedClient.UpdateValidMeasurementUnit(ctx, validMeasurementUnit.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid measurement unit request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid measurement unit")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -245,7 +245,7 @@ func (c *Client) ArchiveValidMeasurementUnit(ctx context.Context, validMeasureme
 
 	res, err := c.authedGeneratedClient.ArchiveValidMeasurementUnit(ctx, validMeasurementUnitID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid measurement unit request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid measurement unit")
 	}
 	defer c.closeResponseBody(ctx, res)
 

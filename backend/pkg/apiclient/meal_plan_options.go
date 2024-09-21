@@ -36,7 +36,7 @@ func (c *Client) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEven
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan ClientOption request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan ClientOption")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanOption]
@@ -76,7 +76,7 @@ func (c *Client) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEve
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionsRequest(ctx, mealPlanID, mealPlanEventID, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building meal plan options list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "meal plan options list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanOption]
@@ -125,7 +125,7 @@ func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanID, mealPlanE
 
 	req, err := c.requestBuilder.BuildCreateMealPlanOptionRequest(ctx, mealPlanID, mealPlanEventID, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan ClientOption request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan ClientOption")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanOption]
@@ -161,7 +161,7 @@ func (c *Client) UpdateMealPlanOption(ctx context.Context, mealPlanID string, me
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanOptionRequest(ctx, mealPlanID, mealPlanOption)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update meal plan ClientOption request")
+		return observability.PrepareAndLogError(err, logger, span, "update meal plan ClientOption")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanOption]
@@ -203,7 +203,7 @@ func (c *Client) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanOptionRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive meal plan ClientOption request")
+		return observability.PrepareAndLogError(err, logger, span, "archive meal plan ClientOption")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanOption]

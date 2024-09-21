@@ -24,7 +24,7 @@ func (c *Client) GetMealPlan(ctx context.Context, mealPlanID string) (*types.Mea
 
 	req, err := c.requestBuilder.BuildGetMealPlanRequest(ctx, mealPlanID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
@@ -54,7 +54,7 @@ func (c *Client) GetMealPlans(ctx context.Context, filter *types.QueryFilter) (*
 
 	req, err := c.requestBuilder.BuildGetMealPlansRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building meal plans list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "meal plans list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.MealPlan]
@@ -91,7 +91,7 @@ func (c *Client) CreateMealPlan(ctx context.Context, input *types.MealPlanCreati
 
 	req, err := c.requestBuilder.BuildCreateMealPlanRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
@@ -121,7 +121,7 @@ func (c *Client) UpdateMealPlan(ctx context.Context, mealPlan *types.MealPlan) e
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanRequest(ctx, mealPlan)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update meal plan request")
+		return observability.PrepareAndLogError(err, logger, span, "update meal plan")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
@@ -151,7 +151,7 @@ func (c *Client) ArchiveMealPlan(ctx context.Context, mealPlanID string) error {
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanRequest(ctx, mealPlanID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive meal plan request")
+		return observability.PrepareAndLogError(err, logger, span, "archive meal plan")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
@@ -181,7 +181,7 @@ func (c *Client) FinalizeMealPlan(ctx context.Context, mealPlanID string) error 
 
 	req, err := c.requestBuilder.BuildFinalizeMealPlanRequest(ctx, mealPlanID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building get meal plan request")
+		return observability.PrepareAndLogError(err, logger, span, "get meal plan")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlan]

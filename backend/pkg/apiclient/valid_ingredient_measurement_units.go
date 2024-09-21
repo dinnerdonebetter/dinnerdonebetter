@@ -25,7 +25,7 @@ func (c *Client) GetValidIngredientMeasurementUnit(ctx context.Context, validIng
 
 	res, err := c.authedGeneratedClient.GetValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient measurement unit request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid ingredient measurement unit")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -59,7 +59,7 @@ func (c *Client) GetValidIngredientMeasurementUnits(ctx context.Context, filter 
 
 	res, err := c.authedGeneratedClient.GetValidIngredientMeasurementUnits(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient measurement unit list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredient measurement unit list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -103,7 +103,7 @@ func (c *Client) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Con
 
 	res, err := c.authedGeneratedClient.GetValidIngredientMeasurementUnitsByIngredient(ctx, validIngredientID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient measurement unit list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredient measurement unit list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -147,7 +147,7 @@ func (c *Client) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx contex
 
 	res, err := c.authedGeneratedClient.GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx, validMeasurementUnitID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient measurement unit list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredient measurement unit list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -188,7 +188,7 @@ func (c *Client) CreateValidIngredientMeasurementUnit(ctx context.Context, input
 
 	res, err := c.authedGeneratedClient.CreateValidIngredientMeasurementUnit(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient measurement unit request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid ingredient measurement unit")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -222,7 +222,7 @@ func (c *Client) UpdateValidIngredientMeasurementUnit(ctx context.Context, valid
 
 	res, err := c.authedGeneratedClient.UpdateValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnit.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient measurement unit request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid ingredient measurement unit")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -253,7 +253,7 @@ func (c *Client) ArchiveValidIngredientMeasurementUnit(ctx context.Context, vali
 
 	res, err := c.authedGeneratedClient.ArchiveValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient measurement unit request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid ingredient measurement unit")
 	}
 	defer c.closeResponseBody(ctx, res)
 

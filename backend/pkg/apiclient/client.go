@@ -203,7 +203,7 @@ func (c *Client) IsUp(ctx context.Context) bool {
 
 	req, err := c.requestBuilder.BuildHealthCheckRequest(ctx)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "building health check request")
+		observability.AcknowledgeError(err, logger, span, "health check")
 
 		return false
 	}

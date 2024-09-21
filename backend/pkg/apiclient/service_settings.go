@@ -2,11 +2,11 @@ package apiclient
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -25,8 +25,9 @@ func (c *Client) GetServiceSetting(ctx context.Context, serviceSettingID string)
 
 	res, err := c.authedGeneratedClient.GetServiceSetting(ctx, serviceSettingID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get service setting request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get service setting")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ServiceSetting]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -64,8 +65,9 @@ func (c *Client) SearchServiceSettings(ctx context.Context, query string, limit 
 
 	res, err := c.authedGeneratedClient.SearchForServiceSettings(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for service settings request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "search for service settings")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ServiceSetting]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -97,8 +99,9 @@ func (c *Client) GetServiceSettings(ctx context.Context, filter *types.QueryFilt
 
 	res, err := c.authedGeneratedClient.GetServiceSettings(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building service settings list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "service settings list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ServiceSetting]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -137,8 +140,9 @@ func (c *Client) CreateServiceSetting(ctx context.Context, input *types.ServiceS
 
 	res, err := c.authedGeneratedClient.CreateServiceSetting(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create service setting request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create service setting")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ServiceSetting]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -167,12 +171,13 @@ func (c *Client) ArchiveServiceSetting(ctx context.Context, serviceSettingID str
 
 	res, err := c.authedGeneratedClient.ArchiveServiceSetting(ctx, serviceSettingID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive service setting request")
+		return observability.PrepareAndLogError(err, logger, span, "archive service setting")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ServiceSetting]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving service setting %s", serviceSettingID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving service setting")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

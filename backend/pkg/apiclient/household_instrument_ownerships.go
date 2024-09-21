@@ -24,7 +24,7 @@ func (c *Client) GetHouseholdInstrumentOwnership(ctx context.Context, validInstr
 
 	req, err := c.requestBuilder.BuildGetHouseholdInstrumentOwnershipRequest(ctx, validInstrumentID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get household instrument ownership request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get household instrument ownership")
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -54,7 +54,7 @@ func (c *Client) GetHouseholdInstrumentOwnerships(ctx context.Context, filter *t
 
 	req, err := c.requestBuilder.BuildGetHouseholdInstrumentOwnershipsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building household instrument ownerships list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "household instrument ownerships list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.HouseholdInstrumentOwnership]
@@ -91,7 +91,7 @@ func (c *Client) CreateHouseholdInstrumentOwnership(ctx context.Context, input *
 
 	req, err := c.requestBuilder.BuildCreateHouseholdInstrumentOwnershipRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create household instrument ownership request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create household instrument ownership")
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -121,7 +121,7 @@ func (c *Client) UpdateHouseholdInstrumentOwnership(ctx context.Context, instrum
 
 	req, err := c.requestBuilder.BuildUpdateHouseholdInstrumentOwnershipRequest(ctx, instrumentOwnership)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update household instrument ownership request")
+		return observability.PrepareAndLogError(err, logger, span, "update household instrument ownership")
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -151,7 +151,7 @@ func (c *Client) ArchiveHouseholdInstrumentOwnership(ctx context.Context, househ
 
 	req, err := c.requestBuilder.BuildArchiveHouseholdInstrumentOwnershipRequest(ctx, householdInstrumentOwnershipID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive household instrument ownership request")
+		return observability.PrepareAndLogError(err, logger, span, "archive household instrument ownership")
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]

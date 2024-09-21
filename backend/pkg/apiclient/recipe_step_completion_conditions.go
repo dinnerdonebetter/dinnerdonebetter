@@ -36,7 +36,7 @@ func (c *Client) GetRecipeStepCompletionCondition(ctx context.Context, recipeID,
 
 	req, err := c.requestBuilder.BuildGetRecipeStepCompletionConditionRequest(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe step completion condition request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get recipe step completion condition")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -76,7 +76,7 @@ func (c *Client) GetRecipeStepCompletionConditions(ctx context.Context, recipeID
 
 	req, err := c.requestBuilder.BuildGetRecipeStepCompletionConditionsRequest(ctx, recipeID, recipeStepID, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe step completion conditions list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "recipe step completion conditions list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.RecipeStepCompletionCondition]
@@ -125,7 +125,7 @@ func (c *Client) CreateRecipeStepCompletionCondition(ctx context.Context, recipe
 
 	req, err := c.requestBuilder.BuildCreateRecipeStepCompletionConditionRequest(ctx, recipeID, recipeStepID, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step completion condition request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create recipe step completion condition")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -161,7 +161,7 @@ func (c *Client) UpdateRecipeStepCompletionCondition(ctx context.Context, recipe
 
 	req, err := c.requestBuilder.BuildUpdateRecipeStepCompletionConditionRequest(ctx, recipeID, recipeStepIngredient)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update recipe step completion condition request")
+		return observability.PrepareAndLogError(err, logger, span, "update recipe step completion condition")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -203,7 +203,7 @@ func (c *Client) ArchiveRecipeStepCompletionCondition(ctx context.Context, recip
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepCompletionConditionRequest(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive recipe step completion condition request")
+		return observability.PrepareAndLogError(err, logger, span, "archive recipe step completion condition")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]

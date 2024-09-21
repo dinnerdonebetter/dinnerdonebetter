@@ -30,7 +30,7 @@ func (c *Client) GetMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID
 
 	req, err := c.requestBuilder.BuildGetMealPlanTaskRequest(ctx, mealPlanID, mealPlanTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan task")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]
@@ -64,7 +64,7 @@ func (c *Client) CreateMealPlanTask(ctx context.Context, mealPlanID string, inpu
 
 	req, err := c.requestBuilder.BuildCreateMealPlanTaskRequest(ctx, mealPlanID, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan task")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]
@@ -102,7 +102,7 @@ func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, mealPlanID string
 
 	req, err := c.requestBuilder.BuildChangeMealPlanTaskStatusRequest(ctx, mealPlanID, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan task")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]

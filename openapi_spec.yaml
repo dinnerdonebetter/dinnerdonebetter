@@ -5868,7 +5868,7 @@ paths:
   /api/v1/recipes/{recipeID}/prep_steps:
     get:
       description: Operation for fetching RecipePrepTaskStep
-      operationId: GetRecipePrepTaskStep
+      operationId: GetRecipeMealPlanTasks
       parameters:
       - in: path
         name: recipeID

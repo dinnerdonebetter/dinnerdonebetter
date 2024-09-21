@@ -42,7 +42,7 @@ func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlan
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan ClientOption vote request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan ClientOption vote")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
@@ -88,7 +88,7 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPla
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionVotesRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building meal plan ClientOption votes list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "meal plan ClientOption votes list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanOptionVote]
@@ -137,7 +137,7 @@ func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 
 	req, err := c.requestBuilder.BuildCreateMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan ClientOption vote request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan ClientOption vote")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanOptionVote]
@@ -179,7 +179,7 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionVote)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update meal plan ClientOption vote request")
+		return observability.PrepareAndLogError(err, logger, span, "update meal plan ClientOption vote")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
@@ -227,7 +227,7 @@ func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive meal plan ClientOption vote request")
+		return observability.PrepareAndLogError(err, logger, span, "archive meal plan ClientOption vote")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]

@@ -30,7 +30,7 @@ func (c *Client) GetRecipeRating(ctx context.Context, mealID, recipeRatingID str
 
 	req, err := c.requestBuilder.BuildGetRecipeRatingRequest(ctx, mealID, recipeRatingID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe rating request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get recipe rating")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeRating]
@@ -62,7 +62,7 @@ func (c *Client) GetRecipeRatings(ctx context.Context, mealID string, filter *ty
 
 	req, err := c.requestBuilder.BuildGetRecipeRatingsRequest(ctx, mealID, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe ratings list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "recipe ratings list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.RecipeRating]
@@ -101,7 +101,7 @@ func (c *Client) CreateRecipeRating(ctx context.Context, mealID string, input *t
 
 	req, err := c.requestBuilder.BuildCreateRecipeRatingRequest(ctx, mealID, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe rating request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create recipe rating")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeRating]
@@ -127,7 +127,7 @@ func (c *Client) UpdateRecipeRating(ctx context.Context, recipeRating *types.Rec
 
 	req, err := c.requestBuilder.BuildUpdateRecipeRatingRequest(ctx, recipeRating)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update recipe rating request")
+		return observability.PrepareAndLogError(err, logger, span, "update recipe rating")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeRating]
@@ -159,7 +159,7 @@ func (c *Client) ArchiveRecipeRating(ctx context.Context, mealID, recipeRatingID
 
 	req, err := c.requestBuilder.BuildArchiveRecipeRatingRequest(ctx, mealID, recipeRatingID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive recipe rating request")
+		return observability.PrepareAndLogError(err, logger, span, "archive recipe rating")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeRating]

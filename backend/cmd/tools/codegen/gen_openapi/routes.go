@@ -646,7 +646,7 @@ var routeInfoMap = map[string]routeDetails{
 	"POST /api/v1/recipes/{recipeID}/images": {},
 	"GET /api/v1/recipes/{recipeID}/mermaid": {},
 	"GET /api/v1/recipes/{recipeID}/prep_steps": {
-		ID:           "GetRecipePrepTaskStep",
+		ID:           "GetRecipeMealPlanTasks",
 		ResponseType: &types.RecipePrepTaskStep{},
 		OAuth2Scopes: []string{householdMember},
 	},

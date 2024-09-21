@@ -4,10 +4,6 @@ import (
 	"errors"
 )
 
-const (
-	randomBasePath = "random"
-)
-
 var (
 	// ErrNoURLProvided is a handy error to return when we expect a *url.URL and don't receive one.
 	ErrNoURLProvided = errors.New("no URL provided")
@@ -24,9 +20,6 @@ var (
 	// ErrInvalidIDProvided indicates nil input was provided in an unacceptable context.
 	ErrInvalidIDProvided = errors.New("required ID provided is zero")
 
-	// ErrEmptyUsernameProvided indicates the user provided an empty username for search.
-	ErrEmptyUsernameProvided = errors.New("empty username provided")
-
 	// ErrEmptyEmailAddressProvided indicates the user provided an empty username for search.
 	ErrEmptyEmailAddressProvided = errors.New("empty email address provided")
 
@@ -35,7 +28,4 @@ var (
 
 	// ErrInvalidPhotoEncodingForUpload indicates the provided photo upload is of the wrong encoding.
 	ErrInvalidPhotoEncodingForUpload = errors.New("invalid photo encoding")
-
-	// ErrInvalidSecretKeyLength indicates that a secret key of invalid length was provided as an argument.
-	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
 )

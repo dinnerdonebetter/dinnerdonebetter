@@ -25,7 +25,7 @@ func (c *Client) GetValidIngredientStateIngredient(ctx context.Context, validIng
 
 	res, err := c.authedGeneratedClient.GetValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient state ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid ingredient state ingredient")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -59,7 +59,7 @@ func (c *Client) GetValidIngredientStateIngredients(ctx context.Context, filter 
 
 	res, err := c.authedGeneratedClient.GetValidIngredientStateIngredients(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient state ingredient list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredient state ingredient list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -103,7 +103,7 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredient(ctx context.Con
 
 	res, err := c.authedGeneratedClient.GetValidIngredientStateIngredientsByIngredient(ctx, validIngredientID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient state ingredient list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredient state ingredient list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -147,7 +147,7 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredientState(ctx contex
 
 	res, err := c.authedGeneratedClient.GetValidIngredientStateIngredientsByIngredientState(ctx, ingredientState, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient state ingredient list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredient state ingredient list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -188,7 +188,7 @@ func (c *Client) CreateValidIngredientStateIngredient(ctx context.Context, input
 
 	res, err := c.authedGeneratedClient.CreateValidIngredientStateIngredient(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient state ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid ingredient state ingredient")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -222,7 +222,7 @@ func (c *Client) UpdateValidIngredientStateIngredient(ctx context.Context, valid
 
 	res, err := c.authedGeneratedClient.UpdateValidIngredientStateIngredient(ctx, validIngredientStateIngredient.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient state ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid ingredient state ingredient")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -253,7 +253,7 @@ func (c *Client) ArchiveValidIngredientStateIngredient(ctx context.Context, vali
 
 	res, err := c.authedGeneratedClient.ArchiveValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient state ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid ingredient state ingredient")
 	}
 	defer c.closeResponseBody(ctx, res)
 

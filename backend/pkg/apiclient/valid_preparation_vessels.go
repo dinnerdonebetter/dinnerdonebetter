@@ -147,7 +147,7 @@ func (c *Client) GetValidPreparationVesselsForVessel(ctx context.Context, validI
 
 	res, err := c.authedGeneratedClient.GetValidPreparationVesselsByVessel(ctx, validInstrumentID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation vessels list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid preparation vessels list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -188,7 +188,7 @@ func (c *Client) CreateValidPreparationVessel(ctx context.Context, input *types.
 
 	res, err := c.authedGeneratedClient.CreateValidPreparationVessel(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid preparation vessel request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid preparation vessel")
 	}
 	defer c.closeResponseBody(ctx, res)
 

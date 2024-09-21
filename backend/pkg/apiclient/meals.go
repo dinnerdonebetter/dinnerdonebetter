@@ -24,7 +24,7 @@ func (c *Client) GetMeal(ctx context.Context, mealID string) (*types.Meal, error
 
 	req, err := c.requestBuilder.BuildGetMealRequest(ctx, mealID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal")
 	}
 
 	var apiResponse *types.APIResponse[*types.Meal]
@@ -50,7 +50,7 @@ func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*type
 
 	req, err := c.requestBuilder.BuildGetMealsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building meals list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "meals list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.Meal]
@@ -78,7 +78,7 @@ func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types
 
 	req, err := c.requestBuilder.BuildSearchForMealsRequest(ctx, query, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building meals list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "meals list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.Meal]
@@ -111,7 +111,7 @@ func (c *Client) CreateMeal(ctx context.Context, input *types.MealCreationReques
 
 	req, err := c.requestBuilder.BuildCreateMealRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create meal")
 	}
 
 	var apiResponse *types.APIResponse[*types.Meal]
@@ -137,7 +137,7 @@ func (c *Client) ArchiveMeal(ctx context.Context, mealID string) error {
 
 	req, err := c.requestBuilder.BuildArchiveMealRequest(ctx, mealID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive meal request")
+		return observability.PrepareAndLogError(err, logger, span, "archive meal")
 	}
 
 	var apiResponse *types.APIResponse[*types.Meal]

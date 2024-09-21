@@ -30,7 +30,7 @@ func (c *Client) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTask
 
 	req, err := c.requestBuilder.BuildGetRecipePrepTaskRequest(ctx, recipeID, recipePrepTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe prep task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get recipe prep task")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
@@ -60,7 +60,7 @@ func (c *Client) GetRecipePrepTasks(ctx context.Context, recipeID string, filter
 
 	req, err := c.requestBuilder.BuildGetRecipePrepTasksRequest(ctx, recipeID, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe prep tasks list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "recipe prep tasks list")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.RecipePrepTask]
@@ -88,7 +88,7 @@ func (c *Client) CreateRecipePrepTask(ctx context.Context, input *types.RecipePr
 
 	req, err := c.requestBuilder.BuildCreateRecipePrepTaskRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe prep task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create recipe prep task")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
@@ -114,7 +114,7 @@ func (c *Client) UpdateRecipePrepTask(ctx context.Context, recipePrepTask *types
 
 	req, err := c.requestBuilder.BuildUpdateRecipePrepTaskRequest(ctx, recipePrepTask)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update recipe prep task request")
+		return observability.PrepareAndLogError(err, logger, span, "update recipe prep task")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
@@ -146,7 +146,7 @@ func (c *Client) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrep
 
 	req, err := c.requestBuilder.BuildArchiveRecipePrepTaskRequest(ctx, recipeID, recipePrepTaskID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive recipe prep task request")
+		return observability.PrepareAndLogError(err, logger, span, "archive recipe prep task")
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]

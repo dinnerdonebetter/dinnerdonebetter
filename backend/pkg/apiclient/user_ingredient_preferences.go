@@ -2,11 +2,11 @@ package apiclient
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -28,8 +28,9 @@ func (c *Client) GetUserIngredientPreferences(ctx context.Context, filter *types
 
 	res, err := c.authedGeneratedClient.GetUserIngredientPreferences(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building user ingredient preferences list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "user ingredient preferences list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.UserIngredientPreference]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -68,8 +69,9 @@ func (c *Client) CreateUserIngredientPreference(ctx context.Context, input *type
 
 	res, err := c.authedGeneratedClient.CreateUserIngredientPreference(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create user ingredient preference request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create user ingredient preference")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.UserIngredientPreference]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -101,8 +103,9 @@ func (c *Client) UpdateUserIngredientPreference(ctx context.Context, userIngredi
 
 	res, err := c.authedGeneratedClient.UpdateUserIngredientPreference(ctx, userIngredientPreference.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update user ingredient preference request")
+		return observability.PrepareAndLogError(err, logger, span, "update user ingredient preference")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[types.UserIngredientPreference]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -131,8 +134,9 @@ func (c *Client) ArchiveUserIngredientPreference(ctx context.Context, userIngred
 
 	res, err := c.authedGeneratedClient.ArchiveUserIngredientPreference(ctx, userIngredientPreferenceID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive user ingredient preference request")
+		return observability.PrepareAndLogError(err, logger, span, "archive user ingredient preference")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[types.UserIngredientPreference]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

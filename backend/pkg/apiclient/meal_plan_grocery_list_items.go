@@ -30,7 +30,7 @@ func (c *Client) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mea
 
 	req, err := c.requestBuilder.BuildGetMealPlanGroceryListItemRequest(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan grocery list item request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan grocery list item")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanGroceryListItem]
@@ -60,7 +60,7 @@ func (c *Client) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mea
 
 	req, err := c.requestBuilder.BuildGetMealPlanGroceryListItemsForMealPlanRequest(ctx, mealPlanID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan grocery list item request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan grocery list item")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanGroceryListItem]
@@ -94,7 +94,7 @@ func (c *Client) CreateMealPlanGroceryListItem(ctx context.Context, mealPlanID s
 
 	req, err := c.requestBuilder.BuildCreateMealPlanGroceryListItemRequest(ctx, mealPlanID, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan grocery list item request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan grocery list item")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanGroceryListItem]
@@ -132,7 +132,7 @@ func (c *Client) UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID, 
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanGroceryListItemRequest(ctx, mealPlanID, mealPlanGroceryListItemID, input)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building create meal plan grocery list item request")
+		return observability.PrepareAndLogError(err, logger, span, "create meal plan grocery list item")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanGroceryListItem]
@@ -168,7 +168,7 @@ func (c *Client) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanGroceryListItemRequest(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building create meal plan grocery list item request")
+		return observability.PrepareAndLogError(err, logger, span, "create meal plan grocery list item")
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanGroceryListItem]

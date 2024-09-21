@@ -25,8 +25,9 @@ func (c *Client) GetUserNotification(ctx context.Context, userNotificationID str
 
 	res, err := c.authedGeneratedClient.GetUserNotification(ctx, userNotificationID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get user notification request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get user notification")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserNotification]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -54,8 +55,9 @@ func (c *Client) GetUserNotifications(ctx context.Context, filter *types.QueryFi
 
 	res, err := c.authedGeneratedClient.GetUserNotifications(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building user notifications list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "user notifications list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.UserNotification]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -90,8 +92,9 @@ func (c *Client) CreateUserNotification(ctx context.Context, input *types.UserNo
 
 	res, err := c.authedGeneratedClient.CreateUserNotification(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create user notification request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create user notification")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserNotification]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -119,8 +122,9 @@ func (c *Client) UpdateUserNotification(ctx context.Context, userNotification *t
 
 	res, err := c.authedGeneratedClient.UpdateUserNotification(ctx, userNotification.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update user notification request")
+		return observability.PrepareAndLogError(err, logger, span, "update user notification")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserNotification]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

@@ -25,7 +25,7 @@ func (c *Client) GetValidPreparationInstrument(ctx context.Context, validPrepara
 
 	res, err := c.authedGeneratedClient.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid ingredient preparation")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -59,7 +59,7 @@ func (c *Client) GetValidPreparationInstruments(ctx context.Context, filter *typ
 
 	res, err := c.authedGeneratedClient.GetValidPreparationInstruments(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation instruments list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid preparation instruments list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -103,7 +103,7 @@ func (c *Client) GetValidPreparationInstrumentsForPreparation(ctx context.Contex
 
 	res, err := c.authedGeneratedClient.GetValidPreparationInstrumentsByPreparation(ctx, validPreparationID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation instruments list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid preparation instruments list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -147,7 +147,7 @@ func (c *Client) GetValidPreparationInstrumentsForInstrument(ctx context.Context
 
 	res, err := c.authedGeneratedClient.GetValidPreparationInstrumentsByInstrument(ctx, validInstrumentID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation instruments list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid preparation instruments list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -188,7 +188,7 @@ func (c *Client) CreateValidPreparationInstrument(ctx context.Context, input *ty
 
 	res, err := c.authedGeneratedClient.CreateValidPreparationInstrument(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid ingredient preparation")
 	}
 	defer c.closeResponseBody(ctx, res)
 

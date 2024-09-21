@@ -25,8 +25,9 @@ func (c *Client) GetValidIngredientGroup(ctx context.Context, validIngredientGro
 
 	res, err := c.authedGeneratedClient.GetValidIngredientGroup(ctx, validIngredientGroupID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient group request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid ingredient group")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -64,8 +65,9 @@ func (c *Client) SearchValidIngredientGroups(ctx context.Context, query string, 
 
 	res, err := c.authedGeneratedClient.SearchForValidIngredientGroups(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid ingredient groups request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "search for valid ingredient groups")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientGroup]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -97,8 +99,9 @@ func (c *Client) GetValidIngredientGroups(ctx context.Context, filter *types.Que
 
 	res, err := c.authedGeneratedClient.GetValidIngredientGroups(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredients list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredients list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientGroup]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -137,8 +140,9 @@ func (c *Client) CreateValidIngredientGroup(ctx context.Context, input *types.Va
 
 	res, err := c.authedGeneratedClient.CreateValidIngredientGroup(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid ingredient")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -170,8 +174,9 @@ func (c *Client) UpdateValidIngredientGroup(ctx context.Context, validIngredient
 
 	res, err := c.authedGeneratedClient.UpdateValidIngredientGroup(ctx, validIngredientGroup.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient group request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid ingredient group")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -200,8 +205,9 @@ func (c *Client) ArchiveValidIngredientGroup(ctx context.Context, validIngredien
 
 	res, err := c.authedGeneratedClient.ArchiveValidIngredientGroup(ctx, validIngredientGroupID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient group request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid ingredient group")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

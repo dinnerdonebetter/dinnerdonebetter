@@ -25,7 +25,7 @@ func (c *Client) GetValidInstrument(ctx context.Context, validInstrumentID strin
 
 	res, err := c.authedGeneratedClient.GetValidInstrument(ctx, validInstrumentID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid instrument request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid instrument")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -50,7 +50,7 @@ func (c *Client) GetRandomValidInstrument(ctx context.Context) (*types.ValidInst
 
 	res, err := c.authedGeneratedClient.GetRandomValidInstrument(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid instrument request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid instrument")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -90,7 +90,7 @@ func (c *Client) SearchValidInstruments(ctx context.Context, query string, limit
 
 	res, err := c.authedGeneratedClient.SearchForValidInstruments(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid instruments request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "search for valid instruments")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -124,7 +124,7 @@ func (c *Client) GetValidInstruments(ctx context.Context, filter *types.QueryFil
 
 	res, err := c.authedGeneratedClient.GetValidInstruments(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid instruments list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid instruments list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -165,7 +165,7 @@ func (c *Client) CreateValidInstrument(ctx context.Context, input *types.ValidIn
 
 	res, err := c.authedGeneratedClient.CreateValidInstrument(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid instrument request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid instrument")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -199,7 +199,7 @@ func (c *Client) UpdateValidInstrument(ctx context.Context, validInstrument *typ
 
 	res, err := c.authedGeneratedClient.UpdateValidInstrument(ctx, validInstrument.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid instrument request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid instrument")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -230,7 +230,7 @@ func (c *Client) ArchiveValidInstrument(ctx context.Context, validInstrumentID s
 
 	res, err := c.authedGeneratedClient.ArchiveValidInstrument(ctx, validInstrumentID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid instrument request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid instrument")
 	}
 	defer c.closeResponseBody(ctx, res)
 
