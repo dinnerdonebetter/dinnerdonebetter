@@ -261,7 +261,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"POST /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/vote": {
-		ID:           "CreateMealPlanVote",
+		ID:           "CreateMealPlanOptionVote",
 		ResponseType: &types.MealPlanOptionVote{},
 		InputType:    &types.MealPlanOptionVoteCreationRequestInput{},
 		OAuth2Scopes: []string{householdMember},
@@ -312,7 +312,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PATCH /api/v1/meal_plans/{mealPlanID}/tasks/{mealPlanTaskID}/": {
-		ID:           "UpdateMealPlanTask",
+		ID:           "UpdateMealPlanTaskStatus",
 		ResponseType: &types.MealPlanTask{},
 		InputType:    &types.MealPlanTaskStatusChangeRequestInput{},
 		OAuth2Scopes: []string{householdMember},

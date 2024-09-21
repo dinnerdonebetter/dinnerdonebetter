@@ -231,10 +231,6 @@ var openAPITypeMap = map[string]string{
 }
 
 func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value string, isArray bool) {
-	if typeName == "WebhookCreationRequestInput" && fieldName == "events" {
-		println("here")
-	}
-
 	switch t := field.Type.(type) {
 	case *ast.SelectorExpr:
 		if x, ok := t.X.(*ast.Ident); ok && x.Obj == nil {

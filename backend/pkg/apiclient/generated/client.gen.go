@@ -3864,8 +3864,8 @@ type UpdateMealPlanOptionJSONRequestBody = MealPlanOptionUpdateRequestInput
 // UpdateMealPlanOptionVoteJSONRequestBody defines body for UpdateMealPlanOptionVote for application/json ContentType.
 type UpdateMealPlanOptionVoteJSONRequestBody = MealPlanOptionVoteUpdateRequestInput
 
-// CreateMealPlanVoteJSONRequestBody defines body for CreateMealPlanVote for application/json ContentType.
-type CreateMealPlanVoteJSONRequestBody = MealPlanOptionVoteCreationRequestInput
+// CreateMealPlanOptionVoteJSONRequestBody defines body for CreateMealPlanOptionVote for application/json ContentType.
+type CreateMealPlanOptionVoteJSONRequestBody = MealPlanOptionVoteCreationRequestInput
 
 // CreateMealPlanGroceryListItemJSONRequestBody defines body for CreateMealPlanGroceryListItem for application/json ContentType.
 type CreateMealPlanGroceryListItemJSONRequestBody = MealPlanGroceryListItemCreationRequestInput
@@ -3876,8 +3876,8 @@ type UpdateMealPlanGroceryListItemJSONRequestBody = MealPlanGroceryListItemUpdat
 // CreateMealPlanTaskJSONRequestBody defines body for CreateMealPlanTask for application/json ContentType.
 type CreateMealPlanTaskJSONRequestBody = MealPlanTaskCreationRequestInput
 
-// UpdateMealPlanTaskJSONRequestBody defines body for UpdateMealPlanTask for application/json ContentType.
-type UpdateMealPlanTaskJSONRequestBody = MealPlanTaskStatusChangeRequestInput
+// UpdateMealPlanTaskStatusJSONRequestBody defines body for UpdateMealPlanTaskStatus for application/json ContentType.
+type UpdateMealPlanTaskStatusJSONRequestBody = MealPlanTaskStatusChangeRequestInput
 
 // CreateMealJSONRequestBody defines body for CreateMeal for application/json ContentType.
 type CreateMealJSONRequestBody = MealCreationRequestInput
@@ -4353,10 +4353,10 @@ type ClientInterface interface {
 
 	UpdateMealPlanOptionVote(ctx context.Context, mealPlanID string, mealPlanEventID string, mealPlanOptionID string, mealPlanOptionVoteID string, body UpdateMealPlanOptionVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// CreateMealPlanVoteWithBody request with any body
-	CreateMealPlanVoteWithBody(ctx context.Context, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// CreateMealPlanOptionVoteWithBody request with any body
+	CreateMealPlanOptionVoteWithBody(ctx context.Context, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CreateMealPlanVote(ctx context.Context, mealPlanID string, mealPlanEventID string, body CreateMealPlanVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreateMealPlanOptionVote(ctx context.Context, mealPlanID string, mealPlanEventID string, body CreateMealPlanOptionVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// FinalizeMealPlan request
 	FinalizeMealPlan(ctx context.Context, mealPlanID string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4391,10 +4391,10 @@ type ClientInterface interface {
 	// GetMealPlanTask request
 	GetMealPlanTask(ctx context.Context, mealPlanID string, mealPlanTaskID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// UpdateMealPlanTaskWithBody request with any body
-	UpdateMealPlanTaskWithBody(ctx context.Context, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// UpdateMealPlanTaskStatusWithBody request with any body
+	UpdateMealPlanTaskStatusWithBody(ctx context.Context, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateMealPlanTask(ctx context.Context, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateMealPlanTaskStatus(ctx context.Context, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetMeals request
 	GetMeals(ctx context.Context, params *GetMealsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5959,8 +5959,8 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID string
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreateMealPlanVoteWithBody(ctx context.Context, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateMealPlanVoteRequestWithBody(c.Server, mealPlanID, mealPlanEventID, contentType, body)
+func (c *Client) CreateMealPlanOptionVoteWithBody(ctx context.Context, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMealPlanOptionVoteRequestWithBody(c.Server, mealPlanID, mealPlanEventID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5971,8 +5971,8 @@ func (c *Client) CreateMealPlanVoteWithBody(ctx context.Context, mealPlanID stri
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreateMealPlanVote(ctx context.Context, mealPlanID string, mealPlanEventID string, body CreateMealPlanVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateMealPlanVoteRequest(c.Server, mealPlanID, mealPlanEventID, body)
+func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID string, mealPlanEventID string, body CreateMealPlanOptionVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMealPlanOptionVoteRequest(c.Server, mealPlanID, mealPlanEventID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6127,8 +6127,8 @@ func (c *Client) GetMealPlanTask(ctx context.Context, mealPlanID string, mealPla
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateMealPlanTaskWithBody(ctx context.Context, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateMealPlanTaskRequestWithBody(c.Server, mealPlanID, mealPlanTaskID, contentType, body)
+func (c *Client) UpdateMealPlanTaskStatusWithBody(ctx context.Context, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMealPlanTaskStatusRequestWithBody(c.Server, mealPlanID, mealPlanTaskID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6139,8 +6139,8 @@ func (c *Client) UpdateMealPlanTaskWithBody(ctx context.Context, mealPlanID stri
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateMealPlanTask(ctx context.Context, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateMealPlanTaskRequest(c.Server, mealPlanID, mealPlanTaskID, body)
+func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMealPlanTaskStatusRequest(c.Server, mealPlanID, mealPlanTaskID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -12050,19 +12050,19 @@ func NewUpdateMealPlanOptionVoteRequestWithBody(server string, mealPlanID string
 	return req, nil
 }
 
-// NewCreateMealPlanVoteRequest calls the generic CreateMealPlanVote builder with application/json body
-func NewCreateMealPlanVoteRequest(server string, mealPlanID string, mealPlanEventID string, body CreateMealPlanVoteJSONRequestBody) (*http.Request, error) {
+// NewCreateMealPlanOptionVoteRequest calls the generic CreateMealPlanOptionVote builder with application/json body
+func NewCreateMealPlanOptionVoteRequest(server string, mealPlanID string, mealPlanEventID string, body CreateMealPlanOptionVoteJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateMealPlanVoteRequestWithBody(server, mealPlanID, mealPlanEventID, "application/json", bodyReader)
+	return NewCreateMealPlanOptionVoteRequestWithBody(server, mealPlanID, mealPlanEventID, "application/json", bodyReader)
 }
 
-// NewCreateMealPlanVoteRequestWithBody generates requests for CreateMealPlanVote with any type of body
-func NewCreateMealPlanVoteRequestWithBody(server string, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader) (*http.Request, error) {
+// NewCreateMealPlanOptionVoteRequestWithBody generates requests for CreateMealPlanOptionVote with any type of body
+func NewCreateMealPlanOptionVoteRequestWithBody(server string, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -12681,19 +12681,19 @@ func NewGetMealPlanTaskRequest(server string, mealPlanID string, mealPlanTaskID 
 	return req, nil
 }
 
-// NewUpdateMealPlanTaskRequest calls the generic UpdateMealPlanTask builder with application/json body
-func NewUpdateMealPlanTaskRequest(server string, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskJSONRequestBody) (*http.Request, error) {
+// NewUpdateMealPlanTaskStatusRequest calls the generic UpdateMealPlanTaskStatus builder with application/json body
+func NewUpdateMealPlanTaskStatusRequest(server string, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskStatusJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateMealPlanTaskRequestWithBody(server, mealPlanID, mealPlanTaskID, "application/json", bodyReader)
+	return NewUpdateMealPlanTaskStatusRequestWithBody(server, mealPlanID, mealPlanTaskID, "application/json", bodyReader)
 }
 
-// NewUpdateMealPlanTaskRequestWithBody generates requests for UpdateMealPlanTask with any type of body
-func NewUpdateMealPlanTaskRequestWithBody(server string, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader) (*http.Request, error) {
+// NewUpdateMealPlanTaskStatusRequestWithBody generates requests for UpdateMealPlanTaskStatus with any type of body
+func NewUpdateMealPlanTaskStatusRequestWithBody(server string, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -26285,10 +26285,10 @@ type ClientWithResponsesInterface interface {
 
 	UpdateMealPlanOptionVoteWithResponse(ctx context.Context, mealPlanID string, mealPlanEventID string, mealPlanOptionID string, mealPlanOptionVoteID string, body UpdateMealPlanOptionVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMealPlanOptionVoteResponse, error)
 
-	// CreateMealPlanVoteWithBodyWithResponse request with any body
-	CreateMealPlanVoteWithBodyWithResponse(ctx context.Context, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMealPlanVoteResponse, error)
+	// CreateMealPlanOptionVoteWithBodyWithResponse request with any body
+	CreateMealPlanOptionVoteWithBodyWithResponse(ctx context.Context, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMealPlanOptionVoteResponse, error)
 
-	CreateMealPlanVoteWithResponse(ctx context.Context, mealPlanID string, mealPlanEventID string, body CreateMealPlanVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMealPlanVoteResponse, error)
+	CreateMealPlanOptionVoteWithResponse(ctx context.Context, mealPlanID string, mealPlanEventID string, body CreateMealPlanOptionVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMealPlanOptionVoteResponse, error)
 
 	// FinalizeMealPlanWithResponse request
 	FinalizeMealPlanWithResponse(ctx context.Context, mealPlanID string, reqEditors ...RequestEditorFn) (*FinalizeMealPlanResponse, error)
@@ -26323,10 +26323,10 @@ type ClientWithResponsesInterface interface {
 	// GetMealPlanTaskWithResponse request
 	GetMealPlanTaskWithResponse(ctx context.Context, mealPlanID string, mealPlanTaskID string, reqEditors ...RequestEditorFn) (*GetMealPlanTaskResponse, error)
 
-	// UpdateMealPlanTaskWithBodyWithResponse request with any body
-	UpdateMealPlanTaskWithBodyWithResponse(ctx context.Context, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMealPlanTaskResponse, error)
+	// UpdateMealPlanTaskStatusWithBodyWithResponse request with any body
+	UpdateMealPlanTaskStatusWithBodyWithResponse(ctx context.Context, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMealPlanTaskStatusResponse, error)
 
-	UpdateMealPlanTaskWithResponse(ctx context.Context, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMealPlanTaskResponse, error)
+	UpdateMealPlanTaskStatusWithResponse(ctx context.Context, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMealPlanTaskStatusResponse, error)
 
 	// GetMealsWithResponse request
 	GetMealsWithResponse(ctx context.Context, params *GetMealsParams, reqEditors ...RequestEditorFn) (*GetMealsResponse, error)
@@ -28941,7 +28941,7 @@ func (r UpdateMealPlanOptionVoteResponse) StatusCode() int {
 	return 0
 }
 
-type CreateMealPlanVoteResponse struct {
+type CreateMealPlanOptionVoteResponse struct {
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanOptionVote `json:"data,omitempty"`
@@ -28965,7 +28965,7 @@ type CreateMealPlanVoteResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r CreateMealPlanVoteResponse) Status() string {
+func (r CreateMealPlanOptionVoteResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -28973,7 +28973,7 @@ func (r CreateMealPlanVoteResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r CreateMealPlanVoteResponse) StatusCode() int {
+func (r CreateMealPlanOptionVoteResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -29331,7 +29331,7 @@ func (r GetMealPlanTaskResponse) StatusCode() int {
 	return 0
 }
 
-type UpdateMealPlanTaskResponse struct {
+type UpdateMealPlanTaskStatusResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanTask    `json:"data,omitempty"`
@@ -29355,7 +29355,7 @@ type UpdateMealPlanTaskResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r UpdateMealPlanTaskResponse) Status() string {
+func (r UpdateMealPlanTaskStatusResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -29363,7 +29363,7 @@ func (r UpdateMealPlanTaskResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r UpdateMealPlanTaskResponse) StatusCode() int {
+func (r UpdateMealPlanTaskStatusResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -37766,21 +37766,21 @@ func (c *ClientWithResponses) UpdateMealPlanOptionVoteWithResponse(ctx context.C
 	return ParseUpdateMealPlanOptionVoteResponse(rsp)
 }
 
-// CreateMealPlanVoteWithBodyWithResponse request with arbitrary body returning *CreateMealPlanVoteResponse
-func (c *ClientWithResponses) CreateMealPlanVoteWithBodyWithResponse(ctx context.Context, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMealPlanVoteResponse, error) {
-	rsp, err := c.CreateMealPlanVoteWithBody(ctx, mealPlanID, mealPlanEventID, contentType, body, reqEditors...)
+// CreateMealPlanOptionVoteWithBodyWithResponse request with arbitrary body returning *CreateMealPlanOptionVoteResponse
+func (c *ClientWithResponses) CreateMealPlanOptionVoteWithBodyWithResponse(ctx context.Context, mealPlanID string, mealPlanEventID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMealPlanOptionVoteResponse, error) {
+	rsp, err := c.CreateMealPlanOptionVoteWithBody(ctx, mealPlanID, mealPlanEventID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseCreateMealPlanVoteResponse(rsp)
+	return ParseCreateMealPlanOptionVoteResponse(rsp)
 }
 
-func (c *ClientWithResponses) CreateMealPlanVoteWithResponse(ctx context.Context, mealPlanID string, mealPlanEventID string, body CreateMealPlanVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMealPlanVoteResponse, error) {
-	rsp, err := c.CreateMealPlanVote(ctx, mealPlanID, mealPlanEventID, body, reqEditors...)
+func (c *ClientWithResponses) CreateMealPlanOptionVoteWithResponse(ctx context.Context, mealPlanID string, mealPlanEventID string, body CreateMealPlanOptionVoteJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMealPlanOptionVoteResponse, error) {
+	rsp, err := c.CreateMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseCreateMealPlanVoteResponse(rsp)
+	return ParseCreateMealPlanOptionVoteResponse(rsp)
 }
 
 // FinalizeMealPlanWithResponse request returning *FinalizeMealPlanResponse
@@ -37888,21 +37888,21 @@ func (c *ClientWithResponses) GetMealPlanTaskWithResponse(ctx context.Context, m
 	return ParseGetMealPlanTaskResponse(rsp)
 }
 
-// UpdateMealPlanTaskWithBodyWithResponse request with arbitrary body returning *UpdateMealPlanTaskResponse
-func (c *ClientWithResponses) UpdateMealPlanTaskWithBodyWithResponse(ctx context.Context, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMealPlanTaskResponse, error) {
-	rsp, err := c.UpdateMealPlanTaskWithBody(ctx, mealPlanID, mealPlanTaskID, contentType, body, reqEditors...)
+// UpdateMealPlanTaskStatusWithBodyWithResponse request with arbitrary body returning *UpdateMealPlanTaskStatusResponse
+func (c *ClientWithResponses) UpdateMealPlanTaskStatusWithBodyWithResponse(ctx context.Context, mealPlanID string, mealPlanTaskID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMealPlanTaskStatusResponse, error) {
+	rsp, err := c.UpdateMealPlanTaskStatusWithBody(ctx, mealPlanID, mealPlanTaskID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateMealPlanTaskResponse(rsp)
+	return ParseUpdateMealPlanTaskStatusResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateMealPlanTaskWithResponse(ctx context.Context, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMealPlanTaskResponse, error) {
-	rsp, err := c.UpdateMealPlanTask(ctx, mealPlanID, mealPlanTaskID, body, reqEditors...)
+func (c *ClientWithResponses) UpdateMealPlanTaskStatusWithResponse(ctx context.Context, mealPlanID string, mealPlanTaskID string, body UpdateMealPlanTaskStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMealPlanTaskStatusResponse, error) {
+	rsp, err := c.UpdateMealPlanTaskStatus(ctx, mealPlanID, mealPlanTaskID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateMealPlanTaskResponse(rsp)
+	return ParseUpdateMealPlanTaskStatusResponse(rsp)
 }
 
 // GetMealsWithResponse request returning *GetMealsResponse
@@ -44336,15 +44336,15 @@ func ParseUpdateMealPlanOptionVoteResponse(rsp *http.Response) (*UpdateMealPlanO
 	return response, nil
 }
 
-// ParseCreateMealPlanVoteResponse parses an HTTP response from a CreateMealPlanVoteWithResponse call
-func ParseCreateMealPlanVoteResponse(rsp *http.Response) (*CreateMealPlanVoteResponse, error) {
+// ParseCreateMealPlanOptionVoteResponse parses an HTTP response from a CreateMealPlanOptionVoteWithResponse call
+func ParseCreateMealPlanOptionVoteResponse(rsp *http.Response) (*CreateMealPlanOptionVoteResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &CreateMealPlanVoteResponse{
+	response := &CreateMealPlanOptionVoteResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -45186,15 +45186,15 @@ func ParseGetMealPlanTaskResponse(rsp *http.Response) (*GetMealPlanTaskResponse,
 	return response, nil
 }
 
-// ParseUpdateMealPlanTaskResponse parses an HTTP response from a UpdateMealPlanTaskWithResponse call
-func ParseUpdateMealPlanTaskResponse(rsp *http.Response) (*UpdateMealPlanTaskResponse, error) {
+// ParseUpdateMealPlanTaskStatusResponse parses an HTTP response from a UpdateMealPlanTaskStatusWithResponse call
+func ParseUpdateMealPlanTaskStatusResponse(rsp *http.Response) (*UpdateMealPlanTaskStatusResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &UpdateMealPlanTaskResponse{
+	response := &UpdateMealPlanTaskStatusResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

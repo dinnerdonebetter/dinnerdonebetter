@@ -34,6 +34,10 @@ func (c *Client) GetUserNotification(ctx context.Context, userNotificationID str
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user notification")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -62,6 +66,10 @@ func (c *Client) GetUserNotifications(ctx context.Context, filter *types.QueryFi
 	var apiResponse *types.APIResponse[[]*types.UserNotification]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user notifications")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.UserNotification]{
@@ -101,6 +109,10 @@ func (c *Client) CreateUserNotification(ctx context.Context, input *types.UserNo
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user notification")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -129,6 +141,10 @@ func (c *Client) UpdateUserNotification(ctx context.Context, userNotification *t
 	var apiResponse *types.APIResponse[*types.UserNotification]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "retrieving user notification")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

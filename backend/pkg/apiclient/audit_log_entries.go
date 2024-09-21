@@ -33,6 +33,10 @@ func (c *Client) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (
 		return nil, observability.PrepareAndLogError(err, logger, span, "%s %s %d", res.Request.Method, res.Request.URL.Path, res.StatusCode)
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -53,6 +57,10 @@ func (c *Client) GetAuditLogEntriesForUser(ctx context.Context, resourceTypes ..
 	var apiResponse *types.APIResponse[[]*types.AuditLogEntry]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading user audit log entries")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	result := &types.QueryFilteredResult[types.AuditLogEntry]{
@@ -80,6 +88,10 @@ func (c *Client) GetAuditLogEntriesForHousehold(ctx context.Context, resourceTyp
 	var apiResponse *types.APIResponse[[]*types.AuditLogEntry]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading user audit log entries")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	result := &types.QueryFilteredResult[types.AuditLogEntry]{

@@ -34,6 +34,10 @@ func (c *Client) GetValidIngredientState(ctx context.Context, validIngredientSta
 		return nil, observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient state response")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 

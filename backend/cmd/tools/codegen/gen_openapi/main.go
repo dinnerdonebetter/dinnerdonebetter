@@ -74,6 +74,10 @@ func main() {
 			continue
 		}
 
+		//if route.Method == "POST" && strings.HasSuffix(route.Path, "vote") {
+		//	println("haha")
+		//}
+
 		if route.Path == "/auth/{auth_provider}" || route.Path == "/auth/{auth_provider}/callback" {
 			continue
 		}

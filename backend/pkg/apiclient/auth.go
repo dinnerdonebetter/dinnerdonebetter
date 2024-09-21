@@ -24,6 +24,10 @@ func (c *Client) UserStatus(ctx context.Context) (*types.UserStatusResponse, err
 		return nil, observability.PrepareError(err, span, "retrieving user status")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -137,6 +141,10 @@ func (c *Client) CycleTwoFactorSecret(ctx context.Context, cookie *http.Cookie, 
 	var apiResponse *types.APIResponse[*types.TOTPSecretRefreshResponse]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "cycling two factor secret")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
