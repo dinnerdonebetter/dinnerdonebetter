@@ -3666,7 +3666,7 @@ paths:
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/vote:
     post:
       description: Operation for creating MealPlanOptionVote
-      operationId: CreateMealPlanVote
+      operationId: CreateMealPlanOptionVote
       parameters:
       - in: path
         name: mealPlanID
@@ -4495,7 +4495,7 @@ paths:
       - meal plan tasks
     patch:
       description: Operation for updating MealPlanTask
-      operationId: UpdateMealPlanTask
+      operationId: UpdateMealPlanTaskStatus
       parameters:
       - in: path
         name: mealPlanID
