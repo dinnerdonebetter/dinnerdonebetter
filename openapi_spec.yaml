@@ -3811,7 +3811,7 @@ paths:
   /api/v1/meal_plans/{mealPlanID}/grocery_list_items:
     get:
       description: Operation for fetching MealPlanGroceryListItem
-      operationId: GetMealPlanGroceryListItems
+      operationId: GetMealPlanGroceryListItemsForMealPlan
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query

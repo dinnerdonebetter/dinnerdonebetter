@@ -94,16 +94,16 @@ const (
 	GetMealPlanOptionVotesParamsSortByDesc GetMealPlanOptionVotesParamsSortBy = "desc"
 )
 
-// Defines values for GetMealPlanGroceryListItemsParamsIncludeArchived.
+// Defines values for GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchived.
 const (
-	GetMealPlanGroceryListItemsParamsIncludeArchivedFalse GetMealPlanGroceryListItemsParamsIncludeArchived = "false"
-	GetMealPlanGroceryListItemsParamsIncludeArchivedTrue  GetMealPlanGroceryListItemsParamsIncludeArchived = "true"
+	GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchivedFalse GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchived = "false"
+	GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchivedTrue  GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchived = "true"
 )
 
-// Defines values for GetMealPlanGroceryListItemsParamsSortBy.
+// Defines values for GetMealPlanGroceryListItemsForMealPlanParamsSortBy.
 const (
-	GetMealPlanGroceryListItemsParamsSortByAsc  GetMealPlanGroceryListItemsParamsSortBy = "asc"
-	GetMealPlanGroceryListItemsParamsSortByDesc GetMealPlanGroceryListItemsParamsSortBy = "desc"
+	GetMealPlanGroceryListItemsForMealPlanParamsSortByAsc  GetMealPlanGroceryListItemsForMealPlanParamsSortBy = "asc"
+	GetMealPlanGroceryListItemsForMealPlanParamsSortByDesc GetMealPlanGroceryListItemsForMealPlanParamsSortBy = "desc"
 )
 
 // Defines values for GetMealPlanTasksParamsIncludeArchived.
@@ -2786,23 +2786,23 @@ type GetMealPlanOptionVotesParamsIncludeArchived string
 // GetMealPlanOptionVotesParamsSortBy defines parameters for GetMealPlanOptionVotes.
 type GetMealPlanOptionVotesParamsSortBy string
 
-// GetMealPlanGroceryListItemsParams defines parameters for GetMealPlanGroceryListItems.
-type GetMealPlanGroceryListItemsParams struct {
-	CreatedBefore   string                                           `json:"createdBefore"   form:"createdBefore"`
-	CreatedAfter    string                                           `json:"createdAfter"    form:"createdAfter"`
-	UpdatedBefore   string                                           `json:"updatedBefore"   form:"updatedBefore"`
-	UpdatedAfter    string                                           `json:"updatedAfter"    form:"updatedAfter"`
-	IncludeArchived GetMealPlanGroceryListItemsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
-	SortBy          GetMealPlanGroceryListItemsParamsSortBy          `json:"sortBy"          form:"sortBy"`
-	Limit           int                                              `json:"limit"           form:"limit"`
-	Page            int                                              `json:"page"            form:"page"`
+// GetMealPlanGroceryListItemsForMealPlanParams defines parameters for GetMealPlanGroceryListItemsForMealPlan.
+type GetMealPlanGroceryListItemsForMealPlanParams struct {
+	CreatedBefore   string                                                      `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                      `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                      `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                      `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetMealPlanGroceryListItemsForMealPlanParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                         `json:"limit"           form:"limit"`
+	Page            int                                                         `json:"page"            form:"page"`
 }
 
-// GetMealPlanGroceryListItemsParamsIncludeArchived defines parameters for GetMealPlanGroceryListItems.
-type GetMealPlanGroceryListItemsParamsIncludeArchived string
+// GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchived defines parameters for GetMealPlanGroceryListItemsForMealPlan.
+type GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchived string
 
-// GetMealPlanGroceryListItemsParamsSortBy defines parameters for GetMealPlanGroceryListItems.
-type GetMealPlanGroceryListItemsParamsSortBy string
+// GetMealPlanGroceryListItemsForMealPlanParamsSortBy defines parameters for GetMealPlanGroceryListItemsForMealPlan.
+type GetMealPlanGroceryListItemsForMealPlanParamsSortBy string
 
 // GetMealPlanTasksParams defines parameters for GetMealPlanTasks.
 type GetMealPlanTasksParams struct {
@@ -4361,8 +4361,8 @@ type ClientInterface interface {
 	// FinalizeMealPlan request
 	FinalizeMealPlan(ctx context.Context, mealPlanID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetMealPlanGroceryListItems request
-	GetMealPlanGroceryListItems(ctx context.Context, mealPlanID string, params *GetMealPlanGroceryListItemsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetMealPlanGroceryListItemsForMealPlan request
+	GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, params *GetMealPlanGroceryListItemsForMealPlanParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateMealPlanGroceryListItemWithBody request with any body
 	CreateMealPlanGroceryListItemWithBody(ctx context.Context, mealPlanID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5995,8 +5995,8 @@ func (c *Client) FinalizeMealPlan(ctx context.Context, mealPlanID string, reqEdi
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetMealPlanGroceryListItems(ctx context.Context, mealPlanID string, params *GetMealPlanGroceryListItemsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetMealPlanGroceryListItemsRequest(c.Server, mealPlanID, params)
+func (c *Client) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, params *GetMealPlanGroceryListItemsForMealPlanParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMealPlanGroceryListItemsForMealPlanRequest(c.Server, mealPlanID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -12138,8 +12138,8 @@ func NewFinalizeMealPlanRequest(server string, mealPlanID string) (*http.Request
 	return req, nil
 }
 
-// NewGetMealPlanGroceryListItemsRequest generates requests for GetMealPlanGroceryListItems
-func NewGetMealPlanGroceryListItemsRequest(server string, mealPlanID string, params *GetMealPlanGroceryListItemsParams) (*http.Request, error) {
+// NewGetMealPlanGroceryListItemsForMealPlanRequest generates requests for GetMealPlanGroceryListItemsForMealPlan
+func NewGetMealPlanGroceryListItemsForMealPlanRequest(server string, mealPlanID string, params *GetMealPlanGroceryListItemsForMealPlanParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -26293,8 +26293,8 @@ type ClientWithResponsesInterface interface {
 	// FinalizeMealPlanWithResponse request
 	FinalizeMealPlanWithResponse(ctx context.Context, mealPlanID string, reqEditors ...RequestEditorFn) (*FinalizeMealPlanResponse, error)
 
-	// GetMealPlanGroceryListItemsWithResponse request
-	GetMealPlanGroceryListItemsWithResponse(ctx context.Context, mealPlanID string, params *GetMealPlanGroceryListItemsParams, reqEditors ...RequestEditorFn) (*GetMealPlanGroceryListItemsResponse, error)
+	// GetMealPlanGroceryListItemsForMealPlanWithResponse request
+	GetMealPlanGroceryListItemsForMealPlanWithResponse(ctx context.Context, mealPlanID string, params *GetMealPlanGroceryListItemsForMealPlanParams, reqEditors ...RequestEditorFn) (*GetMealPlanGroceryListItemsForMealPlanResponse, error)
 
 	// CreateMealPlanGroceryListItemWithBodyWithResponse request with any body
 	CreateMealPlanGroceryListItemWithBodyWithResponse(ctx context.Context, mealPlanID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMealPlanGroceryListItemResponse, error)
@@ -29019,7 +29019,7 @@ func (r FinalizeMealPlanResponse) StatusCode() int {
 	return 0
 }
 
-type GetMealPlanGroceryListItemsResponse struct {
+type GetMealPlanGroceryListItemsForMealPlanResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanGroceryListItem `json:"data,omitempty"`
@@ -29043,7 +29043,7 @@ type GetMealPlanGroceryListItemsResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r GetMealPlanGroceryListItemsResponse) Status() string {
+func (r GetMealPlanGroceryListItemsForMealPlanResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -29051,7 +29051,7 @@ func (r GetMealPlanGroceryListItemsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetMealPlanGroceryListItemsResponse) StatusCode() int {
+func (r GetMealPlanGroceryListItemsForMealPlanResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -37792,13 +37792,13 @@ func (c *ClientWithResponses) FinalizeMealPlanWithResponse(ctx context.Context, 
 	return ParseFinalizeMealPlanResponse(rsp)
 }
 
-// GetMealPlanGroceryListItemsWithResponse request returning *GetMealPlanGroceryListItemsResponse
-func (c *ClientWithResponses) GetMealPlanGroceryListItemsWithResponse(ctx context.Context, mealPlanID string, params *GetMealPlanGroceryListItemsParams, reqEditors ...RequestEditorFn) (*GetMealPlanGroceryListItemsResponse, error) {
-	rsp, err := c.GetMealPlanGroceryListItems(ctx, mealPlanID, params, reqEditors...)
+// GetMealPlanGroceryListItemsForMealPlanWithResponse request returning *GetMealPlanGroceryListItemsForMealPlanResponse
+func (c *ClientWithResponses) GetMealPlanGroceryListItemsForMealPlanWithResponse(ctx context.Context, mealPlanID string, params *GetMealPlanGroceryListItemsForMealPlanParams, reqEditors ...RequestEditorFn) (*GetMealPlanGroceryListItemsForMealPlanResponse, error) {
+	rsp, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetMealPlanGroceryListItemsResponse(rsp)
+	return ParseGetMealPlanGroceryListItemsForMealPlanResponse(rsp)
 }
 
 // CreateMealPlanGroceryListItemWithBodyWithResponse request with arbitrary body returning *CreateMealPlanGroceryListItemResponse
@@ -44506,15 +44506,15 @@ func ParseFinalizeMealPlanResponse(rsp *http.Response) (*FinalizeMealPlanRespons
 	return response, nil
 }
 
-// ParseGetMealPlanGroceryListItemsResponse parses an HTTP response from a GetMealPlanGroceryListItemsWithResponse call
-func ParseGetMealPlanGroceryListItemsResponse(rsp *http.Response) (*GetMealPlanGroceryListItemsResponse, error) {
+// ParseGetMealPlanGroceryListItemsForMealPlanResponse parses an HTTP response from a GetMealPlanGroceryListItemsForMealPlanWithResponse call
+func ParseGetMealPlanGroceryListItemsForMealPlanResponse(rsp *http.Response) (*GetMealPlanGroceryListItemsForMealPlanResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetMealPlanGroceryListItemsResponse{
+	response := &GetMealPlanGroceryListItemsForMealPlanResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

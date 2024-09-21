@@ -267,7 +267,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/meal_plans/{mealPlanID}/grocery_list_items/": {
-		ID:           "GetMealPlanGroceryListItems",
+		ID:           "GetMealPlanGroceryListItemsForMealPlan",
 		ResponseType: &types.MealPlanGroceryListItem{},
 		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},

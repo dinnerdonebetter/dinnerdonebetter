@@ -24,11 +24,6 @@ func (c *Client) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEvent
 	}
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanEventID)
 
-	if mealPlanEventID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
-
 	req, err := c.requestBuilder.BuildGetMealPlanEventRequest(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building get meal plan event request")
@@ -160,11 +155,6 @@ func (c *Client) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanE
 		return ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanEventID)
-
-	if mealPlanEventID == "" {
-		return ErrInvalidIDProvided
-	}
-	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanEventRequest(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
