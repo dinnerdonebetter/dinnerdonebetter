@@ -11729,7 +11729,7 @@ paths:
   /api/v1/users/household/select:
     post:
       description: Operation for creating Household
-      operationId: UpdateDefaultHousehold
+      operationId: ChangeActiveHousehold
       requestBody:
         content:
           application/json:

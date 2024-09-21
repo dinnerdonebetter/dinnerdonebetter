@@ -20,8 +20,9 @@ func (c *Client) GetOAuth2Client(ctx context.Context, oauth2ClientDatabaseID str
 
 	res, err := c.authedGeneratedClient.GetOAuth2Client(ctx, oauth2ClientDatabaseID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building retrieve OAuth2 client request")
+		return nil, observability.PrepareError(err, span, "retrieve OAuth2 client")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.OAuth2Client]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -50,8 +51,9 @@ func (c *Client) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilter
 
 	res, err := c.authedGeneratedClient.GetOAuth2Clients(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building OAuth2 clients list request")
+		return nil, observability.PrepareError(err, span, "OAuth2 clients list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.OAuth2Client]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -88,8 +90,9 @@ func (c *Client) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Clie
 
 	res, err := c.authedGeneratedClient.CreateOAuth2Client(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building create OAuth2 client request")
+		return nil, observability.PrepareError(err, span, "create OAuth2 client")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.OAuth2ClientCreationResponse]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -114,8 +117,9 @@ func (c *Client) ArchiveOAuth2Client(ctx context.Context, oauth2ClientDatabaseID
 
 	res, err := c.authedGeneratedClient.ArchiveOAuth2Client(ctx, oauth2ClientDatabaseID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive OAuth2 client request")
+		return observability.PrepareError(err, span, "archive OAuth2 client")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.OAuth2Client]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

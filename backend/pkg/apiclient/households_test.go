@@ -380,7 +380,7 @@ func (s *householdsTestSuite) TestClient_ArchiveHousehold() {
 }
 
 func (s *householdsTestSuite) TestClient_InviteUserToHousehold() {
-	const expectedPathFormat = "/api/v1/households/%s/invite"
+	const expectedPathFormat = "/api/v1/households/%s/invitations"
 
 	s.Run("standard", func() {
 		t := s.T()

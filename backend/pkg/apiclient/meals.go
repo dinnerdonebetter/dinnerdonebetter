@@ -27,6 +27,7 @@ func (c *Client) GetMeal(ctx context.Context, mealID string) (*types.Meal, error
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get meal")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Meal]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -56,6 +57,7 @@ func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*type
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "meals list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.Meal]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -92,6 +94,7 @@ func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "meals list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.Meal]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -128,6 +131,7 @@ func (c *Client) CreateMeal(ctx context.Context, input *types.MealCreationReques
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create meal")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Meal]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -154,6 +158,7 @@ func (c *Client) ArchiveMeal(ctx context.Context, mealID string) error {
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archive meal")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Meal]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

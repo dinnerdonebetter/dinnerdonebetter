@@ -3972,8 +3972,8 @@ type UpdateUserEmailAddressJSONRequestBody = UserEmailAddressUpdateInput
 // VerifyUserEmailAddressJSONRequestBody defines body for VerifyUserEmailAddress for application/json ContentType.
 type VerifyUserEmailAddressJSONRequestBody = EmailAddressVerificationRequestInput
 
-// UpdateDefaultHouseholdJSONRequestBody defines body for UpdateDefaultHousehold for application/json ContentType.
-type UpdateDefaultHouseholdJSONRequestBody = ChangeActiveHouseholdInput
+// ChangeActiveHouseholdJSONRequestBody defines body for ChangeActiveHousehold for application/json ContentType.
+type ChangeActiveHouseholdJSONRequestBody = ChangeActiveHouseholdInput
 
 // UpdatePasswordJSONRequestBody defines body for UpdatePassword for application/json ContentType.
 type UpdatePasswordJSONRequestBody = PasswordUpdateInput
@@ -4713,10 +4713,10 @@ type ClientInterface interface {
 
 	VerifyUserEmailAddress(ctx context.Context, body VerifyUserEmailAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// UpdateDefaultHouseholdWithBody request with any body
-	UpdateDefaultHouseholdWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// ChangeActiveHouseholdWithBody request with any body
+	ChangeActiveHouseholdWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateDefaultHousehold(ctx context.Context, body UpdateDefaultHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	ChangeActiveHousehold(ctx context.Context, body ChangeActiveHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdatePasswordWithBody request with any body
 	UpdatePasswordWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -7543,8 +7543,8 @@ func (c *Client) VerifyUserEmailAddress(ctx context.Context, body VerifyUserEmai
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateDefaultHouseholdWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateDefaultHouseholdRequestWithBody(c.Server, contentType, body)
+func (c *Client) ChangeActiveHouseholdWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewChangeActiveHouseholdRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -7555,8 +7555,8 @@ func (c *Client) UpdateDefaultHouseholdWithBody(ctx context.Context, contentType
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateDefaultHousehold(ctx context.Context, body UpdateDefaultHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateDefaultHouseholdRequest(c.Server, body)
+func (c *Client) ChangeActiveHousehold(ctx context.Context, body ChangeActiveHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewChangeActiveHouseholdRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -18395,19 +18395,19 @@ func NewVerifyUserEmailAddressRequestWithBody(server string, contentType string,
 	return req, nil
 }
 
-// NewUpdateDefaultHouseholdRequest calls the generic UpdateDefaultHousehold builder with application/json body
-func NewUpdateDefaultHouseholdRequest(server string, body UpdateDefaultHouseholdJSONRequestBody) (*http.Request, error) {
+// NewChangeActiveHouseholdRequest calls the generic ChangeActiveHousehold builder with application/json body
+func NewChangeActiveHouseholdRequest(server string, body ChangeActiveHouseholdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateDefaultHouseholdRequestWithBody(server, "application/json", bodyReader)
+	return NewChangeActiveHouseholdRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewUpdateDefaultHouseholdRequestWithBody generates requests for UpdateDefaultHousehold with any type of body
-func NewUpdateDefaultHouseholdRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewChangeActiveHouseholdRequestWithBody generates requests for ChangeActiveHousehold with any type of body
+func NewChangeActiveHouseholdRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -26645,10 +26645,10 @@ type ClientWithResponsesInterface interface {
 
 	VerifyUserEmailAddressWithResponse(ctx context.Context, body VerifyUserEmailAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*VerifyUserEmailAddressResponse, error)
 
-	// UpdateDefaultHouseholdWithBodyWithResponse request with any body
-	UpdateDefaultHouseholdWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDefaultHouseholdResponse, error)
+	// ChangeActiveHouseholdWithBodyWithResponse request with any body
+	ChangeActiveHouseholdWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeActiveHouseholdResponse, error)
 
-	UpdateDefaultHouseholdWithResponse(ctx context.Context, body UpdateDefaultHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDefaultHouseholdResponse, error)
+	ChangeActiveHouseholdWithResponse(ctx context.Context, body ChangeActiveHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeActiveHouseholdResponse, error)
 
 	// UpdatePasswordWithBodyWithResponse request with any body
 	UpdatePasswordWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePasswordResponse, error)
@@ -32631,7 +32631,7 @@ func (r VerifyUserEmailAddressResponse) StatusCode() int {
 	return 0
 }
 
-type UpdateDefaultHouseholdResponse struct {
+type ChangeActiveHouseholdResponse struct {
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -32655,7 +32655,7 @@ type UpdateDefaultHouseholdResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r UpdateDefaultHouseholdResponse) Status() string {
+func (r ChangeActiveHouseholdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -32663,7 +32663,7 @@ func (r UpdateDefaultHouseholdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r UpdateDefaultHouseholdResponse) StatusCode() int {
+func (r ChangeActiveHouseholdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -38918,21 +38918,21 @@ func (c *ClientWithResponses) VerifyUserEmailAddressWithResponse(ctx context.Con
 	return ParseVerifyUserEmailAddressResponse(rsp)
 }
 
-// UpdateDefaultHouseholdWithBodyWithResponse request with arbitrary body returning *UpdateDefaultHouseholdResponse
-func (c *ClientWithResponses) UpdateDefaultHouseholdWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDefaultHouseholdResponse, error) {
-	rsp, err := c.UpdateDefaultHouseholdWithBody(ctx, contentType, body, reqEditors...)
+// ChangeActiveHouseholdWithBodyWithResponse request with arbitrary body returning *ChangeActiveHouseholdResponse
+func (c *ClientWithResponses) ChangeActiveHouseholdWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeActiveHouseholdResponse, error) {
+	rsp, err := c.ChangeActiveHouseholdWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateDefaultHouseholdResponse(rsp)
+	return ParseChangeActiveHouseholdResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateDefaultHouseholdWithResponse(ctx context.Context, body UpdateDefaultHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDefaultHouseholdResponse, error) {
-	rsp, err := c.UpdateDefaultHousehold(ctx, body, reqEditors...)
+func (c *ClientWithResponses) ChangeActiveHouseholdWithResponse(ctx context.Context, body ChangeActiveHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeActiveHouseholdResponse, error) {
+	rsp, err := c.ChangeActiveHousehold(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseUpdateDefaultHouseholdResponse(rsp)
+	return ParseChangeActiveHouseholdResponse(rsp)
 }
 
 // UpdatePasswordWithBodyWithResponse request with arbitrary body returning *UpdatePasswordResponse
@@ -52289,15 +52289,15 @@ func ParseVerifyUserEmailAddressResponse(rsp *http.Response) (*VerifyUserEmailAd
 	return response, nil
 }
 
-// ParseUpdateDefaultHouseholdResponse parses an HTTP response from a UpdateDefaultHouseholdWithResponse call
-func ParseUpdateDefaultHouseholdResponse(rsp *http.Response) (*UpdateDefaultHouseholdResponse, error) {
+// ParseChangeActiveHouseholdResponse parses an HTTP response from a ChangeActiveHouseholdWithResponse call
+func ParseChangeActiveHouseholdResponse(rsp *http.Response) (*ChangeActiveHouseholdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &UpdateDefaultHouseholdResponse{
+	response := &ChangeActiveHouseholdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

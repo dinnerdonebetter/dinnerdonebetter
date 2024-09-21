@@ -37,7 +37,7 @@ func (b *Builder) BuildMultipleRecipeMediaUploadRequestForRecipeStep(ctx context
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, body)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building media upload request")
+		return nil, observability.PrepareError(err, span, "media upload")
 	}
 
 	req.Header.Set("Content-Type", formDataContentType)

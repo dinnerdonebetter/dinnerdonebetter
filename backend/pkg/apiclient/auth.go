@@ -16,7 +16,7 @@ func (c *Client) UserStatus(ctx context.Context) (*types.UserStatusResponse, err
 
 	req, err := c.requestBuilder.BuildUserStatusRequest(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "user status")
 	}
 
 	var apiResponse *types.APIResponse[*types.UserStatusResponse]
@@ -44,7 +44,7 @@ func (c *Client) BeginSession(ctx context.Context, input *types.UserLoginInput) 
 
 	req, err := c.requestBuilder.BuildLoginRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building login request")
+		return nil, observability.PrepareError(err, span, "login")
 	}
 
 	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
@@ -68,7 +68,7 @@ func (c *Client) EndSession(ctx context.Context) error {
 
 	req, err := c.requestBuilder.BuildLogoutRequest(ctx)
 	if err != nil {
-		return observability.PrepareError(err, span, "building logout request")
+		return observability.PrepareError(err, span, "logout")
 	}
 
 	res, err := c.fetchResponseToRequest(ctx, c.authedClient, req)
@@ -99,7 +99,7 @@ func (c *Client) ChangePassword(ctx context.Context, cookie *http.Cookie, input 
 
 	req, err := c.requestBuilder.BuildChangePasswordRequest(ctx, cookie, input)
 	if err != nil {
-		return observability.PrepareError(err, span, "building change password request")
+		return observability.PrepareError(err, span, "change password")
 	}
 
 	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
@@ -135,7 +135,7 @@ func (c *Client) CycleTwoFactorSecret(ctx context.Context, cookie *http.Cookie, 
 
 	req, err := c.requestBuilder.BuildCycleTwoFactorSecretRequest(ctx, cookie, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building cycle two factor secret request")
+		return nil, observability.PrepareError(err, span, "cycle two factor secret")
 	}
 
 	var apiResponse *types.APIResponse[*types.TOTPSecretRefreshResponse]
@@ -165,7 +165,7 @@ func (c *Client) VerifyTOTPSecret(ctx context.Context, userID, token string) err
 
 	req, err := c.requestBuilder.BuildVerifyTOTPSecretRequest(ctx, userID, token)
 	if err != nil {
-		return observability.PrepareError(err, span, "building verify two factor secret request")
+		return observability.PrepareError(err, span, "verify two factor secret")
 	}
 
 	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
@@ -195,7 +195,7 @@ func (c *Client) RequestPasswordResetToken(ctx context.Context, emailAddress str
 
 	req, err := c.requestBuilder.BuildPasswordResetTokenRequest(ctx, emailAddress)
 	if err != nil {
-		return observability.PrepareError(err, span, "building password reset token request")
+		return observability.PrepareError(err, span, "password reset token")
 	}
 
 	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
@@ -223,7 +223,7 @@ func (c *Client) RedeemPasswordResetToken(ctx context.Context, input *types.Pass
 
 	req, err := c.requestBuilder.BuildPasswordResetTokenRedemptionRequest(ctx, input)
 	if err != nil {
-		return observability.PrepareError(err, span, "building password reset token redemption request")
+		return observability.PrepareError(err, span, "password reset token redemption")
 	}
 
 	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)

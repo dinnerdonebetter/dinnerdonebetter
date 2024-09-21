@@ -45,6 +45,7 @@ func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlan
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan ClientOption vote")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -94,6 +95,7 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPla
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "meal plan ClientOption votes list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanOptionVote]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -146,6 +148,7 @@ func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan ClientOption vote")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanOptionVote]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -191,6 +194,7 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "update meal plan ClientOption vote")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -239,6 +243,7 @@ func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archive meal plan ClientOption vote")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

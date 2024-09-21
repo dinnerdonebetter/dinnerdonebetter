@@ -39,6 +39,7 @@ func (c *Client) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEven
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan ClientOption")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOption]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -82,6 +83,7 @@ func (c *Client) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEve
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "meal plan options list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanOption]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -134,6 +136,7 @@ func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanID, mealPlanE
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan ClientOption")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOption]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -173,6 +176,7 @@ func (c *Client) UpdateMealPlanOption(ctx context.Context, mealPlanID string, me
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "update meal plan ClientOption")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOption]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -215,6 +219,7 @@ func (c *Client) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archive meal plan ClientOption")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOption]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

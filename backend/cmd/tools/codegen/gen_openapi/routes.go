@@ -818,7 +818,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"POST /api/v1/users/household/select": {
-		ID:           "UpdateDefaultHousehold",
+		ID:           "ChangeActiveHousehold",
 		ResponseType: &types.Household{},
 		InputType:    &types.ChangeActiveHouseholdInput{},
 		OAuth2Scopes: []string{householdMember},

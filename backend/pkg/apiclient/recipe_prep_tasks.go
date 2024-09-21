@@ -33,6 +33,7 @@ func (c *Client) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTask
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get recipe prep task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -66,6 +67,7 @@ func (c *Client) GetRecipePrepTasks(ctx context.Context, recipeID string, filter
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "recipe prep tasks list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.RecipePrepTask]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -97,6 +99,7 @@ func (c *Client) CreateRecipePrepTask(ctx context.Context, input *types.RecipePr
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create recipe prep task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -126,6 +129,7 @@ func (c *Client) UpdateRecipePrepTask(ctx context.Context, recipePrepTask *types
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "update recipe prep task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -158,6 +162,7 @@ func (c *Client) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrep
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archive recipe prep task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

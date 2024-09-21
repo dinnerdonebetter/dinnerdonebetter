@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	householdsBasePath                    = "households"
 	householdInstrumentOwnershipsBasePath = "instruments"
 )
 

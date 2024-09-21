@@ -27,6 +27,7 @@ func (c *Client) GetMealPlan(ctx context.Context, mealPlanID string) (*types.Mea
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -60,6 +61,7 @@ func (c *Client) GetMealPlans(ctx context.Context, filter *types.QueryFilter) (*
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "meal plans list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.MealPlan]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -100,6 +102,7 @@ func (c *Client) CreateMealPlan(ctx context.Context, input *types.MealPlanCreati
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -133,6 +136,7 @@ func (c *Client) UpdateMealPlan(ctx context.Context, mealPlan *types.MealPlan) e
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "update meal plan")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -163,6 +167,7 @@ func (c *Client) ArchiveMealPlan(ctx context.Context, mealPlanID string) error {
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archive meal plan")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -193,6 +198,7 @@ func (c *Client) FinalizeMealPlan(ctx context.Context, mealPlanID string) error 
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "get meal plan")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlan]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

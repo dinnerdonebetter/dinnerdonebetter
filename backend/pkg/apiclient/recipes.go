@@ -271,7 +271,7 @@ func (c *Client) UploadRecipeMedia(ctx context.Context, files map[string][]byte,
 	// TODO: generated client?
 	req, err := c.requestBuilder.BuildMultipleRecipeMediaUploadRequest(ctx, files, recipeID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building media upload request")
+		return observability.PrepareError(err, span, "media upload")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.RecipeMedia]

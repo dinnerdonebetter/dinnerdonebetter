@@ -33,6 +33,7 @@ func (c *Client) GetMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -70,6 +71,7 @@ func (c *Client) CreateMealPlanTask(ctx context.Context, mealPlanID string, inpu
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
@@ -111,6 +113,7 @@ func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, mealPlanID string
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {

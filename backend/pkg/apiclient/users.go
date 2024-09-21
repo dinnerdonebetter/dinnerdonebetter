@@ -16,7 +16,7 @@ func (c *Client) GetSelf(ctx context.Context) (*types.User, error) {
 
 	res, err := c.authedGeneratedClient.GetSelf(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building get self request")
+		return nil, observability.PrepareError(err, span, "get self")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -43,7 +43,7 @@ func (c *Client) GetUser(ctx context.Context, userID string) (*types.User, error
 
 	res, err := c.authedGeneratedClient.GetUser(ctx, userID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building get user request")
+		return nil, observability.PrepareError(err, span, "get user")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -74,7 +74,7 @@ func (c *Client) GetUsers(ctx context.Context, filter *types.QueryFilter) (*type
 
 	res, err := c.authedGeneratedClient.GetUsers(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building users list request")
+		return nil, observability.PrepareError(err, span, "users list")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -111,7 +111,7 @@ func (c *Client) SearchForUsersByUsername(ctx context.Context, username string) 
 
 	res, err := c.authedGeneratedClient.SearchForUsers(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building username search request")
+		return nil, observability.PrepareError(err, span, "username search")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -168,7 +168,7 @@ func (c *Client) ArchiveUser(ctx context.Context, userID string) error {
 
 	res, err := c.authedGeneratedClient.ArchiveUser(ctx, userID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive user request")
+		return observability.PrepareError(err, span, "archive user")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -198,7 +198,7 @@ func (c *Client) UploadNewAvatar(ctx context.Context, input *types.AvatarUpdateI
 
 	res, err := c.authedGeneratedClient.UploadUserAvatar(ctx, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building avatar upload request")
+		return observability.PrepareError(err, span, "avatar upload")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -229,7 +229,7 @@ func (c *Client) CheckUserPermissions(ctx context.Context, permissions ...string
 
 	res, err := c.authedGeneratedClient.CheckPermissions(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building permission check request")
+		return nil, observability.PrepareError(err, span, "permission check")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -259,7 +259,7 @@ func (c *Client) UpdateUserEmailAddress(ctx context.Context, input *types.UserEm
 
 	res, err := c.authedGeneratedClient.UpdateUserEmailAddress(ctx, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive user request")
+		return observability.PrepareError(err, span, "archive user")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -289,7 +289,7 @@ func (c *Client) UpdateUserUsername(ctx context.Context, input *types.UsernameUp
 
 	res, err := c.authedGeneratedClient.UpdateUserUsername(ctx, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive user request")
+		return observability.PrepareError(err, span, "archive user")
 	}
 	defer c.closeResponseBody(ctx, res)
 
@@ -319,7 +319,7 @@ func (c *Client) UpdateUserDetails(ctx context.Context, input *types.UserDetails
 
 	res, err := c.authedGeneratedClient.UpdateUserDetails(ctx, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive user request")
+		return observability.PrepareError(err, span, "archive user")
 	}
 	defer c.closeResponseBody(ctx, res)
 
