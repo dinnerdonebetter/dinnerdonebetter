@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -22,13 +23,16 @@ func (c *Client) GetUserIngredientPreferences(ctx context.Context, filter *types
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetUserIngredientPreferencesRequest(ctx, filter)
+	params := &generated.GetUserIngredientPreferencesParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetUserIngredientPreferences(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building user ingredient preferences list request")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.UserIngredientPreference]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user ingredient preferences")
 	}
 
@@ -59,13 +63,16 @@ func (c *Client) CreateUserIngredientPreference(ctx context.Context, input *type
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateUserIngredientPreferenceRequest(ctx, input)
+	body := generated.CreateUserIngredientPreferenceJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateUserIngredientPreference(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create user ingredient preference request")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.UserIngredientPreference]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating user ingredient preference")
 	}
 
@@ -89,13 +96,16 @@ func (c *Client) UpdateUserIngredientPreference(ctx context.Context, userIngredi
 	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreference.ID)
 	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreference.ID)
 
-	req, err := c.requestBuilder.BuildUpdateUserIngredientPreferenceRequest(ctx, userIngredientPreference)
+	body := generated.UpdateUserIngredientPreferenceJSONRequestBody{}
+	c.copyType(&body, userIngredientPreference)
+
+	res, err := c.authedGeneratedClient.UpdateUserIngredientPreference(ctx, userIngredientPreference.ID, body)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building update user ingredient preference request")
 	}
 
 	var apiResponse *types.APIResponse[types.UserIngredientPreference]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating user ingredient preference %s", userIngredientPreference.ID)
 	}
 
@@ -119,13 +129,13 @@ func (c *Client) ArchiveUserIngredientPreference(ctx context.Context, userIngred
 	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 
-	req, err := c.requestBuilder.BuildArchiveUserIngredientPreferenceRequest(ctx, userIngredientPreferenceID)
+	res, err := c.authedGeneratedClient.ArchiveUserIngredientPreference(ctx, userIngredientPreferenceID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building archive user ingredient preference request")
 	}
 
 	var apiResponse *types.APIResponse[types.UserIngredientPreference]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving user ingredient preference %s", userIngredientPreferenceID)
 	}
 

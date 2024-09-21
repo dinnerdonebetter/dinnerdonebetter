@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -22,13 +23,13 @@ func (c *Client) GetServiceSetting(ctx context.Context, serviceSettingID string)
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
-	req, err := c.requestBuilder.BuildGetServiceSettingRequest(ctx, serviceSettingID)
+	res, err := c.authedGeneratedClient.GetServiceSetting(ctx, serviceSettingID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get service setting request")
 	}
 
 	var apiResponse *types.APIResponse[*types.ServiceSetting]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving service setting")
 	}
 
@@ -56,13 +57,18 @@ func (c *Client) SearchServiceSettings(ctx context.Context, query string, limit 
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
 
-	req, err := c.requestBuilder.BuildSearchServiceSettingsRequest(ctx, query, limit)
+	params := &generated.SearchForServiceSettingsParams{
+		Q:     query,
+		Limit: int(limit),
+	}
+
+	res, err := c.authedGeneratedClient.SearchForServiceSettings(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building search for service settings request")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.ServiceSetting]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving service settings")
 	}
 
@@ -86,13 +92,16 @@ func (c *Client) GetServiceSettings(ctx context.Context, filter *types.QueryFilt
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetServiceSettingsRequest(ctx, filter)
+	params := &generated.GetServiceSettingsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetServiceSettings(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building service settings list request")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.ServiceSetting]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving service settings")
 	}
 
@@ -123,13 +132,16 @@ func (c *Client) CreateServiceSetting(ctx context.Context, input *types.ServiceS
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateServiceSettingRequest(ctx, input)
+	body := generated.CreateServiceSettingJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateServiceSetting(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create service setting request")
 	}
 
 	var apiResponse *types.APIResponse[*types.ServiceSetting]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating service setting")
 	}
 
@@ -153,13 +165,13 @@ func (c *Client) ArchiveServiceSetting(ctx context.Context, serviceSettingID str
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
-	req, err := c.requestBuilder.BuildArchiveServiceSettingRequest(ctx, serviceSettingID)
+	res, err := c.authedGeneratedClient.ArchiveServiceSetting(ctx, serviceSettingID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building archive service setting request")
 	}
 
 	var apiResponse *types.APIResponse[*types.ServiceSetting]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving service setting %s", serviceSettingID)
 	}
 

@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,13 +23,13 @@ func (c *Client) GetUserNotification(ctx context.Context, userNotificationID str
 	logger = logger.WithValue(keys.UserNotificationIDKey, userNotificationID)
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotificationID)
 
-	req, err := c.requestBuilder.BuildGetUserNotificationRequest(ctx, userNotificationID)
+	res, err := c.authedGeneratedClient.GetUserNotification(ctx, userNotificationID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get user notification request")
 	}
 
 	var apiResponse *types.APIResponse[*types.UserNotification]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user notification")
 	}
 
@@ -48,13 +49,16 @@ func (c *Client) GetUserNotifications(ctx context.Context, filter *types.QueryFi
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetUserNotificationsRequest(ctx, filter)
+	params := &generated.GetUserNotificationsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetUserNotifications(ctx, params)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building user notifications list request")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.UserNotification]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user notifications")
 	}
 
@@ -81,13 +85,16 @@ func (c *Client) CreateUserNotification(ctx context.Context, input *types.UserNo
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateUserNotificationRequest(ctx, input)
+	body := generated.CreateUserNotificationJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateUserNotification(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create user notification request")
 	}
 
 	var apiResponse *types.APIResponse[*types.UserNotification]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user notification")
 	}
 
@@ -107,13 +114,16 @@ func (c *Client) UpdateUserNotification(ctx context.Context, userNotification *t
 	logger = logger.WithValue(keys.UserNotificationIDKey, userNotification.ID)
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotification.ID)
 
-	req, err := c.requestBuilder.BuildUpdateUserNotificationRequest(ctx, userNotification)
+	body := generated.UpdateUserNotificationJSONRequestBody{}
+	c.copyType(&body, userNotification)
+
+	res, err := c.authedGeneratedClient.UpdateUserNotification(ctx, userNotification.ID, body)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building update user notification request")
 	}
 
 	var apiResponse *types.APIResponse[*types.UserNotification]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "retrieving user notification")
 	}
 

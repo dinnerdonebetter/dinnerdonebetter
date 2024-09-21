@@ -698,17 +698,20 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"GET /api/v1/settings/configurations/household": {
 		ID:           "GetServiceSettingConfigurationsForHousehold",
+		ListRoute:    true,
 		ResponseType: &types.ServiceSettingConfiguration{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/settings/configurations/user": {
 		ID:           "GetServiceSettingConfigurationsForUser",
+		ListRoute:    true,
 		ResponseType: &types.ServiceSettingConfiguration{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/settings/configurations/user/{serviceSettingConfigurationName}": {
-		ID:           "GetServiceSettingConfiguration",
+		ID:           "GetServiceSettingConfigurationByName",
 		ResponseType: &types.ServiceSettingConfiguration{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"DELETE /api/v1/settings/configurations/{serviceSettingConfigurationID}": {

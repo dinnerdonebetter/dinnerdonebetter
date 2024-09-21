@@ -10085,6 +10085,62 @@ paths:
     get:
       description: Operation for fetching ServiceSettingConfiguration
       operationId: GetServiceSettingConfigurationsForHousehold
+      parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -10094,8 +10150,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ServiceSettingConfiguration'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ServiceSettingConfiguration'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -10103,8 +10160,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ServiceSettingConfiguration'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ServiceSettingConfiguration'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -10145,6 +10203,62 @@ paths:
     get:
       description: Operation for fetching ServiceSettingConfiguration
       operationId: GetServiceSettingConfigurationsForUser
+      parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -10154,8 +10268,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ServiceSettingConfiguration'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ServiceSettingConfiguration'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -10163,8 +10278,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ServiceSettingConfiguration'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ServiceSettingConfiguration'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -10204,8 +10320,63 @@ paths:
   /api/v1/settings/configurations/user/{serviceSettingConfigurationName}:
     get:
       description: Operation for fetching ServiceSettingConfiguration
-      operationId: GetServiceSettingConfiguration
+      operationId: GetServiceSettingConfigurationByName
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: serviceSettingConfigurationName
         required: true
@@ -10220,8 +10391,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ServiceSettingConfiguration'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ServiceSettingConfiguration'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -10229,8 +10401,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ServiceSettingConfiguration'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ServiceSettingConfiguration'
+                      type: array
                   type: object
           description: ""
         "400":
