@@ -264,6 +264,8 @@ func (c *Client) UpdateValidIngredientPreparation(ctx context.Context, validIngr
 
 	body := generated.UpdateValidIngredientPreparationJSONRequestBody{}
 	c.copyType(&body, validIngredientPreparation)
+	body.ValidIngredientID = &validIngredientPreparation.Ingredient.ID
+	body.ValidPreparationID = &validIngredientPreparation.Preparation.ID
 
 	res, err := c.authedGeneratedClient.UpdateValidIngredientPreparation(ctx, validIngredientPreparation.ID, body)
 	if err != nil {

@@ -219,6 +219,8 @@ func (c *Client) UpdateValidPreparationInstrument(ctx context.Context, validPrep
 
 	body := generated.UpdateValidPreparationInstrumentJSONRequestBody{}
 	c.copyType(&body, validPreparationInstrument)
+	body.ValidPreparationID = &validPreparationInstrument.Preparation.ID
+	body.ValidInstrumentID = &validPreparationInstrument.Instrument.ID
 
 	res, err := c.authedGeneratedClient.UpdateValidPreparationInstrument(ctx, validPreparationInstrument.ID, body)
 	if err != nil {

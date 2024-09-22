@@ -219,6 +219,8 @@ func (c *Client) UpdateValidPreparationVessel(ctx context.Context, validPreparat
 
 	body := generated.UpdateValidPreparationVesselJSONRequestBody{}
 	c.copyType(&body, validPreparationVessel)
+	body.ValidVesselID = &validPreparationVessel.Vessel.ID
+	body.ValidPreparationID = &validPreparationVessel.Preparation.ID
 
 	res, err := c.authedGeneratedClient.UpdateValidPreparationVessel(ctx, validPreparationVessel.ID, body)
 	if err != nil {

@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/oapi-codegen/runtime"
 )
@@ -814,7 +815,7 @@ type AuditLogEntry struct {
 	BelongsToHousehold *string    `json:"belongsToHousehold,omitempty"`
 	BelongsToUser      *string    `json:"belongsToUser,omitempty"`
 	Changes            *ChangeLog `json:"changes,omitempty"`
-	CreatedAt          *string    `json:"createdAt,omitempty"`
+	CreatedAt          *time.Time `json:"createdAt,omitempty"`
 	EventType          *string    `json:"eventType,omitempty"`
 	Id                 *string    `json:"id,omitempty"`
 	RelevantID         *string    `json:"relevantID,omitempty"`
@@ -856,15 +857,15 @@ type FinalizeMealPlansResponse struct {
 type Household struct {
 	AddressLine1             *string                            `json:"addressLine1,omitempty"`
 	AddressLine2             *string                            `json:"addressLine2,omitempty"`
-	ArchivedAt               *string                            `json:"archivedAt,omitempty"`
+	ArchivedAt               *time.Time                         `json:"archivedAt,omitempty"`
 	BelongsToUser            *string                            `json:"belongsToUser,omitempty"`
 	BillingStatus            *string                            `json:"billingStatus,omitempty"`
 	City                     *string                            `json:"city,omitempty"`
 	ContactPhone             *string                            `json:"contactPhone,omitempty"`
 	Country                  *string                            `json:"country,omitempty"`
-	CreatedAt                *string                            `json:"createdAt,omitempty"`
+	CreatedAt                *time.Time                         `json:"createdAt,omitempty"`
 	Id                       *string                            `json:"id,omitempty"`
-	LastUpdatedAt            *string                            `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt            *time.Time                         `json:"lastUpdatedAt,omitempty"`
 	Latitude                 *float32                           `json:"latitude,omitempty"`
 	Longitude                *float32                           `json:"longitude,omitempty"`
 	Members                  *[]HouseholdUserMembershipWithUser `json:"members,omitempty"`
@@ -891,12 +892,12 @@ type HouseholdCreationRequestInput struct {
 
 // HouseholdInstrumentOwnership defines model for HouseholdInstrumentOwnership.
 type HouseholdInstrumentOwnership struct {
-	ArchivedAt         *string          `json:"archivedAt,omitempty"`
+	ArchivedAt         *time.Time       `json:"archivedAt,omitempty"`
 	BelongsToHousehold *string          `json:"belongsToHousehold,omitempty"`
-	CreatedAt          *string          `json:"createdAt,omitempty"`
+	CreatedAt          *time.Time       `json:"createdAt,omitempty"`
 	Id                 *string          `json:"id,omitempty"`
 	Instrument         *ValidInstrument `json:"instrument,omitempty"`
-	LastUpdatedAt      *string          `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt      *time.Time       `json:"lastUpdatedAt,omitempty"`
 	Notes              *string          `json:"notes,omitempty"`
 	Quantity           *int             `json:"quantity,omitempty"`
 }
@@ -918,13 +919,13 @@ type HouseholdInstrumentOwnershipUpdateRequestInput struct {
 
 // HouseholdInvitation defines model for HouseholdInvitation.
 type HouseholdInvitation struct {
-	ArchivedAt           *string    `json:"archivedAt,omitempty"`
-	CreatedAt            *string    `json:"createdAt,omitempty"`
+	ArchivedAt           *time.Time `json:"archivedAt,omitempty"`
+	CreatedAt            *time.Time `json:"createdAt,omitempty"`
 	DestinationHousehold *Household `json:"destinationHousehold,omitempty"`
-	ExpiresAt            *string    `json:"expiresAt,omitempty"`
+	ExpiresAt            *time.Time `json:"expiresAt,omitempty"`
 	FromUser             *User      `json:"fromUser,omitempty"`
 	Id                   *string    `json:"id,omitempty"`
-	LastUpdatedAt        *string    `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt        *time.Time `json:"lastUpdatedAt,omitempty"`
 	Note                 *string    `json:"note,omitempty"`
 	Status               *string    `json:"status,omitempty"`
 	StatusNote           *string    `json:"statusNote,omitempty"`
@@ -936,10 +937,10 @@ type HouseholdInvitation struct {
 
 // HouseholdInvitationCreationRequestInput defines model for HouseholdInvitationCreationRequestInput.
 type HouseholdInvitationCreationRequestInput struct {
-	ExpiresAt *string `json:"expiresAt,omitempty"`
-	Note      *string `json:"note,omitempty"`
-	ToEmail   *string `json:"toEmail,omitempty"`
-	ToName    *string `json:"toName,omitempty"`
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+	Note      *string    `json:"note,omitempty"`
+	ToEmail   *string    `json:"toEmail,omitempty"`
+	ToName    *string    `json:"toName,omitempty"`
 }
 
 // HouseholdInvitationUpdateRequestInput defines model for HouseholdInvitationUpdateRequestInput.
@@ -971,38 +972,38 @@ type HouseholdUpdateRequestInput struct {
 
 // HouseholdUserMembership defines model for HouseholdUserMembership.
 type HouseholdUserMembership struct {
-	ArchivedAt         *string `json:"archivedAt,omitempty"`
-	BelongsToHousehold *string `json:"belongsToHousehold,omitempty"`
-	BelongsToUser      *string `json:"belongsToUser,omitempty"`
-	CreatedAt          *string `json:"createdAt,omitempty"`
-	DefaultHousehold   *bool   `json:"defaultHousehold,omitempty"`
-	HouseholdRole      *string `json:"householdRole,omitempty"`
-	Id                 *string `json:"id,omitempty"`
-	LastUpdatedAt      *string `json:"lastUpdatedAt,omitempty"`
+	ArchivedAt         *time.Time `json:"archivedAt,omitempty"`
+	BelongsToHousehold *string    `json:"belongsToHousehold,omitempty"`
+	BelongsToUser      *string    `json:"belongsToUser,omitempty"`
+	CreatedAt          *time.Time `json:"createdAt,omitempty"`
+	DefaultHousehold   *bool      `json:"defaultHousehold,omitempty"`
+	HouseholdRole      *string    `json:"householdRole,omitempty"`
+	Id                 *string    `json:"id,omitempty"`
+	LastUpdatedAt      *time.Time `json:"lastUpdatedAt,omitempty"`
 }
 
 // HouseholdUserMembershipWithUser defines model for HouseholdUserMembershipWithUser.
 type HouseholdUserMembershipWithUser struct {
-	ArchivedAt         *string `json:"archivedAt,omitempty"`
-	BelongsToHousehold *string `json:"belongsToHousehold,omitempty"`
-	BelongsToUser      *User   `json:"belongsToUser,omitempty"`
-	CreatedAt          *string `json:"createdAt,omitempty"`
-	DefaultHousehold   *bool   `json:"defaultHousehold,omitempty"`
-	HouseholdRole      *string `json:"householdRole,omitempty"`
-	Id                 *string `json:"id,omitempty"`
-	LastUpdatedAt      *string `json:"lastUpdatedAt,omitempty"`
+	ArchivedAt         *time.Time `json:"archivedAt,omitempty"`
+	BelongsToHousehold *string    `json:"belongsToHousehold,omitempty"`
+	BelongsToUser      *User      `json:"belongsToUser,omitempty"`
+	CreatedAt          *time.Time `json:"createdAt,omitempty"`
+	DefaultHousehold   *bool      `json:"defaultHousehold,omitempty"`
+	HouseholdRole      *string    `json:"householdRole,omitempty"`
+	Id                 *string    `json:"id,omitempty"`
+	LastUpdatedAt      *time.Time `json:"lastUpdatedAt,omitempty"`
 }
 
 // Meal defines model for Meal.
 type Meal struct {
-	ArchivedAt               *string          `json:"archivedAt,omitempty"`
+	ArchivedAt               *time.Time       `json:"archivedAt,omitempty"`
 	Components               *[]MealComponent `json:"components,omitempty"`
-	CreatedAt                *string          `json:"createdAt,omitempty"`
+	CreatedAt                *time.Time       `json:"createdAt,omitempty"`
 	CreatedByUser            *string          `json:"createdByUser,omitempty"`
 	Description              *string          `json:"description,omitempty"`
 	EligibleForMealPlans     *bool            `json:"eligibleForMealPlans,omitempty"`
 	Id                       *string          `json:"id,omitempty"`
-	LastUpdatedAt            *string          `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt            *time.Time       `json:"lastUpdatedAt,omitempty"`
 	MaximumEstimatedPortions *float32         `json:"maximumEstimatedPortions,omitempty"`
 	MinimumEstimatedPortions *float32         `json:"minimumEstimatedPortions,omitempty"`
 	Name                     *string          `json:"name,omitempty"`
@@ -1034,19 +1035,19 @@ type MealCreationRequestInput struct {
 
 // MealPlan defines model for MealPlan.
 type MealPlan struct {
-	ArchivedAt             *string          `json:"archivedAt,omitempty"`
+	ArchivedAt             *time.Time       `json:"archivedAt,omitempty"`
 	BelongsToHousehold     *string          `json:"belongsToHousehold,omitempty"`
-	CreatedAt              *string          `json:"createdAt,omitempty"`
+	CreatedAt              *time.Time       `json:"createdAt,omitempty"`
 	CreatedBy              *string          `json:"createdBy,omitempty"`
 	ElectionMethod         *string          `json:"electionMethod,omitempty"`
 	Events                 *[]MealPlanEvent `json:"events,omitempty"`
 	GroceryListInitialized *bool            `json:"groceryListInitialized,omitempty"`
 	Id                     *string          `json:"id,omitempty"`
-	LastUpdatedAt          *string          `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt          *time.Time       `json:"lastUpdatedAt,omitempty"`
 	Notes                  *string          `json:"notes,omitempty"`
 	Status                 *string          `json:"status,omitempty"`
 	TasksCreated           *bool            `json:"tasksCreated,omitempty"`
-	VotingDeadline         *string          `json:"votingDeadline,omitempty"`
+	VotingDeadline         *time.Time       `json:"votingDeadline,omitempty"`
 }
 
 // MealPlanCreationRequestInput defines model for MealPlanCreationRequestInput.
@@ -1054,48 +1055,48 @@ type MealPlanCreationRequestInput struct {
 	ElectionMethod *string                              `json:"electionMethod,omitempty"`
 	Events         *[]MealPlanEventCreationRequestInput `json:"events,omitempty"`
 	Notes          *string                              `json:"notes,omitempty"`
-	VotingDeadline *string                              `json:"votingDeadline,omitempty"`
+	VotingDeadline *time.Time                           `json:"votingDeadline,omitempty"`
 }
 
 // MealPlanEvent defines model for MealPlanEvent.
 type MealPlanEvent struct {
-	ArchivedAt        *string           `json:"archivedAt,omitempty"`
+	ArchivedAt        *time.Time        `json:"archivedAt,omitempty"`
 	BelongsToMealPlan *string           `json:"belongsToMealPlan,omitempty"`
-	CreatedAt         *string           `json:"createdAt,omitempty"`
-	EndsAt            *string           `json:"endsAt,omitempty"`
+	CreatedAt         *time.Time        `json:"createdAt,omitempty"`
+	EndsAt            *time.Time        `json:"endsAt,omitempty"`
 	Id                *string           `json:"id,omitempty"`
-	LastUpdatedAt     *string           `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt     *time.Time        `json:"lastUpdatedAt,omitempty"`
 	MealName          *string           `json:"mealName,omitempty"`
 	Notes             *string           `json:"notes,omitempty"`
 	Options           *[]MealPlanOption `json:"options,omitempty"`
-	StartsAt          *string           `json:"startsAt,omitempty"`
+	StartsAt          *time.Time        `json:"startsAt,omitempty"`
 }
 
 // MealPlanEventCreationRequestInput defines model for MealPlanEventCreationRequestInput.
 type MealPlanEventCreationRequestInput struct {
-	EndsAt   *string                               `json:"endsAt,omitempty"`
+	EndsAt   *time.Time                            `json:"endsAt,omitempty"`
 	MealName *string                               `json:"mealName,omitempty"`
 	Notes    *string                               `json:"notes,omitempty"`
 	Options  *[]MealPlanOptionCreationRequestInput `json:"options,omitempty"`
-	StartsAt *string                               `json:"startsAt,omitempty"`
+	StartsAt *time.Time                            `json:"startsAt,omitempty"`
 }
 
 // MealPlanEventUpdateRequestInput defines model for MealPlanEventUpdateRequestInput.
 type MealPlanEventUpdateRequestInput struct {
-	EndsAt   *string `json:"endsAt,omitempty"`
-	MealName *string `json:"mealName,omitempty"`
-	Notes    *string `json:"notes,omitempty"`
-	StartsAt *string `json:"startsAt,omitempty"`
+	EndsAt   *time.Time `json:"endsAt,omitempty"`
+	MealName *string    `json:"mealName,omitempty"`
+	Notes    *string    `json:"notes,omitempty"`
+	StartsAt *time.Time `json:"startsAt,omitempty"`
 }
 
 // MealPlanGroceryListItem defines model for MealPlanGroceryListItem.
 type MealPlanGroceryListItem struct {
-	ArchivedAt               *string               `json:"archivedAt,omitempty"`
+	ArchivedAt               *time.Time            `json:"archivedAt,omitempty"`
 	BelongsToMealPlan        *string               `json:"belongsToMealPlan,omitempty"`
-	CreatedAt                *string               `json:"createdAt,omitempty"`
+	CreatedAt                *time.Time            `json:"createdAt,omitempty"`
 	Id                       *string               `json:"id,omitempty"`
 	Ingredient               *ValidIngredient      `json:"ingredient,omitempty"`
-	LastUpdatedAt            *string               `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt            *time.Time            `json:"lastUpdatedAt,omitempty"`
 	MaximumQuantityNeeded    *float32              `json:"maximumQuantityNeeded,omitempty"`
 	MeasurementUnit          *ValidMeasurementUnit `json:"measurementUnit,omitempty"`
 	MinimumQuantityNeeded    *float32              `json:"minimumQuantityNeeded,omitempty"`
@@ -1139,14 +1140,14 @@ type MealPlanGroceryListItemUpdateRequestInput struct {
 
 // MealPlanOption defines model for MealPlanOption.
 type MealPlanOption struct {
-	ArchivedAt             *string               `json:"archivedAt,omitempty"`
+	ArchivedAt             *time.Time            `json:"archivedAt,omitempty"`
 	AssignedCook           *string               `json:"assignedCook,omitempty"`
 	AssignedDishwasher     *string               `json:"assignedDishwasher,omitempty"`
 	BelongsToMealPlanEvent *string               `json:"belongsToMealPlanEvent,omitempty"`
 	Chosen                 *bool                 `json:"chosen,omitempty"`
-	CreatedAt              *string               `json:"createdAt,omitempty"`
+	CreatedAt              *time.Time            `json:"createdAt,omitempty"`
 	Id                     *string               `json:"id,omitempty"`
-	LastUpdatedAt          *string               `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt          *time.Time            `json:"lastUpdatedAt,omitempty"`
 	Meal                   *Meal                 `json:"meal,omitempty"`
 	MealScale              *float32              `json:"mealScale,omitempty"`
 	Notes                  *string               `json:"notes,omitempty"`
@@ -1174,15 +1175,15 @@ type MealPlanOptionUpdateRequestInput struct {
 
 // MealPlanOptionVote defines model for MealPlanOptionVote.
 type MealPlanOptionVote struct {
-	Abstain                 *bool   `json:"abstain,omitempty"`
-	ArchivedAt              *string `json:"archivedAt,omitempty"`
-	BelongsToMealPlanOption *string `json:"belongsToMealPlanOption,omitempty"`
-	ByUser                  *string `json:"byUser,omitempty"`
-	CreatedAt               *string `json:"createdAt,omitempty"`
-	Id                      *string `json:"id,omitempty"`
-	LastUpdatedAt           *string `json:"lastUpdatedAt,omitempty"`
-	Notes                   *string `json:"notes,omitempty"`
-	Rank                    *int    `json:"rank,omitempty"`
+	Abstain                 *bool      `json:"abstain,omitempty"`
+	ArchivedAt              *time.Time `json:"archivedAt,omitempty"`
+	BelongsToMealPlanOption *string    `json:"belongsToMealPlanOption,omitempty"`
+	ByUser                  *string    `json:"byUser,omitempty"`
+	CreatedAt               *time.Time `json:"createdAt,omitempty"`
+	Id                      *string    `json:"id,omitempty"`
+	LastUpdatedAt           *time.Time `json:"lastUpdatedAt,omitempty"`
+	Notes                   *string    `json:"notes,omitempty"`
+	Rank                    *int       `json:"rank,omitempty"`
 }
 
 // MealPlanOptionVoteCreationInput defines model for MealPlanOptionVoteCreationInput.
@@ -1209,11 +1210,11 @@ type MealPlanOptionVoteUpdateRequestInput struct {
 // MealPlanTask defines model for MealPlanTask.
 type MealPlanTask struct {
 	AssignedToUser      *string         `json:"assignedToUser,omitempty"`
-	CompletedAt         *string         `json:"completedAt,omitempty"`
-	CreatedAt           *string         `json:"createdAt,omitempty"`
+	CompletedAt         *time.Time      `json:"completedAt,omitempty"`
+	CreatedAt           *time.Time      `json:"createdAt,omitempty"`
 	CreationExplanation *string         `json:"creationExplanation,omitempty"`
 	Id                  *string         `json:"id,omitempty"`
-	LastUpdatedAt       *string         `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt       *time.Time      `json:"lastUpdatedAt,omitempty"`
 	MealPlanOption      *MealPlanOption `json:"mealPlanOption,omitempty"`
 	RecipePrepTask      *RecipePrepTask `json:"recipePrepTask,omitempty"`
 	Status              *string         `json:"status,omitempty"`
@@ -1239,8 +1240,8 @@ type MealPlanTaskStatusChangeRequestInput struct {
 
 // MealPlanUpdateRequestInput defines model for MealPlanUpdateRequestInput.
 type MealPlanUpdateRequestInput struct {
-	Notes          *string `json:"notes,omitempty"`
-	VotingDeadline *string `json:"votingDeadline,omitempty"`
+	Notes          *string    `json:"notes,omitempty"`
+	VotingDeadline *time.Time `json:"votingDeadline,omitempty"`
 }
 
 // ModifyUserPermissionsInput defines model for ModifyUserPermissionsInput.
@@ -1251,13 +1252,13 @@ type ModifyUserPermissionsInput struct {
 
 // OAuth2Client defines model for OAuth2Client.
 type OAuth2Client struct {
-	ArchivedAt   *string `json:"archivedAt,omitempty"`
-	ClientID     *string `json:"clientID,omitempty"`
-	ClientSecret *string `json:"clientSecret,omitempty"`
-	CreatedAt    *string `json:"createdAt,omitempty"`
-	Description  *string `json:"description,omitempty"`
-	Id           *string `json:"id,omitempty"`
-	Name         *string `json:"name,omitempty"`
+	ArchivedAt   *time.Time `json:"archivedAt,omitempty"`
+	ClientID     *string    `json:"clientID,omitempty"`
+	ClientSecret *string    `json:"clientSecret,omitempty"`
+	CreatedAt    *time.Time `json:"createdAt,omitempty"`
+	Description  *string    `json:"description,omitempty"`
+	Id           *string    `json:"id,omitempty"`
+	Name         *string    `json:"name,omitempty"`
 }
 
 // OAuth2ClientCreationRequestInput defines model for OAuth2ClientCreationRequestInput.
@@ -1285,13 +1286,13 @@ type Pagination struct {
 
 // PasswordResetToken defines model for PasswordResetToken.
 type PasswordResetToken struct {
-	ArchivedAt    *string `json:"archivedAt,omitempty"`
-	BelongsToUser *string `json:"belongsToUser,omitempty"`
-	CreatedAt     *string `json:"createdAt,omitempty"`
-	ExpiresAt     *string `json:"expiresAt,omitempty"`
-	Id            *string `json:"id,omitempty"`
-	LastUpdatedAt *string `json:"lastUpdatedAt,omitempty"`
-	Token         *string `json:"token,omitempty"`
+	ArchivedAt    *time.Time `json:"archivedAt,omitempty"`
+	BelongsToUser *string    `json:"belongsToUser,omitempty"`
+	CreatedAt     *time.Time `json:"createdAt,omitempty"`
+	ExpiresAt     *time.Time `json:"expiresAt,omitempty"`
+	Id            *string    `json:"id,omitempty"`
+	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty"`
+	Token         *string    `json:"token,omitempty"`
 }
 
 // PasswordResetTokenCreationRequestInput defines model for PasswordResetTokenCreationRequestInput.
@@ -1314,14 +1315,14 @@ type PasswordUpdateInput struct {
 
 // Recipe defines model for Recipe.
 type Recipe struct {
-	ArchivedAt               *string           `json:"archivedAt,omitempty"`
-	CreatedAt                *string           `json:"createdAt,omitempty"`
+	ArchivedAt               *time.Time        `json:"archivedAt,omitempty"`
+	CreatedAt                *time.Time        `json:"createdAt,omitempty"`
 	CreatedByUser            *string           `json:"createdByUser,omitempty"`
 	Description              *string           `json:"description,omitempty"`
 	EligibleForMeals         *bool             `json:"eligibleForMeals,omitempty"`
 	Id                       *string           `json:"id,omitempty"`
 	InspiredByRecipeID       *string           `json:"inspiredByRecipeID,omitempty"`
-	LastUpdatedAt            *string           `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt            *time.Time        `json:"lastUpdatedAt,omitempty"`
 	MaximumEstimatedPortions *float32          `json:"maximumEstimatedPortions,omitempty"`
 	Media                    *[]RecipeMedia    `json:"media,omitempty"`
 	MinimumEstimatedPortions *float32          `json:"minimumEstimatedPortions,omitempty"`
@@ -1358,27 +1359,27 @@ type RecipeCreationRequestInput struct {
 
 // RecipeMedia defines model for RecipeMedia.
 type RecipeMedia struct {
-	ArchivedAt          *string `json:"archivedAt,omitempty"`
-	BelongsToRecipe     *string `json:"belongsToRecipe,omitempty"`
-	BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`
-	CreatedAt           *string `json:"createdAt,omitempty"`
-	ExternalPath        *string `json:"externalPath,omitempty"`
-	Id                  *string `json:"id,omitempty"`
-	Index               *int    `json:"index,omitempty"`
-	InternalPath        *string `json:"internalPath,omitempty"`
-	LastUpdatedAt       *string `json:"lastUpdatedAt,omitempty"`
-	MimeType            *string `json:"mimeType,omitempty"`
+	ArchivedAt          *time.Time `json:"archivedAt,omitempty"`
+	BelongsToRecipe     *string    `json:"belongsToRecipe,omitempty"`
+	BelongsToRecipeStep *string    `json:"belongsToRecipeStep,omitempty"`
+	CreatedAt           *time.Time `json:"createdAt,omitempty"`
+	ExternalPath        *string    `json:"externalPath,omitempty"`
+	Id                  *string    `json:"id,omitempty"`
+	Index               *int       `json:"index,omitempty"`
+	InternalPath        *string    `json:"internalPath,omitempty"`
+	LastUpdatedAt       *time.Time `json:"lastUpdatedAt,omitempty"`
+	MimeType            *string    `json:"mimeType,omitempty"`
 }
 
 // RecipePrepTask defines model for RecipePrepTask.
 type RecipePrepTask struct {
-	ArchivedAt                             *string               `json:"archivedAt,omitempty"`
+	ArchivedAt                             *time.Time            `json:"archivedAt,omitempty"`
 	BelongsToRecipe                        *string               `json:"belongsToRecipe,omitempty"`
-	CreatedAt                              *string               `json:"createdAt,omitempty"`
+	CreatedAt                              *time.Time            `json:"createdAt,omitempty"`
 	Description                            *string               `json:"description,omitempty"`
 	ExplicitStorageInstructions            *string               `json:"explicitStorageInstructions,omitempty"`
 	Id                                     *string               `json:"id,omitempty"`
-	LastUpdatedAt                          *string               `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt                          *time.Time            `json:"lastUpdatedAt,omitempty"`
 	MaximumStorageTemperatureInCelsius     *float32              `json:"maximumStorageTemperatureInCelsius,omitempty"`
 	MaximumTimeBufferBeforeRecipeInSeconds *int                  `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
 	MinimumStorageTemperatureInCelsius     *float32              `json:"minimumStorageTemperatureInCelsius,omitempty"`
@@ -1467,18 +1468,18 @@ type RecipePrepTaskWithinRecipeCreationRequestInput struct {
 
 // RecipeRating defines model for RecipeRating.
 type RecipeRating struct {
-	ArchivedAt    *string  `json:"archivedAt,omitempty"`
-	ByUser        *string  `json:"byUser,omitempty"`
-	Cleanup       *float32 `json:"cleanup,omitempty"`
-	CreatedAt     *string  `json:"createdAt,omitempty"`
-	Difficulty    *float32 `json:"difficulty,omitempty"`
-	Id            *string  `json:"id,omitempty"`
-	Instructions  *float32 `json:"instructions,omitempty"`
-	LastUpdatedAt *string  `json:"lastUpdatedAt,omitempty"`
-	Notes         *string  `json:"notes,omitempty"`
-	Overall       *float32 `json:"overall,omitempty"`
-	RecipeID      *string  `json:"recipeID,omitempty"`
-	Taste         *float32 `json:"taste,omitempty"`
+	ArchivedAt    *time.Time `json:"archivedAt,omitempty"`
+	ByUser        *string    `json:"byUser,omitempty"`
+	Cleanup       *float32   `json:"cleanup,omitempty"`
+	CreatedAt     *time.Time `json:"createdAt,omitempty"`
+	Difficulty    *float32   `json:"difficulty,omitempty"`
+	Id            *string    `json:"id,omitempty"`
+	Instructions  *float32   `json:"instructions,omitempty"`
+	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty"`
+	Notes         *string    `json:"notes,omitempty"`
+	Overall       *float32   `json:"overall,omitempty"`
+	RecipeID      *string    `json:"recipeID,omitempty"`
+	Taste         *float32   `json:"taste,omitempty"`
 }
 
 // RecipeRatingCreationRequestInput defines model for RecipeRatingCreationRequestInput.
@@ -1507,17 +1508,17 @@ type RecipeRatingUpdateRequestInput struct {
 
 // RecipeStep defines model for RecipeStep.
 type RecipeStep struct {
-	ArchivedAt                    *string                          `json:"archivedAt,omitempty"`
+	ArchivedAt                    *time.Time                       `json:"archivedAt,omitempty"`
 	BelongsToRecipe               *string                          `json:"belongsToRecipe,omitempty"`
 	CompletionConditions          *[]RecipeStepCompletionCondition `json:"completionConditions,omitempty"`
 	ConditionExpression           *string                          `json:"conditionExpression,omitempty"`
-	CreatedAt                     *string                          `json:"createdAt,omitempty"`
+	CreatedAt                     *time.Time                       `json:"createdAt,omitempty"`
 	ExplicitInstructions          *string                          `json:"explicitInstructions,omitempty"`
 	Id                            *string                          `json:"id,omitempty"`
 	Index                         *int                             `json:"index,omitempty"`
 	Ingredients                   *[]RecipeStepIngredient          `json:"ingredients,omitempty"`
 	Instruments                   *[]RecipeStepInstrument          `json:"instruments,omitempty"`
-	LastUpdatedAt                 *string                          `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt                 *time.Time                       `json:"lastUpdatedAt,omitempty"`
 	MaximumEstimatedTimeInSeconds *int                             `json:"maximumEstimatedTimeInSeconds,omitempty"`
 	MaximumTemperatureInCelsius   *float32                         `json:"maximumTemperatureInCelsius,omitempty"`
 	Media                         *[]RecipeMedia                   `json:"media,omitempty"`
@@ -1533,13 +1534,13 @@ type RecipeStep struct {
 
 // RecipeStepCompletionCondition defines model for RecipeStepCompletionCondition.
 type RecipeStepCompletionCondition struct {
-	ArchivedAt          *string                                    `json:"archivedAt,omitempty"`
+	ArchivedAt          *time.Time                                 `json:"archivedAt,omitempty"`
 	BelongsToRecipeStep *string                                    `json:"belongsToRecipeStep,omitempty"`
-	CreatedAt           *string                                    `json:"createdAt,omitempty"`
+	CreatedAt           *time.Time                                 `json:"createdAt,omitempty"`
 	Id                  *string                                    `json:"id,omitempty"`
 	IngredientState     *ValidIngredientState                      `json:"ingredientState,omitempty"`
 	Ingredients         *[]RecipeStepCompletionConditionIngredient `json:"ingredients,omitempty"`
-	LastUpdatedAt       *string                                    `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt       *time.Time                                 `json:"lastUpdatedAt,omitempty"`
 	Notes               *string                                    `json:"notes,omitempty"`
 	Optional            *bool                                      `json:"optional,omitempty"`
 }
@@ -1564,12 +1565,12 @@ type RecipeStepCompletionConditionForExistingRecipeCreationRequestInput struct {
 
 // RecipeStepCompletionConditionIngredient defines model for RecipeStepCompletionConditionIngredient.
 type RecipeStepCompletionConditionIngredient struct {
-	ArchivedAt                             *string `json:"archivedAt,omitempty"`
-	BelongsToRecipeStepCompletionCondition *string `json:"belongsToRecipeStepCompletionCondition,omitempty"`
-	CreatedAt                              *string `json:"createdAt,omitempty"`
-	Id                                     *string `json:"id,omitempty"`
-	LastUpdatedAt                          *string `json:"lastUpdatedAt,omitempty"`
-	RecipeStepIngredient                   *string `json:"recipeStepIngredient,omitempty"`
+	ArchivedAt                             *time.Time `json:"archivedAt,omitempty"`
+	BelongsToRecipeStepCompletionCondition *string    `json:"belongsToRecipeStepCompletionCondition,omitempty"`
+	CreatedAt                              *time.Time `json:"createdAt,omitempty"`
+	Id                                     *string    `json:"id,omitempty"`
+	LastUpdatedAt                          *time.Time `json:"lastUpdatedAt,omitempty"`
+	RecipeStepIngredient                   *string    `json:"recipeStepIngredient,omitempty"`
 }
 
 // RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput defines model for RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput.
@@ -1607,13 +1608,13 @@ type RecipeStepCreationRequestInput struct {
 
 // RecipeStepIngredient defines model for RecipeStepIngredient.
 type RecipeStepIngredient struct {
-	ArchivedAt             *string               `json:"archivedAt,omitempty"`
+	ArchivedAt             *time.Time            `json:"archivedAt,omitempty"`
 	BelongsToRecipeStep    *string               `json:"belongsToRecipeStep,omitempty"`
-	CreatedAt              *string               `json:"createdAt,omitempty"`
+	CreatedAt              *time.Time            `json:"createdAt,omitempty"`
 	Id                     *string               `json:"id,omitempty"`
 	Ingredient             *ValidIngredient      `json:"ingredient,omitempty"`
 	IngredientNotes        *string               `json:"ingredientNotes,omitempty"`
-	LastUpdatedAt          *string               `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt          *time.Time            `json:"lastUpdatedAt,omitempty"`
 	MaximumQuantity        *float32              `json:"maximumQuantity,omitempty"`
 	MeasurementUnit        *ValidMeasurementUnit `json:"measurementUnit,omitempty"`
 	MinimumQuantity        *float32              `json:"minimumQuantity,omitempty"`
@@ -1668,12 +1669,12 @@ type RecipeStepIngredientUpdateRequestInput struct {
 
 // RecipeStepInstrument defines model for RecipeStepInstrument.
 type RecipeStepInstrument struct {
-	ArchivedAt          *string          `json:"archivedAt,omitempty"`
+	ArchivedAt          *time.Time       `json:"archivedAt,omitempty"`
 	BelongsToRecipeStep *string          `json:"belongsToRecipeStep,omitempty"`
-	CreatedAt           *string          `json:"createdAt,omitempty"`
+	CreatedAt           *time.Time       `json:"createdAt,omitempty"`
 	Id                  *string          `json:"id,omitempty"`
 	Instrument          *ValidInstrument `json:"instrument,omitempty"`
-	LastUpdatedAt       *string          `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt       *time.Time       `json:"lastUpdatedAt,omitempty"`
 	MaximumQuantity     *int             `json:"maximumQuantity,omitempty"`
 	MinimumQuantity     *int             `json:"minimumQuantity,omitempty"`
 	Name                *string          `json:"name,omitempty"`
@@ -1715,16 +1716,16 @@ type RecipeStepInstrumentUpdateRequestInput struct {
 
 // RecipeStepProduct defines model for RecipeStepProduct.
 type RecipeStepProduct struct {
-	ArchivedAt                         *string               `json:"archivedAt,omitempty"`
+	ArchivedAt                         *time.Time            `json:"archivedAt,omitempty"`
 	BelongsToRecipeStep                *string               `json:"belongsToRecipeStep,omitempty"`
 	Compostable                        *bool                 `json:"compostable,omitempty"`
 	ContainedInVesselIndex             *int                  `json:"containedInVesselIndex,omitempty"`
-	CreatedAt                          *string               `json:"createdAt,omitempty"`
+	CreatedAt                          *time.Time            `json:"createdAt,omitempty"`
 	Id                                 *string               `json:"id,omitempty"`
 	Index                              *int                  `json:"index,omitempty"`
 	IsLiquid                           *bool                 `json:"isLiquid,omitempty"`
 	IsWaste                            *bool                 `json:"isWaste,omitempty"`
-	LastUpdatedAt                      *string               `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt                      *time.Time            `json:"lastUpdatedAt,omitempty"`
 	MaximumQuantity                    *float32              `json:"maximumQuantity,omitempty"`
 	MaximumStorageDurationInSeconds    *int                  `json:"maximumStorageDurationInSeconds,omitempty"`
 	MaximumStorageTemperatureInCelsius *float32              `json:"maximumStorageTemperatureInCelsius,omitempty"`
@@ -1794,11 +1795,11 @@ type RecipeStepUpdateRequestInput struct {
 
 // RecipeStepVessel defines model for RecipeStepVessel.
 type RecipeStepVessel struct {
-	ArchivedAt           *string      `json:"archivedAt,omitempty"`
+	ArchivedAt           *time.Time   `json:"archivedAt,omitempty"`
 	BelongsToRecipeStep  *string      `json:"belongsToRecipeStep,omitempty"`
-	CreatedAt            *string      `json:"createdAt,omitempty"`
+	CreatedAt            *time.Time   `json:"createdAt,omitempty"`
 	Id                   *string      `json:"id,omitempty"`
-	LastUpdatedAt        *string      `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt        *time.Time   `json:"lastUpdatedAt,omitempty"`
 	MaximumQuantity      *int         `json:"maximumQuantity,omitempty"`
 	MinimumQuantity      *int         `json:"minimumQuantity,omitempty"`
 	Name                 *string      `json:"name,omitempty"`
@@ -1860,26 +1861,26 @@ type ResponseDetails struct {
 
 // ServiceSetting defines model for ServiceSetting.
 type ServiceSetting struct {
-	AdminsOnly    *bool     `json:"adminsOnly,omitempty"`
-	ArchivedAt    *string   `json:"archivedAt,omitempty"`
-	CreatedAt     *string   `json:"createdAt,omitempty"`
-	DefaultValue  *string   `json:"defaultValue,omitempty"`
-	Description   *string   `json:"description,omitempty"`
-	Enumeration   *[]string `json:"enumeration,omitempty"`
-	Id            *string   `json:"id,omitempty"`
-	LastUpdatedAt *string   `json:"lastUpdatedAt,omitempty"`
-	Name          *string   `json:"name,omitempty"`
-	Type          *string   `json:"type,omitempty"`
+	AdminsOnly    *bool      `json:"adminsOnly,omitempty"`
+	ArchivedAt    *time.Time `json:"archivedAt,omitempty"`
+	CreatedAt     *time.Time `json:"createdAt,omitempty"`
+	DefaultValue  *string    `json:"defaultValue,omitempty"`
+	Description   *string    `json:"description,omitempty"`
+	Enumeration   *[]string  `json:"enumeration,omitempty"`
+	Id            *string    `json:"id,omitempty"`
+	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty"`
+	Name          *string    `json:"name,omitempty"`
+	Type          *string    `json:"type,omitempty"`
 }
 
 // ServiceSettingConfiguration defines model for ServiceSettingConfiguration.
 type ServiceSettingConfiguration struct {
-	ArchivedAt         *string         `json:"archivedAt,omitempty"`
+	ArchivedAt         *time.Time      `json:"archivedAt,omitempty"`
 	BelongsToHousehold *string         `json:"belongsToHousehold,omitempty"`
 	BelongsToUser      *string         `json:"belongsToUser,omitempty"`
-	CreatedAt          *string         `json:"createdAt,omitempty"`
+	CreatedAt          *time.Time      `json:"createdAt,omitempty"`
 	Id                 *string         `json:"id,omitempty"`
-	LastUpdatedAt      *string         `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt      *time.Time      `json:"lastUpdatedAt,omitempty"`
 	Notes              *string         `json:"notes,omitempty"`
 	ServiceSetting     *ServiceSetting `json:"serviceSetting,omitempty"`
 	Value              *string         `json:"value,omitempty"`
@@ -1933,25 +1934,25 @@ type TOTPSecretVerificationInput struct {
 
 // User defines model for User.
 type User struct {
-	AccountStatus             *string `json:"accountStatus,omitempty"`
-	AccountStatusExplanation  *string `json:"accountStatusExplanation,omitempty"`
-	ArchivedAt                *string `json:"archivedAt,omitempty"`
-	Avatar                    *string `json:"avatar,omitempty"`
-	Birthday                  *string `json:"birthday,omitempty"`
-	CreatedAt                 *string `json:"createdAt,omitempty"`
-	EmailAddress              *string `json:"emailAddress,omitempty"`
-	EmailAddressVerifiedAt    *string `json:"emailAddressVerifiedAt,omitempty"`
-	FirstName                 *string `json:"firstName,omitempty"`
-	Id                        *string `json:"id,omitempty"`
-	LastAcceptedPrivacyPolicy *string `json:"lastAcceptedPrivacyPolicy,omitempty"`
-	LastAcceptedTOS           *string `json:"lastAcceptedTOS,omitempty"`
-	LastName                  *string `json:"lastName,omitempty"`
-	LastUpdatedAt             *string `json:"lastUpdatedAt,omitempty"`
-	PasswordLastChangedAt     *string `json:"passwordLastChangedAt,omitempty"`
-	RequiresPasswordChange    *bool   `json:"requiresPasswordChange,omitempty"`
-	ServiceRoles              *string `json:"serviceRoles,omitempty"`
-	TwoFactorSecretVerifiedAt *string `json:"twoFactorSecretVerifiedAt,omitempty"`
-	Username                  *string `json:"username,omitempty"`
+	AccountStatus             *string    `json:"accountStatus,omitempty"`
+	AccountStatusExplanation  *string    `json:"accountStatusExplanation,omitempty"`
+	ArchivedAt                *time.Time `json:"archivedAt,omitempty"`
+	Avatar                    *string    `json:"avatar,omitempty"`
+	Birthday                  *time.Time `json:"birthday,omitempty"`
+	CreatedAt                 *time.Time `json:"createdAt,omitempty"`
+	EmailAddress              *string    `json:"emailAddress,omitempty"`
+	EmailAddressVerifiedAt    *time.Time `json:"emailAddressVerifiedAt,omitempty"`
+	FirstName                 *string    `json:"firstName,omitempty"`
+	Id                        *string    `json:"id,omitempty"`
+	LastAcceptedPrivacyPolicy *time.Time `json:"lastAcceptedPrivacyPolicy,omitempty"`
+	LastAcceptedTOS           *time.Time `json:"lastAcceptedTOS,omitempty"`
+	LastName                  *string    `json:"lastName,omitempty"`
+	LastUpdatedAt             *time.Time `json:"lastUpdatedAt,omitempty"`
+	PasswordLastChangedAt     *time.Time `json:"passwordLastChangedAt,omitempty"`
+	RequiresPasswordChange    *bool      `json:"requiresPasswordChange,omitempty"`
+	ServiceRoles              *string    `json:"serviceRoles,omitempty"`
+	TwoFactorSecretVerifiedAt *time.Time `json:"twoFactorSecretVerifiedAt,omitempty"`
+	Username                  *string    `json:"username,omitempty"`
 }
 
 // UserAccountStatusUpdateInput defines model for UserAccountStatusUpdateInput.
@@ -1963,27 +1964,27 @@ type UserAccountStatusUpdateInput struct {
 
 // UserCreationResponse defines model for UserCreationResponse.
 type UserCreationResponse struct {
-	AccountStatus   *string `json:"accountStatus,omitempty"`
-	Avatar          *string `json:"avatar,omitempty"`
-	Birthday        *string `json:"birthday,omitempty"`
-	CreatedAt       *string `json:"createdAt,omitempty"`
-	CreatedUserID   *string `json:"createdUserID,omitempty"`
-	EmailAddress    *string `json:"emailAddress,omitempty"`
-	FirstName       *string `json:"firstName,omitempty"`
-	IsAdmin         *bool   `json:"isAdmin,omitempty"`
-	LastName        *string `json:"lastName,omitempty"`
-	QrCode          *string `json:"qrCode,omitempty"`
-	TwoFactorSecret *string `json:"twoFactorSecret,omitempty"`
-	Username        *string `json:"username,omitempty"`
+	AccountStatus   *string    `json:"accountStatus,omitempty"`
+	Avatar          *string    `json:"avatar,omitempty"`
+	Birthday        *time.Time `json:"birthday,omitempty"`
+	CreatedAt       *time.Time `json:"createdAt,omitempty"`
+	CreatedUserID   *string    `json:"createdUserID,omitempty"`
+	EmailAddress    *string    `json:"emailAddress,omitempty"`
+	FirstName       *string    `json:"firstName,omitempty"`
+	IsAdmin         *bool      `json:"isAdmin,omitempty"`
+	LastName        *string    `json:"lastName,omitempty"`
+	QrCode          *string    `json:"qrCode,omitempty"`
+	TwoFactorSecret *string    `json:"twoFactorSecret,omitempty"`
+	Username        *string    `json:"username,omitempty"`
 }
 
 // UserDetailsUpdateRequestInput defines model for UserDetailsUpdateRequestInput.
 type UserDetailsUpdateRequestInput struct {
-	Birthday        *string `json:"birthday,omitempty"`
-	CurrentPassword *string `json:"currentPassword,omitempty"`
-	FirstName       *string `json:"firstName,omitempty"`
-	LastName        *string `json:"lastName,omitempty"`
-	TotpToken       *string `json:"totpToken,omitempty"`
+	Birthday        *time.Time `json:"birthday,omitempty"`
+	CurrentPassword *string    `json:"currentPassword,omitempty"`
+	FirstName       *string    `json:"firstName,omitempty"`
+	LastName        *string    `json:"lastName,omitempty"`
+	TotpToken       *string    `json:"totpToken,omitempty"`
 }
 
 // UserEmailAddressUpdateInput defines model for UserEmailAddressUpdateInput.
@@ -1996,12 +1997,12 @@ type UserEmailAddressUpdateInput struct {
 // UserIngredientPreference defines model for UserIngredientPreference.
 type UserIngredientPreference struct {
 	Allergy       *bool            `json:"allergy,omitempty"`
-	ArchivedAt    *string          `json:"archivedAt,omitempty"`
+	ArchivedAt    *time.Time       `json:"archivedAt,omitempty"`
 	BelongsToUser *string          `json:"belongsToUser,omitempty"`
-	CreatedAt     *string          `json:"createdAt,omitempty"`
+	CreatedAt     *time.Time       `json:"createdAt,omitempty"`
 	Id            *string          `json:"id,omitempty"`
 	Ingredient    *ValidIngredient `json:"ingredient,omitempty"`
-	LastUpdatedAt *string          `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt *time.Time       `json:"lastUpdatedAt,omitempty"`
 	Notes         *string          `json:"notes,omitempty"`
 	Rating        *int             `json:"rating,omitempty"`
 }
@@ -2032,12 +2033,12 @@ type UserLoginInput struct {
 
 // UserNotification defines model for UserNotification.
 type UserNotification struct {
-	BelongsToUser *string `json:"belongsToUser,omitempty"`
-	Content       *string `json:"content,omitempty"`
-	CreatedAt     *string `json:"createdAt,omitempty"`
-	Id            *string `json:"id,omitempty"`
-	LastUpdatedAt *string `json:"lastUpdatedAt,omitempty"`
-	Status        *string `json:"status,omitempty"`
+	BelongsToUser *string    `json:"belongsToUser,omitempty"`
+	Content       *string    `json:"content,omitempty"`
+	CreatedAt     *time.Time `json:"createdAt,omitempty"`
+	Id            *string    `json:"id,omitempty"`
+	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty"`
+	Status        *string    `json:"status,omitempty"`
 }
 
 // UserNotificationCreationRequestInput defines model for UserNotificationCreationRequestInput.
@@ -2064,17 +2065,17 @@ type UserPermissionsResponse struct {
 
 // UserRegistrationInput defines model for UserRegistrationInput.
 type UserRegistrationInput struct {
-	AcceptedPrivacyPolicy *bool   `json:"acceptedPrivacyPolicy,omitempty"`
-	AcceptedTOS           *bool   `json:"acceptedTOS,omitempty"`
-	Birthday              *string `json:"birthday,omitempty"`
-	EmailAddress          *string `json:"emailAddress,omitempty"`
-	FirstName             *string `json:"firstName,omitempty"`
-	HouseholdName         *string `json:"householdName,omitempty"`
-	InvitationID          *string `json:"invitationID,omitempty"`
-	InvitationToken       *string `json:"invitationToken,omitempty"`
-	LastName              *string `json:"lastName,omitempty"`
-	Password              *string `json:"password,omitempty"`
-	Username              *string `json:"username,omitempty"`
+	AcceptedPrivacyPolicy *bool      `json:"acceptedPrivacyPolicy,omitempty"`
+	AcceptedTOS           *bool      `json:"acceptedTOS,omitempty"`
+	Birthday              *time.Time `json:"birthday,omitempty"`
+	EmailAddress          *string    `json:"emailAddress,omitempty"`
+	FirstName             *string    `json:"firstName,omitempty"`
+	HouseholdName         *string    `json:"householdName,omitempty"`
+	InvitationID          *string    `json:"invitationID,omitempty"`
+	InvitationToken       *string    `json:"invitationToken,omitempty"`
+	LastName              *string    `json:"lastName,omitempty"`
+	Password              *string    `json:"password,omitempty"`
+	Username              *string    `json:"username,omitempty"`
 }
 
 // UserStatusResponse defines model for UserStatusResponse.
@@ -2100,44 +2101,44 @@ type UsernameUpdateInput struct {
 
 // ValidIngredient defines model for ValidIngredient.
 type ValidIngredient struct {
-	AnimalDerived                           *bool    `json:"animalDerived,omitempty"`
-	AnimalFlesh                             *bool    `json:"animalFlesh,omitempty"`
-	ArchivedAt                              *string  `json:"archivedAt,omitempty"`
-	ContainsAlcohol                         *bool    `json:"containsAlcohol,omitempty"`
-	ContainsDairy                           *bool    `json:"containsDairy,omitempty"`
-	ContainsEgg                             *bool    `json:"containsEgg,omitempty"`
-	ContainsFish                            *bool    `json:"containsFish,omitempty"`
-	ContainsGluten                          *bool    `json:"containsGluten,omitempty"`
-	ContainsPeanut                          *bool    `json:"containsPeanut,omitempty"`
-	ContainsSesame                          *bool    `json:"containsSesame,omitempty"`
-	ContainsShellfish                       *bool    `json:"containsShellfish,omitempty"`
-	ContainsSoy                             *bool    `json:"containsSoy,omitempty"`
-	ContainsTreeNut                         *bool    `json:"containsTreeNut,omitempty"`
-	ContainsWheat                           *bool    `json:"containsWheat,omitempty"`
-	CreatedAt                               *string  `json:"createdAt,omitempty"`
-	Description                             *string  `json:"description,omitempty"`
-	IconPath                                *string  `json:"iconPath,omitempty"`
-	Id                                      *string  `json:"id,omitempty"`
-	IsAcid                                  *bool    `json:"isAcid,omitempty"`
-	IsFat                                   *bool    `json:"isFat,omitempty"`
-	IsFruit                                 *bool    `json:"isFruit,omitempty"`
-	IsGrain                                 *bool    `json:"isGrain,omitempty"`
-	IsHeat                                  *bool    `json:"isHeat,omitempty"`
-	IsLiquid                                *bool    `json:"isLiquid,omitempty"`
-	IsMeasuredVolumetrically                *bool    `json:"isMeasuredVolumetrically,omitempty"`
-	IsProtein                               *bool    `json:"isProtein,omitempty"`
-	IsSalt                                  *bool    `json:"isSalt,omitempty"`
-	IsStarch                                *bool    `json:"isStarch,omitempty"`
-	LastUpdatedAt                           *string  `json:"lastUpdatedAt,omitempty"`
-	MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius,omitempty"`
-	MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius,omitempty"`
-	Name                                    *string  `json:"name,omitempty"`
-	PluralName                              *string  `json:"pluralName,omitempty"`
-	RestrictToPreparations                  *bool    `json:"restrictToPreparations,omitempty"`
-	ShoppingSuggestions                     *string  `json:"shoppingSuggestions,omitempty"`
-	Slug                                    *string  `json:"slug,omitempty"`
-	StorageInstructions                     *string  `json:"storageInstructions,omitempty"`
-	Warning                                 *string  `json:"warning,omitempty"`
+	AnimalDerived                           *bool      `json:"animalDerived,omitempty"`
+	AnimalFlesh                             *bool      `json:"animalFlesh,omitempty"`
+	ArchivedAt                              *time.Time `json:"archivedAt,omitempty"`
+	ContainsAlcohol                         *bool      `json:"containsAlcohol,omitempty"`
+	ContainsDairy                           *bool      `json:"containsDairy,omitempty"`
+	ContainsEgg                             *bool      `json:"containsEgg,omitempty"`
+	ContainsFish                            *bool      `json:"containsFish,omitempty"`
+	ContainsGluten                          *bool      `json:"containsGluten,omitempty"`
+	ContainsPeanut                          *bool      `json:"containsPeanut,omitempty"`
+	ContainsSesame                          *bool      `json:"containsSesame,omitempty"`
+	ContainsShellfish                       *bool      `json:"containsShellfish,omitempty"`
+	ContainsSoy                             *bool      `json:"containsSoy,omitempty"`
+	ContainsTreeNut                         *bool      `json:"containsTreeNut,omitempty"`
+	ContainsWheat                           *bool      `json:"containsWheat,omitempty"`
+	CreatedAt                               *time.Time `json:"createdAt,omitempty"`
+	Description                             *string    `json:"description,omitempty"`
+	IconPath                                *string    `json:"iconPath,omitempty"`
+	Id                                      *string    `json:"id,omitempty"`
+	IsAcid                                  *bool      `json:"isAcid,omitempty"`
+	IsFat                                   *bool      `json:"isFat,omitempty"`
+	IsFruit                                 *bool      `json:"isFruit,omitempty"`
+	IsGrain                                 *bool      `json:"isGrain,omitempty"`
+	IsHeat                                  *bool      `json:"isHeat,omitempty"`
+	IsLiquid                                *bool      `json:"isLiquid,omitempty"`
+	IsMeasuredVolumetrically                *bool      `json:"isMeasuredVolumetrically,omitempty"`
+	IsProtein                               *bool      `json:"isProtein,omitempty"`
+	IsSalt                                  *bool      `json:"isSalt,omitempty"`
+	IsStarch                                *bool      `json:"isStarch,omitempty"`
+	LastUpdatedAt                           *time.Time `json:"lastUpdatedAt,omitempty"`
+	MaximumIdealStorageTemperatureInCelsius *float32   `json:"maximumIdealStorageTemperatureInCelsius,omitempty"`
+	MinimumIdealStorageTemperatureInCelsius *float32   `json:"minimumIdealStorageTemperatureInCelsius,omitempty"`
+	Name                                    *string    `json:"name,omitempty"`
+	PluralName                              *string    `json:"pluralName,omitempty"`
+	RestrictToPreparations                  *bool      `json:"restrictToPreparations,omitempty"`
+	ShoppingSuggestions                     *string    `json:"shoppingSuggestions,omitempty"`
+	Slug                                    *string    `json:"slug,omitempty"`
+	StorageInstructions                     *string    `json:"storageInstructions,omitempty"`
+	Warning                                 *string    `json:"warning,omitempty"`
 }
 
 // ValidIngredientCreationRequestInput defines model for ValidIngredientCreationRequestInput.
@@ -2180,11 +2181,11 @@ type ValidIngredientCreationRequestInput struct {
 
 // ValidIngredientGroup defines model for ValidIngredientGroup.
 type ValidIngredientGroup struct {
-	ArchivedAt    *string                       `json:"archivedAt,omitempty"`
-	CreatedAt     *string                       `json:"createdAt,omitempty"`
+	ArchivedAt    *time.Time                    `json:"archivedAt,omitempty"`
+	CreatedAt     *time.Time                    `json:"createdAt,omitempty"`
 	Description   *string                       `json:"description,omitempty"`
 	Id            *string                       `json:"id,omitempty"`
-	LastUpdatedAt *string                       `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt *time.Time                    `json:"lastUpdatedAt,omitempty"`
 	Members       *[]ValidIngredientGroupMember `json:"members,omitempty"`
 	Name          *string                       `json:"name,omitempty"`
 	Slug          *string                       `json:"slug,omitempty"`
@@ -2200,9 +2201,9 @@ type ValidIngredientGroupCreationRequestInput struct {
 
 // ValidIngredientGroupMember defines model for ValidIngredientGroupMember.
 type ValidIngredientGroupMember struct {
-	ArchivedAt      *string          `json:"archivedAt,omitempty"`
+	ArchivedAt      *time.Time       `json:"archivedAt,omitempty"`
 	BelongsToGroup  *string          `json:"belongsToGroup,omitempty"`
-	CreatedAt       *string          `json:"createdAt,omitempty"`
+	CreatedAt       *time.Time       `json:"createdAt,omitempty"`
 	Id              *string          `json:"id,omitempty"`
 	ValidIngredient *ValidIngredient `json:"validIngredient,omitempty"`
 }
@@ -2221,11 +2222,11 @@ type ValidIngredientGroupUpdateRequestInput struct {
 
 // ValidIngredientMeasurementUnit defines model for ValidIngredientMeasurementUnit.
 type ValidIngredientMeasurementUnit struct {
-	ArchivedAt               *string               `json:"archivedAt,omitempty"`
-	CreatedAt                *string               `json:"createdAt,omitempty"`
+	ArchivedAt               *time.Time            `json:"archivedAt,omitempty"`
+	CreatedAt                *time.Time            `json:"createdAt,omitempty"`
 	Id                       *string               `json:"id,omitempty"`
 	Ingredient               *ValidIngredient      `json:"ingredient,omitempty"`
-	LastUpdatedAt            *string               `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt            *time.Time            `json:"lastUpdatedAt,omitempty"`
 	MaximumAllowableQuantity *float32              `json:"maximumAllowableQuantity,omitempty"`
 	MeasurementUnit          *ValidMeasurementUnit `json:"measurementUnit,omitempty"`
 	MinimumAllowableQuantity *float32              `json:"minimumAllowableQuantity,omitempty"`
@@ -2252,11 +2253,11 @@ type ValidIngredientMeasurementUnitUpdateRequestInput struct {
 
 // ValidIngredientPreparation defines model for ValidIngredientPreparation.
 type ValidIngredientPreparation struct {
-	ArchivedAt    *string           `json:"archivedAt,omitempty"`
-	CreatedAt     *string           `json:"createdAt,omitempty"`
+	ArchivedAt    *time.Time        `json:"archivedAt,omitempty"`
+	CreatedAt     *time.Time        `json:"createdAt,omitempty"`
 	Id            *string           `json:"id,omitempty"`
 	Ingredient    *ValidIngredient  `json:"ingredient,omitempty"`
-	LastUpdatedAt *string           `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt *time.Time        `json:"lastUpdatedAt,omitempty"`
 	Notes         *string           `json:"notes,omitempty"`
 	Preparation   *ValidPreparation `json:"preparation,omitempty"`
 }
@@ -2277,16 +2278,16 @@ type ValidIngredientPreparationUpdateRequestInput struct {
 
 // ValidIngredientState defines model for ValidIngredientState.
 type ValidIngredientState struct {
-	ArchivedAt    *string `json:"archivedAt,omitempty"`
-	AttributeType *string `json:"attributeType,omitempty"`
-	CreatedAt     *string `json:"createdAt,omitempty"`
-	Description   *string `json:"description,omitempty"`
-	IconPath      *string `json:"iconPath,omitempty"`
-	Id            *string `json:"id,omitempty"`
-	LastUpdatedAt *string `json:"lastUpdatedAt,omitempty"`
-	Name          *string `json:"name,omitempty"`
-	PastTense     *string `json:"pastTense,omitempty"`
-	Slug          *string `json:"slug,omitempty"`
+	ArchivedAt    *time.Time `json:"archivedAt,omitempty"`
+	AttributeType *string    `json:"attributeType,omitempty"`
+	CreatedAt     *time.Time `json:"createdAt,omitempty"`
+	Description   *string    `json:"description,omitempty"`
+	IconPath      *string    `json:"iconPath,omitempty"`
+	Id            *string    `json:"id,omitempty"`
+	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty"`
+	Name          *string    `json:"name,omitempty"`
+	PastTense     *string    `json:"pastTense,omitempty"`
+	Slug          *string    `json:"slug,omitempty"`
 }
 
 // ValidIngredientStateCreationRequestInput defines model for ValidIngredientStateCreationRequestInput.
@@ -2301,12 +2302,12 @@ type ValidIngredientStateCreationRequestInput struct {
 
 // ValidIngredientStateIngredient defines model for ValidIngredientStateIngredient.
 type ValidIngredientStateIngredient struct {
-	ArchivedAt      *string               `json:"archivedAt,omitempty"`
-	CreatedAt       *string               `json:"createdAt,omitempty"`
+	ArchivedAt      *time.Time            `json:"archivedAt,omitempty"`
+	CreatedAt       *time.Time            `json:"createdAt,omitempty"`
 	Id              *string               `json:"id,omitempty"`
 	Ingredient      *ValidIngredient      `json:"ingredient,omitempty"`
 	IngredientState *ValidIngredientState `json:"ingredientState,omitempty"`
-	LastUpdatedAt   *string               `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt   *time.Time            `json:"lastUpdatedAt,omitempty"`
 	Notes           *string               `json:"notes,omitempty"`
 }
 
@@ -2374,18 +2375,18 @@ type ValidIngredientUpdateRequestInput struct {
 
 // ValidInstrument defines model for ValidInstrument.
 type ValidInstrument struct {
-	ArchivedAt                     *string `json:"archivedAt,omitempty"`
-	CreatedAt                      *string `json:"createdAt,omitempty"`
-	Description                    *string `json:"description,omitempty"`
-	DisplayInSummaryLists          *bool   `json:"displayInSummaryLists,omitempty"`
-	IconPath                       *string `json:"iconPath,omitempty"`
-	Id                             *string `json:"id,omitempty"`
-	IncludeInGeneratedInstructions *bool   `json:"includeInGeneratedInstructions,omitempty"`
-	LastUpdatedAt                  *string `json:"lastUpdatedAt,omitempty"`
-	Name                           *string `json:"name,omitempty"`
-	PluralName                     *string `json:"pluralName,omitempty"`
-	Slug                           *string `json:"slug,omitempty"`
-	UsableForStorage               *bool   `json:"usableForStorage,omitempty"`
+	ArchivedAt                     *time.Time `json:"archivedAt,omitempty"`
+	CreatedAt                      *time.Time `json:"createdAt,omitempty"`
+	Description                    *string    `json:"description,omitempty"`
+	DisplayInSummaryLists          *bool      `json:"displayInSummaryLists,omitempty"`
+	IconPath                       *string    `json:"iconPath,omitempty"`
+	Id                             *string    `json:"id,omitempty"`
+	IncludeInGeneratedInstructions *bool      `json:"includeInGeneratedInstructions,omitempty"`
+	LastUpdatedAt                  *time.Time `json:"lastUpdatedAt,omitempty"`
+	Name                           *string    `json:"name,omitempty"`
+	PluralName                     *string    `json:"pluralName,omitempty"`
+	Slug                           *string    `json:"slug,omitempty"`
+	UsableForStorage               *bool      `json:"usableForStorage,omitempty"`
 }
 
 // ValidInstrumentCreationRequestInput defines model for ValidInstrumentCreationRequestInput.
@@ -2414,28 +2415,28 @@ type ValidInstrumentUpdateRequestInput struct {
 
 // ValidMeasurementUnit defines model for ValidMeasurementUnit.
 type ValidMeasurementUnit struct {
-	ArchivedAt    *string `json:"archivedAt,omitempty"`
-	CreatedAt     *string `json:"createdAt,omitempty"`
-	Description   *string `json:"description,omitempty"`
-	IconPath      *string `json:"iconPath,omitempty"`
-	Id            *string `json:"id,omitempty"`
-	Imperial      *bool   `json:"imperial,omitempty"`
-	LastUpdatedAt *string `json:"lastUpdatedAt,omitempty"`
-	Metric        *bool   `json:"metric,omitempty"`
-	Name          *string `json:"name,omitempty"`
-	PluralName    *string `json:"pluralName,omitempty"`
-	Slug          *string `json:"slug,omitempty"`
-	Universal     *bool   `json:"universal,omitempty"`
-	Volumetric    *bool   `json:"volumetric,omitempty"`
+	ArchivedAt    *time.Time `json:"archivedAt,omitempty"`
+	CreatedAt     *time.Time `json:"createdAt,omitempty"`
+	Description   *string    `json:"description,omitempty"`
+	IconPath      *string    `json:"iconPath,omitempty"`
+	Id            *string    `json:"id,omitempty"`
+	Imperial      *bool      `json:"imperial,omitempty"`
+	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty"`
+	Metric        *bool      `json:"metric,omitempty"`
+	Name          *string    `json:"name,omitempty"`
+	PluralName    *string    `json:"pluralName,omitempty"`
+	Slug          *string    `json:"slug,omitempty"`
+	Universal     *bool      `json:"universal,omitempty"`
+	Volumetric    *bool      `json:"volumetric,omitempty"`
 }
 
 // ValidMeasurementUnitConversion defines model for ValidMeasurementUnitConversion.
 type ValidMeasurementUnitConversion struct {
-	ArchivedAt        *string               `json:"archivedAt,omitempty"`
-	CreatedAt         *string               `json:"createdAt,omitempty"`
+	ArchivedAt        *time.Time            `json:"archivedAt,omitempty"`
+	CreatedAt         *time.Time            `json:"createdAt,omitempty"`
 	From              *ValidMeasurementUnit `json:"from,omitempty"`
 	Id                *string               `json:"id,omitempty"`
-	LastUpdatedAt     *string               `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt     *time.Time            `json:"lastUpdatedAt,omitempty"`
 	Modifier          *float32              `json:"modifier,omitempty"`
 	Notes             *string               `json:"notes,omitempty"`
 	OnlyForIngredient *ValidIngredient      `json:"onlyForIngredient,omitempty"`
@@ -2488,28 +2489,28 @@ type ValidMeasurementUnitUpdateRequestInput struct {
 
 // ValidPreparation defines model for ValidPreparation.
 type ValidPreparation struct {
-	ArchivedAt                  *string `json:"archivedAt,omitempty"`
-	ConditionExpressionRequired *bool   `json:"conditionExpressionRequired,omitempty"`
-	ConsumesVessel              *bool   `json:"consumesVessel,omitempty"`
-	CreatedAt                   *string `json:"createdAt,omitempty"`
-	Description                 *string `json:"description,omitempty"`
-	IconPath                    *string `json:"iconPath,omitempty"`
-	Id                          *string `json:"id,omitempty"`
-	LastUpdatedAt               *string `json:"lastUpdatedAt,omitempty"`
-	MaximumIngredientCount      *int    `json:"maximumIngredientCount,omitempty"`
-	MaximumInstrumentCount      *int    `json:"maximumInstrumentCount,omitempty"`
-	MaximumVesselCount          *int    `json:"maximumVesselCount,omitempty"`
-	MinimumIngredientCount      *int    `json:"minimumIngredientCount,omitempty"`
-	MinimumInstrumentCount      *int    `json:"minimumInstrumentCount,omitempty"`
-	MinimumVesselCount          *int    `json:"minimumVesselCount,omitempty"`
-	Name                        *string `json:"name,omitempty"`
-	OnlyForVessels              *bool   `json:"onlyForVessels,omitempty"`
-	PastTense                   *string `json:"pastTense,omitempty"`
-	RestrictToIngredients       *bool   `json:"restrictToIngredients,omitempty"`
-	Slug                        *string `json:"slug,omitempty"`
-	TemperatureRequired         *bool   `json:"temperatureRequired,omitempty"`
-	TimeEstimateRequired        *bool   `json:"timeEstimateRequired,omitempty"`
-	YieldsNothing               *bool   `json:"yieldsNothing,omitempty"`
+	ArchivedAt                  *time.Time `json:"archivedAt,omitempty"`
+	ConditionExpressionRequired *bool      `json:"conditionExpressionRequired,omitempty"`
+	ConsumesVessel              *bool      `json:"consumesVessel,omitempty"`
+	CreatedAt                   *time.Time `json:"createdAt,omitempty"`
+	Description                 *string    `json:"description,omitempty"`
+	IconPath                    *string    `json:"iconPath,omitempty"`
+	Id                          *string    `json:"id,omitempty"`
+	LastUpdatedAt               *time.Time `json:"lastUpdatedAt,omitempty"`
+	MaximumIngredientCount      *int       `json:"maximumIngredientCount,omitempty"`
+	MaximumInstrumentCount      *int       `json:"maximumInstrumentCount,omitempty"`
+	MaximumVesselCount          *int       `json:"maximumVesselCount,omitempty"`
+	MinimumIngredientCount      *int       `json:"minimumIngredientCount,omitempty"`
+	MinimumInstrumentCount      *int       `json:"minimumInstrumentCount,omitempty"`
+	MinimumVesselCount          *int       `json:"minimumVesselCount,omitempty"`
+	Name                        *string    `json:"name,omitempty"`
+	OnlyForVessels              *bool      `json:"onlyForVessels,omitempty"`
+	PastTense                   *string    `json:"pastTense,omitempty"`
+	RestrictToIngredients       *bool      `json:"restrictToIngredients,omitempty"`
+	Slug                        *string    `json:"slug,omitempty"`
+	TemperatureRequired         *bool      `json:"temperatureRequired,omitempty"`
+	TimeEstimateRequired        *bool      `json:"timeEstimateRequired,omitempty"`
+	YieldsNothing               *bool      `json:"yieldsNothing,omitempty"`
 }
 
 // ValidPreparationCreationRequestInput defines model for ValidPreparationCreationRequestInput.
@@ -2536,11 +2537,11 @@ type ValidPreparationCreationRequestInput struct {
 
 // ValidPreparationInstrument defines model for ValidPreparationInstrument.
 type ValidPreparationInstrument struct {
-	ArchivedAt    *string           `json:"archivedAt,omitempty"`
-	CreatedAt     *string           `json:"createdAt,omitempty"`
+	ArchivedAt    *time.Time        `json:"archivedAt,omitempty"`
+	CreatedAt     *time.Time        `json:"createdAt,omitempty"`
 	Id            *string           `json:"id,omitempty"`
 	Instrument    *ValidInstrument  `json:"instrument,omitempty"`
-	LastUpdatedAt *string           `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt *time.Time        `json:"lastUpdatedAt,omitempty"`
 	Notes         *string           `json:"notes,omitempty"`
 	Preparation   *ValidPreparation `json:"preparation,omitempty"`
 }
@@ -2583,11 +2584,11 @@ type ValidPreparationUpdateRequestInput struct {
 
 // ValidPreparationVessel defines model for ValidPreparationVessel.
 type ValidPreparationVessel struct {
-	ArchivedAt    *string           `json:"archivedAt,omitempty"`
-	CreatedAt     *string           `json:"createdAt,omitempty"`
+	ArchivedAt    *time.Time        `json:"archivedAt,omitempty"`
+	CreatedAt     *time.Time        `json:"createdAt,omitempty"`
 	Id            *string           `json:"id,omitempty"`
 	Instrument    *ValidVessel      `json:"instrument,omitempty"`
-	LastUpdatedAt *string           `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt *time.Time        `json:"lastUpdatedAt,omitempty"`
 	Notes         *string           `json:"notes,omitempty"`
 	Preparation   *ValidPreparation `json:"preparation,omitempty"`
 }
@@ -2608,17 +2609,17 @@ type ValidPreparationVesselUpdateRequestInput struct {
 
 // ValidVessel defines model for ValidVessel.
 type ValidVessel struct {
-	ArchivedAt                     *string               `json:"archivedAt,omitempty"`
+	ArchivedAt                     *time.Time            `json:"archivedAt,omitempty"`
 	Capacity                       *float32              `json:"capacity,omitempty"`
 	CapacityUnit                   *ValidMeasurementUnit `json:"capacityUnit,omitempty"`
-	CreatedAt                      *string               `json:"createdAt,omitempty"`
+	CreatedAt                      *time.Time            `json:"createdAt,omitempty"`
 	Description                    *string               `json:"description,omitempty"`
 	DisplayInSummaryLists          *bool                 `json:"displayInSummaryLists,omitempty"`
 	HeightInMillimeters            *float32              `json:"heightInMillimeters,omitempty"`
 	IconPath                       *string               `json:"iconPath,omitempty"`
 	Id                             *string               `json:"id,omitempty"`
 	IncludeInGeneratedInstructions *bool                 `json:"includeInGeneratedInstructions,omitempty"`
-	LastUpdatedAt                  *string               `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt                  *time.Time            `json:"lastUpdatedAt,omitempty"`
 	LengthInMillimeters            *float32              `json:"lengthInMillimeters,omitempty"`
 	Name                           *string               `json:"name,omitempty"`
 	PluralName                     *string               `json:"pluralName,omitempty"`
@@ -2666,13 +2667,13 @@ type ValidVesselUpdateRequestInput struct {
 
 // Webhook defines model for Webhook.
 type Webhook struct {
-	ArchivedAt         *string                `json:"archivedAt,omitempty"`
+	ArchivedAt         *time.Time             `json:"archivedAt,omitempty"`
 	BelongsToHousehold *string                `json:"belongsToHousehold,omitempty"`
 	ContentType        *string                `json:"contentType,omitempty"`
-	CreatedAt          *string                `json:"createdAt,omitempty"`
+	CreatedAt          *time.Time             `json:"createdAt,omitempty"`
 	Events             *[]WebhookTriggerEvent `json:"events,omitempty"`
 	Id                 *string                `json:"id,omitempty"`
-	LastUpdatedAt      *string                `json:"lastUpdatedAt,omitempty"`
+	LastUpdatedAt      *time.Time             `json:"lastUpdatedAt,omitempty"`
 	Method             *string                `json:"method,omitempty"`
 	Name               *string                `json:"name,omitempty"`
 	Url                *string                `json:"url,omitempty"`
@@ -2689,11 +2690,11 @@ type WebhookCreationRequestInput struct {
 
 // WebhookTriggerEvent defines model for WebhookTriggerEvent.
 type WebhookTriggerEvent struct {
-	ArchivedAt       *string `json:"archivedAt,omitempty"`
-	BelongsToWebhook *string `json:"belongsToWebhook,omitempty"`
-	CreatedAt        *string `json:"createdAt,omitempty"`
-	Id               *string `json:"id,omitempty"`
-	TriggerEvent     *string `json:"triggerEvent,omitempty"`
+	ArchivedAt       *time.Time `json:"archivedAt,omitempty"`
+	BelongsToWebhook *string    `json:"belongsToWebhook,omitempty"`
+	CreatedAt        *time.Time `json:"createdAt,omitempty"`
+	Id               *string    `json:"id,omitempty"`
+	TriggerEvent     *string    `json:"triggerEvent,omitempty"`
 }
 
 // WebhookTriggerEventCreationRequestInput defines model for WebhookTriggerEventCreationRequestInput.

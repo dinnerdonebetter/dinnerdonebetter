@@ -154,6 +154,8 @@ func (c *Client) UpdateValidMeasurementUnitConversion(ctx context.Context, valid
 
 	body := generated.UpdateValidMeasurementUnitConversionJSONRequestBody{}
 	c.copyType(&body, validMeasurementUnitConversion)
+	body.To = &validMeasurementUnitConversion.To.ID
+	body.From = &validMeasurementUnitConversion.From.ID
 
 	res, err := c.authedGeneratedClient.UpdateValidMeasurementUnitConversion(ctx, validMeasurementUnitConversion.ID, body)
 	if err != nil {

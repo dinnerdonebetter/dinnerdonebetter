@@ -219,6 +219,8 @@ func (c *Client) UpdateValidIngredientMeasurementUnit(ctx context.Context, valid
 
 	body := generated.UpdateValidIngredientMeasurementUnitJSONRequestBody{}
 	c.copyType(&body, validIngredientMeasurementUnit)
+	body.ValidIngredientID = &validIngredientMeasurementUnit.Ingredient.ID
+	body.ValidMeasurementUnitID = &validIngredientMeasurementUnit.MeasurementUnit.ID
 
 	res, err := c.authedGeneratedClient.UpdateValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnit.ID, body)
 	if err != nil {

@@ -60,6 +60,7 @@ type openapiProperty struct {
 	Items    *openapiProperty `json:"items,omitempty"    yaml:"items,omitempty"`
 	Type     string           `json:"type,omitempty"     yaml:"type,omitempty"`
 	Ref      string           `json:"$ref,omitempty"     yaml:"$ref,omitempty"`
+	Format   string           `json:"format,omitempty"   yaml:"format,omitempty"`
 	Examples []string         `json:"examples,omitempty" yaml:"examples,omitempty"`
 }
 
@@ -170,7 +171,7 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 						continue
 					}
 
-					fieldType, isArray := deriveOpenAPIFieldType(typeName, fieldName, field)
+					fieldType, isTime, isArray := deriveOpenAPIFieldType(typeName, fieldName, field)
 					property := &openapiProperty{
 						Type: fieldType,
 					}
@@ -178,6 +179,10 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 					if _, nativeType := nativeTypesMap[fieldType]; !nativeType {
 						property.Type = ""
 						property.Ref = fmt.Sprintf("#/components/schemas/%s", fieldType)
+					}
+
+					if isTime {
+						property.Format = "date-time"
 					}
 
 					if isArray {
@@ -230,7 +235,11 @@ var openAPITypeMap = map[string]string{
 	// Add other mappings as needed
 }
 
-func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value string, isArray bool) {
+func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value string, isTime, isArray bool) {
+	if typeName == "WebhookCreationRequestInput" && fieldName == "events" {
+		println("here")
+	}
+
 	switch t := field.Type.(type) {
 	case *ast.SelectorExpr:
 		if x, ok := t.X.(*ast.Ident); ok && x.Obj == nil {
@@ -265,7 +274,7 @@ func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value
 	case *ast.MapType:
 		// TODO: confirm this is being handled correctly
 		if typeName == "AuditLogEntry" && fieldName == "changes" {
-			return "ChangeLog", isArray
+			return "ChangeLog", isTime, isArray
 		}
 		value = "object"
 	default:
@@ -276,13 +285,17 @@ func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value
 		panic("empty value for field")
 	}
 
+	if value == "time.Time" {
+		isTime = true
+	}
+
 	if x, ok := typeAliases[value]; ok {
-		return x, isArray
+		return x, isTime, isArray
 	}
 
 	if x, ok := openAPITypeMap[value]; ok {
-		return x, isArray
+		return x, isTime, isArray
 	}
 
-	return value, isArray
+	return value, isTime, isArray
 }

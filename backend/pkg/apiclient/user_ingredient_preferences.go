@@ -100,6 +100,7 @@ func (c *Client) UpdateUserIngredientPreference(ctx context.Context, userIngredi
 
 	body := generated.UpdateUserIngredientPreferenceJSONRequestBody{}
 	c.copyType(&body, userIngredientPreference)
+	body.IngredientID = &userIngredientPreference.Ingredient.ID
 
 	res, err := c.authedGeneratedClient.UpdateUserIngredientPreference(ctx, userIngredientPreference.ID, body)
 	if err != nil {

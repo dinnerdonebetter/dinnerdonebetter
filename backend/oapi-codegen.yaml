@@ -4,6 +4,15 @@ output: pkg/apiclient/generated/client.gen.go
 generate:
   models: true
   client: true
+# output-options:
+#   user-templates:
+#     client-with-response: pkg/apiclient/openapi_templates/client-with-response.tmpl
+#     imports: pkg/apiclient/openapi_templates/imports.tmpl
+#     param-types: pkg/apiclient/openapi_templates/param-types.tmpl
+#     request-bodies: pkg/apiclient/openapi_templates/request-bodies.tmpl
+#     typedef: pkg/apiclient/openapi_templates/typedef.tmpl
+#     unions-and-additional-properties: pkg/apiclient/openapi_templates/unions-and-additional-properties.tmpl
+#     union: pkg/apiclient/openapi_templates/union.tmpl
 #output-options:
 #import-mapping:
 #additional-imports:
