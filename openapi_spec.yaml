@@ -21162,6 +21162,7 @@ components:
         changes:
           $ref: '#/components/schemas/ChangeLog'
         createdAt:
+          format: date-time
           type: string
         eventType:
           type: string
@@ -21211,6 +21212,7 @@ components:
         addressLine2:
           type: string
         archivedAt:
+          format: date-time
           type: string
         belongsToUser:
           type: string
@@ -21223,10 +21225,12 @@ components:
         country:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         latitude:
           type: number
@@ -21273,16 +21277,19 @@ components:
     HouseholdInstrumentOwnership:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToHousehold:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         instrument:
           $ref: '#/components/schemas/ValidInstrument'
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -21312,18 +21319,22 @@ components:
     HouseholdInvitation:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         destinationHousehold:
           $ref: '#/components/schemas/Household'
         expiresAt:
+          format: date-time
           type: string
         fromUser:
           $ref: '#/components/schemas/User'
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         note:
           type: string
@@ -21343,6 +21354,7 @@ components:
     HouseholdInvitationCreationRequestInput:
       properties:
         expiresAt:
+          format: date-time
           type: string
         note:
           type: string
@@ -21393,12 +21405,14 @@ components:
     HouseholdUserMembership:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToHousehold:
           type: string
         belongsToUser:
           type: string
         createdAt:
+          format: date-time
           type: string
         defaultHousehold:
           type: boolean
@@ -21407,17 +21421,20 @@ components:
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
       type: object
     HouseholdUserMembershipWithUser:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToHousehold:
           type: string
         belongsToUser:
           $ref: '#/components/schemas/User'
         createdAt:
+          format: date-time
           type: string
         defaultHousehold:
           type: boolean
@@ -21426,17 +21443,20 @@ components:
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
       type: object
     Meal:
       properties:
         archivedAt:
+          format: date-time
           type: string
         components:
           items:
             $ref: '#/components/schemas/MealComponent'
           type: array
         createdAt:
+          format: date-time
           type: string
         createdByUser:
           type: string
@@ -21447,6 +21467,7 @@ components:
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumEstimatedPortions:
           type: number
@@ -21493,10 +21514,12 @@ components:
     MealPlan:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToHousehold:
           type: string
         createdAt:
+          format: date-time
           type: string
         createdBy:
           type: string
@@ -21511,6 +21534,7 @@ components:
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -21519,6 +21543,7 @@ components:
         tasksCreated:
           type: boolean
         votingDeadline:
+          format: date-time
           type: string
       type: object
     MealPlanCreationRequestInput:
@@ -21532,21 +21557,26 @@ components:
         notes:
           type: string
         votingDeadline:
+          format: date-time
           type: string
       type: object
     MealPlanEvent:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToMealPlan:
           type: string
         createdAt:
+          format: date-time
           type: string
         endsAt:
+          format: date-time
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         mealName:
           type: string
@@ -21557,11 +21587,13 @@ components:
             $ref: '#/components/schemas/MealPlanOption'
           type: array
         startsAt:
+          format: date-time
           type: string
       type: object
     MealPlanEventCreationRequestInput:
       properties:
         endsAt:
+          format: date-time
           type: string
         mealName:
           type: string
@@ -21572,32 +21604,38 @@ components:
             $ref: '#/components/schemas/MealPlanOptionCreationRequestInput'
           type: array
         startsAt:
+          format: date-time
           type: string
       type: object
     MealPlanEventUpdateRequestInput:
       properties:
         endsAt:
+          format: date-time
           type: string
         mealName:
           type: string
         notes:
           type: string
         startsAt:
+          format: date-time
           type: string
       type: object
     MealPlanGroceryListItem:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToMealPlan:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         ingredient:
           $ref: '#/components/schemas/ValidIngredient'
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumQuantityNeeded:
           type: number
@@ -21671,6 +21709,7 @@ components:
     MealPlanOption:
       properties:
         archivedAt:
+          format: date-time
           type: string
         assignedCook:
           type: string
@@ -21681,10 +21720,12 @@ components:
         chosen:
           type: boolean
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         meal:
           $ref: '#/components/schemas/Meal'
@@ -21730,16 +21771,19 @@ components:
         abstain:
           type: boolean
         archivedAt:
+          format: date-time
           type: string
         belongsToMealPlanOption:
           type: string
         byUser:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -21780,14 +21824,17 @@ components:
         assignedToUser:
           type: string
         completedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         creationExplanation:
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         mealPlanOption:
           $ref: '#/components/schemas/MealPlanOption'
@@ -21827,6 +21874,7 @@ components:
         notes:
           type: string
         votingDeadline:
+          format: date-time
           type: string
       type: object
     ModifyUserPermissionsInput:
@@ -21839,12 +21887,14 @@ components:
     OAuth2Client:
       properties:
         archivedAt:
+          format: date-time
           type: string
         clientID:
           type: string
         clientSecret:
           type: string
         createdAt:
+          format: date-time
           type: string
         description:
           type: string
@@ -21887,16 +21937,20 @@ components:
     PasswordResetToken:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToUser:
           type: string
         createdAt:
+          format: date-time
           type: string
         expiresAt:
+          format: date-time
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         token:
           type: string
@@ -21925,8 +21979,10 @@ components:
     Recipe:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         createdByUser:
           type: string
@@ -21939,6 +21995,7 @@ components:
         inspiredByRecipeID:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumEstimatedPortions:
           type: number
@@ -22015,12 +22072,14 @@ components:
     RecipeMedia:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToRecipe:
           type: string
         belongsToRecipeStep:
           type: string
         createdAt:
+          format: date-time
           type: string
         externalPath:
           type: string
@@ -22031,6 +22090,7 @@ components:
         internalPath:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         mimeType:
           type: string
@@ -22038,10 +22098,12 @@ components:
     RecipePrepTask:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToRecipe:
           type: string
         createdAt:
+          format: date-time
           type: string
         description:
           type: string
@@ -22050,6 +22112,7 @@ components:
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumStorageTemperatureInCelsius:
           type: number
@@ -22196,12 +22259,14 @@ components:
     RecipeRating:
       properties:
         archivedAt:
+          format: date-time
           type: string
         byUser:
           type: string
         cleanup:
           type: number
         createdAt:
+          format: date-time
           type: string
         difficulty:
           type: number
@@ -22210,6 +22275,7 @@ components:
         instructions:
           type: number
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -22261,6 +22327,7 @@ components:
     RecipeStep:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToRecipe:
           type: string
@@ -22271,6 +22338,7 @@ components:
         conditionExpression:
           type: string
         createdAt:
+          format: date-time
           type: string
         explicitInstructions:
           type: string
@@ -22287,6 +22355,7 @@ components:
             $ref: '#/components/schemas/RecipeStepInstrument'
           type: array
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumEstimatedTimeInSeconds:
           type: integer
@@ -22320,10 +22389,12 @@ components:
     RecipeStepCompletionCondition:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToRecipeStep:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
@@ -22334,6 +22405,7 @@ components:
             $ref: '#/components/schemas/RecipeStepCompletionConditionIngredient'
           type: array
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -22373,14 +22445,17 @@ components:
     RecipeStepCompletionConditionIngredient:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToRecipeStepCompletionCondition:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         recipeStepIngredient:
           type: string
@@ -22449,10 +22524,12 @@ components:
     RecipeStepIngredient:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToRecipeStep:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
@@ -22461,6 +22538,7 @@ components:
         ingredientNotes:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumQuantity:
           type: number
@@ -22556,16 +22634,19 @@ components:
     RecipeStepInstrument:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToRecipeStep:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         instrument:
           $ref: '#/components/schemas/ValidInstrument'
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumQuantity:
           type: integer
@@ -22635,6 +22716,7 @@ components:
     RecipeStepProduct:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToRecipeStep:
           type: string
@@ -22643,6 +22725,7 @@ components:
         containedInVesselIndex:
           type: integer
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
@@ -22653,6 +22736,7 @@ components:
         isWaste:
           type: boolean
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumQuantity:
           type: number
@@ -22773,14 +22857,17 @@ components:
     RecipeStepVessel:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToRecipeStep:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumQuantity:
           type: integer
@@ -22882,8 +22969,10 @@ components:
         adminsOnly:
           type: boolean
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         defaultValue:
           type: string
@@ -22896,6 +22985,7 @@ components:
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         name:
           type: string
@@ -22905,16 +22995,19 @@ components:
     ServiceSettingConfiguration:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToHousehold:
           type: string
         belongsToUser:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -22994,36 +23087,45 @@ components:
         accountStatusExplanation:
           type: string
         archivedAt:
+          format: date-time
           type: string
         avatar:
           type: string
         birthday:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         emailAddress:
           type: string
         emailAddressVerifiedAt:
+          format: date-time
           type: string
         firstName:
           type: string
         id:
           type: string
         lastAcceptedPrivacyPolicy:
+          format: date-time
           type: string
         lastAcceptedTOS:
+          format: date-time
           type: string
         lastName:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         passwordLastChangedAt:
+          format: date-time
           type: string
         requiresPasswordChange:
           type: boolean
         serviceRoles:
           type: string
         twoFactorSecretVerifiedAt:
+          format: date-time
           type: string
         username:
           type: string
@@ -23044,8 +23146,10 @@ components:
         avatar:
           type: string
         birthday:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         createdUserID:
           type: string
@@ -23067,6 +23171,7 @@ components:
     UserDetailsUpdateRequestInput:
       properties:
         birthday:
+          format: date-time
           type: string
         currentPassword:
           type: string
@@ -23091,16 +23196,19 @@ components:
         allergy:
           type: boolean
         archivedAt:
+          format: date-time
           type: string
         belongsToUser:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         ingredient:
           $ref: '#/components/schemas/ValidIngredient'
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -23147,10 +23255,12 @@ components:
         content:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         status:
           type: string
@@ -23188,6 +23298,7 @@ components:
         acceptedTOS:
           type: boolean
         birthday:
+          format: date-time
           type: string
         emailAddress:
           type: string
@@ -23240,6 +23351,7 @@ components:
         animalFlesh:
           type: boolean
         archivedAt:
+          format: date-time
           type: string
         containsAlcohol:
           type: boolean
@@ -23264,6 +23376,7 @@ components:
         containsWheat:
           type: boolean
         createdAt:
+          format: date-time
           type: string
         description:
           type: string
@@ -23292,6 +23405,7 @@ components:
         isStarch:
           type: boolean
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumIdealStorageTemperatureInCelsius:
           type: number
@@ -23386,14 +23500,17 @@ components:
     ValidIngredientGroup:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         description:
           type: string
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         members:
           items:
@@ -23420,10 +23537,12 @@ components:
     ValidIngredientGroupMember:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToGroup:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
@@ -23447,14 +23566,17 @@ components:
     ValidIngredientMeasurementUnit:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         ingredient:
           $ref: '#/components/schemas/ValidIngredient'
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumAllowableQuantity:
           type: number
@@ -23494,14 +23616,17 @@ components:
     ValidIngredientPreparation:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         ingredient:
           $ref: '#/components/schemas/ValidIngredient'
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -23529,10 +23654,12 @@ components:
     ValidIngredientState:
       properties:
         archivedAt:
+          format: date-time
           type: string
         attributeType:
           type: string
         createdAt:
+          format: date-time
           type: string
         description:
           type: string
@@ -23541,6 +23668,7 @@ components:
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         name:
           type: string
@@ -23567,8 +23695,10 @@ components:
     ValidIngredientStateIngredient:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
@@ -23577,6 +23707,7 @@ components:
         ingredientState:
           $ref: '#/components/schemas/ValidIngredientState'
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -23688,8 +23819,10 @@ components:
     ValidInstrument:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         description:
           type: string
@@ -23702,6 +23835,7 @@ components:
         includeInGeneratedInstructions:
           type: boolean
         lastUpdatedAt:
+          format: date-time
           type: string
         name:
           type: string
@@ -23753,8 +23887,10 @@ components:
     ValidMeasurementUnit:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         description:
           type: string
@@ -23765,6 +23901,7 @@ components:
         imperial:
           type: boolean
         lastUpdatedAt:
+          format: date-time
           type: string
         metric:
           type: boolean
@@ -23782,14 +23919,17 @@ components:
     ValidMeasurementUnitConversion:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         from:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         modifier:
           type: number
@@ -23871,12 +24011,14 @@ components:
     ValidPreparation:
       properties:
         archivedAt:
+          format: date-time
           type: string
         conditionExpressionRequired:
           type: boolean
         consumesVessel:
           type: boolean
         createdAt:
+          format: date-time
           type: string
         description:
           type: string
@@ -23885,6 +24027,7 @@ components:
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         maximumIngredientCount:
           type: integer
@@ -23957,14 +24100,17 @@ components:
     ValidPreparationInstrument:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         instrument:
           $ref: '#/components/schemas/ValidInstrument'
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -24031,14 +24177,17 @@ components:
     ValidPreparationVessel:
       properties:
         archivedAt:
+          format: date-time
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
         instrument:
           $ref: '#/components/schemas/ValidVessel'
         lastUpdatedAt:
+          format: date-time
           type: string
         notes:
           type: string
@@ -24066,12 +24215,14 @@ components:
     ValidVessel:
       properties:
         archivedAt:
+          format: date-time
           type: string
         capacity:
           type: number
         capacityUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         createdAt:
+          format: date-time
           type: string
         description:
           type: string
@@ -24086,6 +24237,7 @@ components:
         includeInGeneratedInstructions:
           type: boolean
         lastUpdatedAt:
+          format: date-time
           type: string
         lengthInMillimeters:
           type: number
@@ -24167,12 +24319,14 @@ components:
     Webhook:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToHousehold:
           type: string
         contentType:
           type: string
         createdAt:
+          format: date-time
           type: string
         events:
           items:
@@ -24181,6 +24335,7 @@ components:
         id:
           type: string
         lastUpdatedAt:
+          format: date-time
           type: string
         method:
           type: string
@@ -24207,10 +24362,12 @@ components:
     WebhookTriggerEvent:
       properties:
         archivedAt:
+          format: date-time
           type: string
         belongsToWebhook:
           type: string
         createdAt:
+          format: date-time
           type: string
         id:
           type: string
