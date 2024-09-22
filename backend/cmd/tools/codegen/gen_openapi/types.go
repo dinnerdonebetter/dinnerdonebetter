@@ -11,21 +11,38 @@ import (
 	"github.com/fatih/structtag"
 )
 
+const (
+	intType     = "int"
+	int8Type    = "int8"
+	int16Type   = "int16"
+	int32Type   = "int32"
+	int64Type   = "int64"
+	uintType    = "uint"
+	uint8Type   = "uint8"
+	uint16Type  = "uint16"
+	uint32Type  = "uint32"
+	uint64Type  = "uint64"
+	float32Type = "float32"
+	float64Type = "float64"
+	stringType  = "string"
+	boolType    = "bool"
+)
+
 var nativeTypesMap = map[string]struct{}{
-	"int":     {},
-	"int8":    {},
-	"int16":   {},
-	"int32":   {},
-	"int64":   {},
-	"uint":    {},
-	"uint8":   {},
-	"uint16":  {},
-	"uint32":  {},
-	"uint64":  {},
-	"float32": {},
-	"float64": {},
-	"string":  {},
-	"bool":    {},
+	intType:     {},
+	int8Type:    {},
+	int16Type:   {},
+	int32Type:   {},
+	int64Type:   {},
+	uintType:    {},
+	uint8Type:   {},
+	uint16Type:  {},
+	uint32Type:  {},
+	uint64Type:  {},
+	float32Type: {},
+	float64Type: {},
+	stringType:  {},
+	boolType:    {},
 	// these are actually openapi types
 	"object":  {},
 	"integer": {},
@@ -171,7 +188,7 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 						continue
 					}
 
-					fieldType, isTime, isArray := deriveOpenAPIFieldType(typeName, fieldName, field)
+					fieldType, format, isArray := deriveOpenAPIFieldType(typeName, fieldName, field)
 					property := &openapiProperty{
 						Type: fieldType,
 					}
@@ -181,8 +198,8 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 						property.Ref = fmt.Sprintf("#/components/schemas/%s", fieldType)
 					}
 
-					if isTime {
-						property.Format = "date-time"
+					if format != "" {
+						property.Format = format
 					}
 
 					if isArray {
@@ -218,24 +235,24 @@ var typeAliases = map[string]string{
 }
 
 var openAPITypeMap = map[string]string{
-	"int":     "integer",
-	"int8":    "integer",
-	"int16":   "integer",
-	"int32":   "integer",
-	"int64":   "integer",
-	"uint":    "integer",
-	"uint8":   "integer",
-	"uint16":  "integer",
-	"uint32":  "integer",
-	"uint64":  "integer",
-	"float32": "number",
-	"float64": "number",
-	"string":  "string",
-	"bool":    "boolean",
+	intType:     "integer",
+	int8Type:    "integer",
+	int16Type:   "integer",
+	int32Type:   "integer",
+	int64Type:   "integer",
+	uintType:    "integer",
+	uint8Type:   "integer",
+	uint16Type:  "integer",
+	uint32Type:  "integer",
+	uint64Type:  "integer",
+	float32Type: "number",
+	float64Type: "number",
+	stringType:  "string",
+	boolType:    "boolean",
 	// Add other mappings as needed
 }
 
-func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value string, isTime, isArray bool) {
+func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value, format string, isArray bool) {
 	if typeName == "WebhookCreationRequestInput" && fieldName == "events" {
 		println("here")
 	}
@@ -274,7 +291,7 @@ func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value
 	case *ast.MapType:
 		// TODO: confirm this is being handled correctly
 		if typeName == "AuditLogEntry" && fieldName == "changes" {
-			return "ChangeLog", isTime, isArray
+			return "ChangeLog", format, isArray
 		}
 		value = "object"
 	default:
@@ -286,16 +303,36 @@ func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value
 	}
 
 	if value == "time.Time" {
-		isTime = true
+		format = "date-time"
+	}
+
+	switch strings.ToLower(fieldName) {
+	case "password", "currentpassword", "newpassword":
+		format = "password"
+	case "emailaddress":
+		// format = "email"	// NOT WORTH, uses some third party string alias type :(
+	case "url":
+		format = "uri"
 	}
 
 	if x, ok := typeAliases[value]; ok {
-		return x, isTime, isArray
+		value = x
 	}
 
 	if x, ok := openAPITypeMap[value]; ok {
-		return x, isTime, isArray
+		switch value {
+		case uint64Type, int64Type, uintType, uint32Type, uint16Type:
+			return x, int64Type, isArray
+		case int32Type, intType, int8Type, uint8Type, int16Type:
+			return x, int32Type, isArray
+		case float32Type, float64Type:
+			return x, "double", isArray
+		default:
+			// just "string" and "bool" left
+			return x, format, isArray
+		}
+		return x, format, isArray
 	}
 
-	return value, isTime, isArray
+	return value, format, isArray
 }

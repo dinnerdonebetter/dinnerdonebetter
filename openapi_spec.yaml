@@ -21203,6 +21203,7 @@ components:
     FinalizeMealPlansResponse:
       properties:
         count:
+          format: int32
           type: integer
       type: object
     Household:
@@ -21233,8 +21234,10 @@ components:
           format: date-time
           type: string
         latitude:
+          format: double
           type: number
         longitude:
+          format: double
           type: number
         members:
           items:
@@ -21264,8 +21267,10 @@ components:
         country:
           type: string
         latitude:
+          format: double
           type: number
         longitude:
+          format: double
           type: number
         name:
           type: string
@@ -21294,6 +21299,7 @@ components:
         notes:
           type: string
         quantity:
+          format: int64
           type: integer
       type: object
     HouseholdInstrumentOwnershipCreationRequestInput:
@@ -21303,6 +21309,7 @@ components:
         notes:
           type: string
         quantity:
+          format: int64
           type: integer
         validInstrumentID:
           type: string
@@ -21312,6 +21319,7 @@ components:
         notes:
           type: string
         quantity:
+          format: int64
           type: integer
         validInstrumentID:
           type: string
@@ -21392,8 +21400,10 @@ components:
         country:
           type: string
         latitude:
+          format: double
           type: number
         longitude:
+          format: double
           type: number
         name:
           type: string
@@ -21470,8 +21480,10 @@ components:
           format: date-time
           type: string
         maximumEstimatedPortions:
+          format: double
           type: number
         minimumEstimatedPortions:
+          format: double
           type: number
         name:
           type: string
@@ -21483,6 +21495,7 @@ components:
         recipe:
           $ref: '#/components/schemas/Recipe'
         recipeScale:
+          format: double
           type: number
       type: object
     MealComponentCreationRequestInput:
@@ -21492,6 +21505,7 @@ components:
         recipeID:
           type: string
         recipeScale:
+          format: double
           type: number
       type: object
     MealCreationRequestInput:
@@ -21501,8 +21515,10 @@ components:
         eligibleForMealPlans:
           type: boolean
         maximumEstimatedPortions:
+          format: double
           type: number
         minimumEstimatedPortions:
+          format: double
           type: number
         name:
           type: string
@@ -21638,18 +21654,22 @@ components:
           format: date-time
           type: string
         maximumQuantityNeeded:
+          format: double
           type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         minimumQuantityNeeded:
+          format: double
           type: number
         purchasePrice:
+          format: double
           type: number
         purchasedMeasurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         purchasedUPC:
           type: string
         quantityPurchased:
+          format: double
           type: number
         status:
           type: string
@@ -21661,16 +21681,20 @@ components:
         belongsToMealPlan:
           type: string
         maximumQuantityNeeded:
+          format: double
           type: number
         minimumQuantityNeeded:
+          format: double
           type: number
         purchasePrice:
+          format: double
           type: number
         purchasedMeasurementUnitID:
           type: string
         purchasedUPC:
           type: string
         quantityPurchased:
+          format: double
           type: number
         status:
           type: string
@@ -21686,16 +21710,20 @@ components:
         belongsToMealPlan:
           type: string
         maximumQuantityNeeded:
+          format: double
           type: number
         minimumQuantityNeeded:
+          format: double
           type: number
         purchasePrice:
+          format: double
           type: number
         purchasedMeasurementUnitID:
           type: string
         purchasedUPC:
           type: string
         quantityPurchased:
+          format: double
           type: number
         status:
           type: string
@@ -21730,6 +21758,7 @@ components:
         meal:
           $ref: '#/components/schemas/Meal'
         mealScale:
+          format: double
           type: number
         notes:
           type: string
@@ -21749,6 +21778,7 @@ components:
         mealID:
           type: string
         mealScale:
+          format: double
           type: number
         notes:
           type: string
@@ -21762,6 +21792,7 @@ components:
         mealID:
           type: string
         mealScale:
+          format: double
           type: number
         notes:
           type: string
@@ -21788,6 +21819,7 @@ components:
         notes:
           type: string
         rank:
+          format: int32
           type: integer
       type: object
     MealPlanOptionVoteCreationInput:
@@ -21799,6 +21831,7 @@ components:
         notes:
           type: string
         rank:
+          format: int32
           type: integer
       type: object
     MealPlanOptionVoteCreationRequestInput:
@@ -21817,6 +21850,7 @@ components:
         notes:
           type: string
         rank:
+          format: int32
           type: integer
       type: object
     MealPlanTask:
@@ -21926,12 +21960,16 @@ components:
     Pagination:
       properties:
         filteredCount:
+          format: int64
           type: integer
         limit:
+          format: int32
           type: integer
         page:
+          format: int64
           type: integer
         totalCount:
+          format: int64
           type: integer
       type: object
     PasswordResetToken:
@@ -21963,6 +22001,7 @@ components:
     PasswordResetTokenRedemptionRequestInput:
       properties:
         newPassword:
+          format: password
           type: string
         token:
           type: string
@@ -21970,8 +22009,10 @@ components:
     PasswordUpdateInput:
       properties:
         currentPassword:
+          format: password
           type: string
         newPassword:
+          format: password
           type: string
         totpToken:
           type: string
@@ -21998,12 +22039,14 @@ components:
           format: date-time
           type: string
         maximumEstimatedPortions:
+          format: double
           type: number
         media:
           items:
             $ref: '#/components/schemas/RecipeMedia'
           type: array
         minimumEstimatedPortions:
+          format: double
           type: number
         name:
           type: string
@@ -22043,8 +22086,10 @@ components:
         inspiredByRecipeID:
           type: string
         maximumEstimatedPortions:
+          format: double
           type: number
         minimumEstimatedPortions:
+          format: double
           type: number
         name:
           type: string
@@ -22086,6 +22131,7 @@ components:
         id:
           type: string
         index:
+          format: int64
           type: integer
         internalPath:
           type: string
@@ -22115,12 +22161,16 @@ components:
           format: date-time
           type: string
         maximumStorageTemperatureInCelsius:
+          format: double
           type: number
         maximumTimeBufferBeforeRecipeInSeconds:
+          format: int64
           type: integer
         minimumStorageTemperatureInCelsius:
+          format: double
           type: number
         minimumTimeBufferBeforeRecipeInSeconds:
+          format: int64
           type: integer
         name:
           type: string
@@ -22144,12 +22194,16 @@ components:
         explicitStorageInstructions:
           type: string
         maximumStorageTemperatureInCelsius:
+          format: double
           type: number
         maximumTimeBufferBeforeRecipeInSeconds:
+          format: int64
           type: integer
         minimumStorageTemperatureInCelsius:
+          format: double
           type: number
         minimumTimeBufferBeforeRecipeInSeconds:
+          format: int64
           type: integer
         name:
           type: string
@@ -22194,6 +22248,7 @@ components:
     RecipePrepTaskStepWithinRecipeCreationRequestInput:
       properties:
         belongsToRecipeStepIndex:
+          format: int64
           type: integer
         satisfiesRecipeStep:
           type: boolean
@@ -22207,12 +22262,16 @@ components:
         explicitStorageInstructions:
           type: string
         maximumStorageTemperatureInCelsius:
+          format: double
           type: number
         maximumTimeBufferBeforeRecipeInSeconds:
+          format: int64
           type: integer
         minimumStorageTemperatureInCelsius:
+          format: double
           type: number
         minimumTimeBufferBeforeRecipeInSeconds:
+          format: int64
           type: integer
         name:
           type: string
@@ -22236,12 +22295,16 @@ components:
         explicitStorageInstructions:
           type: string
         maximumStorageTemperatureInCelsius:
+          format: double
           type: number
         maximumTimeBufferBeforeRecipeInSeconds:
+          format: int64
           type: integer
         minimumStorageTemperatureInCelsius:
+          format: double
           type: number
         minimumTimeBufferBeforeRecipeInSeconds:
+          format: int64
           type: integer
         name:
           type: string
@@ -22264,15 +22327,18 @@ components:
         byUser:
           type: string
         cleanup:
+          format: double
           type: number
         createdAt:
           format: date-time
           type: string
         difficulty:
+          format: double
           type: number
         id:
           type: string
         instructions:
+          format: double
           type: number
         lastUpdatedAt:
           format: date-time
@@ -22280,10 +22346,12 @@ components:
         notes:
           type: string
         overall:
+          format: double
           type: number
         recipeID:
           type: string
         taste:
+          format: double
           type: number
       type: object
     RecipeRatingCreationRequestInput:
@@ -22291,18 +22359,23 @@ components:
         byUser:
           type: string
         cleanup:
+          format: double
           type: number
         difficulty:
+          format: double
           type: number
         instructions:
+          format: double
           type: number
         notes:
           type: string
         overall:
+          format: double
           type: number
         recipeID:
           type: string
         taste:
+          format: double
           type: number
       type: object
     RecipeRatingUpdateRequestInput:
@@ -22310,18 +22383,23 @@ components:
         byUser:
           type: string
         cleanup:
+          format: double
           type: number
         difficulty:
+          format: double
           type: number
         instructions:
+          format: double
           type: number
         notes:
           type: string
         overall:
+          format: double
           type: number
         recipeID:
           type: string
         taste:
+          format: double
           type: number
       type: object
     RecipeStep:
@@ -22345,6 +22423,7 @@ components:
         id:
           type: string
         index:
+          format: int64
           type: integer
         ingredients:
           items:
@@ -22358,16 +22437,20 @@ components:
           format: date-time
           type: string
         maximumEstimatedTimeInSeconds:
+          format: int64
           type: integer
         maximumTemperatureInCelsius:
+          format: double
           type: number
         media:
           items:
             $ref: '#/components/schemas/RecipeMedia'
           type: array
         minimumEstimatedTimeInSeconds:
+          format: int64
           type: integer
         minimumTemperatureInCelsius:
+          format: double
           type: number
         notes:
           type: string
@@ -22419,6 +22502,7 @@ components:
         ingredientState:
           type: string
         ingredients:
+          format: int64
           items:
             type: integer
           type: array
@@ -22487,6 +22571,7 @@ components:
         explicitInstructions:
           type: string
         index:
+          format: int64
           type: integer
         ingredients:
           items:
@@ -22497,12 +22582,16 @@ components:
             $ref: '#/components/schemas/RecipeStepInstrumentCreationRequestInput'
           type: array
         maximumEstimatedTimeInSeconds:
+          format: int64
           type: integer
         maximumTemperatureInCelsius:
+          format: double
           type: number
         minimumEstimatedTimeInSeconds:
+          format: int64
           type: integer
         minimumTemperatureInCelsius:
+          format: double
           type: number
         notes:
           type: string
@@ -22541,20 +22630,24 @@ components:
           format: date-time
           type: string
         maximumQuantity:
+          format: double
           type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         minimumQuantity:
+          format: double
           type: number
         name:
           type: string
         optionIndex:
+          format: int64
           type: integer
         optional:
           type: boolean
         productOfRecipeID:
           type: string
         productPercentageToUse:
+          format: double
           type: number
         quantityNotes:
           type: string
@@ -22563,6 +22656,7 @@ components:
         toTaste:
           type: boolean
         vesselIndex:
+          format: int64
           type: integer
       type: object
     RecipeStepIngredientCreationRequestInput:
@@ -22572,30 +22666,37 @@ components:
         ingredientNotes:
           type: string
         maximumQuantity:
+          format: double
           type: number
         measurementUnitID:
           type: string
         minimumQuantity:
+          format: double
           type: number
         name:
           type: string
         optionIndex:
+          format: int64
           type: integer
         optional:
           type: boolean
         productOfRecipeID:
           type: string
         productOfRecipeStepIndex:
+          format: int64
           type: integer
         productOfRecipeStepProductIndex:
+          format: int64
           type: integer
         productPercentageToUse:
+          format: double
           type: number
         quantityNotes:
           type: string
         toTaste:
           type: boolean
         vesselIndex:
+          format: int64
           type: integer
       type: object
     RecipeStepIngredientUpdateRequestInput:
@@ -22607,20 +22708,24 @@ components:
         ingredientNotes:
           type: string
         maximumQuantity:
+          format: double
           type: number
         measurementUnitID:
           type: string
         minimumQuantity:
+          format: double
           type: number
         name:
           type: string
         optionIndex:
+          format: int64
           type: integer
         optional:
           type: boolean
         productOfRecipeID:
           type: string
         productPercentageToUse:
+          format: double
           type: number
         quantityNotes:
           type: string
@@ -22629,6 +22734,7 @@ components:
         toTaste:
           type: boolean
         vesselIndex:
+          format: int64
           type: integer
       type: object
     RecipeStepInstrument:
@@ -22649,18 +22755,22 @@ components:
           format: date-time
           type: string
         maximumQuantity:
+          format: int64
           type: integer
         minimumQuantity:
+          format: int64
           type: integer
         name:
           type: string
         notes:
           type: string
         optionIndex:
+          format: int64
           type: integer
         optional:
           type: boolean
         preferenceRank:
+          format: int32
           type: integer
         recipeStepProductID:
           type: string
@@ -22670,22 +22780,28 @@ components:
         instrumentID:
           type: string
         maximumQuantity:
+          format: int64
           type: integer
         minimumQuantity:
+          format: int64
           type: integer
         name:
           type: string
         notes:
           type: string
         optionIndex:
+          format: int64
           type: integer
         optional:
           type: boolean
         preferenceRank:
+          format: int32
           type: integer
         productOfRecipeStepIndex:
+          format: int64
           type: integer
         productOfRecipeStepProductIndex:
+          format: int64
           type: integer
         recipeStepProductID:
           type: string
@@ -22697,18 +22813,22 @@ components:
         instrumentID:
           type: string
         maximumQuantity:
+          format: int64
           type: integer
         minimumQuantity:
+          format: int64
           type: integer
         name:
           type: string
         notes:
           type: string
         optionIndex:
+          format: int64
           type: integer
         optional:
           type: boolean
         preferenceRank:
+          format: int32
           type: integer
         recipeStepProductID:
           type: string
@@ -22723,6 +22843,7 @@ components:
         compostable:
           type: boolean
         containedInVesselIndex:
+          format: int64
           type: integer
         createdAt:
           format: date-time
@@ -22730,6 +22851,7 @@ components:
         id:
           type: string
         index:
+          format: int64
           type: integer
         isLiquid:
           type: boolean
@@ -22739,16 +22861,21 @@ components:
           format: date-time
           type: string
         maximumQuantity:
+          format: double
           type: number
         maximumStorageDurationInSeconds:
+          format: int64
           type: integer
         maximumStorageTemperatureInCelsius:
+          format: double
           type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         minimumQuantity:
+          format: double
           type: number
         minimumStorageTemperatureInCelsius:
+          format: double
           type: number
         name:
           type: string
@@ -22764,24 +22891,31 @@ components:
         compostable:
           type: boolean
         containedInVesselIndex:
+          format: int64
           type: integer
         index:
+          format: int64
           type: integer
         isLiquid:
           type: boolean
         isWaste:
           type: boolean
         maximumQuantity:
+          format: double
           type: number
         maximumStorageDurationInSeconds:
+          format: int64
           type: integer
         maximumStorageTemperatureInCelsius:
+          format: double
           type: number
         measurementUnitID:
           type: string
         minimumQuantity:
+          format: double
           type: number
         minimumStorageTemperatureInCelsius:
+          format: double
           type: number
         name:
           type: string
@@ -22799,24 +22933,31 @@ components:
         compostable:
           type: boolean
         containedInVesselIndex:
+          format: int64
           type: integer
         index:
+          format: int64
           type: integer
         isLiquid:
           type: boolean
         isWaste:
           type: boolean
         maximumQuantity:
+          format: double
           type: number
         maximumStorageDurationInSeconds:
+          format: int64
           type: integer
         maximumStorageTemperatureInCelsius:
+          format: double
           type: number
         measurementUnitID:
           type: string
         minimumQuantity:
+          format: double
           type: number
         minimumStorageTemperatureInCelsius:
+          format: double
           type: number
         name:
           type: string
@@ -22836,14 +22977,19 @@ components:
         explicitInstructions:
           type: string
         index:
+          format: int64
           type: integer
         maximumEstimatedTimeInSeconds:
+          format: int64
           type: integer
         maximumTemperatureInCelsius:
+          format: double
           type: number
         minimumEstimatedTimeInSeconds:
+          format: int64
           type: integer
         minimumTemperatureInCelsius:
+          format: double
           type: number
         notes:
           type: string
@@ -22870,8 +23016,10 @@ components:
           format: date-time
           type: string
         maximumQuantity:
+          format: int64
           type: integer
         minimumQuantity:
+          format: int64
           type: integer
         name:
           type: string
@@ -22889,16 +23037,20 @@ components:
     RecipeStepVesselCreationRequestInput:
       properties:
         maximumQuantity:
+          format: int64
           type: integer
         minimumQuantity:
+          format: int64
           type: integer
         name:
           type: string
         notes:
           type: string
         productOfRecipeStepIndex:
+          format: int64
           type: integer
         productOfRecipeStepProductIndex:
+          format: int64
           type: integer
         recipeStepProductID:
           type: string
@@ -22914,8 +23066,10 @@ components:
         belongsToRecipeStep:
           type: string
         maximumQuantity:
+          format: int64
           type: integer
         minimumQuantity:
+          format: int64
           type: integer
         name:
           type: string
@@ -22939,8 +23093,10 @@ components:
         inspiredByRecipeID:
           type: string
         maximumEstimatedPortions:
+          format: double
           type: number
         minimumEstimatedPortions:
+          format: double
           type: number
         name:
           type: string
@@ -23062,6 +23218,7 @@ components:
     TOTPSecretRefreshInput:
       properties:
         currentPassword:
+          format: password
           type: string
         totpToken:
           type: string
@@ -23174,6 +23331,7 @@ components:
           format: date-time
           type: string
         currentPassword:
+          format: password
           type: string
         firstName:
           type: string
@@ -23185,6 +23343,7 @@ components:
     UserEmailAddressUpdateInput:
       properties:
         currentPassword:
+          format: password
           type: string
         newEmailAddress:
           type: string
@@ -23213,6 +23372,7 @@ components:
         notes:
           type: string
         rating:
+          format: int32
           type: integer
       type: object
     UserIngredientPreferenceCreationRequestInput:
@@ -23222,6 +23382,7 @@ components:
         notes:
           type: string
         rating:
+          format: int32
           type: integer
         validIngredientGroupID:
           type: string
@@ -23237,11 +23398,13 @@ components:
         notes:
           type: string
         rating:
+          format: int32
           type: integer
       type: object
     UserLoginInput:
       properties:
         password:
+          format: password
           type: string
         totpToken:
           type: string
@@ -23313,6 +23476,7 @@ components:
         lastName:
           type: string
         password:
+          format: password
           type: string
         username:
           type: string
@@ -23338,6 +23502,7 @@ components:
     UsernameUpdateInput:
       properties:
         currentPassword:
+          format: password
           type: string
         newUsername:
           type: string
@@ -23408,8 +23573,10 @@ components:
           format: date-time
           type: string
         maximumIdealStorageTemperatureInCelsius:
+          format: double
           type: number
         minimumIdealStorageTemperatureInCelsius:
+          format: double
           type: number
         name:
           type: string
@@ -23479,8 +23646,10 @@ components:
         isStarch:
           type: boolean
         maximumIdealStorageTemperatureInCelsius:
+          format: double
           type: number
         minimumIdealStorageTemperatureInCelsius:
+          format: double
           type: number
         name:
           type: string
@@ -23579,10 +23748,12 @@ components:
           format: date-time
           type: string
         maximumAllowableQuantity:
+          format: double
           type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         minimumAllowableQuantity:
+          format: double
           type: number
         notes:
           type: string
@@ -23590,8 +23761,10 @@ components:
     ValidIngredientMeasurementUnitCreationRequestInput:
       properties:
         maximumAllowableQuantity:
+          format: double
           type: number
         minimumAllowableQuantity:
+          format: double
           type: number
         notes:
           type: string
@@ -23603,8 +23776,10 @@ components:
     ValidIngredientMeasurementUnitUpdateRequestInput:
       properties:
         maximumAllowableQuantity:
+          format: double
           type: number
         minimumAllowableQuantity:
+          format: double
           type: number
         notes:
           type: string
@@ -23798,8 +23973,10 @@ components:
         isStarch:
           type: boolean
         maximumIdealStorageTemperatureInCelsius:
+          format: double
           type: number
         minimumIdealStorageTemperatureInCelsius:
+          format: double
           type: number
         name:
           type: string
@@ -23932,6 +24109,7 @@ components:
           format: date-time
           type: string
         modifier:
+          format: double
           type: number
         notes:
           type: string
@@ -23945,6 +24123,7 @@ components:
         from:
           type: string
         modifier:
+          format: double
           type: number
         notes:
           type: string
@@ -23958,6 +24137,7 @@ components:
         from:
           type: string
         modifier:
+          format: double
           type: number
         notes:
           type: string
@@ -24030,16 +24210,22 @@ components:
           format: date-time
           type: string
         maximumIngredientCount:
+          format: int32
           type: integer
         maximumInstrumentCount:
+          format: int32
           type: integer
         maximumVesselCount:
+          format: int32
           type: integer
         minimumIngredientCount:
+          format: int32
           type: integer
         minimumInstrumentCount:
+          format: int32
           type: integer
         minimumVesselCount:
+          format: int32
           type: integer
         name:
           type: string
@@ -24069,16 +24255,22 @@ components:
         iconPath:
           type: string
         maximumIngredientCount:
+          format: int32
           type: integer
         maximumInstrumentCount:
+          format: int32
           type: integer
         maximumVesselCount:
+          format: int32
           type: integer
         minimumIngredientCount:
+          format: int32
           type: integer
         minimumInstrumentCount:
+          format: int32
           type: integer
         minimumVesselCount:
+          format: int32
           type: integer
         name:
           type: string
@@ -24146,16 +24338,22 @@ components:
         iconPath:
           type: string
         maximumIngredientCount:
+          format: int32
           type: integer
         maximumInstrumentCount:
+          format: int32
           type: integer
         maximumVesselCount:
+          format: int32
           type: integer
         minimumIngredientCount:
+          format: int32
           type: integer
         minimumInstrumentCount:
+          format: int32
           type: integer
         minimumVesselCount:
+          format: int32
           type: integer
         name:
           type: string
@@ -24218,6 +24416,7 @@ components:
           format: date-time
           type: string
         capacity:
+          format: double
           type: number
         capacityUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
@@ -24229,6 +24428,7 @@ components:
         displayInSummaryLists:
           type: boolean
         heightInMillimeters:
+          format: double
           type: number
         iconPath:
           type: string
@@ -24240,6 +24440,7 @@ components:
           format: date-time
           type: string
         lengthInMillimeters:
+          format: double
           type: number
         name:
           type: string
@@ -24252,11 +24453,13 @@ components:
         usableForStorage:
           type: boolean
         widthInMillimeters:
+          format: double
           type: number
       type: object
     ValidVesselCreationRequestInput:
       properties:
         capacity:
+          format: double
           type: number
         capacityUnitID:
           type: string
@@ -24265,12 +24468,14 @@ components:
         displayInSummaryLists:
           type: boolean
         heightInMillimeters:
+          format: double
           type: number
         iconPath:
           type: string
         includeInGeneratedInstructions:
           type: boolean
         lengthInMillimeters:
+          format: double
           type: number
         name:
           type: string
@@ -24283,11 +24488,13 @@ components:
         usableForStorage:
           type: boolean
         widthInMillimeters:
+          format: double
           type: number
       type: object
     ValidVesselUpdateRequestInput:
       properties:
         capacity:
+          format: double
           type: number
         capacityUnitID:
           type: string
@@ -24296,12 +24503,14 @@ components:
         displayInSummaryLists:
           type: boolean
         heightInMillimeters:
+          format: double
           type: number
         iconPath:
           type: string
         includeInGeneratedInstructions:
           type: boolean
         lengthInMillimeters:
+          format: double
           type: number
         name:
           type: string
@@ -24314,6 +24523,7 @@ components:
         usableForStorage:
           type: boolean
         widthInMillimeters:
+          format: double
           type: number
       type: object
     Webhook:
@@ -24342,6 +24552,7 @@ components:
         name:
           type: string
         url:
+          format: uri
           type: string
       type: object
     WebhookCreationRequestInput:
@@ -24357,6 +24568,7 @@ components:
         name:
           type: string
         url:
+          format: uri
           type: string
       type: object
     WebhookTriggerEvent:

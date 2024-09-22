@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -143,6 +144,20 @@ func (c *Client) CreateRecipe(ctx context.Context, input *types.RecipeCreationRe
 
 	body := generated.CreateRecipeJSONRequestBody{}
 	c.copyType(&body, input)
+
+	// manual body shaping
+	for i, step := range input.Steps {
+		for j, cc := range step.CompletionConditions {
+			bodySteps := *body.Steps
+			bodyCCs := bodySteps[i].CompletionConditions
+			(*bodyCCs)[j].Ingredients = pointer.To(make([]int, len(input.Steps[i].CompletionConditions)))
+			for k, ingredientID := range cc.Ingredients {
+				(*(*bodyCCs)[j].Ingredients)[k] = int(ingredientID)
+			}
+		}
+	}
+
+	logger.WithValue("body", body).Info("creating recipe")
 
 	res, err := c.authedGeneratedClient.CreateRecipe(ctx, body)
 	if err != nil {
