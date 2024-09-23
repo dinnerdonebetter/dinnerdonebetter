@@ -295,8 +295,6 @@ func (q *Querier) createRecipeStepCompletionCondition(ctx context.Context, db da
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.RecipeStepCompletionConditionIDKey, input.ID)
-
 	// create the recipe step completion condition.
 	if err := q.generatedQuerier.CreateRecipeStepCompletionCondition(ctx, db, &generated.CreateRecipeStepCompletionConditionParams{
 		ID:                  input.ID,
@@ -305,8 +303,6 @@ func (q *Querier) createRecipeStepCompletionCondition(ctx context.Context, db da
 		Notes:               input.Notes,
 		Optional:            input.Optional,
 	}); err != nil {
-		logger.WithValue("input.BelongsToRecipeStep", input.BelongsToRecipeStep).WithValue("input.IngredientStateID", input.IngredientStateID).Info("aaaaaaaaaaaaaaaaaa")
-
 		return nil, observability.PrepareError(err, span, "performing recipe step completion condition creation query")
 	}
 

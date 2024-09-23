@@ -8,7 +8,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -145,19 +144,20 @@ func (c *Client) CreateRecipe(ctx context.Context, input *types.RecipeCreationRe
 	body := generated.CreateRecipeJSONRequestBody{}
 	c.copyType(&body, input)
 
-	// manual body shaping
+	// we have to do this horrific procedure because `copyType` doesn't *quite* do it correctly for us.
+	// basically, we need to go through each step's completion conditions and set the input's `IngredientStateID`
 	for i, step := range input.Steps {
-		for j, cc := range step.CompletionConditions {
-			bodySteps := *body.Steps
-			bodyCCs := bodySteps[i].CompletionConditions
-			(*bodyCCs)[j].Ingredients = pointer.To(make([]int, len(input.Steps[i].CompletionConditions)))
-			for k, ingredientID := range cc.Ingredients {
-				(*(*bodyCCs)[j].Ingredients)[k] = int(ingredientID)
+		if step != nil {
+			for j, cc := range step.CompletionConditions {
+				if cc != nil {
+					// fucking slice pointers in generated code, man.
+					bodySteps := *body.Steps
+					bodyCCs := bodySteps[i].CompletionConditions
+					(*bodyCCs)[j].IngredientState = &cc.IngredientStateID
+				}
 			}
 		}
 	}
-
-	logger.WithValue("body", body).Info("creating recipe")
 
 	res, err := c.authedGeneratedClient.CreateRecipe(ctx, body)
 	if err != nil {

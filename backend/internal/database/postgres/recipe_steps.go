@@ -329,6 +329,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		StartTimerAutomatically:       input.StartTimerAutomatically,
 		CreatedAt:                     q.currentTime(),
 	}
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, x.ID)
 
 	for i, ingredientInput := range input.Ingredients {
 		ingredientInput.BelongsToRecipeStep = x.ID
@@ -379,8 +380,6 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 
 		x.CompletionConditions = append(x.CompletionConditions, condition)
 	}
-
-	tracing.AttachToSpan(span, keys.RecipeStepIDKey, x.ID)
 
 	return x, nil
 }
