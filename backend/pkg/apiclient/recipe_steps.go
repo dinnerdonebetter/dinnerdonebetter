@@ -10,10 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-const (
-	recipeStepsBasePath = "recipe_steps"
-)
-
 // GetRecipeStep gets a recipe step.
 func (c *Client) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
 	ctx, span := c.tracer.StartSpan(ctx)

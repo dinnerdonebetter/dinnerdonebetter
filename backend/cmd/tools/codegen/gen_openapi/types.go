@@ -331,7 +331,6 @@ func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value
 			// just "string" and "bool" left
 			return x, format, isArray
 		}
-		return x, format, isArray
 	}
 
 	return value, format, isArray
