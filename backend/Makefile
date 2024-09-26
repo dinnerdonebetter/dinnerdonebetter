@@ -245,7 +245,6 @@ integration_tests_postgres:
 	$(CONTAINER_RUNNER) compose \
 	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
 	--build \
-	--pull always \
 	--force-recreate \
 	--remove-orphans \
 	--renew-anon-volumes \

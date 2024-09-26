@@ -273,7 +273,7 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 
 	stepIndicesMentionedInPrepTasks := map[uint32]bool{}
 	for i, task := range x.PrepTasks {
-		for j, step := range task.TaskSteps {
+		for j, step := range task.RecipeSteps {
 			if _, ok := stepIndicesMentionedInPrepTasks[step.BelongsToRecipeStepIndex]; ok {
 				errResult = multierror.Append(fmt.Errorf("duplicate step mentioned in step %d for task %d", i+1, j+1), errResult)
 			} else {

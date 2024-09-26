@@ -33,7 +33,7 @@ func buildLoggingMiddleware(logger logging.Logger, tracer tracing.Tracer, silenc
 					"status":  ww.Status(),
 					"elapsed": time.Since(start).Milliseconds(),
 					"written": ww.BytesWritten(),
-				}).Debug("response served")
+				}).Info("response served")
 			}
 		})
 	}

@@ -78,7 +78,7 @@ type (
 		MaximumEstimatedPortions *float32                             `json:"maximumEstimatedPortions"`
 		Name                     string                               `json:"name"`
 		Description              string                               `json:"description"`
-		Components               []*MealComponentCreationRequestInput `json:"recipes"`
+		Components               []*MealComponentCreationRequestInput `json:"components"`
 		MinimumEstimatedPortions float32                              `json:"minimumEstimatedPortions"`
 		EligibleForMealPlans     bool                                 `json:"eligibleForMealPlans"`
 	}

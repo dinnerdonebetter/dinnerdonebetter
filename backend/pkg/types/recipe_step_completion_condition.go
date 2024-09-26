@@ -66,7 +66,7 @@ type (
 	RecipeStepCompletionConditionForExistingRecipeCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		IngredientStateID   string                                                                          `json:"ingredientState"`
+		IngredientStateID   string                                                                          `json:"ingredientStateID"`
 		BelongsToRecipeStep string                                                                          `json:"belongsToRecipeStep"`
 		Notes               string                                                                          `json:"notes"`
 		Ingredients         []*RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput `json:"ingredients"`

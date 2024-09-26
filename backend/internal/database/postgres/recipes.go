@@ -437,7 +437,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		stepInput.Index = uint32(i)
 		stepInput.BelongsToRecipe = x.ID
 
-		q.logger.WithValue("completionConditions", stepInput.CompletionConditions).Info(fmt.Sprintf("creating recipe step #%d", i+1))
+		q.logger.Info(fmt.Sprintf("creating recipe step #%d", i+1))
 
 		var s *types.RecipeStep
 		s, err = q.createRecipeStep(ctx, tx, stepInput)

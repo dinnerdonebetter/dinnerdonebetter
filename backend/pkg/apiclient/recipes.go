@@ -14,6 +14,7 @@ import (
 
 const (
 	recipesBasePath = "recipes"
+	imagesPath      = "images"
 )
 
 // GetRecipe gets a recipe.
@@ -333,7 +334,7 @@ func (c *Client) UploadRecipeMedia(ctx context.Context, files map[string][]byte,
 		return ErrNilInputProvided
 	}
 
-	uri := c.BuildURL(ctx, nil, recipesBasePath, recipeID, "images")
+	uri := c.BuildURL(ctx, nil, recipesBasePath, recipeID, imagesPath)
 
 	req, err := c.buildMultipleRecipeMediaUploadRequest(ctx, uri, files)
 	if err != nil {

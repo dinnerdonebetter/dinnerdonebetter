@@ -174,13 +174,13 @@ func (c *Client) UpdateMealPlanOption(ctx context.Context, mealPlanID string, me
 
 	res, err := c.authedGeneratedClient.UpdateMealPlanOption(ctx, mealPlanID, mealPlanOption.BelongsToMealPlanEvent, mealPlanOption.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "update meal plan ClientOption")
+		return observability.PrepareAndLogError(err, logger, span, "update meal plan option")
 	}
 	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOption]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating meal plan ClientOption")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

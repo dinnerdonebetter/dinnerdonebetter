@@ -192,13 +192,13 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 
 	res, err := c.authedGeneratedClient.UpdateMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionVote.BelongsToMealPlanOption, mealPlanOptionVote.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "update meal plan ClientOption vote")
+		return observability.PrepareAndLogError(err, logger, span, "update meal plan option vote")
 	}
 	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating meal plan ClientOption vote")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option vote")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

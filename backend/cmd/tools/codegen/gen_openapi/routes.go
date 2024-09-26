@@ -608,7 +608,11 @@ var routeInfoMap = map[string]routeDetails{
 		InputType:    &types.RecipeStepUpdateRequestInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
-	"POST /api/v1/recipes/{recipeID}/steps/{recipeStepID}/images": {},
+	"POST /api/v1/recipes/{recipeID}/steps/{recipeStepID}/images": {
+		ID:           "UploadMediaForRecipeStep",
+		OAuth2Scopes: []string{householdMember},
+		ResponseType: []*types.RecipeMedia{},
+	},
 	"POST /api/v1/recipes/": {
 		ID:           "CreateRecipe",
 		ResponseType: &types.Recipe{},
@@ -654,8 +658,14 @@ var routeInfoMap = map[string]routeDetails{
 		ResponseType: &types.APIError{},
 		OAuth2Scopes: []string{householdMember},
 	},
-	"POST /api/v1/recipes/{recipeID}/images": {},
-	"GET /api/v1/recipes/{recipeID}/mermaid": {},
+	"POST /api/v1/recipes/{recipeID}/images": {
+		ID:           "UploadMediaForRecipe",
+		OAuth2Scopes: []string{householdMember},
+		ResponseType: []*types.RecipeMedia{},
+	},
+	"GET /api/v1/recipes/{recipeID}/mermaid": {
+		ID: "GetMermaidDiagramForRecipe",
+	},
 	"GET /api/v1/recipes/{recipeID}/prep_steps": {
 		ID:           "GetRecipeMealPlanTasks",
 		ResponseType: &types.RecipePrepTaskStep{},

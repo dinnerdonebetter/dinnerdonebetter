@@ -61,7 +61,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 	}
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		logger.WithValue(keys.ValidationErrorKey, err).Info("provided meal creation input was invalid")
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return

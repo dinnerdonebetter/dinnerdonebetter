@@ -92,7 +92,7 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 		Description:                            buildUniqueString(),
 		StorageType:                            types.RecipePrepTaskStorageTypeUncovered,
 		BelongsToRecipe:                        BuildFakeID(),
-		TaskSteps:                              taskSteps,
+		RecipeSteps:                            taskSteps,
 		MaximumTimeBufferBeforeRecipeInSeconds: pointer.To(uint32(minTimeBuffer) + 1),
 		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer),
 		MinimumStorageTemperatureInCelsius:     pointer.To(float32(minStorageTemp)),

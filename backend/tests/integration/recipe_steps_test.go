@@ -101,7 +101,7 @@ func (s *TestSuite) TestRecipeSteps_ContentUploading() {
 				"image_3.png": img3Bytes,
 			}
 
-			require.NoError(t, testClients.user.UploadRecipeMediaForStep(ctx, files, createdRecipe.ID, createdRecipeStep.ID))
+			require.NoError(t, testClients.user.UploadMediaForRecipeStep(ctx, files, createdRecipe.ID, createdRecipeStep.ID))
 
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}

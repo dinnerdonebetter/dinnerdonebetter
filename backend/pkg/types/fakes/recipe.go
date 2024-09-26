@@ -81,7 +81,7 @@ func BuildFakeRecipeCreationRequestInput() *types.RecipeCreationRequestInput {
 	exampleCreationInput := converters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
 	examplePrepTask := BuildFakeRecipePrepTask()
 	examplePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(exampleRecipe, examplePrepTask)
-	examplePrepTaskInput.TaskSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+	examplePrepTaskInput.RecipeSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 		{
 			BelongsToRecipeStepIndex: exampleCreationInput.Steps[0].Index,
 			SatisfiesRecipeStep:      false,

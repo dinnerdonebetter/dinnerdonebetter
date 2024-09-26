@@ -191,7 +191,7 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
 		examplePrepTask := fakes.BuildFakeRecipePrepTask()
 		examplePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(exampleRecipe, examplePrepTask)
-		examplePrepTaskInput.TaskSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+		examplePrepTaskInput.RecipeSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{
 				BelongsToRecipeStepIndex: exampleInput.Steps[0].Index,
 				SatisfiesRecipeStep:      false,

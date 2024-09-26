@@ -5964,7 +5964,7 @@ paths:
   /api/v1/recipes/{recipeID}/images:
     post:
       description: Operation for creating
-      operationId: POST_recipes_recipeID_images
+      operationId: UploadMediaForRecipe
       parameters:
       - in: path
         name: recipeID
@@ -5973,12 +5973,14 @@ paths:
           type: string
       security:
       - cookieAuth: []
+      - oauth2:
+        - household_member
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/mermaid:
     get:
       description: Operation for fetching
-      operationId: GET_recipes_recipeID_mermaid
+      operationId: GetMermaidDiagramForRecipe
       parameters:
       - in: path
         name: recipeID
@@ -7755,7 +7757,7 @@ paths:
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/images:
     post:
       description: Operation for creating
-      operationId: POST_recipes_recipeID_steps_recipeStepID_images
+      operationId: UploadMediaForRecipeStep
       parameters:
       - in: path
         name: recipeID
@@ -7769,6 +7771,8 @@ paths:
           type: string
       security:
       - cookieAuth: []
+      - oauth2:
+        - household_member
       tags:
       - recipes
       - recipe steps
@@ -21510,6 +21514,10 @@ components:
       type: object
     MealCreationRequestInput:
       properties:
+        components:
+          items:
+            $ref: '#/components/schemas/MealComponentCreationRequestInput'
+          type: array
         description:
           type: string
         eligibleForMealPlans:
@@ -21522,10 +21530,6 @@ components:
           type: number
         name:
           type: string
-        recipes:
-          items:
-            $ref: '#/components/schemas/MealComponentCreationRequestInput'
-          type: array
       type: object
     MealPlan:
       properties:
@@ -21913,7 +21917,7 @@ components:
       type: object
     ModifyUserPermissionsInput:
       properties:
-        newRoles:
+        newRole:
           type: string
         reason:
           type: string
@@ -22515,7 +22519,7 @@ components:
       properties:
         belongsToRecipeStep:
           type: string
-        ingredientState:
+        ingredientStateID:
           type: string
         ingredients:
           items:

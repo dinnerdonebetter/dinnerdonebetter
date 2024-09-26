@@ -127,6 +127,8 @@ func (c *Client) CreateMeal(ctx context.Context, input *types.MealCreationReques
 	body := generated.CreateMealJSONRequestBody{}
 	c.copyType(&body, input)
 
+	logger.WithValue("input", input).WithValue("body", body).Info("creating meal")
+
 	res, err := c.authedGeneratedClient.CreateMeal(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create meal")

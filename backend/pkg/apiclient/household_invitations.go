@@ -81,6 +81,10 @@ func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filt
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := c.logger.Clone()
 	filter.AttachToLogger(logger)
 

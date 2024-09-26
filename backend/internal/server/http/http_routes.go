@@ -902,7 +902,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			})
 		})
 
-		// TaskSteps
+		// RecipeSteps
 		recipeStepPath := "steps"
 		recipeStepsRoute := path.Join(
 			recipePath,

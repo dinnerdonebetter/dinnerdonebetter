@@ -3,7 +3,6 @@ package apiclient
 import (
 	"context"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"io"
 	"net/http"
 	"net/url"
@@ -11,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/jinzhu/copier"
@@ -195,6 +195,14 @@ func (c *Client) copyType(to, from any) {
 	case *generated.UpdateRecipeStepCompletionConditionJSONRequestBody:
 		if f, ok := from.(*types.RecipeStepCompletionCondition); ok {
 			t.IngredientState = &f.IngredientState.ID
+		}
+	case *generated.UpdateMealPlanOptionJSONRequestBody:
+		if f, ok := from.(*types.MealPlanOption); ok {
+			t.MealID = &f.Meal.ID
+		}
+	case *generated.UpdateHouseholdInstrumentOwnershipJSONRequestBody:
+		if f, ok := from.(*types.HouseholdInstrumentOwnership); ok {
+			t.ValidInstrumentID = &f.Instrument.ID
 		}
 	}
 }

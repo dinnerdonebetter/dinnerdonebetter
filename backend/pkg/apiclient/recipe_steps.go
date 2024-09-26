@@ -203,8 +203,8 @@ func (c *Client) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	return nil
 }
 
-// UploadRecipeMediaForStep uploads a new avatar.
-func (c *Client) UploadRecipeMediaForStep(ctx context.Context, files map[string][]byte, recipeID, recipeStepID string) error {
+// UploadMediaForRecipeStep uploads a new avatar.
+func (c *Client) UploadMediaForRecipeStep(ctx context.Context, files map[string][]byte, recipeID, recipeStepID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -222,16 +222,19 @@ func (c *Client) UploadRecipeMediaForStep(ctx context.Context, files map[string]
 		return ErrNilInputProvided
 	}
 
-	uri := c.BuildURL(ctx, nil, recipesBasePath, recipeID, recipeStepsBasePath, recipeStepID, "images")
+	uri := c.BuildURL(ctx, nil, recipesBasePath, recipeID, "steps", recipeStepID, imagesPath)
+
+	logger := c.logger.WithValue(keys.RecipeStepIDKey, recipeID).WithValue(keys.RecipeStepIDKey, recipeStepID)
+	logger.WithValue("uri", uri).Info("Uploading recipe step media")
 
 	req, err := c.buildMultipleRecipeMediaUploadRequest(ctx, uri, files)
 	if err != nil {
-		return observability.PrepareError(err, span, "media upload")
+		return observability.PrepareError(err, span, "recipe step media upload")
 	}
 
 	var apiResponse *types.APIResponse[[]*types.RecipeMedia]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareError(err, span, "uploading media")
+		return observability.PrepareError(err, span, "uploading recipe step media")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

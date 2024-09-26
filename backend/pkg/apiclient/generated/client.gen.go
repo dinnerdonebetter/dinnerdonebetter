@@ -1025,12 +1025,12 @@ type MealComponentCreationRequestInput struct {
 
 // MealCreationRequestInput defines model for MealCreationRequestInput.
 type MealCreationRequestInput struct {
+	Components               *[]MealComponentCreationRequestInput `json:"components,omitempty"`
 	Description              *string                              `json:"description,omitempty"`
 	EligibleForMealPlans     *bool                                `json:"eligibleForMealPlans,omitempty"`
 	MaximumEstimatedPortions *float64                             `json:"maximumEstimatedPortions,omitempty"`
 	MinimumEstimatedPortions *float64                             `json:"minimumEstimatedPortions,omitempty"`
 	Name                     *string                              `json:"name,omitempty"`
-	Recipes                  *[]MealComponentCreationRequestInput `json:"recipes,omitempty"`
 }
 
 // MealPlan defines model for MealPlan.
@@ -1246,8 +1246,8 @@ type MealPlanUpdateRequestInput struct {
 
 // ModifyUserPermissionsInput defines model for ModifyUserPermissionsInput.
 type ModifyUserPermissionsInput struct {
-	NewRoles *string `json:"newRoles,omitempty"`
-	Reason   *string `json:"reason,omitempty"`
+	NewRole *string `json:"newRole,omitempty"`
+	Reason  *string `json:"reason,omitempty"`
 }
 
 // OAuth2Client defines model for OAuth2Client.
@@ -1557,7 +1557,7 @@ type RecipeStepCompletionConditionCreationRequestInput struct {
 // RecipeStepCompletionConditionForExistingRecipeCreationRequestInput defines model for RecipeStepCompletionConditionForExistingRecipeCreationRequestInput.
 type RecipeStepCompletionConditionForExistingRecipeCreationRequestInput struct {
 	BelongsToRecipeStep *string                                                                         `json:"belongsToRecipeStep,omitempty"`
-	IngredientState     *string                                                                         `json:"ingredientState,omitempty"`
+	IngredientStateID   *string                                                                         `json:"ingredientStateID,omitempty"`
 	Ingredients         *[]RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput `json:"ingredients,omitempty"`
 	Notes               *string                                                                         `json:"notes,omitempty"`
 	Optional            *bool                                                                           `json:"optional,omitempty"`
@@ -4522,11 +4522,11 @@ type ClientInterface interface {
 	// GetRecipeDAG request
 	GetRecipeDAG(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// POSTRecipesRecipeIDImages request
-	POSTRecipesRecipeIDImages(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// UploadMediaForRecipe request
+	UploadMediaForRecipe(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GETRecipesRecipeIDMermaid request
-	GETRecipesRecipeIDMermaid(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetMermaidDiagramForRecipe request
+	GetMermaidDiagramForRecipe(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetRecipeMealPlanTasks request
 	GetRecipeMealPlanTasks(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4607,8 +4607,8 @@ type ClientInterface interface {
 
 	UpdateRecipeStepCompletionCondition(ctx context.Context, recipeID string, recipeStepID string, recipeStepCompletionConditionID string, body UpdateRecipeStepCompletionConditionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// POSTRecipesRecipeIDStepsRecipeStepIDImages request
-	POSTRecipesRecipeIDStepsRecipeStepIDImages(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// UploadMediaForRecipeStep request
+	UploadMediaForRecipeStep(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetRecipeStepIngredients request
 	GetRecipeStepIngredients(ctx context.Context, recipeID string, recipeStepID string, params *GetRecipeStepIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -6494,8 +6494,8 @@ func (c *Client) GetRecipeDAG(ctx context.Context, recipeID string, reqEditors .
 	return c.Client.Do(req)
 }
 
-func (c *Client) POSTRecipesRecipeIDImages(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPOSTRecipesRecipeIDImagesRequest(c.Server, recipeID)
+func (c *Client) UploadMediaForRecipe(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUploadMediaForRecipeRequest(c.Server, recipeID)
 	if err != nil {
 		return nil, err
 	}
@@ -6506,8 +6506,8 @@ func (c *Client) POSTRecipesRecipeIDImages(ctx context.Context, recipeID string,
 	return c.Client.Do(req)
 }
 
-func (c *Client) GETRecipesRecipeIDMermaid(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGETRecipesRecipeIDMermaidRequest(c.Server, recipeID)
+func (c *Client) GetMermaidDiagramForRecipe(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMermaidDiagramForRecipeRequest(c.Server, recipeID)
 	if err != nil {
 		return nil, err
 	}
@@ -6866,8 +6866,8 @@ func (c *Client) UpdateRecipeStepCompletionCondition(ctx context.Context, recipe
 	return c.Client.Do(req)
 }
 
-func (c *Client) POSTRecipesRecipeIDStepsRecipeStepIDImages(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPOSTRecipesRecipeIDStepsRecipeStepIDImagesRequest(c.Server, recipeID, recipeStepID)
+func (c *Client) UploadMediaForRecipeStep(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUploadMediaForRecipeStepRequest(c.Server, recipeID, recipeStepID)
 	if err != nil {
 		return nil, err
 	}
@@ -14192,8 +14192,8 @@ func NewGetRecipeDAGRequest(server string, recipeID string) (*http.Request, erro
 	return req, nil
 }
 
-// NewPOSTRecipesRecipeIDImagesRequest generates requests for POSTRecipesRecipeIDImages
-func NewPOSTRecipesRecipeIDImagesRequest(server string, recipeID string) (*http.Request, error) {
+// NewUploadMediaForRecipeRequest generates requests for UploadMediaForRecipe
+func NewUploadMediaForRecipeRequest(server string, recipeID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -14226,8 +14226,8 @@ func NewPOSTRecipesRecipeIDImagesRequest(server string, recipeID string) (*http.
 	return req, nil
 }
 
-// NewGETRecipesRecipeIDMermaidRequest generates requests for GETRecipesRecipeIDMermaid
-func NewGETRecipesRecipeIDMermaidRequest(server string, recipeID string) (*http.Request, error) {
+// NewGetMermaidDiagramForRecipeRequest generates requests for GetMermaidDiagramForRecipe
+func NewGetMermaidDiagramForRecipeRequest(server string, recipeID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -15605,8 +15605,8 @@ func NewUpdateRecipeStepCompletionConditionRequestWithBody(server string, recipe
 	return req, nil
 }
 
-// NewPOSTRecipesRecipeIDStepsRecipeStepIDImagesRequest generates requests for POSTRecipesRecipeIDStepsRecipeStepIDImages
-func NewPOSTRecipesRecipeIDStepsRecipeStepIDImagesRequest(server string, recipeID string, recipeStepID string) (*http.Request, error) {
+// NewUploadMediaForRecipeStepRequest generates requests for UploadMediaForRecipeStep
+func NewUploadMediaForRecipeStepRequest(server string, recipeID string, recipeStepID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -26742,11 +26742,11 @@ type ClientWithResponsesInterface interface {
 	// GetRecipeDAGWithResponse request
 	GetRecipeDAGWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*GetRecipeDAGResponse, error)
 
-	// POSTRecipesRecipeIDImagesWithResponse request
-	POSTRecipesRecipeIDImagesWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*POSTRecipesRecipeIDImagesResponse, error)
+	// UploadMediaForRecipeWithResponse request
+	UploadMediaForRecipeWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*UploadMediaForRecipeResponse, error)
 
-	// GETRecipesRecipeIDMermaidWithResponse request
-	GETRecipesRecipeIDMermaidWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*GETRecipesRecipeIDMermaidResponse, error)
+	// GetMermaidDiagramForRecipeWithResponse request
+	GetMermaidDiagramForRecipeWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*GetMermaidDiagramForRecipeResponse, error)
 
 	// GetRecipeMealPlanTasksWithResponse request
 	GetRecipeMealPlanTasksWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*GetRecipeMealPlanTasksResponse, error)
@@ -26827,8 +26827,8 @@ type ClientWithResponsesInterface interface {
 
 	UpdateRecipeStepCompletionConditionWithResponse(ctx context.Context, recipeID string, recipeStepID string, recipeStepCompletionConditionID string, body UpdateRecipeStepCompletionConditionJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRecipeStepCompletionConditionResponse, error)
 
-	// POSTRecipesRecipeIDStepsRecipeStepIDImagesWithResponse request
-	POSTRecipesRecipeIDStepsRecipeStepIDImagesWithResponse(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse, error)
+	// UploadMediaForRecipeStepWithResponse request
+	UploadMediaForRecipeStepWithResponse(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*UploadMediaForRecipeStepResponse, error)
 
 	// GetRecipeStepIngredientsWithResponse request
 	GetRecipeStepIngredientsWithResponse(ctx context.Context, recipeID string, recipeStepID string, params *GetRecipeStepIngredientsParams, reqEditors ...RequestEditorFn) (*GetRecipeStepIngredientsResponse, error)
@@ -30430,13 +30430,13 @@ func (r GetRecipeDAGResponse) StatusCode() int {
 	return 0
 }
 
-type POSTRecipesRecipeIDImagesResponse struct {
+type UploadMediaForRecipeResponse struct {
 	HTTPResponse *http.Response
 	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
-func (r POSTRecipesRecipeIDImagesResponse) Status() string {
+func (r UploadMediaForRecipeResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -30444,20 +30444,20 @@ func (r POSTRecipesRecipeIDImagesResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r POSTRecipesRecipeIDImagesResponse) StatusCode() int {
+func (r UploadMediaForRecipeResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GETRecipesRecipeIDMermaidResponse struct {
+type GetMermaidDiagramForRecipeResponse struct {
 	HTTPResponse *http.Response
 	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
-func (r GETRecipesRecipeIDMermaidResponse) Status() string {
+func (r GetMermaidDiagramForRecipeResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -30465,7 +30465,7 @@ func (r GETRecipesRecipeIDMermaidResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GETRecipesRecipeIDMermaidResponse) StatusCode() int {
+func (r GetMermaidDiagramForRecipeResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -31291,13 +31291,13 @@ func (r UpdateRecipeStepCompletionConditionResponse) StatusCode() int {
 	return 0
 }
 
-type POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse struct {
+type UploadMediaForRecipeStepResponse struct {
 	HTTPResponse *http.Response
 	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
-func (r POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse) Status() string {
+func (r UploadMediaForRecipeStepResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -31305,7 +31305,7 @@ func (r POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse) StatusCode() int {
+func (r UploadMediaForRecipeStepResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -38505,22 +38505,22 @@ func (c *ClientWithResponses) GetRecipeDAGWithResponse(ctx context.Context, reci
 	return ParseGetRecipeDAGResponse(rsp)
 }
 
-// POSTRecipesRecipeIDImagesWithResponse request returning *POSTRecipesRecipeIDImagesResponse
-func (c *ClientWithResponses) POSTRecipesRecipeIDImagesWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*POSTRecipesRecipeIDImagesResponse, error) {
-	rsp, err := c.POSTRecipesRecipeIDImages(ctx, recipeID, reqEditors...)
+// UploadMediaForRecipeWithResponse request returning *UploadMediaForRecipeResponse
+func (c *ClientWithResponses) UploadMediaForRecipeWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*UploadMediaForRecipeResponse, error) {
+	rsp, err := c.UploadMediaForRecipe(ctx, recipeID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePOSTRecipesRecipeIDImagesResponse(rsp)
+	return ParseUploadMediaForRecipeResponse(rsp)
 }
 
-// GETRecipesRecipeIDMermaidWithResponse request returning *GETRecipesRecipeIDMermaidResponse
-func (c *ClientWithResponses) GETRecipesRecipeIDMermaidWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*GETRecipesRecipeIDMermaidResponse, error) {
-	rsp, err := c.GETRecipesRecipeIDMermaid(ctx, recipeID, reqEditors...)
+// GetMermaidDiagramForRecipeWithResponse request returning *GetMermaidDiagramForRecipeResponse
+func (c *ClientWithResponses) GetMermaidDiagramForRecipeWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*GetMermaidDiagramForRecipeResponse, error) {
+	rsp, err := c.GetMermaidDiagramForRecipe(ctx, recipeID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGETRecipesRecipeIDMermaidResponse(rsp)
+	return ParseGetMermaidDiagramForRecipeResponse(rsp)
 }
 
 // GetRecipeMealPlanTasksWithResponse request returning *GetRecipeMealPlanTasksResponse
@@ -38776,13 +38776,13 @@ func (c *ClientWithResponses) UpdateRecipeStepCompletionConditionWithResponse(ct
 	return ParseUpdateRecipeStepCompletionConditionResponse(rsp)
 }
 
-// POSTRecipesRecipeIDStepsRecipeStepIDImagesWithResponse request returning *POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse
-func (c *ClientWithResponses) POSTRecipesRecipeIDStepsRecipeStepIDImagesWithResponse(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse, error) {
-	rsp, err := c.POSTRecipesRecipeIDStepsRecipeStepIDImages(ctx, recipeID, recipeStepID, reqEditors...)
+// UploadMediaForRecipeStepWithResponse request returning *UploadMediaForRecipeStepResponse
+func (c *ClientWithResponses) UploadMediaForRecipeStepWithResponse(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*UploadMediaForRecipeStepResponse, error) {
+	rsp, err := c.UploadMediaForRecipeStep(ctx, recipeID, recipeStepID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePOSTRecipesRecipeIDStepsRecipeStepIDImagesResponse(rsp)
+	return ParseUploadMediaForRecipeStepResponse(rsp)
 }
 
 // GetRecipeStepIngredientsWithResponse request returning *GetRecipeStepIngredientsResponse
@@ -47163,15 +47163,15 @@ func ParseGetRecipeDAGResponse(rsp *http.Response) (*GetRecipeDAGResponse, error
 	return response, nil
 }
 
-// ParsePOSTRecipesRecipeIDImagesResponse parses an HTTP response from a POSTRecipesRecipeIDImagesWithResponse call
-func ParsePOSTRecipesRecipeIDImagesResponse(rsp *http.Response) (*POSTRecipesRecipeIDImagesResponse, error) {
+// ParseUploadMediaForRecipeResponse parses an HTTP response from a UploadMediaForRecipeWithResponse call
+func ParseUploadMediaForRecipeResponse(rsp *http.Response) (*UploadMediaForRecipeResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &POSTRecipesRecipeIDImagesResponse{
+	response := &UploadMediaForRecipeResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -47179,15 +47179,15 @@ func ParsePOSTRecipesRecipeIDImagesResponse(rsp *http.Response) (*POSTRecipesRec
 	return response, nil
 }
 
-// ParseGETRecipesRecipeIDMermaidResponse parses an HTTP response from a GETRecipesRecipeIDMermaidWithResponse call
-func ParseGETRecipesRecipeIDMermaidResponse(rsp *http.Response) (*GETRecipesRecipeIDMermaidResponse, error) {
+// ParseGetMermaidDiagramForRecipeResponse parses an HTTP response from a GetMermaidDiagramForRecipeWithResponse call
+func ParseGetMermaidDiagramForRecipeResponse(rsp *http.Response) (*GetMermaidDiagramForRecipeResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GETRecipesRecipeIDMermaidResponse{
+	response := &GetMermaidDiagramForRecipeResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -48980,15 +48980,15 @@ func ParseUpdateRecipeStepCompletionConditionResponse(rsp *http.Response) (*Upda
 	return response, nil
 }
 
-// ParsePOSTRecipesRecipeIDStepsRecipeStepIDImagesResponse parses an HTTP response from a POSTRecipesRecipeIDStepsRecipeStepIDImagesWithResponse call
-func ParsePOSTRecipesRecipeIDStepsRecipeStepIDImagesResponse(rsp *http.Response) (*POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse, error) {
+// ParseUploadMediaForRecipeStepResponse parses an HTTP response from a UploadMediaForRecipeStepWithResponse call
+func ParseUploadMediaForRecipeStepResponse(rsp *http.Response) (*UploadMediaForRecipeStepResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &POSTRecipesRecipeIDStepsRecipeStepIDImagesResponse{
+	response := &UploadMediaForRecipeStepResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
