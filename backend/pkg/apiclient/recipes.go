@@ -144,21 +144,6 @@ func (c *Client) CreateRecipe(ctx context.Context, input *types.RecipeCreationRe
 	body := generated.CreateRecipeJSONRequestBody{}
 	c.copyType(&body, input)
 
-	// we have to do this horrific procedure because `copyType` doesn't *quite* do it correctly for us.
-	// basically, we need to go through each step's completion conditions and set the input's `IngredientStateID`
-	for i, step := range input.Steps {
-		if step != nil {
-			for j, cc := range step.CompletionConditions {
-				if cc != nil {
-					// fucking slice pointers in generated code, man.
-					bodySteps := *body.Steps
-					bodyCCs := bodySteps[i].CompletionConditions
-					(*bodyCCs)[j].IngredientState = &cc.IngredientStateID
-				}
-			}
-		}
-	}
-
 	res, err := c.authedGeneratedClient.CreateRecipe(ctx, body)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "create recipe")
@@ -167,7 +152,7 @@ func (c *Client) CreateRecipe(ctx context.Context, input *types.RecipeCreationRe
 
 	var apiResponse *types.APIResponse[*types.Recipe]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading recipe creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

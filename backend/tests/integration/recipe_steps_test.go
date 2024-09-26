@@ -125,6 +125,8 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			var expected []*types.RecipeStep
 			for i := 0; i < 5; i++ {
+				t.Logf("creating recipe step #%d", i+1)
+
 				exampleRecipeStep := fakes.BuildFakeRecipeStep()
 				exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
 				for j := range exampleRecipeStep.Ingredients {
@@ -164,6 +166,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				require.Equal(t, createdRecipe.ID, createdRecipeStep.BelongsToRecipe)
 
 				expected = append(expected, createdRecipeStep)
+				t.Logf("created step #%d", i)
 			}
 
 			// assert recipe step list equality

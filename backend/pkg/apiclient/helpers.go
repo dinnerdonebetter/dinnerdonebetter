@@ -3,6 +3,7 @@ package apiclient
 import (
 	"context"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"io"
 	"net/http"
 	"net/url"
@@ -135,5 +136,65 @@ func (c *Client) queryFilterCleaner(ctx context.Context, req *http.Request) erro
 func (c *Client) copyType(to, from any) {
 	if err := copier.Copy(to, from); err != nil {
 		panic(err)
+	}
+
+	// the above doesn't _always_ work how we'd like it, so we handle special cases here:
+	switch t := to.(type) {
+	case *generated.UpdateRecipeStepProductJSONRequestBody:
+		if f, ok := from.(*types.RecipeStepProduct); ok {
+			if f.MeasurementUnit != nil {
+				t.MeasurementUnitID = &f.MeasurementUnit.ID
+			}
+		}
+	case *generated.CreateRecipeJSONRequestBody:
+		if f, ok := from.(*types.RecipeCreationRequestInput); ok {
+			for i, step := range f.Steps {
+				if step != nil {
+					for j, cc := range step.CompletionConditions {
+						if cc != nil {
+							// fucking slice pointers in generated code, man.
+							bodySteps := *t.Steps
+							bodyCCs := bodySteps[i].CompletionConditions
+							(*bodyCCs)[j].IngredientState = &cc.IngredientStateID
+
+							for k, ingredientID := range cc.Ingredients {
+								(*(*bodyCCs)[j].Ingredients)[k] = int(ingredientID)
+							}
+						}
+					}
+				}
+			}
+		}
+	case *generated.CreateRecipeStepJSONRequestBody:
+		if f, ok := from.(*types.RecipeStepCreationRequestInput); ok {
+			for j, cc := range f.CompletionConditions {
+				if cc != nil {
+					// fucking slice pointers in generated code, man.
+					bodyCCs := t.CompletionConditions
+					(*bodyCCs)[j].IngredientState = &cc.IngredientStateID
+
+					for k, ingredientID := range cc.Ingredients {
+						(*(*bodyCCs)[j].Ingredients)[k] = int(ingredientID)
+					}
+				}
+			}
+		}
+	case *generated.RecipeStepInstrumentUpdateRequestInput:
+		if f, ok := from.(*types.RecipeStepInstrument); ok {
+			if f.Instrument != nil {
+				t.InstrumentID = &f.Instrument.ID
+			}
+		}
+	case *generated.RecipeStepIngredientUpdateRequestInput:
+		if f, ok := from.(*types.RecipeStepIngredient); ok {
+			t.MeasurementUnitID = &f.MeasurementUnit.ID
+			if f.Ingredient != nil {
+				t.IngredientID = &f.Ingredient.ID
+			}
+		}
+	case *generated.UpdateRecipeStepCompletionConditionJSONRequestBody:
+		if f, ok := from.(*types.RecipeStepCompletionCondition); ok {
+			t.IngredientState = &f.IngredientState.ID
+		}
 	}
 }

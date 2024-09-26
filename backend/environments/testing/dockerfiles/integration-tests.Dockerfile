@@ -5,6 +5,33 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 COPY . .
 
 # to debug a specific test:
-ENTRYPOINT go test -parallel 1 -v -failfast github.com/dinnerdonebetter/backend/tests/integration -run TestIntegration/TestRecipes_Realistic
 
-# ENTRYPOINT go test -v github.com/dinnerdonebetter/backend/tests/integration
+# TestIntegration/TestHouseholdInstrumentOwnerships_CompleteLifecycle
+# TestIntegration/TestHouseholds_ChangingMemberships
+# TestIntegration/TestHouseholds_InviteCanBeCancelled
+# TestIntegration/TestHouseholds_InviteCanBeRejected
+# TestIntegration/TestHouseholds_InvitingPreExistentUser
+# TestIntegration/TestHouseholds_InvitingUserWhoSignsUpIndependently
+# TestIntegration/TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCancelling
+# TestIntegration/TestMealPlanEvents_CompleteLifecycle
+# TestIntegration/TestMealPlanEvents_Listing
+# TestIntegration/TestMealPlanGroceryListItems_CompleteLifecycle
+# TestIntegration/TestMealPlanOptionVotes_CompleteLifecycle
+# TestIntegration/TestMealPlanOptionVotes_Listing
+# TestIntegration/TestMealPlanOptions_CompleteLifecycle
+# TestIntegration/TestMealPlanOptions_Listing
+# TestIntegration/TestMealPlanTasks_CompleteLifecycle
+# TestIntegration/TestMealPlans_CompleteLifecycleForAllVotesReceived
+# TestIntegration/TestMealPlans_CompleteLifecycleForSomeVotesReceived
+# TestIntegration/TestMealPlans_Listing
+# TestIntegration/TestMeals_CompleteLifecycle
+# TestIntegration/TestMeals_Listing
+# TestIntegration/TestMeals_Searching
+# TestIntegration/TestRecipePrepTasks_CompleteLifecycle
+# TestIntegration/TestRecipePrepTasks_Listing
+# TestIntegration/TestRecipeStepCompletionConditions_CompleteLifecycle
+# TestIntegration/TestRecipeSteps_ContentUploading
+
+# ENTRYPOINT go test -parallel 1 -v -failfast github.com/dinnerdonebetter/backend/tests/integration -run TestIntegration/TestRecipeStepIngredients_CompleteLifecycle
+
+ENTRYPOINT go test -v github.com/dinnerdonebetter/backend/tests/integration
