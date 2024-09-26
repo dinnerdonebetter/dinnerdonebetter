@@ -74,7 +74,7 @@ endif
 .PHONY: ensure_oapi_codegen_installed
 ensure_oapi_codegen_installed:
 ifeq (, $(shell which scc))
-	$(shell go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest)
+	$(shell go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0)
 endif
 
 .PHONY: clean_vendor
