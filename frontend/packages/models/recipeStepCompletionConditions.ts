@@ -115,7 +115,7 @@ export class RecipeStepCompletionConditionCreationRequestInput
 }
 
 export interface IRecipeStepCompletionConditionForExistingRecipeCreationRequestInput {
-  ingredientState: NonNullable<string>;
+  ingredientStateID: NonNullable<string>;
   belongsToRecipeStep: NonNullable<string>;
   notes: NonNullable<string>;
   ingredients: NonNullable<Array<RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput>>;
@@ -125,14 +125,14 @@ export interface IRecipeStepCompletionConditionForExistingRecipeCreationRequestI
 export class RecipeStepCompletionConditionForExistingRecipeCreationRequestInput
   implements IRecipeStepCompletionConditionForExistingRecipeCreationRequestInput
 {
-  ingredientState: NonNullable<string> = '';
+  ingredientStateID: NonNullable<string> = '';
   belongsToRecipeStep: NonNullable<string> = '';
   notes: NonNullable<string> = '';
   ingredients: NonNullable<Array<RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput>> = [];
   optional: NonNullable<boolean> = false;
 
   constructor(input: Partial<RecipeStepCompletionConditionForExistingRecipeCreationRequestInput> = {}) {
-    this.ingredientState = input.ingredientState ?? '';
+    this.ingredientStateID = input.ingredientStateID ?? '';
     this.belongsToRecipeStep = input.belongsToRecipeStep ?? '';
     this.notes = input.notes ?? '';
     this.ingredients = input.ingredients ?? [];

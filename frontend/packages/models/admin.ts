@@ -2,15 +2,15 @@
 
 export interface IModifyUserPermissionsInput {
   reason: NonNullable<string>;
-  newRoles: NonNullable<string>;
+  newRole: NonNullable<string>;
 }
 
 export class ModifyUserPermissionsInput implements IModifyUserPermissionsInput {
   reason: NonNullable<string> = '';
-  newRoles: NonNullable<string> = '';
+  newRole: NonNullable<string> = '';
 
   constructor(input: Partial<ModifyUserPermissionsInput> = {}) {
     this.reason = input.reason ?? '';
-    this.newRoles = input.newRoles ?? '';
+    this.newRole = input.newRole ?? '';
   }
 }
