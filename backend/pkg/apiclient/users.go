@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -13,13 +14,14 @@ func (c *Client) GetSelf(ctx context.Context) (*types.User, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	req, err := c.requestBuilder.BuildGetSelfRequest(ctx)
+	res, err := c.authedGeneratedClient.GetSelf(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building get self request")
+		return nil, observability.PrepareError(err, span, "get self")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "fetching self")
 	}
 
@@ -39,13 +41,14 @@ func (c *Client) GetUser(ctx context.Context, userID string) (*types.User, error
 		return nil, ErrInvalidIDProvided
 	}
 
-	req, err := c.requestBuilder.BuildGetUserRequest(ctx, userID)
+	res, err := c.authedGeneratedClient.GetUser(ctx, userID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building get user request")
+		return nil, observability.PrepareError(err, span, "get user")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "fetching user")
 	}
 
@@ -61,15 +64,22 @@ func (c *Client) GetUsers(ctx context.Context, filter *types.QueryFilter) (*type
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetUsersRequest(ctx, filter)
+	params := &generated.GetUsersParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetUsers(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building users list request")
+		return nil, observability.PrepareError(err, span, "users list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving users")
 	}
 
@@ -86,6 +96,7 @@ func (c *Client) GetUsers(ctx context.Context, filter *types.QueryFilter) (*type
 }
 
 // SearchForUsersByUsername searches for a user from a list of users by their username.
+// TODO: add queryFilter as param.
 func (c *Client) SearchForUsersByUsername(ctx context.Context, username string) ([]*types.User, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -94,13 +105,18 @@ func (c *Client) SearchForUsersByUsername(ctx context.Context, username string) 
 		return nil, ErrEmptyUsernameProvided
 	}
 
-	req, err := c.requestBuilder.BuildSearchForUsersByUsernameRequest(ctx, username)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "building username search request")
+	params := &generated.SearchForUsersParams{
+		Q: username,
 	}
 
+	res, err := c.authedGeneratedClient.SearchForUsers(ctx, params)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "username search")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[[]*types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "searching for users")
 	}
 
@@ -120,17 +136,18 @@ func (c *Client) CreateUser(ctx context.Context, input *types.UserRegistrationIn
 		return nil, ErrNilInputProvided
 	}
 
-	// deliberately not validating here
-	// maybe I should make a client-side validate method vs a server-side?
+	body := generated.CreateUserJSONRequestBody{}
+	c.copyType(&body, input)
 
-	req, err := c.requestBuilder.BuildCreateUserRequest(ctx, input)
+	res, err := c.unauthedGeneratedClient.CreateUser(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building create user request")
+		return nil, observability.PrepareError(err, span, "creating user")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserCreationResponse]
-	if err = c.fetchAndUnmarshalWithoutAuthentication(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareError(err, span, "creating user")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareError(err, span, "loading user creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -149,13 +166,14 @@ func (c *Client) ArchiveUser(ctx context.Context, userID string) error {
 		return ErrInvalidIDProvided
 	}
 
-	req, err := c.requestBuilder.BuildArchiveUserRequest(ctx, userID)
+	res, err := c.authedGeneratedClient.ArchiveUser(ctx, userID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive user request")
+		return observability.PrepareError(err, span, "archive user")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving user")
 	}
 
@@ -175,13 +193,17 @@ func (c *Client) UploadNewAvatar(ctx context.Context, input *types.AvatarUpdateI
 		return ErrNilInputProvided
 	}
 
-	req, err := c.requestBuilder.BuildAvatarUploadRequest(ctx, input)
+	body := generated.UploadUserAvatarJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.UploadUserAvatar(ctx, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building avatar upload request")
+		return observability.PrepareError(err, span, "avatar upload")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "uploading avatar")
 	}
 
@@ -201,13 +223,18 @@ func (c *Client) CheckUserPermissions(ctx context.Context, permissions ...string
 		return nil, ErrNilInputProvided
 	}
 
-	req, err := c.requestBuilder.BuildCheckUserPermissionsRequests(ctx, permissions...)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "building permission check request")
+	body := generated.CheckPermissionsJSONRequestBody{
+		Permissions: &permissions,
 	}
 
+	res, err := c.authedGeneratedClient.CheckPermissions(ctx, body)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "permission check")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[*types.UserPermissionsResponse]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "checking permission")
 	}
 
@@ -227,13 +254,17 @@ func (c *Client) UpdateUserEmailAddress(ctx context.Context, input *types.UserEm
 		return ErrNilInputProvided
 	}
 
-	req, err := c.requestBuilder.BuildUpdateUserEmailAddressRequest(ctx, input)
+	body := generated.UpdateUserEmailAddressJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.UpdateUserEmailAddress(ctx, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive user request")
+		return observability.PrepareError(err, span, "archive user")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving user")
 	}
 
@@ -253,13 +284,17 @@ func (c *Client) UpdateUserUsername(ctx context.Context, input *types.UsernameUp
 		return ErrNilInputProvided
 	}
 
-	req, err := c.requestBuilder.BuildUpdateUserUsernameRequest(ctx, input)
+	body := generated.UpdateUserUsernameJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.UpdateUserUsername(ctx, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive user request")
+		return observability.PrepareError(err, span, "archive user")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving user")
 	}
 
@@ -279,13 +314,17 @@ func (c *Client) UpdateUserDetails(ctx context.Context, input *types.UserDetails
 		return ErrNilInputProvided
 	}
 
-	req, err := c.requestBuilder.BuildUpdateUserDetailsRequest(ctx, input)
+	body := generated.UpdateUserDetailsJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.UpdateUserDetails(ctx, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive user request")
+		return observability.PrepareError(err, span, "archive user")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving user")
 	}
 

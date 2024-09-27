@@ -277,8 +277,9 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
+
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, input.ID)
-	logger := q.logger.WithValue(keys.RecipeStepInstrumentIDKey, input.ID)
+	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.BelongsToRecipeStep).WithValue(keys.RecipeStepInstrumentIDKey, input.ID)
 
 	// create the recipe step instrument.
 	if err := q.generatedQuerier.CreateRecipeStepInstrument(ctx, querier, &generated.CreateRecipeStepInstrumentParams{

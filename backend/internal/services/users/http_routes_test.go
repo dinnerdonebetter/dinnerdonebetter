@@ -227,7 +227,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		helper.service.userDataManager = mockDB
 
 		v := helper.req.URL.Query()
-		v.Set(types.SearchQueryKey, helper.exampleUser.Username)
+		v.Set(types.QueryKeySearch, helper.exampleUser.Username)
 		helper.req.URL.RawQuery = v.Encode()
 
 		helper.service.UsernameSearchHandler(helper.res, helper.req)
@@ -258,7 +258,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		helper.service.userDataManager = mockDB
 
 		v := helper.req.URL.Query()
-		v.Set(types.SearchQueryKey, helper.exampleUser.Username)
+		v.Set(types.QueryKeySearch, helper.exampleUser.Username)
 		helper.req.URL.RawQuery = v.Encode()
 
 		helper.service.UsernameSearchHandler(helper.res, helper.req)

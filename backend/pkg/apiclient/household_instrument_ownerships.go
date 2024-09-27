@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,13 +23,14 @@ func (c *Client) GetHouseholdInstrumentOwnership(ctx context.Context, validInstr
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, validInstrumentID)
 	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, validInstrumentID)
 
-	req, err := c.requestBuilder.BuildGetHouseholdInstrumentOwnershipRequest(ctx, validInstrumentID)
+	res, err := c.authedGeneratedClient.GetHouseholdInstrumentOwnership(ctx, validInstrumentID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get household instrument ownership request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get household instrument ownership")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving household instrument ownership")
 	}
 
@@ -44,17 +46,25 @@ func (c *Client) GetHouseholdInstrumentOwnerships(ctx context.Context, filter *t
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := c.logger.Clone()
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetHouseholdInstrumentOwnershipsRequest(ctx, filter)
+	params := &generated.GetHouseholdInstrumentOwnershipsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetHouseholdInstrumentOwnerships(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building household instrument ownerships list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "household instrument ownerships list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.HouseholdInstrumentOwnership]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving household instrument ownerships")
 	}
 
@@ -85,13 +95,17 @@ func (c *Client) CreateHouseholdInstrumentOwnership(ctx context.Context, input *
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateHouseholdInstrumentOwnershipRequest(ctx, input)
+	body := generated.CreateHouseholdInstrumentOwnershipJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateHouseholdInstrumentOwnership(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create household instrument ownership request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create household instrument ownership")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating household instrument ownership")
 	}
 
@@ -115,14 +129,18 @@ func (c *Client) UpdateHouseholdInstrumentOwnership(ctx context.Context, instrum
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, instrumentOwnership.ID)
 	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, instrumentOwnership.ID)
 
-	req, err := c.requestBuilder.BuildUpdateHouseholdInstrumentOwnershipRequest(ctx, instrumentOwnership)
+	body := generated.UpdateHouseholdInstrumentOwnershipJSONRequestBody{}
+	c.copyType(&body, instrumentOwnership)
+
+	res, err := c.authedGeneratedClient.UpdateHouseholdInstrumentOwnership(ctx, instrumentOwnership.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update household instrument ownership request")
+		return observability.PrepareAndLogError(err, logger, span, "update household instrument ownership")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership %s", instrumentOwnership.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -145,14 +163,15 @@ func (c *Client) ArchiveHouseholdInstrumentOwnership(ctx context.Context, househ
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
-	req, err := c.requestBuilder.BuildArchiveHouseholdInstrumentOwnershipRequest(ctx, householdInstrumentOwnershipID)
+	res, err := c.authedGeneratedClient.ArchiveHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive household instrument ownership request")
+		return observability.PrepareAndLogError(err, logger, span, "archive household instrument ownership")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving household instrument ownership %s", householdInstrumentOwnershipID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving household instrument ownership")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

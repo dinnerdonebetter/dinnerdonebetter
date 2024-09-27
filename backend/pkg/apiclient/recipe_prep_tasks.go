@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -28,13 +29,14 @@ func (c *Client) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTask
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	req, err := c.requestBuilder.BuildGetRecipePrepTaskRequest(ctx, recipeID, recipePrepTaskID)
+	res, err := c.authedGeneratedClient.GetRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe prep task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get recipe prep task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe prep task")
 	}
 
@@ -46,6 +48,9 @@ func (c *Client) GetRecipePrepTasks(ctx context.Context, recipeID string, filter
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -55,13 +60,17 @@ func (c *Client) GetRecipePrepTasks(ctx context.Context, recipeID string, filter
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	req, err := c.requestBuilder.BuildGetRecipePrepTasksRequest(ctx, recipeID, filter)
+	params := &generated.GetRecipePrepTasksParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetRecipePrepTasks(ctx, recipeID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe prep tasks list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "recipe prep tasks list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.RecipePrepTask]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe prep tasks")
 	}
 
@@ -83,13 +92,17 @@ func (c *Client) CreateRecipePrepTask(ctx context.Context, input *types.RecipePr
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateRecipePrepTaskRequest(ctx, input)
+	body := generated.CreateRecipePrepTaskJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateRecipePrepTask(ctx, input.BelongsToRecipe, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe prep task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create recipe prep task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
 	}
 
@@ -109,14 +122,18 @@ func (c *Client) UpdateRecipePrepTask(ctx context.Context, recipePrepTask *types
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTask.ID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTask.ID)
 
-	req, err := c.requestBuilder.BuildUpdateRecipePrepTaskRequest(ctx, recipePrepTask)
+	body := generated.UpdateRecipePrepTaskJSONRequestBody{}
+	c.copyType(&body, recipePrepTask)
+
+	res, err := c.authedGeneratedClient.UpdateRecipePrepTask(ctx, recipePrepTask.BelongsToRecipe, recipePrepTask.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update recipe prep task request")
+		return observability.PrepareAndLogError(err, logger, span, "update recipe prep task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task %s", recipePrepTask.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task")
 	}
 
 	return nil
@@ -141,14 +158,15 @@ func (c *Client) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrep
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	req, err := c.requestBuilder.BuildArchiveRecipePrepTaskRequest(ctx, recipeID, recipePrepTaskID)
+	res, err := c.authedGeneratedClient.ArchiveRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive recipe prep task request")
+		return observability.PrepareAndLogError(err, logger, span, "archive recipe prep task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving recipe prep task %s", recipePrepTaskID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe prep task")
 	}
 
 	return nil

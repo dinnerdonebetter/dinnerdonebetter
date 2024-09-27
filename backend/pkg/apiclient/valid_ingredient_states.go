@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,14 +23,19 @@ func (c *Client) GetValidIngredientState(ctx context.Context, validIngredientSta
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientStateRequest(ctx, validIngredientStateID)
+	res, err := c.authedGeneratedClient.GetValidIngredientState(ctx, validIngredientStateID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient state request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientState]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient state response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -47,19 +53,25 @@ func (c *Client) SearchValidIngredientStates(ctx context.Context, query string, 
 	}
 
 	if limit == 0 {
-		limit = types.DefaultLimit
+		limit = types.DefaultQueryFilterLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
 
-	req, err := c.requestBuilder.BuildSearchValidIngredientStatesRequest(ctx, query, limit)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid ingredient states request")
+	params := &generated.SearchForValidIngredientStatesParams{
+		Q:     query,
+		Limit: int(limit),
 	}
 
+	res, err := c.authedGeneratedClient.SearchForValidIngredientStates(ctx, params)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid ingredient states")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientState]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient states")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient states response")
 	}
 
 	return apiResponse.Data, nil
@@ -71,17 +83,25 @@ func (c *Client) GetValidIngredientStates(ctx context.Context, filter *types.Que
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientStatesRequest(ctx, filter)
+	params := &generated.GetValidIngredientStatesParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidIngredientStates(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient states list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "listing valid ingredient states")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientState]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient states")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient states list response")
 	}
 
 	response := &types.QueryFilteredResult[types.ValidIngredientState]{
@@ -107,14 +127,18 @@ func (c *Client) CreateValidIngredientState(ctx context.Context, input *types.Va
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidIngredientStateRequest(ctx, input)
+	body := generated.CreateValidIngredientStateJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidIngredientState(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient state request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient state")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientState]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient state")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient state creation response")
 	}
 
 	return apiResponse.Data, nil
@@ -133,14 +157,18 @@ func (c *Client) UpdateValidIngredientState(ctx context.Context, validIngredient
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientState.ID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientState.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidIngredientStateRequest(ctx, validIngredientState)
+	body := generated.UpdateValidIngredientStateJSONRequestBody{}
+	c.copyType(&body, validIngredientState)
+
+	res, err := c.authedGeneratedClient.UpdateValidIngredientState(ctx, validIngredientState.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient state request")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientState]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state %s", validIngredientState.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient state update response")
 	}
 
 	return nil
@@ -159,13 +187,15 @@ func (c *Client) ArchiveValidIngredientState(ctx context.Context, validIngredien
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
-	req, err := c.requestBuilder.BuildArchiveValidIngredientStateRequest(ctx, validIngredientStateID)
+	res, err := c.authedGeneratedClient.ArchiveValidIngredientState(ctx, validIngredientStateID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient state request")
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state")
 	}
+	defer c.closeResponseBody(ctx, res)
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state %s", validIngredientStateID)
+	var apiResponse *types.APIResponse[*types.ValidIngredientState]
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient state archive response")
 	}
 
 	return nil

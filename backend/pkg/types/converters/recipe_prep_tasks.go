@@ -40,7 +40,7 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *types.Recipe
 // ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationInput(input *types.RecipePrepTaskCreationRequestInput) *types.RecipePrepTaskDatabaseCreationInput {
 	taskSteps := []*types.RecipePrepTaskStepDatabaseCreationInput{}
-	for _, x := range input.TaskSteps {
+	for _, x := range input.RecipeSteps {
 		taskSteps = append(taskSteps, &types.RecipePrepTaskStepDatabaseCreationInput{
 			BelongsToRecipeStep: x.BelongsToRecipeStep,
 			SatisfiesRecipeStep: x.SatisfiesRecipeStep,
@@ -84,7 +84,7 @@ func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDataba
 	}
 
 	x.TaskSteps = []*types.RecipePrepTaskStepDatabaseCreationInput{}
-	for i, ts := range input.TaskSteps {
+	for i, ts := range input.RecipeSteps {
 		if rs := recipe.FindStepByIndex(ts.BelongsToRecipeStepIndex); rs != nil {
 			x.TaskSteps = append(x.TaskSteps, &types.RecipePrepTaskStepDatabaseCreationInput{
 				ID:                      identifiers.New(),
@@ -145,7 +145,7 @@ func ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(input *types.Reci
 		Optional:                               input.Optional,
 		StorageType:                            input.StorageType,
 		BelongsToRecipe:                        input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
+		RecipeSteps:                            taskSteps,
 		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
 		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
@@ -167,7 +167,7 @@ func ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(recip
 		Optional:                               input.Optional,
 		StorageType:                            input.StorageType,
 		BelongsToRecipe:                        input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
+		RecipeSteps:                            taskSteps,
 		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
 		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,

@@ -215,8 +215,8 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
@@ -259,8 +259,8 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
@@ -287,8 +287,8 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}

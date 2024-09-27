@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,13 +23,14 @@ func (c *Client) GetValidMeasurementUnitConversion(ctx context.Context, validMea
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
-	req, err := c.requestBuilder.BuildGetValidMeasurementUnitConversionRequest(ctx, validMeasurementUnitConversionID)
+	res, err := c.authedGeneratedClient.GetValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid measurement conversion")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnitConversion]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement conversion")
 	}
 
@@ -52,13 +54,14 @@ func (c *Client) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context,
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	req, err := c.requestBuilder.BuildGetValidMeasurementUnitConversionsFromUnitRequest(ctx, validMeasurementUnitID)
+	res, err := c.authedGeneratedClient.GetValidMeasurementUnitConversionsFromUnit(ctx, validMeasurementUnitID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid measurement conversion")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement conversion")
 	}
 
@@ -82,13 +85,14 @@ func (c *Client) GetValidMeasurementUnitConversionToUnit(ctx context.Context, va
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	req, err := c.requestBuilder.BuildGetValidMeasurementUnitConversionsToUnitRequest(ctx, validMeasurementUnitID)
+	res, err := c.authedGeneratedClient.ValidMeasurementUnitConversionsToUnit(ctx, validMeasurementUnitID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid measurement conversion")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement conversion")
 	}
 
@@ -114,13 +118,17 @@ func (c *Client) CreateValidMeasurementUnitConversion(ctx context.Context, input
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidMeasurementUnitConversionRequest(ctx, input)
+	body := generated.CreateValidMeasurementUnitConversionJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidMeasurementUnitConversion(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid measurement conversion request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid measurement conversion")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnitConversion]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid measurement conversion")
 	}
 
@@ -144,14 +152,20 @@ func (c *Client) UpdateValidMeasurementUnitConversion(ctx context.Context, valid
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversion.ID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversion.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidMeasurementUnitConversionRequest(ctx, validMeasurementUnitConversion)
+	body := generated.UpdateValidMeasurementUnitConversionJSONRequestBody{}
+	c.copyType(&body, validMeasurementUnitConversion)
+	body.To = &validMeasurementUnitConversion.To.ID
+	body.From = &validMeasurementUnitConversion.From.ID
+
+	res, err := c.authedGeneratedClient.UpdateValidMeasurementUnitConversion(ctx, validMeasurementUnitConversion.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid measurement conversion request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid measurement conversion")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnitConversion]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement conversion %s", validMeasurementUnitConversion.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement conversion")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -174,14 +188,15 @@ func (c *Client) ArchiveValidMeasurementUnitConversion(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
-	req, err := c.requestBuilder.BuildArchiveValidMeasurementUnitConversionRequest(ctx, validMeasurementUnitConversionID)
+	res, err := c.authedGeneratedClient.ArchiveValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid measurement conversion request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid measurement conversion")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnitConversion]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion %s", validMeasurementUnitConversionID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

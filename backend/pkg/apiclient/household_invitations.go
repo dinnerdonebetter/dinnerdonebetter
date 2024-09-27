@@ -5,33 +5,30 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 // GetHouseholdInvitation retrieves a household invitation.
-func (c *Client) GetHouseholdInvitation(ctx context.Context, householdID, householdInvitationID string) (*types.HouseholdInvitation, error) {
+func (c *Client) GetHouseholdInvitation(ctx context.Context, householdInvitationID string) (*types.HouseholdInvitation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
-
-	if householdID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	if householdInvitationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
-	req, err := c.requestBuilder.BuildGetHouseholdInvitationRequest(ctx, householdID, householdInvitationID)
+	res, err := c.authedGeneratedClient.GetHouseholdInvitation(ctx, householdInvitationID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get invitation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get invitation")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving invitation")
 	}
 
@@ -48,15 +45,22 @@ func (c *Client) GetPendingHouseholdInvitationsFromUser(ctx context.Context, fil
 	defer span.End()
 
 	logger := c.logger.Clone()
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	filter.AttachToLogger(logger)
 
-	req, err := c.requestBuilder.BuildGetPendingHouseholdInvitationsFromUserRequest(ctx, filter)
+	params := &generated.GetSentHouseholdInvitationsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetSentHouseholdInvitations(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reject invitation")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.HouseholdInvitation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
 	}
 
@@ -77,16 +81,24 @@ func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filt
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := c.logger.Clone()
 	filter.AttachToLogger(logger)
 
-	req, err := c.requestBuilder.BuildGetPendingHouseholdInvitationsForUserRequest(ctx, filter)
+	params := &generated.GetReceivedHouseholdInvitationsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetReceivedHouseholdInvitations(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reject invitation")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.HouseholdInvitation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
 	}
 
@@ -118,13 +130,19 @@ func (c *Client) AcceptHouseholdInvitation(ctx context.Context, householdInvitat
 		return ErrInvalidIDProvided
 	}
 
-	req, err := c.requestBuilder.BuildAcceptHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+	body := generated.AcceptHouseholdInvitationJSONRequestBody{
+		Note:  &note,
+		Token: &token,
 	}
 
+	res, err := c.authedGeneratedClient.AcceptHouseholdInvitation(ctx, householdInvitationID, body)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "accept invitation")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
 	}
 
@@ -151,13 +169,19 @@ func (c *Client) CancelHouseholdInvitation(ctx context.Context, householdInvitat
 		return ErrInvalidIDProvided
 	}
 
-	req, err := c.requestBuilder.BuildCancelHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+	body := generated.CancelHouseholdInvitationJSONRequestBody{
+		Note:  &note,
+		Token: &token,
 	}
 
+	res, err := c.authedGeneratedClient.CancelHouseholdInvitation(ctx, householdInvitationID, body)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "cancel invitation")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
 	}
 
@@ -184,13 +208,19 @@ func (c *Client) RejectHouseholdInvitation(ctx context.Context, householdInvitat
 		return ErrInvalidIDProvided
 	}
 
-	req, err := c.requestBuilder.BuildRejectHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
+	body := generated.RejectHouseholdInvitationJSONRequestBody{
+		Note:  &note,
+		Token: &token,
 	}
 
+	res, err := c.authedGeneratedClient.RejectHouseholdInvitation(ctx, householdInvitationID, body)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "reject invitation")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
 	}
 

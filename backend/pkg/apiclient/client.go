@@ -14,7 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient/requests"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/moul/http2curl"
@@ -31,9 +31,8 @@ const (
 type authMethod struct{}
 
 var (
-	cookieAuthMethod   = new(authMethod)
-	oauth2AuthMethod   = new(authMethod)
-	defaultContentType = encoding.ContentTypeJSON
+	cookieAuthMethod = new(authMethod)
+	oauth2AuthMethod = new(authMethod)
 
 	errInvalidResponseCode = errors.New("invalid response code")
 )
@@ -43,12 +42,13 @@ type Client struct {
 	logger                  logging.Logger
 	tracer                  tracing.Tracer
 	encoder                 encoding.ClientEncoder
-	url                     *url.URL
-	requestBuilder          *requests.Builder
-	unauthenticatedClient   *http.Client
 	authedClient            *http.Client
+	unauthenticatedClient   *http.Client
+	url                     *url.URL
 	authMethod              *authMethod
 	cookie                  *http.Cookie
+	authedGeneratedClient   *generated.Client
+	unauthedGeneratedClient *generated.Client
 	impersonatedUserID      string
 	impersonatedHouseholdID string
 	debug                   bool
@@ -69,11 +69,6 @@ func (c *Client) URL() *url.URL {
 	return c.url
 }
 
-// RequestBuilder provides the client's *requests.Builder.
-func (c *Client) RequestBuilder() *requests.Builder {
-	return c.requestBuilder
-}
-
 // NewClient builds a new API client for us.
 func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...ClientOption) (*Client, error) {
 	l := logging.NewNoopLogger()
@@ -88,20 +83,25 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...Cli
 		unauthenticatedClient: tracing.BuildTracedHTTPClient(),
 	}
 
-	requestBuilder, err := requests.NewBuilder(c.url, c.logger, tracerProvider, encoding.ProvideClientEncoder(l, tracerProvider, defaultContentType))
-	if err != nil {
-		return nil, err
-	}
-
-	c.requestBuilder = requestBuilder
 	for _, opt := range options {
-		if err = opt(c); err != nil {
+		if err := opt(c); err != nil {
 			return nil, err
 		}
 	}
 
 	if c.url == nil || c.url.String() == "" {
 		return nil, ErrNoURLProvided
+	}
+
+	var err error
+	c.authedGeneratedClient, err = generated.NewClient(c.url.String(), generated.WithHTTPClient(c.authedClient), generated.WithRequestEditorFn(c.queryFilterCleaner))
+	if err != nil {
+		return nil, err
+	}
+
+	c.unauthedGeneratedClient, err = generated.NewClient(c.url.String(), generated.WithHTTPClient(c.unauthenticatedClient))
+	if err != nil {
+		return nil, err
 	}
 
 	return c, nil
@@ -188,21 +188,12 @@ func (c *Client) IsUp(ctx context.Context) bool {
 
 	logger := c.logger.Clone()
 
-	req, err := c.requestBuilder.BuildHealthCheckRequest(ctx)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "building health check request")
-
-		return false
-	}
-
-	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
+	res, err := c.unauthedGeneratedClient.CheckForReadiness(ctx)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "performing health check")
-
 		return false
 	}
-
-	c.closeResponseBody(ctx, res)
+	defer c.closeResponseBody(ctx, res)
 
 	return res.StatusCode == http.StatusOK
 }

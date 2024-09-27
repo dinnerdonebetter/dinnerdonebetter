@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -21,13 +22,18 @@ func (c *Client) SwitchActiveHousehold(ctx context.Context, householdID string) 
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	if c.authMethod == cookieAuthMethod {
-		req, err := c.requestBuilder.BuildSwitchActiveHouseholdRequest(ctx, householdID)
-		if err != nil {
-			return observability.PrepareError(err, span, "building household switch request")
+		body := generated.ChangeActiveHouseholdJSONRequestBody{
+			HouseholdID: &householdID,
 		}
 
+		res, err := c.authedGeneratedClient.ChangeActiveHousehold(ctx, body)
+		if err != nil {
+			return observability.PrepareError(err, span, "household switch")
+		}
+		defer c.closeResponseBody(ctx, res)
+
 		var apiResponse *types.APIResponse[*types.Household]
-		if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+		if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 			return observability.PrepareError(err, span, "executing household switch request")
 		}
 
@@ -44,13 +50,14 @@ func (c *Client) GetCurrentHousehold(ctx context.Context) (*types.Household, err
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	req, err := c.requestBuilder.BuildGetCurrentHouseholdRequest(ctx)
+	res, err := c.authedGeneratedClient.GetActiveHousehold(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building household retrieval request")
+		return nil, observability.PrepareError(err, span, "household retrieval")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving household")
 	}
 
@@ -72,13 +79,14 @@ func (c *Client) GetHousehold(ctx context.Context, householdID string) (*types.H
 
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
-	req, err := c.requestBuilder.BuildGetHouseholdRequest(ctx, householdID)
+	res, err := c.authedGeneratedClient.GetHousehold(ctx, householdID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building household retrieval request")
+		return nil, observability.PrepareError(err, span, "household retrieval")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving household")
 	}
 
@@ -94,15 +102,22 @@ func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetHouseholdsRequest(ctx, filter)
+	params := &generated.GetHouseholdsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetHouseholds(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building household list request")
+		return nil, observability.PrepareError(err, span, "household list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving households")
 	}
 
@@ -131,13 +146,17 @@ func (c *Client) CreateHousehold(ctx context.Context, input *types.HouseholdCrea
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateHouseholdRequest(ctx, input)
+	body := generated.CreateHouseholdJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateHousehold(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building household creation request")
+		return nil, observability.PrepareError(err, span, "household creation")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "creating household")
 	}
 
@@ -159,13 +178,17 @@ func (c *Client) UpdateHousehold(ctx context.Context, household *types.Household
 
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, household.ID)
 
-	req, err := c.requestBuilder.BuildUpdateHouseholdRequest(ctx, household)
+	body := generated.UpdateHouseholdJSONRequestBody{}
+	c.copyType(&body, household)
+
+	res, err := c.authedGeneratedClient.UpdateHousehold(ctx, household.ID, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building household update request")
+		return observability.PrepareError(err, span, "household update")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "updating household")
 	}
 
@@ -187,13 +210,14 @@ func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error
 
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
-	req, err := c.requestBuilder.BuildArchiveHouseholdRequest(ctx, householdID)
+	res, err := c.authedGeneratedClient.ArchiveHousehold(ctx, householdID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building household archive request")
+		return observability.PrepareError(err, span, "household archive")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving household")
 	}
 
@@ -217,13 +241,17 @@ func (c *Client) InviteUserToHousehold(ctx context.Context, destinationHousehold
 
 	// we don't validate here because it needs to have the user ID
 
-	req, err := c.requestBuilder.BuildInviteUserToHouseholdRequest(ctx, destinationHouseholdID, input)
+	body := generated.CreateHouseholdInvitationJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateHouseholdInvitation(ctx, destinationHouseholdID, body)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building add user to household request")
+		return nil, observability.PrepareError(err, span, "add user to household")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "adding user to household")
 	}
 
@@ -249,13 +277,14 @@ func (c *Client) MarkAsDefault(ctx context.Context, householdID string) error {
 
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
-	req, err := c.requestBuilder.BuildMarkAsDefaultRequest(ctx, householdID)
+	res, err := c.authedGeneratedClient.SetDefaultHousehold(ctx, householdID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building mark household as default request")
+		return observability.PrepareError(err, span, "mark household as default")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "marking household as default")
 	}
 
@@ -282,13 +311,14 @@ func (c *Client) RemoveUserFromHousehold(ctx context.Context, householdID, userI
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	req, err := c.requestBuilder.BuildRemoveUserRequest(ctx, householdID, userID, "")
+	res, err := c.authedGeneratedClient.ArchiveUserMembership(ctx, householdID, userID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building remove user from household request")
+		return observability.PrepareError(err, span, "remove user from household")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "removing user from household")
 	}
 
@@ -323,13 +353,17 @@ func (c *Client) ModifyMemberPermissions(ctx context.Context, householdID, userI
 		return observability.PrepareError(err, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildModifyMemberPermissionsRequest(ctx, householdID, userID, input)
+	body := generated.UpdateHouseholdMemberPermissionsJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.UpdateHouseholdMemberPermissions(ctx, householdID, userID, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building modify household member permissions request")
+		return observability.PrepareError(err, span, "modify household member permissions")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "modifying user household permissions")
 	}
 
@@ -360,13 +394,17 @@ func (c *Client) TransferHouseholdOwnership(ctx context.Context, householdID str
 		return observability.PrepareError(err, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildTransferHouseholdOwnershipRequest(ctx, householdID, input)
+	body := generated.TransferHouseholdOwnershipJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.TransferHouseholdOwnership(ctx, householdID, body)
 	if err != nil {
-		return observability.PrepareError(err, span, "building transfer household ownership request")
+		return observability.PrepareError(err, span, "transfer household ownership")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "transferring household to user")
 	}
 

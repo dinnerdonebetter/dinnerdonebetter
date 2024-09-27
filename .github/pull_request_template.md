@@ -7,6 +7,7 @@ _PR description goes here_
 
 <!-- delete this section if what is being completed is not part of a new feature --> 
 ## Backend Feature Checklist
+  - [ ] OpenAPI Spec
   - [ ] Migration
   - [ ] Queries
   - [ ] Observability keys
@@ -31,8 +32,6 @@ _PR description goes here_
       - [ ] Service config struct
       - [ ] Config generators
   - [ ] API client
-      - [ ] Request builders
-      - [ ] Request builder tests
       - [ ] Request executors
       - [ ] Request executor tests
   - [ ] Integration tests

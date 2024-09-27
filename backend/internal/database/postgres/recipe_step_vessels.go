@@ -347,7 +347,7 @@ func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.S
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.RecipeStepVesselIDKey, input.ID)
+	logger := q.logger.WithValue(keys.RecipeStepVesselIDKey, input.ID).WithValue(keys.RecipeStepIDKey, input.BelongsToRecipeStep)
 
 	// create the recipe step vessel.
 	if err := q.generatedQuerier.CreateRecipeStepVessel(ctx, querier, &generated.CreateRecipeStepVesselParams{

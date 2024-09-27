@@ -16,6 +16,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -112,7 +113,7 @@ func buildTestClient(t *testing.T, ts *httptest.Server) *Client {
 	require.NotNil(t, ts)
 
 	client, err := NewClient(
-		mustParseURL("https://whatever.whocares.gov"),
+		mustParseURL(ts.URL),
 		tracing.NewNoopTracerProvider(),
 		UsingLogger(logging.NewNoopLogger()),
 		UsingJSON(),
@@ -120,9 +121,12 @@ func buildTestClient(t *testing.T, ts *httptest.Server) *Client {
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
-	require.NoError(t, client.requestBuilder.SetURL(mustParseURL(ts.URL)))
-	client.unauthenticatedClient = ts.Client()
-	client.authedClient = ts.Client()
+	client.unauthenticatedClient, client.authedClient = ts.Client(), ts.Client()
+
+	generatedClient, err := generated.NewClient(ts.URL, generated.WithHTTPClient(ts.Client()), generated.WithRequestEditorFn(client.queryFilterCleaner))
+	require.NoError(t, err)
+
+	client.authedGeneratedClient, client.unauthedGeneratedClient = generatedClient, generatedClient
 
 	return client
 }

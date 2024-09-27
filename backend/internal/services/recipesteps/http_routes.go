@@ -429,6 +429,8 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
+	logger.Info("ImageUploadHandler invoked")
+
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
 	}

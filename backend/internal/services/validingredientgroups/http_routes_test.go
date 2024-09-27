@@ -400,8 +400,8 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
@@ -441,8 +441,8 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
@@ -466,8 +466,8 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}

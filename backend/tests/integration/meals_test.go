@@ -40,6 +40,7 @@ func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *a
 		createdRecipeIDs = append(createdRecipeIDs, &types.MealComponentCreationRequestInput{
 			RecipeID:      recipe.ID,
 			ComponentType: types.MealComponentTypesMain,
+			RecipeScale:   1.0,
 		})
 	}
 

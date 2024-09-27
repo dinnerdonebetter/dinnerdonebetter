@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,13 +23,14 @@ func (c *Client) GetValidMeasurementUnit(ctx context.Context, validMeasurementUn
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	req, err := c.requestBuilder.BuildGetValidMeasurementUnitRequest(ctx, validMeasurementUnitID)
+	res, err := c.authedGeneratedClient.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement unit request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid measurement unit")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement unit")
 	}
 
@@ -51,18 +53,24 @@ func (c *Client) SearchValidMeasurementUnits(ctx context.Context, query string, 
 	}
 
 	if limit == 0 {
-		limit = types.DefaultLimit
+		limit = types.DefaultQueryFilterLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
 
-	req, err := c.requestBuilder.BuildSearchValidMeasurementUnitsRequest(ctx, query, limit)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid measurement units request")
+	params := &generated.SearchForValidMeasurementUnitsParams{
+		Q:     query,
+		Limit: int(limit),
 	}
 
+	res, err := c.authedGeneratedClient.SearchForValidMeasurementUnits(ctx, params)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "search for valid measurement units")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[[]*types.ValidMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement units")
 	}
 
@@ -91,13 +99,17 @@ func (c *Client) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, 
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
-	req, err := c.requestBuilder.BuildSearchValidMeasurementUnitsByIngredientIDRequest(ctx, validIngredientID, filter)
+	params := &generated.SearchValidMeasurementUnitsByIngredientParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.SearchValidMeasurementUnitsByIngredient(ctx, validIngredientID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid measurement units request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "search for valid measurement units")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement units")
 	}
 
@@ -119,16 +131,24 @@ func (c *Client) GetValidMeasurementUnits(ctx context.Context, filter *types.Que
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetValidMeasurementUnitsRequest(ctx, filter)
+	params := &generated.GetValidMeasurementUnitsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidMeasurementUnits(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid measurement units list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid measurement units list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement units")
 	}
 
@@ -159,13 +179,17 @@ func (c *Client) CreateValidMeasurementUnit(ctx context.Context, input *types.Va
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidMeasurementUnitRequest(ctx, input)
+	body := generated.CreateValidMeasurementUnitJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidMeasurementUnit(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid measurement unit request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid measurement unit")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid measurement unit")
 	}
 
@@ -189,14 +213,18 @@ func (c *Client) UpdateValidMeasurementUnit(ctx context.Context, validMeasuremen
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnit.ID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnit.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidMeasurementUnitRequest(ctx, validMeasurementUnit)
+	body := generated.UpdateValidMeasurementUnitJSONRequestBody{}
+	c.copyType(&body, validMeasurementUnit)
+
+	res, err := c.authedGeneratedClient.UpdateValidMeasurementUnit(ctx, validMeasurementUnit.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid measurement unit request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid measurement unit")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit %s", validMeasurementUnit.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit")
 	}
 
 	return nil
@@ -215,14 +243,15 @@ func (c *Client) ArchiveValidMeasurementUnit(ctx context.Context, validMeasureme
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	req, err := c.requestBuilder.BuildArchiveValidMeasurementUnitRequest(ctx, validMeasurementUnitID)
+	res, err := c.authedGeneratedClient.ArchiveValidMeasurementUnit(ctx, validMeasurementUnitID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid measurement unit request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid measurement unit")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit %s", validMeasurementUnitID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

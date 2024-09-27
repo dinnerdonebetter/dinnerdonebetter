@@ -61,7 +61,7 @@ type (
 		_ struct{} `json:"-"`
 
 		Reason  string `json:"reason"`
-		NewRole string `json:"newRoles"`
+		NewRole string `json:"newRole"`
 	}
 
 	// HouseholdUserMembershipDataManager describes a structure capable of storing householdUserMemberships permanently.

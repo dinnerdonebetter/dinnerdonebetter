@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -34,13 +35,14 @@ func (c *Client) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepI
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	req, err := c.requestBuilder.BuildGetRecipeStepProductRequest(ctx, recipeID, recipeStepID, recipeStepProductID)
+	res, err := c.authedGeneratedClient.GetRecipeStepProduct(ctx, recipeID, recipeStepID, recipeStepProductID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe step product request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get recipe step product")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeStepProduct]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step product")
 	}
 
@@ -56,6 +58,9 @@ func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStep
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -71,13 +76,17 @@ func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStep
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	req, err := c.requestBuilder.BuildGetRecipeStepProductsRequest(ctx, recipeID, recipeStepID, filter)
+	params := &generated.GetRecipeStepProductsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetRecipeStepProducts(ctx, recipeID, recipeStepID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe step products list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "recipe step products list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.RecipeStepProduct]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step products")
 	}
 
@@ -120,13 +129,17 @@ func (c *Client) CreateRecipeStepProduct(ctx context.Context, recipeID, recipeSt
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateRecipeStepProductRequest(ctx, recipeID, recipeStepID, input)
+	body := generated.CreateRecipeStepProductJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateRecipeStepProduct(ctx, recipeID, recipeStepID, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step product request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create recipe step product")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeStepProduct]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step product")
 	}
 
@@ -156,14 +169,18 @@ func (c *Client) UpdateRecipeStepProduct(ctx context.Context, recipeID string, r
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProduct.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProduct.ID)
 
-	req, err := c.requestBuilder.BuildUpdateRecipeStepProductRequest(ctx, recipeID, recipeStepProduct)
+	body := generated.UpdateRecipeStepProductJSONRequestBody{}
+	c.copyType(&body, recipeStepProduct)
+
+	res, err := c.authedGeneratedClient.UpdateRecipeStepProduct(ctx, recipeID, recipeStepProduct.BelongsToRecipeStep, recipeStepProduct.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update recipe step product request")
+		return observability.PrepareAndLogError(err, logger, span, "update recipe step product")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeStepProduct]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe step product %s", recipeStepProduct.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step product")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -198,14 +215,15 @@ func (c *Client) ArchiveRecipeStepProduct(ctx context.Context, recipeID, recipeS
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	req, err := c.requestBuilder.BuildArchiveRecipeStepProductRequest(ctx, recipeID, recipeStepID, recipeStepProductID)
+	res, err := c.authedGeneratedClient.ArchiveRecipeStepProduct(ctx, recipeID, recipeStepID, recipeStepProductID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive recipe step product request")
+		return observability.PrepareAndLogError(err, logger, span, "archive recipe step product")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.RecipeStepProduct]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step product %s", recipeStepProductID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step product")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

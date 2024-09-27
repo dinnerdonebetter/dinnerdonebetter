@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,14 +23,19 @@ func (c *Client) GetValidInstrument(ctx context.Context, validInstrumentID strin
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
-	req, err := c.requestBuilder.BuildGetValidInstrumentRequest(ctx, validInstrumentID)
+	res, err := c.authedGeneratedClient.GetValidInstrument(ctx, validInstrumentID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid instrument request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid instrument")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidInstrument]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid instrument")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -42,14 +48,19 @@ func (c *Client) GetRandomValidInstrument(ctx context.Context) (*types.ValidInst
 
 	logger := c.logger.Clone()
 
-	req, err := c.requestBuilder.BuildGetRandomValidInstrumentRequest(ctx)
+	res, err := c.authedGeneratedClient.GetRandomValidInstrument(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid instrument request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid instrument")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidInstrument]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid instrument")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -67,19 +78,29 @@ func (c *Client) SearchValidInstruments(ctx context.Context, query string, limit
 	}
 
 	if limit == 0 {
-		limit = types.DefaultLimit
+		limit = types.DefaultQueryFilterLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
 
-	req, err := c.requestBuilder.BuildSearchValidInstrumentsRequest(ctx, query, limit)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid instruments request")
+	params := &generated.SearchForValidInstrumentsParams{
+		Q:     query,
+		Limit: int(limit),
 	}
 
+	res, err := c.authedGeneratedClient.SearchForValidInstruments(ctx, params)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "search for valid instruments")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[[]*types.ValidInstrument]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid instruments")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -91,17 +112,29 @@ func (c *Client) GetValidInstruments(ctx context.Context, filter *types.QueryFil
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetValidInstrumentsRequest(ctx, filter)
+	params := &generated.GetValidInstrumentsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidInstruments(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid instruments list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid instruments list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidInstrument]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid instruments")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	result := &types.QueryFilteredResult[types.ValidInstrument]{
@@ -127,14 +160,22 @@ func (c *Client) CreateValidInstrument(ctx context.Context, input *types.ValidIn
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidInstrumentRequest(ctx, input)
+	body := generated.CreateValidInstrumentJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidInstrument(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid instrument request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid instrument")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidInstrument]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid instrument")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -153,14 +194,22 @@ func (c *Client) UpdateValidInstrument(ctx context.Context, validInstrument *typ
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrument.ID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrument.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidInstrumentRequest(ctx, validInstrument)
+	body := generated.UpdateValidInstrumentJSONRequestBody{}
+	c.copyType(&body, validInstrument)
+
+	res, err := c.authedGeneratedClient.UpdateValidInstrument(ctx, validInstrument.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid instrument request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid instrument")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidInstrument]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument %s", validInstrument.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -179,13 +228,19 @@ func (c *Client) ArchiveValidInstrument(ctx context.Context, validInstrumentID s
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
-	req, err := c.requestBuilder.BuildArchiveValidInstrumentRequest(ctx, validInstrumentID)
+	res, err := c.authedGeneratedClient.ArchiveValidInstrument(ctx, validInstrumentID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid instrument request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid instrument")
+	}
+	defer c.closeResponseBody(ctx, res)
+
+	var apiResponse *types.APIResponse[*types.ValidInstrument]
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument %s", validInstrumentID)
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

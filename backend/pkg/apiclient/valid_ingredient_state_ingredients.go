@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,14 +23,19 @@ func (c *Client) GetValidIngredientStateIngredient(ctx context.Context, validIng
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientStateIngredientRequest(ctx, validIngredientStateIngredientID)
+	res, err := c.authedGeneratedClient.GetValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient state ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid ingredient state ingredient")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -41,17 +47,29 @@ func (c *Client) GetValidIngredientStateIngredients(ctx context.Context, filter 
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientStateIngredientsRequest(ctx, filter)
+	params := &generated.GetValidIngredientStateIngredientsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidIngredientStateIngredients(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient state ingredient list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredient state ingredient list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientStateIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
@@ -67,6 +85,10 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredient(ctx context.Con
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -76,14 +98,22 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredient(ctx context.Con
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientStateIngredientsForIngredientRequest(ctx, validIngredientID, filter)
+	params := &generated.GetValidIngredientStateIngredientsByIngredientParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidIngredientStateIngredientsByIngredient(ctx, validIngredientID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient state ingredient list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredient state ingredient list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientStateIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
@@ -99,6 +129,10 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredientState(ctx contex
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -108,14 +142,22 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredientState(ctx contex
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, ingredientState)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, ingredientState)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientStateIngredientsForPreparationRequest(ctx, ingredientState, filter)
+	params := &generated.GetValidIngredientStateIngredientsByIngredientStateParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidIngredientStateIngredientsByIngredientState(ctx, ingredientState, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient state ingredient list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredient state ingredient list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientStateIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
@@ -141,14 +183,22 @@ func (c *Client) CreateValidIngredientStateIngredient(ctx context.Context, input
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidIngredientStateIngredientRequest(ctx, input)
+	body := generated.CreateValidIngredientStateIngredientJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidIngredientStateIngredient(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient state ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid ingredient state ingredient")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -167,13 +217,24 @@ func (c *Client) UpdateValidIngredientStateIngredient(ctx context.Context, valid
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredient.ID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredient.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidIngredientStateIngredientRequest(ctx, validIngredientStateIngredient)
+	body := generated.UpdateValidIngredientStateIngredientJSONRequestBody{}
+	c.copyType(&body, validIngredientStateIngredient)
+	body.ValidIngredientID = &validIngredientStateIngredient.Ingredient.ID
+	body.ValidIngredientStateID = &validIngredientStateIngredient.IngredientState.ID
+
+	res, err := c.authedGeneratedClient.UpdateValidIngredientStateIngredient(ctx, validIngredientStateIngredient.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient state ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid ingredient state ingredient")
 	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state ingredient %s", validIngredientStateIngredient.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state ingredient")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -192,13 +253,19 @@ func (c *Client) ArchiveValidIngredientStateIngredient(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
-	req, err := c.requestBuilder.BuildArchiveValidIngredientStateIngredientRequest(ctx, validIngredientStateIngredientID)
+	res, err := c.authedGeneratedClient.ArchiveValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient state ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid ingredient state ingredient")
+	}
+	defer c.closeResponseBody(ctx, res)
+
+	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient %s", validIngredientStateIngredientID)
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

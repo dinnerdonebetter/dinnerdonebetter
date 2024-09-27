@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,14 +23,19 @@ func (c *Client) GetValidIngredient(ctx context.Context, validIngredientID strin
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientRequest(ctx, validIngredientID)
+	res, err := c.authedGeneratedClient.GetValidIngredient(ctx, validIngredientID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid ingredient")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -42,14 +48,19 @@ func (c *Client) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngr
 
 	logger := c.logger.Clone()
 
-	req, err := c.requestBuilder.BuildGetRandomValidIngredientRequest(ctx)
+	res, err := c.authedGeneratedClient.GetRandomValidIngredient(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting random valid ingredient")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing random valid ingredient response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -67,19 +78,29 @@ func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit
 	}
 
 	if limit == 0 {
-		limit = types.DefaultLimit
+		limit = types.DefaultQueryFilterLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
 
-	req, err := c.requestBuilder.BuildSearchValidIngredientsRequest(ctx, query, limit)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid ingredients request")
+	params := &generated.SearchForValidIngredientsParams{
+		Q:     query,
+		Limit: int(limit),
 	}
 
+	res, err := c.authedGeneratedClient.SearchForValidIngredients(ctx, params)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid ingredients")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[[]*types.ValidIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredients")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing valid ingredients response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.ValidIngredient]{
@@ -96,17 +117,29 @@ func (c *Client) GetValidIngredients(ctx context.Context, filter *types.QueryFil
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientsRequest(ctx, filter)
+	params := &generated.GetValidIngredientsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidIngredients(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredients list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid ingredients list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredients")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing valid ingredients response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.ValidIngredient]{
@@ -132,14 +165,22 @@ func (c *Client) CreateValidIngredient(ctx context.Context, input *types.ValidIn
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidIngredientRequest(ctx, input)
+	body := generated.CreateValidIngredientJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidIngredient(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -158,14 +199,22 @@ func (c *Client) UpdateValidIngredient(ctx context.Context, validIngredient *typ
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredient.ID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredient.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidIngredientRequest(ctx, validIngredient)
+	body := generated.UpdateValidIngredientJSONRequestBody{}
+	c.copyType(&body, validIngredient)
+
+	res, err := c.authedGeneratedClient.UpdateValidIngredient(ctx, validIngredient.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -184,13 +233,19 @@ func (c *Client) ArchiveValidIngredient(ctx context.Context, validIngredientID s
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
-	req, err := c.requestBuilder.BuildArchiveValidIngredientRequest(ctx, validIngredientID)
+	res, err := c.authedGeneratedClient.ArchiveValidIngredient(ctx, validIngredientID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
+	}
+	defer c.closeResponseBody(ctx, res)
+
+	var apiResponse *types.APIResponse[*types.ValidIngredient]
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "parsing valid ingredient archive response")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient %s", validIngredientID)
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

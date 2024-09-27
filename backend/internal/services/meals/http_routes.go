@@ -61,7 +61,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 	}
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		logger.WithValue(keys.ValidationErrorKey, err).Info("provided meal creation input was invalid")
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
@@ -223,14 +223,14 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	query := req.URL.Query().Get(types.SearchQueryKey)
+	query := req.URL.Query().Get(types.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 	logger = filter.AttachToLogger(logger)
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{

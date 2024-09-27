@@ -11,26 +11,44 @@ import (
 	"github.com/fatih/structtag"
 )
 
+const (
+	intType     = "int"
+	int8Type    = "int8"
+	int16Type   = "int16"
+	int32Type   = "int32"
+	int64Type   = "int64"
+	uintType    = "uint"
+	uint8Type   = "uint8"
+	uint16Type  = "uint16"
+	uint32Type  = "uint32"
+	uint64Type  = "uint64"
+	float32Type = "float32"
+	float64Type = "float64"
+	stringType  = "string"
+	boolType    = "bool"
+)
+
 var nativeTypesMap = map[string]struct{}{
-	"int":     {},
-	"int8":    {},
-	"int16":   {},
-	"int32":   {},
-	"int64":   {},
-	"uint":    {},
-	"uint8":   {},
-	"uint16":  {},
-	"uint32":  {},
-	"uint64":  {},
-	"float32": {},
-	"float64": {},
-	"string":  {},
-	"bool":    {},
+	intType:     {},
+	int8Type:    {},
+	int16Type:   {},
+	int32Type:   {},
+	int64Type:   {},
+	uintType:    {},
+	uint8Type:   {},
+	uint16Type:  {},
+	uint32Type:  {},
+	uint64Type:  {},
+	float32Type: {},
+	float64Type: {},
+	stringType:  {},
+	boolType:    {},
 	// these are actually openapi types
 	"object":  {},
 	"integer": {},
 	"number":  {},
 	"boolean": {},
+	"array":   {},
 }
 
 var skipTypes = map[string]bool{
@@ -45,17 +63,22 @@ var skipTypes = map[string]bool{
 	"FinalizedMealPlanDatabaseResult":      true,
 	"MissingVote":                          true,
 	"MealUpdateRequestInput":               true,
-	"NamedID":                              true, // one day...
 	"OAuth2ClientToken":                    true,
 	"MealComponentUpdateRequestInput":      true,
 	"RecipeMediaCreationRequestInput":      true,
 	"RecipeMediaUpdateRequestInput":        true,
+	// one day...
+	"NamedID":    true,
+	"FloatRange": true,
+	"UintRange":  true,
 }
 
 type openapiProperty struct {
-	Type     string   `json:"type,omitempty"     yaml:"type,omitempty"`
-	Ref      string   `json:"$ref,omitempty"     yaml:"$ref,omitempty"`
-	Examples []string `json:"examples,omitempty" yaml:"examples,omitempty"`
+	Items    *openapiProperty `json:"items,omitempty"    yaml:"items,omitempty"`
+	Type     string           `json:"type,omitempty"     yaml:"type,omitempty"`
+	Ref      string           `json:"$ref,omitempty"     yaml:"$ref,omitempty"`
+	Format   string           `json:"format,omitempty"   yaml:"format,omitempty"`
+	Examples []string         `json:"examples,omitempty" yaml:"examples,omitempty"`
 }
 
 type openapiSchema struct {
@@ -165,7 +188,7 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 						continue
 					}
 
-					fieldType := deriveNameForFieldType(typeName, fieldName, field)
+					fieldType, format, isArray := deriveOpenAPIFieldType(typeName, fieldName, field)
 					property := &openapiProperty{
 						Type: fieldType,
 					}
@@ -173,6 +196,22 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 					if _, nativeType := nativeTypesMap[fieldType]; !nativeType {
 						property.Type = ""
 						property.Ref = fmt.Sprintf("#/components/schemas/%s", fieldType)
+					}
+
+					if format != "" {
+						property.Format = format
+					}
+
+					if isArray {
+						property.Type = "array"
+						property.Ref = ""
+						property.Items = &openapiProperty{
+							Type: fieldType,
+						}
+						if _, nativeType := nativeTypesMap[fieldType]; !nativeType {
+							property.Items.Type = ""
+							property.Items = &openapiProperty{Ref: fmt.Sprintf("#/components/schemas/%s", fieldType)}
+						}
 					}
 
 					schema.Properties[fieldName] = property
@@ -196,25 +235,27 @@ var typeAliases = map[string]string{
 }
 
 var openAPITypeMap = map[string]string{
-	"int":     "integer",
-	"int8":    "integer",
-	"int16":   "integer",
-	"int32":   "integer",
-	"int64":   "integer",
-	"uint":    "integer",
-	"uint8":   "integer",
-	"uint16":  "integer",
-	"uint32":  "integer",
-	"uint64":  "integer",
-	"float32": "number",
-	"float64": "number",
-	"string":  "string",
-	"bool":    "boolean",
+	intType:     "integer",
+	int8Type:    "integer",
+	int16Type:   "integer",
+	int32Type:   "integer",
+	int64Type:   "integer",
+	uintType:    "integer",
+	uint8Type:   "integer",
+	uint16Type:  "integer",
+	uint32Type:  "integer",
+	uint64Type:  "integer",
+	float32Type: "number",
+	float64Type: "number",
+	stringType:  "string",
+	boolType:    "boolean",
 	// Add other mappings as needed
 }
 
-func deriveNameForFieldType(typeName, fieldName string, field *ast.Field) string {
-	value := ""
+func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value, format string, isArray bool) {
+	if typeName == "WebhookCreationRequestInput" && fieldName == "events" {
+		println("here")
+	}
 
 	switch t := field.Type.(type) {
 	case *ast.SelectorExpr:
@@ -233,7 +274,7 @@ func deriveNameForFieldType(typeName, fieldName string, field *ast.Field) string
 	case *ast.Ident:
 		value = t.Name
 	case *ast.ArrayType:
-		// TODO: handle array type here
+		isArray = true
 		switch u := t.Elt.(type) {
 		case *ast.Ident:
 			value = u.Name
@@ -250,7 +291,7 @@ func deriveNameForFieldType(typeName, fieldName string, field *ast.Field) string
 	case *ast.MapType:
 		// TODO: confirm this is being handled correctly
 		if typeName == "AuditLogEntry" && fieldName == "changes" {
-			return "ChangeLog"
+			return "ChangeLog", format, isArray
 		}
 		value = "object"
 	default:
@@ -261,13 +302,36 @@ func deriveNameForFieldType(typeName, fieldName string, field *ast.Field) string
 		panic("empty value for field")
 	}
 
+	if value == "time.Time" {
+		format = "date-time"
+	}
+
+	switch strings.ToLower(fieldName) {
+	case "password", "currentpassword", "newpassword":
+		format = "password"
+	case "emailaddress":
+		format = "email" // NOT WORTH, uses some third party string alias type :(
+	case "url":
+		format = "uri"
+	}
+
 	if x, ok := typeAliases[value]; ok {
-		return x
+		value = x
 	}
 
 	if x, ok := openAPITypeMap[value]; ok {
-		return x
+		switch value {
+		case uint64Type, int64Type, uintType, uint32Type, uint16Type:
+			return x, int64Type, isArray
+		case int32Type, intType, int8Type, uint8Type, int16Type:
+			return x, int32Type, isArray
+		case float32Type, float64Type:
+			return x, "double", isArray
+		default:
+			// just "string" and "bool" left
+			return x, format, isArray
+		}
 	}
 
-	return value
+	return value, format, isArray
 }

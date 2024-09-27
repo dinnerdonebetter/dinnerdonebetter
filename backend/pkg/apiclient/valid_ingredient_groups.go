@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,13 +23,14 @@ func (c *Client) GetValidIngredientGroup(ctx context.Context, validIngredientGro
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientGroupRequest(ctx, validIngredientGroupID)
+	res, err := c.authedGeneratedClient.GetValidIngredientGroup(ctx, validIngredientGroupID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient group request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get valid ingredient group")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient group")
 	}
 
@@ -51,18 +53,24 @@ func (c *Client) SearchValidIngredientGroups(ctx context.Context, query string, 
 	}
 
 	if limit == 0 {
-		limit = types.DefaultLimit
+		limit = types.DefaultQueryFilterLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
 
-	req, err := c.requestBuilder.BuildSearchValidIngredientGroupsRequest(ctx, query, limit)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid ingredient groups request")
+	params := &generated.SearchForValidIngredientGroupsParams{
+		Q:     query,
+		Limit: int(limit),
 	}
 
+	res, err := c.authedGeneratedClient.SearchForValidIngredientGroups(ctx, params)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "search for valid ingredient groups")
+	}
+	defer c.closeResponseBody(ctx, res)
+
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientGroup]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient groups")
 	}
 
@@ -79,16 +87,24 @@ func (c *Client) GetValidIngredientGroups(ctx context.Context, filter *types.Que
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetValidIngredientGroupsRequest(ctx, filter)
+	params := &generated.GetValidIngredientGroupsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidIngredientGroups(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredients list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "valid ingredients list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientGroup]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredients")
 	}
 
@@ -119,13 +135,17 @@ func (c *Client) CreateValidIngredientGroup(ctx context.Context, input *types.Va
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidIngredientGroupRequest(ctx, input)
+	body := generated.CreateValidIngredientGroupJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidIngredientGroup(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create valid ingredient")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient group")
 	}
 
@@ -149,14 +169,18 @@ func (c *Client) UpdateValidIngredientGroup(ctx context.Context, validIngredient
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroup.ID)
 	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroup.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidIngredientGroupRequest(ctx, validIngredientGroup)
+	body := generated.UpdateValidIngredientGroupJSONRequestBody{}
+	c.copyType(&body, validIngredientGroup)
+
+	res, err := c.authedGeneratedClient.UpdateValidIngredientGroup(ctx, validIngredientGroup.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient group request")
+		return observability.PrepareAndLogError(err, logger, span, "update valid ingredient group")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient group %s", validIngredientGroup.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient group")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -179,14 +203,15 @@ func (c *Client) ArchiveValidIngredientGroup(ctx context.Context, validIngredien
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
-	req, err := c.requestBuilder.BuildArchiveValidIngredientGroupRequest(ctx, validIngredientGroupID)
+	res, err := c.authedGeneratedClient.ArchiveValidIngredientGroup(ctx, validIngredientGroupID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient group request")
+		return observability.PrepareAndLogError(err, logger, span, "archive valid ingredient group")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group %s", validIngredientGroupID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

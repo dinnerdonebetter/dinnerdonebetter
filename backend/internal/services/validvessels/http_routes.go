@@ -224,11 +224,11 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
-	query := req.URL.Query().Get(types.SearchQueryKey)
+	query := req.URL.Query().Get(types.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
 	logger = logger.WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{

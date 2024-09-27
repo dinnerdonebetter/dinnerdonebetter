@@ -70,7 +70,7 @@ type (
 		Name                                   string                                    `json:"name"`
 		Description                            string                                    `json:"description"`
 		BelongsToRecipe                        string                                    `json:"belongsToRecipe"`
-		TaskSteps                              []*RecipePrepTaskStepCreationRequestInput `json:"recipeSteps"`
+		RecipeSteps                            []*RecipePrepTaskStepCreationRequestInput `json:"recipeSteps"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                                    `json:"minimumTimeBufferBeforeRecipeInSeconds"`
 		Optional                               bool                                      `json:"optional"`
 	}
@@ -88,7 +88,7 @@ type (
 		ExplicitStorageInstructions            string                                                `json:"explicitStorageInstructions"`
 		Notes                                  string                                                `json:"notes"`
 		BelongsToRecipe                        string                                                `json:"belongsToRecipe"`
-		TaskSteps                              []*RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps"`
+		RecipeSteps                            []*RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                                                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
 		Optional                               bool                                                  `json:"optional"`
 	}

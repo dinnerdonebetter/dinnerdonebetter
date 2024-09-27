@@ -315,6 +315,8 @@ func (q *Querier) createRecipeStepCompletionCondition(ctx context.Context, db da
 		CreatedAt:           q.currentTime(),
 	}
 
+	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, x.ID)
+
 	for _, ingredient := range input.Ingredients {
 		ingredient.BelongsToRecipeStepCompletionCondition = x.ID
 		completionConditionIngredient, err := q.createRecipeStepCompletionConditionIngredient(ctx, db, ingredient)
@@ -325,7 +327,7 @@ func (q *Querier) createRecipeStepCompletionCondition(ctx context.Context, db da
 		x.Ingredients = append(x.Ingredients, completionConditionIngredient)
 	}
 
-	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, x.ID)
+	q.logger.WithValue(keys.RecipeStepCompletionConditionIDKey, x.ID).Info("completion condition created")
 
 	return x, nil
 }

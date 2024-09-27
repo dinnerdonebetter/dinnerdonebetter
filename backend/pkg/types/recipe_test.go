@@ -157,7 +157,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			},
 			PrepTasks: []*RecipePrepTaskWithinRecipeCreationRequestInput{
 				{
-					TaskSteps: []*RecipePrepTaskStepWithinRecipeCreationRequestInput{
+					RecipeSteps: []*RecipePrepTaskStepWithinRecipeCreationRequestInput{
 						{
 							BelongsToRecipeStepIndex: 0,
 						},
@@ -198,7 +198,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			},
 			PrepTasks: []*RecipePrepTaskWithinRecipeCreationRequestInput{
 				{
-					TaskSteps: []*RecipePrepTaskStepWithinRecipeCreationRequestInput{
+					RecipeSteps: []*RecipePrepTaskStepWithinRecipeCreationRequestInput{
 						{
 							BelongsToRecipeStepIndex: 0,
 						},

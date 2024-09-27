@@ -115,7 +115,6 @@ jobs:
       - name: Check for changes
         run: git diff --exit-code
 
-
   openapi:
     timeout-minutes: 10
     strategy:
@@ -127,7 +126,39 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Ensure openapi spec can be generated
+        working-directory: backend
         run: make openapi
+
+      - name: Check for changes
+        run: git diff --exit-code
+
+  openapi_client:
+    timeout-minutes: 10
+    strategy:
+     matrix:
+       go-version: [ '1.23.x' ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Change version of openapi spec for client generator
+        run: "sed -i 's/openapi: 3.1.0/openapi: 3.0.0/g' openapi_spec.yaml"
+
+      - name: install client generator
+        run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0
+
+      - name: generate client
+        working-directory: backend
+        run: make openapi-client format
+
+      - name: Change openapi spec version back
+        run: "sed -i 's/openapi: 3.0.0/openapi: 3.1.0/g' openapi_spec.yaml"
 
       - name: Check for changes
         run: git diff --exit-code

@@ -6,11 +6,14 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
+	"github.com/jinzhu/copier"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -244,11 +247,15 @@ func (s *usersTestSuite) TestClient_CreateUser() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeUserRegistrationInputFromUser(s.exampleUser)
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c := buildTestClientWithRequestBodyValidation(t, spec, &types.UserRegistrationInput{}, exampleInput, s.exampleUserCreationResponse)
+		rawExampleInput := fakes.BuildFakeUserRegistrationInputFromUser(s.exampleUser)
+		exampleInput := &generated.CreateUserJSONRequestBody{}
+		require.NoError(t, copier.Copy(exampleInput, rawExampleInput))
 
-		actual, err := c.CreateUser(s.ctx, exampleInput)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+
+		c := buildTestClientWithRequestBodyValidation(t, spec, &generated.CreateUserJSONRequestBody{}, exampleInput, s.exampleUserCreationResponse)
+
+		actual, err := c.CreateUser(s.ctx, rawExampleInput)
 		assert.NoError(t, err)
 		assert.Equal(t, s.exampleUserCreationResponse.Data, actual)
 	})
@@ -433,7 +440,7 @@ func (s *usersTestSuite) TestClient_UpdateUserEmailAddress() {
 
 		exampleInput := fakes.BuildFakeUserEmailAddressUpdateInput()
 
-		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		err := c.UpdateUserEmailAddress(s.ctx, exampleInput)
@@ -478,7 +485,7 @@ func (s *usersTestSuite) TestClient_UpdateUserUsername() {
 
 		exampleInput := fakes.BuildFakeUsernameUpdateInput()
 
-		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		err := c.UpdateUserUsername(s.ctx, exampleInput)
@@ -523,7 +530,7 @@ func (s *usersTestSuite) TestClient_UpdateUserDetails() {
 
 		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
 
-		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		err := c.UpdateUserDetails(s.ctx, exampleInput)

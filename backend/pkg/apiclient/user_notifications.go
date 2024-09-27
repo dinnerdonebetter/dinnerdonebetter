@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -22,14 +23,19 @@ func (c *Client) GetUserNotification(ctx context.Context, userNotificationID str
 	logger = logger.WithValue(keys.UserNotificationIDKey, userNotificationID)
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotificationID)
 
-	req, err := c.requestBuilder.BuildGetUserNotificationRequest(ctx, userNotificationID)
+	res, err := c.authedGeneratedClient.GetUserNotification(ctx, userNotificationID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get user notification request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get user notification")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserNotification]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user notification")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -41,17 +47,29 @@ func (c *Client) GetUserNotifications(ctx context.Context, filter *types.QueryFi
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetUserNotificationsRequest(ctx, filter)
+	params := &generated.GetUserNotificationsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetUserNotifications(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building user notifications list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "user notifications list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.UserNotification]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user notifications")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.UserNotification]{
@@ -77,14 +95,22 @@ func (c *Client) CreateUserNotification(ctx context.Context, input *types.UserNo
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateUserNotificationRequest(ctx, input)
+	body := generated.CreateUserNotificationJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateUserNotification(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create user notification request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create user notification")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserNotification]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user notification")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -103,14 +129,22 @@ func (c *Client) UpdateUserNotification(ctx context.Context, userNotification *t
 	logger = logger.WithValue(keys.UserNotificationIDKey, userNotification.ID)
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotification.ID)
 
-	req, err := c.requestBuilder.BuildUpdateUserNotificationRequest(ctx, userNotification)
+	body := generated.UpdateUserNotificationJSONRequestBody{}
+	c.copyType(&body, userNotification)
+
+	res, err := c.authedGeneratedClient.UpdateUserNotification(ctx, userNotification.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update user notification request")
+		return observability.PrepareAndLogError(err, logger, span, "update user notification")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.UserNotification]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "retrieving user notification")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

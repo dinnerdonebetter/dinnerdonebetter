@@ -27,8 +27,8 @@ func checkHouseholdEquality(t *testing.T, expected, actual *types.Household) {
 	assert.Equal(t, expected.State, actual.State, "expected State for household %s to be %v, but it was %v", expected.ID, expected.State, actual.State)
 	assert.Equal(t, expected.ZipCode, actual.ZipCode, "expected ZipCode for household %s to be %v, but it was %v", expected.ID, expected.ZipCode, actual.ZipCode)
 	assert.Equal(t, expected.Country, actual.Country, "expected Country for household %s to be %v, but it was %v", expected.ID, expected.Country, actual.Country)
-	assert.Equal(t, expected.Latitude, actual.Latitude, "expected Latitude for household %s to be %v, but it was %v", expected.ID, expected.Latitude, actual.Latitude)
-	assert.Equal(t, expected.Longitude, actual.Longitude, "expected Longitude for household %s to be %v, but it was %v", expected.ID, expected.Longitude, actual.Longitude)
+	assert.Equal(t, expected.Latitude, actual.Latitude, "expected Latitude for household %s to be %v, but it was %v", expected.ID, *expected.Latitude, *actual.Latitude)
+	assert.Equal(t, expected.Longitude, actual.Longitude, "expected Longitude for household %s to be %v, but it was %v", expected.ID, *expected.Longitude, *actual.Longitude)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
@@ -426,7 +426,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			createdInvitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
-			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitation.ID)
+			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, createdInvitation.ID)
 			requireNotNilAndNoProblems(t, createdInvitation, err)
 
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
@@ -763,7 +763,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			createdInvitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
-			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitation.ID)
+			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, createdInvitation.ID)
 			requireNotNilAndNoProblems(t, createdInvitation, err)
 
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)

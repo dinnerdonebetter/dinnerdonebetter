@@ -340,7 +340,7 @@ export const ConvertMealToMealCreationRequestInput = (x: Meal): MealCreationRequ
     description: x.description,
     minimumEstimatedPortions: x.minimumEstimatedPortions,
     maximumEstimatedPortions: x.maximumEstimatedPortions,
-    recipes: x.components.map(
+    components: x.components.map(
       (x: MealComponent) =>
         ({
           recipeID: x.recipe.id,

@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -435,6 +436,8 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 	for i, stepInput := range input.Steps {
 		stepInput.Index = uint32(i)
 		stepInput.BelongsToRecipe = x.ID
+
+		q.logger.Info(fmt.Sprintf("creating recipe step #%d", i+1))
 
 		var s *types.RecipeStep
 		s, err = q.createRecipeStep(ctx, tx, stepInput)

@@ -6,23 +6,27 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
 
 type RouteDefinition struct {
+	RequestBody      string
+	InputType        string
 	Method           string
-	Summary          string
+	ID               string
 	Path             string
 	ResponseType     string
-	RequestBody      string
+	Summary          string
 	Description      string
-	InputType        string
 	PathArguments    []string
 	Tags             []string
 	OAuth2Scopes     []string
 	MainResponseCode int
+	Authless         bool
 	ListRoute        bool
+	SearchRoute      bool
 }
 
 var routesWithoutAuth = map[string]struct{}{
@@ -67,15 +71,20 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 		}
 	}
 
+	opID := strings.Join(operationParts, "_")
+	if d.ID != "" {
+		opID = d.ID
+	}
+
 	op := &openapi.Operation{
-		ID:          pointer.To(strings.Join(operationParts, "_")),
+		ID:          pointer.To(opID),
 		Tags:        []string{},
 		Summary:     nil,
 		Description: pointer.To(description),
 		Parameters:  []openapi.ParameterOrReference{},
 	}
 
-	if _, ok := routesWithoutAuth[d.Path]; !ok {
+	if _, ok := routesWithoutAuth[d.Path]; !ok && !d.Authless {
 		op.Security = []map[string][]string{
 			{"cookieAuth": []string{}},
 		}
@@ -83,6 +92,21 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 		if len(d.OAuth2Scopes) > 0 {
 			op.Security = append(op.Security, map[string][]string{"oauth2": d.OAuth2Scopes})
 		}
+	}
+
+	if strings.HasSuffix(d.Path, "search") || d.SearchRoute {
+		d.ListRoute = true
+		op.Parameters = append(op.Parameters, openapi.ParameterOrReference{
+			Parameter: &openapi.Parameter{
+				Name:        "q",
+				In:          "query",
+				Description: pointer.To("the search query parameter"),
+				Required:    pointer.To(true),
+				Schema: map[string]any{
+					"type": "string",
+				},
+			},
+		})
 	}
 
 	if d.ListRoute {
@@ -244,4 +268,99 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 	op.Tags = append(op.Tags, d.Tags...)
 
 	return op
+}
+
+func buildQueryFilterPathParams() []openapi.ParameterOrReference {
+	return []openapi.ParameterOrReference{
+		{
+			Parameter: &openapi.Parameter{
+				Name:        "limit",
+				In:          "query",
+				Description: pointer.To(fmt.Sprintf("How many results should appear in output, max is %d.", types.MaxQueryFilterLimit)),
+				Required:    pointer.To(true),
+				Schema: map[string]any{
+					"type": "integer",
+				},
+			},
+		},
+		{
+			Parameter: &openapi.Parameter{
+				Name:        "page",
+				In:          "query",
+				Description: pointer.To("What page of results should appear in output."),
+				Required:    pointer.To(true),
+				Schema: map[string]any{
+					"type": "integer",
+				},
+			},
+		},
+		{
+			Parameter: &openapi.Parameter{
+				Name:        "createdBefore",
+				In:          "query",
+				Description: pointer.To("The latest CreatedAt date that should appear in output."),
+				Required:    pointer.To(true),
+				Schema: map[string]any{
+					"type": "string",
+				},
+			},
+		},
+		{
+			Parameter: &openapi.Parameter{
+				Name:        "createdAfter",
+				In:          "query",
+				Description: pointer.To("The earliest CreatedAt date that should appear in output."),
+				Required:    pointer.To(true),
+				Schema: map[string]any{
+					"type": "string",
+				},
+			},
+		},
+		{
+			Parameter: &openapi.Parameter{
+				Name:        "updatedBefore",
+				In:          "query",
+				Description: pointer.To("The latest UpdatedAt date that should appear in output."),
+				Required:    pointer.To(true),
+				Schema: map[string]any{
+					"type": "string",
+				},
+			},
+		},
+		{
+			Parameter: &openapi.Parameter{
+				Name:        "updatedAfter",
+				In:          "query",
+				Description: pointer.To("The earliest UpdatedAt date that should appear in output."),
+				Required:    pointer.To(true),
+				Schema: map[string]any{
+					"type": "string",
+				},
+			},
+		},
+		{
+			Parameter: &openapi.Parameter{
+				Name:        "includeArchived",
+				In:          "query",
+				Description: pointer.To("Whether or not to include archived results in output, limited to service admins."),
+				Required:    pointer.To(true),
+				Schema: map[string]any{
+					"type": "string",
+					"enum": []string{"true", "false"},
+				},
+			},
+		},
+		{
+			Parameter: &openapi.Parameter{
+				Name:        "sortBy",
+				In:          "query",
+				Description: pointer.To("The direction in which results should be sorted."),
+				Required:    pointer.To(true),
+				Schema: map[string]any{
+					"type": "string",
+					"enum": []string{"asc", "desc"},
+				},
+			},
+		},
+	}
 }

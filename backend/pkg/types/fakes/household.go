@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -36,8 +37,8 @@ func BuildFakeHousehold() *types.Household {
 		State:                      fakeAddress.State,
 		ZipCode:                    fakeAddress.Zip,
 		Country:                    fakeAddress.Country,
-		Latitude:                   &fakeAddress.Latitude,
-		Longitude:                  &fakeAddress.Longitude,
+		Latitude:                   pointer.To(buildFakeNumber()),
+		Longitude:                  pointer.To(buildFakeNumber()),
 		WebhookEncryptionKey:       key,
 	}
 }

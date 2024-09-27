@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -40,13 +41,14 @@ func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlan
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
-	req, err := c.requestBuilder.BuildGetMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
+	res, err := c.authedGeneratedClient.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan ClientOption vote request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan ClientOption vote")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan ClientOption vote")
 	}
 
@@ -62,6 +64,9 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPla
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -83,13 +88,17 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	req, err := c.requestBuilder.BuildGetMealPlanOptionVotesRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
+	params := &generated.GetMealPlanOptionVotesParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building meal plan ClientOption votes list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "meal plan ClientOption votes list")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanOptionVote]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan ClientOption votes")
 	}
 
@@ -132,13 +141,17 @@ func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, input)
+	body := generated.CreateMealPlanOptionVoteJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan ClientOption vote request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan ClientOption vote")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanOptionVote]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan ClientOption vote")
 	}
 
@@ -174,14 +187,18 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVote.ID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVote.ID)
 
-	req, err := c.requestBuilder.BuildUpdateMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionVote)
+	body := generated.UpdateMealPlanOptionVoteJSONRequestBody{}
+	c.copyType(&body, mealPlanOptionVote)
+
+	res, err := c.authedGeneratedClient.UpdateMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionVote.BelongsToMealPlanOption, mealPlanOptionVote.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update meal plan ClientOption vote request")
+		return observability.PrepareAndLogError(err, logger, span, "update meal plan option vote")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating meal plan ClientOption vote %s", mealPlanOptionVote.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option vote")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -222,14 +239,15 @@ func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
-	req, err := c.requestBuilder.BuildArchiveMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
+	res, err := c.authedGeneratedClient.ArchiveMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive meal plan ClientOption vote request")
+		return observability.PrepareAndLogError(err, logger, span, "archive meal plan ClientOption vote")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan ClientOption vote %s", mealPlanOptionVoteID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option vote")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

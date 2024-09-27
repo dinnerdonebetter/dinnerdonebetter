@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -28,13 +29,14 @@ func (c *Client) GetMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 
-	req, err := c.requestBuilder.BuildGetMealPlanTaskRequest(ctx, mealPlanID, mealPlanTaskID)
+	res, err := c.authedGeneratedClient.GetMealPlanTask(ctx, mealPlanID, mealPlanTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan task")
 	}
 
@@ -62,13 +64,17 @@ func (c *Client) CreateMealPlanTask(ctx context.Context, mealPlanID string, inpu
 		return nil, ErrInvalidIDProvided
 	}
 
-	req, err := c.requestBuilder.BuildCreateMealPlanTaskRequest(ctx, mealPlanID, input)
+	body := generated.CreateMealPlanTaskJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateMealPlanTask(ctx, mealPlanID, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "get meal plan task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan task")
 	}
 
@@ -100,13 +106,17 @@ func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, mealPlanID string
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildChangeMealPlanTaskStatusRequest(ctx, mealPlanID, input)
+	body := generated.UpdateMealPlanTaskStatusJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.UpdateMealPlanTaskStatus(ctx, mealPlanID, input.ID, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan task request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan task")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
 

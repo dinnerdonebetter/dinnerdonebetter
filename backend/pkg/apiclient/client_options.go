@@ -15,7 +15,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient/requests"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -61,12 +60,6 @@ func UsingTracingProvider(tracerProvider tracing.TracerProvider) ClientOption {
 // UsingJSON sets the content type on the client.
 func UsingJSON() func(*Client) error {
 	return func(c *Client) error {
-		requestBuilder, err := requests.NewBuilder(c.url, c.logger, tracing.NewNoopTracerProvider(), encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON))
-		if err != nil {
-			return err
-		}
-
-		c.requestBuilder = requestBuilder
 		c.encoder = encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		return nil
@@ -76,12 +69,6 @@ func UsingJSON() func(*Client) error {
 // UsingXML sets the content type on the client.
 func UsingXML() func(*Client) error {
 	return func(c *Client) error {
-		requestBuilder, err := requests.NewBuilder(c.url, c.logger, tracing.NewNoopTracerProvider(), encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeXML))
-		if err != nil {
-			return err
-		}
-
-		c.requestBuilder = requestBuilder
 		c.encoder = encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeXML)
 
 		return nil

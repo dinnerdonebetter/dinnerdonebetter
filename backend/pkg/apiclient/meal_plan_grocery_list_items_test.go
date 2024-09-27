@@ -115,7 +115,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_GetMealPlanGroceryListIte
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleMealPlanID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItemListResponse)
 		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(s.ctx, s.exampleMealPlanID)
 
@@ -147,7 +147,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_GetMealPlanGroceryListIte
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleMealPlanID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(s.ctx, s.exampleMealPlanID)
 
@@ -224,7 +224,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_UpdateMealPlanGroceryList
 		t := s.T()
 
 		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(s.exampleMealPlanGroceryListItem)
-		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItemResponse)
 
 		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID, exampleInput)

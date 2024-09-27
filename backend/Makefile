@@ -71,6 +71,12 @@ ifeq (, $(shell which scc))
 	$(shell go install github.com/boyter/scc@latest)
 endif
 
+.PHONY: ensure_oapi_codegen_installed
+ensure_oapi_codegen_installed:
+ifeq (, $(shell which scc))
+	$(shell go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0)
+endif
+
 .PHONY: clean_vendor
 clean_vendor:
 	rm -rf vendor go.sum
@@ -105,7 +111,7 @@ format: format_golang terraformat
 .PHONY: format_golang
 format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
 	@until fieldalignment -fix ./...; do true; done > /dev/null
-	@tagalign -fix -sort -order "json,toml,yaml" ./...
+	@until tagalign -fix -sort -order "json,toml,yaml" ./...; do true; done > /dev/null
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
@@ -215,6 +221,10 @@ sqlc_struct_check:
 openapi:
 	go run $(THIS)/cmd/tools/codegen/gen_openapi
 
+.PHONY: openapi-client
+openapi-client: ensure_oapi_codegen_installed
+	oapi-codegen --config=oapi-codegen.yaml ../openapi_spec.yaml
+
 ## Integration tests
 
 .PHONY: wipe_containers
@@ -235,7 +245,6 @@ integration_tests_postgres:
 	$(CONTAINER_RUNNER) compose \
 	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
 	--build \
-	--pull always \
 	--force-recreate \
 	--remove-orphans \
 	--renew-anon-volumes \

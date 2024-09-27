@@ -6,6 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -21,14 +22,15 @@ func (c *Client) GetWebhook(ctx context.Context, webhookID string) (*types.Webho
 	}
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
-	req, err := c.requestBuilder.BuildGetWebhookRequest(ctx, webhookID)
+	res, err := c.authedGeneratedClient.GetWebhook(ctx, webhookID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get webhook request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting webhook")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Webhook]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving webhook")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading webhook response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -43,18 +45,26 @@ func (c *Client) GetWebhooks(ctx context.Context, filter *types.QueryFilter) (*t
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := c.logger.Clone()
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetWebhooksRequest(ctx, filter)
+	params := &generated.GetWebhooksParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetWebhooks(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building webhooks list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting webhooks")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[[]*types.Webhook]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving webhooks")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading webhooks response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -84,14 +94,18 @@ func (c *Client) CreateWebhook(ctx context.Context, input *types.WebhookCreation
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateWebhookRequest(ctx, input)
+	body := generated.CreateWebhookJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateWebhook(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create webhook request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating webhook")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Webhook]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating webhook")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "parsing webhook response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -113,14 +127,15 @@ func (c *Client) ArchiveWebhook(ctx context.Context, webhookID string) error {
 	}
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
-	req, err := c.requestBuilder.BuildArchiveWebhookRequest(ctx, webhookID)
+	res, err := c.authedGeneratedClient.ArchiveWebhook(ctx, webhookID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive webhook request")
+		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Webhook]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "loading archiving webhook response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -150,14 +165,18 @@ func (c *Client) AddWebhookTriggerEvent(ctx context.Context, webhookID string, i
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildAddWebhookTriggerEventRequest(ctx, webhookID, input)
+	body := generated.CreateWebhookTriggerEventJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateWebhookTriggerEvent(ctx, webhookID, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building add webhook trigger event request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating webhook trigger event")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.WebhookTriggerEvent]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "adding webhook")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading webhook trigger event creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -184,14 +203,15 @@ func (c *Client) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webh
 	}
 	logger = logger.WithValue(keys.WebhookTriggerEventIDKey, webhookTriggerEventID)
 
-	req, err := c.requestBuilder.BuildArchiveWebhookTriggerEventRequest(ctx, webhookID, webhookTriggerEventID)
+	res, err := c.authedGeneratedClient.ArchiveWebhookTriggerEvent(ctx, webhookID, webhookTriggerEventID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive webhook trigger event request")
+		return observability.PrepareAndLogError(err, logger, span, "archiving webhook trigger event")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.Webhook]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving webhook trigger event")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "loading archiving webhook trigger event response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

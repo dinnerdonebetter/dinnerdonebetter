@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/internal/server/http/build"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
@@ -71,10 +70,6 @@ func main() {
 
 	routeDefinitions := []*RouteDefinition{}
 	for _, route := range srv.Router().Routes() {
-		if strings.Contains(route.Path, "_meta_") {
-			continue
-		}
-
 		if route.Path == "/auth/{auth_provider}" || route.Path == "/auth/{auth_provider}/callback" {
 			continue
 		}
@@ -90,10 +85,14 @@ func main() {
 		}
 
 		routeDef := &RouteDefinition{
+			ID:            routeInfo.ID,
 			Method:        route.Method,
 			Path:          route.Path,
+			SearchRoute:   routeInfo.SearchRoute,
 			PathArguments: pathArgs,
 			ListRoute:     routeInfo.ListRoute,
+			Description:   routeInfo.Description,
+			Authless:      routeInfo.Authless,
 			OAuth2Scopes:  routeInfo.OAuth2Scopes,
 		}
 
@@ -113,13 +112,13 @@ func main() {
 						if _, ok2 := tagDescriptions[rep]; !ok2 {
 							continue
 						}
-						routeDef.Tags = append(routeDef.Tags, rep)
+						routeDef.Tags = append(routeDef.Tags, strings.ReplaceAll(rep, "_", " "))
 						allTags[rep] = struct{}{}
 					} else {
 						if _, ok2 := tagDescriptions[part]; !ok2 {
 							continue
 						}
-						routeDef.Tags = append(routeDef.Tags, part)
+						routeDef.Tags = append(routeDef.Tags, strings.ReplaceAll(part, "_", " "))
 						allTags[part] = struct{}{}
 					}
 				}
@@ -141,7 +140,7 @@ func main() {
 		}
 
 		tags = append(tags, openapi.Tag{
-			Name:        tag,
+			Name:        strings.ReplaceAll(tag, "_", " "),
 			Description: description,
 		})
 	}
@@ -222,90 +221,6 @@ func main() {
 
 	if err = os.WriteFile("../openapi_spec.yaml", output, 0o600); err != nil {
 		log.Fatal(err)
-	}
-}
-
-func buildQueryFilterPathParams() []openapi.ParameterOrReference {
-	return []openapi.ParameterOrReference{
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "page",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "integer",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "createdBefore",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "createdAfter",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "updatedBefore",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "updatedAfter",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "includeArchived",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-					"enum": []string{"true", "false"},
-				},
-			},
-		},
-		{
-			Parameter: &openapi.Parameter{
-				Name:        "sortBy",
-				In:          "query",
-				Description: nil,
-				Required:    pointer.To(true),
-				Schema: map[string]any{
-					"type": "string",
-					"enum": []string{"asc", "desc"},
-				},
-			},
-		},
 	}
 }
 

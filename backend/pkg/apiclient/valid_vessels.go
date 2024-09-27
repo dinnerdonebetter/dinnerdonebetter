@@ -6,8 +6,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
+
+// var (\w+) types\.APIResponse\[\*types\.(\w+)\]\n\	if err \= c\.fetchAndUnmarshal\(ctx\, req\, \&(\w+))\)\; err \!\= nil \{
 
 // GetValidVessel gets a valid vessel.
 func (c *Client) GetValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error) {
@@ -22,14 +25,15 @@ func (c *Client) GetValidVessel(ctx context.Context, validVesselID string) (*typ
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	req, err := c.requestBuilder.BuildGetValidVesselRequest(ctx, validVesselID)
+	res, err := c.authedGeneratedClient.GetValidVessel(ctx, validVesselID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid vessel request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessel")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse types.APIResponse[*types.ValidVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessel")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading valid vessel response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -46,13 +50,14 @@ func (c *Client) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel, 
 
 	logger := c.logger.Clone()
 
-	req, err := c.requestBuilder.BuildGetRandomValidVesselRequest(ctx)
+	res, err := c.authedGeneratedClient.GetRandomValidVessel(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid vessel request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessel")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse types.APIResponse[*types.ValidVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessel")
 	}
 
@@ -64,6 +69,7 @@ func (c *Client) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel, 
 }
 
 // SearchValidVessels searches through a list of valid vessels.
+// TODO: add queryFilter param here.
 func (c *Client) SearchValidVessels(ctx context.Context, query string, limit uint8) ([]*types.ValidVessel, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -75,18 +81,24 @@ func (c *Client) SearchValidVessels(ctx context.Context, query string, limit uin
 	}
 
 	if limit == 0 {
-		limit = types.DefaultLimit
+		limit = types.DefaultQueryFilterLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
 
-	req, err := c.requestBuilder.BuildSearchValidVesselsRequest(ctx, query, limit)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid vessels request")
+	// TODO: actually get search query in here
+	params := &generated.SearchForValidVesselsParams{
+		Q:     query,
+		Limit: int(limit),
 	}
+	res, err := c.authedGeneratedClient.SearchForValidVessels(ctx, params)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessel")
+	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse types.APIResponse[[]*types.ValidVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessels")
 	}
 
@@ -103,17 +115,25 @@ func (c *Client) GetValidVessels(ctx context.Context, filter *types.QueryFilter)
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetValidVesselsRequest(ctx, filter)
+	params := &generated.GetValidVesselsParams{}
+	c.copyType(params, filter)
+
+	res, err := c.authedGeneratedClient.GetValidVessels(ctx, params)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building valid vessels list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessels")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse types.APIResponse[[]*types.ValidVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid vessels")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading valid vessels list response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -143,14 +163,18 @@ func (c *Client) CreateValidVessel(ctx context.Context, input *types.ValidVessel
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateValidVesselRequest(ctx, input)
+	body := generated.CreateValidVesselJSONRequestBody{}
+	c.copyType(&body, input)
+
+	res, err := c.authedGeneratedClient.CreateValidVessel(ctx, body)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid vessel request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid vessel")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse types.APIResponse[*types.ValidVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid vessel")
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading valid vessel creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -173,14 +197,18 @@ func (c *Client) UpdateValidVessel(ctx context.Context, validVessel *types.Valid
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVessel.ID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVessel.ID)
 
-	req, err := c.requestBuilder.BuildUpdateValidVesselRequest(ctx, validVessel)
+	body := generated.UpdateValidVesselJSONRequestBody{}
+	c.copyType(&body, validVessel)
+
+	res, err := c.authedGeneratedClient.UpdateValidVessel(ctx, validVessel.ID, body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update valid vessel request")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid vessel")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse types.APIResponse[*types.ValidVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid vessel %s", validVessel.ID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "loading valid vessel update response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
@@ -203,14 +231,15 @@ func (c *Client) ArchiveValidVessel(ctx context.Context, validVesselID string) e
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	req, err := c.requestBuilder.BuildArchiveValidVesselRequest(ctx, validVesselID)
+	res, err := c.authedGeneratedClient.ArchiveValidVessel(ctx, validVesselID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive valid vessel request")
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}
+	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse types.APIResponse[*types.ValidVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel %s", validVesselID)
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "loading valid vessel archive response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
