@@ -84,6 +84,8 @@ import {
   ValidPreparationVesselCreationRequestInput,
 } from '@dinnerdonebetter/models';
 
+import { ValidIngredientsService } from './generated';
+
 import { createMeal, getMeal, getMeals, updateMeal, deleteMeal, searchForMeals } from './meals';
 import {
   createValidPreparation,
@@ -655,7 +657,9 @@ export class DinnerDoneBetterAPIClient {
 
   // valid ingredients
   async createValidIngredient(input: ValidIngredientCreationRequestInput): Promise<ValidIngredient> {
-    return createValidIngredient(this.client, input);
+    const result = await ValidIngredientsService.createValidIngredient(input);
+
+    return result.data as ValidIngredient;
   }
 
   async getValidIngredient(validIngredientID: string): Promise<ValidIngredient> {
