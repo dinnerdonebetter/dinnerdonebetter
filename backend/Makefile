@@ -222,7 +222,7 @@ openapi:
 	go run $(THIS)/cmd/tools/codegen/gen_openapi
 
 .PHONY: openapi-client
-openapi-client: ensure_oapi_codegen_installed openapi
+openapi-client: ensure_oapi_codegen_installed
 	oapi-codegen --config=oapi-codegen.yaml ../openapi_spec.yaml
 
 ## Integration tests

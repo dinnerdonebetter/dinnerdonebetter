@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   contact:
     email: support@dinnerdonebetter.dev
@@ -22000,6 +22000,7 @@ components:
     PasswordResetTokenCreationRequestInput:
       properties:
         emailAddress:
+          format: email
           type: string
       type: object
     PasswordResetTokenRedemptionRequestInput:
@@ -23259,6 +23260,7 @@ components:
           format: date-time
           type: string
         emailAddress:
+          format: email
           type: string
         emailAddressVerifiedAt:
           format: date-time
@@ -23315,6 +23317,7 @@ components:
         createdUserID:
           type: string
         emailAddress:
+          format: email
           type: string
         firstName:
           type: string
@@ -23468,6 +23471,7 @@ components:
           format: date-time
           type: string
         emailAddress:
+          format: email
           type: string
         firstName:
           type: string
@@ -23501,6 +23505,7 @@ components:
     UsernameReminderRequestInput:
       properties:
         emailAddress:
+          format: email
           type: string
       type: object
     UsernameUpdateInput:

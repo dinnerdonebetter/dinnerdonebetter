@@ -310,7 +310,7 @@ func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value
 	case "password", "currentpassword", "newpassword":
 		format = "password"
 	case "emailaddress":
-		// format = "email"	// NOT WORTH, uses some third party string alias type :(
+		format = "email" // NOT WORTH, uses some third party string alias type :(
 	case "url":
 		format = "uri"
 	}

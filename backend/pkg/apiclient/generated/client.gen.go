@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -1297,7 +1298,7 @@ type PasswordResetToken struct {
 
 // PasswordResetTokenCreationRequestInput defines model for PasswordResetTokenCreationRequestInput.
 type PasswordResetTokenCreationRequestInput struct {
-	EmailAddress *string `json:"emailAddress,omitempty"`
+	EmailAddress *openapi_types.Email `json:"emailAddress,omitempty"`
 }
 
 // PasswordResetTokenRedemptionRequestInput defines model for PasswordResetTokenRedemptionRequestInput.
@@ -1934,25 +1935,25 @@ type TOTPSecretVerificationInput struct {
 
 // User defines model for User.
 type User struct {
-	AccountStatus             *string    `json:"accountStatus,omitempty"`
-	AccountStatusExplanation  *string    `json:"accountStatusExplanation,omitempty"`
-	ArchivedAt                *time.Time `json:"archivedAt,omitempty"`
-	Avatar                    *string    `json:"avatar,omitempty"`
-	Birthday                  *time.Time `json:"birthday,omitempty"`
-	CreatedAt                 *time.Time `json:"createdAt,omitempty"`
-	EmailAddress              *string    `json:"emailAddress,omitempty"`
-	EmailAddressVerifiedAt    *time.Time `json:"emailAddressVerifiedAt,omitempty"`
-	FirstName                 *string    `json:"firstName,omitempty"`
-	Id                        *string    `json:"id,omitempty"`
-	LastAcceptedPrivacyPolicy *time.Time `json:"lastAcceptedPrivacyPolicy,omitempty"`
-	LastAcceptedTOS           *time.Time `json:"lastAcceptedTOS,omitempty"`
-	LastName                  *string    `json:"lastName,omitempty"`
-	LastUpdatedAt             *time.Time `json:"lastUpdatedAt,omitempty"`
-	PasswordLastChangedAt     *time.Time `json:"passwordLastChangedAt,omitempty"`
-	RequiresPasswordChange    *bool      `json:"requiresPasswordChange,omitempty"`
-	ServiceRoles              *string    `json:"serviceRoles,omitempty"`
-	TwoFactorSecretVerifiedAt *time.Time `json:"twoFactorSecretVerifiedAt,omitempty"`
-	Username                  *string    `json:"username,omitempty"`
+	AccountStatus             *string              `json:"accountStatus,omitempty"`
+	AccountStatusExplanation  *string              `json:"accountStatusExplanation,omitempty"`
+	ArchivedAt                *time.Time           `json:"archivedAt,omitempty"`
+	Avatar                    *string              `json:"avatar,omitempty"`
+	Birthday                  *time.Time           `json:"birthday,omitempty"`
+	CreatedAt                 *time.Time           `json:"createdAt,omitempty"`
+	EmailAddress              *openapi_types.Email `json:"emailAddress,omitempty"`
+	EmailAddressVerifiedAt    *time.Time           `json:"emailAddressVerifiedAt,omitempty"`
+	FirstName                 *string              `json:"firstName,omitempty"`
+	Id                        *string              `json:"id,omitempty"`
+	LastAcceptedPrivacyPolicy *time.Time           `json:"lastAcceptedPrivacyPolicy,omitempty"`
+	LastAcceptedTOS           *time.Time           `json:"lastAcceptedTOS,omitempty"`
+	LastName                  *string              `json:"lastName,omitempty"`
+	LastUpdatedAt             *time.Time           `json:"lastUpdatedAt,omitempty"`
+	PasswordLastChangedAt     *time.Time           `json:"passwordLastChangedAt,omitempty"`
+	RequiresPasswordChange    *bool                `json:"requiresPasswordChange,omitempty"`
+	ServiceRoles              *string              `json:"serviceRoles,omitempty"`
+	TwoFactorSecretVerifiedAt *time.Time           `json:"twoFactorSecretVerifiedAt,omitempty"`
+	Username                  *string              `json:"username,omitempty"`
 }
 
 // UserAccountStatusUpdateInput defines model for UserAccountStatusUpdateInput.
@@ -1964,18 +1965,18 @@ type UserAccountStatusUpdateInput struct {
 
 // UserCreationResponse defines model for UserCreationResponse.
 type UserCreationResponse struct {
-	AccountStatus   *string    `json:"accountStatus,omitempty"`
-	Avatar          *string    `json:"avatar,omitempty"`
-	Birthday        *time.Time `json:"birthday,omitempty"`
-	CreatedAt       *time.Time `json:"createdAt,omitempty"`
-	CreatedUserID   *string    `json:"createdUserID,omitempty"`
-	EmailAddress    *string    `json:"emailAddress,omitempty"`
-	FirstName       *string    `json:"firstName,omitempty"`
-	IsAdmin         *bool      `json:"isAdmin,omitempty"`
-	LastName        *string    `json:"lastName,omitempty"`
-	QrCode          *string    `json:"qrCode,omitempty"`
-	TwoFactorSecret *string    `json:"twoFactorSecret,omitempty"`
-	Username        *string    `json:"username,omitempty"`
+	AccountStatus   *string              `json:"accountStatus,omitempty"`
+	Avatar          *string              `json:"avatar,omitempty"`
+	Birthday        *time.Time           `json:"birthday,omitempty"`
+	CreatedAt       *time.Time           `json:"createdAt,omitempty"`
+	CreatedUserID   *string              `json:"createdUserID,omitempty"`
+	EmailAddress    *openapi_types.Email `json:"emailAddress,omitempty"`
+	FirstName       *string              `json:"firstName,omitempty"`
+	IsAdmin         *bool                `json:"isAdmin,omitempty"`
+	LastName        *string              `json:"lastName,omitempty"`
+	QrCode          *string              `json:"qrCode,omitempty"`
+	TwoFactorSecret *string              `json:"twoFactorSecret,omitempty"`
+	Username        *string              `json:"username,omitempty"`
 }
 
 // UserDetailsUpdateRequestInput defines model for UserDetailsUpdateRequestInput.
@@ -2065,17 +2066,17 @@ type UserPermissionsResponse struct {
 
 // UserRegistrationInput defines model for UserRegistrationInput.
 type UserRegistrationInput struct {
-	AcceptedPrivacyPolicy *bool      `json:"acceptedPrivacyPolicy,omitempty"`
-	AcceptedTOS           *bool      `json:"acceptedTOS,omitempty"`
-	Birthday              *time.Time `json:"birthday,omitempty"`
-	EmailAddress          *string    `json:"emailAddress,omitempty"`
-	FirstName             *string    `json:"firstName,omitempty"`
-	HouseholdName         *string    `json:"householdName,omitempty"`
-	InvitationID          *string    `json:"invitationID,omitempty"`
-	InvitationToken       *string    `json:"invitationToken,omitempty"`
-	LastName              *string    `json:"lastName,omitempty"`
-	Password              *string    `json:"password,omitempty"`
-	Username              *string    `json:"username,omitempty"`
+	AcceptedPrivacyPolicy *bool                `json:"acceptedPrivacyPolicy,omitempty"`
+	AcceptedTOS           *bool                `json:"acceptedTOS,omitempty"`
+	Birthday              *time.Time           `json:"birthday,omitempty"`
+	EmailAddress          *openapi_types.Email `json:"emailAddress,omitempty"`
+	FirstName             *string              `json:"firstName,omitempty"`
+	HouseholdName         *string              `json:"householdName,omitempty"`
+	InvitationID          *string              `json:"invitationID,omitempty"`
+	InvitationToken       *string              `json:"invitationToken,omitempty"`
+	LastName              *string              `json:"lastName,omitempty"`
+	Password              *string              `json:"password,omitempty"`
+	Username              *string              `json:"username,omitempty"`
 }
 
 // UserStatusResponse defines model for UserStatusResponse.
@@ -2089,7 +2090,7 @@ type UserStatusResponse struct {
 
 // UsernameReminderRequestInput defines model for UsernameReminderRequestInput.
 type UsernameReminderRequestInput struct {
-	EmailAddress *string `json:"emailAddress,omitempty"`
+	EmailAddress *openapi_types.Email `json:"emailAddress,omitempty"`
 }
 
 // UsernameUpdateInput defines model for UsernameUpdateInput.

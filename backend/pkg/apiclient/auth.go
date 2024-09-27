@@ -6,8 +6,11 @@ import (
 	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	openapitypes "github.com/oapi-codegen/runtime/types"
 )
 
 // UserStatus fetches a user's status.
@@ -188,7 +191,7 @@ func (c *Client) RequestPasswordResetToken(ctx context.Context, emailAddress str
 	}
 
 	body := generated.RequestPasswordResetTokenJSONRequestBody{
-		EmailAddress: &emailAddress,
+		EmailAddress: pointer.To(openapitypes.Email(emailAddress)),
 	}
 
 	res, err := c.unauthedGeneratedClient.RequestPasswordResetToken(ctx, body)
