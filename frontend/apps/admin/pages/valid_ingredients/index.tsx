@@ -38,8 +38,9 @@ export const getServerSideProps: GetServerSideProps = async (
       props = { props: { pageLoadValidIngredients: res } };
     })
     .catch((error: AxiosError) => {
+      console.error(`getting valid ingredients`, error.status);
       span.addEvent('error occurred');
-      if (error.response?.status === 401) {
+      if (error.status === '401') {
         props = {
           redirect: {
             destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
@@ -64,23 +65,25 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
   const [validIngredients, setValidIngredients] =
     useState<QueryFilteredResult<ValidIngredient>>(pageLoadValidIngredients);
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    const qf = QueryFilter.deriveFromGetServerSidePropsContext({ search });
     const apiClient = buildLocalClient();
 
     if (search.trim().length < 1) {
-      const qf = QueryFilter.deriveFromGetServerSidePropsContext({ search });
+      console.log('getting valid ingredients from search useEffect');
       apiClient
         .getValidIngredients(qf)
         .then((res: QueryFilteredResult<ValidIngredient>) => {
           setValidIngredients(res);
         })
         .catch((err: AxiosError) => {
-          console.error(err);
+          console.error('getting valid ingredients: ', err);
         });
     } else {
       apiClient
-        .searchForValidIngredients(search)
+        .searchForValidIngredients(search, qf)
         .then((res: QueryFilteredResult<ValidIngredient>) => {
           setValidIngredients({
             ...QueryFilter.Default(),
@@ -90,7 +93,7 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
           });
         })
         .catch((err: AxiosError) => {
-          console.error(err);
+          console.error('searching for valid ingredients: ', err);
         });
     }
   }, [search]);
@@ -99,8 +102,9 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
     const apiClient = buildLocalClient();
 
     const qf = QueryFilter.deriveFromPage();
-    qf.page = validIngredients.page;
+    qf.page = currentPage;
 
+    console.log('getting valid ingredients from page useEffect');
     apiClient
       .getValidIngredients(qf)
       .then((res: QueryFilteredResult<ValidIngredient>) => {
@@ -109,7 +113,7 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
       .catch((err: AxiosError) => {
         console.error(err);
       });
-  }, [validIngredients.page]);
+  }, [currentPage]);
 
   const formatDate = (x: string | undefined): string => {
     return x ? formatRelative(new Date(x), new Date()) : 'never';
@@ -170,7 +174,7 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
           page={validIngredients.page}
           total={Math.ceil(validIngredients.totalCount / validIngredients.limit)}
           onChange={(value: number) => {
-            setValidIngredients({ ...validIngredients, page: value });
+            setCurrentPage(value);
           }}
         />
       </Stack>

@@ -219,8 +219,6 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
           });
         });
 
-        console.log(newSuggestions);
-
         setSuggestedPreparations(newSuggestions);
       })
       .catch((err: AxiosError) => {

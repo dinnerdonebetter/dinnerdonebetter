@@ -89,10 +89,10 @@ export type ValidSortType = 'asc' | 'desc';
 export class QueryFilter {
   sortBy: ValidSortType = 'asc';
   page: number = 1;
-  createdBefore?: number;
-  createdAfter?: number;
-  updatedBefore?: number;
-  updatedAfter?: number;
+  createdBefore?: string;
+  createdAfter?: string;
+  updatedBefore?: string;
+  updatedAfter?: string;
   limit: number;
   includeArchived?: boolean;
 
@@ -100,10 +100,10 @@ export class QueryFilter {
     input: {
       sortBy?: ValidSortType;
       page?: number;
-      createdBefore?: number;
-      createdAfter?: number;
-      updatedBefore?: number;
-      updatedAfter?: number;
+      createdBefore?: string;
+      createdAfter?: string;
+      updatedBefore?: string;
+      updatedAfter?: string;
       limit?: number;
       includeArchived?: boolean;
     } = {},
@@ -163,16 +163,18 @@ export class QueryFilter {
 
   public static deriveFromPage(): QueryFilter {
     const qf = QueryFilter.Default();
-    const pageParams = new URLSearchParams(window.location.search);
 
-    if (pageParams.has('sortBy')) qf.sortBy = pageParams.get('sortBy') as 'asc' | 'desc';
-    if (pageParams.has('page')) qf.page = parseInt(pageParams.get('page')!);
-    if (pageParams.has('createdBefore')) qf.createdBefore = parseInt(pageParams.get('createdBefore')!);
-    if (pageParams.has('createdAfter')) qf.createdAfter = parseInt(pageParams.get('createdAfter')!);
-    if (pageParams.has('updatedBefore')) qf.updatedBefore = parseInt(pageParams.get('updatedBefore')!);
-    if (pageParams.has('updatedAfter')) qf.updatedAfter = parseInt(pageParams.get('updatedAfter')!);
-    if (pageParams.has('limit')) qf.limit = parseInt(pageParams.get('limit')!);
-    if (pageParams.has('includeArchived')) qf.includeArchived = pageParams.get('includeArchived') === 'true';
+    if (window) {
+      const pageParams = new URLSearchParams(window.location.search);
+      if (pageParams.has('sortBy')) qf.sortBy = pageParams.get('sortBy') as 'asc' | 'desc';
+      if (pageParams.has('page')) qf.page = parseInt(pageParams.get('page')!);
+      if (pageParams.has('createdBefore')) qf.createdBefore = pageParams.get('createdBefore')!;
+      if (pageParams.has('createdAfter')) qf.createdAfter = pageParams.get('createdAfter')!;
+      if (pageParams.has('updatedBefore')) qf.updatedBefore = pageParams.get('updatedBefore')!;
+      if (pageParams.has('updatedAfter')) qf.updatedAfter = pageParams.get('updatedAfter')!;
+      if (pageParams.has('limit')) qf.limit = parseInt(pageParams.get('limit')!);
+      if (pageParams.has('includeArchived')) qf.includeArchived = pageParams.get('includeArchived') === 'true';
+    }
 
     return qf;
   }
@@ -182,10 +184,10 @@ export class QueryFilter {
 
     if (x['sortBy']) qf.sortBy = x['sortBy'] as 'asc' | 'desc';
     if (x['page']) qf.page = parseInt(x['page'].toString()!);
-    if (x['createdBefore']) qf.createdBefore = parseInt(x['createdBefore'].toString()!);
-    if (x['createdAfter']) qf.createdAfter = parseInt(x['createdAfter'].toString()!);
-    if (x['updatedBefore']) qf.updatedBefore = parseInt(x['updatedBefore'].toString()!);
-    if (x['updatedAfter']) qf.updatedAfter = parseInt(x['updatedAfter'].toString()!);
+    if (x['createdBefore']) qf.createdBefore = x['createdBefore'].toString();
+    if (x['createdAfter']) qf.createdAfter = x['createdAfter'].toString();
+    if (x['updatedBefore']) qf.updatedBefore = x['updatedBefore'].toString();
+    if (x['updatedAfter']) qf.updatedAfter = x['updatedAfter'].toString();
     if (x['limit']) qf.limit = parseInt(x['limit'].toString()!);
     if (x['includeArchived']) qf.includeArchived = x['includeArchived'] === 'true';
 

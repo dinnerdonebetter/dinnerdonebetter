@@ -289,12 +289,12 @@ export class DinnerDoneBetterAPIClient {
     } as AxiosRequestConfig);
 
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      logger.debug(`Request: ${request.method} ${request.url}`);
+      logger.debug(`request: ${request.method} ${request.url}`);
       return request;
     });
 
     this.client.interceptors.response.use((response: AxiosResponse) => {
-      logger.debug(`Request: ${response.status}`);
+      logger.debug(`response: ${response.status} ${response.config.method} ${response.config.url}`);
       return response;
     });
   }
@@ -679,8 +679,11 @@ export class DinnerDoneBetterAPIClient {
     return deleteValidIngredient(this.client, validIngredientID);
   }
 
-  async searchForValidIngredients(query: string): Promise<QueryFilteredResult<ValidIngredient>> {
-    return searchForValidIngredients(this.client, query);
+  async searchForValidIngredients(
+    query: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredient>> {
+    return searchForValidIngredients(this.client, query, filter);
   }
 
   async getValidIngredientsForPreparation(

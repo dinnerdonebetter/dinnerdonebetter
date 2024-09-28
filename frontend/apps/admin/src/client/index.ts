@@ -1,5 +1,4 @@
 import { GetServerSidePropsContext } from 'next';
-import router from 'next/router';
 
 import DinnerDoneBetterAPIClient from '@dinnerdonebetter/api-client';
 
@@ -11,9 +10,7 @@ export const buildServerSideClient = (context: GetServerSidePropsContext): Dinne
     throw new Error('no API endpoint set!');
   }
 
-  const ddbClient = new DinnerDoneBetterAPIClient(apiEndpoint, context.req.cookies[apiCookieName]);
-
-  return ddbClient;
+  return new DinnerDoneBetterAPIClient(apiEndpoint, context.req.cookies[apiCookieName]);
 };
 
 export const buildServerSideClientWithRawCookie = (cookie: string): DinnerDoneBetterAPIClient => {
@@ -26,9 +23,7 @@ export const buildServerSideClientWithRawCookie = (cookie: string): DinnerDoneBe
     throw new Error('no cookie set!');
   }
 
-  const ddbClient = new DinnerDoneBetterAPIClient(apiEndpoint, cookie);
-
-  return ddbClient;
+  return new DinnerDoneBetterAPIClient(apiEndpoint, cookie);
 };
 
 export const buildCookielessServerSideClient = (): DinnerDoneBetterAPIClient => {
@@ -37,20 +32,7 @@ export const buildCookielessServerSideClient = (): DinnerDoneBetterAPIClient => 
     throw new Error('no API endpoint set!');
   }
 
-  const ddbClient = new DinnerDoneBetterAPIClient(apiEndpoint);
-
-  return ddbClient;
-};
-
-export const buildBrowserSideClient = (): DinnerDoneBetterAPIClient => {
-  const ddbClient = buildCookielessServerSideClient();
-
-  ddbClient.configureRouterRejectionInterceptor((loc: Location) => {
-    const destParam = new URLSearchParams(loc.search).get('dest') ?? encodeURIComponent(`${loc.pathname}${loc.search}`);
-    router.push({ pathname: '/login', query: { dest: destParam } });
-  });
-
-  return ddbClient;
+  return new DinnerDoneBetterAPIClient(apiEndpoint);
 };
 
 export const buildLocalClient = (): DinnerDoneBetterAPIClient => {

@@ -18,11 +18,10 @@ test:
 	(cd backend && make test)
 	(cd frontend && make test)
 
-.PHONY: openapi
-openapi:
+.PHONY: openapi-clients
+openapi-clients:
 	(cd backend && make openapi-client)
-	npx openapi-typescript-codegen@0.29.0 --input openapi_spec.yaml --output artifacts/generated
-	$(MAKE format)
+	(cd frontend && make openapi-client)
 
 .PHONY: openapi-lint
 openapi-lint:
