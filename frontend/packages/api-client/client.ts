@@ -679,8 +679,8 @@ export class DinnerDoneBetterAPIClient {
     return deleteValidIngredient(this.client, validIngredientID);
   }
 
-  async searchForValidIngredients(query: string): Promise<QueryFilteredResult<ValidIngredient>> {
-    return searchForValidIngredients(this.client, query);
+  async searchForValidIngredients(query: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<ValidIngredient>> {
+    return searchForValidIngredients(this.client, query, filter);
   }
 
   async getValidIngredientsForPreparation(

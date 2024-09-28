@@ -28,6 +28,7 @@ jobs:
         working-directory: frontend/
 
       - run: make openapi-client
+        working-directory: frontend/
 
       - name: Check for changes
         run: git diff --exit-code

@@ -72,7 +72,7 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
     const apiClient = buildLocalClient();
 
     if (search.trim().length < 1) {
-      console.log('getting valid ingredients from search useEffect')
+      console.log('getting valid ingredients from search useEffect');
       apiClient
         .getValidIngredients(qf)
         .then((res: QueryFilteredResult<ValidIngredient>) => {
@@ -104,7 +104,7 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
     const qf = QueryFilter.deriveFromPage();
     qf.page = currentPage;
 
-    console.log('getting valid ingredients from page useEffect')
+    console.log('getting valid ingredients from page useEffect');
     apiClient
       .getValidIngredients(qf)
       .then((res: QueryFilteredResult<ValidIngredient>) => {
