@@ -23,7 +23,7 @@ describe('basic', () => {
       expect(finalParts[0]).toEqual('dur');
       const actual = parseInt(finalParts[1], 10);
 
-      expect(actual).toBeGreaterThanOrEqual(expectation-2); // some wiggle room to make this test less janky.
+      expect(actual).toBeGreaterThanOrEqual(expectation - 2); // some wiggle room to make this test less janky.
     }, 1000);
   });
 });
