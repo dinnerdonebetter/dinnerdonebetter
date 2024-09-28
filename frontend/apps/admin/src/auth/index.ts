@@ -42,7 +42,5 @@ export function processWebappCookieHeader(result: AxiosResponse, userID: string,
 }
 
 export const extractUserInfoFromCookie = (cookies: NextApiRequestCookies): sessionAuth => {
-  const data = cookies[webappCookieName] || 'e30=';
-  const userSessionData = JSON.parse(Buffer.from(data, 'base64').toString('ascii')) as sessionAuth;
-  return userSessionData;
+  return JSON.parse(Buffer.from(cookies[webappCookieName] || 'e30=', 'base64').toString('ascii')) as sessionAuth;
 };

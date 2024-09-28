@@ -84,8 +84,6 @@ import {
   ValidPreparationVesselCreationRequestInput,
 } from '@dinnerdonebetter/models';
 
-import { ValidIngredientsService } from './generated';
-
 import { createMeal, getMeal, getMeals, updateMeal, deleteMeal, searchForMeals } from './meals';
 import {
   createValidPreparation,
@@ -291,12 +289,12 @@ export class DinnerDoneBetterAPIClient {
     } as AxiosRequestConfig);
 
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      logger.debug(`Request: ${request.method} ${request.url}`);
+      logger.debug(`request: ${request.method} ${request.url}`);
       return request;
     });
 
     this.client.interceptors.response.use((response: AxiosResponse) => {
-      logger.debug(`Request: ${response.status}`);
+      logger.debug(`response: ${response.status} ${response.config.method} ${response.config.url}`);
       return response;
     });
   }
@@ -657,9 +655,7 @@ export class DinnerDoneBetterAPIClient {
 
   // valid ingredients
   async createValidIngredient(input: ValidIngredientCreationRequestInput): Promise<ValidIngredient> {
-    const result = await ValidIngredientsService.createValidIngredient(input);
-
-    return result.data as ValidIngredient;
+    return createValidIngredient(this.client, input);
   }
 
   async getValidIngredient(validIngredientID: string): Promise<ValidIngredient> {

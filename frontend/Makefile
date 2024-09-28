@@ -36,7 +36,7 @@ lint_terraform: terraformat
 
 .PHONY: dev
 dev:
-	$(NODE_PACKAGE_MANAGER) dev
+	REWRITE_COOKIE_HOST_FROM='dinnerdonebetter.dev' REWRITE_COOKIE_HOST_TO='localhost' $(NODE_PACKAGE_MANAGER) dev
 
 .PHONY: stop
 stop:
@@ -77,5 +77,5 @@ build_web_container:
 .PHONY: openapi-client
 openapi-client:
 	rm -rf packages/api-client/generated
-	npx openapi-typescript-codegen --input ../openapi_spec.yaml --output packages/api-client/generated --useUnionTypes --exportSchemas true
+	npx openapi-typescript-codegen --input ../openapi_spec.yaml --output packages/api-client/generated --useUnionTypes --client fetch
 	$(MAKE) format

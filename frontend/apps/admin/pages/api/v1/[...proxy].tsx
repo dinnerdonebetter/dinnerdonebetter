@@ -49,8 +49,10 @@ async function APIProxy(req: NextApiRequest, res: NextApiResponse) {
     })
     .catch((err: AxiosError<IAPIError>) => {
       span.addEvent('error received');
-      logger.error(`${err.config.baseURL}${err.config.url}?${err.config.params}`, {
-        status: err.status,
+      logger.error({
+        configURL: err.config.url,
+        status: err.code,
+        err: err,
         ...spanLogDetails,
       });
       res.status(err.response?.status || 500).send(err.response?.data || '');

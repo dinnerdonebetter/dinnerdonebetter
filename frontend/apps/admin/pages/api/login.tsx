@@ -19,11 +19,14 @@ async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
       .then((result: AxiosResponse) => {
         span.addEvent('response received');
         if (result.status === 205) {
-          res.status(205).send('');
+          res.status(result.status).send('');
           return;
         }
 
-        res.setHeader('Set-Cookie', processWebappCookieHeader(result, result.data.userID, result.data.activeHousehold));
+        res.setHeader(
+          'Set-Cookie',
+          processWebappCookieHeader(result, result.data.data.userID, result.data.data.activeHousehold),
+        );
 
         res.status(202).send('');
       })
