@@ -28,6 +28,7 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/goccy/go-graphviz v0.1.3
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/wire v0.6.0
 	github.com/googleapis/gax-go/v2 v2.12.5
 	github.com/gorilla/securecookie v1.1.2
