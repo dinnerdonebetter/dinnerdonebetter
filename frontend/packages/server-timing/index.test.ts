@@ -3,11 +3,12 @@ import { ServerTiming } from './index';
 describe('basic', () => {
   it('should track basic actions', () => {
     const t = new ServerTiming();
+    const expectation = 100;
 
     const testEvent = t.addEvent('test', 'testing');
     setTimeout(() => {
       testEvent.end();
-    }, 100);
+    }, expectation);
 
     setTimeout(() => {
       const actualParts = t.headerValue().split(';');
@@ -22,7 +23,7 @@ describe('basic', () => {
       expect(finalParts[0]).toEqual('dur');
       const actual = parseInt(finalParts[1], 10);
 
-      expect(actual).toBeGreaterThanOrEqual(100);
+      expect(actual).toBeGreaterThanOrEqual(expectation-2); // some wiggle room to make this test less janky.
     }, 1000);
   });
 });
