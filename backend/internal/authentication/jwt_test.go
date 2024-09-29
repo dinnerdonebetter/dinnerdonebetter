@@ -20,6 +20,7 @@ const (
 	exampleSigningKey = testutils.Example32ByteKey
 	ed25519SigningKey = testutils.Example64ByteKey
 	exampleJWT        = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJUZXN0X2p3dFNpZ25lcl9Jc3N1ZUpXVC9zdGFuZGFyZCIsImV4cCI6MTcyNzU3MDU0OCwiaWF0IjoxNzI3NTY5OTQ4LCJpc3MiOiJkaW5uZXJkb25lYmV0dGVyIiwianRpIjoiY3JzYTA3NnRnM3FkdG1jY3E5MTAiLCJuYmYiOjE3Mjc1Njk4ODgsInN1YiI6ImNyc2EwNzZ0ZzNxZHRtY2NxOTBnIn0.tMASrQBoYAq4n1iwOElLqUQsYOARX5T1qxo8RKhvaAg"
+	exampleExpiry     = time.Minute * 10
 )
 
 func Test_jwtSigner_IssueJWT(T *testing.T) {
@@ -33,9 +34,8 @@ func Test_jwtSigner_IssueJWT(T *testing.T) {
 
 		ctx := context.Background()
 		user := fakes.BuildFakeUser()
-		expiry := time.Minute * 10
 
-		actual, err := signer.IssueJWT(ctx, user, expiry)
+		actual, err := signer.IssueJWT(ctx, user, exampleExpiry)
 		assert.NoError(t, err)
 
 		parsed, err := signer.ParseJWT(ctx, actual)
@@ -73,11 +73,14 @@ func Test_jwtSigner_ParseJWT(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleToken := exampleJWT
 		signer, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := context.Background()
+		user := fakes.BuildFakeUser()
+
+		exampleToken, err := signer.IssueJWT(ctx, user, exampleExpiry)
+		assert.NoError(t, err)
 
 		actual, err := signer.ParseJWT(ctx, exampleToken)
 		assert.NoError(t, err)
