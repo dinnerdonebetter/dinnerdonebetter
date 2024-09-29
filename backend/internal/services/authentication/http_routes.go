@@ -724,12 +724,18 @@ var _ types.OAuth2Service = (*service)(nil)
 
 // AuthorizeHandler is our oauth2 auth route.
 func (s *service) AuthorizeHandler(res http.ResponseWriter, req *http.Request) {
+	_, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
 	if err := s.oauth2Server.HandleAuthorizeRequest(res, req); err != nil {
 		http.Error(res, err.Error(), http.StatusBadRequest)
 	}
 }
 
 func (s *service) TokenHandler(res http.ResponseWriter, req *http.Request) {
+	_, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
 	if err := s.oauth2Server.HandleTokenRequest(res, req); err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 	}

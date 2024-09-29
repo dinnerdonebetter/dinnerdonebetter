@@ -166,7 +166,7 @@ func UsingLogin(ctx context.Context, input *types.UserLoginInput) func(*Client) 
 }
 
 // UsingOAuth2 sets the client to use OAuth2.
-func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []string, cookie *http.Cookie) func(*Client) error {
+func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []string, token string) func(*Client) error {
 	genCodeChallengeS256 := func(s string) string {
 		s256 := sha256.Sum256([]byte(s))
 		return base64.URLEncoding.EncodeToString(s256[:])
@@ -199,7 +199,8 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []st
 			return fmt.Errorf("failed to get oauth2 code: %w", err)
 		}
 
-		req.AddCookie(cookie)
+		req.Header.Set("Authorization", "Bearer "+token)
+
 		client := otelhttp.DefaultClient
 		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse

@@ -2,7 +2,9 @@ package authentication
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"net/http"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -22,6 +24,8 @@ func ProvideOAuth2ServerImplementation(
 	tracer tracing.Tracer,
 	cfg *OAuth2Config,
 	dataManager database.DataManager,
+	authenticator authentication.Authenticator,
+	jwtSigner authentication.JWTSigner,
 ) *server.Server {
 	manager := manage.NewManager()
 
@@ -55,15 +59,23 @@ func ProvideOAuth2ServerImplementation(
 	oauth2Server := server.NewServer(oauth2ServerConfig, manager)
 
 	oauth2Server.UserAuthorizationHandler = func(res http.ResponseWriter, req *http.Request) (userID string, err error) {
-		_, span := tracer.StartCustomSpan(req.Context(), "oauth2_server.UserAuthorizationHandler")
+		ctx, span := tracer.StartCustomSpan(req.Context(), "oauth2_server.UserAuthorizationHandler")
 		defer span.End()
 
-		sessionCtx, err := FetchContextFromRequest(req)
+		rawToken := req.Header.Get("Authorization")
+		token := strings.TrimPrefix(rawToken, "Bearer ")
+
+		parsedToken, err := jwtSigner.ParseJWT(ctx, token)
 		if err != nil {
 			return "", errors.ErrAccessDenied
 		}
 
-		return sessionCtx.Requester.UserID, nil
+		subject, err := parsedToken.Claims.GetSubject()
+		if err != nil {
+			return "", errors.ErrAccessDenied
+		}
+
+		return subject, nil
 	}
 
 	oauth2Server.PasswordAuthorizationHandler = func(ctx context.Context, clientID, username, password string) (userID string, err error) {
@@ -72,7 +84,20 @@ func ProvideOAuth2ServerImplementation(
 			return "", errors.New("invalid username or password")
 		}
 
-		// TODO: validate password here, duh
+		valid, err := authenticator.CredentialsAreValid(
+			ctx,
+			user.HashedPassword,
+			password,
+			"",
+			"",
+		)
+		if err != nil {
+			return "", errors.New("invalid username or password")
+		}
+
+		if !valid {
+			return "", errors.New("invalid username or password")
+		}
 
 		return user.ID, nil
 	}

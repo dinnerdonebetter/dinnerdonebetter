@@ -67,7 +67,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	client, err = initializeCookiePoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
-	oauthedClient, err = initializeOAuth2PoweredClient(ctx, cookie)
+	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
 	return user, cookie, client, oauthedClient
@@ -101,7 +101,7 @@ func initializeCookiePoweredClient(ctx context.Context, loginInput *types.UserLo
 	return c, nil
 }
 
-func initializeOAuth2PoweredClient(ctx context.Context, cookie *http.Cookie) (*apiclient.Client, error) {
+func initializeOAuth2PoweredClient(ctx context.Context, input *types.UserLoginInput) (*apiclient.Client, error) {
 	if parsedURLToUse == nil {
 		panic("url not set!")
 	}
@@ -114,9 +114,17 @@ func initializeOAuth2PoweredClient(ctx context.Context, cookie *http.Cookie) (*a
 		apiclient.UsingLogger(logger),
 		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
 		apiclient.UsingURL(urlToUse),
-		apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, cookie),
 	)
 	if err != nil {
+		return nil, err
+	}
+
+	tokenResponse, err := c.LoginForJWT(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse)); err != nil {
 		return nil, err
 	}
 
@@ -176,10 +184,7 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (cooki
 	adminCookieClient, err := initializeCookiePoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
-	cookie, err := testutils.GetLoginCookie(ctx, urlToUse, premadeAdminUser)
-	require.NoError(t, err)
-
-	oauthedClient, err = initializeOAuth2PoweredClient(ctx, cookie)
+	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
 	return adminCookieClient, oauthedClient
