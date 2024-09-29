@@ -7,6 +7,7 @@ import type { AvatarUpdateInput } from '../models/AvatarUpdateInput';
 import type { ChangeActiveHouseholdInput } from '../models/ChangeActiveHouseholdInput';
 import type { EmailAddressVerificationRequestInput } from '../models/EmailAddressVerificationRequestInput';
 import type { Household } from '../models/Household';
+import type { JWTResponse } from '../models/JWTResponse';
 import type { PasswordResetToken } from '../models/PasswordResetToken';
 import type { PasswordResetTokenCreationRequestInput } from '../models/PasswordResetTokenCreationRequestInput';
 import type { PasswordResetTokenRedemptionRequestInput } from '../models/PasswordResetTokenRedemptionRequestInput';
@@ -413,6 +414,42 @@ export class UsersService {
     return __request(OpenAPI, {
       method: 'POST',
       url: '/users/login/admin',
+      body: requestBody,
+      mediaType: 'application/json',
+    });
+  }
+  /**
+   * Operation for creating JWTResponse
+   * @param requestBody
+   * @returns any
+   * @throws ApiError
+   */
+  public static loginForJwt(requestBody: UserLoginInput): CancelablePromise<
+    APIResponse & {
+      data?: JWTResponse;
+    }
+  > {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/users/login/jwt',
+      body: requestBody,
+      mediaType: 'application/json',
+    });
+  }
+  /**
+   * Operation for creating JWTResponse
+   * @param requestBody
+   * @returns any
+   * @throws ApiError
+   */
+  public static adminLoginForJwt(requestBody: UserLoginInput): CancelablePromise<
+    APIResponse & {
+      data?: JWTResponse;
+    }
+  > {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/users/login/jwt/admin',
       body: requestBody,
       mediaType: 'application/json',
     });

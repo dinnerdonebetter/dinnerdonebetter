@@ -29,6 +29,7 @@ export type { HouseholdOwnershipTransferInput } from './models/HouseholdOwnershi
 export type { HouseholdUpdateRequestInput } from './models/HouseholdUpdateRequestInput';
 export type { HouseholdUserMembership } from './models/HouseholdUserMembership';
 export type { HouseholdUserMembershipWithUser } from './models/HouseholdUserMembershipWithUser';
+export type { JWTResponse } from './models/JWTResponse';
 export type { Meal } from './models/Meal';
 export type { MealComponent } from './models/MealComponent';
 export type { MealComponentCreationRequestInput } from './models/MealComponentCreationRequestInput';
