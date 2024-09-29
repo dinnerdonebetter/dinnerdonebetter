@@ -107,6 +107,27 @@ resource "google_secret_manager_secret_version" "cookie_block_key" {
   secret_data = random_string.cookie_block_key.result
 }
 
+# JWT Signing key
+
+resource "random_string" "jwt_signing_key" {
+  length  = 32
+  special = false
+}
+
+resource "google_secret_manager_secret" "jwt_signing_key" {
+  secret_id = "jwt_signing_key"
+
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "jwt_signing_key" {
+  secret = google_secret_manager_secret.jwt_signing_key.id
+
+  secret_data = base64encode(random_string.jwt_signing_key.result)
+}
+
 ### External API services ###
 
 # Sendgrid token

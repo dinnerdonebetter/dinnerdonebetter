@@ -55,7 +55,7 @@ func (s *service) determineCookieDomain(ctx context.Context, req *http.Request) 
 }
 
 // BuildLoginHandler is our login route.
-func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *http.Request) {
+func (s *service) BuildLoginHandler(adminOnly, returningJWT bool) func(http.ResponseWriter, *http.Request) {
 	return func(res http.ResponseWriter, req *http.Request) {
 		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
@@ -171,7 +171,18 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
-		responseCode, err := s.postLogin(ctx, user, defaultHouseholdID, req, res)
+		cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID, requestedCookieDomain)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "issuing cookie")
+			errRes := types.NewAPIErrorResponse("cookie issuance", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+			return
+		}
+
+		http.SetCookie(res, cookie)
+		logger.Debug("user logged in")
+
+		responseCode, err := s.postLogin(ctx, user, defaultHouseholdID)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "handling login status")
 			errRes := types.NewAPIErrorResponse(staticError, types.ErrTalkingToDatabase, responseDetails)
@@ -179,36 +190,44 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
-		statusResponse := &types.UserStatusResponse{
-			UserID:                   user.ID,
-			UserIsAuthenticated:      true,
-			AccountStatus:            user.AccountStatus,
-			ActiveHousehold:          defaultHouseholdID,
-			AccountStatusExplanation: user.AccountStatusExplanation,
-		}
+		if returningJWT {
+			var token string
+			token, err = s.jwtSigner.IssueJWT(ctx, user, s.config.JWTLifetime)
+			if err != nil {
+				observability.AcknowledgeError(err, logger, span, "signing token")
+				errRes := types.NewAPIErrorResponse(staticError, types.ErrEncryptionIssue, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, responseCode)
+				return
+			}
 
-		responseValue := &types.APIResponse[*types.UserStatusResponse]{
-			Details: responseDetails,
-			Data:    statusResponse,
-		}
+			responseValue := &types.APIResponse[*types.JWTResponse]{
+				Details: responseDetails,
+				Data:    &types.JWTResponse{Token: token},
+			}
 
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, responseCode)
-		logger.Debug("user logged in")
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, responseCode)
+		} else {
+			statusResponse := &types.UserStatusResponse{
+				UserID:                   user.ID,
+				UserIsAuthenticated:      true,
+				AccountStatus:            user.AccountStatus,
+				ActiveHousehold:          defaultHouseholdID,
+				AccountStatusExplanation: user.AccountStatusExplanation,
+			}
+
+			responseValue := &types.APIResponse[*types.UserStatusResponse]{
+				Details: responseDetails,
+				Data:    statusResponse,
+			}
+
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, responseCode)
+		}
 	}
 }
 
-func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseholdID string, req *http.Request, res http.ResponseWriter) (int, error) {
+func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseholdID string) (int, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
-
-	requestedCookieDomain := s.determineCookieDomain(ctx, req)
-
-	cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID, requestedCookieDomain)
-	if err != nil {
-		return http.StatusInternalServerError, observability.PrepareError(err, span, "issuing cookie")
-	}
-
-	http.SetCookie(res, cookie)
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.UserLoggedInCustomerEventType,
@@ -216,12 +235,12 @@ func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseh
 		UserID:      user.ID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+	if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, s.logger, span, "publishing data change message")
 		return http.StatusAccepted, nil
 	}
 
-	if err = s.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
+	if err := s.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
 		"username":          user.Username,
 		"default_household": defaultHouseholdID,
 		"first_name":        user.FirstName,
@@ -230,7 +249,7 @@ func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseh
 		return http.StatusAccepted, observability.PrepareError(err, span, "identifying user for analytics")
 	}
 
-	if err = s.featureFlagManager.Identify(ctx, user); err != nil {
+	if err := s.featureFlagManager.Identify(ctx, user); err != nil {
 		return http.StatusAccepted, observability.PrepareError(err, span, "identifying user in feature flag manager")
 	}
 
@@ -299,6 +318,11 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
+
+	requestedCookieDomain := s.determineCookieDomain(ctx, req)
+	if requestedCookieDomain != "" {
+		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
+	}
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
@@ -382,7 +406,17 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	}
 	defaultHouseholdTimer.Stop()
 
-	responseCode, err := s.postLogin(ctx, user, defaultHouseholdID, req, res)
+	cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID, requestedCookieDomain)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "issuing cookie")
+		errRes := types.NewAPIErrorResponse("cookie issuance", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(res, cookie)
+
+	responseCode, err := s.postLogin(ctx, user, defaultHouseholdID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "handling login status")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, responseCode)

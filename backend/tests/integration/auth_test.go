@@ -26,7 +26,7 @@ func (s *TestSuite) TestLogin() {
 		defer span.End()
 
 		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
-		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
+		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -42,7 +42,90 @@ func (s *TestSuite) TestLogin() {
 		assert.Equal(t, "/", cookie.Path)
 		assert.Equal(t, http.SameSiteNoneMode, cookie.SameSite)
 
-		assert.NoError(t, testClient.EndSession(ctx))
+		assert.NoError(t, testClient.Logout(ctx))
+	})
+}
+
+func (s *TestSuite) TestAdminLogin() {
+	s.Run("logging in and out works", func() {
+		t := s.T()
+
+		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
+		defer span.End()
+
+		loginInput := &types.UserLoginInput{
+			Username:  premadeAdminUser.Username,
+			Password:  premadeAdminUser.HashedPassword,
+			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
+		}
+
+		adminClient, err := initializeCookiePoweredClient(ctx, loginInput)
+		require.NoError(t, err)
+
+		// kinda redundant, but this one actually uses the admin route
+		cookie, err := adminClient.AdminLogin(ctx, &types.UserLoginInput{
+			Username:  premadeAdminUser.Username,
+			Password:  premadeAdminUser.HashedPassword,
+			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
+		})
+
+		assert.NotNil(t, cookie)
+		assert.NoError(t, err)
+
+		assert.Equal(t, authservice.DefaultCookieName, cookie.Name)
+		assert.NotEmpty(t, cookie.Value)
+		assert.NotZero(t, cookie.MaxAge)
+		assert.True(t, cookie.HttpOnly)
+		assert.Equal(t, "/", cookie.Path)
+		assert.Equal(t, http.SameSiteNoneMode, cookie.SameSite)
+
+		assert.NoError(t, adminClient.Logout(ctx))
+	})
+}
+
+func (s *TestSuite) TestLoginForJWT() {
+	s.Run("logging in and out works", func() {
+		t := s.T()
+
+		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
+		defer span.End()
+
+		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		token, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
+			Username:  testUser.Username,
+			Password:  testUser.HashedPassword,
+			TOTPToken: generateTOTPTokenForUser(t, testUser),
+		})
+
+		assert.NotEmpty(t, token)
+		assert.NoError(t, err)
+	})
+}
+
+func (s *TestSuite) TestAdminLoginForJWT() {
+	s.Run("logging in and out works", func() {
+		t := s.T()
+
+		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
+		defer span.End()
+
+		loginInput := &types.UserLoginInput{
+			Username:  premadeAdminUser.Username,
+			Password:  premadeAdminUser.HashedPassword,
+			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
+		}
+
+		adminClient, err := initializeCookiePoweredClient(ctx, loginInput)
+		require.NoError(t, err)
+
+		token, err := adminClient.AdminLoginForJWT(ctx, &types.UserLoginInput{
+			Username:  premadeAdminUser.Username,
+			Password:  premadeAdminUser.HashedPassword,
+			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
+		})
+
+		assert.NotEmpty(t, token)
+		assert.NoError(t, err)
 	})
 }
 
@@ -90,7 +173,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithInvalidPassword() {
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
 		}
 
-		cookie, err := testClient.BeginSession(ctx, r)
+		cookie, err := testClient.Login(ctx, r)
 		assert.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -112,7 +195,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginAsANonexistentUser() {
 			TOTPToken: "123456",
 		}
 
-		cookie, err := testClient.BeginSession(ctx, r)
+		cookie, err := testClient.Login(ctx, r)
 		assert.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -139,7 +222,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithoutValidating2FASecret()
 			Password: exampleUserCreationInput.Password,
 		}
 
-		cookie, err := testClient.BeginSession(ctx, r)
+		cookie, err := testClient.Login(ctx, r)
 		assert.NotNil(t, cookie)
 		assert.NoError(t, err)
 	})
@@ -153,7 +236,7 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		defer span.End()
 
 		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
-		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
+		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -170,7 +253,7 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		assert.Equal(t, "", actual.AccountStatusExplanation, "expected AccountStatusExplanation to equal %v, but got %v", "", actual.AccountStatusExplanation)
 		assert.NotZero(t, actual.ActiveHousehold)
 
-		assert.NoError(t, testClient.EndSession(ctx))
+		assert.NoError(t, testClient.Logout(ctx))
 	})
 }
 
@@ -184,7 +267,7 @@ func (s *TestSuite) TestPasswordChanging() {
 		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
 
 		// login.
-		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
+		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -206,10 +289,10 @@ func (s *TestSuite) TestPasswordChanging() {
 		}))
 
 		// logout.
-		assert.NoError(t, testClient.EndSession(ctx))
+		assert.NoError(t, testClient.Logout(ctx))
 
 		// login again with new passwords.
-		cookie, err = testClient.BeginSession(ctx, &types.UserLoginInput{
+		cookie, err = testClient.Login(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  backwardsPass,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -229,7 +312,7 @@ func (s *TestSuite) TestTOTPSecretChanging() {
 
 		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
 
-		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
+		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -246,13 +329,13 @@ func (s *TestSuite) TestTOTPSecretChanging() {
 		require.NoError(t, testClient.VerifyTOTPSecret(ctx, testUser.ID, generateTOTPTokenForUser(t, testUser)))
 
 		// logout.
-		require.NoError(t, testClient.EndSession(ctx))
+		require.NoError(t, testClient.Logout(ctx))
 
 		// create login request.
 		newToken, err := totp.GenerateCode(r.TwoFactorSecret, time.Now().UTC())
 		requireNotNilAndNoProblems(t, newToken, err)
 
-		secondCookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
+		secondCookie, err := testClient.Login(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: newToken,
@@ -336,7 +419,7 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 			NewPassword: fakeInput.Password,
 		}))
 
-		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
+		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
 			Username:  u.Username,
 			Password:  fakeInput.Password,
 			TOTPToken: generateTOTPTokenForUser(t, u),

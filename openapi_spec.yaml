@@ -20816,6 +20816,138 @@ paths:
           description: ""
       tags:
       - users
+  /users/login/jwt:
+    post:
+      description: Operation for creating JWTResponse
+      operationId: LoginForJWT
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginInput'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UserLoginInput'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/JWTResponse'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/JWTResponse'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+      security:
+      - cookieAuth: []
+      tags:
+      - users
+  /users/login/jwt/admin:
+    post:
+      description: Operation for creating JWTResponse
+      operationId: AdminLoginForJWT
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginInput'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UserLoginInput'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/JWTResponse'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/JWTResponse'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+      security:
+      - cookieAuth: []
+      tags:
+      - users
   /users/logout:
     post:
       description: Operation for creating UserStatusResponse
@@ -21458,6 +21590,11 @@ components:
           type: string
         lastUpdatedAt:
           format: date-time
+          type: string
+      type: object
+    JWTResponse:
+      properties:
+        token:
           type: string
       type: object
     Meal:

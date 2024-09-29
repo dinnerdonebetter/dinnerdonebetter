@@ -58,4 +58,6 @@ const (
 	ErrUserIsBanned ErrorCode = "E109"
 	// ErrUserIsNotAuthorized is returned when a user is not authorized.
 	ErrUserIsNotAuthorized ErrorCode = "E110"
+	// ErrEncryptionIssue is returned when encryption fails in the service.
+	ErrEncryptionIssue ErrorCode = "E111"
 )

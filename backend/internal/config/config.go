@@ -41,13 +41,13 @@ type (
 	InstanceConfig struct {
 		_             struct{}                  `json:"-"`
 		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
-		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
 		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
-		Search        searchcfg.Config          `json:"search"        toml:"search,omitempty"`
+		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
 		FeatureFlags  featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
+		Search        searchcfg.Config          `json:"search"        toml:"search,omitempty"`
 		Encoding      encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
-		Meta          MetaSettings              `json:"meta"          toml:"meta,omitempty"`
 		Routing       routing.Config            `json:"routing"       toml:"routing,omitempty"`
+		Meta          MetaSettings              `json:"meta"          toml:"meta,omitempty"`
 		Events        msgconfig.Config          `json:"events"        toml:"events,omitempty"`
 		Server        http.Config               `json:"server"        toml:"server,omitempty"`
 		Database      dbconfig.Config           `json:"database"      toml:"database,omitempty"`

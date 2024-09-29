@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"log"
 	"os"
@@ -23,6 +24,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltracehttp"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/algolia"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
@@ -264,6 +266,8 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
+				JWTAudience:           "https://api.dinnerdonebetter.dev",
+				JWTLifetime:           5 * time.Minute,
 			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -347,7 +351,7 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 	return saveConfig(ctx, filePath, cfg, false, false)
 }
 
-func buildDevConfig() *config.InstanceConfig {
+func buildLocalDevConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
 		Routing: localRoutingConfig,
 		Meta: config.MetaSettings{
@@ -409,6 +413,9 @@ func buildDevConfig() *config.InstanceConfig {
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
 				DataChangesTopicName:  dataChangesTopicName,
+				JWTAudience:           "localhost",
+				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+				JWTLifetime:           5 * time.Minute,
 			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -573,7 +580,7 @@ func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string
 	const localUploadsDir = "artifacts/uploads"
 	const localRedisAddr = "localhost:6379"
 	return func(ctx context.Context, filePath string) error {
-		cfg := buildDevConfig()
+		cfg := buildLocalDevConfig()
 
 		if local {
 			cfg.Database.ConnectionDetails = "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable"
@@ -655,6 +662,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
 				DataChangesTopicName:  dataChangesTopicName,
+				JWTAudience:           "localhost",
+				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+				JWTLifetime:           5 * time.Minute,
 			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,

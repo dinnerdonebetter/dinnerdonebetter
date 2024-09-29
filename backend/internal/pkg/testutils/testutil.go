@@ -23,6 +23,11 @@ func init() {
 	fake.Seed(time.Now().UnixNano())
 }
 
+const (
+	Example32ByteKey = "HEREISA32CHARSECRETWHICHISMADEUP"
+	Example64ByteKey = "HEREISA64CHARSECRETWHICHISMADEUPHEREISA64CHARSECRETWHICHISMADEUP"
+)
+
 // errArbitrary is an arbitrary error.
 var errArbitrary = errors.New("blah")
 

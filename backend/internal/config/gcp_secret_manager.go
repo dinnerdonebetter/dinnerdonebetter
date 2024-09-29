@@ -39,6 +39,8 @@ const (
 	gcpGoogleSSOClientIDEnvVarKey        = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_ID"
 	gcpGoogleSSOClientSecretEnvVarKey    = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_SECRET"
 	/* #nosec G101 */
+	gcpJWTSigningKeyEnvVarKey = "DINNER_DONE_BETTER_JWT_SIGNING_KEY"
+	/* #nosec G101 */
 	gcpOauth2TokenEncryptionKeyEnvVarKey = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
 	/* #nosec G101 */
 	gcpDatabaseUserPasswordEnvVarKey = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
@@ -109,6 +111,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.SSO.Google.ClientID = os.Getenv(gcpGoogleSSOClientIDEnvVarKey)
 	cfg.Services.Auth.SSO.Google.ClientSecret = os.Getenv(gcpGoogleSSOClientSecretEnvVarKey)
+	cfg.Services.Auth.JWTSigningKey = os.Getenv(gcpJWTSigningKeyEnvVarKey)
 
 	cfg.Search = searchcfg.Config{
 		Provider: searchcfg.AlgoliaProvider,
@@ -127,7 +130,6 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
-
 	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName

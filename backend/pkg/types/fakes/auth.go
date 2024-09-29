@@ -46,3 +46,21 @@ func BuildFakeChangeActiveHouseholdInput() *types.ChangeActiveHouseholdInput {
 		HouseholdID: fake.UUID(),
 	}
 }
+
+// BuildFakeUserStatusResponse builds a faked UserStatusResponse.
+func BuildFakeUserStatusResponse() *types.UserStatusResponse {
+	return &types.UserStatusResponse{
+		UserID:                   BuildFakeID(),
+		AccountStatus:            string(types.GoodStandingUserAccountStatus),
+		AccountStatusExplanation: "",
+		ActiveHousehold:          BuildFakeID(),
+		UserIsAuthenticated:      true,
+	}
+}
+
+// BuildFakeJWTResponse builds a faked JWTResponse.
+func BuildFakeJWTResponse() *types.JWTResponse {
+	return &types.JWTResponse{
+		Token: fake.UUID(),
+	}
+}

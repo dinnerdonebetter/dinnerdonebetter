@@ -43,16 +43,18 @@ type (
 
 	// Config represents our passwords configuration.
 	Config struct {
-		_ struct{} `json:"-"`
-
-		SSO                   SSOConfigs   `json:"sso,omitempty"                   toml:"sso,omitempty"`
-		DataChangesTopicName  string       `json:"dataChanges,omitempty"           toml:"data_changes,omitempty"`
-		Cookies               CookieConfig `json:"cookies,omitempty"               toml:"cookies,omitempty"`
-		OAuth2                OAuth2Config `json:"oauth2,omitempty"                toml:"oauth2,omitempty"`
-		Debug                 bool         `json:"debug,omitempty"                 toml:"debug,omitempty"`
-		EnableUserSignup      bool         `json:"enableUserSignup,omitempty"      toml:"enable_user_signup,omitempty"`
-		MinimumUsernameLength uint8        `json:"minimumUsernameLength,omitempty" toml:"minimum_username_length,omitempty"`
-		MinimumPasswordLength uint8        `json:"minimumPasswordLength,omitempty" toml:"minimum_password_length,omitempty"`
+		_                     struct{}      `json:"-"`
+		SSO                   SSOConfigs    `json:"sso,omitempty"                   toml:"sso,omitempty"`
+		DataChangesTopicName  string        `json:"dataChanges,omitempty"           toml:"data_changes,omitempty"`
+		JWTAudience           string        `json:"jwtAudience,omitempty"           toml:"jwt_audience,omitempty"`
+		JWTSigningKey         string        `json:"jwtSigningKey"                   toml:"jwt_signing_key"`
+		Cookies               CookieConfig  `json:"cookies,omitempty"               toml:"cookies,omitempty"`
+		OAuth2                OAuth2Config  `json:"oauth2,omitempty"                toml:"oauth2,omitempty"`
+		JWTLifetime           time.Duration `json:"jwtLifetime"                     toml:"jwt_lifetime"`
+		Debug                 bool          `json:"debug,omitempty"                 toml:"debug,omitempty"`
+		EnableUserSignup      bool          `json:"enableUserSignup,omitempty"      toml:"enable_user_signup,omitempty"`
+		MinimumUsernameLength uint8         `json:"minimumUsernameLength,omitempty" toml:"minimum_username_length,omitempty"`
+		MinimumPasswordLength uint8         `json:"minimumPasswordLength,omitempty" toml:"minimum_password_length,omitempty"`
 	}
 )
 
