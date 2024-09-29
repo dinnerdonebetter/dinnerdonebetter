@@ -9,7 +9,7 @@ import (
 )
 
 type tokenImpl struct {
-	types.OAuth2ClientToken
+	Token types.OAuth2ClientToken
 }
 
 func (t *tokenImpl) New() oauth2.TokenInfo {
@@ -18,125 +18,125 @@ func (t *tokenImpl) New() oauth2.TokenInfo {
 }
 
 func (t *tokenImpl) GetClientID() string {
-	return t.ClientID
+	return t.Token.ClientID
 }
 
 func (t *tokenImpl) SetClientID(s string) {
-	t.ClientID = s
+	t.Token.ClientID = s
 }
 
 func (t *tokenImpl) GetUserID() string {
-	return t.BelongsToUser
+	return t.Token.BelongsToUser
 }
 
 func (t *tokenImpl) SetUserID(s string) {
-	t.BelongsToUser = s
+	t.Token.BelongsToUser = s
 }
 
 func (t *tokenImpl) GetRedirectURI() string {
-	return t.RedirectURI
+	return t.Token.RedirectURI
 }
 
 func (t *tokenImpl) SetRedirectURI(s string) {
-	t.RedirectURI = s
+	t.Token.RedirectURI = s
 }
 
 func (t *tokenImpl) GetScope() string {
-	return t.Scope
+	return t.Token.Scope
 }
 
 func (t *tokenImpl) SetScope(s string) {
-	t.Scope = s
+	t.Token.Scope = s
 }
 
 func (t *tokenImpl) GetCode() string {
-	return t.Code
+	return t.Token.Code
 }
 
 func (t *tokenImpl) SetCode(s string) {
-	t.Code = s
+	t.Token.Code = s
 }
 
 func (t *tokenImpl) GetCodeCreateAt() time.Time {
-	return t.CodeCreatedAt
+	return t.Token.CodeCreatedAt
 }
 
 func (t *tokenImpl) SetCodeCreateAt(x time.Time) {
-	t.CodeCreatedAt = x
+	t.Token.CodeCreatedAt = x
 }
 
 func (t *tokenImpl) GetCodeExpiresIn() time.Duration {
-	return t.CodeExpiresAt
+	return t.Token.CodeExpiresAt
 }
 
 func (t *tokenImpl) SetCodeExpiresIn(duration time.Duration) {
-	t.CodeExpiresAt = duration
+	t.Token.CodeExpiresAt = duration
 }
 
 func (t *tokenImpl) GetCodeChallenge() string {
-	return t.CodeChallenge
+	return t.Token.CodeChallenge
 }
 
 func (t *tokenImpl) SetCodeChallenge(s string) {
-	t.CodeChallenge = s
+	t.Token.CodeChallenge = s
 }
 
 func (t *tokenImpl) GetCodeChallengeMethod() oauth2.CodeChallengeMethod {
-	return oauth2.CodeChallengeMethod(t.CodeChallengeMethod)
+	return oauth2.CodeChallengeMethod(t.Token.CodeChallengeMethod)
 }
 
 func (t *tokenImpl) SetCodeChallengeMethod(method oauth2.CodeChallengeMethod) {
-	t.CodeChallengeMethod = method.String()
+	t.Token.CodeChallengeMethod = method.String()
 }
 
 func (t *tokenImpl) GetAccess() string {
-	return t.Access
+	return t.Token.Access
 }
 
 func (t *tokenImpl) SetAccess(s string) {
-	t.Access = s
+	t.Token.Access = s
 }
 
 func (t *tokenImpl) GetAccessCreateAt() time.Time {
-	return t.AccessCreatedAt
+	return t.Token.AccessCreatedAt
 }
 
 func (t *tokenImpl) SetAccessCreateAt(x time.Time) {
-	t.AccessCreatedAt = x
+	t.Token.AccessCreatedAt = x
 }
 
 func (t *tokenImpl) GetAccessExpiresIn() time.Duration {
-	return t.AccessExpiresAt
+	return t.Token.AccessExpiresAt
 }
 
 func (t *tokenImpl) SetAccessExpiresIn(duration time.Duration) {
-	t.AccessExpiresAt = duration
+	t.Token.AccessExpiresAt = duration
 }
 
 func (t *tokenImpl) GetRefresh() string {
-	return t.Refresh
+	return t.Token.Refresh
 }
 
 func (t *tokenImpl) SetRefresh(s string) {
-	t.Refresh = s
+	t.Token.Refresh = s
 }
 
 func (t *tokenImpl) GetRefreshCreateAt() time.Time {
-	return t.RefreshCreatedAt
+	return t.Token.RefreshCreatedAt
 }
 
 func (t *tokenImpl) SetRefreshCreateAt(x time.Time) {
-	t.RefreshCreatedAt = x
+	t.Token.RefreshCreatedAt = x
 }
 
 func (t *tokenImpl) GetRefreshExpiresIn() time.Duration {
-	return t.RefreshExpiresAt
+	return t.Token.RefreshExpiresAt
 }
 
 func (t *tokenImpl) SetRefreshExpiresIn(duration time.Duration) {
-	t.RefreshExpiresAt = duration
+	t.Token.RefreshExpiresAt = duration
 }
 
 func convertTokenToImpl(t *types.OAuth2ClientToken) oauth2.TokenInfo {
-	return &tokenImpl{OAuth2ClientToken: *t}
+	return &tokenImpl{Token: *t}
 }

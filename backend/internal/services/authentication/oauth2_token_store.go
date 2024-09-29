@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"context"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -25,8 +26,10 @@ func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	info.SetAccessExpiresIn(24 * time.Hour)
+	info.SetRefreshExpiresIn(72 * time.Hour)
+
 	logger := s.logger.WithValue("info", info)
-	logger.Debug("Create invoked")
 
 	input := &types.OAuth2ClientTokenDatabaseCreationInput{
 		RefreshCreatedAt:    info.GetRefreshCreateAt(),
