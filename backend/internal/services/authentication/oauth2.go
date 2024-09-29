@@ -2,10 +2,10 @@ package authentication
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"net/http"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
