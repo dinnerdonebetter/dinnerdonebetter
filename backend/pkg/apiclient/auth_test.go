@@ -99,12 +99,17 @@ func (s *authTestSuite) TestClient_Login() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+		exampleResponse := fakes.BuildFakeUserStatusResponse()
 
 		ts := httptest.NewTLSServer(http.HandlerFunc(
 			func(res http.ResponseWriter, req *http.Request) {
 				assertRequestQuality(t, req, spec)
 
 				http.SetCookie(res, &http.Cookie{Name: s.exampleUser.Username})
+
+				require.NoError(t, json.NewEncoder(res).Encode(&types.APIResponse[*types.UserStatusResponse]{
+					Data: exampleResponse,
+				}))
 			},
 		))
 		c := buildTestClient(t, ts)
@@ -168,12 +173,17 @@ func (s *authTestSuite) TestClient_AdminLogin() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+		exampleResponse := fakes.BuildFakeUserStatusResponse()
 
 		ts := httptest.NewTLSServer(http.HandlerFunc(
 			func(res http.ResponseWriter, req *http.Request) {
 				assertRequestQuality(t, req, spec)
 
 				http.SetCookie(res, &http.Cookie{Name: s.exampleUser.Username})
+
+				require.NoError(t, json.NewEncoder(res).Encode(&types.APIResponse[*types.UserStatusResponse]{
+					Data: exampleResponse,
+				}))
 			},
 		))
 		c := buildTestClient(t, ts)
