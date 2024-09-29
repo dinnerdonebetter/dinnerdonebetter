@@ -42,6 +42,7 @@ func Test_jwtSigner_IssueJWT(T *testing.T) {
 		assert.NoError(t, err)
 
 		sub, err := parsed.Claims.GetSubject()
+		assert.NoError(t, err)
 		assert.Equal(t, sub, user.ID)
 
 		expTime, err := parsed.Claims.GetExpirationTime()

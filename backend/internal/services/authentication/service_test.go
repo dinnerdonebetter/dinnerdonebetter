@@ -122,7 +122,6 @@ func TestProvideService(T *testing.T) {
 				Name:     DefaultCookieName,
 				BlockKey: "BLAHBLAHBLAH",
 			},
-			JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 		}
 
 		pp := &mockpublishers.ProducerProvider{}

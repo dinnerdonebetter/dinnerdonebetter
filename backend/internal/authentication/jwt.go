@@ -84,6 +84,7 @@ func (s *jwtSigner) ParseJWT(ctx context.Context, token string) (*jwt.Token, err
 		return s.signingKey, nil
 	})
 	if err != nil {
+		s.logger.Error(err, "parsing JWT")
 		return nil, err
 	}
 
