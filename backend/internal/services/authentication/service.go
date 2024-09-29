@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"sync"
@@ -60,6 +61,7 @@ type (
 		tracer                     tracing.Tracer
 		dataChangesPublisher       messagequeue.Publisher
 		oauth2Server               *server.Server
+		jwtSigner                  authentication.JWTSigner
 	}
 )
 
@@ -91,6 +93,11 @@ func ProvideService(
 
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))
 
+	decryptedJWTSigningKey, err := base64.URLEncoding.DecodeString(cfg.JWTSigningKey)
+	if err != nil {
+		return nil, fmt.Errorf("decoding Token signing key: %w", err)
+	}
+
 	svc := &service{
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
 		encoderDecoder:             encoder,
@@ -109,7 +116,13 @@ func ProvideService(
 		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager),
 	}
 
-	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {
+	signer, err := authentication.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
+	if err != nil {
+		return nil, fmt.Errorf("creating Token signer: %w", err)
+	}
+	svc.jwtSigner = signer
+
+	if _, err = svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {
 		logger.WithValue("cookie_signing_key_length", len(cfg.Cookies.BlockKey)).Error(err, "building test cookie")
 		return nil, fmt.Errorf("building test cookie: %w", err)
 	}

@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"context"
+	"encoding/base64"
 	"net/http"
 	"testing"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/routing/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -33,6 +35,7 @@ func buildTestService(t *testing.T) *service {
 			BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
 			Domain:   ".whocares.gov",
 		},
+		JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 	}
 
 	pp := &mockpublishers.ProducerProvider{}
@@ -77,6 +80,7 @@ func TestProvideService(T *testing.T) {
 				Name:     DefaultCookieName,
 				BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
 			},
+			JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
@@ -118,6 +122,7 @@ func TestProvideService(T *testing.T) {
 				Name:     DefaultCookieName,
 				BlockKey: "BLAHBLAHBLAH",
 			},
+			JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 		}
 
 		pp := &mockpublishers.ProducerProvider{}

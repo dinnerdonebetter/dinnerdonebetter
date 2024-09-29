@@ -995,6 +995,11 @@ type HouseholdUserMembershipWithUser struct {
 	LastUpdatedAt      *time.Time `json:"lastUpdatedAt,omitempty"`
 }
 
+// JWTResponse defines model for JWTResponse.
+type JWTResponse struct {
+	Token *string `json:"token,omitempty"`
+}
+
 // Meal defines model for Meal.
 type Meal struct {
 	ArchivedAt               *time.Time       `json:"archivedAt,omitempty"`
@@ -4148,6 +4153,12 @@ type LoginJSONRequestBody = UserLoginInput
 // AdminLoginJSONRequestBody defines body for AdminLogin for application/json ContentType.
 type AdminLoginJSONRequestBody = UserLoginInput
 
+// LoginForJWTJSONRequestBody defines body for LoginForJWT for application/json ContentType.
+type LoginForJWTJSONRequestBody = UserLoginInput
+
+// AdminLoginForJWTJSONRequestBody defines body for AdminLoginForJWT for application/json ContentType.
+type AdminLoginForJWTJSONRequestBody = UserLoginInput
+
 // RequestPasswordResetTokenJSONRequestBody defines body for RequestPasswordResetToken for application/json ContentType.
 type RequestPasswordResetTokenJSONRequestBody = PasswordResetTokenCreationRequestInput
 
@@ -5198,6 +5209,16 @@ type ClientInterface interface {
 	AdminLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	AdminLogin(ctx context.Context, body AdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// LoginForJWTWithBody request with any body
+	LoginForJWTWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	LoginForJWT(ctx context.Context, body LoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AdminLoginForJWTWithBody request with any body
+	AdminLoginForJWTWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AdminLoginForJWT(ctx context.Context, body AdminLoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// Logout request
 	Logout(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -9449,6 +9470,54 @@ func (c *Client) AdminLoginWithBody(ctx context.Context, contentType string, bod
 
 func (c *Client) AdminLogin(ctx context.Context, body AdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAdminLoginRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) LoginForJWTWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLoginForJWTRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) LoginForJWT(ctx context.Context, body LoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLoginForJWTRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AdminLoginForJWTWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAdminLoginForJWTRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AdminLoginForJWT(ctx context.Context, body AdminLoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAdminLoginForJWTRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -26223,6 +26292,86 @@ func NewAdminLoginRequestWithBody(server string, contentType string, body io.Rea
 	return req, nil
 }
 
+// NewLoginForJWTRequest calls the generic LoginForJWT builder with application/json body
+func NewLoginForJWTRequest(server string, body LoginForJWTJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewLoginForJWTRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewLoginForJWTRequestWithBody generates requests for LoginForJWT with any type of body
+func NewLoginForJWTRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/login/jwt")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewAdminLoginForJWTRequest calls the generic AdminLoginForJWT builder with application/json body
+func NewAdminLoginForJWTRequest(server string, body AdminLoginForJWTJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAdminLoginForJWTRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewAdminLoginForJWTRequestWithBody generates requests for AdminLoginForJWT with any type of body
+func NewAdminLoginForJWTRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/login/jwt/admin")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewLogoutRequest generates requests for Logout
 func NewLogoutRequest(server string) (*http.Request, error) {
 	var err error
@@ -27418,6 +27567,16 @@ type ClientWithResponsesInterface interface {
 	AdminLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AdminLoginResponse, error)
 
 	AdminLoginWithResponse(ctx context.Context, body AdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*AdminLoginResponse, error)
+
+	// LoginForJWTWithBodyWithResponse request with any body
+	LoginForJWTWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginForJWTResponse, error)
+
+	LoginForJWTWithResponse(ctx context.Context, body LoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*LoginForJWTResponse, error)
+
+	// AdminLoginForJWTWithBodyWithResponse request with any body
+	AdminLoginForJWTWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AdminLoginForJWTResponse, error)
+
+	AdminLoginForJWTWithResponse(ctx context.Context, body AdminLoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*AdminLoginForJWTResponse, error)
 
 	// LogoutWithResponse request
 	LogoutWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LogoutResponse, error)
@@ -37385,6 +37544,84 @@ func (r AdminLoginResponse) StatusCode() int {
 	return 0
 }
 
+type LoginForJWTResponse struct {
+	HTTPResponse *http.Response
+	JSON201      *struct {
+		Data       *JWTResponse     `json:"data,omitempty"`
+		Details    *ResponseDetails `json:"details,omitempty"`
+		Error      *APIError        `json:"error,omitempty"`
+		Pagination *Pagination      `json:"pagination,omitempty"`
+	}
+	XML201 *struct {
+		Data       *JWTResponse     `json:"data,omitempty"`
+		Details    *ResponseDetails `json:"details,omitempty"`
+		Error      *APIError        `json:"error,omitempty"`
+		Pagination *Pagination      `json:"pagination,omitempty"`
+	}
+	JSON400 *APIResponseWithError
+	XML400  *APIResponseWithError
+	JSON401 *APIResponseWithError
+	XML401  *APIResponseWithError
+	JSON500 *APIResponseWithError
+	XML500  *APIResponseWithError
+	Body    []byte
+}
+
+// Status returns HTTPResponse.Status
+func (r LoginForJWTResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r LoginForJWTResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AdminLoginForJWTResponse struct {
+	HTTPResponse *http.Response
+	JSON201      *struct {
+		Data       *JWTResponse     `json:"data,omitempty"`
+		Details    *ResponseDetails `json:"details,omitempty"`
+		Error      *APIError        `json:"error,omitempty"`
+		Pagination *Pagination      `json:"pagination,omitempty"`
+	}
+	XML201 *struct {
+		Data       *JWTResponse     `json:"data,omitempty"`
+		Details    *ResponseDetails `json:"details,omitempty"`
+		Error      *APIError        `json:"error,omitempty"`
+		Pagination *Pagination      `json:"pagination,omitempty"`
+	}
+	JSON400 *APIResponseWithError
+	XML400  *APIResponseWithError
+	JSON401 *APIResponseWithError
+	XML401  *APIResponseWithError
+	JSON500 *APIResponseWithError
+	XML500  *APIResponseWithError
+	Body    []byte
+}
+
+// Status returns HTTPResponse.Status
+func (r AdminLoginForJWTResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AdminLoginForJWTResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type LogoutResponse struct {
 	HTTPResponse *http.Response
 	JSON201      *struct {
@@ -40662,6 +40899,40 @@ func (c *ClientWithResponses) AdminLoginWithResponse(ctx context.Context, body A
 		return nil, err
 	}
 	return ParseAdminLoginResponse(rsp)
+}
+
+// LoginForJWTWithBodyWithResponse request with arbitrary body returning *LoginForJWTResponse
+func (c *ClientWithResponses) LoginForJWTWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginForJWTResponse, error) {
+	rsp, err := c.LoginForJWTWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseLoginForJWTResponse(rsp)
+}
+
+func (c *ClientWithResponses) LoginForJWTWithResponse(ctx context.Context, body LoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*LoginForJWTResponse, error) {
+	rsp, err := c.LoginForJWT(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseLoginForJWTResponse(rsp)
+}
+
+// AdminLoginForJWTWithBodyWithResponse request with arbitrary body returning *AdminLoginForJWTResponse
+func (c *ClientWithResponses) AdminLoginForJWTWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AdminLoginForJWTResponse, error) {
+	rsp, err := c.AdminLoginForJWTWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAdminLoginForJWTResponse(rsp)
+}
+
+func (c *ClientWithResponses) AdminLoginForJWTWithResponse(ctx context.Context, body AdminLoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*AdminLoginForJWTResponse, error) {
+	rsp, err := c.AdminLoginForJWT(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAdminLoginForJWTResponse(rsp)
 }
 
 // LogoutWithResponse request returning *LogoutResponse
@@ -62050,6 +62321,176 @@ func ParseAdminLoginResponse(rsp *http.Response) (*AdminLoginResponse, error) {
 			Details    *ResponseDetails    `json:"details,omitempty"`
 			Error      *APIError           `json:"error,omitempty"`
 			Pagination *Pagination         `json:"pagination,omitempty"`
+		}
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseLoginForJWTResponse parses an HTTP response from a LoginForJWTWithResponse call
+func ParseLoginForJWTResponse(rsp *http.Response) (*LoginForJWTResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &LoginForJWTResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest struct {
+			Data       *JWTResponse     `json:"data,omitempty"`
+			Details    *ResponseDetails `json:"details,omitempty"`
+			Error      *APIError        `json:"error,omitempty"`
+			Pagination *Pagination      `json:"pagination,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 201:
+		var dest struct {
+			Data       *JWTResponse     `json:"data,omitempty"`
+			Details    *ResponseDetails `json:"details,omitempty"`
+			Error      *APIError        `json:"error,omitempty"`
+			Pagination *Pagination      `json:"pagination,omitempty"`
+		}
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAdminLoginForJWTResponse parses an HTTP response from a AdminLoginForJWTWithResponse call
+func ParseAdminLoginForJWTResponse(rsp *http.Response) (*AdminLoginForJWTResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AdminLoginForJWTResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest struct {
+			Data       *JWTResponse     `json:"data,omitempty"`
+			Details    *ResponseDetails `json:"details,omitempty"`
+			Error      *APIError        `json:"error,omitempty"`
+			Pagination *Pagination      `json:"pagination,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 201:
+		var dest struct {
+			Data       *JWTResponse     `json:"data,omitempty"`
+			Details    *ResponseDetails `json:"details,omitempty"`
+			Error      *APIError        `json:"error,omitempty"`
+			Pagination *Pagination      `json:"pagination,omitempty"`
 		}
 		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err

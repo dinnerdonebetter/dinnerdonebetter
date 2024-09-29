@@ -103,8 +103,10 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 
 	router.Route("/users", func(userRouter routing.Router) {
 		userRouter.Post(root, s.usersService.CreateHandler)
-		userRouter.Post("/login", s.authService.BuildLoginHandler(false))
-		userRouter.Post("/login/admin", s.authService.BuildLoginHandler(true))
+		userRouter.Post("/login", s.authService.BuildLoginHandler(false, false))
+		userRouter.Post("/login/admin", s.authService.BuildLoginHandler(true, false))
+		userRouter.Post("/login/jwt", s.authService.BuildLoginHandler(false, true))
+		userRouter.Post("/login/jwt/admin", s.authService.BuildLoginHandler(true, true))
 		userRouter.WithMiddleware(s.authService.UserAttributionMiddleware, s.authService.CookieRequirementMiddleware).
 			Post("/logout", s.authService.EndSessionHandler)
 		userRouter.Post("/username/reminder", s.usersService.RequestUsernameReminderHandler)

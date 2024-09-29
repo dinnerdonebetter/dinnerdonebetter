@@ -1481,6 +1481,16 @@ var routeInfoMap = map[string]routeDetails{
 		ResponseType: &types.UserStatusResponse{},
 		InputType:    &types.UserLoginInput{},
 	},
+	"POST /users/login/jwt": {
+		ID:           "LoginForJWT",
+		ResponseType: &types.JWTResponse{},
+		InputType:    &types.UserLoginInput{},
+	},
+	"POST /users/login/jwt/admin": {
+		ID:           "AdminLoginForJWT",
+		ResponseType: &types.JWTResponse{},
+		InputType:    &types.UserLoginInput{},
+	},
 	"POST /users/logout": {
 		ID:           "Logout",
 		ResponseType: &types.UserStatusResponse{},

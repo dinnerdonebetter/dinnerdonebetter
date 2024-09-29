@@ -94,6 +94,13 @@ type (
 		UserIsAuthenticated      bool   `json:"isAuthenticated"`
 	}
 
+	// JWTResponse is used to return a JWT to a user.
+	JWTResponse struct {
+		_ struct{} `json:"-"`
+
+		Token string `json:"token"`
+	}
+
 	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.
 	UserPermissionsRequestInput struct {
 		_ struct{} `json:"-"`
@@ -118,7 +125,7 @@ type (
 	// AuthService describes a structure capable of handling passwords and authorization requests.
 	AuthService interface {
 		StatusHandler(http.ResponseWriter, *http.Request)
-		BuildLoginHandler(bool) func(http.ResponseWriter, *http.Request)
+		BuildLoginHandler(adminOnly, returnJWT bool) func(http.ResponseWriter, *http.Request)
 		EndSessionHandler(http.ResponseWriter, *http.Request)
 		CycleCookieSecretHandler(http.ResponseWriter, *http.Request)
 		ChangeActiveHouseholdHandler(http.ResponseWriter, *http.Request)

@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -89,7 +90,7 @@ func (s *authTestSuite) TestClient_UserStatus() {
 	})
 }
 
-func (s *authTestSuite) TestClient_BeginSession() {
+func (s *authTestSuite) TestClient_Login() {
 	const expectedPath = "/users/login"
 
 	spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
@@ -108,7 +109,7 @@ func (s *authTestSuite) TestClient_BeginSession() {
 		))
 		c := buildTestClient(t, ts)
 
-		cookie, err := c.BeginSession(s.ctx, exampleInput)
+		cookie, err := c.Login(s.ctx, exampleInput)
 		require.NotNil(t, cookie)
 		assert.NoError(t, err)
 	})
@@ -118,7 +119,7 @@ func (s *authTestSuite) TestClient_BeginSession() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		cookie, err := c.BeginSession(s.ctx, nil)
+		cookie, err := c.Login(s.ctx, nil)
 		assert.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -130,7 +131,7 @@ func (s *authTestSuite) TestClient_BeginSession() {
 
 		c := buildTestClientWithInvalidURL(t)
 
-		cookie, err := c.BeginSession(s.ctx, exampleInput)
+		cookie, err := c.Login(s.ctx, exampleInput)
 		assert.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -141,7 +142,7 @@ func (s *authTestSuite) TestClient_BeginSession() {
 		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		cookie, err := c.BeginSession(s.ctx, exampleInput)
+		cookie, err := c.Login(s.ctx, exampleInput)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -152,13 +153,204 @@ func (s *authTestSuite) TestClient_BeginSession() {
 		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
 
-		cookie, err := c.BeginSession(s.ctx, exampleInput)
+		cookie, err := c.Login(s.ctx, exampleInput)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 	})
 }
 
-func (s *authTestSuite) TestClient_EndSession() {
+func (s *authTestSuite) TestClient_AdminLogin() {
+	const expectedPath = "/users/login/admin"
+
+	spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+
+		ts := httptest.NewTLSServer(http.HandlerFunc(
+			func(res http.ResponseWriter, req *http.Request) {
+				assertRequestQuality(t, req, spec)
+
+				http.SetCookie(res, &http.Cookie{Name: s.exampleUser.Username})
+			},
+		))
+		c := buildTestClient(t, ts)
+
+		cookie, err := c.AdminLogin(s.ctx, exampleInput)
+		require.NotNil(t, cookie)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with nil input", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		cookie, err := c.AdminLogin(s.ctx, nil)
+		assert.Nil(t, cookie)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+
+		c := buildTestClientWithInvalidURL(t)
+
+		cookie, err := c.AdminLogin(s.ctx, exampleInput)
+		assert.Nil(t, cookie)
+		assert.Error(t, err)
+	})
+
+	s.Run("with timeout", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+		c, _ := buildTestClientThatWaitsTooLong(t)
+
+		cookie, err := c.AdminLogin(s.ctx, exampleInput)
+		require.Nil(t, cookie)
+		assert.Error(t, err)
+	})
+
+	s.Run("with missing cookie", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+
+		cookie, err := c.AdminLogin(s.ctx, exampleInput)
+		require.Nil(t, cookie)
+		assert.Error(t, err)
+	})
+}
+
+func (s *authTestSuite) TestClient_LoginForJWT() {
+	const expectedPath = "/users/login/jwt"
+
+	spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+
+		ts := httptest.NewTLSServer(http.HandlerFunc(
+			func(res http.ResponseWriter, req *http.Request) {
+				assertRequestQuality(t, req, spec)
+
+				resVal := &types.APIResponse[*types.JWTResponse]{
+					Data: fakes.BuildFakeJWTResponse(),
+				}
+				require.NoError(t, json.NewEncoder(res).Encode(resVal))
+			},
+		))
+		c := buildTestClient(t, ts)
+
+		token, err := c.LoginForJWT(s.ctx, exampleInput)
+		assert.NotEmpty(t, token)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with nil input", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		token, err := c.LoginForJWT(s.ctx, nil)
+		assert.Empty(t, token)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+
+		c := buildTestClientWithInvalidURL(t)
+
+		token, err := c.LoginForJWT(s.ctx, exampleInput)
+		assert.Empty(t, token)
+		assert.Error(t, err)
+	})
+
+	s.Run("with timeout", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+		c, _ := buildTestClientThatWaitsTooLong(t)
+
+		token, err := c.LoginForJWT(s.ctx, exampleInput)
+		assert.Empty(t, token)
+		assert.Error(t, err)
+	})
+}
+
+func (s *authTestSuite) TestClient_AdminLoginForJWT() {
+	const expectedPath = "/users/login/jwt/admin"
+
+	spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+
+		ts := httptest.NewTLSServer(http.HandlerFunc(
+			func(res http.ResponseWriter, req *http.Request) {
+				assertRequestQuality(t, req, spec)
+
+				resVal := &types.APIResponse[*types.JWTResponse]{
+					Data: fakes.BuildFakeJWTResponse(),
+				}
+				require.NoError(t, json.NewEncoder(res).Encode(resVal))
+			},
+		))
+		c := buildTestClient(t, ts)
+
+		token, err := c.AdminLoginForJWT(s.ctx, exampleInput)
+		assert.NotEmpty(t, token)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with nil input", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		token, err := c.AdminLoginForJWT(s.ctx, nil)
+		assert.Empty(t, token)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+
+		c := buildTestClientWithInvalidURL(t)
+
+		token, err := c.AdminLoginForJWT(s.ctx, exampleInput)
+		assert.Empty(t, token)
+		assert.Error(t, err)
+	})
+
+	s.Run("with timeout", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
+		c, _ := buildTestClientThatWaitsTooLong(t)
+
+		token, err := c.AdminLoginForJWT(s.ctx, exampleInput)
+		assert.Empty(t, token)
+		assert.Error(t, err)
+	})
+}
+
+func (s *authTestSuite) TestClient_Logout() {
 	const expectedPath = "/users/logout"
 
 	s.Run("standard", func() {
@@ -167,7 +359,7 @@ func (s *authTestSuite) TestClient_EndSession() {
 		spec := newRequestSpec(true, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
-		err := c.EndSession(s.ctx)
+		err := c.Logout(s.ctx)
 		assert.NoError(t, err)
 	})
 
@@ -176,7 +368,7 @@ func (s *authTestSuite) TestClient_EndSession() {
 
 		c := buildTestClientWithInvalidURL(t)
 
-		err := c.EndSession(s.ctx)
+		err := c.Logout(s.ctx)
 		assert.Error(t, err)
 	})
 
@@ -185,7 +377,7 @@ func (s *authTestSuite) TestClient_EndSession() {
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		err := c.EndSession(s.ctx)
+		err := c.Logout(s.ctx)
 		assert.Error(t, err)
 	})
 }

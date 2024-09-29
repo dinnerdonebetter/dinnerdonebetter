@@ -46,3 +46,10 @@ func BuildFakeChangeActiveHouseholdInput() *types.ChangeActiveHouseholdInput {
 		HouseholdID: fake.UUID(),
 	}
 }
+
+// BuildFakeJWTResponse builds a faked JWTResponse.
+func BuildFakeJWTResponse() *types.JWTResponse {
+	return &types.JWTResponse{
+		Token: fake.UUID(),
+	}
+}

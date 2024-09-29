@@ -13,13 +13,6 @@
 			"provider": "otel"
 		}
 	},
-	"email": {
-		"sendgrid": null,
-		"mailgun": null,
-		"mailjet": null,
-		"circuitBreakerConfig": null,
-		"provider": ""
-	},
 	"analytics": {
 		"segment": null,
 		"posthog": null,
@@ -27,9 +20,10 @@
 		"circuitBreakerConfig": null,
 		"provider": ""
 	},
-	"search": {
-		"algolia": null,
-		"elasticsearch": null,
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
 		"circuitBreakerConfig": null,
 		"provider": ""
 	},
@@ -39,16 +33,22 @@
 		"CircuitBreakingConfig": null,
 		"Provider": ""
 	},
+	"search": {
+		"algolia": null,
+		"elasticsearch": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
 	"encoding": {
 		"contentType": "application/json"
-	},
-	"meta": {
-		"runMode": "testing",
-		"debug": false
 	},
 	"routing": {
 		"provider": "chi",
 		"enableCORSForLocalhost": true
+	},
+	"meta": {
+		"runMode": "testing",
+		"debug": false
 	},
 	"events": {
 		"consumers": {
@@ -94,28 +94,28 @@
 	},
 	"services": {
 		"auditLogEntries": {},
-		"recipeStepProducts": {
+		"recipeStepCompletionConditions": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validInstrumentMeasurementUnits": {
+		"mealPlanOptionVotes": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepVessels": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeRatings": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanGroceryListItems": {
-			"dataChangesTopicName": "data_changes"
-		},
 		"validMeasurementUnitConversions": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"serviceSettingConfigurations": {
+		"validIngredientGroups": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"serviceSettings": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validIngredientStateIngredients": {
+		"validInstrumentMeasurementUnits": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeStepInstruments": {
@@ -142,25 +142,25 @@
 		"mealPlans": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepVessels": {
+		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredientPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"recipeStepProducts": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validIngredientStateIngredients": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanGroceryListItems": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"mealPlanTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanOptionVotes": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validPreparationInstruments": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipeStepCompletionConditions": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validIngredientGroups": {
+		"serviceSettingConfigurations": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validPreparationVessels": {
@@ -197,25 +197,6 @@
 				"debug": false
 			}
 		},
-		"validPreparations": {
-			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
-		},
-		"validIngredients": {
-			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
-		},
-		"validMeasurementUnits": {
-			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
-		},
-		"meals": {
-			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
-		},
-		"oauth2Clients": {
-			"creationEnabled": false
-		},
 		"validIngredientStates": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
@@ -223,6 +204,21 @@
 		"webhooks": {
 			"dataChangesTopicName": "data_changes",
 			"debug": false
+		},
+		"validMeasurementUnits": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"oauth2Clients": {
+			"creationEnabled": false
+		},
+		"meals": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"validIngredients": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"validInstruments": {
 			"dataChangesTopicName": "data_changes",
@@ -235,6 +231,10 @@
 		"householdInvitations": {
 			"dataChangesTopicName": "data_changes",
 			"debug": false
+		},
+		"validPreparations": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"recipes": {
 			"dataChangesTopicName": "data_changes",
@@ -253,6 +253,8 @@
 				"google": {}
 			},
 			"dataChanges": "data_changes",
+			"jwtAudience": "localhost",
+			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
 			"cookies": {
 				"name": "ddb_api_cookie",
 				"domain": ".whatever.gov",
@@ -266,6 +268,7 @@
 				"refreshTokenLifespan": 3600000000000,
 				"debug": false
 			},
+			"jwtLifetime": 300000000000,
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8

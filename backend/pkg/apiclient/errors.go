@@ -42,8 +42,11 @@ var (
 	// ErrCookieRequired indicates a cookie is required.
 	ErrCookieRequired = errors.New("cookie required for request")
 
-	// ErrNoCookiesReturned indicates nil input was provided in an unacceptable context.
+	// ErrNoCookiesReturned indicates the server responded without a cookie.
 	ErrNoCookiesReturned = errors.New("no cookies returned from request")
+
+	// ErrNoJWTReturned indicates that the server responded without a JWT.
+	ErrNoJWTReturned = errors.New("no JWT returned from request")
 
 	// ErrNilResponse indicates we received a nil response.
 	ErrNilResponse = errors.New("nil response")

@@ -173,7 +173,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 	})
 }
 
-func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *testing.T) {
+func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -224,7 +224,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
@@ -284,7 +284,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.BuildLoginHandler(true)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(true, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
@@ -292,6 +292,73 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
+	})
+
+	T.Run("standard with JWT", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager.On(
+			"GetUserByUsername",
+			testutils.ContextMatcher,
+			helper.exampleUser.Username,
+		).Return(helper.exampleUser, nil)
+		helper.service.userDataManager = userDataManager
+
+		authenticator := &mockauthn.Authenticator{}
+		authenticator.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			helper.exampleLoginInput.Password,
+			helper.exampleUser.TwoFactorSecret,
+			helper.exampleLoginInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = authenticator
+
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
+		membershipDB.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.BuildLoginHandler(false, true)(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
+		var actual *types.APIResponse[*types.JWTResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
+
+		token, err := helper.service.jwtSigner.ParseJWT(helper.ctx, actual.Data.Token)
+		require.NoError(t, err)
+
+		sub, err := token.Claims.GetSubject()
+		assert.NoError(t, err)
+		assert.Equal(t, helper.exampleUser.ID, sub)
 
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
@@ -347,7 +414,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
@@ -373,7 +440,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -392,7 +459,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -419,7 +486,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return((*types.User)(nil), sql.ErrNoRows)
 		helper.service.userDataManager = userDataManager
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -448,7 +515,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = userDataManager
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -480,7 +547,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -520,7 +587,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(false, nil)
 		helper.service.authenticator = authenticator
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -560,7 +627,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, errors.New("blah"))
 		helper.service.authenticator = authenticator
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -600,7 +667,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(false, authentication.ErrInvalidTOTPToken)
 		helper.service.authenticator = authenticator
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -640,7 +707,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(false, authentication.ErrPasswordDoesNotMatch)
 		helper.service.authenticator = authenticator
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -681,7 +748,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusResetContent, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -729,7 +796,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return("", errors.New("blah"))
 		helper.service.householdMembershipManager = membershipDB
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -781,7 +848,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -834,7 +901,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		sm.On("RenewToken", testutils.ContextMatcher).Return(errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -890,7 +957,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		sm.On("Commit", testutils.ContextMatcher).Return("", time.Now(), errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -947,7 +1014,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -1003,7 +1070,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -1059,7 +1126,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false, false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
