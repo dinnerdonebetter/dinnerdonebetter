@@ -6,8 +6,7 @@
   "scripts": {
     "lint": "eslint *.ts*",
     "format": "prettier --write .",
-    "format-check": "prettier --check .",
-    "test": "jest"
+    "format-check": "prettier --check ."
   },
   "dependencies": {},
   "devDependencies": {

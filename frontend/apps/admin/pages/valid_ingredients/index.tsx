@@ -36,10 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredients(qf)
     .then((res: QueryFilteredResult<ValidIngredient>) => {
       span.addEvent('valid ingredients retrieved');
-
-      console.log(`server response ${JSON.stringify(res)}`);
-
-      props = { props: { pageLoadValidIngredients: JSON.parse(JSON.stringify(res)) } };
+      props = { props: { pageLoadValidIngredients: res } };
     })
     .catch((error: AxiosError) => {
       console.error(`getting valid ingredients`, error.status);
