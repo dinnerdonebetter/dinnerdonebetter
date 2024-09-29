@@ -52,6 +52,8 @@
     "@dinnerdonebetter/server-timing": "*",
     "@dinnerdonebetter/utils": "*",
     "@dinnerdonebetter/tracing": "*",
+    "@dinnerdonebetter/analytics": "*",
+    "@dinnerdonebetter/next-routes": "*",
     "@playwright/test": "1.29.0",
     "@types/cookie": "0.5.1",
     "@types/dagre": "0.7.48",

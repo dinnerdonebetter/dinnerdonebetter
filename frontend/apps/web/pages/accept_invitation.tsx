@@ -4,8 +4,8 @@ import { useRouter } from 'next/router';
 
 import { HouseholdInvitationUpdateRequestInput } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { buildBrowserSideClient } from '@dinnerdonebetter/api-client';
 
-import { buildBrowserSideClient } from '../src/client';
 import { AppLayout } from '../src/layouts';
 import { serverSideTracer } from '../src/tracer';
 import { extractUserInfoFromCookie } from '../src/auth';

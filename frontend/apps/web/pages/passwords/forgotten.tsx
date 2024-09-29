@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import { PasswordResetTokenCreationRequestInput, IAPIError, UserStatusResponse } from '@dinnerdonebetter/models';
 
-import { buildLocalClient } from '../../src/client';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 import { AppLayout } from '../../src/layouts';
 
 const forgottenPasswordFormSchema = z.object({

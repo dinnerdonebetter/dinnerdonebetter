@@ -294,7 +294,7 @@ export class DinnerDoneBetterAPIClient {
     });
 
     this.client.interceptors.response.use((response: AxiosResponse) => {
-      logger.debug(`response: ${response.status} ${response.config.method} ${response.config.url}`);
+      logger.debug(`Response: ${response.status} ${response.config.method} ${response.config.url} ${response.data}`);
       return response;
     });
   }

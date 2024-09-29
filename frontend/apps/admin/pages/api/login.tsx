@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { IAPIError, UserLoginInput } from '@dinnerdonebetter/models';
 
-import { buildCookielessServerSideClient } from '../../src/client';
+import { buildCookielessServerSideClient } from '@dinnerdonebetter/api-client';
 import { serverSideTracer } from '../../src/tracer';
 import { processWebappCookieHeader } from '../../src/auth';
 

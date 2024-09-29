@@ -1,0 +1,22 @@
+{
+  "name": "@dinnerdonebetter/next-routes",
+  "license": "UNLICENSED",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "lint": "eslint *.ts*",
+    "format": "prettier --write .",
+    "format-check": "prettier --check ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "ts-node": "10.9.1",
+    "axios": "0.27.2",
+    "next": "13.0.0",
+    "@dinnerdonebetter/api-client": "*",
+    "@dinnerdonebetter/logger": "*",
+    "@dinnerdonebetter/models": "*",
+    "@dinnerdonebetter/tracing": "*",
+    "tsconfig": "*"
+  }
+}

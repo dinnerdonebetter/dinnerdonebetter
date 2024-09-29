@@ -6,6 +6,7 @@ const withTM = require('next-transpile-modules')([
   '@dinnerdonebetter/logger',
   '@dinnerdonebetter/server-timing',
   '@dinnerdonebetter/tracing',
+  '@dinnerdonebetter/next-routes',
 ]);
 
 module.exports = withTM({

@@ -4,9 +4,9 @@ import { TextInput, Button, Group, Container, Select } from '@mantine/core';
 import { z } from 'zod';
 
 import { ServiceSetting, ServiceSettingCreationRequestInput } from '@dinnerdonebetter/models';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
-import { buildLocalClient } from '../../src/client';
 
 const serviceSettingCreationFormSchema = z.object({
   name: z.string().trim().min(1, 'name is required'),

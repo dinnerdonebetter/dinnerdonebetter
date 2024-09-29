@@ -8,8 +8,9 @@ import { useState, useEffect } from 'react';
 
 import { QueryFilter, QueryFilteredResult, ValidIngredient } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildLocalClient, buildServerSideClient } from '../../src/client';
+import { buildServerSideClient } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
@@ -35,7 +36,10 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredients(qf)
     .then((res: QueryFilteredResult<ValidIngredient>) => {
       span.addEvent('valid ingredients retrieved');
-      props = { props: { pageLoadValidIngredients: res } };
+
+      console.log(`server response ${JSON.stringify(res)}`);
+
+      props = { props: { pageLoadValidIngredients: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       console.error(`getting valid ingredients`, error.status);

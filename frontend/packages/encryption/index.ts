@@ -42,17 +42,13 @@ export class EncryptorDecryptor {
     let encrypted = cipher.update(x, 'utf-8', 'hex');
     encrypted += cipher.final('hex');
 
-    return encrypted
+    return encrypted;
   }
 
   decrypt(encrypted: string): string {
     let decipher = crypto.createDecipheriv('aes-256-cbc', this.secretKey, this.initializationVectors);
-    let decrypted = decipher.update(
-     encrypted,
-     'hex',
-     'utf-8'
-    );
-    
+    let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
+
     decrypted += decipher.final('utf8');
     return decrypted;
   }

@@ -4,9 +4,9 @@ import { TextInput, Button, Group, Container, Switch } from '@mantine/core';
 import { z } from 'zod';
 
 import { ValidInstrument, ValidInstrumentCreationRequestInput } from '@dinnerdonebetter/models';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
-import { buildLocalClient } from '../../src/client';
 import { inputSlug } from '../../src/schemas';
 
 const validInstrumentCreationFormSchema = z.object({

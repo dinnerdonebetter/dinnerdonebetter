@@ -17,6 +17,7 @@
     "@types/string-format": "2.0.0",
     "axios": "0.27.2",
     "tsconfig": "*",
+    "next": "13.0.0",
     "@dinnerdonebetter/models": "*",
     "@dinnerdonebetter/logger": "*",
     "string-format": "2.0.0"

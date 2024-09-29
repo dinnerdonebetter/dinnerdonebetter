@@ -5,8 +5,8 @@ import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import { PasswordResetTokenRedemptionRequestInput } from '@dinnerdonebetter/models';
+import { buildBrowserSideClient } from '@dinnerdonebetter/api-client';
 
-import { buildBrowserSideClient } from '../src/client';
 import { AppLayout } from '../src/layouts';
 import { serverSideTracer } from '../src/tracer';
 

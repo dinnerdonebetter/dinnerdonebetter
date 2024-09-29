@@ -2,9 +2,9 @@ import { AxiosError, AxiosResponse } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { IAPIError, UserLoginInput, UserStatusResponse } from '@dinnerdonebetter/models';
+import { buildCookielessServerSideClient } from '@dinnerdonebetter/api-client';
 
 import { serverSideAnalytics } from '../../src/analytics';
-import { buildCookielessServerSideClient } from '../../src/client';
 import { serverSideTracer } from '../../src/tracer';
 import { processWebappCookieHeader } from '../../src/auth';
 

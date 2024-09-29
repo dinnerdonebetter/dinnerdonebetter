@@ -8,9 +8,9 @@ import {
   ValidIngredientStateCreationRequestInput,
   ValidIngredientStateAttributeType,
 } from '@dinnerdonebetter/models';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
-import { buildLocalClient } from '../../src/client';
 import { inputSlug } from '../../src/schemas';
 
 const validIngredientStateCreationFormSchema = z.object({
