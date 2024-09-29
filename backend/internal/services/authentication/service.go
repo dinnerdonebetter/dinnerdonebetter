@@ -98,6 +98,11 @@ func ProvideService(
 		return nil, fmt.Errorf("decoding Token signing key: %w", err)
 	}
 
+	signer, err := authentication.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
+	if err != nil {
+		return nil, fmt.Errorf("creating Token signer: %w", err)
+	}
+
 	svc := &service{
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
 		encoderDecoder:             encoder,
@@ -112,15 +117,10 @@ func ProvideService(
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
 		analyticsReporter:          analyticsReporter,
+		jwtSigner:                  signer,
 		authProviderFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
-		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager),
+		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
 	}
-
-	signer, err := authentication.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
-	if err != nil {
-		return nil, fmt.Errorf("creating Token signer: %w", err)
-	}
-	svc.jwtSigner = signer
 
 	if _, err = svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {
 		logger.WithValue("cookie_signing_key_length", len(cfg.Cookies.BlockKey)).Error(err, "building test cookie")
