@@ -56,6 +56,15 @@ func (c *Client) Login(ctx context.Context, input *types.UserLoginInput) (*http.
 	}
 	defer c.closeResponseBody(ctx, res)
 
+	var apiResponse *types.APIResponse[*types.UserStatusResponse]
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareError(err, span, "parsing login JWT response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	if cookies := res.Cookies(); len(cookies) > 0 {
 		return cookies[0], nil
 	}
@@ -82,6 +91,15 @@ func (c *Client) AdminLogin(ctx context.Context, input *types.UserLoginInput) (*
 		return nil, observability.PrepareError(err, span, "executing login request")
 	}
 	defer c.closeResponseBody(ctx, res)
+
+	var apiResponse *types.APIResponse[*types.UserStatusResponse]
+	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
+		return nil, observability.PrepareError(err, span, "parsing login JWT response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
 
 	if cookies := res.Cookies(); len(cookies) > 0 {
 		return cookies[0], nil
@@ -115,6 +133,10 @@ func (c *Client) LoginForJWT(ctx context.Context, input *types.UserLoginInput) (
 		return "", observability.PrepareError(err, span, "parsing login JWT response")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return "", err
+	}
+
 	return apiResponse.Data.Token, nil
 }
 
@@ -141,6 +163,10 @@ func (c *Client) AdminLoginForJWT(ctx context.Context, input *types.UserLoginInp
 	var apiResponse *types.APIResponse[*types.JWTResponse]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
 		return "", observability.PrepareError(err, span, "parsing login JWT response")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return "", err
 	}
 
 	return apiResponse.Data.Token, nil

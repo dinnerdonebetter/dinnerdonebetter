@@ -182,7 +182,7 @@ func (s *service) BuildLoginHandler(adminOnly, returningJWT bool) func(http.Resp
 		http.SetCookie(res, cookie)
 		logger.Debug("user logged in")
 
-		responseCode, err := s.postLogin(ctx, user, defaultHouseholdID, req, res)
+		responseCode, err := s.postLogin(ctx, user, defaultHouseholdID)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "handling login status")
 			errRes := types.NewAPIErrorResponse(staticError, types.ErrTalkingToDatabase, responseDetails)
@@ -225,7 +225,7 @@ func (s *service) BuildLoginHandler(adminOnly, returningJWT bool) func(http.Resp
 	}
 }
 
-func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseholdID string, req *http.Request, res http.ResponseWriter) (int, error) {
+func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseholdID string) (int, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -416,7 +416,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 
 	http.SetCookie(res, cookie)
 
-	responseCode, err := s.postLogin(ctx, user, defaultHouseholdID, req, res)
+	responseCode, err := s.postLogin(ctx, user, defaultHouseholdID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "handling login status")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, responseCode)
