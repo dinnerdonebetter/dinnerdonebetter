@@ -159,7 +159,7 @@ resource "google_cloud_run_v2_service" "api_server" {
       resources {
         limits = {
           cpu    = "1"
-          memory = "128Mi"
+          memory = "256Mi"
         }
         cpu_idle          = true
         startup_cpu_boost = false
