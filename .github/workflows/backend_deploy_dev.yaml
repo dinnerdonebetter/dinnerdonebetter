@@ -1,10 +1,10 @@
 concurrency:
   group: ${{ github.ref }}
 
-on: [pull_request]
-#  push:
-#    branches:
-#      - dev
+on: # [pull_request]
+  push:
+    branches:
+      - dev
 
 name: backend - deploy
 jobs:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: [ '1.23.x' ]
+        go-version: [ '1.22.x' ]
     steps:
       - name: Install Go
         uses: actions/setup-go@v4
