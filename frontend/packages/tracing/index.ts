@@ -23,3 +23,5 @@ opentelemetry.trace.setGlobalTracerProvider(provider);
 export function getTracer(name: string): Tracer {
   return opentelemetry.trace.getTracer(name);
 }
+
+export type TracerType = Tracer;

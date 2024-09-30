@@ -82,6 +82,7 @@ import {
   ValidVesselUpdateRequestInput,
   ValidPreparationVessel,
   ValidPreparationVesselCreationRequestInput,
+  JWTResponse,
 } from '@dinnerdonebetter/models';
 
 import { createMeal, getMeal, getMeals, updateMeal, deleteMeal, searchForMeals } from './meals';
@@ -157,8 +158,10 @@ import {
   searchForValidIngredientGroups,
 } from './valid_ingredient_groups';
 import {
-  logIn,
+  login,
   adminLogin,
+  loginForJWT,
+  adminLoginForJWT,
   logOut,
   register,
   checkPermissions,
@@ -339,11 +342,19 @@ export class DinnerDoneBetterAPIClient {
   // auth
 
   async logIn(input: UserLoginInput): Promise<AxiosResponse<UserStatusResponse>> {
-    return logIn(this.client, input);
+    return login(this.client, input);
+  }
+
+  async logInForJWT(input: UserLoginInput): Promise<AxiosResponse<JWTResponse>> {
+    return loginForJWT(this.client, input);
   }
 
   async adminLogin(input: UserLoginInput): Promise<AxiosResponse<UserStatusResponse>> {
     return adminLogin(this.client, input);
+  }
+
+  async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<JWTResponse>> {
+    return adminLoginForJWT(this.client, input);
   }
 
   async logOut(): Promise<AxiosResponse<UserStatusResponse>> {

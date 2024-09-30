@@ -202,7 +202,11 @@ func (s *service) BuildLoginHandler(adminOnly, returningJWT bool) func(http.Resp
 
 			responseValue := &types.APIResponse[*types.JWTResponse]{
 				Details: responseDetails,
-				Data:    &types.JWTResponse{Token: token},
+				Data: &types.JWTResponse{
+					HouseholdID: defaultHouseholdID,
+					UserID:      user.ID,
+					Token:       token,
+				},
 			}
 
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, responseCode)

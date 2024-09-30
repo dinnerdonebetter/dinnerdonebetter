@@ -19,11 +19,11 @@ export class ServerTimingEvent {
   }
 }
 
-export class EncryptorDecryptor {
+export class EncryptorDecryptor<JSONValue> {
   secretKey: string;
   initializationVectors: Buffer;
 
-  constructor(secretKey: string, initializationVectors?: Buffer) {
+  constructor(secretKey: string, initializationVectors?: string) {
     if (!secretKey) {
       throw new Error('secretKey is required');
     }
@@ -31,25 +31,26 @@ export class EncryptorDecryptor {
     this.secretKey = secretKey;
 
     if (initializationVectors) {
-      this.initializationVectors = initializationVectors;
+      this.initializationVectors = Buffer.from(initializationVectors, 'base64');
     } else {
       this.initializationVectors = crypto.randomBytes(16);
     }
   }
 
-  encrypt(x: string): string {
+  encrypt(x: JSONValue): string {
     let cipher = crypto.createCipheriv('aes-256-cbc', this.secretKey, this.initializationVectors);
-    let encrypted = cipher.update(x, 'utf-8', 'hex');
+    let encrypted = cipher.update(JSON.stringify(x), 'utf-8', 'hex');
     encrypted += cipher.final('hex');
 
     return encrypted;
   }
 
-  decrypt(encrypted: string): string {
+  decrypt(encrypted: string): JSONValue {
     let decipher = crypto.createDecipheriv('aes-256-cbc', this.secretKey, this.initializationVectors);
     let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
 
     decrypted += decipher.final('utf8');
-    return decrypted;
+
+    return JSON.parse(decrypted);
   }
 }

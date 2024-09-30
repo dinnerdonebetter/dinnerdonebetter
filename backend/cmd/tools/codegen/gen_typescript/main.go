@@ -70,6 +70,7 @@ func main() {
 
 	indexOutput := `
 export * from './_unions';
+export * from './_sessions';
 export * from './main';
 `
 

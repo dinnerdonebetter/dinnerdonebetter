@@ -21594,7 +21594,11 @@ components:
       type: object
     JWTResponse:
       properties:
+        householdID:
+          type: string
         token:
+          type: string
+        userID:
           type: string
       type: object
     Meal:

@@ -74,6 +74,7 @@ var (
 			types.TOTPSecretVerificationInput{},
 			types.TOTPSecretRefreshResponse{},
 			types.PasswordUpdateInput{},
+			types.JWTResponse{},
 		},
 		"errors": {
 			types.APIError{},

@@ -98,7 +98,9 @@ type (
 	JWTResponse struct {
 		_ struct{} `json:"-"`
 
-		Token string `json:"token"`
+		UserID      string `json:"userID"`
+		HouseholdID string `json:"householdID"`
+		Token       string `json:"token"`
 	}
 
 	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.

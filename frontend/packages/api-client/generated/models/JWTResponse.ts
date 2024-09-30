@@ -3,5 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type JWTResponse = {
+  householdID?: string;
   token?: string;
+  userID?: string;
 };

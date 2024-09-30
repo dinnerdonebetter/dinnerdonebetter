@@ -131,3 +131,21 @@ export class PasswordUpdateInput implements IPasswordUpdateInput {
     this.totpToken = input.totpToken ?? '';
   }
 }
+
+export interface IJWTResponse {
+  userID: NonNullable<string>;
+  householdID: NonNullable<string>;
+  token: NonNullable<string>;
+}
+
+export class JWTResponse implements IJWTResponse {
+  userID: NonNullable<string> = '';
+  householdID: NonNullable<string> = '';
+  token: NonNullable<string> = '';
+
+  constructor(input: Partial<JWTResponse> = {}) {
+    this.userID = input.userID ?? '';
+    this.householdID = input.householdID ?? '';
+    this.token = input.token ?? '';
+  }
+}

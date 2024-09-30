@@ -2,6 +2,8 @@
 export const enum backendRoutes {
   LOGIN = '/users/login',
   LOGIN_ADMIN = '/users/login/admin',
+  LOGIN_FOR_JWT = '/users/login/jwt',
+  LOGIN_ADMIN_FOR_JWT = '/users/login/jwt/admin',
   LOGOUT = '/users/logout',
 
   USER_REGISTRATION = '/users/',
