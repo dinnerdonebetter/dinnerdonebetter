@@ -83,6 +83,7 @@ import {
   ValidPreparationVessel,
   ValidPreparationVesselCreationRequestInput,
   JWTResponse,
+  APIResponse,
 } from '@dinnerdonebetter/models';
 
 import { createMeal, getMeal, getMeals, updateMeal, deleteMeal, searchForMeals } from './meals';
@@ -297,7 +298,7 @@ export class DinnerDoneBetterAPIClient {
     });
 
     this.client.interceptors.response.use((response: AxiosResponse) => {
-      logger.debug(`Response: ${response.status} ${response.config.method} ${response.config.url} ${response.data}`);
+      logger.debug(`Response: ${response.status} ${response.config.method} ${response.config.url} ${JSON.stringify(response.data)}`);
       return response;
     });
   }
@@ -341,19 +342,19 @@ export class DinnerDoneBetterAPIClient {
 
   // auth
 
-  async logIn(input: UserLoginInput): Promise<AxiosResponse<UserStatusResponse>> {
+  async logIn(input: UserLoginInput): Promise<AxiosResponse<APIResponse<UserStatusResponse>>> {
     return login(this.client, input);
   }
 
-  async logInForJWT(input: UserLoginInput): Promise<AxiosResponse<JWTResponse>> {
+  async logInForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
     return loginForJWT(this.client, input);
   }
 
-  async adminLogin(input: UserLoginInput): Promise<AxiosResponse<UserStatusResponse>> {
+  async adminLogin(input: UserLoginInput): Promise<AxiosResponse<APIResponse<UserStatusResponse>>> {
     return adminLogin(this.client, input);
   }
 
-  async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<JWTResponse>> {
+  async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
     return adminLoginForJWT(this.client, input);
   }
 

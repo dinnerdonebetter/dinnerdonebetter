@@ -6,6 +6,8 @@ import { IAPIError } from '@dinnerdonebetter/models';
 import { buildServerSideClientWithRawCookie } from '@dinnerdonebetter/api-client';
 import { getTracer } from '@dinnerdonebetter/tracing';
 
+// TODO: I need to decrypt the cookie by its name and use it in the request
+
 export function buildAPIProxyRoute(logger: LoggerType, apiCookieName: string) {
   return async function APIProxy(req: NextApiRequest, res: NextApiResponse) {
     const span = getTracer('').startSpan('APIProxy');

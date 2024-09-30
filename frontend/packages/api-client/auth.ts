@@ -17,8 +17,8 @@ import {
 
 import { backendRoutes } from './routes';
 
-export async function login(client: Axios, input: UserLoginInput): Promise<AxiosResponse<UserStatusResponse>> {
-  return client.post<UserStatusResponse>(backendRoutes.LOGIN, input).then((response) => {
+export async function login(client: Axios, input: UserLoginInput): Promise<AxiosResponse<APIResponse<UserStatusResponse>>> {
+  return client.post<APIResponse<UserStatusResponse>>(backendRoutes.LOGIN, input).then((response) => {
     if (response.status !== 202 && response.status !== 205) {
       throw new Error(`Unexpected response status: ${response.status}`);
     }
@@ -27,8 +27,8 @@ export async function login(client: Axios, input: UserLoginInput): Promise<Axios
   });
 }
 
-export async function loginForJWT(client: Axios, input: UserLoginInput): Promise<AxiosResponse<JWTResponse>> {
-  return client.post<JWTResponse>(backendRoutes.LOGIN_FOR_JWT, input).then((response) => {
+export async function loginForJWT(client: Axios, input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
+  return client.post<APIResponse<JWTResponse>>(backendRoutes.LOGIN_FOR_JWT, input).then((response) => {
     if (response.status !== 202 && response.status !== 205) {
       throw new Error(`Unexpected response status: ${response.status}`);
     }
@@ -37,8 +37,8 @@ export async function loginForJWT(client: Axios, input: UserLoginInput): Promise
   });
 }
 
-export async function adminLogin(client: Axios, input: UserLoginInput): Promise<AxiosResponse<UserStatusResponse>> {
-  return client.post<UserStatusResponse>(backendRoutes.LOGIN_ADMIN, input).then((response) => {
+export async function adminLogin(client: Axios, input: UserLoginInput): Promise<AxiosResponse<APIResponse<UserStatusResponse>>> {
+  return client.post<APIResponse<UserStatusResponse>>(backendRoutes.LOGIN_ADMIN, input).then((response) => {
     if (response.status !== 202) {
       throw new Error(`Unexpected response status: ${response.status}`);
     }
@@ -47,8 +47,8 @@ export async function adminLogin(client: Axios, input: UserLoginInput): Promise<
   });
 }
 
-export async function adminLoginForJWT(client: Axios, input: UserLoginInput): Promise<AxiosResponse<JWTResponse>> {
-  return client.post<JWTResponse>(backendRoutes.LOGIN_ADMIN_FOR_JWT, input).then((response) => {
+export async function adminLoginForJWT(client: Axios, input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
+  return client.post<APIResponse<JWTResponse>>(backendRoutes.LOGIN_ADMIN_FOR_JWT, input).then((response) => {
     if (response.status !== 202 && response.status !== 205) {
       throw new Error(`Unexpected response status: ${response.status}`);
     }
