@@ -1,8 +1,8 @@
 module github.com/dinnerdonebetter/backend/cmd/functions/outbound_emailer
 
-go 1.23
+go 1.22
 
-toolchain go1.23.0
+toolchain go1.22.0
 
 replace github.com/dinnerdonebetter/backend => ../../../
 

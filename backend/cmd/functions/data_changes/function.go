@@ -420,7 +420,7 @@ func handleOutboundNotifications(
 	tracer tracing.Tracer,
 	dataManager database.DataManager,
 	outboundEmailsPublisher,
-	webhookExecutionRequestsPublisher messagequeue.Publisher,
+	_ messagequeue.Publisher,
 	analyticsEventReporter analytics.EventReporter,
 	changeMessage *types.DataChangeMessage,
 ) error {
