@@ -25,13 +25,17 @@ async function getOAuth2Token(jwt: string, userID: string, householdID: string):
   const authorizationUri = client.authorizeURL({
     redirect_uri: 'http://localhost:3000/callback',
     scope: 'service_admin',
-    state: '',
+    state: 'state',
   });
+
+  console.log('hitting authorization uri: ', authorizationUri);
 
   await axios.get(authorizationUri, {headers: { 
     "Authorization": `Bearer ${jwt}`,
   }}).then((response) => {
-    console.log(`authorization uri response: ${response.config.url}`);
+    console.log(`authorization uri response: ${response.data} ${JSON.stringify(response.headers)}`);
+  }).catch((error: AxiosError) => {
+    console.log(`authorization uri error: ${error.toJSON()}`);
   });
 
   const tokenParams = {
