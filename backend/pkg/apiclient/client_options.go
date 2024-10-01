@@ -3,14 +3,14 @@ package apiclient
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -19,6 +19,14 @@ import (
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/oauth2"
+)
+
+const (
+	codeKey = "code"
+)
+
+var (
+	ErrCodeNotReturned = errors.New("code not returned")
 )
 
 type ClientOption func(*Client) error
@@ -167,12 +175,12 @@ func UsingLogin(ctx context.Context, input *types.UserLoginInput) func(*Client) 
 
 // UsingOAuth2 sets the client to use OAuth2.
 func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []string, token string) func(*Client) error {
-	genCodeChallengeS256 := func(s string) string {
-		s256 := sha256.Sum256([]byte(s))
-		return base64.URLEncoding.EncodeToString(s256[:])
-	}
-
 	return func(c *Client) error {
+		state, err := random.GenerateBase64EncodedString(ctx, 32)
+		if err != nil {
+			return fmt.Errorf("generating state: %w", err)
+		}
+
 		oauth2Config := oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -189,9 +197,8 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []st
 			ctx,
 			http.MethodGet,
 			oauth2Config.AuthCodeURL(
-				"state",
-				oauth2.SetAuthURLParam("code_challenge", genCodeChallengeS256("s256example")),
-				oauth2.SetAuthURLParam("code_challenge_method", "S256"),
+				state,
+				oauth2.SetAuthURLParam("code_challenge_method", "plain"),
 			),
 			http.NoBody,
 		)
@@ -221,28 +228,24 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []st
 			return err
 		}
 
-		code := rl.Query().Get("code")
+		code := rl.Query().Get(codeKey)
 		if code == "" {
-			return errors.New("oauth2 code not found")
+			return ErrCodeNotReturned
 		}
 
-		token, err := oauth2Config.Exchange(ctx, code,
-			oauth2.SetAuthURLParam("code_verifier", "s256example"),
-		)
+		oauth2Token, err := oauth2Config.Exchange(ctx, code)
 		if err != nil {
 			return err
 		}
 
 		c.authMethod = oauth2AuthMethod
 		c.authedClient.Transport = &oauth2.Transport{
-			Source: oauth2.ReuseTokenSource(token, oauth2.StaticTokenSource(token)),
+			Source: oauth2.ReuseTokenSource(oauth2Token, oauth2.StaticTokenSource(oauth2Token)),
 			Base:   otelhttp.DefaultClient.Transport,
 		}
 
 		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
 		c.cookie = nil
-
-		c.logger.Debug("set client oauth2 token")
 
 		return nil
 	}
