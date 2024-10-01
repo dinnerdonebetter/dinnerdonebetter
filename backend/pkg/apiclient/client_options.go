@@ -179,7 +179,7 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []st
 			Scopes:       scopes,
 			RedirectURL:  c.url.String(),
 			Endpoint: oauth2.Endpoint{
-				AuthStyle: oauth2.AuthStyleAutoDetect,
+				AuthStyle: oauth2.AuthStyleInParams,
 				AuthURL:   c.URL().String() + "/oauth2/authorize",
 				TokenURL:  c.URL().String() + "/oauth2/token",
 			},
