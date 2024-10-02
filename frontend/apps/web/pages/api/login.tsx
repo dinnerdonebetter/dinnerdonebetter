@@ -24,7 +24,10 @@ async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
           return;
         }
 
-        res.setHeader('Set-Cookie', processWebappCookieHeader(result, result.data.data.userID, result.data.data.activeHousehold));
+        res.setHeader(
+          'Set-Cookie',
+          processWebappCookieHeader(result, result.data.data.userID, result.data.data.activeHousehold),
+        );
 
         serverSideAnalytics.identify(result.data.data.userID || '', {
           activeHousehold: result.data.data.activeHousehold,
