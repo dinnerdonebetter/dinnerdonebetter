@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
+	oauth2errors "github.com/go-oauth2/oauth2/v4/errors"
 	servertiming "github.com/mitchellh/go-server-timing"
 )
 
@@ -149,7 +150,12 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		tokenTimer := timing.NewMetric("token validation").WithDesc("validating bearer token from request").Start()
 		token, err := s.oauth2Server.ValidationBearerToken(req)
 		if err != nil {
-			logger.Error(err, "determining user ID")
+			if errors.Is(err, oauth2errors.ErrExpiredAccessToken) || errors.Is(err, oauth2errors.ErrExpiredRefreshToken) {
+				res.WriteHeader(http.StatusTeapot)
+				return
+			} else {
+				logger.Error(err, "determining user ID")
+			}
 		}
 		tokenTimer.Stop()
 

@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { parse } from 'cookie';
 
 import { LoggerType } from '@dinnerdonebetter/logger';
-import { IAPIError, User } from '@dinnerdonebetter/models';
+import { IAPIError } from '@dinnerdonebetter/models';
 import { buildServerSideClientWithOAuth2Token } from '@dinnerdonebetter/api-client';
 import { getTracer } from '@dinnerdonebetter/tracing';
 import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';

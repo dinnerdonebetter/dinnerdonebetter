@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { IAPIError, UserLoginInput, UserStatusResponse } from '@dinnerdonebetter/models';
+import { APIResponse, IAPIError, UserLoginInput, UserStatusResponse } from '@dinnerdonebetter/models';
 import { buildCookielessServerSideClient } from '@dinnerdonebetter/api-client';
 
 import { serverSideAnalytics } from '../../src/analytics';
@@ -17,17 +17,17 @@ async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
 
     await apiClient
       .logIn(input)
-      .then((result: AxiosResponse<UserStatusResponse>) => {
+      .then((result: AxiosResponse<APIResponse<UserStatusResponse>>) => {
         span.addEvent('response received');
         if (result.status === 205) {
           res.status(205).send('');
           return;
         }
 
-        res.setHeader('Set-Cookie', processWebappCookieHeader(result, result.data.userID, result.data.activeHousehold));
+        res.setHeader('Set-Cookie', processWebappCookieHeader(result, result.data.data.userID, result.data.data.activeHousehold));
 
-        serverSideAnalytics.identify(result.data.userID || '', {
-          activeHousehold: result.data.activeHousehold,
+        serverSideAnalytics.identify(result.data.data.userID || '', {
+          activeHousehold: result.data.data.activeHousehold,
         });
 
         res.status(202).send('');
