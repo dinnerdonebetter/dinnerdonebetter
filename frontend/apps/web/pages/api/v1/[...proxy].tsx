@@ -1,9 +1,51 @@
-import { buildServerSideLogger } from '@dinnerdonebetter/logger';
-import { buildAPIProxyRoute } from '@dinnerdonebetter/next-routes';
+import { AxiosError, AxiosResponse } from 'axios';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { apiCookieName } from '../../../src/constants';
+import { APIResponse, IAPIError, UserLoginInput, UserStatusResponse } from '@dinnerdonebetter/models';
+import { buildCookielessServerSideClient } from '@dinnerdonebetter/api-client';
 
-const logger = buildServerSideLogger('webapp_v1_api_proxy');
-const apiProxyRoute = buildAPIProxyRoute(logger, apiCookieName);
+import { serverSideAnalytics } from '../../../src/analytics';
+import { serverSideTracer } from '../../../src/tracer';
+import { processWebappCookieHeader } from '../../../src/auth';
 
-export default apiProxyRoute;
+async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    const span = serverSideTracer.startSpan('LoginProxy');
+    const input = req.body as UserLoginInput;
+
+    const apiClient = buildCookielessServerSideClient().withSpan(span);
+
+    await apiClient
+      .logIn(input)
+      .then((result: AxiosResponse<APIResponse<UserStatusResponse>>) => {
+        span.addEvent('response received');
+        if (result.status === 205) {
+          res.status(205).send('');
+          return;
+        }
+
+        res.setHeader(
+          'Set-Cookie',
+          processWebappCookieHeader(result, result.data.data.userID, result.data.data.activeHousehold),
+        );
+
+        serverSideAnalytics.identify(result.data.data.userID || '', {
+          activeHousehold: result.data.data.activeHousehold,
+        });
+
+        res.status(202).send('');
+      })
+      .catch((err: AxiosError<IAPIError>) => {
+        span.addEvent('error received');
+        console.log('error from login route', err);
+        res.status(err.response?.status || 500).send('');
+        return;
+      });
+
+    span.end();
+  } else {
+    res.status(405).send(`Method ${req.method} Not Allowed`);
+  }
+}
+
+export default LoginRoute;

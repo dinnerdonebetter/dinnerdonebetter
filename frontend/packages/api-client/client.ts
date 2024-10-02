@@ -266,10 +266,9 @@ const logger = buildServerSideLogger('api_client');
 export class DinnerDoneBetterAPIClient {
   baseURL: string;
   client: AxiosInstance;
-  traceID: string;
   requestInterceptorID: number;
 
-  constructor(baseURL: string = '', cookie?: string, traceID?: string) {
+  constructor(baseURL: string = '', cookie?: string, oauth2Token?: string) {
     this.baseURL = baseURL;
 
     const headers: Record<string, string> = {
@@ -282,7 +281,9 @@ export class DinnerDoneBetterAPIClient {
       headers['Cookie'] = `${cookieName}=${cookie}`;
     }
 
-    this.traceID = traceID || '';
+    if (oauth2Token) {
+      headers['Authorization'] = `Bearer ${oauth2Token}`;
+    }
 
     this.client = axios.create({
       baseURL,
@@ -293,12 +294,14 @@ export class DinnerDoneBetterAPIClient {
     } as AxiosRequestConfig);
 
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      logger.debug(`request: ${request.method} ${request.url}`);
+      // logger.debug(`Request: ${request.method} ${request.url}`);
       return request;
     });
 
     this.client.interceptors.response.use((response: AxiosResponse) => {
-      logger.debug(`Response: ${response.status} ${response.config.method} ${response.config.url} ${JSON.stringify(response.data)}`);
+      // logger.debug(
+      //   `Response: ${response.status} ${response.config.method} ${response.config.url} ${JSON.stringify(response.data)}`,
+      // );
       return response;
     });
   }
@@ -311,11 +314,11 @@ export class DinnerDoneBetterAPIClient {
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
       logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
 
-      if (this.traceID) {
-        request.headers = request.headers
-          ? { ...request.headers, traceparent: this.traceID }
-          : { traceparent: this.traceID };
-      }
+      // if (this.traceID) {
+      //   request.headers = request.headers
+      //     ? { ...request.headers, traceparent: this.traceID }
+      //     : { traceparent: this.traceID };
+      // }
 
       return request;
     });

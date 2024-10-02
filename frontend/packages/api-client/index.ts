@@ -34,6 +34,19 @@ export const buildServerSideClientWithRawCookie = (cookie: string): DinnerDoneBe
   return new DinnerDoneBetterAPIClient(apiEndpoint, cookie);
 };
 
+export const buildServerSideClientWithOAuth2Token = (token: string): DinnerDoneBetterAPIClient => {
+  const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
+  if (!apiEndpoint) {
+    throw new Error('no API endpoint set!');
+  }
+
+  if (!token) {
+    throw new Error('no token set!');
+  }
+
+  return new DinnerDoneBetterAPIClient(apiEndpoint, undefined, token);
+};
+
 export const buildCookielessServerSideClient = (): DinnerDoneBetterAPIClient => {
   const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
   if (!apiEndpoint) {

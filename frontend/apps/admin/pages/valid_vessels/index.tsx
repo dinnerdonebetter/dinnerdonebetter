@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidVessels(qf)
     .then((res: QueryFilteredResult<ValidVessel>) => {
       span.addEvent('valid vessels retrieved');
-      props = { props: { pageLoadValidVessels: res } };
+      props = { props: { pageLoadValidVessels: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

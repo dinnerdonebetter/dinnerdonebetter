@@ -35,12 +35,14 @@ export class EncryptorDecryptor<JSONValue> {
     } else {
       this.initializationVectors = crypto.randomBytes(16);
     }
-
-    console.log(`initializationVectors: ${this.initializationVectors.toString('base64')}`);
   }
 
   encrypt(x: JSONValue): string {
-    let cipher = crypto.createCipheriv('aes-256-cbc', this.secretKey, this.initializationVectors.toString('hex').slice(0, 16));
+    let cipher = crypto.createCipheriv(
+      'aes-256-cbc',
+      this.secretKey,
+      this.initializationVectors.toString('hex').slice(0, 16),
+    );
     let encrypted = cipher.update(JSON.stringify(x), 'utf-8', 'hex');
     encrypted += cipher.final('hex');
 
@@ -48,7 +50,11 @@ export class EncryptorDecryptor<JSONValue> {
   }
 
   decrypt(encrypted: string): JSONValue {
-    let decipher = crypto.createDecipheriv('aes-256-cbc', this.secretKey, this.initializationVectors.toString('hex').slice(0, 16));
+    let decipher = crypto.createDecipheriv(
+      'aes-256-cbc',
+      this.secretKey,
+      this.initializationVectors.toString('hex').slice(0, 16),
+    );
     let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
 
     decrypted += decipher.final('utf8');

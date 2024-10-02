@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredientGroups(qf)
     .then((res: QueryFilteredResult<ValidIngredientGroup>) => {
       span.addEvent('valid ingredient groups retrieved');
-      props = { props: { pageLoadValidIngredientGroups: res } };
+      props = { props: { pageLoadValidIngredientGroups: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

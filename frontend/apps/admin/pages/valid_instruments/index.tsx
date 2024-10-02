@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidInstruments(qf)
     .then((res: QueryFilteredResult<ValidInstrument>) => {
       span.addEvent('valid instruments retrieved');
-      props = { props: { pageLoadValidInstruments: res } };
+      props = { props: { pageLoadValidInstruments: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

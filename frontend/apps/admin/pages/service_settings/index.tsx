@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getServiceSettings(qf)
     .then((res: QueryFilteredResult<ServiceSetting>) => {
       span.addEvent('service settings retrieved');
-      props = { props: { pageLoadServiceSettings: res } };
+      props = { props: { pageLoadServiceSettings: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

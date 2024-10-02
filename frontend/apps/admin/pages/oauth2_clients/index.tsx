@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getOAuth2Clients(qf)
     .then((res: QueryFilteredResult<OAuth2Client>) => {
       span.addEvent('oauth2 clients retrieved');
-      props = { props: { pageLoadOAuth2Clients: res } };
+      props = { props: { pageLoadOAuth2Clients: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

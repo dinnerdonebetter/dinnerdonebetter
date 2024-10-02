@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getUsers(qf)
     .then((res: QueryFilteredResult<User>) => {
       span.addEvent('users retrieved');
-      props = { props: { pageLoadUsers: res } };
+      props = { props: { pageLoadUsers: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

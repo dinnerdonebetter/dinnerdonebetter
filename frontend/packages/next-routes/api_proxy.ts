@@ -1,37 +1,52 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { parse } from 'cookie';
 
 import { LoggerType } from '@dinnerdonebetter/logger';
-import { IAPIError } from '@dinnerdonebetter/models';
-import { buildServerSideClientWithRawCookie } from '@dinnerdonebetter/api-client';
+import { IAPIError, User } from '@dinnerdonebetter/models';
+import { buildServerSideClientWithOAuth2Token } from '@dinnerdonebetter/api-client';
 import { getTracer } from '@dinnerdonebetter/tracing';
+import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
-// TODO: I need to decrypt the cookie by its name and use it in the request
+import { UserSessionDetails } from './utils';
 
-export function buildAPIProxyRoute(logger: LoggerType, apiCookieName: string) {
+export function buildAPIProxyRoute(
+  logger: LoggerType,
+  cookieName: string,
+  encryptorDecryptor: EncryptorDecryptor<UserSessionDetails>,
+) {
   return async function APIProxy(req: NextApiRequest, res: NextApiResponse) {
     const span = getTracer('').startSpan('APIProxy');
     const spanContext = span.spanContext();
     const spanLogDetails = { spanID: spanContext.spanId, traceID: spanContext.traceId };
 
-    const cookie = (req.headers['cookie'] || '').replace(`${apiCookieName}=`, '');
+    const cookie = req.headers['cookie'];
     if (!cookie) {
       logger.debug('cookie missing from request', spanLogDetails);
       res.status(401).send('no cookie attached');
       return;
     }
 
+    const parsedCookie = parse(cookie);
+    if (!parsedCookie.hasOwnProperty(cookieName)) {
+      logger.debug('cookie missing from request', spanLogDetails);
+      res.status(401).send('no cookie attached');
+      return;
+    }
+
+    const userSessionDetails = encryptorDecryptor.decrypt(parsedCookie[cookieName]) as UserSessionDetails;
+    const accessToken = JSON.parse(JSON.stringify(userSessionDetails.Token))['access_token'];
+
     const reqConfig: AxiosRequestConfig = {
       method: req.method,
       url: req.url,
-      withCredentials: true,
     };
 
     if (req.body) {
       reqConfig.data = req.body;
     }
 
-    const apiClient = buildServerSideClientWithRawCookie(cookie).withSpan(span);
+    const apiClient = buildServerSideClientWithOAuth2Token(accessToken).withSpan(span);
     await apiClient.client
       .request(reqConfig)
       .then((result: AxiosResponse) => {

@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidMeasurementUnits(qf)
     .then((res: QueryFilteredResult<ValidMeasurementUnit>) => {
       span.addEvent('valid measurement units retrieved');
-      props = { props: { pageLoadValidMeasurementUnits: res } };
+      props = { props: { pageLoadValidMeasurementUnits: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');
