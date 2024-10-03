@@ -2,10 +2,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { apiCookieName } from './src/constants';
+import { webappCookieName } from './src/constants';
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
-  if (!request.cookies.has(apiCookieName) && !request.nextUrl.pathname.startsWith('/accept_invitation')) {
+  if (!request.cookies.has(webappCookieName) && !request.nextUrl.pathname.startsWith('/accept_invitation')) {
     const destParam =
       request.nextUrl.searchParams.get('dest') ??
       encodeURIComponent(`${request.nextUrl.pathname}${request.nextUrl.search}`);

@@ -2,11 +2,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { apiCookieName } from './src/constants';
+import { webappCookieName } from './src/constants';
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest): Promise<NextResponse> {
-  if (!request.cookies.has(apiCookieName)) {
+  if (!request.cookies.has(webappCookieName)) {
     const destParam =
       request.nextUrl.searchParams.get('dest') ??
       encodeURIComponent(`${request.nextUrl.pathname}${request.nextUrl.search}`);

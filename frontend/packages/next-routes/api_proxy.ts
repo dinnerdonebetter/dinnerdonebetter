@@ -5,13 +5,14 @@ import { parse } from 'cookie';
 import { LoggerType } from '@dinnerdonebetter/logger';
 import { IAPIError } from '@dinnerdonebetter/models';
 import { buildServerSideClientWithOAuth2Token } from '@dinnerdonebetter/api-client';
-import { getTracer } from '@dinnerdonebetter/tracing';
+import { getTracer, TracerType } from '@dinnerdonebetter/tracing';
 import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
 import { UserSessionDetails } from './utils';
 
 export function buildAPIProxyRoute(
   logger: LoggerType,
+  serverSideTracer: TracerType,
   cookieName: string,
   encryptorDecryptor: EncryptorDecryptor<UserSessionDetails>,
 ) {
@@ -29,7 +30,7 @@ export function buildAPIProxyRoute(
 
     const parsedCookie = parse(cookie);
     if (!parsedCookie.hasOwnProperty(cookieName)) {
-      logger.debug('cookie missing from request', spanLogDetails);
+      logger.debug('named cookie missing from request', spanLogDetails);
       res.status(401).send('no cookie attached');
       return;
     }

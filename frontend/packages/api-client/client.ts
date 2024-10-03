@@ -312,7 +312,7 @@ export class DinnerDoneBetterAPIClient {
 
     this.client.interceptors.request.eject(this.requestInterceptorID);
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
+      // logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
 
       // if (this.traceID) {
       //   request.headers = request.headers
