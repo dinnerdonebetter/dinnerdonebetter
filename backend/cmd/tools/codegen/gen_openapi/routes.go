@@ -33,10 +33,6 @@ var routeInfoMap = map[string]routeDetails{
 		Description: "checks for service readiness",
 		Authless:    true,
 	},
-	"POST /api/v1/admin/cycle_cookie_secret": {
-		ID:           "AdminCycleCookieSecret",
-		OAuth2Scopes: []string{serviceAdmin},
-	},
 	"POST /api/v1/admin/users/status": {
 		ID:           "AdminUpdateUserStatus",
 		InputType:    &types.UserAccountStatusUpdateInput{},
@@ -836,12 +832,6 @@ var routeInfoMap = map[string]routeDetails{
 		ID:           "VerifyUserEmailAddress",
 		ResponseType: &types.User{},
 		InputType:    &types.EmailAddressVerificationRequestInput{},
-		OAuth2Scopes: []string{householdMember},
-	},
-	"POST /api/v1/users/household/select": {
-		ID:           "ChangeActiveHousehold",
-		ResponseType: &types.Household{},
-		InputType:    &types.ChangeActiveHouseholdInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PUT /api/v1/users/password/new": {

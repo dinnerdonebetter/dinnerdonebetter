@@ -98,7 +98,9 @@ type (
 	JWTResponse struct {
 		_ struct{} `json:"-"`
 
-		Token string `json:"token"`
+		UserID      string `json:"userID"`
+		HouseholdID string `json:"householdID"`
+		Token       string `json:"token"`
 	}
 
 	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.
@@ -125,16 +127,12 @@ type (
 	// AuthService describes a structure capable of handling passwords and authorization requests.
 	AuthService interface {
 		StatusHandler(http.ResponseWriter, *http.Request)
-		BuildLoginHandler(adminOnly, returnJWT bool) func(http.ResponseWriter, *http.Request)
-		EndSessionHandler(http.ResponseWriter, *http.Request)
-		CycleCookieSecretHandler(http.ResponseWriter, *http.Request)
-		ChangeActiveHouseholdHandler(http.ResponseWriter, *http.Request)
+		BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *http.Request)
 
 		SSOLoginHandler(http.ResponseWriter, *http.Request)
 		SSOLoginCallbackHandler(http.ResponseWriter, *http.Request)
 
 		PermissionFilterMiddleware(permissions ...authorization.Permission) func(next http.Handler) http.Handler
-		CookieRequirementMiddleware(next http.Handler) http.Handler
 		UserAttributionMiddleware(next http.Handler) http.Handler
 		AuthorizationMiddleware(next http.Handler) http.Handler
 		ServiceAdminMiddleware(next http.Handler) http.Handler

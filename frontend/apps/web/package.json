@@ -5,9 +5,8 @@
   "scripts": {
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "dev": "next dev -p 9000",
+    "dev": "NEXT_PUBLIC_API_ENDPOINT='https://api.dinnerdonebetter.dev' NEXT_COOKIE_ENCRYPTION_KEY='ZOTGz4KEhZFSM6udeESOX5JVqhtEdHdS' NEXT_BASE64_COOKIE_ENCRYPT_IV='S2IwVXVvMW9hSEl4WjQ0ak1NYW50QndMTzJBWDJFV2o=' next dev -p 9000",
     "build": "next build",
-    "start": "next start",
     "lint": "next lint",
     "test:local": "cross-env TARGET_ADDRESS=http://localhost:9000 npx playwright test"
   },
@@ -52,6 +51,9 @@
     "@dinnerdonebetter/server-timing": "*",
     "@dinnerdonebetter/utils": "*",
     "@dinnerdonebetter/tracing": "*",
+    "@dinnerdonebetter/analytics": "*",
+    "@dinnerdonebetter/next-routes": "*",
+    "@dinnerdonebetter/encryption": "*",
     "@playwright/test": "1.29.0",
     "@types/cookie": "0.5.1",
     "@types/dagre": "0.7.48",
@@ -62,7 +64,7 @@
     "eslint-config-custom": "*",
     "next-transpile-modules": "9.0.0",
     "tsconfig": "*",
-    "typescript": "4.5.3",
+    "typescript": "4.7.4",
     "webpack": "5.74.0"
   },
   "browserslist": [

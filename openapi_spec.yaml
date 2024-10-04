@@ -17,16 +17,6 @@ paths:
     get:
       description: checks for service readiness
       operationId: CheckForReadiness
-  /api/v1/admin/cycle_cookie_secret:
-    post:
-      description: Operation for creating
-      operationId: AdminCycleCookieSecret
-      security:
-      - cookieAuth: []
-      - oauth2:
-        - service_admin
-      tags:
-      - admin
   /api/v1/admin/users/status:
     post:
       description: Operation for creating UserStatusResponse
@@ -90,7 +80,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -156,7 +145,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -215,7 +203,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -274,7 +261,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -339,7 +325,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -413,7 +398,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -487,7 +471,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -561,7 +544,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -678,7 +660,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -795,7 +776,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -912,7 +892,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -979,7 +958,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -1044,7 +1022,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -1108,7 +1085,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -1181,7 +1157,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -1246,7 +1221,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -1320,7 +1294,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -1391,7 +1364,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -1466,7 +1438,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -1536,7 +1507,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -1616,7 +1586,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -1691,7 +1660,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -1750,7 +1718,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -1867,7 +1834,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -1935,7 +1901,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -2001,7 +1966,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -2066,7 +2030,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -2140,7 +2103,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -2258,7 +2220,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -2325,7 +2286,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -2390,7 +2350,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -2454,7 +2413,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -2527,7 +2485,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -2649,7 +2606,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -2723,7 +2679,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -2794,7 +2749,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -2864,7 +2818,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -2943,7 +2896,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -3071,7 +3023,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -3151,7 +3102,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -3228,7 +3178,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -3304,7 +3253,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -3389,7 +3337,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -3523,7 +3470,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -3606,7 +3552,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -3688,7 +3633,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -3779,7 +3723,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -3861,7 +3804,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -3927,7 +3869,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -4049,7 +3990,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -4123,7 +4063,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -4194,7 +4133,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -4264,7 +4202,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -4343,7 +4280,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -4466,7 +4402,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -4540,7 +4475,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -4611,7 +4545,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -4690,7 +4623,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -4808,7 +4740,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -4875,7 +4806,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -4940,7 +4870,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5004,7 +4933,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5127,7 +5055,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5244,7 +5171,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5311,7 +5237,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -5376,7 +5301,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -5440,7 +5364,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5557,7 +5480,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5624,7 +5546,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5689,7 +5610,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5753,7 +5673,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5826,7 +5745,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5891,7 +5809,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5956,7 +5873,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5972,7 +5888,6 @@ paths:
         schema:
           type: string
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -5987,8 +5902,6 @@ paths:
         required: true
         schema:
           type: string
-      security:
-      - cookieAuth: []
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/prep_steps:
@@ -6051,7 +5964,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6173,7 +6085,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6247,7 +6158,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6318,7 +6228,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6388,7 +6297,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6467,7 +6375,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6590,7 +6497,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6664,7 +6570,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6735,7 +6640,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6805,7 +6709,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -6884,7 +6787,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7007,7 +6909,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7081,7 +6982,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7152,7 +7052,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7222,7 +7121,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7301,7 +7199,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7429,7 +7326,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7509,7 +7405,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7586,7 +7481,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7662,7 +7556,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7747,7 +7640,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7770,7 +7662,6 @@ paths:
         schema:
           type: string
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7898,7 +7789,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -7978,7 +7868,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8055,7 +7944,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8131,7 +8019,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8216,7 +8103,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8345,7 +8231,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8425,7 +8310,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8502,7 +8386,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8578,7 +8461,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8663,7 +8545,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8792,7 +8673,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8872,7 +8752,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -8949,7 +8828,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9025,7 +8903,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9110,7 +8987,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9239,7 +9115,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9319,7 +9194,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9396,7 +9270,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9472,7 +9345,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9557,7 +9429,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9682,7 +9553,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9799,7 +9669,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -9866,7 +9735,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -9931,7 +9799,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -9995,7 +9862,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10063,7 +9929,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10129,7 +9994,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10203,7 +10067,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10321,7 +10184,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10439,7 +10301,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10562,7 +10423,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10687,7 +10547,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10804,7 +10663,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10871,7 +10729,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -10936,7 +10793,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11009,7 +10865,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11126,7 +10981,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11193,7 +11047,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -11258,7 +11111,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11331,7 +11183,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11448,7 +11299,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11513,7 +11363,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11577,7 +11426,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11645,7 +11493,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11713,7 +11560,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11781,7 +11627,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -11849,80 +11694,10 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
       - users
-  /api/v1/users/household/select:
-    post:
-      description: Operation for creating Household
-      operationId: ChangeActiveHousehold
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChangeActiveHouseholdInput'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/ChangeActiveHouseholdInput'
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/Household'
-                      type: object
-                  type: object
-            application/xml:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/Household'
-                      type: object
-                  type: object
-          description: ""
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-      security:
-      - cookieAuth: []
-      - oauth2:
-        - household_member
-      tags:
-      - users
-      - household
   /api/v1/users/password/new:
     put:
       description: Operation for updating
@@ -11937,7 +11712,6 @@ paths:
               $ref: '#/components/schemas/PasswordUpdateInput'
         required: true
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -12006,7 +11780,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -12130,7 +11903,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -12189,7 +11961,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -12257,7 +12028,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -12326,7 +12096,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -12443,7 +12212,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -12510,7 +12278,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -12575,7 +12342,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -12639,7 +12405,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -12712,7 +12477,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -12835,7 +12599,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -12952,7 +12715,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -13019,7 +12781,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -13084,7 +12845,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -13148,7 +12908,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -13221,7 +12980,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -13343,7 +13101,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -13465,7 +13222,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -13582,7 +13338,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -13649,7 +13404,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -13714,7 +13468,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -13778,7 +13531,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -13851,7 +13603,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -13973,7 +13724,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -14095,7 +13845,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -14212,7 +13961,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -14279,7 +14027,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -14344,7 +14091,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -14408,7 +14154,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -14481,7 +14226,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -14603,7 +14347,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -14725,7 +14468,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -14842,7 +14584,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -14909,7 +14650,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -14974,7 +14714,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -15038,7 +14777,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -15111,7 +14849,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -15234,7 +14971,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -15351,7 +15087,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -15418,7 +15153,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -15483,7 +15217,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -15547,7 +15280,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -15620,7 +15352,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -15748,7 +15479,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -15807,7 +15537,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -15930,7 +15659,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -16047,7 +15775,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -16114,7 +15841,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -16179,7 +15905,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -16243,7 +15968,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -16316,7 +16040,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -16375,7 +16098,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -16498,7 +16220,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -16566,7 +16287,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -16631,7 +16351,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -16695,7 +16414,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -16768,7 +16486,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -16833,7 +16550,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -16898,7 +16614,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -17015,7 +16730,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -17082,7 +16796,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -17147,7 +16860,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -17211,7 +16923,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -17284,7 +16995,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -17412,7 +17122,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -17535,7 +17244,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -17652,7 +17360,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -17719,7 +17426,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -17784,7 +17490,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -17848,7 +17553,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -17921,7 +17625,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -18043,7 +17746,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -18165,7 +17867,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -18282,7 +17983,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -18349,7 +18049,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -18414,7 +18113,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -18478,7 +18176,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -18551,7 +18248,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -18673,7 +18369,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -18795,7 +18490,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -18912,7 +18606,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -18979,7 +18672,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -19044,7 +18736,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -19108,7 +18799,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -19181,7 +18871,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -19240,7 +18929,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -19363,7 +19051,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -19480,7 +19167,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -19547,7 +19233,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -19612,7 +19297,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -19676,7 +19360,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -19749,7 +19432,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - service_admin
       tags:
@@ -19808,7 +19490,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -19931,7 +19612,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -20048,7 +19728,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -20115,7 +19794,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -20180,7 +19858,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -20244,7 +19921,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -20318,7 +19994,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -20388,7 +20063,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -20457,7 +20131,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -20467,7 +20140,6 @@ paths:
       description: Operation for creating
       operationId: RunMealPlanGroceryListInitializerWorker
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -20477,7 +20149,6 @@ paths:
       description: Operation for creating
       operationId: RunMealPlanTaskCreatorWorker
       security:
-      - cookieAuth: []
       - oauth2:
         - household_admin
       tags:
@@ -20536,7 +20207,6 @@ paths:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
       security:
-      - cookieAuth: []
       - oauth2:
         - household_member
       tags:
@@ -20545,16 +20215,12 @@ paths:
     get:
       description: Operation for fetching
       operationId: GET_oauth2_authorize
-      security:
-      - cookieAuth: []
       tags:
       - oauth2
   /oauth2/token:
     post:
       description: Operation for creating
       operationId: POST_oauth2_token
-      security:
-      - cookieAuth: []
       tags:
       - oauth2
   /users:
@@ -20619,8 +20285,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
-      security:
-      - cookieAuth: []
       tags:
       - users
   /users/email_address/verify:
@@ -20688,134 +20352,6 @@ paths:
       tags:
       - users
       - email address
-  /users/login:
-    post:
-      description: Operation for creating UserStatusResponse
-      operationId: Login
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserLoginInput'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/UserLoginInput'
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/UserStatusResponse'
-                      type: object
-                  type: object
-            application/xml:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/UserStatusResponse'
-                      type: object
-                  type: object
-          description: ""
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-      tags:
-      - users
-  /users/login/admin:
-    post:
-      description: Operation for creating UserStatusResponse
-      operationId: AdminLogin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserLoginInput'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/UserLoginInput'
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/UserStatusResponse'
-                      type: object
-                  type: object
-            application/xml:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/UserStatusResponse'
-                      type: object
-                  type: object
-          description: ""
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-      tags:
-      - users
   /users/login/jwt:
     post:
       description: Operation for creating JWTResponse
@@ -20878,8 +20414,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
-      security:
-      - cookieAuth: []
       tags:
       - users
   /users/login/jwt/admin:
@@ -20944,65 +20478,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/APIResponseWithError'
           description: ""
-      security:
-      - cookieAuth: []
-      tags:
-      - users
-  /users/logout:
-    post:
-      description: Operation for creating UserStatusResponse
-      operationId: Logout
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/UserStatusResponse'
-                      type: object
-                  type: object
-            application/xml:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/UserStatusResponse'
-                      type: object
-                  type: object
-          description: ""
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-      security:
-      - cookieAuth: []
       tags:
       - users
   /users/password/reset:
@@ -21594,7 +21069,11 @@ components:
       type: object
     JWTResponse:
       properties:
+        householdID:
+          type: string
         token:
+          type: string
+        userID:
           type: string
       type: object
     Meal:
@@ -24740,10 +24219,6 @@ components:
           type: string
       type: object
   securitySchemes:
-    cookieAuth:
-      in: cookie
-      name: ddb_api_cookie
-      type: apiKey
     oauth2:
       flows:
         implicit:
@@ -24759,7 +24234,6 @@ tags:
 - name: auth
 - name: email address
 - name: grocery list items
-- name: household
 - name: household instrument ownerships
 - name: household invitations
 - name: household members

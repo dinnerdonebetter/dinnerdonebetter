@@ -7,8 +7,9 @@ import { useState, useEffect } from 'react';
 
 import { QueryFilter, OAuth2Client, QueryFilteredResult } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildLocalClient, buildServerSideClient } from '../../src/client';
+import { buildServerSideClient } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
@@ -34,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getOAuth2Clients(qf)
     .then((res: QueryFilteredResult<OAuth2Client>) => {
       span.addEvent('oauth2 clients retrieved');
-      props = { props: { pageLoadOAuth2Clients: res } };
+      props = { props: { pageLoadOAuth2Clients: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

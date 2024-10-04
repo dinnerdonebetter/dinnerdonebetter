@@ -76,14 +76,11 @@ import (
 )
 
 const (
-	defaultPort         = 8000
-	defaultCookieDomain = ".whatever.gov"
+	defaultPort = 8000
 	/* #nosec G101 */
 	debugCookieHashKey = "HEREISA32CHARSECRETWHICHISMADEUP"
 	/* #nosec G101 */
-	debugCookieBlockKey      = "DIFFERENT32CHARSECRETTHATIMADEUP"
 	devPostgresDBConnDetails = "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable"
-	defaultCookieName        = authservice.DefaultCookieName
 
 	// run modes.
 	developmentEnv = "development"
@@ -126,15 +123,6 @@ var (
 		Debug:           true,
 		HTTPPort:        defaultPort,
 		StartupDeadline: time.Minute,
-	}
-
-	localCookies = authservice.CookieConfig{
-		Name:       defaultCookieName,
-		Domain:     defaultCookieDomain,
-		HashKey:    debugCookieHashKey,
-		BlockKey:   debugCookieBlockKey,
-		Lifetime:   authservice.DefaultCookieLifetime,
-		SecureOnly: false,
 	}
 
 	localTracingConfig = tracingcfg.Config{
@@ -189,13 +177,6 @@ var files = map[string]configFunc{
 }
 
 func buildDevEnvironmentServerConfig() *config.InstanceConfig {
-	cookieConfig := authservice.CookieConfig{
-		Name:       defaultCookieName,
-		Domain:     ".dinnerdonebetter.dev",
-		Lifetime:   (24 * time.Hour) * 30,
-		SecureOnly: true,
-	}
-
 	emailConfig := emailconfig.Config{
 		Provider: emailconfig.ProviderSendgrid,
 		Sendgrid: &sendgrid.Config{},
@@ -261,7 +242,6 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 					RefreshTokenLifespan: time.Hour,
 					Debug:                false,
 				},
-				Cookies:               cookieConfig,
 				Debug:                 true,
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,
@@ -407,7 +387,6 @@ func buildLocalDevConfig() *config.InstanceConfig {
 						CallbackURL: "https://app.dinnerdonebetter.dev/auth/google/callback",
 					},
 				},
-				Cookies:               localCookies,
 				Debug:                 true,
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,
@@ -648,14 +627,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 					AccessTokenLifespan:  time.Hour,
 					RefreshTokenLifespan: time.Hour,
 					Debug:                false,
-				},
-				Cookies: authservice.CookieConfig{
-					Name:       defaultCookieName,
-					Domain:     defaultCookieDomain,
-					HashKey:    debugCookieHashKey,
-					BlockKey:   debugCookieBlockKey,
-					Lifetime:   authservice.DefaultCookieLifetime,
-					SecureOnly: false,
 				},
 				Debug:                 false,
 				EnableUserSignup:      true,

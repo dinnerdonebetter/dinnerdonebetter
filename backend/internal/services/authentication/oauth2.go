@@ -169,23 +169,20 @@ func buildUserAuthorizationHandler(tracer tracing.Tracer, logger logging.Logger,
 	}
 }
 
-func AuthorizeScopeHandler(logger logging.Logger) func(http.ResponseWriter, *http.Request) (string, error) {
+func AuthorizeScopeHandler(_ logging.Logger) func(http.ResponseWriter, *http.Request) (string, error) {
 	return func(_ http.ResponseWriter, req *http.Request) (scope string, err error) {
-		logger.Info("AuthorizeScopeHandler invoked")
 		return req.URL.Query().Get("scope"), nil
 	}
 }
 
-func AccessTokenExpHandler(logger logging.Logger) func(http.ResponseWriter, *http.Request) (time.Duration, error) {
+func AccessTokenExpHandler(_ logging.Logger) func(http.ResponseWriter, *http.Request) (time.Duration, error) {
 	return func(_ http.ResponseWriter, _ *http.Request) (time.Duration, error) {
-		logger.Info("AccessTokenExpHandler invoked")
 		return 24 * time.Hour, nil
 	}
 }
 
-func ClientScopeHandler(logger logging.Logger) func(_ *oauth2.TokenGenerateRequest) (allowed bool, err error) {
+func ClientScopeHandler(_ logging.Logger) func(_ *oauth2.TokenGenerateRequest) (allowed bool, err error) {
 	return func(_ *oauth2.TokenGenerateRequest) (allowed bool, err error) {
-		logger.Info("ClientScopeHandler invoked")
 		return true, nil
 	}
 }

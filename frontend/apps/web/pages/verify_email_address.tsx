@@ -4,7 +4,7 @@ import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult
 
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
-import { buildCookielessServerSideClient } from '../src/client';
+import { buildCookielessServerSideClient } from '@dinnerdonebetter/api-client';
 import { serverSideTracer } from '../src/tracer';
 
 declare interface VerifyEmailAddressPageProps {}

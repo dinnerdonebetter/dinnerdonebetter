@@ -2,15 +2,12 @@ package integration
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -19,14 +16,11 @@ const (
 	oauth2AuthType = "oauth2"
 )
 
-var (
-	globalClientExceptions []string
-)
-
 type testClientWrapper struct {
-	user     *apiclient.Client
-	admin    *apiclient.Client
-	authType string
+	user        *types.User
+	userClient  *apiclient.Client
+	adminClient *apiclient.Client
+	authType    string
 }
 
 func TestIntegration(t *testing.T) {
@@ -38,12 +32,9 @@ func TestIntegration(t *testing.T) {
 type TestSuite struct {
 	suite.Suite
 
-	ctx    context.Context
-	user   *types.User
-	cookie *http.Cookie
-	cookieClient,
+	ctx  context.Context
+	user *types.User
 	oauthedClient,
-	adminCookieClient,
 	adminOAuthedClient *apiclient.Client
 }
 
@@ -57,46 +48,10 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.cookie, s.cookieClient, s.oauthedClient = createUserAndClientForTest(s.ctx, t, nil)
-	s.adminCookieClient, s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
+	s.user, s.oauthedClient = createUserAndClientForTest(s.ctx, t, nil)
+	s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
 }
 
-func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.runForEachClientExcept(name, subtestBuilder, oauth2AuthType)
-}
-
-func (s *TestSuite) runForOAuth2Client(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.runForEachClientExcept(name, subtestBuilder, cookieAuthType)
-}
-
-func (s *TestSuite) runForEachClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.runForEachClientExcept(name, subtestBuilder)
-}
-
-func (s *TestSuite) runForEachClientExcept(name string, subtestBuilder func(*testClientWrapper) func(), exceptions ...string) {
-	for a, c := range s.eachClientExcept(exceptions...) {
-		authType, testClients := a, c
-		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
-	}
-}
-
-func (s *TestSuite) eachClientExcept(exceptions ...string) map[string]*testClientWrapper {
-	t := s.T()
-
-	clients := map[string]*testClientWrapper{
-		cookieAuthType: {authType: cookieAuthType, user: s.cookieClient, admin: s.adminCookieClient},
-		oauth2AuthType: {authType: oauth2AuthType, user: s.oauthedClient, admin: s.adminOAuthedClient},
-	}
-
-	for _, name := range exceptions {
-		delete(clients, name)
-	}
-
-	for _, name := range globalClientExceptions {
-		delete(clients, name)
-	}
-
-	require.NotEmpty(t, clients)
-
-	return clients
+func (s *TestSuite) runTest(name string, subtestBuilder func(*testClientWrapper) func()) {
+	s.Run(name, subtestBuilder(&testClientWrapper{authType: oauth2AuthType, userClient: s.oauthedClient, adminClient: s.adminOAuthedClient, user: s.user}))
 }

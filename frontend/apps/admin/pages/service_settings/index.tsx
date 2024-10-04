@@ -8,8 +8,9 @@ import { useState, useEffect } from 'react';
 
 import { QueryFilter, ServiceSetting, QueryFilteredResult } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildLocalClient, buildServerSideClient } from '../../src/client';
+import { buildServerSideClient } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
@@ -35,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getServiceSettings(qf)
     .then((res: QueryFilteredResult<ServiceSetting>) => {
       span.addEvent('service settings retrieved');
-      props = { props: { pageLoadServiceSettings: res } };
+      props = { props: { pageLoadServiceSettings: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

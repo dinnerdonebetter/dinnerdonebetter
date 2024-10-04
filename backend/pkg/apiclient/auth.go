@@ -36,85 +36,13 @@ func (c *Client) UserStatus(ctx context.Context) (*types.UserStatusResponse, err
 	return apiResponse.Data, nil
 }
 
-// Login fetches a login cookie.
-func (c *Client) Login(ctx context.Context, input *types.UserLoginInput) (*http.Cookie, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if input == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	// validating input here requires settings knowledge, so we regrettably don't bother
-
-	body := generated.LoginJSONRequestBody{}
-	c.copyType(&body, input)
-
-	res, err := c.unauthedGeneratedClient.Login(ctx, body)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing login request")
-	}
-	defer c.closeResponseBody(ctx, res)
-
-	var apiResponse *types.APIResponse[*types.UserStatusResponse]
-	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return nil, observability.PrepareError(err, span, "parsing login JWT response")
-	}
-
-	if err = apiResponse.Error.AsError(); err != nil {
-		return nil, err
-	}
-
-	if cookies := res.Cookies(); len(cookies) > 0 {
-		return cookies[0], nil
-	}
-
-	return nil, ErrNoCookiesReturned
-}
-
-// AdminLogin fetches a login cookie.
-func (c *Client) AdminLogin(ctx context.Context, input *types.UserLoginInput) (*http.Cookie, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if input == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	// validating input here requires settings knowledge, so we regrettably don't bother
-
-	body := generated.AdminLoginJSONRequestBody{}
-	c.copyType(&body, input)
-
-	res, err := c.unauthedGeneratedClient.AdminLogin(ctx, body)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing login request")
-	}
-	defer c.closeResponseBody(ctx, res)
-
-	var apiResponse *types.APIResponse[*types.UserStatusResponse]
-	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return nil, observability.PrepareError(err, span, "parsing login JWT response")
-	}
-
-	if err = apiResponse.Error.AsError(); err != nil {
-		return nil, err
-	}
-
-	if cookies := res.Cookies(); len(cookies) > 0 {
-		return cookies[0], nil
-	}
-
-	return nil, ErrNoCookiesReturned
-}
-
 // LoginForJWT fetches a JWT for a user.
-func (c *Client) LoginForJWT(ctx context.Context, input *types.UserLoginInput) (string, error) {
+func (c *Client) LoginForJWT(ctx context.Context, input *types.UserLoginInput) (*types.JWTResponse, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
-		return "", ErrNilInputProvided
+		return nil, ErrNilInputProvided
 	}
 
 	// validating input here requires settings knowledge, so we regrettably don't bother
@@ -124,20 +52,20 @@ func (c *Client) LoginForJWT(ctx context.Context, input *types.UserLoginInput) (
 
 	res, err := c.unauthedGeneratedClient.LoginForJWT(ctx, body)
 	if err != nil {
-		return "", observability.PrepareError(err, span, "executing login for jwt request")
+		return nil, observability.PrepareError(err, span, "executing login for jwt request")
 	}
 	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.JWTResponse]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return "", observability.PrepareError(err, span, "parsing login JWT response")
+		return nil, observability.PrepareError(err, span, "parsing login JWT response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return apiResponse.Data.Token, nil
+	return apiResponse.Data, nil
 }
 
 // AdminLoginForJWT fetches a JWT for a user.
@@ -172,30 +100,10 @@ func (c *Client) AdminLoginForJWT(ctx context.Context, input *types.UserLoginInp
 	return apiResponse.Data.Token, nil
 }
 
-// Logout logs a user out.
-func (c *Client) Logout(ctx context.Context) error {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	res, err := c.authedGeneratedClient.Logout(ctx)
-	if err != nil {
-		return observability.PrepareError(err, span, "executing logout request")
-	}
-	defer c.closeResponseBody(ctx, res)
-
-	c.authedClient.Transport = newDefaultRoundTripper(c.authedClient.Timeout, c.impersonatedUserID, c.impersonatedHouseholdID)
-
-	return nil
-}
-
 // ChangePassword changes a user's password.
-func (c *Client) ChangePassword(ctx context.Context, cookie *http.Cookie, input *types.PasswordUpdateInput) error {
+func (c *Client) ChangePassword(ctx context.Context, input *types.PasswordUpdateInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
-
-	if cookie == nil {
-		return ErrCookieRequired
-	}
 
 	if input == nil {
 		return ErrNilInputProvided
@@ -220,13 +128,9 @@ func (c *Client) ChangePassword(ctx context.Context, cookie *http.Cookie, input 
 }
 
 // CycleTwoFactorSecret cycles a user's 2FA secret.
-func (c *Client) CycleTwoFactorSecret(ctx context.Context, cookie *http.Cookie, input *types.TOTPSecretRefreshInput) (*types.TOTPSecretRefreshResponse, error) {
+func (c *Client) CycleTwoFactorSecret(ctx context.Context, input *types.TOTPSecretRefreshInput) (*types.TOTPSecretRefreshResponse, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
-
-	if cookie == nil {
-		return nil, ErrCookieRequired
-	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided

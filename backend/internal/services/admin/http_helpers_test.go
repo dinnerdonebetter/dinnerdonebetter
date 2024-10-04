@@ -49,19 +49,16 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	t.Helper()
 
 	helper := &adminServiceHTTPRoutesTestHelper{}
-
 	helper.service = buildTestService(t)
 
-	var err error
-	helper.ctx, err = helper.service.sessionManager.Load(context.Background(), "")
-	require.NoError(t, err)
-
+	helper.ctx = context.Background()
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleInput = fakes.BuildFakeUserAccountStatusUpdateInput()
 
+	var err error
 	helper.res = httptest.NewRecorder()
 	helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://blah.com", http.NoBody)
 	require.NoError(t, err)

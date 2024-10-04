@@ -35,9 +35,10 @@ import {
   QueryFilteredResult,
 } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
-import { buildLocalClient, buildServerSideClient } from '../../../src/client';
+import { buildServerSideClient } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
 
@@ -87,7 +88,12 @@ export const getServerSideProps: GetServerSideProps = async (
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return { props: { pageLoadValidInstrument, pageLoadPreparationInstruments } };
+  return {
+    props: {
+      pageLoadValidInstrument: JSON.parse(JSON.stringify(pageLoadValidInstrument)),
+      pageLoadPreparationInstruments: JSON.parse(JSON.stringify(pageLoadPreparationInstruments)),
+    },
+  };
 };
 
 const validInstrumentUpdateFormSchema = z.object({

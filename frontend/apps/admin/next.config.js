@@ -6,14 +6,14 @@ const withTM = require('next-transpile-modules')([
   '@dinnerdonebetter/logger',
   '@dinnerdonebetter/server-timing',
   '@dinnerdonebetter/tracing',
+  '@dinnerdonebetter/next-routes',
+  '@dinnerdonebetter/encryption',
 ]);
 
 module.exports = withTM({
   reactStrictMode: true,
   output: 'standalone',
-  env: {
-    NEXT_PUBLIC_API_ENDPOINT: 'https://api.dinnerdonebetter.dev',
-  },
+  env: {},
   experimental: {
     outputFileTracingRoot: path.join(__dirname, '../../'),
   },

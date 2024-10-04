@@ -15,7 +15,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
-	"github.com/alexedwards/scs/v2/mockstore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -338,10 +337,6 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
-
-		mockHandler := &mockstore.MockStore{}
-		mockHandler.ExpectDelete("", errors.New("blah"))
-		helper.service.sessionManager.Store = mockHandler
 
 		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(

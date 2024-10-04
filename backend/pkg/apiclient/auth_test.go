@@ -90,154 +90,6 @@ func (s *authTestSuite) TestClient_UserStatus() {
 	})
 }
 
-func (s *authTestSuite) TestClient_Login() {
-	const expectedPath = "/users/login"
-
-	spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
-		exampleResponse := fakes.BuildFakeUserStatusResponse()
-
-		ts := httptest.NewTLSServer(http.HandlerFunc(
-			func(res http.ResponseWriter, req *http.Request) {
-				assertRequestQuality(t, req, spec)
-
-				http.SetCookie(res, &http.Cookie{Name: s.exampleUser.Username})
-
-				require.NoError(t, json.NewEncoder(res).Encode(&types.APIResponse[*types.UserStatusResponse]{
-					Data: exampleResponse,
-				}))
-			},
-		))
-		c := buildTestClient(t, ts)
-
-		cookie, err := c.Login(s.ctx, exampleInput)
-		require.NotNil(t, cookie)
-		assert.NoError(t, err)
-	})
-
-	s.Run("with nil input", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-
-		cookie, err := c.Login(s.ctx, nil)
-		assert.Nil(t, cookie)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
-
-		c := buildTestClientWithInvalidURL(t)
-
-		cookie, err := c.Login(s.ctx, exampleInput)
-		assert.Nil(t, cookie)
-		assert.Error(t, err)
-	})
-
-	s.Run("with timeout", func() {
-		t := s.T()
-
-		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
-		c, _ := buildTestClientThatWaitsTooLong(t)
-
-		cookie, err := c.Login(s.ctx, exampleInput)
-		require.Nil(t, cookie)
-		assert.Error(t, err)
-	})
-
-	s.Run("with missing cookie", func() {
-		t := s.T()
-
-		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
-
-		cookie, err := c.Login(s.ctx, exampleInput)
-		require.Nil(t, cookie)
-		assert.Error(t, err)
-	})
-}
-
-func (s *authTestSuite) TestClient_AdminLogin() {
-	const expectedPath = "/users/login/admin"
-
-	spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
-		exampleResponse := fakes.BuildFakeUserStatusResponse()
-
-		ts := httptest.NewTLSServer(http.HandlerFunc(
-			func(res http.ResponseWriter, req *http.Request) {
-				assertRequestQuality(t, req, spec)
-
-				http.SetCookie(res, &http.Cookie{Name: s.exampleUser.Username})
-
-				require.NoError(t, json.NewEncoder(res).Encode(&types.APIResponse[*types.UserStatusResponse]{
-					Data: exampleResponse,
-				}))
-			},
-		))
-		c := buildTestClient(t, ts)
-
-		cookie, err := c.AdminLogin(s.ctx, exampleInput)
-		require.NotNil(t, cookie)
-		assert.NoError(t, err)
-	})
-
-	s.Run("with nil input", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-
-		cookie, err := c.AdminLogin(s.ctx, nil)
-		assert.Nil(t, cookie)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
-
-		c := buildTestClientWithInvalidURL(t)
-
-		cookie, err := c.AdminLogin(s.ctx, exampleInput)
-		assert.Nil(t, cookie)
-		assert.Error(t, err)
-	})
-
-	s.Run("with timeout", func() {
-		t := s.T()
-
-		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
-		c, _ := buildTestClientThatWaitsTooLong(t)
-
-		cookie, err := c.AdminLogin(s.ctx, exampleInput)
-		require.Nil(t, cookie)
-		assert.Error(t, err)
-	})
-
-	s.Run("with missing cookie", func() {
-		t := s.T()
-
-		exampleInput := fakes.BuildFakeUserLoginInputFromUser(s.exampleUser)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
-
-		cookie, err := c.AdminLogin(s.ctx, exampleInput)
-		require.Nil(t, cookie)
-		assert.Error(t, err)
-	})
-}
-
 func (s *authTestSuite) TestClient_LoginForJWT() {
 	const expectedPath = "/users/login/jwt"
 
@@ -261,7 +113,7 @@ func (s *authTestSuite) TestClient_LoginForJWT() {
 		c := buildTestClient(t, ts)
 
 		token, err := c.LoginForJWT(s.ctx, exampleInput)
-		assert.NotEmpty(t, token)
+		assert.NotNil(t, token)
 		assert.NoError(t, err)
 	})
 
@@ -271,7 +123,7 @@ func (s *authTestSuite) TestClient_LoginForJWT() {
 		c, _ := buildSimpleTestClient(t)
 
 		token, err := c.LoginForJWT(s.ctx, nil)
-		assert.Empty(t, token)
+		assert.Nil(t, token)
 		assert.Error(t, err)
 	})
 
@@ -283,7 +135,7 @@ func (s *authTestSuite) TestClient_LoginForJWT() {
 		c := buildTestClientWithInvalidURL(t)
 
 		token, err := c.LoginForJWT(s.ctx, exampleInput)
-		assert.Empty(t, token)
+		assert.Nil(t, token)
 		assert.Error(t, err)
 	})
 
@@ -294,7 +146,7 @@ func (s *authTestSuite) TestClient_LoginForJWT() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		token, err := c.LoginForJWT(s.ctx, exampleInput)
-		assert.Empty(t, token)
+		assert.Nil(t, token)
 		assert.Error(t, err)
 	})
 }
@@ -360,38 +212,6 @@ func (s *authTestSuite) TestClient_AdminLoginForJWT() {
 	})
 }
 
-func (s *authTestSuite) TestClient_Logout() {
-	const expectedPath = "/users/logout"
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		spec := newRequestSpec(true, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
-
-		err := c.Logout(s.ctx)
-		assert.NoError(t, err)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-
-		err := c.Logout(s.ctx)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-
-		err := c.Logout(s.ctx)
-		assert.Error(t, err)
-	})
-}
-
 func (s *authTestSuite) TestClient_ChangePassword() {
 	const expectedPath = "/api/v1/users/password/new"
 
@@ -402,18 +222,8 @@ func (s *authTestSuite) TestClient_ChangePassword() {
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 		exampleInput := fakes.BuildFakePasswordUpdateInput()
 
-		err := c.ChangePassword(s.ctx, s.exampleCookie, exampleInput)
+		err := c.ChangePassword(s.ctx, exampleInput)
 		assert.NoError(t, err)
-	})
-
-	s.Run("with nil cookie", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-		exampleInput := fakes.BuildFakePasswordUpdateInput()
-
-		err := c.ChangePassword(s.ctx, nil, exampleInput)
-		assert.Error(t, err)
 	})
 
 	s.Run("with nil input", func() {
@@ -421,7 +231,7 @@ func (s *authTestSuite) TestClient_ChangePassword() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.ChangePassword(s.ctx, s.exampleCookie, nil)
+		err := c.ChangePassword(s.ctx, nil)
 		assert.Error(t, err)
 	})
 
@@ -431,7 +241,7 @@ func (s *authTestSuite) TestClient_ChangePassword() {
 		c := buildTestClientWithInvalidURL(t)
 		exampleInput := fakes.BuildFakePasswordUpdateInput()
 
-		err := c.ChangePassword(s.ctx, s.exampleCookie, exampleInput)
+		err := c.ChangePassword(s.ctx, exampleInput)
 		assert.Error(t, err)
 	})
 
@@ -441,7 +251,7 @@ func (s *authTestSuite) TestClient_ChangePassword() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 		exampleInput := fakes.BuildFakePasswordUpdateInput()
 
-		err := c.ChangePassword(s.ctx, s.exampleCookie, exampleInput)
+		err := c.ChangePassword(s.ctx, exampleInput)
 		assert.Error(t, err)
 	})
 
@@ -452,7 +262,7 @@ func (s *authTestSuite) TestClient_ChangePassword() {
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusBadRequest)
 		exampleInput := fakes.BuildFakePasswordUpdateInput()
 
-		err := c.ChangePassword(s.ctx, s.exampleCookie, exampleInput)
+		err := c.ChangePassword(s.ctx, exampleInput)
 		assert.Error(t, err)
 	})
 }
@@ -475,25 +285,9 @@ func (s *authTestSuite) TestClient_CycleTwoFactorSecret() {
 		c, _ := buildTestClientWithJSONResponse(t, spec, expectedResponse)
 		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
 
-		actual, err := c.CycleTwoFactorSecret(s.ctx, s.exampleCookie, exampleInput)
+		actual, err := c.CycleTwoFactorSecret(s.ctx, exampleInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
-	})
-
-	s.Run("with nil cookie", func() {
-		t := s.T()
-
-		expected := &types.TOTPSecretRefreshResponse{
-			TwoFactorQRCode: t.Name(),
-			TwoFactorSecret: t.Name(),
-		}
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
-
-		actual, err := c.CycleTwoFactorSecret(s.ctx, nil, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -501,7 +295,7 @@ func (s *authTestSuite) TestClient_CycleTwoFactorSecret() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		actual, err := c.CycleTwoFactorSecret(s.ctx, s.exampleCookie, nil)
+		actual, err := c.CycleTwoFactorSecret(s.ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -512,7 +306,7 @@ func (s *authTestSuite) TestClient_CycleTwoFactorSecret() {
 		c, _ := buildSimpleTestClient(t)
 		exampleInput := &types.TOTPSecretRefreshInput{}
 
-		actual, err := c.CycleTwoFactorSecret(s.ctx, s.exampleCookie, exampleInput)
+		actual, err := c.CycleTwoFactorSecret(s.ctx, exampleInput)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -523,7 +317,7 @@ func (s *authTestSuite) TestClient_CycleTwoFactorSecret() {
 		c := buildTestClientWithInvalidURL(t)
 		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
 
-		actual, err := c.CycleTwoFactorSecret(s.ctx, s.exampleCookie, exampleInput)
+		actual, err := c.CycleTwoFactorSecret(s.ctx, exampleInput)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -534,7 +328,7 @@ func (s *authTestSuite) TestClient_CycleTwoFactorSecret() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
 
-		actual, err := c.CycleTwoFactorSecret(s.ctx, s.exampleCookie, exampleInput)
+		actual, err := c.CycleTwoFactorSecret(s.ctx, exampleInput)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

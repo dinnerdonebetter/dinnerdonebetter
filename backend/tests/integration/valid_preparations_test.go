@@ -61,7 +61,7 @@ func createValidPreparationForTest(t *testing.T, ctx context.Context, vessel *ty
 }
 
 func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -69,26 +69,26 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			defer span.End()
 
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			createdValidPreparation := createValidPreparationForTest(t, ctx, exampleValidPreparation, testClients.admin)
+			createdValidPreparation := createValidPreparationForTest(t, ctx, exampleValidPreparation, testClients.adminClient)
 
 			newValidPreparation := fakes.BuildFakeValidPreparation()
 			createdValidPreparation.Update(converters.ConvertValidPreparationToValidPreparationUpdateRequestInput(newValidPreparation))
-			assert.NoError(t, testClients.admin.UpdateValidPreparation(ctx, createdValidPreparation))
+			assert.NoError(t, testClients.adminClient.UpdateValidPreparation(ctx, createdValidPreparation))
 
-			actual, err := testClients.admin.GetValidPreparation(ctx, createdValidPreparation.ID)
+			actual, err := testClients.adminClient.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid preparation equality
 			checkValidPreparationEquality(t, newValidPreparation, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestValidPreparations_GetRandom() {
-	s.runForEachClient("should be able to get a random valid preparation", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to get a random valid preparation", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -97,20 +97,20 @@ func (s *TestSuite) TestValidPreparations_GetRandom() {
 
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparation, err := testClients.adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			createdValidPreparation, err = testClients.admin.GetRandomValidPreparation(ctx)
+			createdValidPreparation, err = testClients.adminClient.GetRandomValidPreparation(ctx)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 
-			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestValidPreparations_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -121,7 +121,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation := fakes.BuildFakeValidPreparation()
 				exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-				createdValidPreparation, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+				createdValidPreparation, createdValidPreparationErr := testClients.adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, createdValidPreparationErr)
 
 				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
@@ -130,7 +130,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			}
 
 			// assert valid preparation list equality
-			actual, err := testClients.admin.GetValidPreparations(ctx, nil)
+			actual, err := testClients.adminClient.GetValidPreparations(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -141,14 +141,14 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			)
 
 			for _, createdValidPreparation := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 			}
 		}
 	})
 }
 
 func (s *TestSuite) TestValidPreparations_Searching() {
-	s.runForEachClient("should be able to be search for valid preparations", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be search for valid preparations", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -162,7 +162,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-				createdValidPreparation, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+				createdValidPreparation, createdValidPreparationErr := testClients.adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, createdValidPreparationErr)
 				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -172,7 +172,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			exampleLimit := uint8(20)
 
 			// assert valid preparation list equality
-			actual, err := testClients.admin.SearchValidPreparations(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchValidPreparations(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -183,7 +183,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			)
 
 			for _, createdValidPreparation := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 			}
 		}
 	})

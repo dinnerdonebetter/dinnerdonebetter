@@ -39,7 +39,6 @@ type (
 
 		AsHouseholdRolePermissionChecker() HouseholdRolePermissionsChecker
 		IsServiceAdmin() bool
-		CanCycleCookieSecrets() bool
 		CanUpdateUserAccountStatuses() bool
 		CanImpersonateUsers() bool
 	}
@@ -87,11 +86,6 @@ func (r serviceRoleCollection) IsServiceAdmin() bool {
 	}
 
 	return false
-}
-
-// CanCycleCookieSecrets returns whether a user can cycle cookie secrets.
-func (r serviceRoleCollection) CanCycleCookieSecrets() bool {
-	return hasPermission(CycleCookieSecretPermission, r.Roles...)
 }
 
 // CanUpdateUserAccountStatuses returns whether a user can update user account statuses.

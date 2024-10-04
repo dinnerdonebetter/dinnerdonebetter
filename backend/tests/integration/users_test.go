@@ -38,58 +38,58 @@ func checkUserEquality(t *testing.T, expected, actual *types.User) {
 }
 
 func (s *TestSuite) TestUsers_Creating() {
-	s.runForEachClient("should be creatable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create user.
+			// Create userClient.
 			exampleUserInput := fakes.BuildFakeUserCreationInput()
-			createdUser, err := testClients.user.CreateUser(ctx, exampleUserInput)
+			createdUser, err := testClients.userClient.CreateUser(ctx, exampleUserInput)
 			requireNotNilAndNoProblems(t, createdUser, err)
 
-			// Assert user equality.
+			// Assert userClient equality.
 			checkUserCreationEquality(t, exampleUserInput, createdUser)
 
-			assert.NoError(t, testClients.admin.ArchiveUser(ctx, createdUser.CreatedUserID))
+			assert.NoError(t, testClients.adminClient.ArchiveUser(ctx, createdUser.CreatedUserID))
 		}
 	})
 
-	s.runForEachClient("should return 400 for duplicate user registration", func(testClients *testClientWrapper) func() {
+	s.runTest("should return 400 for duplicate userClient registration", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create user.
+			// Create userClient.
 			exampleUserInput := fakes.BuildFakeUserCreationInput()
-			createdUser, err := testClients.user.CreateUser(ctx, exampleUserInput)
+			createdUser, err := testClients.userClient.CreateUser(ctx, exampleUserInput)
 			requireNotNilAndNoProblems(t, createdUser, err)
 
-			// attempt to create user again.
-			_, err = testClients.user.CreateUser(ctx, exampleUserInput)
+			// attempt to create userClient again.
+			_, err = testClients.userClient.CreateUser(ctx, exampleUserInput)
 			require.Error(t, err)
 
-			// Assert user equality.
+			// Assert userClient equality.
 			checkUserCreationEquality(t, exampleUserInput, createdUser)
 
-			assert.NoError(t, testClients.admin.ArchiveUser(ctx, createdUser.CreatedUserID))
+			assert.NoError(t, testClients.adminClient.ArchiveUser(ctx, createdUser.CreatedUserID))
 		}
 	})
 }
 
 func (s *TestSuite) TestUsers_Reading_Returns404ForNonexistentUser() {
-	s.runForEachClient("should return an error when trying to read a user that does not exist", func(testClients *testClientWrapper) func() {
+	s.runTest("should return an error when trying to read a userClient that does not exist", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			actual, err := testClients.admin.GetUser(ctx, nonexistentID)
+			actual, err := testClients.adminClient.GetUser(ctx, nonexistentID)
 			assert.Nil(t, actual)
 			assert.Error(t, err)
 		}
@@ -97,38 +97,38 @@ func (s *TestSuite) TestUsers_Reading_Returns404ForNonexistentUser() {
 }
 
 func (s *TestSuite) TestUsers_Reading() {
-	s.runForEachClient("should be able to be read", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be read", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
+			user, _ := createUserAndClientForTest(ctx, t, nil)
 
-			actual, err := testClients.admin.GetUser(ctx, user.ID)
+			actual, err := testClients.adminClient.GetUser(ctx, user.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			// Assert user equality.
+			// Assert userClient equality.
 			checkUserEquality(t, user, actual)
 
 			// Clean up.
-			assert.NoError(t, testClients.admin.ArchiveUser(ctx, actual.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveUser(ctx, actual.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestUsers_PermissionsChecking() {
-	s.runForEachClient("should be able to check users permissions", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to check users permissions", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
+			user, _ := createUserAndClientForTest(ctx, t, nil)
 
-			permissions, err := testClients.user.CheckUserPermissions(ctx, authorization.ReadWebhooksPermission.ID())
+			permissions, err := testClients.userClient.CheckUserPermissions(ctx, authorization.ReadWebhooksPermission.ID())
 			requireNotNilAndNoProblems(t, permissions, err)
 
 			for _, status := range permissions.Permissions {
@@ -136,21 +136,21 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 			}
 
 			// Clean up.
-			assert.NoError(t, testClients.admin.ArchiveUser(ctx, user.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveUser(ctx, user.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
-	s.runForEachClient("it should only be accessible to admins", func(testClients *testClientWrapper) func() {
+	s.runTest("it should only be accessible to admins", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Search For user.
-			actual, err := testClients.user.SearchForUsersByUsername(ctx, s.user.Username)
+			// Search For userClient.
+			actual, err := testClients.userClient.SearchForUsersByUsername(ctx, s.user.Username)
 			assert.Nil(t, actual)
 			assert.Error(t, err)
 		}
@@ -158,7 +158,7 @@ func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
 }
 
 func (s *TestSuite) TestUsers_Searching() {
-	s.runForEachClient("it should return be searchable", func(testClients *testClientWrapper) func() {
+	s.runTest("it should return be searchable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -181,7 +181,7 @@ func (s *TestSuite) TestUsers_Searching() {
 			}
 
 			// execute search
-			actual, err := testClients.admin.SearchForUsersByUsername(ctx, exampleUsername)
+			actual, err := testClients.adminClient.SearchForUsersByUsername(ctx, exampleUsername)
 			assert.NoError(t, err)
 			assert.NotEmpty(t, actual)
 
@@ -192,36 +192,36 @@ func (s *TestSuite) TestUsers_Searching() {
 
 			// clean up
 			for _, id := range createdUserIDs {
-				require.NoError(t, testClients.admin.ArchiveUser(ctx, id))
+				require.NoError(t, testClients.adminClient.ArchiveUser(ctx, id))
 			}
 		}
 	})
 }
 
 func (s *TestSuite) TestUsers_Archiving_Returns404ForNonexistentUser() {
-	s.runForEachClient("should error when archiving a non-existent user", func(testClients *testClientWrapper) func() {
+	s.runTest("should error when archiving a non-existent userClient", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			assert.Error(t, testClients.admin.ArchiveUser(ctx, nonexistentID))
+			assert.Error(t, testClients.adminClient.ArchiveUser(ctx, nonexistentID))
 		}
 	})
 }
 
 func (s *TestSuite) TestUsers_Archiving() {
-	s.runForEachClient("should be able to be archived", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be archived", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create user.
+			// Create userClient.
 			exampleUserInput := fakes.BuildFakeUserCreationInput()
-			createdUser, err := testClients.user.CreateUser(ctx, exampleUserInput)
+			createdUser, err := testClients.userClient.CreateUser(ctx, exampleUserInput)
 			assert.NoError(t, err)
 			assert.NotNil(t, createdUser)
 
@@ -230,13 +230,13 @@ func (s *TestSuite) TestUsers_Archiving() {
 			}
 
 			// Execute.
-			assert.NoError(t, testClients.admin.ArchiveUser(ctx, createdUser.CreatedUserID))
+			assert.NoError(t, testClients.adminClient.ArchiveUser(ctx, createdUser.CreatedUserID))
 		}
 	})
 }
 
 func (s *TestSuite) TestUsers_AvatarManagement() {
-	s.runForCookieClient("should be able to upload an avatar", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to upload an avatar", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -247,15 +247,15 @@ func (s *TestSuite) TestUsers_AvatarManagement() {
 
 			encoded := base64.RawStdEncoding.EncodeToString(avatar)
 
-			require.NoError(t, testClients.user.UploadNewAvatar(ctx, &types.AvatarUpdateInput{Base64EncodedData: encoded}))
+			require.NoError(t, testClients.userClient.UploadNewAvatar(ctx, &types.AvatarUpdateInput{Base64EncodedData: encoded}))
 
-			// Assert user equality.
-			user, err := testClients.admin.GetUser(ctx, s.user.ID)
+			// Assert userClient equality.
+			user, err := testClients.adminClient.GetUser(ctx, s.user.ID)
 			requireNotNilAndNoProblems(t, user, err)
 
 			assert.NotEmpty(t, user.AvatarSrc)
 
-			assert.NoError(t, testClients.admin.ArchiveUser(ctx, s.user.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveUser(ctx, s.user.ID))
 		}
 	})
 }

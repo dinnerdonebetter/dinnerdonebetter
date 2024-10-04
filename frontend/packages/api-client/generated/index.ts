@@ -177,7 +177,6 @@ export { AuthService } from './services/AuthService';
 export { DefaultService } from './services/DefaultService';
 export { EmailAddressService } from './services/EmailAddressService';
 export { GroceryListItemsService } from './services/GroceryListItemsService';
-export { HouseholdService } from './services/HouseholdService';
 export { HouseholdInstrumentOwnershipsService } from './services/HouseholdInstrumentOwnershipsService';
 export { HouseholdInvitationsService } from './services/HouseholdInvitationsService';
 export { HouseholdMembersService } from './services/HouseholdMembersService';

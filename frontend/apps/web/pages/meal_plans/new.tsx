@@ -32,8 +32,8 @@ import {
   QueryFilteredResult,
 } from '@dinnerdonebetter/models';
 import { ConvertMealPlanToMealPlanCreationRequestInput } from '@dinnerdonebetter/utils';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildLocalClient } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 
 /* BEGIN Meal Plan Creation Reducer */

@@ -225,10 +225,6 @@ func main() {
 }
 
 const (
-	/* #nosec G101 */
-	debugCookieHashKey = "HEREISA32CHARSECRETWHICHISMADEUP"
-	/* #nosec G101 */
-	debugCookieBlockKey  = "DIFFERENT32CHARSECRETTHATIMADEUP"
 	dataChangesTopicName = "dataChangesTopicName"
 )
 
@@ -239,8 +235,6 @@ func neutralizeConfig(cfg *config.InstanceConfig) {
 
 	cfg.Database.RunMigrations = false
 	cfg.Database.OAuth2TokenEncryptionKey = "BLAHBLAHBLAHBLAHBLAHBLAHBLAHBLAH"
-	cfg.Services.Auth.Cookies.HashKey = debugCookieHashKey
-	cfg.Services.Auth.Cookies.BlockKey = debugCookieBlockKey
 	cfg.Services.Auth.SSO.Google.ClientID = "blah blah blah blah"
 	cfg.Services.Auth.SSO.Google.ClientSecret = "blah blah blah blah"
 	cfg.Analytics.Provider = ""

@@ -59,53 +59,55 @@ func createValidVesselForTest(t *testing.T, ctx context.Context, vessel *types.V
 	return createdValidVessel
 }
 
+// TODO: handle creating and reading a vessel that doesn't have a CapacityUnit
+
 func (s *TestSuite) TestValidVessels_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.admin)
+			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.adminClient)
 
 			newValidVessel := fakes.BuildFakeValidVessel()
 			newValidVessel.CapacityUnit = createdValidVessel.CapacityUnit
 			createdValidVessel.Update(converters.ConvertValidVesselToValidVesselUpdateRequestInput(newValidVessel))
-			assert.NoError(t, testClients.admin.UpdateValidVessel(ctx, createdValidVessel))
+			assert.NoError(t, testClients.adminClient.UpdateValidVessel(ctx, createdValidVessel))
 
-			actual, err := testClients.admin.GetValidVessel(ctx, createdValidVessel.ID)
+			actual, err := testClients.adminClient.GetValidVessel(ctx, createdValidVessel.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid vessel equality
 			checkValidVesselEquality(t, newValidVessel, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveValidVessel(ctx, createdValidVessel.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidVessel(ctx, createdValidVessel.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestValidVessels_GetRandom() {
-	s.runForEachClient("should be able to get a random valid vessel", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to get a random valid vessel", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.admin)
+			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.adminClient)
 
-			actual, err := testClients.admin.GetRandomValidVessel(ctx)
+			actual, err := testClients.adminClient.GetRandomValidVessel(ctx)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			assert.NoError(t, testClients.admin.ArchiveValidVessel(ctx, createdValidVessel.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidVessel(ctx, createdValidVessel.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestValidVessels_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -114,12 +116,12 @@ func (s *TestSuite) TestValidVessels_Listing() {
 
 			var expected []*types.ValidVessel
 			for i := 0; i < 5; i++ {
-				createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.admin)
+				createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.adminClient)
 				expected = append(expected, createdValidVessel)
 			}
 
 			// assert valid vessel list equality
-			actual, err := testClients.admin.GetValidVessels(ctx, nil)
+			actual, err := testClients.adminClient.GetValidVessels(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -130,14 +132,14 @@ func (s *TestSuite) TestValidVessels_Listing() {
 			)
 
 			for _, createdValidVessel := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidVessel(ctx, createdValidVessel.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidVessel(ctx, createdValidVessel.ID))
 			}
 		}
 	})
 }
 
 func (s *TestSuite) TestValidVessels_Searching() {
-	s.runForEachClient("should be able to be search for valid vessels", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be search for valid vessels", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -150,14 +152,14 @@ func (s *TestSuite) TestValidVessels_Searching() {
 			searchQuery := exampleValidVessel.Name
 			for i := 0; i < 5; i++ {
 				exampleValidVessel.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				createdValidVessel := createValidVesselForTest(t, ctx, exampleValidVessel, testClients.admin)
+				createdValidVessel := createValidVesselForTest(t, ctx, exampleValidVessel, testClients.adminClient)
 				expected = append(expected, createdValidVessel)
 			}
 
 			exampleLimit := uint8(20)
 
 			// assert valid vessel list equality
-			actual, err := testClients.admin.SearchValidVessels(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchValidVessels(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -168,7 +170,7 @@ func (s *TestSuite) TestValidVessels_Searching() {
 			)
 
 			for _, createdValidVessel := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidVessel(ctx, createdValidVessel.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidVessel(ctx, createdValidVessel.ID))
 			}
 		}
 	})

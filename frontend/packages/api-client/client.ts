@@ -1,7 +1,7 @@
-import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse, HeadersDefaults } from 'axios';
 import { Span } from '@opentelemetry/api';
 
-import { buildServerSideLogger } from '@dinnerdonebetter/logger';
+import { buildServerSideLogger, LoggerType } from '@dinnerdonebetter/logger';
 import {
   MealPlanTask,
   MealPlanTaskStatusChangeRequestInput,
@@ -82,6 +82,8 @@ import {
   ValidVesselUpdateRequestInput,
   ValidPreparationVessel,
   ValidPreparationVesselCreationRequestInput,
+  JWTResponse,
+  APIResponse,
 } from '@dinnerdonebetter/models';
 
 import { createMeal, getMeal, getMeals, updateMeal, deleteMeal, searchForMeals } from './meals';
@@ -157,8 +159,10 @@ import {
   searchForValidIngredientGroups,
 } from './valid_ingredient_groups';
 import {
-  logIn,
+  login,
   adminLogin,
+  loginForJWT,
+  adminLoginForJWT,
   logOut,
   register,
   checkPermissions,
@@ -255,17 +259,48 @@ import {
   searchForValidVessels,
 } from './valid_vessels';
 
-const cookieName = 'ddb_api_cookie';
+function _curlFromAxiosConfig(config: AxiosRequestConfig): string {
+  const method = (config?.method || 'UNKNOWN').toUpperCase();
+  const url = config.url;
+  const headers = config.headers || {};
+  const data = config.data;
 
-const logger = buildServerSideLogger('api_client');
+  ['get', 'delete', 'head', 'post', 'put', 'patch'].forEach((method) => {
+    delete headers[method];
+  });
+
+  // iterate through headers["common"], and add each key's value to headers
+  const headerDefault = headers as unknown as HeadersDefaults;
+  for (const key in headerDefault['common']) {
+    if (headerDefault['common'].hasOwnProperty(key)) {
+      headers[key] = headerDefault['common'][key];
+    }
+  }
+  delete headers['common'];
+
+  let curlCommand = `curl -X ${method} "${config?.baseURL || 'MISSING_BASE_URL'}${url}"`;
+
+  for (const key in headers) {
+    if (headers.hasOwnProperty(key)) {
+      curlCommand += ` -H "${key}: ${headers[key]}"`;
+    }
+  }
+
+  if (data) {
+    curlCommand += ` -d '${JSON.stringify(data)}'`;
+  }
+
+  return curlCommand;
+}
 
 export class DinnerDoneBetterAPIClient {
   baseURL: string;
   client: AxiosInstance;
-  traceID: string;
   requestInterceptorID: number;
+  responseInterceptorID: number;
+  logger: LoggerType = buildServerSideLogger('api_client');
 
-  constructor(baseURL: string = '', cookie?: string, traceID?: string) {
+  constructor(baseURL: string = '', oauth2Token?: string) {
     this.baseURL = baseURL;
 
     const headers: Record<string, string> = {
@@ -274,11 +309,9 @@ export class DinnerDoneBetterAPIClient {
       'X-Service-Client': clientName,
     };
 
-    if (cookie) {
-      headers['Cookie'] = `${cookieName}=${cookie}`;
+    if (oauth2Token) {
+      headers['Authorization'] = `Bearer ${oauth2Token}`;
     }
-
-    this.traceID = traceID || '';
 
     this.client = axios.create({
       baseURL,
@@ -288,15 +321,36 @@ export class DinnerDoneBetterAPIClient {
       headers,
     } as AxiosRequestConfig);
 
-    this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      logger.debug(`request: ${request.method} ${request.url}`);
-      return request;
-    });
+    this.requestInterceptorID = this.client.interceptors.request.use(
+      (request: AxiosRequestConfig) => {
+        // this.logger.debug(`Request: ${request.method} ${request.baseURL}${request.url}`);
+        console.log(`${_curlFromAxiosConfig(request)}`);
 
-    this.client.interceptors.response.use((response: AxiosResponse) => {
-      logger.debug(`response: ${response.status} ${response.config.method} ${response.config.url}`);
-      return response;
-    });
+        return request;
+      },
+      (error) => {
+        // Do whatever you want with the response error here
+        // But, be SURE to return the rejected promise, so the caller still has
+        // the option of additional specialized handling at the call-site:
+        return Promise.reject(error);
+      },
+    );
+
+    this.responseInterceptorID = this.client.interceptors.response.use(
+      (response: AxiosResponse) => {
+        this.logger.debug(
+          `Response: ${response.status} ${response.config.method} ${response.config.url}`,
+          // response.data,
+        );
+
+        // console.log(`${response.status} ${_curlFromAxiosConfig(response.config)}`);
+
+        return response;
+      },
+      (error) => {
+        return Promise.reject(error);
+      },
+    );
   }
 
   withSpan(span: Span): DinnerDoneBetterAPIClient {
@@ -304,25 +358,37 @@ export class DinnerDoneBetterAPIClient {
     const spanLogDetails = { spanID: spanContext.spanId, traceID: spanContext.traceId };
 
     this.client.interceptors.request.eject(this.requestInterceptorID);
-    this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
+    this.requestInterceptorID = this.client.interceptors.request.use(
+      (request: AxiosRequestConfig) => {
+        this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
 
-      if (this.traceID) {
-        request.headers = request.headers
-          ? { ...request.headers, traceparent: this.traceID }
-          : { traceparent: this.traceID };
-      }
+        // console.log(_curlFromAxiosConfig(request));
 
-      return request;
-    });
+        if (spanContext.traceId) {
+          request.headers = request.headers
+            ? { ...request.headers, traceparent: spanContext.traceId }
+            : { traceparent: spanContext.traceId };
+        }
+
+        return request;
+      },
+      (error) => {
+        return Promise.reject(error);
+      },
+    );
 
     return this;
   }
 
   // eslint-disable-next-line no-unused-vars
   configureRouterRejectionInterceptor(redirectCallback: (_: Location) => void) {
-    this.client.interceptors.response.use(
+    this.client.interceptors.response.eject(this.responseInterceptorID);
+    this.responseInterceptorID = this.client.interceptors.response.use(
       (response: AxiosResponse) => {
+        this.logger.debug(
+          `Response: ${response.status} ${response.config.method} ${response.config.url}${response.config.method === 'POST' || response.config.method === 'PUT' ? ` ${JSON.stringify(response.config.data)}` : ''}`,
+        );
+
         return response;
       },
       (error: AxiosError) => {
@@ -338,12 +404,20 @@ export class DinnerDoneBetterAPIClient {
 
   // auth
 
-  async logIn(input: UserLoginInput): Promise<AxiosResponse<UserStatusResponse>> {
-    return logIn(this.client, input);
+  async logIn(input: UserLoginInput): Promise<AxiosResponse<APIResponse<UserStatusResponse>>> {
+    return login(this.client, input);
   }
 
-  async adminLogin(input: UserLoginInput): Promise<AxiosResponse<UserStatusResponse>> {
+  async logInForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
+    return loginForJWT(this.client, input);
+  }
+
+  async adminLogin(input: UserLoginInput): Promise<AxiosResponse<APIResponse<UserStatusResponse>>> {
     return adminLogin(this.client, input);
+  }
+
+  async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
+    return adminLoginForJWT(this.client, input);
   }
 
   async logOut(): Promise<AxiosResponse<UserStatusResponse>> {

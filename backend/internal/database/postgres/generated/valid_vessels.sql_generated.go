@@ -272,7 +272,7 @@ SELECT
 	valid_vessels.last_updated_at,
 	valid_vessels.archived_at
 FROM valid_vessels
-	JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
+	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_vessels.id = $1
@@ -280,35 +280,35 @@ WHERE valid_vessels.archived_at IS NULL
 
 type GetValidVesselRow struct {
 	CreatedAt                         time.Time
-	ValidMeasurementUnitCreatedAt     time.Time
-	ValidMeasurementUnitArchivedAt    sql.NullTime
+	ValidMeasurementUnitCreatedAt     sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt sql.NullTime
 	ValidMeasurementUnitLastIndexedAt sql.NullTime
-	ArchivedAt                        sql.NullTime
 	LastIndexedAt                     sql.NullTime
+	ArchivedAt                        sql.NullTime
+	ValidMeasurementUnitArchivedAt    sql.NullTime
 	LastUpdatedAt                     sql.NullTime
-	ValidMeasurementUnitDescription   string
-	Description                       string
-	ValidMeasurementUnitID            string
-	ValidMeasurementUnitName          string
-	Name                              string
-	PluralName                        string
-	ValidMeasurementUnitIconPath      string
-	ID                                string
-	Slug                              string
-	Shape                             VesselShape
-	ValidMeasurementUnitSlug          string
-	ValidMeasurementUnitPluralName    string
-	IconPath                          string
 	Capacity                          string
+	PluralName                        string
+	Slug                              string
+	Name                              string
+	ID                                string
+	IconPath                          string
+	Description                       string
+	Shape                             VesselShape
+	ValidMeasurementUnitDescription   sql.NullString
 	HeightInMillimeters               sql.NullString
-	WidthInMillimeters                sql.NullString
+	ValidMeasurementUnitSlug          sql.NullString
+	ValidMeasurementUnitPluralName    sql.NullString
+	ValidMeasurementUnitIconPath      sql.NullString
 	LengthInMillimeters               sql.NullString
+	ValidMeasurementUnitName          sql.NullString
+	ValidMeasurementUnitID            sql.NullString
+	WidthInMillimeters                sql.NullString
+	ValidMeasurementUnitMetric        sql.NullBool
+	ValidMeasurementUnitImperial      sql.NullBool
+	ValidMeasurementUnitUniversal     sql.NullBool
 	ValidMeasurementUnitVolumetric    sql.NullBool
 	IncludeInGeneratedInstructions    bool
-	ValidMeasurementUnitImperial      bool
-	ValidMeasurementUnitMetric        bool
-	ValidMeasurementUnitUniversal     bool
 	DisplayInSummaryLists             bool
 	UsableForStorage                  bool
 }

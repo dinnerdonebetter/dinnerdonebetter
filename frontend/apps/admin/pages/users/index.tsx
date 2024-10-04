@@ -7,8 +7,9 @@ import { useState, useEffect } from 'react';
 
 import { QueryFilter, QueryFilteredResult, User } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildLocalClient, buildServerSideClient } from '../../src/client';
+import { buildServerSideClient } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
@@ -34,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .getUsers(qf)
     .then((res: QueryFilteredResult<User>) => {
       span.addEvent('users retrieved');
-      props = { props: { pageLoadUsers: res } };
+      props = { props: { pageLoadUsers: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

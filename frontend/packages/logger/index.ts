@@ -1,5 +1,7 @@
 import { Logger } from 'tslog';
 
+export type LoggerType = Logger<void>;
+
 export const buildServerSideLogger = (name: string, pretty: boolean = false): Logger<void> => {
   return new Logger<void>({
     type: pretty ? 'pretty' : 'json',

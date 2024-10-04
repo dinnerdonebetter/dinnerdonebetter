@@ -55,9 +55,9 @@ import {
   RecipeStepProductSuggestion,
   RecipeStepVesselSuggestion,
 } from '@dinnerdonebetter/utils';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../..//src/layouts';
-import { buildLocalClient } from '../../src/client';
 import { useRecipeCreationReducer, RecipeCreationPageState } from '../../src/reducers';
 
 const validRecipeStepProductTypes = ['ingredient', 'instrument', 'vessel'];

@@ -51,6 +51,7 @@ var (
 		ProvideOAuth2ClientDataManager,
 		ProvideValidVesselDataManager,
 		ProvideValidPreparationVesselDataManager,
+		ProvideOAuth2ClientTokenDataManager,
 		ProvideUserNotificationDataManager,
 		ProvideAuditLogEntryDataManager,
 	)
@@ -263,6 +264,11 @@ func ProvideValidVesselDataManager(db DataManager) types.ValidVesselDataManager 
 
 // ProvideValidPreparationVesselDataManager is an arbitrary function for dependency injection's sake.
 func ProvideValidPreparationVesselDataManager(db DataManager) types.ValidPreparationVesselDataManager {
+	return db
+}
+
+// ProvideOAuth2ClientTokenDataManager is an arbitrary function for dependency injection's sake.
+func ProvideOAuth2ClientTokenDataManager(db DataManager) types.OAuth2ClientTokenDataManager {
 	return db
 }
 

@@ -18,9 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/alexedwards/scs/v2"
 	"github.com/go-oauth2/oauth2/v4/server"
-	"github.com/gorilla/securecookie"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/google"
 )
@@ -54,8 +52,6 @@ type (
 		userDataManager            types.UserDataManager
 		householdMembershipManager types.HouseholdUserMembershipDataManager
 		encoderDecoder             encoding.ServerEncoderDecoder
-		cookieManager              cookieEncoderDecoder
-		sessionManager             sessionManager
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
 		authProviderFetcher        func(*http.Request) string
 		tracer                     tracing.Tracer
@@ -73,7 +69,6 @@ func ProvideService(
 	authenticator authentication.Authenticator,
 	dataManager database.DataManager,
 	householdMembershipManager types.HouseholdUserMembershipDataManager,
-	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
@@ -81,11 +76,6 @@ func ProvideService(
 	analyticsReporter analytics.EventReporter,
 	routeParamManager routing.RouteParamManager,
 ) (types.AuthService, error) {
-	hashKey := []byte(cfg.Cookies.HashKey)
-	if len(hashKey) == 0 {
-		hashKey = securecookie.GenerateRandomKey(cookieSecretSize)
-	}
-
 	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if publisherProviderErr != nil {
 		return nil, fmt.Errorf("setting up auth service data changes publisher: %w", publisherProviderErr)
@@ -110,9 +100,7 @@ func ProvideService(
 		userDataManager:            dataManager,
 		householdMembershipManager: householdMembershipManager,
 		authenticator:              authenticator,
-		sessionManager:             sessionManager,
 		sessionContextDataFetcher:  FetchContextFromRequest,
-		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
 		tracer:                     tracer,
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
@@ -120,11 +108,6 @@ func ProvideService(
 		jwtSigner:                  signer,
 		authProviderFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
 		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
-	}
-
-	if _, err = svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {
-		logger.WithValue("cookie_signing_key_length", len(cfg.Cookies.BlockKey)).Error(err, "building test cookie")
-		return nil, fmt.Errorf("building test cookie: %w", err)
 	}
 
 	useProvidersMutex.Lock()

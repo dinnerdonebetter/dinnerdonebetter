@@ -8,8 +8,9 @@ import { useState, useEffect } from 'react';
 
 import { QueryFilter, QueryFilteredResult, ValidIngredient } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildLocalClient, buildServerSideClient } from '../../src/client';
+import { buildServerSideClient } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
@@ -30,12 +31,13 @@ export const getServerSideProps: GetServerSideProps = async (
   const qf = QueryFilter.deriveFromGetServerSidePropsContext(context.query);
   qf.attachToSpan(span);
 
+  console.log('getting valid ingredients from getServerSideProps');
   const fetchValidIngredientsTimer = timing.addEvent('fetch valid ingredients');
   await apiClient
     .getValidIngredients(qf)
     .then((res: QueryFilteredResult<ValidIngredient>) => {
       span.addEvent('valid ingredients retrieved');
-      props = { props: { pageLoadValidIngredients: res } };
+      props = { props: { pageLoadValidIngredients: JSON.parse(JSON.stringify(res)) } };
     })
     .catch((error: AxiosError) => {
       console.error(`getting valid ingredients`, error.status);
@@ -48,6 +50,9 @@ export const getServerSideProps: GetServerSideProps = async (
           },
         };
       }
+    })
+    .catch((error) => {
+      console.error('error occurred', error);
     })
     .finally(() => {
       fetchValidIngredientsTimer.end();
@@ -82,6 +87,7 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
           console.error('getting valid ingredients: ', err);
         });
     } else {
+      console.log('searching for valid ingredients from search useEffect');
       apiClient
         .searchForValidIngredients(search, qf)
         .then((res: QueryFilteredResult<ValidIngredient>) => {

@@ -25,7 +25,7 @@ func checkValidIngredientMeasurementUnitEquality(t *testing.T, expected, actual 
 }
 
 func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -34,23 +34,23 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+			createdValidMeasurementUnit, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
-			createdValidMeasurementUnit, err = testClients.user.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+			createdValidMeasurementUnit, err = testClients.userClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.userClient.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -58,12 +58,12 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 			exampleValidIngredientMeasurementUnit.Ingredient = *createdValidIngredient
 			exampleValidIngredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnit
 			exampleValidIngredientMeasurementUnitInput := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit)
-			createdValidIngredientMeasurementUnit, err := testClients.admin.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
+			createdValidIngredientMeasurementUnit, err := testClients.adminClient.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
 			require.NoError(t, err)
 
 			checkValidIngredientMeasurementUnitEquality(t, exampleValidIngredientMeasurementUnit, createdValidIngredientMeasurementUnit)
 
-			createdValidIngredientMeasurementUnit, err = testClients.user.GetValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID)
+			createdValidIngredientMeasurementUnit, err = testClients.userClient.GetValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredientMeasurementUnit, err)
 
 			checkValidIngredientMeasurementUnitEquality(t, exampleValidIngredientMeasurementUnit, createdValidIngredientMeasurementUnit)
@@ -72,30 +72,30 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 			newValidIngredientMeasurementUnit.Ingredient = *createdValidIngredient
 			newValidIngredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnit
 			createdValidIngredientMeasurementUnit.Update(converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateRequestInput(newValidIngredientMeasurementUnit))
-			assert.NoError(t, testClients.admin.UpdateValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit))
+			assert.NoError(t, testClients.adminClient.UpdateValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit))
 
-			actual, err := testClients.user.GetValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID)
+			actual, err := testClients.userClient.GetValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid ingredient measurement unit equality
 			checkValidIngredientMeasurementUnitEquality(t, newValidIngredientMeasurementUnit, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			searchedMeasurementUnits, err := testClients.user.SearchValidMeasurementUnitsByIngredientID(ctx, createdValidIngredient.ID, types.DefaultQueryFilter())
+			searchedMeasurementUnits, err := testClients.userClient.SearchValidMeasurementUnitsByIngredientID(ctx, createdValidIngredient.ID, types.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, searchedMeasurementUnits, err)
 			assert.GreaterOrEqual(t, len(searchedMeasurementUnits.Data), 1)
 
-			assert.NoError(t, testClients.admin.ArchiveValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -106,23 +106,23 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 				exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-				createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+				createdValidMeasurementUnit, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, err)
 
 				checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
-				createdValidMeasurementUnit, err = testClients.user.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+				createdValidMeasurementUnit, err = testClients.userClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 				requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 				checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 				exampleValidIngredient := fakes.BuildFakeValidIngredient()
 				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-				createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, err)
 
 				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-				createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
+				createdValidIngredient, err = testClients.userClient.GetValidIngredient(ctx, createdValidIngredient.ID)
 				requireNotNilAndNoProblems(t, createdValidIngredient, err)
 				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -130,7 +130,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 				exampleValidIngredientMeasurementUnit.Ingredient = *createdValidIngredient
 				exampleValidIngredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnit
 				exampleValidIngredientMeasurementUnitInput := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit)
-				createdValidIngredientMeasurementUnit, createdValidIngredientMeasurementUnitErr := testClients.admin.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
+				createdValidIngredientMeasurementUnit, createdValidIngredientMeasurementUnitErr := testClients.adminClient.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
 				require.NoError(t, createdValidIngredientMeasurementUnitErr)
 
 				checkValidIngredientMeasurementUnitEquality(t, exampleValidIngredientMeasurementUnit, createdValidIngredientMeasurementUnit)
@@ -139,7 +139,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 			}
 
 			// assert valid ingredient measurement unit list equality
-			actual, err := testClients.user.GetValidIngredientMeasurementUnits(ctx, nil)
+			actual, err := testClients.userClient.GetValidIngredientMeasurementUnits(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -150,14 +150,14 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 			)
 
 			for _, createdValidIngredientMeasurementUnit := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID))
 			}
 		}
 	})
 }
 
 func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing_ByValues() {
-	s.runForEachClient("should be findable via either member of the bridge type", func(testClients *testClientWrapper) func() {
+	s.runTest("should be findable via either member of the bridge type", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -166,23 +166,23 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing_ByValues() {
 
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+			createdValidMeasurementUnit, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
-			createdValidMeasurementUnit, err = testClients.user.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+			createdValidMeasurementUnit, err = testClients.userClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.userClient.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -190,18 +190,18 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing_ByValues() {
 			exampleValidIngredientMeasurementUnit.Ingredient = *createdValidIngredient
 			exampleValidIngredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnit
 			exampleValidIngredientMeasurementUnitInput := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit)
-			createdValidIngredientMeasurementUnit, err := testClients.admin.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
+			createdValidIngredientMeasurementUnit, err := testClients.adminClient.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
 			require.NoError(t, err)
 
 			checkValidIngredientMeasurementUnitEquality(t, exampleValidIngredientMeasurementUnit, createdValidIngredientMeasurementUnit)
 
-			validIngredientMeasurementUnitsForValidIngredient, err := testClients.user.GetValidIngredientMeasurementUnitsForIngredient(ctx, createdValidIngredient.ID, nil)
+			validIngredientMeasurementUnitsForValidIngredient, err := testClients.userClient.GetValidIngredientMeasurementUnitsForIngredient(ctx, createdValidIngredient.ID, nil)
 			requireNotNilAndNoProblems(t, validIngredientMeasurementUnitsForValidIngredient, err)
 
 			require.Len(t, validIngredientMeasurementUnitsForValidIngredient.Data, 1)
 			assert.Equal(t, validIngredientMeasurementUnitsForValidIngredient.Data[0].ID, createdValidIngredientMeasurementUnit.ID)
 
-			validIngredientMeasurementUnitsForValidMeasurementUnit, err := testClients.user.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, createdValidMeasurementUnit.ID, nil)
+			validIngredientMeasurementUnitsForValidMeasurementUnit, err := testClients.userClient.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, createdValidMeasurementUnit.ID, nil)
 			requireNotNilAndNoProblems(t, validIngredientMeasurementUnitsForValidMeasurementUnit, err)
 
 			require.Len(t, validIngredientMeasurementUnitsForValidMeasurementUnit.Data, 1)

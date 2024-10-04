@@ -14,6 +14,7 @@ import { AppLayout } from '../src/layouts';
 import { serverSideAnalytics } from '../src/analytics';
 import { extractUserInfoFromCookie } from '../src/auth';
 import { serverSideTracer } from '../src/tracer';
+import { webappCookieName } from '../src/constants';
 
 const loginFormSchema = z.object({
   username: z.string().trim().min(1, 'username is required'),
@@ -30,19 +31,22 @@ export const getServerSideProps: GetServerSideProps = async (
   const span = serverSideTracer.startSpan('LoginPageProps.getServerSideProps');
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
-  if (userSessionData?.userID) {
-    serverSideAnalytics.page(userSessionData.userID, 'LOGIN_PAGE', context, {
-      householdID: userSessionData.householdID,
-    });
 
-    span.end();
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
+  if (context.req.cookies[webappCookieName]) {
+    const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+    if (userSessionData?.userID) {
+      serverSideAnalytics.page(userSessionData.userID, 'LOGIN_PAGE', context, {
+        householdID: userSessionData.householdID,
+      });
+
+      span.end();
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
   }
   extractCookieTimer.end();
 

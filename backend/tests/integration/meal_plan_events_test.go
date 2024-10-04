@@ -25,14 +25,14 @@ func checkMealPlanEventEquality(t *testing.T, expected, actual *types.MealPlanEv
 }
 
 func (s *TestSuite) TestMealPlanEvents_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
+			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.adminClient, testClients.userClient)
 
 			require.NotNil(t, createdMealPlan)
 			require.NotEmpty(t, createdMealPlan.Events)
@@ -43,31 +43,31 @@ func (s *TestSuite) TestMealPlanEvents_CompleteLifecycle() {
 			newMealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
 
 			createdMealPlanEvent.Update(converters.ConvertMealPlanEventToMealPlanEventUpdateRequestInput(newMealPlanEvent))
-			assert.NoError(t, testClients.user.UpdateMealPlanEvent(ctx, createdMealPlanEvent))
+			assert.NoError(t, testClients.userClient.UpdateMealPlanEvent(ctx, createdMealPlanEvent))
 
-			actual, err := testClients.user.GetMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID)
+			actual, err := testClients.userClient.GetMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert meal plan event equality
 			checkMealPlanEventEquality(t, newMealPlanEvent, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
+			assert.NoError(t, testClients.userClient.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
 
-			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
+			assert.NoError(t, testClients.userClient.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestMealPlanEvents_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
+			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.adminClient, testClients.userClient)
 
 			var expected []*types.MealPlanEvent
 			for i := 0; i < 5; i++ {
@@ -76,12 +76,12 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 				exampleMealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
 
 				exampleMealPlanEventInput := converters.ConvertMealPlanEventToMealPlanEventCreationRequestInput(exampleMealPlanEvent)
-				createdMealPlanEvent, err := testClients.user.CreateMealPlanEvent(ctx, createdMealPlan.ID, exampleMealPlanEventInput)
+				createdMealPlanEvent, err := testClients.userClient.CreateMealPlanEvent(ctx, createdMealPlan.ID, exampleMealPlanEventInput)
 				require.NoError(t, err)
 
 				checkMealPlanEventEquality(t, exampleMealPlanEvent, createdMealPlanEvent)
 
-				createdMealPlanEvent, err = testClients.user.GetMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID)
+				createdMealPlanEvent, err = testClients.userClient.GetMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID)
 				requireNotNilAndNoProblems(t, createdMealPlanEvent, err)
 				require.Equal(t, createdMealPlan.ID, createdMealPlanEvent.BelongsToMealPlan)
 
@@ -89,7 +89,7 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 			}
 
 			// assert meal plan event list equality
-			actual, err := testClients.user.GetMealPlanEvents(ctx, createdMealPlan.ID, nil)
+			actual, err := testClients.userClient.GetMealPlanEvents(ctx, createdMealPlan.ID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -100,10 +100,10 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 			)
 
 			for _, createdMealPlanEvent := range expected {
-				assert.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
+				assert.NoError(t, testClients.userClient.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
 			}
 
-			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
+			assert.NoError(t, testClients.userClient.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})
 }

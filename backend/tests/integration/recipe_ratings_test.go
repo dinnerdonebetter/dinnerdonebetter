@@ -27,23 +27,23 @@ func checkRecipeRatingEquality(t *testing.T, expected, actual *types.RecipeRatin
 }
 
 func (s *TestSuite) TestRecipeRatings_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			exampleRecipeRating := fakes.BuildFakeRecipeRating()
 			exampleRecipeRating.RecipeID = createdRecipe.ID
 			exampleRecipeRatingInput := converters.ConvertRecipeRatingToRecipeRatingCreationRequestInput(exampleRecipeRating)
-			createdRecipeRating, err := testClients.user.CreateRecipeRating(ctx, createdRecipe.ID, exampleRecipeRatingInput)
+			createdRecipeRating, err := testClients.userClient.CreateRecipeRating(ctx, createdRecipe.ID, exampleRecipeRatingInput)
 			require.NoError(t, err)
 			checkRecipeRatingEquality(t, exampleRecipeRating, createdRecipeRating)
 
-			createdRecipeRating, err = testClients.user.GetRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID)
+			createdRecipeRating, err = testClients.userClient.GetRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID)
 			requireNotNilAndNoProblems(t, createdRecipeRating, err)
 			checkRecipeRatingEquality(t, exampleRecipeRating, createdRecipeRating)
 
@@ -51,43 +51,43 @@ func (s *TestSuite) TestRecipeRatings_CompleteLifecycle() {
 			newRecipeRating.RecipeID = createdRecipe.ID
 			newRecipeRating.ByUser = createdRecipeRating.ByUser
 			createdRecipeRating.Update(converters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(newRecipeRating))
-			assert.NoError(t, testClients.user.UpdateRecipeRating(ctx, createdRecipeRating))
+			assert.NoError(t, testClients.userClient.UpdateRecipeRating(ctx, createdRecipeRating))
 
-			actual, err := testClients.user.GetRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID)
+			actual, err := testClients.userClient.GetRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe rating equality
 			checkRecipeRatingEquality(t, newRecipeRating, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.user.ArchiveRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID))
+			assert.NoError(t, testClients.userClient.ArchiveRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestRecipeRatings_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			exampleRecipeRating := fakes.BuildFakeRecipeRating()
 			exampleRecipeRating.RecipeID = createdRecipe.ID
 			exampleRecipeRatingInput := converters.ConvertRecipeRatingToRecipeRatingCreationRequestInput(exampleRecipeRating)
-			createdRecipeRating, err := testClients.user.CreateRecipeRating(ctx, createdRecipe.ID, exampleRecipeRatingInput)
+			createdRecipeRating, err := testClients.userClient.CreateRecipeRating(ctx, createdRecipe.ID, exampleRecipeRatingInput)
 			require.NoError(t, err)
 			checkRecipeRatingEquality(t, exampleRecipeRating, createdRecipeRating)
 
 			// assert recipe rating list equality
-			actual, err := testClients.admin.GetRecipeRatings(ctx, createdRecipe.ID, nil)
+			actual, err := testClients.adminClient.GetRecipeRatings(ctx, createdRecipe.ID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.Equal(t, len(actual.Data), 1, "expected %d to be <= %d", len(actual.Data), 1)
 
-			assert.NoError(t, testClients.admin.ArchiveRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID))
 		}
 	})
 }

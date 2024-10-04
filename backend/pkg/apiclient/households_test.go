@@ -53,49 +53,6 @@ func (s *householdsTestSuite) SetupTest() {
 	}
 }
 
-func (s *householdsTestSuite) TestClient_SwitchActiveHousehold() {
-	const expectedPath = "/api/v1/users/household/select"
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		s.exampleHousehold.BelongsToUser = ""
-
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
-		c.authMethod = cookieAuthMethod
-
-		assert.NoError(t, c.SwitchActiveHousehold(s.ctx, s.exampleHousehold.ID))
-	})
-
-	s.Run("with invalid household ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-		c.authMethod = cookieAuthMethod
-
-		assert.Error(t, c.SwitchActiveHousehold(s.ctx, ""))
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-		c.authMethod = cookieAuthMethod
-
-		assert.Error(t, c.SwitchActiveHousehold(s.ctx, s.exampleHousehold.ID))
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-		c.authMethod = cookieAuthMethod
-
-		assert.Error(t, c.SwitchActiveHousehold(s.ctx, s.exampleHousehold.ID))
-	})
-}
-
 func (s *householdsTestSuite) TestClient_GetCurrentHousehold() {
 	const expectedPathFormat = "/api/v1/households/current"
 

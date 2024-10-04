@@ -27,7 +27,11 @@ export const getServerSideProps: GetServerSideProps = async (
   const span = serverSideTracer.startSpan('RecipesPage.getServerSideProps');
   const spanContext = span.spanContext();
   const spanLogDetails = { spanID: spanContext.spanId, traceID: spanContext.traceId };
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const qf = QueryFilter.deriveFromGetServerSidePropsContext(context.query);
+  qf.attachToSpan(span);
+
+  let props!: GetServerSidePropsResult<RecipesPageProps>;
 
   const extractCookieTimer = timing.addEvent('extract cookie');
   const userSessionData = extractUserInfoFromCookie(context.req.cookies);
@@ -35,14 +39,20 @@ export const getServerSideProps: GetServerSideProps = async (
     serverSideAnalytics.page(userSessionData.userID, 'RECIPES_PAGE', context, {
       householdID: userSessionData.householdID,
     });
+  } else {
+    props = {
+      redirect: {
+        destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
+        permanent: false,
+      },
+    };
+    return props;
   }
   extractCookieTimer.end();
 
-  const qf = QueryFilter.deriveFromGetServerSidePropsContext(context.query);
-  qf.attachToSpan(span);
+  const apiClient = buildServerSideClient(context).withSpan(span);
 
   const fetchRecipesTimer = timing.addEvent('fetch recipes');
-  let props!: GetServerSidePropsResult<RecipesPageProps>;
   await apiClient
     .getRecipes(qf)
     .then((res: QueryFilteredResult<Recipe>) => {

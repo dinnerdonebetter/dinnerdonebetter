@@ -1,8 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
 
 import DinnerDoneBetterAPIClient from '@dinnerdonebetter/api-client';
+import { UserSessionDetails } from '@dinnerdonebetter/next-routes';
+import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
-import { apiCookieName } from '../constants';
+import { webappCookieName } from '../constants';
+import { encryptorDecryptor } from '../encryption';
 
 export const buildServerSideClient = (context: GetServerSidePropsContext): DinnerDoneBetterAPIClient => {
   const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
@@ -10,31 +13,19 @@ export const buildServerSideClient = (context: GetServerSidePropsContext): Dinne
     throw new Error('no API endpoint set!');
   }
 
-  return new DinnerDoneBetterAPIClient(apiEndpoint, context.req.cookies[apiCookieName]);
-};
-
-export const buildServerSideClientWithRawCookie = (cookie: string): DinnerDoneBetterAPIClient => {
-  const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  if (!apiEndpoint) {
-    throw new Error('no API endpoint set!');
+  let encryptedCookieData = context.req.cookies[webappCookieName];
+  if (!encryptedCookieData) {
+    throw new Error('no cookie data found');
   }
 
-  if (!cookie) {
-    throw new Error('no cookie set!');
+  const userSessionDetails = (encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>).decrypt(
+    encryptedCookieData,
+  );
+
+  const accessToken = JSON.parse(JSON.stringify(userSessionDetails.token))['access_token'];
+  if (!accessToken) {
+    throw new Error('no token found');
   }
 
-  return new DinnerDoneBetterAPIClient(apiEndpoint, cookie);
-};
-
-export const buildCookielessServerSideClient = (): DinnerDoneBetterAPIClient => {
-  const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  if (!apiEndpoint) {
-    throw new Error('no API endpoint set!');
-  }
-
-  return new DinnerDoneBetterAPIClient(apiEndpoint);
-};
-
-export const buildLocalClient = (): DinnerDoneBetterAPIClient => {
-  return new DinnerDoneBetterAPIClient();
+  return new DinnerDoneBetterAPIClient(apiEndpoint, accessToken);
 };

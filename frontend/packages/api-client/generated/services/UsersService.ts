@@ -4,9 +4,7 @@
 /* eslint-disable */
 import type { APIResponse } from '../models/APIResponse';
 import type { AvatarUpdateInput } from '../models/AvatarUpdateInput';
-import type { ChangeActiveHouseholdInput } from '../models/ChangeActiveHouseholdInput';
 import type { EmailAddressVerificationRequestInput } from '../models/EmailAddressVerificationRequestInput';
-import type { Household } from '../models/Household';
 import type { JWTResponse } from '../models/JWTResponse';
 import type { PasswordResetToken } from '../models/PasswordResetToken';
 import type { PasswordResetTokenCreationRequestInput } from '../models/PasswordResetTokenCreationRequestInput';
@@ -202,24 +200,6 @@ export class UsersService {
     });
   }
   /**
-   * Operation for creating Household
-   * @param requestBody
-   * @returns any
-   * @throws ApiError
-   */
-  public static changeActiveHousehold(requestBody: ChangeActiveHouseholdInput): CancelablePromise<
-    APIResponse & {
-      data?: Household;
-    }
-  > {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/users/household/select',
-      body: requestBody,
-      mediaType: 'application/json',
-    });
-  }
-  /**
    * Operation for updating
    * @param requestBody
    * @throws ApiError
@@ -383,42 +363,6 @@ export class UsersService {
     });
   }
   /**
-   * Operation for creating UserStatusResponse
-   * @param requestBody
-   * @returns any
-   * @throws ApiError
-   */
-  public static login(requestBody: UserLoginInput): CancelablePromise<
-    APIResponse & {
-      data?: UserStatusResponse;
-    }
-  > {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/users/login',
-      body: requestBody,
-      mediaType: 'application/json',
-    });
-  }
-  /**
-   * Operation for creating UserStatusResponse
-   * @param requestBody
-   * @returns any
-   * @throws ApiError
-   */
-  public static adminLogin(requestBody: UserLoginInput): CancelablePromise<
-    APIResponse & {
-      data?: UserStatusResponse;
-    }
-  > {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/users/login/admin',
-      body: requestBody,
-      mediaType: 'application/json',
-    });
-  }
-  /**
    * Operation for creating JWTResponse
    * @param requestBody
    * @returns any
@@ -452,21 +396,6 @@ export class UsersService {
       url: '/users/login/jwt/admin',
       body: requestBody,
       mediaType: 'application/json',
-    });
-  }
-  /**
-   * Operation for creating UserStatusResponse
-   * @returns any
-   * @throws ApiError
-   */
-  public static logout(): CancelablePromise<
-    APIResponse & {
-      data?: UserStatusResponse;
-    }
-  > {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/users/logout',
     });
   }
   /**

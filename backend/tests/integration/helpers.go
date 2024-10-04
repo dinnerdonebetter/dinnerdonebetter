@@ -3,7 +3,6 @@ package integration
 import (
 	"context"
 	"encoding/json"
-	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -38,7 +37,7 @@ func requireNotNilAndNoProblems(t *testing.T, i any, err error) {
 	require.NotNil(t, i)
 }
 
-func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, cookie *http.Cookie, client, oauthedClient *apiclient.Client) {
+func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, oauthedClient *apiclient.Client) {
 	t.Helper()
 
 	if input == nil {
@@ -52,9 +51,6 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	user, err := testutils.CreateServiceUser(ctx, urlToUse, input)
 	require.NoError(t, err)
 
-	cookie, err = testutils.GetLoginCookie(ctx, urlToUse, user)
-	require.NoError(t, err)
-
 	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
 
@@ -64,41 +60,10 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 		TOTPToken: code,
 	}
 
-	client, err = initializeCookiePoweredClient(ctx, loginInput)
-	require.NoError(t, err)
-
 	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
-	return user, cookie, client, oauthedClient
-}
-
-func initializeCookiePoweredClient(ctx context.Context, loginInput *types.UserLoginInput) (*apiclient.Client, error) {
-	if parsedURLToUse == nil {
-		panic("url not set!")
-	}
-
-	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
-
-	c, err := apiclient.NewClient(
-		parsedURLToUse,
-		tracing.NewNoopTracerProvider(),
-		apiclient.UsingLogger(logger),
-		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
-		apiclient.UsingURL(urlToUse),
-		apiclient.UsingLogin(ctx, loginInput),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	if debug {
-		if setOptionErr := c.SetOptions(apiclient.UsingDebug(true)); setOptionErr != nil {
-			return nil, setOptionErr
-		}
-	}
-
-	return c, nil
+	return user, oauthedClient
 }
 
 func initializeOAuth2PoweredClient(ctx context.Context, input *types.UserLoginInput) (*apiclient.Client, error) {
@@ -124,7 +89,7 @@ func initializeOAuth2PoweredClient(ctx context.Context, input *types.UserLoginIn
 		return nil, err
 	}
 
-	if err = c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse)); err != nil {
+	if err = c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)); err != nil {
 		return nil, err
 	}
 
@@ -161,7 +126,7 @@ func generateTOTPTokenForUser(t *testing.T, u *types.User) string {
 	return code
 }
 
-func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (cookieClient *apiclient.Client, oauthedClient *apiclient.Client) {
+func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauthedClient *apiclient.Client) {
 	t.Helper()
 
 	u := serverutils.DetermineServiceURL()
@@ -181,11 +146,8 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (cooki
 		TOTPToken: adminCode,
 	}
 
-	adminCookieClient, err := initializeCookiePoweredClient(ctx, loginInput)
-	require.NoError(t, err)
-
 	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
-	return adminCookieClient, oauthedClient
+	return oauthedClient
 }

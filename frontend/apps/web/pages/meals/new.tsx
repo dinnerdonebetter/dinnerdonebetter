@@ -32,7 +32,7 @@ import {
 } from '@dinnerdonebetter/models';
 import { ConvertMealToMealCreationRequestInput } from '@dinnerdonebetter/utils';
 
-import { buildLocalClient } from '../../src/client';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 import { AppLayout } from '../../src/layouts';
 
 /* BEGIN Meal Creation Reducer */

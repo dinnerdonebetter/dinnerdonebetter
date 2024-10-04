@@ -8,10 +8,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
+	oauth2errors "github.com/go-oauth2/oauth2/v4/errors"
 	servertiming "github.com/mitchellh/go-server-timing"
 )
 
@@ -57,35 +57,6 @@ func (s *service) determineZuckMode(ctx context.Context, req *http.Request, sess
 	return "", "", nil
 }
 
-// CookieRequirementMiddleware requires every request have a valid cookie.
-func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		ctx, span := s.tracer.StartSpan(req.Context())
-		defer span.End()
-
-		timing := servertiming.FromContext(ctx)
-		logger := s.logger.WithRequest(req).WithSpan(span)
-
-		cookieFetchTimer := timing.NewMetric("cookie fetch").WithDesc("decoding cookie from request").Start()
-		cookie, cookieErr := req.Cookie(s.config.Cookies.Name)
-		cookieFetchTimer.Stop()
-		if !errors.Is(cookieErr, http.ErrNoCookie) && cookie != nil {
-			var token string
-			if err := s.cookieManager.Decode(s.config.Cookies.Name, cookie.Value, &token); err == nil {
-				next.ServeHTTP(res, req)
-				return
-			} else {
-				observability.AcknowledgeError(err, logger, span, "decoding cookie")
-			}
-		}
-
-		logger.Info("no cookie attached to request")
-
-		// if no cookie was attached to the request, tell them to login first.
-		res.WriteHeader(http.StatusUnauthorized)
-	})
-}
-
 // UserAttributionMiddleware is concerned with figuring out who a user is, but not worried about kicking out users who are not known.
 func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
@@ -93,7 +64,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		defer span.End()
 
 		timing := servertiming.FromContext(ctx)
-		logger := s.logger.WithRequest(req).WithSpan(span).WithValue("cookie", req.Header[s.config.Cookies.Name])
+		logger := s.logger.WithRequest(req).WithSpan(span)
 		for _, cookie := range req.Cookies() {
 			logger = logger.WithValue(fmt.Sprintf("cookie.%s", cookie.Name), cookie.Value)
 		}
@@ -102,59 +73,21 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			TraceID: span.SpanContext().TraceID().String(),
 		}
 
-		// handle cookies if relevant.
-		cookieTimer := timing.NewMetric("cookie fetch").WithDesc("decoding cookie from request").Start()
-		cookieContext, userID, err := s.getUserIDFromCookie(ctx, req)
-		cookieTimer.Stop()
-		if err == nil && userID != "" {
-			ctx = cookieContext // don't delete this, nothing works without it
-
-			tracing.AttachToSpan(span, keys.RequesterIDKey, userID)
-			logger = logger.WithValue(keys.RequesterIDKey, userID)
-
-			sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
-			if sessionCtxDataErr != nil {
-				observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
-				errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-				return
-			}
-
-			s.overrideSessionContextDataValuesWithSessionData(ctx, sessionCtxData)
-
-			zuckUserID, zuckHouseholdID, zuckErr := s.determineZuckMode(ctx, req, sessionCtxData)
-			if zuckErr != nil {
-				observability.AcknowledgeError(zuckErr, logger, span, "fetching user info for zuck mode")
-				errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-				return
-			}
-
-			if zuckUserID != "" {
-				sessionCtxData.Requester.UserID = zuckUserID
-			}
-
-			if zuckHouseholdID != "" {
-				sessionCtxData.ActiveHouseholdID = zuckHouseholdID
-				sessionCtxData.HouseholdPermissions[zuckHouseholdID] = authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String())
-			}
-
-			if sessionCtxData != nil {
-				next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
-				return
-			}
-		}
-
 		// validate bearer token.
 		tokenTimer := timing.NewMetric("token validation").WithDesc("validating bearer token from request").Start()
 		token, err := s.oauth2Server.ValidationBearerToken(req)
 		if err != nil {
-			logger.Error(err, "determining user ID")
+			if errors.Is(err, oauth2errors.ErrExpiredAccessToken) || errors.Is(err, oauth2errors.ErrExpiredRefreshToken) {
+				res.WriteHeader(http.StatusTeapot)
+				return
+			} else {
+				logger.Error(err, "determining user ID")
+			}
 		}
 		tokenTimer.Stop()
 
 		if token != nil {
-			if userID = token.GetUserID(); userID != "" {
+			if userID := token.GetUserID(); userID != "" {
 				userAttributionTimer := timing.NewMetric("user attribution").WithDesc("attributing user to request").Start()
 				sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 				if sessionCtxDataErr != nil {

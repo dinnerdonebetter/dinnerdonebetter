@@ -35,9 +35,10 @@ import {
   ValidIngredientStateUpdateRequestInput,
 } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
-import { buildLocalClient, buildServerSideClient } from '../../../src/client';
+import { buildServerSideClient } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
 
@@ -88,7 +89,12 @@ export const getServerSideProps: GetServerSideProps = async (
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return { props: { pageLoadValidIngredientState, pageLoadValidIngredientStates } };
+  return {
+    props: {
+      pageLoadValidIngredientState: JSON.parse(JSON.stringify(pageLoadValidIngredientState)),
+      pageLoadValidIngredientStates: JSON.parse(JSON.stringify(pageLoadValidIngredientStates)),
+    },
+  };
 };
 
 const validIngredientStateUpdateFormSchema = z.object({

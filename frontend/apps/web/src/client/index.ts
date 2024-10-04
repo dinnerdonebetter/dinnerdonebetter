@@ -1,9 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
-import router from 'next/router';
 
 import DinnerDoneBetterAPIClient from '@dinnerdonebetter/api-client';
+import { UserSessionDetails } from '@dinnerdonebetter/next-routes';
+import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
-import { apiCookieName } from '../constants';
+import { webappCookieName } from '../constants';
+import { encryptorDecryptor } from '../encryption';
 
 export const buildServerSideClient = (context: GetServerSidePropsContext): DinnerDoneBetterAPIClient => {
   const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
@@ -11,48 +13,18 @@ export const buildServerSideClient = (context: GetServerSidePropsContext): Dinne
     throw new Error('no API endpoint set!');
   }
 
-  const ddbClient = new DinnerDoneBetterAPIClient(apiEndpoint, context.req.cookies[apiCookieName]);
-
-  return ddbClient;
-};
-
-export const buildServerSideClientWithRawCookie = (cookie: string): DinnerDoneBetterAPIClient => {
-  const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  if (!apiEndpoint) {
-    throw new Error('no API endpoint set!');
+  let encryptedCookieData = context.req.cookies[webappCookieName];
+  if (!encryptedCookieData) {
+    throw new Error('no cookie data found');
   }
 
-  if (!cookie) {
-    throw new Error('no cookie set!');
+  const ed = encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>;
+
+  const userSessionDetails = ed.decrypt(encryptedCookieData);
+  const accessToken = JSON.parse(JSON.stringify(userSessionDetails.token))['access_token'];
+  if (!accessToken) {
+    throw new Error('no token found');
   }
 
-  const ddbClient = new DinnerDoneBetterAPIClient(apiEndpoint, cookie);
-
-  return ddbClient;
-};
-
-export const buildCookielessServerSideClient = (): DinnerDoneBetterAPIClient => {
-  const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  if (!apiEndpoint) {
-    throw new Error('no API endpoint set!');
-  }
-
-  const ddbClient = new DinnerDoneBetterAPIClient(apiEndpoint);
-
-  return ddbClient;
-};
-
-export const buildBrowserSideClient = (): DinnerDoneBetterAPIClient => {
-  const ddbClient = buildCookielessServerSideClient();
-
-  ddbClient.configureRouterRejectionInterceptor((loc: Location) => {
-    const destParam = new URLSearchParams(loc.search).get('dest') ?? encodeURIComponent(`${loc.pathname}${loc.search}`);
-    router.push({ pathname: '/login', query: { dest: destParam } });
-  });
-
-  return ddbClient;
-};
-
-export const buildLocalClient = (): DinnerDoneBetterAPIClient => {
-  return new DinnerDoneBetterAPIClient();
+  return new DinnerDoneBetterAPIClient(apiEndpoint, accessToken);
 };

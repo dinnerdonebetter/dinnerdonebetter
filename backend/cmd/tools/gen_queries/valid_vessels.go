@@ -170,7 +170,7 @@ WHERE %s.%s IS NULL
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN %s ON %s.%s=%s.id
+	LEFT JOIN %s ON %s.%s=%s.id
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,

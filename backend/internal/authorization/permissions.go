@@ -12,8 +12,6 @@ type (
 )
 
 const (
-	// CycleCookieSecretPermission is a service admin permission.
-	CycleCookieSecretPermission Permission = "update.cookie_secret"
 	// UpdateUserStatusPermission is a service admin permission.
 	UpdateUserStatusPermission Permission = "update.user_status"
 	// ImpersonateUserPermission is a service admin permission.
@@ -417,7 +415,6 @@ func (p Permission) Match(perm gorbac.Permission) bool {
 var (
 	// ServiceAdminPermissions is every service admin permission.
 	ServiceAdminPermissions = []gorbac.Permission{
-		CycleCookieSecretPermission,
 		UpdateUserStatusPermission,
 		ReadUserPermission,
 		SearchUserPermission,

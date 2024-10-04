@@ -36,14 +36,14 @@ func checkRecipeStepVesselEquality(t *testing.T, expected, actual *types.RecipeS
 }
 
 func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			var createdRecipeStepID string
 			for _, step := range createdRecipe.Steps {
@@ -51,18 +51,18 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 				break
 			}
 
-			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.admin)
+			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.adminClient)
 
 			exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepVessel.Vessel = &types.ValidVessel{ID: createdValidVessel.ID}
 			exampleRecipeStepVesselInput := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
-			createdRecipeStepVessel, err := testClients.admin.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
+			createdRecipeStepVessel, err := testClients.adminClient.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
 			require.NoError(t, err)
 
 			checkRecipeStepVesselEquality(t, exampleRecipeStepVessel, createdRecipeStepVessel, false)
 
-			createdRecipeStepVessel, err = testClients.user.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
+			createdRecipeStepVessel, err = testClients.userClient.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
 			requireNotNilAndNoProblems(t, createdRecipeStepVessel, err)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepVessel.BelongsToRecipeStep)
 			exampleRecipeStepVessel.Vessel = createdValidVessel
@@ -72,7 +72,7 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 
 			newExampleValidInstrument := fakes.BuildFakeValidInstrument()
 			newExampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(newExampleValidInstrument)
-			newValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, newExampleValidInstrumentInput)
+			newValidInstrument, err := testClients.adminClient.CreateValidInstrument(ctx, newExampleValidInstrumentInput)
 			require.NoError(t, err)
 			checkValidInstrumentEquality(t, newExampleValidInstrument, newValidInstrument)
 
@@ -80,26 +80,26 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			newRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			newRecipeStepVessel.Vessel = createdValidVessel
 			createdRecipeStepVessel.Update(converters.ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(newRecipeStepVessel))
-			assert.NoError(t, testClients.admin.UpdateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepVessel))
+			assert.NoError(t, testClients.adminClient.UpdateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepVessel))
 
-			actual, err := testClients.user.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
+			actual, err := testClients.userClient.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe step vessel equality
 			checkRecipeStepVesselEquality(t, newRecipeStepVessel, actual, false)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.user.ArchiveRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID))
+			assert.NoError(t, testClients.userClient.ArchiveRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID))
 
-			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
+			assert.NoError(t, testClients.userClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
-	s.runForEachClient("should be able to use a recipe step vessel that was the product of a prior recipe step", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to use a recipe step vessel that was the product of a prior recipe step", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -108,42 +108,42 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 
 			lineBase := fakes.BuildFakeValidPreparation()
 			lineInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(lineBase)
-			line, err := testClients.admin.CreateValidPreparation(ctx, lineInput)
+			line, err := testClients.adminClient.CreateValidPreparation(ctx, lineInput)
 			require.NoError(t, err)
 
 			roastBase := fakes.BuildFakeValidPreparation()
 			roastInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(roastBase)
-			roast, err := testClients.admin.CreateValidPreparation(ctx, roastInput)
+			roast, err := testClients.adminClient.CreateValidPreparation(ctx, roastInput)
 			require.NoError(t, err)
 
-			bakingSheet := createValidVesselForTest(t, ctx, nil, testClients.admin)
+			bakingSheet := createValidVesselForTest(t, ctx, nil, testClients.adminClient)
 
 			sheetsBase := fakes.BuildFakeValidMeasurementUnit()
 			sheetsBaseInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(sheetsBase)
-			sheets, err := testClients.admin.CreateValidMeasurementUnit(ctx, sheetsBaseInput)
+			sheets, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, sheetsBaseInput)
 			require.NoError(t, err)
 			checkValidMeasurementUnitEquality(t, sheetsBase, sheets)
 
 			headsBase := fakes.BuildFakeValidMeasurementUnit()
 			headsBaseInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(headsBase)
-			head, err := testClients.admin.CreateValidMeasurementUnit(ctx, headsBaseInput)
+			head, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, headsBaseInput)
 			require.NoError(t, err)
 			checkValidMeasurementUnitEquality(t, headsBase, head)
 
 			exampleUnits := fakes.BuildFakeValidMeasurementUnit()
 			exampleUnitsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleUnits)
-			unit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleUnitsInput)
+			unit, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleUnitsInput)
 			require.NoError(t, err)
 			checkValidMeasurementUnitEquality(t, exampleUnits, unit)
 
 			aluminumFoilBase := fakes.BuildFakeValidIngredient()
 			aluminumFoilInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(aluminumFoilBase)
-			aluminumFoil, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, aluminumFoilInput)
+			aluminumFoil, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, aluminumFoilInput)
 			require.NoError(t, createdValidIngredientErr)
 
 			garlic := fakes.BuildFakeValidIngredient()
 			garlicInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(garlic)
-			garlic, garlicErr := testClients.admin.CreateValidIngredient(ctx, garlicInput)
+			garlic, garlicErr := testClients.adminClient.CreateValidIngredient(ctx, garlicInput)
 			require.NoError(t, garlicErr)
 
 			linedBakingSheetName := "lined baking sheet"
@@ -221,11 +221,11 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointer.To(uint64(0))
 			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
 
-			created, err := testClients.admin.CreateRecipe(ctx, exampleRecipeInput)
+			created, err := testClients.adminClient.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
 			checkRecipeEquality(t, expected, created)
 
-			created, err = testClients.user.GetRecipe(ctx, created.ID)
+			created, err = testClients.userClient.GetRecipe(ctx, created.ID)
 			requireNotNilAndNoProblems(t, created, err)
 			checkRecipeEquality(t, expected, created)
 
@@ -244,14 +244,14 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 }
 
 func (s *TestSuite) TestRecipeStepVessels_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			var createdRecipeStepID string
 			for _, step := range createdRecipe.Steps {
@@ -259,7 +259,7 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 				break
 			}
 
-			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.admin)
+			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.adminClient)
 
 			var expected []*types.RecipeStepVessel
 			for i := 0; i < 5; i++ {
@@ -267,11 +267,11 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 				exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepVessel.Vessel = &types.ValidVessel{ID: createdValidVessel.ID}
 				exampleRecipeStepVesselInput := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
-				createdRecipeStepVessel, createdRecipeStepVesselErr := testClients.admin.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
+				createdRecipeStepVessel, createdRecipeStepVesselErr := testClients.adminClient.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
 				require.NoError(t, createdRecipeStepVesselErr)
 				checkRecipeStepVesselEquality(t, exampleRecipeStepVessel, createdRecipeStepVessel, false)
 
-				createdRecipeStepVessel, createdRecipeStepVesselErr = testClients.user.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
+				createdRecipeStepVessel, createdRecipeStepVesselErr = testClients.userClient.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
 				requireNotNilAndNoProblems(t, createdRecipeStepVessel, createdRecipeStepVesselErr)
 				require.Equal(t, createdRecipeStepID, createdRecipeStepVessel.BelongsToRecipeStep)
 
@@ -279,7 +279,7 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 			}
 
 			// assert recipe step vessel list equality
-			actual, err := testClients.user.GetRecipeStepVessels(ctx, createdRecipe.ID, createdRecipeStepID, nil)
+			actual, err := testClients.userClient.GetRecipeStepVessels(ctx, createdRecipe.ID, createdRecipeStepID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -290,12 +290,12 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 			)
 
 			for _, createdRecipeStepVessel := range expected {
-				assert.NoError(t, testClients.user.ArchiveRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID))
+				assert.NoError(t, testClients.userClient.ArchiveRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID))
 			}
 
-			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
+			assert.NoError(t, testClients.userClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

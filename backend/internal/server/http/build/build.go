@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
@@ -80,7 +79,6 @@ func Build(
 		authentication.AuthProviders,
 		config.ServiceConfigProviders,
 		database.DBProviders,
-		dbconfig.DatabaseConfigProviders,
 		encoding.EncDecProviders,
 		msgconfig.MessageQueueProviders,
 		http.ProvidersHTTP,

@@ -1,48 +1,23 @@
-import { AxiosError, AxiosResponse } from 'axios';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { buildLoginRoute, cookieEncoderBuilder, UserSessionDetails } from '@dinnerdonebetter/next-routes';
+import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
-import { IAPIError, UserLoginInput, UserStatusResponse } from '@dinnerdonebetter/models';
-
-import { serverSideAnalytics } from '../../src/analytics';
-import { buildCookielessServerSideClient } from '../../src/client';
+import { encryptorDecryptor } from '../../src/encryption';
 import { serverSideTracer } from '../../src/tracer';
-import { processWebappCookieHeader } from '../../src/auth';
+import { webappCookieName } from '../../src/constants';
 
-async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const span = serverSideTracer.startSpan('LoginProxy');
-    const input = req.body as UserLoginInput;
+const encodeCookie = cookieEncoderBuilder(
+  webappCookieName,
+  encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>,
+);
 
-    const apiClient = buildCookielessServerSideClient().withSpan(span);
-
-    await apiClient
-      .logIn(input)
-      .then((result: AxiosResponse<UserStatusResponse>) => {
-        span.addEvent('response received');
-        if (result.status === 205) {
-          res.status(205).send('');
-          return;
-        }
-
-        res.setHeader('Set-Cookie', processWebappCookieHeader(result, result.data.userID, result.data.activeHousehold));
-
-        serverSideAnalytics.identify(result.data.userID || '', {
-          activeHousehold: result.data.activeHousehold,
-        });
-
-        res.status(202).send('');
-      })
-      .catch((err: AxiosError<IAPIError>) => {
-        span.addEvent('error received');
-        console.log('error from login route', err);
-        res.status(err.response?.status || 500).send('');
-        return;
-      });
-
-    span.end();
-  } else {
-    res.status(405).send(`Method ${req.method} Not Allowed`);
-  }
-}
-
-export default LoginRoute;
+export default buildLoginRoute({
+  baseURL: 'https://api.dinnerdonebetter.dev',
+  scope: 'household_member', // TODO: do I need to know if the user is a household admin here?
+  oauth2ClientID: '039f605f4f8c13a20dc6639e4095e66d',
+  oauth2ClientSecret: 'dc707e2234a05fdfc3d2eb2967c272a2',
+  serverSideTracer,
+  cookieFunc: encodeCookie,
+  cookieName: webappCookieName,
+  encryptorDecryptor: encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>,
+  admin: false,
+});

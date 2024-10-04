@@ -15,9 +15,9 @@ import { z } from 'zod';
 import { AxiosError } from 'axios';
 
 import { ValidMeasurementUnit, ValidVessel, ValidVesselCreationRequestInput } from '@dinnerdonebetter/models';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
-import { buildLocalClient } from '../../src/client';
 import { inputSlug } from '../../src/schemas';
 
 const validVesselCreationFormSchema = z.object({

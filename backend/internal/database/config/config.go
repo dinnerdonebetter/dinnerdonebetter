@@ -2,13 +2,8 @@ package config
 
 import (
 	"context"
-	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
-
-	"github.com/alexedwards/scs/v2"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -37,23 +32,4 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&cfg.ConnectionDetails, validation.Required),
 		validation.Field(&cfg.OAuth2TokenEncryptionKey, validation.Required),
 	)
-}
-
-// ProvideSessionManager provides a session manager based on some settings.
-// There's not a great place to put this function. I don't think it belongs in Auth because it accepts a DB connection,
-// but it obviously doesn't belong in the database package, or maybe it does.
-func ProvideSessionManager(cookieConfig *authservice.CookieConfig, dm database.DataManager) (*scs.SessionManager, error) {
-	sessionManager := scs.New()
-
-	sessionManager.Lifetime = cookieConfig.Lifetime
-	sessionManager.Cookie.Name = cookieConfig.Name
-	sessionManager.Cookie.Domain = cookieConfig.Domain
-	sessionManager.Cookie.HttpOnly = true
-	sessionManager.Cookie.Path = "/"
-	sessionManager.Cookie.SameSite = http.SameSiteStrictMode
-	sessionManager.Cookie.Secure = cookieConfig.SecureOnly
-
-	sessionManager.Store = dm.ProvideSessionStore()
-
-	return sessionManager, nil
 }

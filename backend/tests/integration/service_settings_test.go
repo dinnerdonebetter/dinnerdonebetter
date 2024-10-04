@@ -43,22 +43,22 @@ func createServiceSettingForTest(t *testing.T, ctx context.Context, adminClient 
 }
 
 func (s *TestSuite) TestServiceSettings_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdServiceSetting := createServiceSettingForTest(t, ctx, testClients.admin)
+			createdServiceSetting := createServiceSettingForTest(t, ctx, testClients.adminClient)
 
-			assert.NoError(t, testClients.admin.ArchiveServiceSetting(ctx, createdServiceSetting.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveServiceSetting(ctx, createdServiceSetting.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestServiceSettings_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -69,7 +69,7 @@ func (s *TestSuite) TestServiceSettings_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleServiceSetting := fakes.BuildFakeServiceSetting()
 				exampleServiceSettingInput := converters.ConvertServiceSettingToServiceSettingCreationRequestInput(exampleServiceSetting)
-				createdServiceSetting, createdServiceSettingErr := testClients.admin.CreateServiceSetting(ctx, exampleServiceSettingInput)
+				createdServiceSetting, createdServiceSettingErr := testClients.adminClient.CreateServiceSetting(ctx, exampleServiceSettingInput)
 				require.NoError(t, createdServiceSettingErr)
 
 				checkServiceSettingEquality(t, exampleServiceSetting, createdServiceSetting)
@@ -78,7 +78,7 @@ func (s *TestSuite) TestServiceSettings_Listing() {
 			}
 
 			// assert service setting list equality
-			actual, err := testClients.admin.GetServiceSettings(ctx, nil)
+			actual, err := testClients.adminClient.GetServiceSettings(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -89,7 +89,7 @@ func (s *TestSuite) TestServiceSettings_Listing() {
 			)
 
 			for _, createdServiceSetting := range expected {
-				assert.NoError(t, testClients.admin.ArchiveServiceSetting(ctx, createdServiceSetting.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveServiceSetting(ctx, createdServiceSetting.ID))
 			}
 		}
 	})

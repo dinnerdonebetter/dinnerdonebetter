@@ -20,8 +20,7 @@ import (
 )
 
 const (
-	CookieAuthScopes = "cookieAuth.Scopes"
-	Oauth2Scopes     = "oauth2.Scopes"
+	Oauth2Scopes = "oauth2.Scopes"
 )
 
 // Defines values for GetReceivedHouseholdInvitationsParamsIncludeArchived.
@@ -828,11 +827,6 @@ type AvatarUpdateInput struct {
 	Base64EncodedData *string `json:"base64EncodedData,omitempty"`
 }
 
-// ChangeActiveHouseholdInput defines model for ChangeActiveHouseholdInput.
-type ChangeActiveHouseholdInput struct {
-	HouseholdID *string `json:"householdID,omitempty"`
-}
-
 // ChangeLog defines model for ChangeLog.
 type ChangeLog struct {
 	NewValue *string `json:"newValue,omitempty"`
@@ -997,7 +991,9 @@ type HouseholdUserMembershipWithUser struct {
 
 // JWTResponse defines model for JWTResponse.
 type JWTResponse struct {
-	Token *string `json:"token,omitempty"`
+	HouseholdID *string `json:"householdID,omitempty"`
+	Token       *string `json:"token,omitempty"`
+	UserID      *string `json:"userID,omitempty"`
 }
 
 // Meal defines model for Meal.
@@ -4039,9 +4035,6 @@ type UpdateUserEmailAddressJSONRequestBody = UserEmailAddressUpdateInput
 // VerifyUserEmailAddressJSONRequestBody defines body for VerifyUserEmailAddress for application/json ContentType.
 type VerifyUserEmailAddressJSONRequestBody = EmailAddressVerificationRequestInput
 
-// ChangeActiveHouseholdJSONRequestBody defines body for ChangeActiveHousehold for application/json ContentType.
-type ChangeActiveHouseholdJSONRequestBody = ChangeActiveHouseholdInput
-
 // UpdatePasswordJSONRequestBody defines body for UpdatePassword for application/json ContentType.
 type UpdatePasswordJSONRequestBody = PasswordUpdateInput
 
@@ -4147,12 +4140,6 @@ type CreateUserJSONRequestBody = UserRegistrationInput
 // VerifyEmailAddressJSONRequestBody defines body for VerifyEmailAddress for application/json ContentType.
 type VerifyEmailAddressJSONRequestBody = EmailAddressVerificationRequestInput
 
-// LoginJSONRequestBody defines body for Login for application/json ContentType.
-type LoginJSONRequestBody = UserLoginInput
-
-// AdminLoginJSONRequestBody defines body for AdminLogin for application/json ContentType.
-type AdminLoginJSONRequestBody = UserLoginInput
-
 // LoginForJWTJSONRequestBody defines body for LoginForJWT for application/json ContentType.
 type LoginForJWTJSONRequestBody = UserLoginInput
 
@@ -4249,9 +4236,6 @@ type ClientInterface interface {
 
 	// CheckForReadiness request
 	CheckForReadiness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// AdminCycleCookieSecret request
-	AdminCycleCookieSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// AdminUpdateUserStatusWithBody request with any body
 	AdminUpdateUserStatusWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4792,11 +4776,6 @@ type ClientInterface interface {
 
 	VerifyUserEmailAddress(ctx context.Context, body VerifyUserEmailAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ChangeActiveHouseholdWithBody request with any body
-	ChangeActiveHouseholdWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	ChangeActiveHousehold(ctx context.Context, body ChangeActiveHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// UpdatePasswordWithBody request with any body
 	UpdatePasswordWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -5200,16 +5179,6 @@ type ClientInterface interface {
 
 	VerifyEmailAddress(ctx context.Context, body VerifyEmailAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// LoginWithBody request with any body
-	LoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	Login(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// AdminLoginWithBody request with any body
-	AdminLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	AdminLogin(ctx context.Context, body AdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// LoginForJWTWithBody request with any body
 	LoginForJWTWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -5219,9 +5188,6 @@ type ClientInterface interface {
 	AdminLoginForJWTWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	AdminLoginForJWT(ctx context.Context, body AdminLoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// Logout request
-	Logout(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RequestPasswordResetTokenWithBody request with any body
 	RequestPasswordResetTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5258,18 +5224,6 @@ func (c *Client) CheckForLiveness(ctx context.Context, reqEditors ...RequestEdit
 
 func (c *Client) CheckForReadiness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCheckForReadinessRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) AdminCycleCookieSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewAdminCycleCookieSecretRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -7656,30 +7610,6 @@ func (c *Client) VerifyUserEmailAddress(ctx context.Context, body VerifyUserEmai
 	return c.Client.Do(req)
 }
 
-func (c *Client) ChangeActiveHouseholdWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewChangeActiveHouseholdRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ChangeActiveHousehold(ctx context.Context, body ChangeActiveHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewChangeActiveHouseholdRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) UpdatePasswordWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdatePasswordRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -9432,54 +9362,6 @@ func (c *Client) VerifyEmailAddress(ctx context.Context, body VerifyEmailAddress
 	return c.Client.Do(req)
 }
 
-func (c *Client) LoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) Login(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) AdminLoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewAdminLoginRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) AdminLogin(ctx context.Context, body AdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewAdminLoginRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) LoginForJWTWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewLoginForJWTRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -9518,18 +9400,6 @@ func (c *Client) AdminLoginForJWTWithBody(ctx context.Context, contentType strin
 
 func (c *Client) AdminLoginForJWT(ctx context.Context, body AdminLoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAdminLoginForJWTRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) Logout(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLogoutRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -9683,33 +9553,6 @@ func NewCheckForReadinessRequest(server string) (*http.Request, error) {
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewAdminCycleCookieSecretRequest generates requests for AdminCycleCookieSecret
-func NewAdminCycleCookieSecretRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/v1/admin/cycle_cookie_secret")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -18814,46 +18657,6 @@ func NewVerifyUserEmailAddressRequestWithBody(server string, contentType string,
 	return req, nil
 }
 
-// NewChangeActiveHouseholdRequest calls the generic ChangeActiveHousehold builder with application/json body
-func NewChangeActiveHouseholdRequest(server string, body ChangeActiveHouseholdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewChangeActiveHouseholdRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewChangeActiveHouseholdRequestWithBody generates requests for ChangeActiveHousehold with any type of body
-func NewChangeActiveHouseholdRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/v1/users/household/select")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
 // NewUpdatePasswordRequest calls the generic UpdatePassword builder with application/json body
 func NewUpdatePasswordRequest(server string, body UpdatePasswordJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -26212,86 +26015,6 @@ func NewVerifyEmailAddressRequestWithBody(server string, contentType string, bod
 	return req, nil
 }
 
-// NewLoginRequest calls the generic Login builder with application/json body
-func NewLoginRequest(server string, body LoginJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewLoginRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewLoginRequestWithBody generates requests for Login with any type of body
-func NewLoginRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/users/login")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewAdminLoginRequest calls the generic AdminLogin builder with application/json body
-func NewAdminLoginRequest(server string, body AdminLoginJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewAdminLoginRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewAdminLoginRequestWithBody generates requests for AdminLogin with any type of body
-func NewAdminLoginRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/users/login/admin")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
 // NewLoginForJWTRequest calls the generic LoginForJWT builder with application/json body
 func NewLoginForJWTRequest(server string, body LoginForJWTJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -26368,33 +26091,6 @@ func NewAdminLoginForJWTRequestWithBody(server string, contentType string, body 
 	}
 
 	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewLogoutRequest generates requests for Logout
-func NewLogoutRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/users/logout")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
 
 	return req, nil
 }
@@ -26607,9 +26303,6 @@ type ClientWithResponsesInterface interface {
 
 	// CheckForReadinessWithResponse request
 	CheckForReadinessWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CheckForReadinessResponse, error)
-
-	// AdminCycleCookieSecretWithResponse request
-	AdminCycleCookieSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*AdminCycleCookieSecretResponse, error)
 
 	// AdminUpdateUserStatusWithBodyWithResponse request with any body
 	AdminUpdateUserStatusWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AdminUpdateUserStatusResponse, error)
@@ -27150,11 +26843,6 @@ type ClientWithResponsesInterface interface {
 
 	VerifyUserEmailAddressWithResponse(ctx context.Context, body VerifyUserEmailAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*VerifyUserEmailAddressResponse, error)
 
-	// ChangeActiveHouseholdWithBodyWithResponse request with any body
-	ChangeActiveHouseholdWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeActiveHouseholdResponse, error)
-
-	ChangeActiveHouseholdWithResponse(ctx context.Context, body ChangeActiveHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeActiveHouseholdResponse, error)
-
 	// UpdatePasswordWithBodyWithResponse request with any body
 	UpdatePasswordWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePasswordResponse, error)
 
@@ -27558,16 +27246,6 @@ type ClientWithResponsesInterface interface {
 
 	VerifyEmailAddressWithResponse(ctx context.Context, body VerifyEmailAddressJSONRequestBody, reqEditors ...RequestEditorFn) (*VerifyEmailAddressResponse, error)
 
-	// LoginWithBodyWithResponse request with any body
-	LoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginResponse, error)
-
-	LoginWithResponse(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*LoginResponse, error)
-
-	// AdminLoginWithBodyWithResponse request with any body
-	AdminLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AdminLoginResponse, error)
-
-	AdminLoginWithResponse(ctx context.Context, body AdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*AdminLoginResponse, error)
-
 	// LoginForJWTWithBodyWithResponse request with any body
 	LoginForJWTWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginForJWTResponse, error)
 
@@ -27577,9 +27255,6 @@ type ClientWithResponsesInterface interface {
 	AdminLoginForJWTWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AdminLoginForJWTResponse, error)
 
 	AdminLoginForJWTWithResponse(ctx context.Context, body AdminLoginForJWTJSONRequestBody, reqEditors ...RequestEditorFn) (*AdminLoginForJWTResponse, error)
-
-	// LogoutWithResponse request
-	LogoutWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LogoutResponse, error)
 
 	// RequestPasswordResetTokenWithBodyWithResponse request with any body
 	RequestPasswordResetTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RequestPasswordResetTokenResponse, error)
@@ -27638,27 +27313,6 @@ func (r CheckForReadinessResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r CheckForReadinessResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type AdminCycleCookieSecretResponse struct {
-	HTTPResponse *http.Response
-	Body         []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r AdminCycleCookieSecretResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r AdminCycleCookieSecretResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -33188,45 +32842,6 @@ func (r VerifyUserEmailAddressResponse) StatusCode() int {
 	return 0
 }
 
-type ChangeActiveHouseholdResponse struct {
-	HTTPResponse *http.Response
-	JSON201      *struct {
-		Data       *Household       `json:"data,omitempty"`
-		Details    *ResponseDetails `json:"details,omitempty"`
-		Error      *APIError        `json:"error,omitempty"`
-		Pagination *Pagination      `json:"pagination,omitempty"`
-	}
-	XML201 *struct {
-		Data       *Household       `json:"data,omitempty"`
-		Details    *ResponseDetails `json:"details,omitempty"`
-		Error      *APIError        `json:"error,omitempty"`
-		Pagination *Pagination      `json:"pagination,omitempty"`
-	}
-	JSON400 *APIResponseWithError
-	XML400  *APIResponseWithError
-	JSON401 *APIResponseWithError
-	XML401  *APIResponseWithError
-	JSON500 *APIResponseWithError
-	XML500  *APIResponseWithError
-	Body    []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r ChangeActiveHouseholdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ChangeActiveHouseholdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type UpdatePasswordResponse struct {
 	HTTPResponse *http.Response
 	Body         []byte
@@ -37466,84 +37081,6 @@ func (r VerifyEmailAddressResponse) StatusCode() int {
 	return 0
 }
 
-type LoginResponse struct {
-	HTTPResponse *http.Response
-	JSON201      *struct {
-		Data       *UserStatusResponse `json:"data,omitempty"`
-		Details    *ResponseDetails    `json:"details,omitempty"`
-		Error      *APIError           `json:"error,omitempty"`
-		Pagination *Pagination         `json:"pagination,omitempty"`
-	}
-	XML201 *struct {
-		Data       *UserStatusResponse `json:"data,omitempty"`
-		Details    *ResponseDetails    `json:"details,omitempty"`
-		Error      *APIError           `json:"error,omitempty"`
-		Pagination *Pagination         `json:"pagination,omitempty"`
-	}
-	JSON400 *APIResponseWithError
-	XML400  *APIResponseWithError
-	JSON401 *APIResponseWithError
-	XML401  *APIResponseWithError
-	JSON500 *APIResponseWithError
-	XML500  *APIResponseWithError
-	Body    []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r LoginResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r LoginResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type AdminLoginResponse struct {
-	HTTPResponse *http.Response
-	JSON201      *struct {
-		Data       *UserStatusResponse `json:"data,omitempty"`
-		Details    *ResponseDetails    `json:"details,omitempty"`
-		Error      *APIError           `json:"error,omitempty"`
-		Pagination *Pagination         `json:"pagination,omitempty"`
-	}
-	XML201 *struct {
-		Data       *UserStatusResponse `json:"data,omitempty"`
-		Details    *ResponseDetails    `json:"details,omitempty"`
-		Error      *APIError           `json:"error,omitempty"`
-		Pagination *Pagination         `json:"pagination,omitempty"`
-	}
-	JSON400 *APIResponseWithError
-	XML400  *APIResponseWithError
-	JSON401 *APIResponseWithError
-	XML401  *APIResponseWithError
-	JSON500 *APIResponseWithError
-	XML500  *APIResponseWithError
-	Body    []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r AdminLoginResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r AdminLoginResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type LoginForJWTResponse struct {
 	HTTPResponse *http.Response
 	JSON201      *struct {
@@ -37616,45 +37153,6 @@ func (r AdminLoginForJWTResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r AdminLoginForJWTResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type LogoutResponse struct {
-	HTTPResponse *http.Response
-	JSON201      *struct {
-		Data       *UserStatusResponse `json:"data,omitempty"`
-		Details    *ResponseDetails    `json:"details,omitempty"`
-		Error      *APIError           `json:"error,omitempty"`
-		Pagination *Pagination         `json:"pagination,omitempty"`
-	}
-	XML201 *struct {
-		Data       *UserStatusResponse `json:"data,omitempty"`
-		Details    *ResponseDetails    `json:"details,omitempty"`
-		Error      *APIError           `json:"error,omitempty"`
-		Pagination *Pagination         `json:"pagination,omitempty"`
-	}
-	JSON400 *APIResponseWithError
-	XML400  *APIResponseWithError
-	JSON401 *APIResponseWithError
-	XML401  *APIResponseWithError
-	JSON500 *APIResponseWithError
-	XML500  *APIResponseWithError
-	Body    []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r LogoutResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r LogoutResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -37833,15 +37331,6 @@ func (c *ClientWithResponses) CheckForReadinessWithResponse(ctx context.Context,
 		return nil, err
 	}
 	return ParseCheckForReadinessResponse(rsp)
-}
-
-// AdminCycleCookieSecretWithResponse request returning *AdminCycleCookieSecretResponse
-func (c *ClientWithResponses) AdminCycleCookieSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*AdminCycleCookieSecretResponse, error) {
-	rsp, err := c.AdminCycleCookieSecret(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseAdminCycleCookieSecretResponse(rsp)
 }
 
 // AdminUpdateUserStatusWithBodyWithResponse request with arbitrary body returning *AdminUpdateUserStatusResponse
@@ -39571,23 +39060,6 @@ func (c *ClientWithResponses) VerifyUserEmailAddressWithResponse(ctx context.Con
 	return ParseVerifyUserEmailAddressResponse(rsp)
 }
 
-// ChangeActiveHouseholdWithBodyWithResponse request with arbitrary body returning *ChangeActiveHouseholdResponse
-func (c *ClientWithResponses) ChangeActiveHouseholdWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ChangeActiveHouseholdResponse, error) {
-	rsp, err := c.ChangeActiveHouseholdWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseChangeActiveHouseholdResponse(rsp)
-}
-
-func (c *ClientWithResponses) ChangeActiveHouseholdWithResponse(ctx context.Context, body ChangeActiveHouseholdJSONRequestBody, reqEditors ...RequestEditorFn) (*ChangeActiveHouseholdResponse, error) {
-	rsp, err := c.ChangeActiveHousehold(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseChangeActiveHouseholdResponse(rsp)
-}
-
 // UpdatePasswordWithBodyWithResponse request with arbitrary body returning *UpdatePasswordResponse
 func (c *ClientWithResponses) UpdatePasswordWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePasswordResponse, error) {
 	rsp, err := c.UpdatePasswordWithBody(ctx, contentType, body, reqEditors...)
@@ -40867,40 +40339,6 @@ func (c *ClientWithResponses) VerifyEmailAddressWithResponse(ctx context.Context
 	return ParseVerifyEmailAddressResponse(rsp)
 }
 
-// LoginWithBodyWithResponse request with arbitrary body returning *LoginResponse
-func (c *ClientWithResponses) LoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginResponse, error) {
-	rsp, err := c.LoginWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseLoginResponse(rsp)
-}
-
-func (c *ClientWithResponses) LoginWithResponse(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*LoginResponse, error) {
-	rsp, err := c.Login(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseLoginResponse(rsp)
-}
-
-// AdminLoginWithBodyWithResponse request with arbitrary body returning *AdminLoginResponse
-func (c *ClientWithResponses) AdminLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AdminLoginResponse, error) {
-	rsp, err := c.AdminLoginWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseAdminLoginResponse(rsp)
-}
-
-func (c *ClientWithResponses) AdminLoginWithResponse(ctx context.Context, body AdminLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*AdminLoginResponse, error) {
-	rsp, err := c.AdminLogin(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseAdminLoginResponse(rsp)
-}
-
 // LoginForJWTWithBodyWithResponse request with arbitrary body returning *LoginForJWTResponse
 func (c *ClientWithResponses) LoginForJWTWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginForJWTResponse, error) {
 	rsp, err := c.LoginForJWTWithBody(ctx, contentType, body, reqEditors...)
@@ -40933,15 +40371,6 @@ func (c *ClientWithResponses) AdminLoginForJWTWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseAdminLoginForJWTResponse(rsp)
-}
-
-// LogoutWithResponse request returning *LogoutResponse
-func (c *ClientWithResponses) LogoutWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LogoutResponse, error) {
-	rsp, err := c.Logout(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseLogoutResponse(rsp)
 }
 
 // RequestPasswordResetTokenWithBodyWithResponse request with arbitrary body returning *RequestPasswordResetTokenResponse
@@ -41037,22 +40466,6 @@ func ParseCheckForReadinessResponse(rsp *http.Response) (*CheckForReadinessRespo
 	}
 
 	response := &CheckForReadinessResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseAdminCycleCookieSecretResponse parses an HTTP response from a AdminCycleCookieSecretWithResponse call
-func ParseAdminCycleCookieSecretResponse(rsp *http.Response) (*AdminCycleCookieSecretResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &AdminCycleCookieSecretResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -53008,91 +52421,6 @@ func ParseVerifyUserEmailAddressResponse(rsp *http.Response) (*VerifyUserEmailAd
 	return response, nil
 }
 
-// ParseChangeActiveHouseholdResponse parses an HTTP response from a ChangeActiveHouseholdWithResponse call
-func ParseChangeActiveHouseholdResponse(rsp *http.Response) (*ChangeActiveHouseholdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ChangeActiveHouseholdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest struct {
-			Data       *Household       `json:"data,omitempty"`
-			Details    *ResponseDetails `json:"details,omitempty"`
-			Error      *APIError        `json:"error,omitempty"`
-			Pagination *Pagination      `json:"pagination,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 201:
-		var dest struct {
-			Data       *Household       `json:"data,omitempty"`
-			Details    *ResponseDetails `json:"details,omitempty"`
-			Error      *APIError        `json:"error,omitempty"`
-			Pagination *Pagination      `json:"pagination,omitempty"`
-		}
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 400:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 401:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 500:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML500 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseUpdatePasswordResponse parses an HTTP response from a UpdatePasswordWithResponse call
 func ParseUpdatePasswordResponse(rsp *http.Response) (*UpdatePasswordResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -62183,176 +61511,6 @@ func ParseVerifyEmailAddressResponse(rsp *http.Response) (*VerifyEmailAddressRes
 	return response, nil
 }
 
-// ParseLoginResponse parses an HTTP response from a LoginWithResponse call
-func ParseLoginResponse(rsp *http.Response) (*LoginResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &LoginResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest struct {
-			Data       *UserStatusResponse `json:"data,omitempty"`
-			Details    *ResponseDetails    `json:"details,omitempty"`
-			Error      *APIError           `json:"error,omitempty"`
-			Pagination *Pagination         `json:"pagination,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 201:
-		var dest struct {
-			Data       *UserStatusResponse `json:"data,omitempty"`
-			Details    *ResponseDetails    `json:"details,omitempty"`
-			Error      *APIError           `json:"error,omitempty"`
-			Pagination *Pagination         `json:"pagination,omitempty"`
-		}
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 400:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 401:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 500:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseAdminLoginResponse parses an HTTP response from a AdminLoginWithResponse call
-func ParseAdminLoginResponse(rsp *http.Response) (*AdminLoginResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &AdminLoginResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest struct {
-			Data       *UserStatusResponse `json:"data,omitempty"`
-			Details    *ResponseDetails    `json:"details,omitempty"`
-			Error      *APIError           `json:"error,omitempty"`
-			Pagination *Pagination         `json:"pagination,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 201:
-		var dest struct {
-			Data       *UserStatusResponse `json:"data,omitempty"`
-			Details    *ResponseDetails    `json:"details,omitempty"`
-			Error      *APIError           `json:"error,omitempty"`
-			Pagination *Pagination         `json:"pagination,omitempty"`
-		}
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 400:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 401:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 500:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML500 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseLoginForJWTResponse parses an HTTP response from a LoginForJWTWithResponse call
 func ParseLoginForJWTResponse(rsp *http.Response) (*LoginForJWTResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -62491,91 +61649,6 @@ func ParseAdminLoginForJWTResponse(rsp *http.Response) (*AdminLoginForJWTRespons
 			Details    *ResponseDetails `json:"details,omitempty"`
 			Error      *APIError        `json:"error,omitempty"`
 			Pagination *Pagination      `json:"pagination,omitempty"`
-		}
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 400:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 401:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 500:
-		var dest APIResponseWithError
-		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.XML500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseLogoutResponse parses an HTTP response from a LogoutWithResponse call
-func ParseLogoutResponse(rsp *http.Response) (*LogoutResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &LogoutResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest struct {
-			Data       *UserStatusResponse `json:"data,omitempty"`
-			Details    *ResponseDetails    `json:"details,omitempty"`
-			Error      *APIError           `json:"error,omitempty"`
-			Pagination *Pagination         `json:"pagination,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest APIResponseWithError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 201:
-		var dest struct {
-			Data       *UserStatusResponse `json:"data,omitempty"`
-			Details    *ResponseDetails    `json:"details,omitempty"`
-			Error      *APIError           `json:"error,omitempty"`
-			Pagination *Pagination         `json:"pagination,omitempty"`
 		}
 		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err

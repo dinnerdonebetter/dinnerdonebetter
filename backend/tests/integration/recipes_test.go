@@ -123,7 +123,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 }
 
 func (s *TestSuite) TestRecipes_Realistic() {
-	s.runForEachClient("sopa de frijol", func(testClients *testClientWrapper) func() {
+	s.runTest("sopa de frijol", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -132,52 +132,52 @@ func (s *TestSuite) TestRecipes_Realistic() {
 
 			soakBase := fakes.BuildFakeValidPreparation()
 			soakInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(soakBase)
-			soak, err := testClients.admin.CreateValidPreparation(ctx, soakInput)
+			soak, err := testClients.adminClient.CreateValidPreparation(ctx, soakInput)
 			require.NoError(t, err)
 
 			mixBase := fakes.BuildFakeValidPreparation()
 			mixInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(mixBase)
-			mix, err := testClients.admin.CreateValidPreparation(ctx, mixInput)
+			mix, err := testClients.adminClient.CreateValidPreparation(ctx, mixInput)
 			require.NoError(t, err)
 
 			exampleGrams := fakes.BuildFakeValidMeasurementUnit()
 			exampleGramsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleGrams)
-			grams, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleGramsInput)
+			grams, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleGramsInput)
 			require.NoError(t, err)
 			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
 
-			grams, err = testClients.admin.GetValidMeasurementUnit(ctx, grams.ID)
+			grams, err = testClients.adminClient.GetValidMeasurementUnit(ctx, grams.ID)
 			requireNotNilAndNoProblems(t, grams, err)
 			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
 
 			exampleCups := fakes.BuildFakeValidMeasurementUnit()
 			exampleCupsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleCups)
-			cups, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleCupsInput)
+			cups, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleCupsInput)
 			require.NoError(t, err)
 			checkValidMeasurementUnitEquality(t, exampleCups, cups)
 
-			cups, err = testClients.admin.GetValidMeasurementUnit(ctx, cups.ID)
+			cups, err = testClients.adminClient.GetValidMeasurementUnit(ctx, cups.ID)
 			requireNotNilAndNoProblems(t, cups, err)
 			checkValidMeasurementUnitEquality(t, exampleCups, cups)
 
 			pintoBeanBase := fakes.BuildFakeValidIngredient()
 			pintoBeanInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(pintoBeanBase)
-			pintoBeans, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, pintoBeanInput)
+			pintoBeans, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, pintoBeanInput)
 			require.NoError(t, createdValidIngredientErr)
 
 			waterBase := fakes.BuildFakeValidIngredient()
 			waterInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(waterBase)
-			water, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, waterInput)
+			water, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, waterInput)
 			require.NoError(t, createdValidIngredientErr)
 
 			garlicPaste := fakes.BuildFakeValidIngredient()
 			garlicPasteInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(garlicPaste)
-			garlicPaste, garlicPasteErr := testClients.admin.CreateValidIngredient(ctx, garlicPasteInput)
+			garlicPaste, garlicPasteErr := testClients.adminClient.CreateValidIngredient(ctx, garlicPasteInput)
 			require.NoError(t, garlicPasteErr)
 
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			createdValidInstrument, err := testClients.adminClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
@@ -342,11 +342,11 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				},
 			}
 
-			created, err := testClients.admin.CreateRecipe(ctx, expectedInput)
+			created, err := testClients.adminClient.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
 			checkRecipeEquality(t, expected, created)
 
-			created, err = testClients.user.GetRecipe(ctx, created.ID)
+			created, err = testClients.userClient.GetRecipe(ctx, created.ID)
 			requireNotNilAndNoProblems(t, created, err)
 			checkRecipeEquality(t, expected, created)
 
@@ -365,46 +365,46 @@ func (s *TestSuite) TestRecipes_Realistic() {
 }
 
 func (s *TestSuite) TestRecipes_Updating() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			newRecipe := fakes.BuildFakeRecipe()
 			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
-			assert.NoError(t, testClients.admin.UpdateRecipe(ctx, createdRecipe))
+			assert.NoError(t, testClients.adminClient.UpdateRecipe(ctx, createdRecipe))
 
-			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
+			actual, err := testClients.userClient.GetRecipe(ctx, createdRecipe.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe equality
 			checkRecipeEquality(t, newRecipe, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestRecipes_UploadRecipeMedia() {
-	s.runForEachClient("should be able to upload content for a recipe", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to upload content for a recipe", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			newRecipe := fakes.BuildFakeRecipe()
 			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
-			assert.NoError(t, testClients.admin.UpdateRecipe(ctx, createdRecipe))
+			assert.NoError(t, testClients.adminClient.UpdateRecipe(ctx, createdRecipe))
 
-			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
+			actual, err := testClients.userClient.GetRecipe(ctx, createdRecipe.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe equality
@@ -421,31 +421,31 @@ func (s *TestSuite) TestRecipes_UploadRecipeMedia() {
 				"image_3.png": img3Bytes,
 			}
 
-			require.NoError(t, testClients.user.UploadRecipeMedia(ctx, files, actual.ID))
+			require.NoError(t, testClients.userClient.UploadRecipeMedia(ctx, files, actual.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
-	s.runForEachClient("should be able to create a meal and a recipe", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to create a meal and a recipe", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil, func(input *types.RecipeCreationRequestInput) {
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil, func(input *types.RecipeCreationRequestInput) {
 				input.AlsoCreateMeal = true
 			})
 
-			mealResults, err := testClients.user.SearchForMeals(ctx, createdRecipe.Name, nil)
+			mealResults, err := testClients.userClient.SearchForMeals(ctx, createdRecipe.Name, nil)
 			requireNotNilAndNoProblems(t, mealResults, err)
 
 			foundMealID := ""
 			for _, m := range mealResults.Data {
-				meal, mealFetchErr := testClients.user.GetMeal(ctx, m.ID)
+				meal, mealFetchErr := testClients.userClient.GetMeal(ctx, m.ID)
 				requireNotNilAndNoProblems(t, meal, mealFetchErr)
 
 				for _, component := range meal.Components {
@@ -457,13 +457,13 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 
 			require.NotEmpty(t, foundMealID)
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestRecipes_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -472,13 +472,13 @@ func (s *TestSuite) TestRecipes_Listing() {
 
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
-				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 				expected = append(expected, createdRecipe)
 			}
 
 			// assert recipe list equality
-			actual, err := testClients.user.GetRecipes(ctx, nil)
+			actual, err := testClients.userClient.GetRecipes(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -489,14 +489,14 @@ func (s *TestSuite) TestRecipes_Listing() {
 			)
 
 			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
 		}
 	})
 }
 
 func (s *TestSuite) TestRecipes_Searching() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -505,23 +505,23 @@ func (s *TestSuite) TestRecipes_Searching() {
 
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.userClient.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparation, err := testClients.adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
+			createdValidPreparation, err = testClients.userClient.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -530,13 +530,13 @@ func (s *TestSuite) TestRecipes_Searching() {
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe.Name = fmt.Sprintf("example%d", i)
-				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, exampleRecipe)
+				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, exampleRecipe)
 
 				expected = append(expected, createdRecipe)
 			}
 
 			// assert recipe list equality
-			actual, err := testClients.user.SearchForRecipes(ctx, "example", nil)
+			actual, err := testClients.userClient.SearchForRecipes(ctx, "example", nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -547,14 +547,14 @@ func (s *TestSuite) TestRecipes_Searching() {
 			)
 
 			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
 		}
 	})
 }
 
 func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
-	s.runForEachClient("meal plan tasks with frozen chicken breast", func(testClients *testClientWrapper) func() {
+	s.runTest("meal plan tasks with frozen chicken breast", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -563,34 +563,34 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 
 			diceBase := fakes.BuildFakeValidPreparation()
 			diceInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(diceBase)
-			dice, err := testClients.admin.CreateValidPreparation(ctx, diceInput)
+			dice, err := testClients.adminClient.CreateValidPreparation(ctx, diceInput)
 			require.NoError(t, err)
 
 			exampleGrams := fakes.BuildFakeValidMeasurementUnit()
 			exampleGramsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleGrams)
-			grams, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleGramsInput)
+			grams, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleGramsInput)
 			require.NoError(t, err)
 			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
 
-			grams, err = testClients.admin.GetValidMeasurementUnit(ctx, grams.ID)
+			grams, err = testClients.adminClient.GetValidMeasurementUnit(ctx, grams.ID)
 			requireNotNilAndNoProblems(t, grams, err)
 			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
 
 			chickenBreastBase := fakes.BuildFakeValidIngredient()
 			chickenBreastInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(chickenBreastBase)
 			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointer.To(float32(2.5))
-			chickenBreast, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, chickenBreastInput)
+			chickenBreast, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, chickenBreastInput)
 			require.NoError(t, createdValidIngredientErr)
 
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			createdValidInstrument, err := testClients.adminClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
 			sauteeBase := fakes.BuildFakeValidPreparation()
 			sauteeInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(sauteeBase)
-			sautee, err := testClients.admin.CreateValidPreparation(ctx, sauteeInput)
+			sautee, err := testClients.adminClient.CreateValidPreparation(ctx, sauteeInput)
 			require.NoError(t, err)
 
 			expected := &types.Recipe{
@@ -732,11 +732,11 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 				},
 			}
 
-			created, err := testClients.admin.CreateRecipe(ctx, expectedInput)
+			created, err := testClients.adminClient.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
 			checkRecipeEquality(t, expected, created)
 
-			steps, err := testClients.user.GetMealPlanTasksForRecipe(ctx, created.ID)
+			steps, err := testClients.userClient.GetMealPlanTasksForRecipe(ctx, created.ID)
 			requireNotNilAndNoProblems(t, created, err)
 
 			require.NotEmpty(t, steps)
@@ -745,40 +745,40 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 }
 
 func (s *TestSuite) TestRecipes_Cloning() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
-			actual, err := testClients.user.CloneRecipe(ctx, createdRecipe.ID)
+			actual, err := testClients.userClient.CloneRecipe(ctx, createdRecipe.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			require.Equal(t, createdRecipe.Name, actual.Name)
 			require.Equal(t, len(createdRecipe.Steps), len(actual.Steps))
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestRecipes_DAGGeneration() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
-			actual, err := testClients.user.GetRecipeDAG(ctx, createdRecipe.ID)
+			actual, err := testClients.userClient.GetRecipeDAG(ctx, createdRecipe.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

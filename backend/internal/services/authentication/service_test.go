@@ -18,7 +18,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
-	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,11 +29,6 @@ func buildTestService(t *testing.T) *service {
 	encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 	cfg := &Config{
-		Cookies: CookieConfig{
-			Name:     DefaultCookieName,
-			BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
-			Domain:   ".whocares.gov",
-		},
 		JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 	}
 
@@ -54,7 +48,6 @@ func buildTestService(t *testing.T) *service {
 		&mockauthn.Authenticator{},
 		database.NewMockDatabase(),
 		&mocktypes.HouseholdUserMembershipDataManagerMock{},
-		scs.New(),
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
 		pp,
@@ -76,10 +69,6 @@ func TestProvideService(T *testing.T) {
 		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		cfg := &Config{
-			Cookies: CookieConfig{
-				Name:     DefaultCookieName,
-				BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
-			},
 			JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 		}
 
@@ -99,7 +88,6 @@ func TestProvideService(T *testing.T) {
 			&mockauthn.Authenticator{},
 			database.NewMockDatabase(),
 			&mocktypes.HouseholdUserMembershipDataManagerMock{},
-			scs.New(),
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
@@ -110,51 +98,5 @@ func TestProvideService(T *testing.T) {
 
 		assert.NotNil(t, s)
 		assert.NoError(t, err)
-	})
-
-	T.Run("with invalid cookie key", func(t *testing.T) {
-		t.Parallel()
-		logger := logging.NewNoopLogger()
-		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		cfg := &Config{
-			Cookies: CookieConfig{
-				Name:     DefaultCookieName,
-				BlockKey: "BLAHBLAHBLAH",
-			},
-		}
-
-		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
-
-		rpm := mockrouting.NewRouteParamManager()
-		rpm.On(
-			"BuildRouteParamStringIDFetcher",
-			AuthProviderParamKey,
-		).Return(func(*http.Request) string { return "" })
-
-		s, err := ProvideService(
-			context.Background(),
-			logger,
-			&Config{
-				Cookies: CookieConfig{
-					Name:     DefaultCookieName,
-					BlockKey: "BLAHBLAHBLAH",
-				},
-			},
-			&mockauthn.Authenticator{},
-			database.NewMockDatabase(),
-			&mocktypes.HouseholdUserMembershipDataManagerMock{},
-			scs.New(),
-			encoderDecoder,
-			tracing.NewNoopTracerProvider(),
-			pp,
-			&featureflags.NoopFeatureFlagManager{},
-			analytics.NewNoopEventReporter(),
-			rpm,
-		)
-
-		assert.Nil(t, s)
-		assert.Error(t, err)
 	})
 }

@@ -9,10 +9,10 @@ import Link from 'next/link';
 import { formatISO, subYears } from 'date-fns';
 
 import { IAPIError, UserRegistrationInput } from '@dinnerdonebetter/models';
+import { buildBrowserSideClient } from '@dinnerdonebetter/api-client';
 
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { serverSideTracer } from '../src/tracer';
-import { buildBrowserSideClient } from '../src/client';
 import { AppLayout } from '../src/layouts';
 
 const registrationFormSchema = z.object({

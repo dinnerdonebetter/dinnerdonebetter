@@ -23,20 +23,20 @@ func checkRecipeStepCompletionConditionEquality(t *testing.T, expected, actual *
 }
 
 func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			createdRecipeStep := createdRecipe.Steps[0]
 			require.NotEmpty(t, createdRecipeStep.ID, "created recipe step ID must not be empty")
 
 			// create ingredient state
-			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.admin)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.adminClient)
 
 			input := &types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{
 				IngredientStateID:   createdValidIngredientState.ID,
@@ -50,14 +50,14 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 				},
 			}
 
-			createdRecipeStepCompletionCondition, err := testClients.user.CreateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, input)
+			createdRecipeStepCompletionCondition, err := testClients.userClient.CreateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, input)
 			requireNotNilAndNoProblems(t, createdRecipeStepCompletionCondition, err)
 
 			createdRecipeStepCompletionCondition.Notes = t.Name() + " updated"
 
-			require.NoError(t, testClients.user.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStepCompletionCondition))
+			require.NoError(t, testClients.userClient.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStepCompletionCondition))
 
-			actual, err := testClients.user.GetRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID)
+			actual, err := testClients.userClient.GetRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 			actual.IngredientState = types.ValidIngredientState{
 				ID: createdRecipeStepCompletionCondition.IngredientState.ID,
@@ -72,7 +72,7 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedAt)
 
 			// assert recipe step completion condition list functionality works
-			listResponse, err := testClients.user.GetRecipeStepCompletionConditions(ctx, createdRecipe.ID, createdRecipeStep.ID, types.DefaultQueryFilter())
+			listResponse, err := testClients.userClient.GetRecipeStepCompletionConditions(ctx, createdRecipe.ID, createdRecipeStep.ID, types.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -82,11 +82,11 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 				len(listResponse.Data),
 			)
 
-			assert.NoError(t, testClients.user.ArchiveRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID))
+			assert.NoError(t, testClients.userClient.ArchiveRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID))
 
-			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+			assert.NoError(t, testClients.userClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
 
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.userClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

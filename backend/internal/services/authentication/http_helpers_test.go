@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -14,32 +13,8 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func attachCookieToRequestForTest(t *testing.T, s *service, req *http.Request, user *types.User) (context.Context, *http.Request, string) {
-	t.Helper()
-
-	exampleHousehold := fakes.BuildFakeHousehold()
-
-	ctx, sessionErr := s.sessionManager.Load(req.Context(), "")
-	require.NoError(t, sessionErr)
-	require.NoError(t, s.sessionManager.RenewToken(ctx))
-
-	s.sessionManager.Put(ctx, userIDContextKey, user.ID)
-	s.sessionManager.Put(ctx, householdIDContextKey, exampleHousehold.ID)
-
-	token, _, err := s.sessionManager.Commit(ctx)
-	assert.NotEmpty(t, token)
-	assert.NoError(t, err)
-
-	c, err := s.buildCookie(ctx, s.config.Cookies.Domain, token, time.Now().Add(s.config.Cookies.Lifetime))
-	require.NoError(t, err)
-	req.AddCookie(c)
-
-	return ctx, req.WithContext(ctx), token
-}
 
 type authServiceHTTPRoutesTestHelper struct {
 	ctx                 context.Context

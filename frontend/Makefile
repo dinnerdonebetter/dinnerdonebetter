@@ -36,7 +36,7 @@ lint_terraform: terraformat
 
 .PHONY: dev
 dev:
-	REWRITE_COOKIE_HOST_FROM='dinnerdonebetter.dev' REWRITE_COOKIE_HOST_TO='localhost' $(NODE_PACKAGE_MANAGER) dev
+	$(NODE_PACKAGE_MANAGER) dev
 
 .PHONY: stop
 stop:

@@ -5,6 +5,6 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 COPY . .
 
 # to debug a specific test:
-# ENTRYPOINT go test -parallel 1 -v -failfast github.com/dinnerdonebetter/backend/tests/integration -run TestIntegration/TestRecipeSteps_ContentUploading
+# ENTRYPOINT go test -parallel 1 -v -failfast github.com/dinnerdonebetter/backend/tests/integration -run TestIntegration/TestLogin_WithoutBodyReturnsError
 
 ENTRYPOINT go test -v github.com/dinnerdonebetter/backend/tests/integration

@@ -4,9 +4,9 @@ import { TextInput, Button, Group, Container, Switch } from '@mantine/core';
 import { z } from 'zod';
 
 import { ValidMeasurementUnit, ValidMeasurementUnitCreationRequestInput } from '@dinnerdonebetter/models';
+import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
-import { buildLocalClient } from '../../src/client';
 import { inputSlug } from '../../src/schemas';
 
 const validMeasurementUnitCreationFormSchema = z.object({

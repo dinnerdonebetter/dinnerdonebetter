@@ -255,13 +255,6 @@
 			"dataChanges": "data_changes",
 			"jwtAudience": "localhost",
 			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-			"cookies": {
-				"name": "ddb_api_cookie",
-				"domain": ".whatever.gov",
-				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
-				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
-				"lifetime": 86400000000000
-			},
 			"oauth2": {
 				"domain": "http://localhost:9000",
 				"accessTokenLifespan": 3600000000000,
