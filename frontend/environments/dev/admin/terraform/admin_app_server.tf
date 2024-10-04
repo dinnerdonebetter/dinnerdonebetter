@@ -89,7 +89,7 @@ resource "google_cloud_run_service" "admin_app_server" {
       service_account_name = google_service_account.admin_app_user_service_account.email
 
       containers {
-        image = "gcr.io/dinner-done-better-dev/admin_app_server"
+        image = "us-central1-docker.pkg.dev/dinner-done-better-dev/containers/admin_app_server"
 
         resources {
           requests = {

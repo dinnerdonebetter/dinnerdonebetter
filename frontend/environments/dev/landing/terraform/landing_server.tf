@@ -122,7 +122,7 @@ resource "google_cloud_run_service" "landing_server" {
       service_account_name = google_service_account.landing_user_service_account.email
 
       containers {
-        image = "gcr.io/dinner-done-better-dev/landing_server"
+        image = "us-central1-docker.pkg.dev/dinner-done-better-dev/containers/landing_server"
 
         resources {
           requests = {

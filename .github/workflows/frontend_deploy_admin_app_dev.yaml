@@ -39,6 +39,7 @@ jobs:
         working-directory: frontend/
         run: |
           docker build --tag ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:${{ github.sha }} --file apps/admin/Dockerfile .
+          docker build --tag ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:latest --file apps/admin/Dockerfile .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
