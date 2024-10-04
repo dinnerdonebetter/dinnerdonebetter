@@ -94,6 +94,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	authenticationConfig := &servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
+	oAuth2ClientTokenDataManager := database.ProvideOAuth2ClientTokenDataManager(dataManager)
 	cookieConfig := &authenticationConfig.Cookies
 	sessionManager, err := config4.ProvideSessionManager(cookieConfig, dataManager)
 	if err != nil {
@@ -119,7 +120,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 		return nil, err
 	}
 	routeParamManager := chi.NewRouteParamManager()
-	authService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager)
+	authService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, oAuth2ClientTokenDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager)
 	if err != nil {
 		return nil, err
 	}

@@ -689,7 +689,7 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
-// MarkAsDefaultHouseholdHandler is our household creation route.
+// MarkAsDefaultHouseholdHandler marks the requested household as the default for the user's login.
 func (s *service) MarkAsDefaultHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

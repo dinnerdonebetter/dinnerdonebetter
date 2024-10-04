@@ -53,26 +53,26 @@ func (s *TestSuite) TestValidPreparationVessels_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.admin)
+			_, _, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.adminClient)
 
 			newValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
 			newValidPreparationVessel.Vessel = createdValidPreparationVessel.Vessel
 			newValidPreparationVessel.Preparation = createdValidPreparationVessel.Preparation
 			createdValidPreparationVessel.Update(converters.ConvertValidPreparationVesselToValidPreparationVesselUpdateRequestInput(newValidPreparationVessel))
-			assert.NoError(t, testClients.admin.UpdateValidPreparationVessel(ctx, createdValidPreparationVessel))
+			assert.NoError(t, testClients.adminClient.UpdateValidPreparationVessel(ctx, createdValidPreparationVessel))
 
-			actual, err := testClients.user.GetValidPreparationVessel(ctx, createdValidPreparationVessel.ID)
+			actual, err := testClients.userClient.GetValidPreparationVessel(ctx, createdValidPreparationVessel.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid preparation vessel equality
 			checkValidPreparationVesselEquality(t, newValidPreparationVessel, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveValidPreparationVessel(ctx, createdValidPreparationVessel.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidPreparationVessel(ctx, createdValidPreparationVessel.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveValidVessel(ctx, createdValidPreparationVessel.Vessel.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidVessel(ctx, createdValidPreparationVessel.Vessel.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparationVessel.Preparation.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidPreparation(ctx, createdValidPreparationVessel.Preparation.ID))
 		}
 	})
 }
@@ -87,12 +87,12 @@ func (s *TestSuite) TestValidPreparationVessels_Listing() {
 
 			var expected []*types.ValidPreparationVessel
 			for i := 0; i < 5; i++ {
-				_, _, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.admin)
+				_, _, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.adminClient)
 				expected = append(expected, createdValidPreparationVessel)
 			}
 
 			// assert valid preparation vessel list equality
-			actual, err := testClients.user.GetValidPreparationVessels(ctx, nil)
+			actual, err := testClients.userClient.GetValidPreparationVessels(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -103,7 +103,7 @@ func (s *TestSuite) TestValidPreparationVessels_Listing() {
 			)
 
 			for _, createdValidPreparationVessel := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidPreparationVessel(ctx, createdValidPreparationVessel.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidPreparationVessel(ctx, createdValidPreparationVessel.ID))
 			}
 		}
 	})
@@ -117,25 +117,25 @@ func (s *TestSuite) TestValidPreparationVessels_Listing_ByValue() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidPreparation, createdValidVessel, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.admin)
+			createdValidPreparation, createdValidVessel, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.adminClient)
 
-			validPreparationVesselsForVessel, err := testClients.user.GetValidPreparationVesselsForVessel(ctx, createdValidVessel.ID, nil)
+			validPreparationVesselsForVessel, err := testClients.userClient.GetValidPreparationVesselsForVessel(ctx, createdValidVessel.ID, nil)
 			requireNotNilAndNoProblems(t, validPreparationVesselsForVessel, err)
 
 			require.Len(t, validPreparationVesselsForVessel.Data, 1)
 			assert.Equal(t, validPreparationVesselsForVessel.Data[0].ID, createdValidPreparationVessel.ID)
 
-			validPreparationVesselsForPreparation, err := testClients.user.GetValidPreparationVesselsForPreparation(ctx, createdValidPreparation.ID, nil)
+			validPreparationVesselsForPreparation, err := testClients.userClient.GetValidPreparationVesselsForPreparation(ctx, createdValidPreparation.ID, nil)
 			requireNotNilAndNoProblems(t, validPreparationVesselsForPreparation, err)
 
 			require.Len(t, validPreparationVesselsForPreparation.Data, 1)
 			assert.Equal(t, validPreparationVesselsForPreparation.Data[0].ID, createdValidPreparationVessel.ID)
 
-			assert.NoError(t, testClients.admin.ArchiveValidPreparationVessel(ctx, createdValidPreparationVessel.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidPreparationVessel(ctx, createdValidPreparationVessel.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveValidVessel(ctx, createdValidVessel.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidVessel(ctx, createdValidVessel.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		}
 	})
 }

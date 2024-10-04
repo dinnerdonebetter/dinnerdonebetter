@@ -62,7 +62,7 @@ func (s *TestSuite) TestAdminLogin() {
 		adminClient, err := initializeCookiePoweredClient(ctx, loginInput)
 		require.NoError(t, err)
 
-		// kinda redundant, but this one actually uses the admin route
+		// kinda redundant, but this one actually uses the adminClient route
 		cookie, err := adminClient.AdminLogin(ctx, &types.UserLoginInput{
 			Username:  premadeAdminUser.Username,
 			Password:  premadeAdminUser.HashedPassword,
@@ -210,7 +210,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithoutValidating2FASecret()
 
 		testClient := buildSimpleClient(t)
 
-		// create a user.
+		// create a userClient.
 		exampleUser := fakes.BuildFakeUser()
 		exampleUserCreationInput := fakes.BuildFakeUserRegistrationInputFromUser(exampleUser)
 		ucr, err := testClient.CreateUser(ctx, exampleUserCreationInput)
@@ -354,7 +354,7 @@ func (s *TestSuite) TestTOTPTokenValidation() {
 
 		testClient := buildSimpleClient(t)
 
-		// create user.
+		// create userClient.
 		userInput := fakes.BuildFakeUserCreationInput()
 		user, err := testClient.CreateUser(ctx, userInput)
 		assert.NotNil(t, user)
@@ -374,7 +374,7 @@ func (s *TestSuite) TestTOTPTokenValidation() {
 
 		testClient := buildSimpleClient(t)
 
-		// create user.
+		// create userClient.
 		userInput := fakes.BuildFakeUserCreationInput()
 		user, err := testClient.CreateUser(ctx, userInput)
 		assert.NotNil(t, user)

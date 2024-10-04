@@ -53,20 +53,20 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.admin)
+			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.adminClient)
 
 			newValidInstrument := fakes.BuildFakeValidInstrument()
 			createdValidInstrument.Update(converters.ConvertValidInstrumentToValidInstrumentUpdateRequestInput(newValidInstrument))
-			assert.NoError(t, testClients.admin.UpdateValidInstrument(ctx, createdValidInstrument))
+			assert.NoError(t, testClients.adminClient.UpdateValidInstrument(ctx, createdValidInstrument))
 
-			actual, err := testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
+			actual, err := testClients.adminClient.GetValidInstrument(ctx, createdValidInstrument.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid instrument equality
 			checkValidInstrumentEquality(t, newValidInstrument, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 		}
 	})
 }
@@ -81,14 +81,14 @@ func (s *TestSuite) TestValidInstruments_GetRandom() {
 
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			createdValidInstrument, err := testClients.adminClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
-			actual, err := testClients.admin.GetRandomValidInstrument(ctx)
+			actual, err := testClients.adminClient.GetRandomValidInstrument(ctx)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 		}
 	})
 }
@@ -105,7 +105,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument := fakes.BuildFakeValidInstrument()
 				exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-				createdValidInstrument, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrument, createdValidInstrumentErr := testClients.adminClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
 
 				checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
@@ -114,7 +114,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			}
 
 			// assert valid instrument list equality
-			actual, err := testClients.admin.GetValidInstruments(ctx, nil)
+			actual, err := testClients.adminClient.GetValidInstruments(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -125,7 +125,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			)
 
 			for _, createdValidInstrument := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
 		}
 	})
@@ -146,7 +146,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-				createdValidInstrument, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrument, createdValidInstrumentErr := testClients.adminClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
 				checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
@@ -156,7 +156,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			exampleLimit := uint8(20)
 
 			// assert valid instrument list equality
-			actual, err := testClients.admin.SearchValidInstruments(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchValidInstruments(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -167,7 +167,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			)
 
 			for _, createdValidInstrument := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
 		}
 	})

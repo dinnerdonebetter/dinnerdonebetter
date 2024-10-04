@@ -18,9 +18,10 @@ const (
 )
 
 type testClientWrapper struct {
-	user     *apiclient.Client
-	admin    *apiclient.Client
-	authType string
+	user        *types.User
+	userClient  *apiclient.Client
+	adminClient *apiclient.Client
+	authType    string
 }
 
 func TestIntegration(t *testing.T) {
@@ -56,9 +57,9 @@ func (s *TestSuite) SetupTest() {
 }
 
 func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.Run(name, subtestBuilder(&testClientWrapper{authType: cookieAuthType, user: s.cookieClient, admin: s.adminCookieClient}))
+	s.Run(name, subtestBuilder(&testClientWrapper{authType: cookieAuthType, userClient: s.cookieClient, adminClient: s.adminCookieClient, user: s.user}))
 }
 
 func (s *TestSuite) runTest(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.Run(name, subtestBuilder(&testClientWrapper{authType: oauth2AuthType, user: s.oauthedClient, admin: s.adminOAuthedClient}))
+	s.Run(name, subtestBuilder(&testClientWrapper{authType: oauth2AuthType, userClient: s.oauthedClient, adminClient: s.adminOAuthedClient, user: s.user}))
 }

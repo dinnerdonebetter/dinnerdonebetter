@@ -53,20 +53,20 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
+			createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, testClients.adminClient)
 
 			newValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			createdValidMeasurementUnit.Update(converters.ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(newValidMeasurementUnit))
-			assert.NoError(t, testClients.admin.UpdateValidMeasurementUnit(ctx, createdValidMeasurementUnit))
+			assert.NoError(t, testClients.adminClient.UpdateValidMeasurementUnit(ctx, createdValidMeasurementUnit))
 
-			actual, err := testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+			actual, err := testClients.adminClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid measurement unit equality
 			checkValidMeasurementUnitEquality(t, newValidMeasurementUnit, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
 		}
 	})
 }
@@ -83,7 +83,7 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 				exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, createdValidMeasurementUnitErr)
 
 				checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
@@ -92,7 +92,7 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 			}
 
 			// assert valid measurement unit list equality
-			actual, err := testClients.admin.GetValidMeasurementUnits(ctx, nil)
+			actual, err := testClients.adminClient.GetValidMeasurementUnits(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -103,7 +103,7 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 			)
 
 			for _, createdValidMeasurementUnit := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
 			}
 		}
 	})
@@ -124,7 +124,7 @@ func (s *TestSuite) TestValidMeasurementUnits_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidMeasurementUnit.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, createdValidMeasurementUnitErr)
 				checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
@@ -134,7 +134,7 @@ func (s *TestSuite) TestValidMeasurementUnits_Searching() {
 			exampleLimit := uint8(20)
 
 			// assert valid measurement unit list equality
-			actual, err := testClients.admin.SearchValidMeasurementUnits(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchValidMeasurementUnits(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -145,7 +145,7 @@ func (s *TestSuite) TestValidMeasurementUnits_Searching() {
 			)
 
 			for _, createdValidMeasurementUnit := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
 			}
 		}
 	})

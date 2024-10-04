@@ -17,10 +17,10 @@ func checkUserIngredientPreferenceEquality(t *testing.T, expected, actual *types
 
 	assert.NotZero(t, actual.ID)
 
-	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for user ingredient preference %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
-	assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected IngredientID for user ingredient preference %s to be %v, but it was %v", expected.ID, expected.Ingredient.ID, actual.Ingredient.ID)
-	assert.Equal(t, expected.Rating, actual.Rating, "expected Rating for user ingredient preference %s to be %v, but it was %v", expected.ID, expected.Rating, actual.Rating)
-	assert.Equal(t, expected.Allergy, actual.Allergy, "expected Allergy for user ingredient preference %s to be %v, but it was %v", expected.ID, expected.Allergy, actual.Allergy)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for userClient ingredient preference %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected IngredientID for userClient ingredient preference %s to be %v, but it was %v", expected.ID, expected.Ingredient.ID, actual.Ingredient.ID)
+	assert.Equal(t, expected.Rating, actual.Rating, "expected Rating for userClient ingredient preference %s to be %v, but it was %v", expected.ID, expected.Rating, actual.Rating)
+	assert.Equal(t, expected.Allergy, actual.Allergy, "expected Allergy for userClient ingredient preference %s to be %v, but it was %v", expected.ID, expected.Allergy, actual.Allergy)
 
 	assert.NotZero(t, actual.CreatedAt)
 }
@@ -33,12 +33,12 @@ func (s *TestSuite) TestUserIngredientPreferences_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredient := createValidIngredientForTest(t, ctx, testClients.admin)
+			createdValidIngredient := createValidIngredientForTest(t, ctx, testClients.adminClient)
 
 			exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 			exampleUserIngredientPreference.Ingredient = *createdValidIngredient
 			exampleUserIngredientPreferenceInput := converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceCreationRequestInput(exampleUserIngredientPreference)
-			created, err := testClients.admin.CreateUserIngredientPreference(ctx, exampleUserIngredientPreferenceInput)
+			created, err := testClients.adminClient.CreateUserIngredientPreference(ctx, exampleUserIngredientPreferenceInput)
 			require.NoError(t, err)
 
 			require.Len(t, created, 1)
@@ -46,28 +46,28 @@ func (s *TestSuite) TestUserIngredientPreferences_CompleteLifecycle() {
 
 			checkUserIngredientPreferenceEquality(t, exampleUserIngredientPreference, createdUserIngredientPreference)
 
-			createdUserIngredientPreferences, err := testClients.admin.GetUserIngredientPreferences(ctx, types.DefaultQueryFilter())
+			createdUserIngredientPreferences, err := testClients.adminClient.GetUserIngredientPreferences(ctx, types.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, createdUserIngredientPreference, err)
 			checkUserIngredientPreferenceEquality(t, exampleUserIngredientPreference, createdUserIngredientPreference)
-			require.NotEmpty(t, createdUserIngredientPreferences.Data, "expected to find at least one user ingredient preference")
+			require.NotEmpty(t, createdUserIngredientPreferences.Data, "expected to find at least one userClient ingredient preference")
 			createdUserIngredientPreference = createdUserIngredientPreferences.Data[0]
 
-			createdValidIngredient2 := createValidIngredientForTest(t, ctx, testClients.admin)
+			createdValidIngredient2 := createValidIngredientForTest(t, ctx, testClients.adminClient)
 			newUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 			newUserIngredientPreference.Ingredient = *createdValidIngredient2
 			createdUserIngredientPreference.Update(converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput(newUserIngredientPreference))
-			assert.NoError(t, testClients.admin.UpdateUserIngredientPreference(ctx, createdUserIngredientPreference))
+			assert.NoError(t, testClients.adminClient.UpdateUserIngredientPreference(ctx, createdUserIngredientPreference))
 
-			newResults, err := testClients.admin.GetUserIngredientPreferences(ctx, types.DefaultQueryFilter())
+			newResults, err := testClients.adminClient.GetUserIngredientPreferences(ctx, types.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, newResults, err)
-			require.NotEmpty(t, newResults.Data, "expected to find at least one user ingredient preference")
+			require.NotEmpty(t, newResults.Data, "expected to find at least one userClient ingredient preference")
 			actual := newResults.Data[0]
 
-			// assert user ingredient preference equality
+			// assert userClient ingredient preference equality
 			checkUserIngredientPreferenceEquality(t, newUserIngredientPreference, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveUserIngredientPreference(ctx, createdUserIngredientPreference.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveUserIngredientPreference(ctx, createdUserIngredientPreference.ID))
 		}
 	})
 }
@@ -80,7 +80,7 @@ func (s *TestSuite) TestUserIngredientPreferences_CreatedFromIngredientGroup() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
+			createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.adminClient)
 			logJSON(t, createdValidIngredientGroup)
 
 			exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
@@ -91,13 +91,13 @@ func (s *TestSuite) TestUserIngredientPreferences_CreatedFromIngredientGroup() {
 			logJSON(t, exampleUserIngredientPreferenceInput)
 			logJSON(t, createdValidIngredientGroup)
 
-			created, err := testClients.admin.CreateUserIngredientPreference(ctx, exampleUserIngredientPreferenceInput)
+			created, err := testClients.adminClient.CreateUserIngredientPreference(ctx, exampleUserIngredientPreferenceInput)
 			require.NoError(t, err)
 
 			require.Equal(t, len(created), len(createdValidIngredientGroup.Members))
 
 			for _, createdUserIngredientPreference := range created {
-				assert.NoError(t, testClients.admin.ArchiveUserIngredientPreference(ctx, createdUserIngredientPreference.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveUserIngredientPreference(ctx, createdUserIngredientPreference.ID))
 			}
 		}
 	})
@@ -113,11 +113,11 @@ func (s *TestSuite) TestUserIngredientPreferences_Listing() {
 
 			var expected []*types.UserIngredientPreference
 			for i := 0; i < 5; i++ {
-				createdValidIngredient := createValidIngredientForTest(t, ctx, testClients.admin)
+				createdValidIngredient := createValidIngredientForTest(t, ctx, testClients.adminClient)
 				exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 				exampleUserIngredientPreference.Ingredient = *createdValidIngredient
 				exampleUserIngredientPreferenceInput := converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceCreationRequestInput(exampleUserIngredientPreference)
-				created, createdUserIngredientPreferenceErr := testClients.admin.CreateUserIngredientPreference(ctx, exampleUserIngredientPreferenceInput)
+				created, createdUserIngredientPreferenceErr := testClients.adminClient.CreateUserIngredientPreference(ctx, exampleUserIngredientPreferenceInput)
 				require.NoError(t, createdUserIngredientPreferenceErr)
 
 				require.Len(t, created, 1)
@@ -128,8 +128,8 @@ func (s *TestSuite) TestUserIngredientPreferences_Listing() {
 				expected = append(expected, createdUserIngredientPreference)
 			}
 
-			// assert user ingredient preference list equality
-			actual, err := testClients.admin.GetUserIngredientPreferences(ctx, nil)
+			// assert userClient ingredient preference list equality
+			actual, err := testClients.adminClient.GetUserIngredientPreferences(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -140,7 +140,7 @@ func (s *TestSuite) TestUserIngredientPreferences_Listing() {
 			)
 
 			for _, createdUserIngredientPreference := range expected {
-				assert.NoError(t, testClients.admin.ArchiveUserIngredientPreference(ctx, createdUserIngredientPreference.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveUserIngredientPreference(ctx, createdUserIngredientPreference.ID))
 			}
 		}
 	})

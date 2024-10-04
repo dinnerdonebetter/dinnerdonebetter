@@ -52,20 +52,20 @@ func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.admin)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.adminClient)
 
 			newValidIngredientState := fakes.BuildFakeValidIngredientState()
 			createdValidIngredientState.Update(converters.ConvertValidIngredientStateToValidIngredientStateUpdateRequestInput(newValidIngredientState))
-			assert.NoError(t, testClients.admin.UpdateValidIngredientState(ctx, createdValidIngredientState))
+			assert.NoError(t, testClients.adminClient.UpdateValidIngredientState(ctx, createdValidIngredientState))
 
-			actual, err := testClients.admin.GetValidIngredientState(ctx, createdValidIngredientState.ID)
+			actual, err := testClients.adminClient.GetValidIngredientState(ctx, createdValidIngredientState.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid ingredient state equality
 			checkValidIngredientStateEquality(t, newValidIngredientState, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveValidIngredientState(ctx, createdValidIngredientState.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidIngredientState(ctx, createdValidIngredientState.ID))
 		}
 	})
 }
@@ -82,7 +82,7 @@ func (s *TestSuite) TestValidIngredientStates_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
 				exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
-				createdValidIngredientState, createdValidIngredientStateErr := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
+				createdValidIngredientState, createdValidIngredientStateErr := testClients.adminClient.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
 				require.NoError(t, createdValidIngredientStateErr)
 
 				checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
@@ -91,7 +91,7 @@ func (s *TestSuite) TestValidIngredientStates_Listing() {
 			}
 
 			// assert valid ingredient state list equality
-			actual, err := testClients.admin.GetValidIngredientStates(ctx, nil)
+			actual, err := testClients.adminClient.GetValidIngredientStates(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -102,7 +102,7 @@ func (s *TestSuite) TestValidIngredientStates_Listing() {
 			)
 
 			for _, createdValidIngredientState := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidIngredientState(ctx, createdValidIngredientState.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidIngredientState(ctx, createdValidIngredientState.ID))
 			}
 		}
 	})
@@ -123,7 +123,7 @@ func (s *TestSuite) TestValidIngredientStates_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidIngredientState.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
-				createdValidIngredientState, createdValidIngredientStateErr := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
+				createdValidIngredientState, createdValidIngredientStateErr := testClients.adminClient.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
 				require.NoError(t, createdValidIngredientStateErr)
 				checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
 
@@ -133,7 +133,7 @@ func (s *TestSuite) TestValidIngredientStates_Searching() {
 			exampleLimit := uint8(20)
 
 			// assert valid ingredient state list equality
-			actual, err := testClients.admin.SearchValidIngredientStates(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchValidIngredientStates(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -144,7 +144,7 @@ func (s *TestSuite) TestValidIngredientStates_Searching() {
 			)
 
 			for _, createdValidIngredientState := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidIngredientState(ctx, createdValidIngredientState.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidIngredientState(ctx, createdValidIngredientState.ID))
 			}
 		}
 	})

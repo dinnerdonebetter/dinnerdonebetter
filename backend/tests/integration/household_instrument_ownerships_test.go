@@ -30,28 +30,28 @@ func (s *TestSuite) TestHouseholdInstrumentOwnerships_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.admin)
+			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.adminClient)
 
 			exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
 			exampleHouseholdInstrumentOwnership.Instrument = *createdValidInstrument
 			exampleHouseholdInstrumentOwnershipInput := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipCreationRequestInput(exampleHouseholdInstrumentOwnership)
-			createdHouseholdInstrumentOwnership, err := testClients.admin.CreateHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnershipInput)
+			createdHouseholdInstrumentOwnership, err := testClients.adminClient.CreateHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnershipInput)
 			require.NoError(t, err)
 			checkHouseholdInstrumentOwnershipEquality(t, exampleHouseholdInstrumentOwnership, createdHouseholdInstrumentOwnership)
 
 			newHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
 			newHouseholdInstrumentOwnership.Instrument = *createdValidInstrument
 			createdHouseholdInstrumentOwnership.Update(converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequestInput(newHouseholdInstrumentOwnership))
-			assert.NoError(t, testClients.admin.UpdateHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership))
+			assert.NoError(t, testClients.adminClient.UpdateHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership))
 
-			actual, err := testClients.admin.GetHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID)
+			actual, err := testClients.adminClient.GetHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert household instrument ownership equality
 			checkHouseholdInstrumentOwnershipEquality(t, newHouseholdInstrumentOwnership, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID))
 		}
 	})
 }
@@ -66,12 +66,12 @@ func (s *TestSuite) TestHouseholdInstrumentOwnerships_Listing() {
 
 			var expected []*types.HouseholdInstrumentOwnership
 			for i := 0; i < 5; i++ {
-				createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.admin)
+				createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.adminClient)
 
 				exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
 				exampleHouseholdInstrumentOwnership.Instrument = *createdValidInstrument
 				exampleHouseholdInstrumentOwnershipInput := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipCreationRequestInput(exampleHouseholdInstrumentOwnership)
-				createdHouseholdInstrumentOwnership, err := testClients.admin.CreateHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnershipInput)
+				createdHouseholdInstrumentOwnership, err := testClients.adminClient.CreateHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnershipInput)
 				require.NoError(t, err)
 				checkHouseholdInstrumentOwnershipEquality(t, exampleHouseholdInstrumentOwnership, createdHouseholdInstrumentOwnership)
 
@@ -79,7 +79,7 @@ func (s *TestSuite) TestHouseholdInstrumentOwnerships_Listing() {
 			}
 
 			// assert household instrument ownership list equality
-			actual, err := testClients.admin.GetHouseholdInstrumentOwnerships(ctx, nil)
+			actual, err := testClients.adminClient.GetHouseholdInstrumentOwnerships(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -90,7 +90,7 @@ func (s *TestSuite) TestHouseholdInstrumentOwnerships_Listing() {
 			)
 
 			for _, createdHouseholdInstrumentOwnership := range expected {
-				assert.NoError(t, testClients.admin.ArchiveHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID))
 			}
 		}
 	})

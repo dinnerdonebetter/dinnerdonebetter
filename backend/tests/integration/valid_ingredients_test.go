@@ -80,20 +80,20 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredient := createValidIngredientForTest(t, ctx, testClients.admin)
+			createdValidIngredient := createValidIngredientForTest(t, ctx, testClients.adminClient)
 
 			newValidIngredient := fakes.BuildFakeValidIngredient()
 			createdValidIngredient.Update(converters.ConvertValidIngredientToValidIngredientUpdateRequestInput(newValidIngredient))
-			assert.NoError(t, testClients.admin.UpdateValidIngredient(ctx, createdValidIngredient))
+			assert.NoError(t, testClients.adminClient.UpdateValidIngredient(ctx, createdValidIngredient))
 
-			actual, err := testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
+			actual, err := testClients.adminClient.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid ingredient equality
 			checkValidIngredientEquality(t, newValidIngredient, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		}
 	})
 }
@@ -108,14 +108,14 @@ func (s *TestSuite) TestValidIngredients_GetRandom() {
 
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.admin.GetRandomValidIngredient(ctx)
+			createdValidIngredient, err = testClients.adminClient.GetRandomValidIngredient(ctx)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 
-			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		}
 	})
 }
@@ -132,7 +132,7 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient := fakes.BuildFakeValidIngredient()
 				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-				createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				createdValidIngredient, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, createdValidIngredientErr)
 
 				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
@@ -141,7 +141,7 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 			}
 
 			// assert valid ingredient list equality
-			actual, err := testClients.admin.GetValidIngredients(ctx, nil)
+			actual, err := testClients.adminClient.GetValidIngredients(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -152,7 +152,7 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 			)
 
 			for _, createdValidIngredient := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 			}
 		}
 	})
@@ -173,7 +173,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-				createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				createdValidIngredient, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, createdValidIngredientErr)
 				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -183,7 +183,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			exampleLimit := uint8(20)
 
 			// assert valid ingredient list equality
-			actual, err := testClients.admin.SearchValidIngredients(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchValidIngredients(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -194,7 +194,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			)
 
 			for _, createdValidIngredient := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 			}
 		}
 	})

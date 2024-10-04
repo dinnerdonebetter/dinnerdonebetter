@@ -93,7 +93,7 @@ func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID strin
 	return id, nil
 }
 
-// markHouseholdAsUserDefault does a thing.
+// markHouseholdAsUserDefault marks a given household as the user's default.
 func (q *Querier) markHouseholdAsUserDefault(ctx context.Context, querier database.SQLQueryExecutor, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

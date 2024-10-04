@@ -70,9 +70,9 @@ func (s *TestSuite) TestMeals_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
+			createdMeal := createMealForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
-			assert.NoError(t, testClients.user.ArchiveMeal(ctx, createdMeal.ID))
+			assert.NoError(t, testClients.userClient.ArchiveMeal(ctx, createdMeal.ID))
 		}
 	})
 }
@@ -87,35 +87,35 @@ func (s *TestSuite) TestMeals_Listing() {
 
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 
 			require.NoError(t, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.userClient.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparation, err := testClients.adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
+			createdValidPreparation, err = testClients.userClient.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 				expected = append(expected, createdMeal)
 			}
 
 			// assert meal list equality
-			actual, err := testClients.user.GetMeals(ctx, nil)
+			actual, err := testClients.userClient.GetMeals(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -126,7 +126,7 @@ func (s *TestSuite) TestMeals_Listing() {
 			)
 
 			for _, createdMeal := range expected {
-				assert.NoError(t, testClients.user.ArchiveMeal(ctx, createdMeal.ID))
+				assert.NoError(t, testClients.userClient.ArchiveMeal(ctx, createdMeal.ID))
 			}
 		}
 	})
@@ -142,23 +142,23 @@ func (s *TestSuite) TestMeals_Searching() {
 
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.userClient.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparation, err := testClients.adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
+			createdValidPreparation, err = testClients.userClient.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -166,13 +166,13 @@ func (s *TestSuite) TestMeals_Searching() {
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
 				exampleMeal.Name = fmt.Sprintf("example%d", i)
-				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, exampleMeal)
+				createdMeal := createMealForTest(ctx, t, testClients.adminClient, testClients.userClient, exampleMeal)
 
 				expected = append(expected, createdMeal)
 			}
 
 			// assert meal list equality
-			actual, err := testClients.user.SearchForMeals(ctx, "example", nil)
+			actual, err := testClients.userClient.SearchForMeals(ctx, "example", nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -183,7 +183,7 @@ func (s *TestSuite) TestMeals_Searching() {
 			)
 
 			for _, createdMeal := range expected {
-				assert.NoError(t, testClients.user.ArchiveMeal(ctx, createdMeal.ID))
+				assert.NoError(t, testClients.userClient.ArchiveMeal(ctx, createdMeal.ID))
 			}
 		}
 	})

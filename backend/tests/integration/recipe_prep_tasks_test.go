@@ -73,25 +73,25 @@ func (s *TestSuite) TestRecipePrepTasks_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdRecipe, actual := createRecipePrepTaskForTest(ctx, t, testClients.admin, testClients.user)
+			createdRecipe, actual := createRecipePrepTaskForTest(ctx, t, testClients.adminClient, testClients.userClient)
 
 			newRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 			newRecipePrepTask.ID = actual.ID
 			newRecipePrepTask.BelongsToRecipe = createdRecipe.ID
 			newRecipePrepTask.TaskSteps = actual.TaskSteps
 			actual.Update(converters.ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(newRecipePrepTask))
-			require.NoError(t, testClients.admin.UpdateRecipePrepTask(ctx, actual))
+			require.NoError(t, testClients.adminClient.UpdateRecipePrepTask(ctx, actual))
 
-			actual, err := testClients.user.GetRecipePrepTask(ctx, createdRecipe.ID, actual.ID)
+			actual, err := testClients.userClient.GetRecipePrepTask(ctx, createdRecipe.ID, actual.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe prep task equality
 			checkRecipePrepTaskEquality(t, newRecipePrepTask, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.user.ArchiveRecipePrepTask(ctx, createdRecipe.ID, actual.ID))
+			assert.NoError(t, testClients.userClient.ArchiveRecipePrepTask(ctx, createdRecipe.ID, actual.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -104,7 +104,7 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			var createdRecipeStep *types.RecipeStep
 			for _, step := range createdRecipe.Steps {
@@ -127,12 +127,12 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 
 				exampleInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
-				createdRecipePrepTask, err := testClients.admin.CreateRecipePrepTask(ctx, exampleInput)
+				createdRecipePrepTask, err := testClients.adminClient.CreateRecipePrepTask(ctx, exampleInput)
 				requireNotNilAndNoProblems(t, createdRecipePrepTask, err)
 
 				exampleRecipePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
-				createdRecipePrepTask, createdRecipePrepTaskErr := testClients.admin.CreateRecipePrepTask(ctx, exampleRecipePrepTaskInput)
+				createdRecipePrepTask, createdRecipePrepTaskErr := testClients.adminClient.CreateRecipePrepTask(ctx, exampleRecipePrepTaskInput)
 				require.NoError(t, createdRecipePrepTaskErr)
 
 				for j := range createdRecipePrepTask.TaskSteps {
@@ -142,7 +142,7 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 
 				checkRecipePrepTaskEquality(t, exampleRecipePrepTask, createdRecipePrepTask)
 
-				createdRecipePrepTask, createdRecipePrepTaskErr = testClients.user.GetRecipePrepTask(ctx, createdRecipe.ID, createdRecipePrepTask.ID)
+				createdRecipePrepTask, createdRecipePrepTaskErr = testClients.userClient.GetRecipePrepTask(ctx, createdRecipe.ID, createdRecipePrepTask.ID)
 				requireNotNilAndNoProblems(t, createdRecipePrepTask, createdRecipePrepTaskErr)
 				require.Equal(t, createdRecipe.ID, createdRecipePrepTask.BelongsToRecipe)
 
@@ -150,7 +150,7 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 			}
 
 			// assert recipe prep task list equality
-			actual, err := testClients.user.GetRecipePrepTasks(ctx, createdRecipe.ID, nil)
+			actual, err := testClients.userClient.GetRecipePrepTasks(ctx, createdRecipe.ID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -161,10 +161,10 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 			)
 
 			for _, createdRecipePrepTask := range expected {
-				assert.NoError(t, testClients.user.ArchiveRecipePrepTask(ctx, createdRecipe.ID, createdRecipePrepTask.ID))
+				assert.NoError(t, testClients.userClient.ArchiveRecipePrepTask(ctx, createdRecipe.ID, createdRecipePrepTask.ID))
 			}
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

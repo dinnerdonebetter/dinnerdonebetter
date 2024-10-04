@@ -35,7 +35,7 @@ func (s *TestSuite) TestOAuth2Clients_Creating() {
 			exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 			exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
 
-			createdOAuth2Client, err := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
+			createdOAuth2Client, err := testClients.adminClient.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 			requireNotNilAndNoProblems(t, createdOAuth2Client, err)
 
 			// Assert OAuth2 client equality.
@@ -43,11 +43,11 @@ func (s *TestSuite) TestOAuth2Clients_Creating() {
 			assert.NotEmpty(t, createdOAuth2Client.ClientSecret, "expected ClientSecret for OAuth2 client %s to not be empty, but it was", createdOAuth2Client.ID)
 
 			// Clean up.
-			assert.NoError(t, testClients.admin.ArchiveOAuth2Client(ctx, createdOAuth2Client.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveOAuth2Client(ctx, createdOAuth2Client.ID))
 		}
 	})
 
-	s.runTest("cannot create OAuth2 clients as plain user", func(testClients *testClientWrapper) func() {
+	s.runTest("cannot create OAuth2 clients as plain userClient", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -58,7 +58,7 @@ func (s *TestSuite) TestOAuth2Clients_Creating() {
 			exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 			exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
 
-			createdOAuth2Client, err := testClients.user.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
+			createdOAuth2Client, err := testClients.userClient.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 			require.Nil(t, createdOAuth2Client)
 			require.Error(t, err)
 		}
@@ -81,14 +81,14 @@ func (s *TestSuite) TestOAuth2Clients_Listing() {
 				// Create OAuth2 client.
 				exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 				exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
-				createdOAuth2Client, err := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
+				createdOAuth2Client, err := testClients.adminClient.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 				requireNotNilAndNoProblems(t, createdOAuth2Client, err)
 
 				expected = append(expected, createdOAuth2Client.ID)
 			}
 
 			// Assert OAuth2 client list equality.
-			actual, err := testClients.user.GetOAuth2Clients(ctx, nil)
+			actual, err := testClients.userClient.GetOAuth2Clients(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -100,7 +100,7 @@ func (s *TestSuite) TestOAuth2Clients_Listing() {
 
 			// Clean up.
 			for _, createdOAuth2ClientID := range expected {
-				assert.NoError(t, testClients.admin.ArchiveOAuth2Client(ctx, createdOAuth2ClientID))
+				assert.NoError(t, testClients.adminClient.ArchiveOAuth2Client(ctx, createdOAuth2ClientID))
 			}
 		}
 	})
@@ -115,7 +115,7 @@ func (s *TestSuite) TestOAuth2Clients_Reading_Returns404ForNonexistentOAuth2Clie
 			defer span.End()
 
 			// Attempt to fetch nonexistent OAuth2 client.
-			_, err := testClients.user.GetOAuth2Client(ctx, nonexistentID)
+			_, err := testClients.userClient.GetOAuth2Client(ctx, nonexistentID)
 			assert.Error(t, err)
 		}
 	})
@@ -133,18 +133,18 @@ func (s *TestSuite) TestOAuth2Clients_Reading() {
 			exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 			exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
 
-			createdOAuth2Client, err := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
+			createdOAuth2Client, err := testClients.adminClient.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 			requireNotNilAndNoProblems(t, createdOAuth2Client, err)
 
 			// Fetch OAuth2 client.
-			actual, err := testClients.user.GetOAuth2Client(ctx, createdOAuth2Client.ID)
+			actual, err := testClients.userClient.GetOAuth2Client(ctx, createdOAuth2Client.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// Assert OAuth2 client equality.
 			checkOAuth2ClientEquality(t, exampleOAuth2Client, actual)
 
 			// Clean up OAuth2 client.
-			assert.NoError(t, testClients.admin.ArchiveOAuth2Client(ctx, createdOAuth2Client.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveOAuth2Client(ctx, createdOAuth2Client.ID))
 		}
 	})
 }
@@ -161,11 +161,11 @@ func (s *TestSuite) TestOAuth2Clients_Archiving() {
 			exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 			exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
 
-			createdOAuth2Client, err := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
+			createdOAuth2Client, err := testClients.adminClient.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 			requireNotNilAndNoProblems(t, createdOAuth2Client, err)
 
 			// Clean up OAuth2 client.
-			assert.NoError(t, testClients.admin.ArchiveOAuth2Client(ctx, createdOAuth2Client.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveOAuth2Client(ctx, createdOAuth2Client.ID))
 		}
 	})
 }

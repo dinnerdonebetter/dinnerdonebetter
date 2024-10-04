@@ -156,7 +156,6 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			usersRouter.Get("/self", s.usersService.SelfHandler)
 			usersRouter.Post("/email_address_verification", s.usersService.RequestEmailVerificationEmailHandler)
 			usersRouter.Post("/permissions/check", s.usersService.PermissionsHandler)
-			usersRouter.Post("/household/select", s.authService.ChangeActiveHouseholdHandler)
 			usersRouter.Put("/password/new", s.usersService.UpdatePasswordHandler)
 			usersRouter.Post("/totp_secret/new", s.usersService.NewTOTPSecretHandler)
 			usersRouter.Put("/username", s.usersService.UpdateUserUsernameHandler)

@@ -69,20 +69,20 @@ func (s *TestSuite) TestValidIngredientGroups_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
+			createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.adminClient)
 
 			newValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
 			createdValidIngredientGroup.Update(converters.ConvertValidIngredientGroupToValidIngredientGroupUpdateRequestInput(newValidIngredientGroup))
-			assert.NoError(t, testClients.admin.UpdateValidIngredientGroup(ctx, createdValidIngredientGroup))
+			assert.NoError(t, testClients.adminClient.UpdateValidIngredientGroup(ctx, createdValidIngredientGroup))
 
-			actual, err := testClients.admin.GetValidIngredientGroup(ctx, createdValidIngredientGroup.ID)
+			actual, err := testClients.adminClient.GetValidIngredientGroup(ctx, createdValidIngredientGroup.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid ingredient group equality
 			checkValidIngredientGroupEquality(t, newValidIngredientGroup, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveValidIngredientGroup(ctx, createdValidIngredientGroup.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveValidIngredientGroup(ctx, createdValidIngredientGroup.ID))
 		}
 	})
 }
@@ -97,13 +97,13 @@ func (s *TestSuite) TestValidIngredientGroups_Listing() {
 
 			var expected []*types.ValidIngredientGroup
 			for i := 0; i < 5; i++ {
-				createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
+				createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.adminClient)
 
 				expected = append(expected, createdValidIngredientGroup)
 			}
 
 			// assert valid ingredient group list equality
-			actual, err := testClients.admin.GetValidIngredientGroups(ctx, nil)
+			actual, err := testClients.adminClient.GetValidIngredientGroups(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -114,7 +114,7 @@ func (s *TestSuite) TestValidIngredientGroups_Listing() {
 			)
 
 			for _, createdValidIngredientGroup := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidIngredientGroup(ctx, createdValidIngredientGroup.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidIngredientGroup(ctx, createdValidIngredientGroup.ID))
 			}
 		}
 	})
@@ -134,14 +134,14 @@ func (s *TestSuite) TestValidIngredientGroups_Searching() {
 			searchQuery := exampleValidIngredientGroup.Name
 			for i := 0; i < 5; i++ {
 				exampleValidIngredientGroup.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, exampleValidIngredientGroup, testClients.admin)
+				createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, exampleValidIngredientGroup, testClients.adminClient)
 				expected = append(expected, createdValidIngredientGroup)
 			}
 
 			exampleLimit := uint8(20)
 
 			// assert valid ingredient group list equality
-			actual, err := testClients.admin.SearchValidIngredientGroups(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchValidIngredientGroups(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -152,7 +152,7 @@ func (s *TestSuite) TestValidIngredientGroups_Searching() {
 			)
 
 			for _, createdValidIngredientGroup := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidIngredientGroup(ctx, createdValidIngredientGroup.ID))
+				assert.NoError(t, testClients.adminClient.ArchiveValidIngredientGroup(ctx, createdValidIngredientGroup.ID))
 			}
 		}
 	})

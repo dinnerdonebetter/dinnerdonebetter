@@ -4,9 +4,7 @@
 /* eslint-disable */
 import type { APIResponse } from '../models/APIResponse';
 import type { AvatarUpdateInput } from '../models/AvatarUpdateInput';
-import type { ChangeActiveHouseholdInput } from '../models/ChangeActiveHouseholdInput';
 import type { EmailAddressVerificationRequestInput } from '../models/EmailAddressVerificationRequestInput';
-import type { Household } from '../models/Household';
 import type { JWTResponse } from '../models/JWTResponse';
 import type { PasswordResetToken } from '../models/PasswordResetToken';
 import type { PasswordResetTokenCreationRequestInput } from '../models/PasswordResetTokenCreationRequestInput';
@@ -197,24 +195,6 @@ export class UsersService {
     return __request(OpenAPI, {
       method: 'POST',
       url: '/api/v1/users/email_address_verification',
-      body: requestBody,
-      mediaType: 'application/json',
-    });
-  }
-  /**
-   * Operation for creating Household
-   * @param requestBody
-   * @returns any
-   * @throws ApiError
-   */
-  public static changeActiveHousehold(requestBody: ChangeActiveHouseholdInput): CancelablePromise<
-    APIResponse & {
-      data?: Household;
-    }
-  > {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/users/household/select',
       body: requestBody,
       mediaType: 'application/json',
     });

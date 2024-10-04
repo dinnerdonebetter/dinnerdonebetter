@@ -62,7 +62,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// create a user for the meal plan household
+			// create a userClient for the meal plan household
 			_, _, householdAdminUserClient, _ := createUserAndClientForTest(ctx, t, nil)
 
 			// create household members
@@ -91,7 +91,12 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				assert.NotEmpty(t, invitations.Data)
 
 				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
-				require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
+				require.NoError(t, c.MarkAsDefault(ctx, relevantHouseholdID))
+
+				tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
+				require.NoError(t, err)
+
+				require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
 
 				createdUsers = append(createdUsers, u)
 				createdClients = append(createdClients, c)
@@ -100,7 +105,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.admin, householdAdminUserClient, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.adminClient, householdAdminUserClient, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -216,7 +221,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			createdMealPlan.VotingDeadline = time.Now().Add(-time.Minute)
 			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
 
-			runRes, err := testClients.admin.RunFinalizeMealPlansWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
+			runRes, err := testClients.adminClient.RunFinalizeMealPlansWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
 			require.NoError(t, err)
 			require.NotNil(t, runRes)
 
@@ -246,7 +251,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// create a user for the meal plan household
+			// create a userClient for the meal plan household
 			_, _, householdAdminUserClient, _ := createUserAndClientForTest(ctx, t, nil)
 
 			// create household members
@@ -275,8 +280,12 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				assert.NotEmpty(t, invitations.Data)
 
 				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
+				require.NoError(t, c.MarkAsDefault(ctx, relevantHouseholdID))
 
-				require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
+				tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
+				require.NoError(t, err)
+
+				require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
 
 				createdUsers = append(createdUsers, u)
 				createdClients = append(createdClients, c)
@@ -285,7 +294,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			// create meals for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.admin, householdAdminUserClient, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.adminClient, householdAdminUserClient, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -380,7 +389,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			createdMealPlan.VotingDeadline = time.Now().Add(-10 * time.Hour)
 			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
 
-			runRes, err := testClients.admin.RunFinalizeMealPlansWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
+			runRes, err := testClients.adminClient.RunFinalizeMealPlansWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
 			require.NoError(t, err)
 			require.NotNil(t, runRes)
 
@@ -412,12 +421,12 @@ func (s *TestSuite) TestMealPlans_Listing() {
 
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
-				createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
+				createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.adminClient, testClients.userClient)
 				expected = append(expected, createdMealPlan)
 			}
 
 			// assert meal plan list equality
-			actual, err := testClients.user.GetMealPlans(ctx, nil)
+			actual, err := testClients.userClient.GetMealPlans(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -428,7 +437,7 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			)
 
 			for _, createdMealPlan := range expected {
-				assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
+				assert.NoError(t, testClients.userClient.ArchiveMealPlan(ctx, createdMealPlan.ID))
 			}
 		}
 	})

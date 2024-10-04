@@ -38,7 +38,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			var createdRecipeStep *types.RecipeStep
 			for _, step := range createdRecipe.Steps {
@@ -57,18 +57,18 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			updateInput := converters.ConvertRecipeStepToRecipeStepUpdateRequestInput(newRecipeStep)
 			updateInput.Preparation = createdValidPreparation
 			createdRecipeStep.Update(updateInput)
-			assert.NoError(t, testClients.admin.UpdateRecipeStep(ctx, createdRecipeStep))
+			assert.NoError(t, testClients.adminClient.UpdateRecipeStep(ctx, createdRecipeStep))
 
-			actual, err := testClients.user.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
+			actual, err := testClients.userClient.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe step equality
 			checkRecipeStepEquality(t, newRecipeStep, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+			assert.NoError(t, testClients.userClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -81,7 +81,7 @@ func (s *TestSuite) TestRecipeSteps_ContentUploading() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
 			var createdRecipeStep *types.RecipeStep
 			for _, step := range createdRecipe.Steps {
@@ -101,9 +101,9 @@ func (s *TestSuite) TestRecipeSteps_ContentUploading() {
 				"image_3.png": img3Bytes,
 			}
 
-			require.NoError(t, testClients.user.UploadMediaForRecipeStep(ctx, files, createdRecipe.ID, createdRecipeStep.ID))
+			require.NoError(t, testClients.userClient.UploadMediaForRecipeStep(ctx, files, createdRecipe.ID, createdRecipeStep.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -116,12 +116,12 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
-			createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
-			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.admin)
-			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.admin)
-			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.admin)
+			createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, testClients.adminClient)
+			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.adminClient)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.adminClient)
+			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.adminClient)
 
 			var expected []*types.RecipeStep
 			for i := 0; i < 5; i++ {
@@ -156,12 +156,12 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStepInput := converters.ConvertRecipeStepToRecipeStepCreationRequestInput(exampleRecipeStep)
 				exampleRecipeStepInput.PreparationID = createdValidPreparation.ID
 
-				createdRecipeStep, createdRecipeStepErr := testClients.admin.CreateRecipeStep(ctx, createdRecipe.ID, exampleRecipeStepInput)
+				createdRecipeStep, createdRecipeStepErr := testClients.adminClient.CreateRecipeStep(ctx, createdRecipe.ID, exampleRecipeStepInput)
 				require.NoError(t, createdRecipeStepErr)
 
 				checkRecipeStepEquality(t, exampleRecipeStep, createdRecipeStep)
 
-				createdRecipeStep, createdRecipeStepErr = testClients.user.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
+				createdRecipeStep, createdRecipeStepErr = testClients.userClient.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
 				requireNotNilAndNoProblems(t, createdRecipeStep, createdRecipeStepErr)
 				require.Equal(t, createdRecipe.ID, createdRecipeStep.BelongsToRecipe)
 
@@ -170,7 +170,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			}
 
 			// assert recipe step list equality
-			actual, err := testClients.user.GetRecipeSteps(ctx, createdRecipe.ID, nil)
+			actual, err := testClients.userClient.GetRecipeSteps(ctx, createdRecipe.ID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -181,10 +181,10 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			)
 
 			for _, createdRecipeStep := range expected {
-				assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+				assert.NoError(t, testClients.userClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
 			}
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

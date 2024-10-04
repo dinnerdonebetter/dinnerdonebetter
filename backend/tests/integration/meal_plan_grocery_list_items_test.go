@@ -40,28 +40,28 @@ func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
+			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.adminClient, testClients.userClient)
 
 			exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 			exampleMealPlanGroceryListItemInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput(exampleMealPlanGroceryListItem)
 
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+			createdValidMeasurementUnit, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
-			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+			createdValidMeasurementUnit, err = testClients.adminClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.adminClient.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -73,20 +73,20 @@ func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
 			exampleMealPlanGroceryListItemInput.ValidIngredientID = createdValidIngredient.ID
 			exampleMealPlanGroceryListItemInput.ValidMeasurementUnitID = createdValidMeasurementUnit.ID
 
-			createdMealPlanGroceryListItem, err := testClients.admin.CreateMealPlanGroceryListItem(ctx, createdMealPlan.ID, exampleMealPlanGroceryListItemInput)
+			createdMealPlanGroceryListItem, err := testClients.adminClient.CreateMealPlanGroceryListItem(ctx, createdMealPlan.ID, exampleMealPlanGroceryListItemInput)
 			require.NoError(t, err)
 			checkMealPlanGroceryListItemEquality(t, exampleMealPlanGroceryListItem, createdMealPlanGroceryListItem)
 
-			actual, err := testClients.admin.GetMealPlanGroceryListItem(ctx, createdMealPlan.ID, createdMealPlanGroceryListItem.ID)
+			actual, err := testClients.adminClient.GetMealPlanGroceryListItem(ctx, createdMealPlan.ID, createdMealPlanGroceryListItem.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert meal plan task equality
 			checkMealPlanGroceryListItemEquality(t, exampleMealPlanGroceryListItem, actual)
 
-			actualList, err := testClients.admin.GetMealPlanGroceryListItemsForMealPlan(ctx, createdMealPlan.ID)
+			actualList, err := testClients.adminClient.GetMealPlanGroceryListItemsForMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
+			assert.NoError(t, testClients.userClient.ArchiveMealPlan(ctx, createdMealPlan.ID))
 
 			assert.Len(t, actualList, 1)
 			checkMealPlanGroceryListItemEquality(t, actualList[0], actual)

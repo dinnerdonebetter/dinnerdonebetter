@@ -838,12 +838,6 @@ var routeInfoMap = map[string]routeDetails{
 		InputType:    &types.EmailAddressVerificationRequestInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
-	"POST /api/v1/users/household/select": {
-		ID:           "ChangeActiveHousehold",
-		ResponseType: &types.Household{},
-		InputType:    &types.ChangeActiveHouseholdInput{},
-		OAuth2Scopes: []string{householdMember},
-	},
 	"PUT /api/v1/users/password/new": {
 		ID:           "UpdatePassword",
 		InputType:    &types.PasswordUpdateInput{},

@@ -10,41 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// SwitchActiveHousehold will switch the household on whose behalf requests are made.
-func (c *Client) SwitchActiveHousehold(ctx context.Context, householdID string) error {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if householdID == "" {
-		return ErrInvalidIDProvided
-	}
-
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
-
-	if c.authMethod == cookieAuthMethod {
-		body := generated.ChangeActiveHouseholdJSONRequestBody{
-			HouseholdID: &householdID,
-		}
-
-		res, err := c.authedGeneratedClient.ChangeActiveHousehold(ctx, body)
-		if err != nil {
-			return observability.PrepareError(err, span, "household switch")
-		}
-		defer c.closeResponseBody(ctx, res)
-
-		var apiResponse *types.APIResponse[*types.Household]
-		if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-			return observability.PrepareError(err, span, "executing household switch request")
-		}
-
-		if err = apiResponse.Error.AsError(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // GetCurrentHousehold retrieves a household.
 func (c *Client) GetCurrentHousehold(ctx context.Context) (*types.Household, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
