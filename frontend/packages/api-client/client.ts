@@ -334,11 +334,11 @@ export class DinnerDoneBetterAPIClient {
     });
 
     this.responseInterceptorID = this.client.interceptors.response.use((response: AxiosResponse) => {
-      // this.logger.debug(
-      //   `Response: ${response.status} ${response.config.method} ${response.config.url}`,
-      // );
+      this.logger.debug(
+        `Response: ${response.status} ${response.config.method} ${response.config.url}`, response.data,
+      );
 
-      console.log(`${response.status} ${_curlFromAxiosConfig(response.config)}`);
+      // console.log(`${response.status} ${_curlFromAxiosConfig(response.config)}`);
 
       return response;
     }, (error) => {
@@ -352,14 +352,15 @@ export class DinnerDoneBetterAPIClient {
 
     this.client.interceptors.request.eject(this.requestInterceptorID);
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      // this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
-      console.log(_curlFromAxiosConfig(request));
+      this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
       
-      // if (this.traceID) {
-      //   request.headers = request.headers
-      //     ? { ...request.headers, traceparent: this.traceID }
-      //     : { traceparent: this.traceID };
-      // }
+      // console.log(_curlFromAxiosConfig(request));
+      
+      if (spanContext.traceId) {
+        request.headers = request.headers
+          ? { ...request.headers, traceparent: spanContext.traceId }
+          : { traceparent: spanContext.traceId };
+      }
 
       return request;
     }, (error) => {
@@ -374,6 +375,10 @@ export class DinnerDoneBetterAPIClient {
     this.client.interceptors.response.eject(this.responseInterceptorID);
     this.responseInterceptorID = this.client.interceptors.response.use(
       (response: AxiosResponse) => {
+        this.logger.debug(
+          `Response: ${response.status} ${response.config.method} ${response.config.url}${response.config.method === 'POST' || response.config.method === 'PUT' ? ` ${JSON.stringify(response.config.data)}` : ''}`,
+        );
+
         return response;
       },
       (error: AxiosError) => {

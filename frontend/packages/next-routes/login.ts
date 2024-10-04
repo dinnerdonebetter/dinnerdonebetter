@@ -117,9 +117,7 @@ export function buildLoginRoute(config: {
             householdID: result.data.data.householdID,
           });
 
-
-        const accessToken = JSON.parse(JSON.stringify(token))['access_token'];
-        console.log(`access token: ${accessToken}`);
+          console.log(`userID: ${result.data.data.userID} householdID: ${result.data.data.householdID}`);
 
           res.setHeader('Set-Cookie', config.cookieFunc(token, result.data.data.userID, result.data.data.householdID));
 

@@ -124,7 +124,7 @@ func initializeOAuth2PoweredClient(ctx context.Context, input *types.UserLoginIn
 		return nil, err
 	}
 
-	if err = c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse)); err != nil {
+	if err = c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)); err != nil {
 		return nil, err
 	}
 

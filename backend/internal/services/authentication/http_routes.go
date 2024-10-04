@@ -170,6 +170,7 @@ func (s *service) BuildLoginHandler(adminOnly, returningJWT bool) func(http.Resp
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
+		responseDetails.CurrentHouseholdID = defaultHouseholdID
 
 		cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID, requestedCookieDomain)
 		if err != nil {

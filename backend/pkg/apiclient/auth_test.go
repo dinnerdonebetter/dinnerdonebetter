@@ -261,7 +261,7 @@ func (s *authTestSuite) TestClient_LoginForJWT() {
 		c := buildTestClient(t, ts)
 
 		token, err := c.LoginForJWT(s.ctx, exampleInput)
-		assert.NotEmpty(t, token)
+		assert.NotNil(t, token)
 		assert.NoError(t, err)
 	})
 
@@ -271,7 +271,7 @@ func (s *authTestSuite) TestClient_LoginForJWT() {
 		c, _ := buildSimpleTestClient(t)
 
 		token, err := c.LoginForJWT(s.ctx, nil)
-		assert.Empty(t, token)
+		assert.Nil(t, token)
 		assert.Error(t, err)
 	})
 
@@ -283,7 +283,7 @@ func (s *authTestSuite) TestClient_LoginForJWT() {
 		c := buildTestClientWithInvalidURL(t)
 
 		token, err := c.LoginForJWT(s.ctx, exampleInput)
-		assert.Empty(t, token)
+		assert.Nil(t, token)
 		assert.Error(t, err)
 	})
 
@@ -294,7 +294,7 @@ func (s *authTestSuite) TestClient_LoginForJWT() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		token, err := c.LoginForJWT(s.ctx, exampleInput)
-		assert.Empty(t, token)
+		assert.Nil(t, token)
 		assert.Error(t, err)
 	})
 }

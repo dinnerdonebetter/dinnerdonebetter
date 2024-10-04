@@ -109,12 +109,12 @@ func (c *Client) AdminLogin(ctx context.Context, input *types.UserLoginInput) (*
 }
 
 // LoginForJWT fetches a JWT for a user.
-func (c *Client) LoginForJWT(ctx context.Context, input *types.UserLoginInput) (string, error) {
+func (c *Client) LoginForJWT(ctx context.Context, input *types.UserLoginInput) (*types.JWTResponse, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
-		return "", ErrNilInputProvided
+		return nil, ErrNilInputProvided
 	}
 
 	// validating input here requires settings knowledge, so we regrettably don't bother
@@ -124,20 +124,20 @@ func (c *Client) LoginForJWT(ctx context.Context, input *types.UserLoginInput) (
 
 	res, err := c.unauthedGeneratedClient.LoginForJWT(ctx, body)
 	if err != nil {
-		return "", observability.PrepareError(err, span, "executing login for jwt request")
+		return nil, observability.PrepareError(err, span, "executing login for jwt request")
 	}
 	defer c.closeResponseBody(ctx, res)
 
 	var apiResponse *types.APIResponse[*types.JWTResponse]
 	if err = c.unmarshalBody(ctx, res, &apiResponse); err != nil {
-		return "", observability.PrepareError(err, span, "parsing login JWT response")
+		return nil, observability.PrepareError(err, span, "parsing login JWT response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return apiResponse.Data.Token, nil
+	return apiResponse.Data, nil
 }
 
 // AdminLoginForJWT fetches a JWT for a user.

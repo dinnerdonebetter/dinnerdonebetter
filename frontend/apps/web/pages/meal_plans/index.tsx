@@ -29,8 +29,11 @@ export const getServerSideProps: GetServerSideProps = async (
   const qf = QueryFilter.deriveFromGetServerSidePropsContext(context.query);
   qf.attachToSpan(span);
 
+  console.log('meal_plans page getServerSideProps', qf);
+
   const extractCookieTimer = timing.addEvent('extract cookie');
   const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  console.log('userSessionData', userSessionData);
   if (userSessionData?.userID) {
     serverSideAnalytics.page(userSessionData.userID, 'MEAL_PLANS_PAGE', context, {
       householdID: userSessionData.householdID,
