@@ -118,7 +118,7 @@ resource "google_cloud_run_service" "admin_app_server" {
         }
 
         env {
-          name = "NEXT_COOKIE_ENCRYPTION_KEY"
+          name  = "NEXT_COOKIE_ENCRYPTION_KEY"
           value = "HEREISA32BYTESECRETWHICHISMADEUP"
           # value_from {
           #   secret_key_ref {
@@ -129,7 +129,7 @@ resource "google_cloud_run_service" "admin_app_server" {
         }
 
         env {
-          name = "NEXT_BASE64_COOKIE_ENCRYPT_IV"
+          name  = "NEXT_BASE64_COOKIE_ENCRYPT_IV"
           value = "SEVSRUlTQTMyQllURVNFQ1JFVFdISUNISVNNQURFVVA="
           # value_from {
           #   secret_key_ref {
