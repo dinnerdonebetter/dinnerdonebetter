@@ -25,7 +25,7 @@ func checkValidIngredientMeasurementUnitEquality(t *testing.T, expected, actual 
 }
 
 func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -95,7 +95,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -157,7 +157,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 }
 
 func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing_ByValues() {
-	s.runForEachClient("should be findable via either member of the bridge type", func(testClients *testClientWrapper) func() {
+	s.runTest("should be findable via either member of the bridge type", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

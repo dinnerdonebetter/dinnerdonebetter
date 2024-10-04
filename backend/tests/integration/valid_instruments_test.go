@@ -46,7 +46,7 @@ func createValidInstrumentForTest(t *testing.T, ctx context.Context, adminClient
 }
 
 func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -72,7 +72,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestValidInstruments_GetRandom() {
-	s.runForEachClient("should be able to get a random valid instrument", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to get a random valid instrument", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -94,7 +94,7 @@ func (s *TestSuite) TestValidInstruments_GetRandom() {
 }
 
 func (s *TestSuite) TestValidInstruments_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -132,7 +132,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 }
 
 func (s *TestSuite) TestValidInstruments_Searching() {
-	s.runForEachClient("should be able to be search for valid instruments", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be search for valid instruments", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

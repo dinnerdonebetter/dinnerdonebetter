@@ -24,7 +24,7 @@ func checkWebhookEquality(t *testing.T, expected, actual *types.Webhook) {
 }
 
 func (s *TestSuite) TestWebhooks_Creating() {
-	s.runForEachClient("should be creatable and readable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -69,7 +69,7 @@ func (s *TestSuite) TestWebhooks_Creating() {
 }
 
 func (s *TestSuite) TestWebhooks_Reading_Returns404ForNonexistentWebhook() {
-	s.runForEachClient("should error when reading non-existent webhook", func(testClients *testClientWrapper) func() {
+	s.runTest("should error when reading non-existent webhook", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -84,7 +84,7 @@ func (s *TestSuite) TestWebhooks_Reading_Returns404ForNonexistentWebhook() {
 }
 
 func (s *TestSuite) TestWebhooks_Listing() {
-	s.runForEachClient("should be able to be read in a list", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be read in a list", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -118,7 +118,7 @@ func (s *TestSuite) TestWebhooks_Listing() {
 }
 
 func (s *TestSuite) TestWebhooks_Archiving_Returns404ForNonexistentWebhook() {
-	s.runForEachClient("should error when archiving a non-existent webhook", func(testClients *testClientWrapper) func() {
+	s.runTest("should error when archiving a non-existent webhook", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -131,7 +131,7 @@ func (s *TestSuite) TestWebhooks_Archiving_Returns404ForNonexistentWebhook() {
 }
 
 func (s *TestSuite) TestWebhookTriggerEvents_Archiving_Returns404ForNonexistentWebhook() {
-	s.runForEachClient("should error when archiving a non-existent webhook", func(testClients *testClientWrapper) func() {
+	s.runTest("should error when archiving a non-existent webhook", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

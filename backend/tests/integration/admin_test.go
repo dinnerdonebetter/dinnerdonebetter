@@ -12,7 +12,7 @@ import (
 )
 
 func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserAccountStatus() {
-	s.runForEachClient("should not be possible to ban a user that does not exist", func(testClients *testClientWrapper) func() {
+	s.runTest("should not be possible to ban a user that does not exist", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -29,7 +29,7 @@ func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserAccountStatus() {
 }
 
 func (s *TestSuite) TestAdmin_BanningUsers() {
-	s.runForEachClient("should be possible to ban users", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to ban users", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

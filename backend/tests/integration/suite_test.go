@@ -19,10 +19,6 @@ const (
 	oauth2AuthType = "oauth2"
 )
 
-var (
-	globalClientExceptions []string
-)
-
 type testClientWrapper struct {
 	user     *apiclient.Client
 	admin    *apiclient.Client
@@ -65,19 +61,15 @@ func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testCli
 	s.runForEachClientExcept(name, subtestBuilder, oauth2AuthType)
 }
 
-func (s *TestSuite) runForOAuth2Client(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.runForEachClientExcept(name, subtestBuilder, cookieAuthType)
-}
-
-func (s *TestSuite) runForEachClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.runForEachClientExcept(name, subtestBuilder)
-}
-
 func (s *TestSuite) runForEachClientExcept(name string, subtestBuilder func(*testClientWrapper) func(), exceptions ...string) {
 	for a, c := range s.eachClientExcept(exceptions...) {
 		authType, testClients := a, c
 		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
 	}
+}
+
+func (s *TestSuite) runTest(name string, subtestBuilder func(*testClientWrapper) func()) {
+	s.Run(name, subtestBuilder(&testClientWrapper{authType: oauth2AuthType, user: s.oauthedClient, admin: s.adminOAuthedClient}))
 }
 
 func (s *TestSuite) eachClientExcept(exceptions ...string) map[string]*testClientWrapper {
@@ -89,10 +81,6 @@ func (s *TestSuite) eachClientExcept(exceptions ...string) map[string]*testClien
 	}
 
 	for _, name := range exceptions {
-		delete(clients, name)
-	}
-
-	for _, name := range globalClientExceptions {
 		delete(clients, name)
 	}
 

@@ -55,7 +55,7 @@ func createMealPlanForTest(ctx context.Context, t *testing.T, mealPlan *types.Me
 }
 
 func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
-	s.runForEachClient("should resolve the meal plan status upon receiving all votes", func(testClients *testClientWrapper) func() {
+	s.runTest("should resolve the meal plan status upon receiving all votes", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -239,7 +239,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 }
 
 func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
-	s.runForEachClient("should resolve the meal plan status upon voting deadline expiry", func(testClients *testClientWrapper) func() {
+	s.runTest("should resolve the meal plan status upon voting deadline expiry", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -403,7 +403,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 }
 
 func (s *TestSuite) TestMealPlans_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

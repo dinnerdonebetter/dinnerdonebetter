@@ -26,7 +26,7 @@ func checkValidMeasurementUnitConversionEquality(t *testing.T, expected, actual 
 }
 
 func (s *TestSuite) TestValidMeasurementUnitConversions_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable without ingredient", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable without ingredient", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -66,7 +66,7 @@ func (s *TestSuite) TestValidMeasurementUnitConversions_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestValidMeasurementUnitConversions_GetFromUnits() {
-	s.runForEachClient("should be able to get what a unit converts from", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to get what a unit converts from", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -99,7 +99,7 @@ func (s *TestSuite) TestValidMeasurementUnitConversions_GetFromUnits() {
 }
 
 func (s *TestSuite) TestValidMeasurementUnitConversions_GetToUnits() {
-	s.runForEachClient("should be able to get what a unit converts to", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to get what a unit converts to", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

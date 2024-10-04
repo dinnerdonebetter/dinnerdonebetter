@@ -73,7 +73,7 @@ func createValidIngredientForTest(t *testing.T, ctx context.Context, adminClient
 }
 
 func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -99,7 +99,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestValidIngredients_GetRandom() {
-	s.runForEachClient("should be able to get a random valid ingredient", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to get a random valid ingredient", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -121,7 +121,7 @@ func (s *TestSuite) TestValidIngredients_GetRandom() {
 }
 
 func (s *TestSuite) TestValidIngredients_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -159,7 +159,7 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 }
 
 func (s *TestSuite) TestValidIngredients_Searching() {
-	s.runForEachClient("should be able to be search for valid ingredients", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be search for valid ingredients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

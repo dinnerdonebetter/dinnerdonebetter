@@ -33,7 +33,7 @@ func checkHouseholdEquality(t *testing.T, expected, actual *types.Household) {
 }
 
 func (s *TestSuite) TestHouseholds_Creating() {
-	s.runForEachClient("should be possible to create households", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to create households", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -56,7 +56,7 @@ func (s *TestSuite) TestHouseholds_Creating() {
 }
 
 func (s *TestSuite) TestHouseholds_Listing() {
-	s.runForEachClient("should be possible to list households", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to list households", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -95,7 +95,7 @@ func (s *TestSuite) TestHouseholds_Listing() {
 }
 
 func (s *TestSuite) TestHouseholds_Reading_Returns404ForNonexistentHousehold() {
-	s.runForEachClient("should not be possible to read a non-existent household", func(testClients *testClientWrapper) func() {
+	s.runTest("should not be possible to read a non-existent household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -110,7 +110,7 @@ func (s *TestSuite) TestHouseholds_Reading_Returns404ForNonexistentHousehold() {
 }
 
 func (s *TestSuite) TestHouseholds_Reading() {
-	s.runForEachClient("should be possible to read a household", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to read a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -137,7 +137,7 @@ func (s *TestSuite) TestHouseholds_Reading() {
 }
 
 func (s *TestSuite) TestHouseholds_Updating_Returns404ForNonexistentHousehold() {
-	s.runForEachClient("should not be possible to update a non-existent household", func(testClients *testClientWrapper) func() {
+	s.runTest("should not be possible to update a non-existent household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -153,7 +153,7 @@ func (s *TestSuite) TestHouseholds_Updating_Returns404ForNonexistentHousehold() 
 }
 
 func (s *TestSuite) TestHouseholds_Updating() {
-	s.runForEachClient("should be possible to update a household", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to update a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -185,7 +185,7 @@ func (s *TestSuite) TestHouseholds_Updating() {
 }
 
 func (s *TestSuite) TestHouseholds_Archiving() {
-	s.runForEachClient("should be possible to archive a household", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to archive a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -205,7 +205,7 @@ func (s *TestSuite) TestHouseholds_Archiving() {
 }
 
 func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
-	s.runForEachClient("should be possible to invite an already-registered user", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite an already-registered user", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -271,7 +271,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 }
 
 func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
-	s.runForEachClient("should be possible to invite a user before they sign up", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite a user before they sign up", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -341,7 +341,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 }
 
 func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCancelling() {
-	s.runForEachClient("should be possible to invite a user before they sign up and cancel before they can accept", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite a user before they sign up and cancel before they can accept", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -396,7 +396,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 }
 
 func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
-	s.runForEachClient("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -460,7 +460,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 }
 
 func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
-	s.runForEachClient("should be possible to invite an already-registered user", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite an already-registered user", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -510,7 +510,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 }
 
 func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
-	s.runForEachClient("should be possible to invite an already-registered user", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite an already-registered user", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -745,7 +745,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 }
 
 func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRemovedFromLastHousehold() {
-	s.runForEachClient("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

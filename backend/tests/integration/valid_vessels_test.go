@@ -62,7 +62,7 @@ func createValidVesselForTest(t *testing.T, ctx context.Context, vessel *types.V
 // TODO: handle creating and reading a vessel that doesn't have a CapacityUnit
 
 func (s *TestSuite) TestValidVessels_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -89,7 +89,7 @@ func (s *TestSuite) TestValidVessels_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestValidVessels_GetRandom() {
-	s.runForEachClient("should be able to get a random valid vessel", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to get a random valid vessel", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -107,7 +107,7 @@ func (s *TestSuite) TestValidVessels_GetRandom() {
 }
 
 func (s *TestSuite) TestValidVessels_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -139,7 +139,7 @@ func (s *TestSuite) TestValidVessels_Listing() {
 }
 
 func (s *TestSuite) TestValidVessels_Searching() {
-	s.runForEachClient("should be able to be search for valid vessels", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be search for valid vessels", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

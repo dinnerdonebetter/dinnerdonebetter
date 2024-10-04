@@ -26,7 +26,7 @@ func checkUserIngredientPreferenceEquality(t *testing.T, expected, actual *types
 }
 
 func (s *TestSuite) TestUserIngredientPreferences_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -73,7 +73,7 @@ func (s *TestSuite) TestUserIngredientPreferences_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestUserIngredientPreferences_CreatedFromIngredientGroup() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -104,7 +104,7 @@ func (s *TestSuite) TestUserIngredientPreferences_CreatedFromIngredientGroup() {
 }
 
 func (s *TestSuite) TestUserIngredientPreferences_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

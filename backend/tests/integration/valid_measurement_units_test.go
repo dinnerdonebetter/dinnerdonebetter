@@ -46,7 +46,7 @@ func createValidMeasurementUnitForTest(t *testing.T, ctx context.Context, adminC
 }
 
 func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -72,7 +72,7 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestValidMeasurementUnits_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -110,7 +110,7 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 }
 
 func (s *TestSuite) TestValidMeasurementUnits_Searching() {
-	s.runForEachClient("should be able to be search for valid measurement units", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be search for valid measurement units", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

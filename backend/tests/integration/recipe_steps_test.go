@@ -31,7 +31,7 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 }
 
 func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -74,7 +74,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestRecipeSteps_ContentUploading() {
-	s.runForEachClient("should be able to upload content for a recipe step", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to upload content for a recipe step", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -109,7 +109,7 @@ func (s *TestSuite) TestRecipeSteps_ContentUploading() {
 }
 
 func (s *TestSuite) TestRecipeSteps_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

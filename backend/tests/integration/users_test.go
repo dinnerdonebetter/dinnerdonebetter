@@ -38,7 +38,7 @@ func checkUserEquality(t *testing.T, expected, actual *types.User) {
 }
 
 func (s *TestSuite) TestUsers_Creating() {
-	s.runForEachClient("should be creatable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -57,7 +57,7 @@ func (s *TestSuite) TestUsers_Creating() {
 		}
 	})
 
-	s.runForEachClient("should return 400 for duplicate user registration", func(testClients *testClientWrapper) func() {
+	s.runTest("should return 400 for duplicate user registration", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -82,7 +82,7 @@ func (s *TestSuite) TestUsers_Creating() {
 }
 
 func (s *TestSuite) TestUsers_Reading_Returns404ForNonexistentUser() {
-	s.runForEachClient("should return an error when trying to read a user that does not exist", func(testClients *testClientWrapper) func() {
+	s.runTest("should return an error when trying to read a user that does not exist", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -97,7 +97,7 @@ func (s *TestSuite) TestUsers_Reading_Returns404ForNonexistentUser() {
 }
 
 func (s *TestSuite) TestUsers_Reading() {
-	s.runForEachClient("should be able to be read", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be read", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -119,7 +119,7 @@ func (s *TestSuite) TestUsers_Reading() {
 }
 
 func (s *TestSuite) TestUsers_PermissionsChecking() {
-	s.runForEachClient("should be able to check users permissions", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to check users permissions", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -142,7 +142,7 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 }
 
 func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
-	s.runForEachClient("it should only be accessible to admins", func(testClients *testClientWrapper) func() {
+	s.runTest("it should only be accessible to admins", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -158,7 +158,7 @@ func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
 }
 
 func (s *TestSuite) TestUsers_Searching() {
-	s.runForEachClient("it should return be searchable", func(testClients *testClientWrapper) func() {
+	s.runTest("it should return be searchable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -199,7 +199,7 @@ func (s *TestSuite) TestUsers_Searching() {
 }
 
 func (s *TestSuite) TestUsers_Archiving_Returns404ForNonexistentUser() {
-	s.runForEachClient("should error when archiving a non-existent user", func(testClients *testClientWrapper) func() {
+	s.runTest("should error when archiving a non-existent user", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -212,7 +212,7 @@ func (s *TestSuite) TestUsers_Archiving_Returns404ForNonexistentUser() {
 }
 
 func (s *TestSuite) TestUsers_Archiving() {
-	s.runForEachClient("should be able to be archived", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be archived", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

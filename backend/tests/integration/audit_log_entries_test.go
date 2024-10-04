@@ -7,7 +7,7 @@ import (
 )
 
 func (s *TestSuite) TestAuditLogEntries_Listing() {
-	s.runForEachClient("should be able to be read in a list", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be read in a list", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -28,7 +28,7 @@ func (s *TestSuite) TestAuditLogEntries_Listing() {
 }
 
 func (s *TestSuite) TestWebhooks_Retrieving_Returns404ForNonexistentAuditLogEntry() {
-	s.runForEachClient("should error when archiving a non-existent auditLogEntry", func(testClients *testClientWrapper) func() {
+	s.runTest("should error when archiving a non-existent auditLogEntry", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

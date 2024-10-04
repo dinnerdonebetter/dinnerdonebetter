@@ -123,7 +123,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 }
 
 func (s *TestSuite) TestRecipes_Realistic() {
-	s.runForEachClient("sopa de frijol", func(testClients *testClientWrapper) func() {
+	s.runTest("sopa de frijol", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -365,7 +365,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 }
 
 func (s *TestSuite) TestRecipes_Updating() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -391,7 +391,7 @@ func (s *TestSuite) TestRecipes_Updating() {
 }
 
 func (s *TestSuite) TestRecipes_UploadRecipeMedia() {
-	s.runForEachClient("should be able to upload content for a recipe", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to upload content for a recipe", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -429,7 +429,7 @@ func (s *TestSuite) TestRecipes_UploadRecipeMedia() {
 }
 
 func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
-	s.runForEachClient("should be able to create a meal and a recipe", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to create a meal and a recipe", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -463,7 +463,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 }
 
 func (s *TestSuite) TestRecipes_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -496,7 +496,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 }
 
 func (s *TestSuite) TestRecipes_Searching() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -554,7 +554,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 }
 
 func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
-	s.runForEachClient("meal plan tasks with frozen chicken breast", func(testClients *testClientWrapper) func() {
+	s.runTest("meal plan tasks with frozen chicken breast", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -745,7 +745,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 }
 
 func (s *TestSuite) TestRecipes_Cloning() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -766,7 +766,7 @@ func (s *TestSuite) TestRecipes_Cloning() {
 }
 
 func (s *TestSuite) TestRecipes_DAGGeneration() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

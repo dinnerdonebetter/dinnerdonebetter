@@ -33,7 +33,7 @@ func checkMealPlanGroceryListItemEquality(t *testing.T, expected, actual *types.
 }
 
 func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

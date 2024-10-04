@@ -5,9 +5,8 @@
   "scripts": {
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "dev": "next dev -p 7000",
+    "dev": "NEXT_PUBLIC_API_ENDPOINT='https://api.dinnerdonebetter.dev' NEXT_COOKIE_ENCRYPTION_KEY='ZOTGz4KEhZFSM6udeESOX5JVqhtEdHdS' NEXT_BASE64_COOKIE_ENCRYPT_IV='S2IwVXVvMW9hSEl4WjQ0ak1NYW50QndMTzJBWDJFV2o=' next dev -p 7000",
     "build": "next build",
-    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {

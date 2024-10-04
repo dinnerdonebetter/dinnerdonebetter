@@ -45,7 +45,7 @@ func createValidIngredientStateForTest(t *testing.T, ctx context.Context, adminC
 }
 
 func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -71,7 +71,7 @@ func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestValidIngredientStates_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -109,7 +109,7 @@ func (s *TestSuite) TestValidIngredientStates_Listing() {
 }
 
 func (s *TestSuite) TestValidIngredientStates_Searching() {
-	s.runForEachClient("should be able to be search for valid ingredient states", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to be search for valid ingredient states", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

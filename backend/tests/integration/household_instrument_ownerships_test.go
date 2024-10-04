@@ -23,7 +23,7 @@ func checkHouseholdInstrumentOwnershipEquality(t *testing.T, expected, actual *t
 }
 
 func (s *TestSuite) TestHouseholdInstrumentOwnerships_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -57,7 +57,7 @@ func (s *TestSuite) TestHouseholdInstrumentOwnerships_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestHouseholdInstrumentOwnerships_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

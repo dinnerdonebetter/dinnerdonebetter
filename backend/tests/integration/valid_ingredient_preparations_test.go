@@ -24,7 +24,7 @@ func checkValidIngredientPreparationEquality(t *testing.T, expected, actual *typ
 }
 
 func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -90,7 +90,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestValidIngredientPreparations_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -155,7 +155,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 }
 
 func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
-	s.runForEachClient("should be findable via either member of the bridge type", func(testClients *testClientWrapper) func() {
+	s.runTest("should be findable via either member of the bridge type", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -213,7 +213,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 		}
 	})
 
-	s.runForEachClient("should be searchable via preparation ID and ingredient name", func(testClients *testClientWrapper) func() {
+	s.runTest("should be searchable via preparation ID and ingredient name", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

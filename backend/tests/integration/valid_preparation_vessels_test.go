@@ -46,7 +46,7 @@ func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, admi
 }
 
 func (s *TestSuite) TestValidPreparationVessels_CompleteLifecycle() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -78,7 +78,7 @@ func (s *TestSuite) TestValidPreparationVessels_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestValidPreparationVessels_Listing() {
-	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -110,7 +110,7 @@ func (s *TestSuite) TestValidPreparationVessels_Listing() {
 }
 
 func (s *TestSuite) TestValidPreparationVessels_Listing_ByValue() {
-	s.runForEachClient("should be findable via either member of the bridge type", func(testClients *testClientWrapper) func() {
+	s.runTest("should be findable via either member of the bridge type", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
