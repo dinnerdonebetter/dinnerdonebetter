@@ -25,6 +25,72 @@ import (
 func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 	T.Parallel()
 
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager.On(
+			"GetUserByUsername",
+			testutils.ContextMatcher,
+			helper.exampleUser.Username,
+		).Return(helper.exampleUser, nil)
+		helper.service.userDataManager = userDataManager
+
+		authenticator := &mockauthn.Authenticator{}
+		authenticator.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			helper.exampleLoginInput.Password,
+			helper.exampleUser.TwoFactorSecret,
+			helper.exampleLoginInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = authenticator
+
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
+		membershipDB.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.JWTResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
+
+		token, err := helper.service.jwtSigner.ParseJWT(helper.ctx, actual.Data.Token)
+		require.NoError(t, err)
+
+		sub, err := token.Claims.GetSubject()
+		assert.NoError(t, err)
+		assert.Equal(t, helper.exampleUser.ID, sub)
+
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
+	})
+
 	T.Run("standard with admin", func(t *testing.T) {
 		t.Parallel()
 
@@ -76,78 +142,10 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper.service.BuildLoginHandler(true)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
-		var actual *types.APIResponse[*types.UserStatusResponse]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NotEmpty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
-	})
-
-	T.Run("standard with JWT", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		userDataManager := &mocktypes.UserDataManagerMock{}
-		userDataManager.On(
-			"GetUserByUsername",
-			testutils.ContextMatcher,
-			helper.exampleUser.Username,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = userDataManager
-
-		authenticator := &mockauthn.Authenticator{}
-		authenticator.On(
-			"CredentialsAreValid",
-			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			helper.exampleLoginInput.Password,
-			helper.exampleUser.TwoFactorSecret,
-			helper.exampleLoginInput.TOTPToken,
-		).Return(true, nil)
-		helper.service.authenticator = authenticator
-
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 		var actual *types.APIResponse[*types.JWTResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
-
-		token, err := helper.service.jwtSigner.ParseJWT(helper.ctx, actual.Data.Token)
-		require.NoError(t, err)
-
-		sub, err := token.Claims.GetSubject()
-		assert.NoError(t, err)
-		assert.Equal(t, helper.exampleUser.ID, sub)
 
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
@@ -578,8 +576,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
-		var actual *types.APIResponse[*types.UserStatusResponse]
+		var actual *types.APIResponse[*types.JWTResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotNil(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())

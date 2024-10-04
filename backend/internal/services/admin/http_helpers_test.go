@@ -51,6 +51,7 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	helper := &adminServiceHTTPRoutesTestHelper{}
 	helper.service = buildTestService(t)
 
+	helper.ctx = context.Background()
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()

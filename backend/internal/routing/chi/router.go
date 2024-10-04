@@ -63,7 +63,7 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 			http.MethodOptions,
 		},
 		AllowedHeaders:   []string{"*"},
-		ExposedHeaders:   []string{"Set-Cookie"},
+		ExposedHeaders:   []string{""},
 		AllowCredentials: true,
 		MaxAge:           maxCORSAge,
 	})
