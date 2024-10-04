@@ -1,13 +1,13 @@
 concurrency:
   group: ${{ github.ref }}-deploy-webapp
 
-on:
-  push:
-    branches:
-      - dev
-    paths:
-      - frontend/apps/web/**
-      - frontend/packages/**
+on: [pull_request]
+#  push:
+#    branches:
+#      - dev
+#    paths:
+#      - frontend/apps/web/**
+#      - frontend/packages/**
 
 name: frontend - deploy webapp to dev
 jobs:
