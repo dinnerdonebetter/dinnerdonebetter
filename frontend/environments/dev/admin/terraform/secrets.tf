@@ -22,7 +22,7 @@ resource "google_secret_manager_secret_version" "cookie_encryption_key" {
 # Cookie encryption initialization vector
 
 resource "random_bytes" "cookie_encryption_iv" {
-  length  = 32
+  length = 32
 }
 
 resource "google_secret_manager_secret" "cookie_encryption_iv" {
