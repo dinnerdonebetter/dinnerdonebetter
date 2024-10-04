@@ -19,7 +19,7 @@ export function cookieEncoderBuilder(cookieName: string, encryptorDecryptor: Enc
 
     return serialize(cookieName, cookieValue, {
       path: '/',
-      expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+      expires: new Date(JSON.parse(JSON.stringify(token))['expires_at']),
       httpOnly: true,
     });
   };

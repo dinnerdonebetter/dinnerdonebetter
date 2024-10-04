@@ -117,6 +117,10 @@ export function buildLoginRoute(config: {
             householdID: result.data.data.householdID,
           });
 
+
+        const accessToken = JSON.parse(JSON.stringify(token))['access_token'];
+        console.log(`access token: ${accessToken}`);
+
           res.setHeader('Set-Cookie', config.cookieFunc(token, result.data.data.userID, result.data.data.householdID));
 
           res.status(202).send('');

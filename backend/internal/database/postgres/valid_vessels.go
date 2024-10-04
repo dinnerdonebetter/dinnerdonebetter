@@ -53,7 +53,7 @@ func (q *Querier) GetValidVessel(ctx context.Context, validVesselID string) (*ty
 
 	result, err := q.generatedQuerier.GetValidVessel(ctx, q.db, validVesselID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid vessel existence check")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid vessels")
 	}
 
 	validVessel := &types.ValidVessel{

@@ -54,7 +54,7 @@ export class EncryptorDecryptor<JSONValue> {
   }
 
   decrypt(encrypted: string): JSONValue {
-    console.log(`decrypting with initialization vectors: ${this.initializationVectors.toString('base64')}`);
+    console.log(`decrypting with initialization vectors: ${this.initializationVectors.toString('base64')}`); // TODO: DELETEME upon verification
 
     let decipher = crypto.createDecipheriv(
       'aes-256-cbc',

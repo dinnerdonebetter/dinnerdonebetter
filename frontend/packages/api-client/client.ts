@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse, HeadersDefaults } from 'axios';
 import { Span } from '@opentelemetry/api';
 
 import { buildServerSideLogger, LoggerType } from '@dinnerdonebetter/logger';
@@ -259,13 +259,26 @@ import {
   searchForValidVessels,
 } from './valid_vessels';
 
-function _curlFromAxiosResponse(response: AxiosResponse): string {
-  const method = (response.config?.method || 'UNKNOWN').toUpperCase();
-  const url = response.config.url;
-  const headers = response.config.headers;
-  const data = response.config.data;
+function _curlFromAxiosConfig(config: AxiosRequestConfig): string {
+  const method = (config?.method || 'UNKNOWN').toUpperCase();
+  const url = config.url;
+  const headers = config.headers || {};
+  const data = config.data;
 
-  let curlCommand = `curl -X ${method} "${url}"`;
+  ['get', 'delete', 'head', 'post', 'put', 'patch'].forEach((method) => {
+    delete headers[method];
+  })
+  
+  // iterate through headers["common"], and add each key's value to headers
+  const headerDefault = (headers as unknown as HeadersDefaults)
+  for (const key in headerDefault["common"]) {
+    if (headerDefault["common"].hasOwnProperty(key)) {
+      headers[key] = headerDefault["common"][key];
+    }
+  }
+  delete headers["common"];
+
+  let curlCommand = `curl -X ${method} "${config?.baseURL || 'MISSING_BASE_URL'}${url}"`;
 
   for (const key in headers) {
     if (headers.hasOwnProperty(key)) {
@@ -284,6 +297,7 @@ export class DinnerDoneBetterAPIClient {
   baseURL: string;
   client: AxiosInstance;
   requestInterceptorID: number;
+  responseInterceptorID: number;
   logger: LoggerType = buildServerSideLogger('api_client');
 
   constructor(baseURL: string = '', oauth2Token?: string) {
@@ -308,15 +322,27 @@ export class DinnerDoneBetterAPIClient {
     } as AxiosRequestConfig);
 
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      this.logger.debug(`Request: ${request.method} ${request.url}`);
+      // this.logger.debug(`Request: ${request.method} ${request.baseURL}${request.url}`);
+      console.log(`${_curlFromAxiosConfig(request)}`);
+
       return request;
+    }, (error) => {
+      // Do whatever you want with the response error here
+      // But, be SURE to return the rejected promise, so the caller still has 
+      // the option of additional specialized handling at the call-site:
+      return Promise.reject(error);
     });
 
-    this.client.interceptors.response.use((response: AxiosResponse) => {
-      this.logger.debug(
-        `Response: ${response.status} ${response.config.method} ${response.config.url} ${JSON.stringify(response.data)}`,
-      );
+    this.responseInterceptorID = this.client.interceptors.response.use((response: AxiosResponse) => {
+      // this.logger.debug(
+      //   `Response: ${response.status} ${response.config.method} ${response.config.url}`,
+      // );
+
+      console.log(`${response.status} ${_curlFromAxiosConfig(response.config)}`);
+
       return response;
+    }, (error) => {
+      return Promise.reject(error);
     });
   }
 
@@ -326,8 +352,9 @@ export class DinnerDoneBetterAPIClient {
 
     this.client.interceptors.request.eject(this.requestInterceptorID);
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
-
+      // this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
+      console.log(_curlFromAxiosConfig(request));
+      
       // if (this.traceID) {
       //   request.headers = request.headers
       //     ? { ...request.headers, traceparent: this.traceID }
@@ -335,6 +362,8 @@ export class DinnerDoneBetterAPIClient {
       // }
 
       return request;
+    }, (error) => {
+      return Promise.reject(error);
     });
 
     return this;
@@ -342,7 +371,8 @@ export class DinnerDoneBetterAPIClient {
 
   // eslint-disable-next-line no-unused-vars
   configureRouterRejectionInterceptor(redirectCallback: (_: Location) => void) {
-    this.client.interceptors.response.use(
+    this.client.interceptors.response.eject(this.responseInterceptorID);
+    this.responseInterceptorID = this.client.interceptors.response.use(
       (response: AxiosResponse) => {
         return response;
       },

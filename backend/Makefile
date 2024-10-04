@@ -280,5 +280,5 @@ line_count: ensure_scc_installed
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
 .PHONY: proxy_dev_db
 proxy_dev_db:
-	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434
+	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
 
