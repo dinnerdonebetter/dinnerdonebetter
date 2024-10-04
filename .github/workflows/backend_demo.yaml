@@ -11,15 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        details:
-          - things: barf
-            stuff: worp
-          - things: yurl
-            stuff: querk
+        - things: barf
+          stuff: worp
+        - things: yurl
+          stuff: querk
     steps:
       - name: testing things
-        run: echo ${{ matrix.details.things }}
+        run: echo ${{ matrix.things }}
 
 
       - name: testing stuff
-        run: echo ${{ matrix.details.stuff }}
+        run: echo ${{ matrix.stuff }}
