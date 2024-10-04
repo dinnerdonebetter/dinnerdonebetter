@@ -17,5 +17,7 @@ export default buildLoginRoute({
   oauth2ClientSecret: 'dc707e2234a05fdfc3d2eb2967c272a2',
   serverSideTracer,
   cookieFunc: encodeCookie,
+  cookieName: webappCookieName,
+  encryptorDecryptor: encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>,
   admin: false,
 });

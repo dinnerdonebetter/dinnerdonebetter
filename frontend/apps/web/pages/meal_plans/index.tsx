@@ -24,12 +24,11 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<MealPlansPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('MealPlansPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
 
   const qf = QueryFilter.deriveFromGetServerSidePropsContext(context.query);
   qf.attachToSpan(span);
 
-  console.log('meal_plans page getServerSideProps', qf);
+  let props!: GetServerSidePropsResult<MealPlansPageProps>;
 
   const extractCookieTimer = timing.addEvent('extract cookie');
   const userSessionData = extractUserInfoFromCookie(context.req.cookies);
@@ -39,14 +38,17 @@ export const getServerSideProps: GetServerSideProps = async (
       householdID: userSessionData.householdID,
     });
   } else {
-    return {
+    props = {
       redirect: {
-        destination: '/login',
+        destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
         permanent: false,
       },
     };
+    return props;
   }
   extractCookieTimer.end();
+  
+  const apiClient = buildServerSideClient(context).withSpan(span);
 
   const fetchMealPlansTimer = timing.addEvent('fetch meal plans');
   const { data: mealPlans } = await apiClient

@@ -13,10 +13,14 @@ import { UserSessionDetails } from './utils';
 export function parseUserSessionDetailsFromCookie(
   rawCookie: string,
   encryptorDecryptor: EncryptorDecryptor<UserSessionDetails>,
-): UserSessionDetails {
-  const sessionDetails = encryptorDecryptor.decrypt(rawCookie) as UserSessionDetails;
-
-  return sessionDetails;
+): UserSessionDetails | undefined {
+  try {
+    const sessionDetails = encryptorDecryptor.decrypt(rawCookie) as UserSessionDetails;
+  
+    return sessionDetails;
+  } catch (error) {
+    return undefined;
+  }
 }
 
 export function buildAPIProxyRoute(
@@ -39,10 +43,16 @@ export function buildAPIProxyRoute(
 
     const parsedCookie = parse(cookie);
     if (!parsedCookie.hasOwnProperty(cookieName)) {
-      throw new Error('no cookie attached');
+      res.status(401).send('no cookie found');
     }
 
     const userSessionDetails = parseUserSessionDetailsFromCookie(parsedCookie[cookieName], encryptorDecryptor);
+    if (!userSessionDetails) {
+      logger.debug('no token found in cookie', spanLogDetails);
+      res.status(401).send('no token found');
+      return;
+    }
+    
     const accessToken = JSON.parse(JSON.stringify(userSessionDetails.token))['access_token'];
 
     const reqConfig: AxiosRequestConfig = {

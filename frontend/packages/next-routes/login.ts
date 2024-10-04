@@ -6,6 +6,7 @@ import { AccessToken, AuthorizationCode } from 'simple-oauth2';
 import { IAPIError, UserLoginInput, JWTResponse, APIResponse } from '@dinnerdonebetter/models';
 import { buildCookielessServerSideClient } from '@dinnerdonebetter/api-client';
 import { TracerType } from '@dinnerdonebetter/tracing';
+import { parseUserSessionDetailsFromCookie } from './api_proxy';
 
 type cookieFunction = (_token: AccessToken, _userID: string, _householdID: string) => string;
 
@@ -79,6 +80,8 @@ export function buildLoginRoute(config: {
   oauth2ClientID: string;
   oauth2ClientSecret: string;
   serverSideTracer: TracerType;
+  cookieName: string;
+  encryptorDecryptor: any;
   cookieFunc: cookieFunction;
   admin: boolean;
 }) {
@@ -86,6 +89,15 @@ export function buildLoginRoute(config: {
     if (req.method === 'POST') {
       const span = config.serverSideTracer.startSpan('LoginRoute');
       const input = req.body as UserLoginInput;
+
+      if (config.cookieName && config.encryptorDecryptor) {
+        const userSessionDetails = parseUserSessionDetailsFromCookie(req.cookies[config.cookieName] || '', config.encryptorDecryptor);
+        if (userSessionDetails) {
+          // redirect to the home page
+          res.status(302).send('/');
+          return;
+        }
+      }
 
       const apiClient = buildCookielessServerSideClient().withSpan(span);
       const loginPromise = config.admin ? apiClient.adminLoginForJWT(input) : apiClient.logInForJWT(input);
@@ -116,8 +128,6 @@ export function buildLoginRoute(config: {
             userID: result.data.data.userID,
             householdID: result.data.data.householdID,
           });
-
-          console.log(`userID: ${result.data.data.userID} householdID: ${result.data.data.householdID}`);
 
           res.setHeader('Set-Cookie', config.cookieFunc(token, result.data.data.userID, result.data.data.householdID));
 

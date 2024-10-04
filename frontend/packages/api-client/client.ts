@@ -335,7 +335,8 @@ export class DinnerDoneBetterAPIClient {
 
     this.responseInterceptorID = this.client.interceptors.response.use((response: AxiosResponse) => {
       this.logger.debug(
-        `Response: ${response.status} ${response.config.method} ${response.config.url}`, response.data,
+        `Response: ${response.status} ${response.config.method} ${response.config.url}`, 
+        // response.data,
       );
 
       // console.log(`${response.status} ${_curlFromAxiosConfig(response.config)}`);

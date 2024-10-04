@@ -47,7 +47,7 @@ export function processWebappCookieHeader(result: AxiosResponse, userID: string,
   return [modifiedAPICookie, webappCookie];
 }
 
-export const extractUserInfoFromCookie = (cookies: NextApiRequestCookies): UserSessionDetails => {
+export const extractUserInfoFromCookie = (cookies: NextApiRequestCookies): UserSessionDetails | undefined => {
   return parseUserSessionDetailsFromCookie(
     cookies[webappCookieName] || '',
     encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>,
