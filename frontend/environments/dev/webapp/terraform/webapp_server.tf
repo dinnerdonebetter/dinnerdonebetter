@@ -102,7 +102,7 @@ resource "google_cloud_run_service" "webapp_server" {
 
         resources {
           requests = {
-            memory = "128Mi"
+            memory = "256Mi"
           }
         }
 

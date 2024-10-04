@@ -221,26 +221,6 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
 
       env {
-        name = "DINNER_DONE_BETTER_COOKIE_HASH_KEY"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.cookie_hash_key.secret_id
-            version = "latest"
-          }
-        }
-      }
-
-      env {
-        name = "DINNER_DONE_BETTER_COOKIE_BLOCK_KEY"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.cookie_block_key.secret_id
-            version = "latest"
-          }
-        }
-      }
-
-      env {
         name = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
         value_source {
           secret_key_ref {
