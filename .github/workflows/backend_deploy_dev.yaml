@@ -1,10 +1,10 @@
 concurrency:
   group: ${{ github.ref }}
 
-on: # [pull_request]
-  push:
-    branches:
-      - dev
+on: [pull_request]
+#  push:
+#    branches:
+#      - dev
 
 name: backend - deploy
 jobs:
@@ -117,52 +117,32 @@ jobs:
           project_id: '${{ matrix.gcp-project }}'
           image: '${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/api_server'
 
-#  build-and-push-containers:
-#    needs: [infrastructure]
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        - gcp-region: 'us-central1'
-#          gcp-project: 'dinner-done-better-dev'
-#          container-name: 'search-data-index-scheduler'
-#          container-filename: 'search_data_index_scheduler'
-#        - gcp-region: 'us-central1'
-#          gcp-project: 'dinner-done-better-dev'
-#          container-name: 'search-data-index-scheduler'
-#          container-filename: 'search_data_index_scheduler'
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: authenticate with GCP
-#        uses: google-github-actions/auth@v1
-#        with:
-#          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-#
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v1
-#
-#      - name: Authorize Docker push to pkg.dev
-#        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
-#
-#      - name: Build and push search data index scheduler container
-#        working-directory: backend/
-#        run: |
-#          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }} --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-#          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-#          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }}
-#          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest
-
-  search-index-scheduler-container:
+  build-and-push-containers:
     needs: [infrastructure]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # these are used simply to ensure consistency, there should never be more than one entry in these arrays.
-        gcp-region: [ 'us-central1' ]
-        gcp-project: [ 'dinner-done-better-dev' ]
-        container-name: [ 'search-data-index-scheduler' ]
-        container-filename: [ 'search_data_index_scheduler' ]
+        configs:
+        - gcp-region: 'us-central1'
+          gcp-project: 'dinner-done-better-dev'
+          container-name: 'search-data-index-scheduler'
+          container-filename: 'search_data_index_scheduler'
+        - gcp-region: 'us-central1'
+          gcp-project: 'dinner-done-better-dev'
+          container-name: 'email-prober'
+          container-filename: 'email_prober'
+        - gcp-region: 'us-central1'
+          gcp-project: 'dinner-done-better-dev'
+          container-name: 'meal-plan-finalizer'
+          container-filename: 'meal_plan_finalizer'
+        - gcp-region: 'us-central1'
+          gcp-project: 'dinner-done-better-dev'
+          container-name: 'meal-plan-grocery-list-initializer'
+          container-filename: 'meal_plan_grocery_list_initializer'
+        - gcp-region: 'us-central1'
+          gcp-project: 'dinner-done-better-dev'
+          container-name: 'meal-plan-task-creator'
+          container-filename: 'meal_plan_task_creator'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -181,139 +161,7 @@ jobs:
       - name: Build and push search data index scheduler container
         working-directory: backend/
         run: |
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }} --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }}
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest
-
-  email-prober-container:
-    needs: [infrastructure]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # these are used simply to ensure consistency, there should never be more than one entry in these arrays.
-        gcp-region: [ 'us-central1' ]
-        gcp-project: [ 'dinner-done-better-dev' ]
-        container-name: [ 'email-prober' ]
-        container-filename: [ 'email_prober' ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: authenticate with GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-
-      - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
-
-      - name: Build and push email prober container
-        working-directory: backend/
-        run: |
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }} --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }}
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest
-
-  meal-plan-finalizer-container:
-    needs: [infrastructure]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # these are used simply to ensure consistency, there should never be more than one entry in these arrays.
-        gcp-region: [ 'us-central1' ]
-        gcp-project: [ 'dinner-done-better-dev' ]
-        container-name: [ 'meal-plan-finalizer' ]
-        container-filename: [ 'meal_plan_finalizer' ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: authenticate with GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-
-      - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
-
-      - name: Build and push meal plan finalizer container
-        working-directory: backend/
-        run: |
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }} --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }}
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest
-
-  meal-plan-grocery-list-init-container:
-    needs: [infrastructure]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # these are used simply to ensure consistency, there should never be more than one entry in these arrays.
-        gcp-region: [ 'us-central1' ]
-        gcp-project: [ 'dinner-done-better-dev' ]
-        container-name: [ 'meal-plan-grocery-list-initializer' ]
-        container-filename: [ 'meal_plan_grocery_list_initializer' ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: authenticate with GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-
-      - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
-
-      - name: Build and push meal plan grocery list initializer container
-        working-directory: backend/
-        run: |
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }} --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }}
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest
-
-  meal-plan-task-creator-container:
-    needs: [infrastructure]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # these are used simply to ensure consistency, there should never be more than one entry in these arrays.
-        gcp-region: [ 'us-central1' ]
-        gcp-project: [ 'dinner-done-better-dev' ]
-        container-name: [ 'meal-plan-task-creator' ]
-        container-filename: [ 'meal_plan_task_creator' ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: authenticate with GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-
-      - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
-
-      - name: Build and push meal plan task creator container
-        working-directory: backend/
-        run: |
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }} --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }}
-          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest
+          docker build --tag ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:${{  github.sha }} --file environments/dev/dockerfiles/${{ matrix.configs.container-filename }}.Dockerfile .
+          docker build --tag ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.configs.container-filename }}.Dockerfile .
+          docker push ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:${{  github.sha }}
+          docker push ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:latest
