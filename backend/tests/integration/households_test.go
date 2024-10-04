@@ -5,7 +5,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -228,7 +227,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
-			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
+			u, c := createUserAndClientForTest(ctx, t, nil)
 
 			invitation, err := testClients.userClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
@@ -310,7 +309,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			u, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
+			u, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
@@ -385,7 +384,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
+			_, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
@@ -443,7 +442,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
+			_, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress:    inviteReq.ToEmail,
 				Username:        fakes.BuildFakeUser().Username,
 				Password:        gofakeit.Password(true, true, true, true, false, 64),
@@ -506,7 +505,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
 
-			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
+			_, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
@@ -543,7 +542,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
-			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
+			u, c := createUserAndClientForTest(ctx, t, nil)
 
 			invitation, err := testClients.userClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
@@ -570,7 +569,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 }
 
 func (s *TestSuite) TestHouseholds_ChangingMemberships() {
-	s.runForCookieClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -615,7 +614,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// create users
 			for i := 0; i < userCount; i++ {
-				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
+				u, c := createUserAndClientForTest(ctx, t, nil)
 				users = append(users, u)
 				clients = append(clients, c)
 
@@ -696,7 +695,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 }
 
 func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
-	s.runForCookieClient("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -704,7 +703,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			defer span.End()
 
 			// create users
-			futureOwner, _, futureOwnerClient, _ := createUserAndClientForTest(ctx, t, nil)
+			futureOwner, futureOwnerClient := createUserAndClientForTest(ctx, t, nil)
 
 			// fetch household data
 			householdCreationInput := &types.HouseholdCreationRequestInput{
@@ -807,7 +806,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 				InvitationID:    createdInvitation.ID,
 				InvitationToken: createdInvitation.Token,
 			}
-			u, _, c, _ := createUserAndClientForTest(ctx, t, regInput)
+			u, c := createUserAndClientForTest(ctx, t, regInput)
 
 			households, err := c.GetHouseholds(ctx, nil)
 			require.NoError(t, err)
@@ -836,10 +835,10 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 
 			u.HashedPassword = regInput.Password
 
-			newCookie, err := testutils.GetLoginCookie(ctx, urlToUse, u)
+			tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 			require.NoError(t, err)
 
-			require.NoError(t, c.SetOptions(apiclient.UsingCookie(newCookie)))
+			require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
 
 			household, err := c.GetCurrentHousehold(ctx)
 			requireNotNilAndNoProblems(t, household, err)

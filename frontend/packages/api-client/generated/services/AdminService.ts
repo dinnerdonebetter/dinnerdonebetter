@@ -10,16 +10,6 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class AdminService {
   /**
-   * Operation for creating
-   * @throws ApiError
-   */
-  public static adminCycleCookieSecret(): CancelablePromise<void> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/v1/admin/cycle_cookie_secret',
-    });
-  }
-  /**
    * Operation for creating UserStatusResponse
    * @param requestBody
    * @returns any

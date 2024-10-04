@@ -17,16 +17,6 @@ func baseSpec() *openapi.Spec {
 		},
 		Components: &openapi.Components{
 			SecuritySchemes: map[string]openapi.SecuritySchemeOrReference{
-				"cookieAuth": {
-					SecurityScheme: &openapi.SecurityScheme{
-						Description: nil,
-						MapOfAnything: map[string]any{
-							"type": "apiKey",
-							"in":   "cookie",
-							"name": "ddb_api_cookie",
-						},
-					},
-				},
 				"oauth2": {
 					SecurityScheme: &openapi.SecurityScheme{
 						Description: nil,

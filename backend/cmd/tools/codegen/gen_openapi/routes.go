@@ -33,10 +33,6 @@ var routeInfoMap = map[string]routeDetails{
 		Description: "checks for service readiness",
 		Authless:    true,
 	},
-	"POST /api/v1/admin/cycle_cookie_secret": {
-		ID:           "AdminCycleCookieSecret",
-		OAuth2Scopes: []string{serviceAdmin},
-	},
 	"POST /api/v1/admin/users/status": {
 		ID:           "AdminUpdateUserStatus",
 		InputType:    &types.UserAccountStatusUpdateInput{},

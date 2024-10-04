@@ -323,7 +323,7 @@ issues:
       linters:
         - bodyclose
 
-    - path: mock_.*\.go
+    - path: mock_?.*\.go
       linters:
         - mnd
         - forcetypeassert

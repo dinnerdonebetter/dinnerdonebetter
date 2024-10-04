@@ -48,7 +48,7 @@ func (s *TestSuite) TestUserNotifications_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, userClient, _ := createUserAndClientForTest(ctx, t, nil)
+			user, userClient := createUserAndClientForTest(ctx, t, nil)
 
 			exampleUserNotification := fakes.BuildFakeUserNotification()
 			exampleUserNotification.BelongsToUser = user.ID
@@ -83,7 +83,7 @@ func (s *TestSuite) TestUserNotifications_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, userClient, _ := createUserAndClientForTest(ctx, t, nil)
+			user, userClient := createUserAndClientForTest(ctx, t, nil)
 
 			var expected []*types.UserNotification
 			for i := 0; i < 5; i++ {

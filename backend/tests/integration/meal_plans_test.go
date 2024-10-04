@@ -63,7 +63,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			defer span.End()
 
 			// create a userClient for the meal plan household
-			_, _, householdAdminUserClient, _ := createUserAndClientForTest(ctx, t, nil)
+			_, householdAdminUserClient := createUserAndClientForTest(ctx, t, nil)
 
 			// create household members
 			currentStatus, statusErr := householdAdminUserClient.UserStatus(s.ctx)
@@ -74,7 +74,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			createdClients := []*apiclient.Client{}
 
 			for i := 0; i < 2; i++ {
-				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
+				u, c := createUserAndClientForTest(ctx, t, nil)
 
 				invitation, err := householdAdminUserClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 					Note:    t.Name(),
@@ -252,7 +252,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			defer span.End()
 
 			// create a userClient for the meal plan household
-			_, _, householdAdminUserClient, _ := createUserAndClientForTest(ctx, t, nil)
+			_, householdAdminUserClient := createUserAndClientForTest(ctx, t, nil)
 
 			// create household members
 			currentStatus, statusErr := householdAdminUserClient.UserStatus(s.ctx)
@@ -263,7 +263,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			createdClients := []*apiclient.Client{}
 
 			for i := 0; i < 2; i++ {
-				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
+				u, c := createUserAndClientForTest(ctx, t, nil)
 
 				invitation, err := householdAdminUserClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 					Note:    t.Name(),

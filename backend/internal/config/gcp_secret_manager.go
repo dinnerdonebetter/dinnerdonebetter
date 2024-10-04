@@ -32,8 +32,6 @@ const (
 	gcpDatabaseUserEnvVarKey             = "DINNER_DONE_BETTER_DATABASE_USER"
 	gcpDatabaseNameEnvVarKey             = "DINNER_DONE_BETTER_DATABASE_NAME"
 	gcpDatabaseInstanceConnNameEnvVarKey = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
-	gcpCookieHashKeyEnvVarKey            = "DINNER_DONE_BETTER_COOKIE_HASH_KEY"
-	gcpCookieBlockKeyEnvVarKey           = "DINNER_DONE_BETTER_COOKIE_BLOCK_KEY"
 	gcpAlgoliaAPIKeyEnvVarKey            = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
 	gcpAlgoliaAppIDEnvVarKey             = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
 	gcpGoogleSSOClientIDEnvVarKey        = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_ID"
@@ -107,8 +105,6 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 
 	cfg.Database.ConnectionDetails = dbURI
 	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
-	cfg.Services.Auth.Cookies.HashKey = os.Getenv(gcpCookieHashKeyEnvVarKey)
-	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.SSO.Google.ClientID = os.Getenv(gcpGoogleSSOClientIDEnvVarKey)
 	cfg.Services.Auth.SSO.Google.ClientSecret = os.Getenv(gcpGoogleSSOClientSecretEnvVarKey)
 	cfg.Services.Auth.JWTSigningKey = os.Getenv(gcpJWTSigningKeyEnvVarKey)

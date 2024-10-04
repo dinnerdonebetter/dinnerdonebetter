@@ -38,11 +38,6 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 			Observability: observability.Config{},
 			Services: ServicesConfig{
 				Auth: authservice.Config{
-					Cookies: authservice.CookieConfig{
-						Name:     "ddb_api_cookie",
-						Domain:   "https://verygoodsoftwarenotvirus.ru",
-						Lifetime: time.Second,
-					},
 					MinimumUsernameLength: 4,
 					MinimumPasswordLength: 8,
 					EnableUserSignup:      true,

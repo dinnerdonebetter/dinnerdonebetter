@@ -36,7 +36,7 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, userClient, _ := createUserAndClientForTest(ctx, t, nil)
+			user, userClient := createUserAndClientForTest(ctx, t, nil)
 
 			// Assert that userClient can access service
 			_, err := userClient.GetWebhooks(ctx, nil)
@@ -106,7 +106,7 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, userClient, _ := createUserAndClientForTest(ctx, t, nil)
+			user, userClient := createUserAndClientForTest(ctx, t, nil)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()

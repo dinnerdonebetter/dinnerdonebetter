@@ -8,27 +8,10 @@ import (
 )
 
 const (
-	// DefaultCookieName is the default Cookie.BucketName.
-	DefaultCookieName = "ddb_api_cookie"
-	// DefaultCookieLifetime is how long a cookie is valid for.
-	DefaultCookieLifetime = 24 * time.Hour
-
 	staticError = "error encountered, please try again later"
 )
 
 type (
-	// CookieConfig holds our cookie settings.
-	CookieConfig struct {
-		_ struct{} `json:"-"`
-
-		Name       string        `json:"name,omitempty"       toml:"name,omitempty"`
-		Domain     string        `json:"domain,omitempty"     toml:"domain,omitempty"`
-		HashKey    string        `json:"hashKey,omitempty"    toml:"hash_key,omitempty"`
-		BlockKey   string        `json:"blockKey,omitempty"   toml:"signing_key,omitempty"`
-		Lifetime   time.Duration `json:"lifetime,omitempty"   toml:"lifetime,omitempty"`
-		SecureOnly bool          `json:"secureOnly,omitempty" toml:"secure_only,omitempty"`
-	}
-
 	GoogleSSOConfig struct {
 		_ struct{} `json:"-"`
 
@@ -48,7 +31,6 @@ type (
 		DataChangesTopicName  string        `json:"dataChanges,omitempty"           toml:"data_changes,omitempty"`
 		JWTAudience           string        `json:"jwtAudience,omitempty"           toml:"jwt_audience,omitempty"`
 		JWTSigningKey         string        `json:"jwtSigningKey"                   toml:"jwt_signing_key"`
-		Cookies               CookieConfig  `json:"cookies,omitempty"               toml:"cookies,omitempty"`
 		OAuth2                OAuth2Config  `json:"oauth2,omitempty"                toml:"oauth2,omitempty"`
 		JWTLifetime           time.Duration `json:"jwtLifetime"                     toml:"jwt_lifetime"`
 		Debug                 bool          `json:"debug,omitempty"                 toml:"debug,omitempty"`
@@ -58,23 +40,11 @@ type (
 	}
 )
 
-var _ validation.ValidatableWithContext = (*CookieConfig)(nil)
-
-// ValidateWithContext validates a CookieConfig struct.
-func (cfg *CookieConfig) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.Name, validation.Required),
-		validation.Field(&cfg.Domain, validation.Required),
-		validation.Field(&cfg.Lifetime, validation.Required),
-	)
-}
-
 var _ validation.ValidatableWithContext = (*Config)(nil)
 
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.Cookies, validation.Required),
 		validation.Field(&cfg.MinimumUsernameLength, validation.Required),
 		validation.Field(&cfg.MinimumPasswordLength, validation.Required),
 	)

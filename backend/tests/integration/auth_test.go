@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -18,71 +17,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func (s *TestSuite) TestLogin() {
-	s.Run("logging in and out works", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
-
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
-		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
-			Username:  testUser.Username,
-			Password:  testUser.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, testUser),
-		})
-
-		assert.NotNil(t, cookie)
-		assert.NoError(t, err)
-
-		assert.Equal(t, authservice.DefaultCookieName, cookie.Name)
-		assert.NotEmpty(t, cookie.Value)
-		assert.NotZero(t, cookie.MaxAge)
-		assert.True(t, cookie.HttpOnly)
-		assert.Equal(t, "/", cookie.Path)
-		assert.Equal(t, http.SameSiteNoneMode, cookie.SameSite)
-
-		assert.NoError(t, testClient.Logout(ctx))
-	})
-}
-
-func (s *TestSuite) TestAdminLogin() {
-	s.Run("logging in and out works", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
-
-		loginInput := &types.UserLoginInput{
-			Username:  premadeAdminUser.Username,
-			Password:  premadeAdminUser.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
-		}
-
-		adminClient, err := initializeCookiePoweredClient(ctx, loginInput)
-		require.NoError(t, err)
-
-		// kinda redundant, but this one actually uses the adminClient route
-		cookie, err := adminClient.AdminLogin(ctx, &types.UserLoginInput{
-			Username:  premadeAdminUser.Username,
-			Password:  premadeAdminUser.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
-		})
-
-		assert.NotNil(t, cookie)
-		assert.NoError(t, err)
-
-		assert.Equal(t, authservice.DefaultCookieName, cookie.Name)
-		assert.NotEmpty(t, cookie.Value)
-		assert.NotZero(t, cookie.MaxAge)
-		assert.True(t, cookie.HttpOnly)
-		assert.Equal(t, "/", cookie.Path)
-		assert.Equal(t, http.SameSiteNoneMode, cookie.SameSite)
-
-		assert.NoError(t, adminClient.Logout(ctx))
-	})
-}
-
 func (s *TestSuite) TestLoginForJWT() {
 	s.Run("logging in and out works", func() {
 		t := s.T()
@@ -90,7 +24,7 @@ func (s *TestSuite) TestLoginForJWT() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
 		token, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
@@ -115,7 +49,7 @@ func (s *TestSuite) TestAdminLoginForJWT() {
 			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
 		}
 
-		adminClient, err := initializeCookiePoweredClient(ctx, loginInput)
+		adminClient, err := initializeOAuth2PoweredClient(ctx, loginInput)
 		require.NoError(t, err)
 
 		token, err := adminClient.AdminLoginForJWT(ctx, &types.UserLoginInput{
@@ -136,11 +70,11 @@ func (s *TestSuite) TestLogin_WithoutBodyReturnsError() {
 		ctx, span := tracing.StartSpan(context.Background())
 		defer span.End()
 
-		_, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		_, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		u, err := url.Parse(testClient.BuildURL(ctx, nil))
 		require.NoError(t, err)
-		u.Path = "/users/login"
+		u.Path = "/users/login/jwt"
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), http.NoBody)
 		requireNotNilAndNoProblems(t, req, err)
@@ -159,7 +93,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithInvalidPassword() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		// create login request.
 		var badPassword string
@@ -173,7 +107,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithInvalidPassword() {
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
 		}
 
-		cookie, err := testClient.Login(ctx, r)
+		cookie, err := testClient.LoginForJWT(ctx, r)
 		assert.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -186,7 +120,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginAsANonexistentUser() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		exampleUserCreationInput := fakes.BuildFakeUserCreationInput()
 		r := &types.UserLoginInput{
@@ -195,7 +129,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginAsANonexistentUser() {
 			TOTPToken: "123456",
 		}
 
-		cookie, err := testClient.Login(ctx, r)
+		cookie, err := testClient.LoginForJWT(ctx, r)
 		assert.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -222,7 +156,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithoutValidating2FASecret()
 			Password: exampleUserCreationInput.Password,
 		}
 
-		cookie, err := testClient.Login(ctx, r)
+		cookie, err := testClient.LoginForJWT(ctx, r)
 		assert.NotNil(t, cookie)
 		assert.NoError(t, err)
 	})
@@ -235,8 +169,8 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
-		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
+		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
+		cookie, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -252,8 +186,6 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		assert.Equal(t, string(types.UnverifiedHouseholdStatus), actual.AccountStatus, "expected AccountStatus to equal %v, but got %v", types.GoodStandingUserAccountStatus, actual.AccountStatus)
 		assert.Equal(t, "", actual.AccountStatusExplanation, "expected AccountStatusExplanation to equal %v, but got %v", "", actual.AccountStatusExplanation)
 		assert.NotZero(t, actual.ActiveHousehold)
-
-		assert.NoError(t, testClient.Logout(ctx))
 	})
 }
 
@@ -264,10 +196,10 @@ func (s *TestSuite) TestPasswordChanging() {
 		ctx, span := tracing.StartSpan(context.Background())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		// login.
-		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
+		cookie, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -282,17 +214,14 @@ func (s *TestSuite) TestPasswordChanging() {
 		}
 
 		// update passwords.
-		assert.NoError(t, testClient.ChangePassword(ctx, cookie, &types.PasswordUpdateInput{
+		assert.NoError(t, testClient.ChangePassword(ctx, &types.PasswordUpdateInput{
 			CurrentPassword: testUser.HashedPassword,
 			TOTPToken:       generateTOTPTokenForUser(t, testUser),
 			NewPassword:     backwardsPass,
 		}))
 
-		// logout.
-		assert.NoError(t, testClient.Logout(ctx))
-
 		// login again with new passwords.
-		cookie, err = testClient.Login(ctx, &types.UserLoginInput{
+		cookie, err = testClient.LoginForJWT(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  backwardsPass,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -310,16 +239,9 @@ func (s *TestSuite) TestTOTPSecretChanging() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
 
-		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
-			Username:  testUser.Username,
-			Password:  testUser.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, testUser),
-		})
-		require.NoError(t, err)
-
-		r, err := testClient.CycleTwoFactorSecret(ctx, cookie, &types.TOTPSecretRefreshInput{
+		r, err := testClient.CycleTwoFactorSecret(ctx, &types.TOTPSecretRefreshInput{
 			CurrentPassword: testUser.HashedPassword,
 			TOTPToken:       generateTOTPTokenForUser(t, testUser),
 		})
@@ -328,14 +250,11 @@ func (s *TestSuite) TestTOTPSecretChanging() {
 		testUser.TwoFactorSecret = r.TwoFactorSecret
 		require.NoError(t, testClient.VerifyTOTPSecret(ctx, testUser.ID, generateTOTPTokenForUser(t, testUser)))
 
-		// logout.
-		require.NoError(t, testClient.Logout(ctx))
-
 		// create login request.
 		newToken, err := totp.GenerateCode(r.TwoFactorSecret, time.Now().UTC())
 		requireNotNilAndNoProblems(t, newToken, err)
 
-		secondCookie, err := testClient.Login(ctx, &types.UserLoginInput{
+		secondCookie, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: newToken,
@@ -391,7 +310,7 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 		ctx, span := tracing.StartSpan(context.Background())
 		defer span.End()
 
-		u, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		u, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		require.NoError(t, testClient.RequestPasswordResetToken(ctx, u.EmailAddress))
 
@@ -419,7 +338,7 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 			NewPassword: fakeInput.Password,
 		}))
 
-		cookie, err := testClient.Login(ctx, &types.UserLoginInput{
+		cookie, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
 			Username:  u.Username,
 			Password:  fakeInput.Password,
 			TOTPToken: generateTOTPTokenForUser(t, u),

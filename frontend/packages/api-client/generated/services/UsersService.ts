@@ -363,42 +363,6 @@ export class UsersService {
     });
   }
   /**
-   * Operation for creating UserStatusResponse
-   * @param requestBody
-   * @returns any
-   * @throws ApiError
-   */
-  public static login(requestBody: UserLoginInput): CancelablePromise<
-    APIResponse & {
-      data?: UserStatusResponse;
-    }
-  > {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/users/login',
-      body: requestBody,
-      mediaType: 'application/json',
-    });
-  }
-  /**
-   * Operation for creating UserStatusResponse
-   * @param requestBody
-   * @returns any
-   * @throws ApiError
-   */
-  public static adminLogin(requestBody: UserLoginInput): CancelablePromise<
-    APIResponse & {
-      data?: UserStatusResponse;
-    }
-  > {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/users/login/admin',
-      body: requestBody,
-      mediaType: 'application/json',
-    });
-  }
-  /**
    * Operation for creating JWTResponse
    * @param requestBody
    * @returns any
@@ -432,21 +396,6 @@ export class UsersService {
       url: '/users/login/jwt/admin',
       body: requestBody,
       mediaType: 'application/json',
-    });
-  }
-  /**
-   * Operation for creating UserStatusResponse
-   * @returns any
-   * @throws ApiError
-   */
-  public static logout(): CancelablePromise<
-    APIResponse & {
-      data?: UserStatusResponse;
-    }
-  > {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/users/logout',
     });
   }
   /**

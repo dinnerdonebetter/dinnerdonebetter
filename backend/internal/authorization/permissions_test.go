@@ -14,7 +14,6 @@ func TestPermissions(T *testing.T) {
 
 		permissionChecker := NewHouseholdRolePermissionChecker(householdAdminRoleName)
 
-		assert.False(t, permissionChecker.HasPermission(CycleCookieSecretPermission))
 		assert.False(t, permissionChecker.HasPermission(UpdateUserStatusPermission))
 		assert.False(t, permissionChecker.HasPermission(ReadUserPermission))
 		assert.False(t, permissionChecker.HasPermission(SearchUserPermission))
@@ -142,7 +141,6 @@ func TestPermissions(T *testing.T) {
 
 		permissionChecker := NewHouseholdRolePermissionChecker(householdMemberRoleName)
 
-		assert.False(t, permissionChecker.HasPermission(CycleCookieSecretPermission))
 		assert.False(t, permissionChecker.HasPermission(UpdateUserStatusPermission))
 		assert.False(t, permissionChecker.HasPermission(ReadUserPermission))
 		assert.False(t, permissionChecker.HasPermission(SearchUserPermission))

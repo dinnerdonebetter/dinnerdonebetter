@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"net/http"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -33,12 +32,9 @@ func TestIntegration(t *testing.T) {
 type TestSuite struct {
 	suite.Suite
 
-	ctx    context.Context
-	user   *types.User
-	cookie *http.Cookie
-	cookieClient,
+	ctx  context.Context
+	user *types.User
 	oauthedClient,
-	adminCookieClient,
 	adminOAuthedClient *apiclient.Client
 }
 
@@ -52,12 +48,8 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.cookie, s.cookieClient, s.oauthedClient = createUserAndClientForTest(s.ctx, t, nil)
-	s.adminCookieClient, s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
-}
-
-func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.Run(name, subtestBuilder(&testClientWrapper{authType: cookieAuthType, userClient: s.cookieClient, adminClient: s.adminCookieClient, user: s.user}))
+	s.user, s.oauthedClient = createUserAndClientForTest(s.ctx, t, nil)
+	s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
 }
 
 func (s *TestSuite) runTest(name string, subtestBuilder func(*testClientWrapper) func()) {

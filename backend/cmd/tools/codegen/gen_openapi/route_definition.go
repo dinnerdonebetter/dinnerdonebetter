@@ -85,10 +85,6 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 	}
 
 	if _, ok := routesWithoutAuth[d.Path]; !ok && !d.Authless {
-		op.Security = []map[string][]string{
-			{"cookieAuth": []string{}},
-		}
-
 		if len(d.OAuth2Scopes) > 0 {
 			op.Security = append(op.Security, map[string][]string{"oauth2": d.OAuth2Scopes})
 		}
