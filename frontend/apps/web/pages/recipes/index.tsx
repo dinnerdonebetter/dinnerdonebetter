@@ -39,7 +39,7 @@ export const getServerSideProps: GetServerSideProps = async (
     serverSideAnalytics.page(userSessionData.userID, 'RECIPES_PAGE', context, {
       householdID: userSessionData.householdID,
     });
-  }else {
+  } else {
     props = {
       redirect: {
         destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
@@ -49,7 +49,6 @@ export const getServerSideProps: GetServerSideProps = async (
     return props;
   }
   extractCookieTimer.end();
-
 
   const apiClient = buildServerSideClient(context).withSpan(span);
 

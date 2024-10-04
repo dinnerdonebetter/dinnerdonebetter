@@ -46,9 +46,11 @@ export const getServerSideProps: GetServerSideProps = async (
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return { props: { 
-    pageLoadValidVessel: JSON.parse(JSON.stringify(pageLoadValidVessel)),
-   }};
+  return {
+    props: {
+      pageLoadValidVessel: JSON.parse(JSON.stringify(pageLoadValidVessel)),
+    },
+  };
 };
 
 const validVesselUpdateFormSchema = z.object({

@@ -91,7 +91,10 @@ export function buildLoginRoute(config: {
       const input = req.body as UserLoginInput;
 
       if (config.cookieName && config.encryptorDecryptor) {
-        const userSessionDetails = parseUserSessionDetailsFromCookie(req.cookies[config.cookieName] || '', config.encryptorDecryptor);
+        const userSessionDetails = parseUserSessionDetailsFromCookie(
+          req.cookies[config.cookieName] || '',
+          config.encryptorDecryptor,
+        );
         if (userSessionDetails) {
           // redirect to the home page
           res.status(302).send('/');

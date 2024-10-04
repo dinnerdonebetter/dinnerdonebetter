@@ -88,10 +88,12 @@ export const getServerSideProps: GetServerSideProps = async (
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return { props: { 
-    pageLoadValidInstrument: JSON.parse(JSON.stringify(pageLoadValidInstrument)), 
-    pageLoadPreparationInstruments: JSON.parse(JSON.stringify(pageLoadPreparationInstruments)),
-   } };
+  return {
+    props: {
+      pageLoadValidInstrument: JSON.parse(JSON.stringify(pageLoadValidInstrument)),
+      pageLoadPreparationInstruments: JSON.parse(JSON.stringify(pageLoadPreparationInstruments)),
+    },
+  };
 };
 
 const validInstrumentUpdateFormSchema = z.object({

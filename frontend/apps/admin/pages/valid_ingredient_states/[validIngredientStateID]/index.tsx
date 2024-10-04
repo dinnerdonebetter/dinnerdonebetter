@@ -89,10 +89,12 @@ export const getServerSideProps: GetServerSideProps = async (
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return { props: { 
-    pageLoadValidIngredientState: JSON.parse(JSON.stringify(pageLoadValidIngredientState)), 
-    pageLoadValidIngredientStates: JSON.parse(JSON.stringify(pageLoadValidIngredientStates)),
-   } };
+  return {
+    props: {
+      pageLoadValidIngredientState: JSON.parse(JSON.stringify(pageLoadValidIngredientState)),
+      pageLoadValidIngredientStates: JSON.parse(JSON.stringify(pageLoadValidIngredientStates)),
+    },
+  };
 };
 
 const validIngredientStateUpdateFormSchema = z.object({

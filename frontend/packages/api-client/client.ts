@@ -267,16 +267,16 @@ function _curlFromAxiosConfig(config: AxiosRequestConfig): string {
 
   ['get', 'delete', 'head', 'post', 'put', 'patch'].forEach((method) => {
     delete headers[method];
-  })
-  
+  });
+
   // iterate through headers["common"], and add each key's value to headers
-  const headerDefault = (headers as unknown as HeadersDefaults)
-  for (const key in headerDefault["common"]) {
-    if (headerDefault["common"].hasOwnProperty(key)) {
-      headers[key] = headerDefault["common"][key];
+  const headerDefault = headers as unknown as HeadersDefaults;
+  for (const key in headerDefault['common']) {
+    if (headerDefault['common'].hasOwnProperty(key)) {
+      headers[key] = headerDefault['common'][key];
     }
   }
-  delete headers["common"];
+  delete headers['common'];
 
   let curlCommand = `curl -X ${method} "${config?.baseURL || 'MISSING_BASE_URL'}${url}"`;
 
@@ -321,30 +321,36 @@ export class DinnerDoneBetterAPIClient {
       headers,
     } as AxiosRequestConfig);
 
-    this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      // this.logger.debug(`Request: ${request.method} ${request.baseURL}${request.url}`);
-      console.log(`${_curlFromAxiosConfig(request)}`);
+    this.requestInterceptorID = this.client.interceptors.request.use(
+      (request: AxiosRequestConfig) => {
+        // this.logger.debug(`Request: ${request.method} ${request.baseURL}${request.url}`);
+        console.log(`${_curlFromAxiosConfig(request)}`);
 
-      return request;
-    }, (error) => {
-      // Do whatever you want with the response error here
-      // But, be SURE to return the rejected promise, so the caller still has 
-      // the option of additional specialized handling at the call-site:
-      return Promise.reject(error);
-    });
+        return request;
+      },
+      (error) => {
+        // Do whatever you want with the response error here
+        // But, be SURE to return the rejected promise, so the caller still has
+        // the option of additional specialized handling at the call-site:
+        return Promise.reject(error);
+      },
+    );
 
-    this.responseInterceptorID = this.client.interceptors.response.use((response: AxiosResponse) => {
-      this.logger.debug(
-        `Response: ${response.status} ${response.config.method} ${response.config.url}`, 
-        // response.data,
-      );
+    this.responseInterceptorID = this.client.interceptors.response.use(
+      (response: AxiosResponse) => {
+        this.logger.debug(
+          `Response: ${response.status} ${response.config.method} ${response.config.url}`,
+          // response.data,
+        );
 
-      // console.log(`${response.status} ${_curlFromAxiosConfig(response.config)}`);
+        // console.log(`${response.status} ${_curlFromAxiosConfig(response.config)}`);
 
-      return response;
-    }, (error) => {
-      return Promise.reject(error);
-    });
+        return response;
+      },
+      (error) => {
+        return Promise.reject(error);
+      },
+    );
   }
 
   withSpan(span: Span): DinnerDoneBetterAPIClient {
@@ -352,21 +358,24 @@ export class DinnerDoneBetterAPIClient {
     const spanLogDetails = { spanID: spanContext.spanId, traceID: spanContext.traceId };
 
     this.client.interceptors.request.eject(this.requestInterceptorID);
-    this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
-      
-      // console.log(_curlFromAxiosConfig(request));
-      
-      if (spanContext.traceId) {
-        request.headers = request.headers
-          ? { ...request.headers, traceparent: spanContext.traceId }
-          : { traceparent: spanContext.traceId };
-      }
+    this.requestInterceptorID = this.client.interceptors.request.use(
+      (request: AxiosRequestConfig) => {
+        this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
 
-      return request;
-    }, (error) => {
-      return Promise.reject(error);
-    });
+        // console.log(_curlFromAxiosConfig(request));
+
+        if (spanContext.traceId) {
+          request.headers = request.headers
+            ? { ...request.headers, traceparent: spanContext.traceId }
+            : { traceparent: spanContext.traceId };
+        }
+
+        return request;
+      },
+      (error) => {
+        return Promise.reject(error);
+      },
+    );
 
     return this;
   }

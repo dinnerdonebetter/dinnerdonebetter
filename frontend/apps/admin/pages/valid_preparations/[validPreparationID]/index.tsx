@@ -108,11 +108,11 @@ export const getServerSideProps: GetServerSideProps = async (
 
   span.end();
   return {
-    props: { 
-      pageLoadValidPreparation: JSON.parse(JSON.stringify(pageLoadValidPreparation)), 
-      pageLoadValidPreparationInstruments: JSON.parse(JSON.stringify(pageLoadValidPreparationInstruments)), 
+    props: {
+      pageLoadValidPreparation: JSON.parse(JSON.stringify(pageLoadValidPreparation)),
+      pageLoadValidPreparationInstruments: JSON.parse(JSON.stringify(pageLoadValidPreparationInstruments)),
       pageLoadValidIngredientPreparations: JSON.parse(JSON.stringify(pageLoadValidIngredientPreparations)),
-     },
+    },
   };
 };
 

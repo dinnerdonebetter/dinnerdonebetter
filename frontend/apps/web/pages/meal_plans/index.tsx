@@ -47,7 +47,7 @@ export const getServerSideProps: GetServerSideProps = async (
     return props;
   }
   extractCookieTimer.end();
-  
+
   const apiClient = buildServerSideClient(context).withSpan(span);
 
   const fetchMealPlansTimer = timing.addEvent('fetch meal plans');

@@ -16,7 +16,7 @@ export function parseUserSessionDetailsFromCookie(
 ): UserSessionDetails | undefined {
   try {
     const sessionDetails = encryptorDecryptor.decrypt(rawCookie) as UserSessionDetails;
-  
+
     return sessionDetails;
   } catch (error) {
     return undefined;
@@ -52,7 +52,7 @@ export function buildAPIProxyRoute(
       res.status(401).send('no token found');
       return;
     }
-    
+
     const accessToken = JSON.parse(JSON.stringify(userSessionDetails.token))['access_token'];
 
     const reqConfig: AxiosRequestConfig = {
