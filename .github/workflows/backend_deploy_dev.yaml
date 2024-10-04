@@ -156,7 +156,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.configs.gcp-region }}-docker.pkg.dev
 
       - name: Build and push search data index scheduler container
         working-directory: backend/
