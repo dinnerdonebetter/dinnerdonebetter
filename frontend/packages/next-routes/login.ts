@@ -75,7 +75,7 @@ async function getOAuth2Token(input: {
 
 export function buildLoginRoute(config: {
   baseURL: string;
-  scope: string;
+  scope: 'household_member' | 'household_admin' | 'service_admin';
   oauth2ClientID: string;
   oauth2ClientSecret: string;
   serverSideTracer: TracerType;

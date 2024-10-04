@@ -31,6 +31,7 @@ export const getServerSideProps: GetServerSideProps = async (
   const qf = QueryFilter.deriveFromGetServerSidePropsContext(context.query);
   qf.attachToSpan(span);
 
+  console.log('getting valid ingredients from getServerSideProps');
   const fetchValidIngredientsTimer = timing.addEvent('fetch valid ingredients');
   await apiClient
     .getValidIngredients(qf)
@@ -49,6 +50,9 @@ export const getServerSideProps: GetServerSideProps = async (
           },
         };
       }
+    })
+    .catch((error) => {
+      console.error('error occurred', error);
     })
     .finally(() => {
       fetchValidIngredientsTimer.end();
@@ -83,6 +87,7 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
           console.error('getting valid ingredients: ', err);
         });
     } else {
+      console.log('searching for valid ingredients from search useEffect');
       apiClient
         .searchForValidIngredients(search, qf)
         .then((res: QueryFilteredResult<ValidIngredient>) => {

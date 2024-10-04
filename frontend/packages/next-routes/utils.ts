@@ -4,17 +4,17 @@ import { serialize } from 'cookie';
 import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
 export interface UserSessionDetails {
-  Token: AccessToken;
-  UserID: string;
-  HouseholdID: string;
+  token: AccessToken;
+  userID: string;
+  householdID: string;
 }
 
 export function cookieEncoderBuilder(cookieName: string, encryptorDecryptor: EncryptorDecryptor<UserSessionDetails>) {
   return function (token: AccessToken, userID: string, householdID: string): string {
     const cookieValue = encryptorDecryptor.encrypt({
-      Token: token,
-      UserID: userID,
-      HouseholdID: householdID,
+      token: token,
+      userID: userID,
+      householdID: householdID,
     });
 
     return serialize(cookieName, cookieValue, {

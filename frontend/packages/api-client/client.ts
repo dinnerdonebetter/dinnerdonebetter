@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Span } from '@opentelemetry/api';
 
-import { buildServerSideLogger } from '@dinnerdonebetter/logger';
+import { buildServerSideLogger, LoggerType } from '@dinnerdonebetter/logger';
 import {
   MealPlanTask,
   MealPlanTaskStatusChangeRequestInput,
@@ -259,14 +259,32 @@ import {
   searchForValidVessels,
 } from './valid_vessels';
 
-const cookieName = 'ddb_api_cookie';
+function _curlFromAxiosResponse(response: AxiosResponse): string {
+  const method = (response.config?.method || 'UNKNOWN').toUpperCase();
+  const url = response.config.url;
+  const headers = response.config.headers;
+  const data = response.config.data;
 
-const logger = buildServerSideLogger('api_client');
+  let curlCommand = `curl -X ${method} "${url}"`;
+
+  for (const key in headers) {
+    if (headers.hasOwnProperty(key)) {
+      curlCommand += ` -H "${key}: ${headers[key]}"`;
+    }
+  }
+
+  if (data) {
+    curlCommand += ` -d '${JSON.stringify(data)}'`;
+  }
+
+  return curlCommand;
+}
 
 export class DinnerDoneBetterAPIClient {
   baseURL: string;
   client: AxiosInstance;
   requestInterceptorID: number;
+  logger: LoggerType = buildServerSideLogger('api_client');
 
   constructor(baseURL: string = '', cookie?: string, oauth2Token?: string) {
     this.baseURL = baseURL;
@@ -276,10 +294,6 @@ export class DinnerDoneBetterAPIClient {
       'X-Request-Source': 'webapp',
       'X-Service-Client': clientName,
     };
-
-    if (cookie) {
-      headers['Cookie'] = `${cookieName}=${cookie}`;
-    }
 
     if (oauth2Token) {
       headers['Authorization'] = `Bearer ${oauth2Token}`;
@@ -294,14 +308,14 @@ export class DinnerDoneBetterAPIClient {
     } as AxiosRequestConfig);
 
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      // logger.debug(`Request: ${request.method} ${request.url}`);
+      this.logger.debug(`Request: ${request.method} ${request.url}`);
       return request;
     });
 
     this.client.interceptors.response.use((response: AxiosResponse) => {
-      // logger.debug(
-      //   `Response: ${response.status} ${response.config.method} ${response.config.url} ${JSON.stringify(response.data)}`,
-      // );
+      this.logger.debug(
+        `Response: ${response.status} ${response.config.method} ${response.config.url} ${JSON.stringify(response.data)}`,
+      );
       return response;
     });
   }
@@ -312,7 +326,7 @@ export class DinnerDoneBetterAPIClient {
 
     this.client.interceptors.request.eject(this.requestInterceptorID);
     this.requestInterceptorID = this.client.interceptors.request.use((request: AxiosRequestConfig) => {
-      // logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
+      this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
 
       // if (this.traceID) {
       //   request.headers = request.headers

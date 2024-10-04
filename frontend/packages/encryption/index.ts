@@ -34,10 +34,14 @@ export class EncryptorDecryptor<JSONValue> {
       this.initializationVectors = Buffer.from(initializationVectors, 'base64');
     } else {
       this.initializationVectors = crypto.randomBytes(16);
+      1;
+      console.log(`Generating new initialization vectors: ${this.initializationVectors.toString('base64')}`);
     }
   }
 
   encrypt(x: JSONValue): string {
+    console.log(`encrypting with initialization vectors: ${this.initializationVectors.toString('base64')}`);
+
     let cipher = crypto.createCipheriv(
       'aes-256-cbc',
       this.secretKey,
@@ -50,6 +54,8 @@ export class EncryptorDecryptor<JSONValue> {
   }
 
   decrypt(encrypted: string): JSONValue {
+    console.log(`decrypting with initialization vectors: ${this.initializationVectors.toString('base64')}`);
+
     let decipher = crypto.createDecipheriv(
       'aes-256-cbc',
       this.secretKey,

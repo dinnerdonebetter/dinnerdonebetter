@@ -17,23 +17,6 @@ export const buildServerSideClient = (
   return ddbClient;
 };
 
-export const buildServerSideClientBuilder = (apiCookieName: string) => {
-  return (context: GetServerSidePropsContext) => buildServerSideClient(context, apiCookieName);
-};
-
-export const buildServerSideClientWithRawCookie = (cookie: string): DinnerDoneBetterAPIClient => {
-  const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  if (!apiEndpoint) {
-    throw new Error('no API endpoint set!');
-  }
-
-  if (!cookie) {
-    throw new Error('no cookie set!');
-  }
-
-  return new DinnerDoneBetterAPIClient(apiEndpoint, cookie);
-};
-
 export const buildServerSideClientWithOAuth2Token = (token: string): DinnerDoneBetterAPIClient => {
   const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
   if (!apiEndpoint) {

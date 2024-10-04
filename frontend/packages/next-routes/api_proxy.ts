@@ -5,10 +5,19 @@ import { parse } from 'cookie';
 import { LoggerType } from '@dinnerdonebetter/logger';
 import { IAPIError } from '@dinnerdonebetter/models';
 import { buildServerSideClientWithOAuth2Token } from '@dinnerdonebetter/api-client';
-import { getTracer, TracerType } from '@dinnerdonebetter/tracing';
+import { TracerType } from '@dinnerdonebetter/tracing';
 import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
 import { UserSessionDetails } from './utils';
+
+export function parseUserSessionDetailsFromCookie(
+  rawCookie: string,
+  encryptorDecryptor: EncryptorDecryptor<UserSessionDetails>,
+): UserSessionDetails {
+  const sessionDetails = encryptorDecryptor.decrypt(rawCookie) as UserSessionDetails;
+
+  return sessionDetails;
+}
 
 export function buildAPIProxyRoute(
   logger: LoggerType,
@@ -17,7 +26,7 @@ export function buildAPIProxyRoute(
   encryptorDecryptor: EncryptorDecryptor<UserSessionDetails>,
 ) {
   return async function APIProxy(req: NextApiRequest, res: NextApiResponse) {
-    const span = getTracer('').startSpan('APIProxy');
+    const span = serverSideTracer.startSpan('APIProxy');
     const spanContext = span.spanContext();
     const spanLogDetails = { spanID: spanContext.spanId, traceID: spanContext.traceId };
 
@@ -30,13 +39,11 @@ export function buildAPIProxyRoute(
 
     const parsedCookie = parse(cookie);
     if (!parsedCookie.hasOwnProperty(cookieName)) {
-      logger.debug('named cookie missing from request', spanLogDetails);
-      res.status(401).send('no cookie attached');
-      return;
+      throw new Error('no cookie attached');
     }
 
-    const userSessionDetails = encryptorDecryptor.decrypt(parsedCookie[cookieName]) as UserSessionDetails;
-    const accessToken = JSON.parse(JSON.stringify(userSessionDetails.Token))['access_token'];
+    const userSessionDetails = parseUserSessionDetailsFromCookie(parsedCookie[cookieName], encryptorDecryptor);
+    const accessToken = JSON.parse(JSON.stringify(userSessionDetails.token))['access_token'];
 
     const reqConfig: AxiosRequestConfig = {
       method: req.method,

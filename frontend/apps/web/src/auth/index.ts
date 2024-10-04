@@ -2,8 +2,12 @@ import { AxiosResponse } from 'axios';
 import { serialize, parse } from 'cookie';
 import { NextApiRequestCookies } from 'next/dist/server/api-utils';
 
+import { parseUserSessionDetailsFromCookie, UserSessionDetails } from '@dinnerdonebetter/next-routes';
+import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
+
 import { webappCookieName } from '../constants';
 import { serverSideTracer } from '../tracer';
+import { encryptorDecryptor } from '../encryption';
 
 export interface sessionAuth {
   userID: string;
@@ -43,8 +47,9 @@ export function processWebappCookieHeader(result: AxiosResponse, userID: string,
   return [modifiedAPICookie, webappCookie];
 }
 
-export const extractUserInfoFromCookie = (cookies: NextApiRequestCookies): sessionAuth => {
-  const data = cookies[webappCookieName] || 'e30=';
-  const userSessionData = JSON.parse(Buffer.from(data, 'base64').toString('ascii')) as sessionAuth;
-  return userSessionData;
+export const extractUserInfoFromCookie = (cookies: NextApiRequestCookies): UserSessionDetails => {
+  return parseUserSessionDetailsFromCookie(
+    cookies[webappCookieName] || '',
+    encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>,
+  );
 };
