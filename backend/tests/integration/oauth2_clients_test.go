@@ -24,7 +24,7 @@ func checkOAuth2ClientEquality(t *testing.T, expected, actual *types.OAuth2Clien
 }
 
 func (s *TestSuite) TestOAuth2Clients_Creating() {
-	s.runForCookieClient("should be possible to create OAuth2 clients", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to create OAuth2 clients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -47,7 +47,7 @@ func (s *TestSuite) TestOAuth2Clients_Creating() {
 		}
 	})
 
-	s.runForCookieClient("cannot create OAuth2 clients as plain user", func(testClients *testClientWrapper) func() {
+	s.runTest("cannot create OAuth2 clients as plain user", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -66,7 +66,7 @@ func (s *TestSuite) TestOAuth2Clients_Creating() {
 }
 
 func (s *TestSuite) TestOAuth2Clients_Listing() {
-	s.runForCookieClient("should be possible to read OAuth2 clients in a list", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to read OAuth2 clients in a list", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -107,7 +107,7 @@ func (s *TestSuite) TestOAuth2Clients_Listing() {
 }
 
 func (s *TestSuite) TestOAuth2Clients_Reading_Returns404ForNonexistentOAuth2Client() {
-	s.runForCookieClient("should not be possible to read non-existent OAuth2 clients", func(testClients *testClientWrapper) func() {
+	s.runTest("should not be possible to read non-existent OAuth2 clients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -122,7 +122,7 @@ func (s *TestSuite) TestOAuth2Clients_Reading_Returns404ForNonexistentOAuth2Clie
 }
 
 func (s *TestSuite) TestOAuth2Clients_Reading() {
-	s.runForCookieClient("should be possible to read OAuth2 clients", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to read OAuth2 clients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -150,7 +150,7 @@ func (s *TestSuite) TestOAuth2Clients_Reading() {
 }
 
 func (s *TestSuite) TestOAuth2Clients_Archiving() {
-	s.runForCookieClient("should be possible to archive OAuth2 clients", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to archive OAuth2 clients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

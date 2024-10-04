@@ -53,6 +53,7 @@ type (
 		featureFlagManager         featureflags.FeatureFlagManager
 		userDataManager            types.UserDataManager
 		householdMembershipManager types.HouseholdUserMembershipDataManager
+		tokenDataManager           types.OAuth2ClientTokenDataManager
 		encoderDecoder             encoding.ServerEncoderDecoder
 		cookieManager              cookieEncoderDecoder
 		sessionManager             sessionManager
@@ -73,6 +74,7 @@ func ProvideService(
 	authenticator authentication.Authenticator,
 	dataManager database.DataManager,
 	householdMembershipManager types.HouseholdUserMembershipDataManager,
+	tokenDataManager types.OAuth2ClientTokenDataManager,
 	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
@@ -114,6 +116,7 @@ func ProvideService(
 		sessionContextDataFetcher:  FetchContextFromRequest,
 		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
 		tracer:                     tracer,
+		tokenDataManager:           tokenDataManager,
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
 		analyticsReporter:          analyticsReporter,

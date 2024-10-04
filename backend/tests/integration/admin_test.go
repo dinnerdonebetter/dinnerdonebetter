@@ -61,7 +61,7 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 }
 
 func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
-	s.runForCookieClient("should be possible to impersonate users without specifying household ID", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to impersonate users without specifying household ID", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -98,7 +98,7 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 	})
 
 	// The OAuth2 client always uses the default household
-	s.runForCookieClient("should be possible to impersonate users while specifying household ID", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to impersonate users while specifying household ID", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -136,7 +136,7 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 		}
 	})
 
-	s.runForCookieClient("plain user should not be able to impersonate users", func(testClients *testClientWrapper) func() {
+	s.runTest("plain user should not be able to impersonate users", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
