@@ -30,5 +30,5 @@ export const buildServerSideClient = (context: GetServerSidePropsContext): Dinne
     throw new Error('no token found');
   }
 
-  return new DinnerDoneBetterAPIClient(apiEndpoint, undefined, accessToken);
+  return new DinnerDoneBetterAPIClient(apiEndpoint, accessToken);
 };

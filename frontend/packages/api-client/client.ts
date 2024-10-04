@@ -286,7 +286,7 @@ export class DinnerDoneBetterAPIClient {
   requestInterceptorID: number;
   logger: LoggerType = buildServerSideLogger('api_client');
 
-  constructor(baseURL: string = '', cookie?: string, oauth2Token?: string) {
+  constructor(baseURL: string = '', oauth2Token?: string) {
     this.baseURL = baseURL;
 
     const headers: Record<string, string> = {

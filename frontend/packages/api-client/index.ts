@@ -1,21 +1,6 @@
-import { GetServerSidePropsContext } from 'next';
 import router from 'next/router';
 
 import { DinnerDoneBetterAPIClient } from './client';
-
-export const buildServerSideClient = (
-  context: GetServerSidePropsContext,
-  apiCookieName: string,
-): DinnerDoneBetterAPIClient => {
-  const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  if (!apiEndpoint) {
-    throw new Error('no API endpoint set!');
-  }
-
-  const ddbClient = new DinnerDoneBetterAPIClient(apiEndpoint, context.req.cookies[apiCookieName]);
-
-  return ddbClient;
-};
 
 export const buildServerSideClientWithOAuth2Token = (token: string): DinnerDoneBetterAPIClient => {
   const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
@@ -27,7 +12,7 @@ export const buildServerSideClientWithOAuth2Token = (token: string): DinnerDoneB
     throw new Error('no token set!');
   }
 
-  return new DinnerDoneBetterAPIClient(apiEndpoint, undefined, token);
+  return new DinnerDoneBetterAPIClient(apiEndpoint, token);
 };
 
 export const buildCookielessServerSideClient = (): DinnerDoneBetterAPIClient => {

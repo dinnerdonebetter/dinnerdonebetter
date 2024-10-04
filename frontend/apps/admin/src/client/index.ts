@@ -21,10 +21,11 @@ export const buildServerSideClient = (context: GetServerSidePropsContext): Dinne
   const userSessionDetails = (encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>).decrypt(
     encryptedCookieData,
   );
-  const accessToken = JSON.parse(JSON.stringify(userSessionDetails.Token))['access_token'];
+
+  const accessToken = JSON.parse(JSON.stringify(userSessionDetails.token))['access_token'];
   if (!accessToken) {
     throw new Error('no token found');
   }
 
-  return new DinnerDoneBetterAPIClient(apiEndpoint, undefined, accessToken);
+  return new DinnerDoneBetterAPIClient(apiEndpoint, accessToken);
 };
