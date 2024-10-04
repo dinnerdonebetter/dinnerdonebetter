@@ -236,7 +236,7 @@ func (s *TestSuite) TestUsers_Archiving() {
 }
 
 func (s *TestSuite) TestUsers_AvatarManagement() {
-	s.runForCookieClient("should be able to upload an avatar", func(testClients *testClientWrapper) func() {
+	s.runTest("should be able to upload an avatar", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -10,7 +9,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -58,33 +56,9 @@ func (s *TestSuite) SetupTest() {
 }
 
 func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.runForEachClientExcept(name, subtestBuilder, oauth2AuthType)
-}
-
-func (s *TestSuite) runForEachClientExcept(name string, subtestBuilder func(*testClientWrapper) func(), exceptions ...string) {
-	for a, c := range s.eachClientExcept(exceptions...) {
-		authType, testClients := a, c
-		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
-	}
+	s.Run(name, subtestBuilder(&testClientWrapper{authType: cookieAuthType, user: s.cookieClient, admin: s.adminCookieClient}))
 }
 
 func (s *TestSuite) runTest(name string, subtestBuilder func(*testClientWrapper) func()) {
 	s.Run(name, subtestBuilder(&testClientWrapper{authType: oauth2AuthType, user: s.oauthedClient, admin: s.adminOAuthedClient}))
-}
-
-func (s *TestSuite) eachClientExcept(exceptions ...string) map[string]*testClientWrapper {
-	t := s.T()
-
-	clients := map[string]*testClientWrapper{
-		cookieAuthType: {authType: cookieAuthType, user: s.cookieClient, admin: s.adminCookieClient},
-		oauth2AuthType: {authType: oauth2AuthType, user: s.oauthedClient, admin: s.adminOAuthedClient},
-	}
-
-	for _, name := range exceptions {
-		delete(clients, name)
-	}
-
-	require.NotEmpty(t, clients)
-
-	return clients
 }
