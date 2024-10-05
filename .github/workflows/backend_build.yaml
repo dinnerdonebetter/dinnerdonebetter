@@ -14,7 +14,7 @@ concurrency:
 
 name: backend - build
 jobs:
-  run:
+  backend:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
@@ -29,19 +29,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: authenticate with GCP
-        uses: google-github-actions/auth@v1
+      - name: Build backend
+        working-directory: backend/
+        run: make build
+
+  cloud functions:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [ '1.22.x' ]
+        script-to-build: [
+          'data_changes',
+          'outbound_emailer',
+          'search_indexer',
+          'webhook_executor',
+          'meal_plan_finalizer',
+          'meal_plan_task_creator',
+          'meal_plan_grocery_list_initializer',
+        ]
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
         with:
-          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Build data changes cloud function directory
         working-directory: backend/
-        run: ./scripts/build_cloud_function.sh data_changes
-
-      - name: Build outbound outbound_emailer cloud function directory
-        working-directory: backend/
-        run: ./scripts/build_cloud_function.sh outbound_emailer
-
-      - name: Build search indexer cloud function directory
-        working-directory: backend/
-        run: ./scripts/build_cloud_function.sh search_indexer
+        run: ./scripts/build_cloud_function.sh ${{ matrix.script-to-build }}

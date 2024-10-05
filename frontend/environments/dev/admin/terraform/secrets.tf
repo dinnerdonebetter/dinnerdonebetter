@@ -6,7 +6,7 @@ resource "random_string" "cookie_encryption_key" {
 }
 
 resource "google_secret_manager_secret" "cookie_encryption_key" {
-  secret_id = "cookie_encryption_key"
+  secret_id = "admin_cookie_encryption_key"
 
   replication {
     auto {}
@@ -26,7 +26,7 @@ resource "random_bytes" "cookie_encryption_iv" {
 }
 
 resource "google_secret_manager_secret" "cookie_encryption_iv" {
-  secret_id = "cookie_encryption_iv"
+  secret_id = "admin_cookie_encryption_iv"
 
   replication {
     auto {}

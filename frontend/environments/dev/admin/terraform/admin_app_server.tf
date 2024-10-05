@@ -93,7 +93,7 @@ resource "google_cloud_run_service" "admin_app_server" {
 
         resources {
           requests = {
-            memory = "128Mi"
+            memory = "256Mi"
           }
         }
 
@@ -118,23 +118,25 @@ resource "google_cloud_run_service" "admin_app_server" {
         }
 
         env {
-          name = "NEXT_COOKIE_ENCRYPTION_KEY"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.cookie_encryption_key.secret_id
-              key  = "latest"
-            }
-          }
+          name  = "NEXT_COOKIE_ENCRYPTION_KEY"
+          value = "HEREISA32BYTESECRETWHICHISMADEUP"
+          # value_from {
+          #   secret_key_ref {
+          #     name = google_secret_manager_secret.cookie_encryption_key.secret_id
+          #     key  = "latest"
+          #   }
+          # }
         }
 
         env {
-          name = "NEXT_BASE64_COOKIE_ENCRYPT_IV"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.cookie_encryption_iv.secret_id
-              key  = "latest"
-            }
-          }
+          name  = "NEXT_BASE64_COOKIE_ENCRYPT_IV"
+          value = "SEVSRUlTQTMyQllURVNFQ1JFVFdISUNISVNNQURFVVA="
+          # value_from {
+          #   secret_key_ref {
+          #     name = google_secret_manager_secret.cookie_encryption_iv.secret_id
+          #     key  = "latest"
+          #   }
+          # }
         }
       }
     }

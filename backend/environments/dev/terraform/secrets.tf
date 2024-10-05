@@ -65,48 +65,6 @@ resource "google_secret_manager_secret_version" "oauth2_token_encryption_key" {
   secret_data = random_string.oauth2_token_encryption_key.result
 }
 
-# API server cookie hash key
-
-resource "random_string" "cookie_hash_key" {
-  length  = 64
-  special = false
-}
-
-resource "google_secret_manager_secret" "cookie_hash_key" {
-  secret_id = "cookie_hash_key"
-
-  replication {
-    auto {}
-  }
-}
-
-resource "google_secret_manager_secret_version" "cookie_hash_key" {
-  secret = google_secret_manager_secret.cookie_hash_key.id
-
-  secret_data = random_string.cookie_hash_key.result
-}
-
-# API server cookie block key
-
-resource "random_string" "cookie_block_key" {
-  length  = 32
-  special = false
-}
-
-resource "google_secret_manager_secret" "cookie_block_key" {
-  secret_id = "cookie_block_key"
-
-  replication {
-    auto {}
-  }
-}
-
-resource "google_secret_manager_secret_version" "cookie_block_key" {
-  secret = google_secret_manager_secret.cookie_block_key.id
-
-  secret_data = random_string.cookie_block_key.result
-}
-
 # JWT Signing key
 
 resource "random_string" "jwt_signing_key" {

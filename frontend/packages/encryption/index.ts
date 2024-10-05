@@ -19,28 +19,37 @@ export class ServerTimingEvent {
   }
 }
 
-export class EncryptorDecryptor<JSONValue> {
+export class EncryptorDecryptor<T> {
   secretKey: string;
   initializationVectors: Buffer;
+  // debug, delete later
+  initializedSecretKey: boolean = false;
+  initializedIV: boolean = false;
 
-  constructor(secretKey: string, initializationVectors?: string) {
-    if (!secretKey) {
-      throw new Error('secretKey is required');
+  constructor(encryptionKey?: string, initializationVectors?: string) {
+    if ((encryptionKey || '').length !== 32) {
+      console.log('encryption key not provided, generating random bytes');
+      this.secretKey = crypto.randomBytes(32).toString('hex').slice(0, 32);
+    } else {
+      console.log(`setting up encryption with provided encryptionKey ${encryptionKey}`);
+      this.initializedSecretKey = true;
+      this.secretKey = encryptionKey!;
     }
 
-    this.secretKey = secretKey;
-
-    if (initializationVectors) {
-      this.initializationVectors = Buffer.from(initializationVectors, 'base64');
+    if (Buffer.from(initializationVectors || '', 'base64').length !== 32) {
+      console.log('initialization vectors not provided, generating random bytes');
+      this.initializationVectors = crypto.randomBytes(32);
     } else {
-      this.initializationVectors = crypto.randomBytes(16);
-      1;
-      console.log(`Generating new initialization vectors: ${this.initializationVectors.toString('base64')}`);
+      console.log(`setting up encryption with provided initializationVectors ${initializationVectors}`);
+      this.initializedIV = true;
+      this.initializationVectors = Buffer.from(initializationVectors!, 'base64');
     }
   }
 
-  encrypt(x: JSONValue): string {
-    console.log(`encrypting with initialization vectors: ${this.initializationVectors.toString('base64')}`);
+  encrypt(x: T): string {
+    console.log(
+      `encrypting with initialization vectors: ${this.initializationVectors.toString('base64')}, initializedSecretKey: ${this.initializedSecretKey}, initializedIV: ${this.initializedIV}`,
+    ); // TODO: DELETEME upon verification
 
     let cipher = crypto.createCipheriv(
       'aes-256-cbc',
@@ -53,8 +62,10 @@ export class EncryptorDecryptor<JSONValue> {
     return encrypted;
   }
 
-  decrypt(encrypted: string): JSONValue {
-    console.log(`decrypting with initialization vectors: ${this.initializationVectors.toString('base64')}`); // TODO: DELETEME upon verification
+  decrypt(encrypted: string): T {
+    console.log(
+      `decrypting with initialization vectors: ${this.initializationVectors.toString('base64')}, initializedSecretKey: ${this.initializedSecretKey}, initializedIV: ${this.initializedIV}`,
+    ); // TODO: DELETEME upon verification
 
     let decipher = crypto.createDecipheriv(
       'aes-256-cbc',
