@@ -8,7 +8,7 @@ import { webappCookieName } from '../constants';
 import { encryptorDecryptor } from '../encryption';
 
 export const buildServerSideClient = (context: GetServerSidePropsContext): DinnerDoneBetterAPIClient => {
-  const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
+  const apiEndpoint = process.env.NEXT_API_ENDPOINT;
   if (!apiEndpoint) {
     throw new Error('no API endpoint set!');
   }

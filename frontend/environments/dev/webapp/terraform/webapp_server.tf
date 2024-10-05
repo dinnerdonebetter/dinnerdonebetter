@@ -137,6 +137,11 @@ resource "google_cloud_run_service" "webapp_server" {
         }
 
         env {
+          name  = "NEXT_API_ENDPOINT"
+          value = "https://api.dinnerdonebetter.dev"
+        }
+
+        env {
           name = "NEXT_COOKIE_ENCRYPTION_KEY"
           value_from {
             secret_key_ref {
