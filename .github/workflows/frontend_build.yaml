@@ -1,4 +1,4 @@
-on:
+on: # [pull_request]
   pull_request:
     paths:
       - frontend/apps/**
@@ -10,12 +10,35 @@ concurrency:
 
 name: frontend - build
 jobs:
-  admin:
+  containers:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['lts/*']
-    name: Webapp on ${{ matrix.node }}
+        configs:
+          - app: 'admin'
+          - app: 'landing'
+          - app: 'web'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: ${{ matrix.configs.app }} Container
+        working-directory: frontend/
+        run: |
+          docker build --tag ${{  github.sha }} --file apps/${{ matrix.configs.app }}/Dockerfile .
+
+  apps:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configs:
+          - node: 'lts/*'
+            app: 'web'
+          - node: 'lts/*'
+            app: 'landing'
+          - node: 'lts/*'
+            app: 'admin'
+    name: ${{ matrix.configs.app }} on ${{ matrix.configs.node }}
     steps:
       - uses: actions/checkout@v3
 
@@ -31,79 +54,4 @@ jobs:
         env:
           NEXT_COOKIE_ENCRYPTION_KEY: 'ZOTGz4KEhZFSM6udeESOX5JVqhtEdHdS'
           NEXT_BASE64_COOKIE_ENCRYPT_IV: 'S2IwVXVvMW9hSEl4WjQ0ak1NYW50QndMTzJBWDJFV2o='
-        working-directory: frontend/apps/admin
-
-  admin_container:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Admin Container
-        working-directory: frontend/
-        run: |
-          docker build --tag gcr.io/dinner-done-better-dev/admin_app_server:${{  github.sha }} --file apps/admin/Dockerfile .
-
-  landing:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ['lts/*']
-    name: Webapp on ${{ matrix.node }}
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-
-      - run: npm install -g yarn
-
-      - run: yarn install
-        working-directory: frontend/
-
-      - run: yarn run build
-        working-directory: frontend/apps/landing
-
-  landing_container:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Webapp Container
-        working-directory: frontend/
-        run: |
-          docker build --tag gcr.io/dinner-done-better-dev/landing_server:${{  github.sha }} --file apps/landing/Dockerfile .
-  webapp:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ['lts/*']
-    name: Webapp on ${{ matrix.node }}
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-
-      - run: npm install -g yarn
-
-      - run: yarn install
-        working-directory: frontend/
-
-      - run: yarn run build
-        working-directory: frontend/apps/web
-
-  webapp_container:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Webapp Container
-        working-directory: frontend/
-        run: |
-          docker build --tag gcr.io/dinner-done-better-dev/webapp_server:${{  github.sha }} --file apps/web/Dockerfile .
+        working-directory: frontend/apps/${{ matrix.configs.app }}
