@@ -1,8 +1,8 @@
-on: [pull_request]
-#  pull_request:
-#    paths:
-#      - frontend/apps/**
-#      - frontend/packages/**
+on: # [pull_request]
+  pull_request:
+    paths:
+      - frontend/apps/**
+      - frontend/packages/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -38,7 +38,7 @@ jobs:
             app: 'landing'
           - node: 'lts/*'
             app: 'admin'
-    name: Webapp on ${{ matrix.configs.node }}
+    name: ${{ matrix.configs.app }} on ${{ matrix.configs.node }}
     steps:
       - uses: actions/checkout@v3
 
