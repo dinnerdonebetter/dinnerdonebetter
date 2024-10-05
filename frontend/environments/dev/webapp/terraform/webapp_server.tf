@@ -137,7 +137,7 @@ resource "google_cloud_run_service" "webapp_server" {
         }
 
         env {
-          name = "NEXT_API_ENDPOINT"
+          name  = "NEXT_API_ENDPOINT"
           value = "https://api.dinnerdonebetter.dev"
         }
 

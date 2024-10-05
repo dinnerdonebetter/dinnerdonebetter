@@ -118,12 +118,12 @@ resource "google_cloud_run_service" "admin_app_server" {
         }
 
         env {
-          name = "NEXT_API_ENDPOINT"
+          name  = "NEXT_API_ENDPOINT"
           value = "https://api.dinnerdonebetter.dev"
         }
 
         env {
-          name  = "NEXT_COOKIE_ENCRYPTION_KEY"
+          name = "NEXT_COOKIE_ENCRYPTION_KEY"
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.cookie_encryption_key.secret_id
@@ -133,7 +133,7 @@ resource "google_cloud_run_service" "admin_app_server" {
         }
 
         env {
-          name  = "NEXT_BASE64_COOKIE_ENCRYPT_IV"
+          name = "NEXT_BASE64_COOKIE_ENCRYPT_IV"
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.cookie_encryption_iv.secret_id
