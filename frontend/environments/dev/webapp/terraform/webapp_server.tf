@@ -98,7 +98,7 @@ resource "google_cloud_run_service" "webapp_server" {
       service_account_name = google_service_account.webapp_user_service_account.email
 
       containers {
-        image = "us-central1-docker.pkg.dev/dinner-done-better-dev/containers/webapp_server"
+        image = "gcr.io/dinner-done-better-dev/webapp_server"
 
         resources {
           requests = {
