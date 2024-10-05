@@ -5,6 +5,10 @@ _PR description goes here_
 ## Issues addressed
 - [ ]
 
+<!-- delete this section if there aren't any additional tasks --> 
+## Additional tasks
+- [ ]
+
 <!-- delete this section if what is being completed is not part of a new feature --> 
 ## Backend Feature Checklist
   - [ ] OpenAPI Spec
@@ -35,7 +39,3 @@ _PR description goes here_
       - [ ] Request executors
       - [ ] Request executor tests
   - [ ] Integration tests
-
-<!-- delete this section if there aren't any additional tasks --> 
-## Additional tasks
-- [ ]
