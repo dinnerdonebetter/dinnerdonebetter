@@ -17,6 +17,7 @@ resource "google_project_iam_custom_role" "admin_app_server_role" {
   title       = "Admin app server role"
   description = "An IAM role for the Admin app server"
   permissions = [
+    "secretmanager.versions.access",
     "cloudtrace.traces.patch",
     "logging.buckets.create",
     "logging.buckets.write",
