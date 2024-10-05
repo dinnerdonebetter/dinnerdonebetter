@@ -76,6 +76,6 @@ build_web_container:
 
 .PHONY: openapi-client
 openapi-client:
-	rm -rf packages/api-client/generated
-	npx openapi-typescript-codegen --input ../openapi_spec.yaml --output packages/api-client/generated --useUnionTypes --client fetch
+	rm -rf packages/api-client/generateda
+	npx @hey-api/openapi-ts -i ../openapi_spec.yaml -o packages/api-client/generated -c @hey-api/client-fetch
 	$(MAKE) format

@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async (
     .catch((error: AxiosError) => {
       console.error(`getting valid ingredients`, error.status);
       span.addEvent('error occurred');
-      if (error.status === '401') {
+      if (error.status === 401) {
         props = {
           redirect: {
             destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
