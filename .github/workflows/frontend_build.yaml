@@ -12,11 +12,12 @@ name: frontend - build
 jobs:
   containers:
     runs-on: ubuntu-latest
-    matrix:
-      configs:
-        - app: 'admin'
-        - app: 'landing'
-        - app: 'web'
+    strategy:
+      matrix:
+        configs:
+          - app: 'admin'
+          - app: 'landing'
+          - app: 'web'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
