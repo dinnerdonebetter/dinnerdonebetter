@@ -1,8 +1,8 @@
-on:
-  pull_request:
-    paths:
-      - frontend/apps/**
-      - frontend/packages/**
+on: [pull_request]
+#  pull_request:
+#    paths:
+#      - frontend/apps/**
+#      - frontend/packages/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -35,7 +35,6 @@ jobs:
 
   admin_container:
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -43,7 +42,7 @@ jobs:
       - name: Admin Container
         working-directory: frontend/
         run: |
-          docker build --tag gcr.io/dinner-done-better-dev/admin_app_server:${{  github.sha }} --file apps/admin/Dockerfile .
+          docker build --tag ${{  github.sha }} --file apps/admin/Dockerfile .
 
   landing:
     runs-on: ubuntu-latest
@@ -67,7 +66,6 @@ jobs:
 
   landing_container:
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -75,7 +73,7 @@ jobs:
       - name: Webapp Container
         working-directory: frontend/
         run: |
-          docker build --tag gcr.io/dinner-done-better-dev/landing_server:${{  github.sha }} --file apps/landing/Dockerfile .
+          docker build --tag ${{  github.sha }} --file apps/landing/Dockerfile .
   webapp:
     runs-on: ubuntu-latest
     strategy:
@@ -98,7 +96,6 @@ jobs:
 
   webapp_container:
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -106,4 +103,4 @@ jobs:
       - name: Webapp Container
         working-directory: frontend/
         run: |
-          docker build --tag gcr.io/dinner-done-better-dev/webapp_server:${{  github.sha }} --file apps/web/Dockerfile .
+          docker build --tag ${{  github.sha }} --file apps/web/Dockerfile .
