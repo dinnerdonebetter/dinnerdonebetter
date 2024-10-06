@@ -73,9 +73,3 @@ build_landing_container:
 .PHONY: build_web_container
 build_web_container:
 	$(CONTAINER_RUNNER) build --tag ddb_web:latest --file apps/web/Dockerfile .
-
-.PHONY: openapi-client
-openapi-client:
-	rm -rf packages/api-client/generated
-	npx openapi-typescript-codegen --input ../openapi_spec.yaml --output packages/api-client/generated --useUnionTypes --client fetch
-	$(MAKE) format

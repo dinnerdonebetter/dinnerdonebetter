@@ -1,4 +1,11 @@
-import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse, HeadersDefaults } from 'axios';
+import axios, {
+  AxiosInstance,
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  HeadersDefaults,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import { Span } from '@opentelemetry/api';
 
 import { buildServerSideLogger, LoggerType } from '@dinnerdonebetter/logger';
@@ -259,7 +266,7 @@ import {
   searchForValidVessels,
 } from './valid_vessels';
 
-function _curlFromAxiosConfig(config: AxiosRequestConfig): string {
+function _curlFromAxiosConfig(config: InternalAxiosRequestConfig): string {
   const method = (config?.method || 'UNKNOWN').toUpperCase();
   const url = config.url;
   const headers = config.headers || {};
@@ -322,7 +329,7 @@ export class DinnerDoneBetterAPIClient {
     } as AxiosRequestConfig);
 
     this.requestInterceptorID = this.client.interceptors.request.use(
-      (request: AxiosRequestConfig) => {
+      (request: InternalAxiosRequestConfig) => {
         // this.logger.debug(`Request: ${request.method} ${request.baseURL}${request.url}`);
         console.log(`${_curlFromAxiosConfig(request)}`);
 
@@ -359,15 +366,13 @@ export class DinnerDoneBetterAPIClient {
 
     this.client.interceptors.request.eject(this.requestInterceptorID);
     this.requestInterceptorID = this.client.interceptors.request.use(
-      (request: AxiosRequestConfig) => {
+      (request: InternalAxiosRequestConfig) => {
         this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
 
         // console.log(_curlFromAxiosConfig(request));
 
         if (spanContext.traceId) {
-          request.headers = request.headers
-            ? { ...request.headers, traceparent: spanContext.traceId }
-            : { traceparent: spanContext.traceId };
+          request.headers.set('traceparent', spanContext.traceId);
         }
 
         return request;
