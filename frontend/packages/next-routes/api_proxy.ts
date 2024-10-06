@@ -82,7 +82,7 @@ export function buildAPIProxyRoute(
       .catch((err: AxiosError<IAPIError>) => {
         span.addEvent('error received');
         logger.error({
-          configURL: err.config.url,
+          configURL: err.config?.url || '',
           status: err.code,
           err: err,
           ...spanLogDetails,
