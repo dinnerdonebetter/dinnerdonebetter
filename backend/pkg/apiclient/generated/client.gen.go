@@ -1327,46 +1327,44 @@ type PasswordUpdateInput struct {
 
 // Recipe defines model for Recipe.
 type Recipe struct {
-	ArchivedAt               *time.Time        `json:"archivedAt,omitempty"`
-	CreatedAt                *time.Time        `json:"createdAt,omitempty"`
-	CreatedByUser            *string           `json:"createdByUser,omitempty"`
-	Description              *string           `json:"description,omitempty"`
-	EligibleForMeals         *bool             `json:"eligibleForMeals,omitempty"`
-	Id                       *string           `json:"id,omitempty"`
-	InspiredByRecipeID       *string           `json:"inspiredByRecipeID,omitempty"`
-	LastUpdatedAt            *time.Time        `json:"lastUpdatedAt,omitempty"`
-	MaximumEstimatedPortions *float64          `json:"maximumEstimatedPortions,omitempty"`
-	Media                    *[]RecipeMedia    `json:"media,omitempty"`
-	MinimumEstimatedPortions *float64          `json:"minimumEstimatedPortions,omitempty"`
-	Name                     *string           `json:"name,omitempty"`
-	PluralPortionName        *string           `json:"pluralPortionName,omitempty"`
-	PortionName              *string           `json:"portionName,omitempty"`
-	PrepTasks                *[]RecipePrepTask `json:"prepTasks,omitempty"`
-	SealOfApproval           *bool             `json:"sealOfApproval,omitempty"`
-	Slug                     *string           `json:"slug,omitempty"`
-	Source                   *string           `json:"source,omitempty"`
-	Steps                    *[]RecipeStep     `json:"steps,omitempty"`
-	SupportingRecipes        *[]Recipe         `json:"supportingRecipes,omitempty"`
-	YieldsComponentType      *string           `json:"yieldsComponentType,omitempty"`
+	ArchivedAt          *time.Time                   `json:"archivedAt,omitempty"`
+	CreatedAt           *time.Time                   `json:"createdAt,omitempty"`
+	CreatedByUser       *string                      `json:"createdByUser,omitempty"`
+	Description         *string                      `json:"description,omitempty"`
+	EligibleForMeals    *bool                        `json:"eligibleForMeals,omitempty"`
+	EstimatedPortions   *Float32RangeWithOptionalMax `json:"estimatedPortions,omitempty"`
+	Id                  *string                      `json:"id,omitempty"`
+	InspiredByRecipeID  *string                      `json:"inspiredByRecipeID,omitempty"`
+	LastUpdatedAt       *time.Time                   `json:"lastUpdatedAt,omitempty"`
+	Media               *[]RecipeMedia               `json:"media,omitempty"`
+	Name                *string                      `json:"name,omitempty"`
+	PluralPortionName   *string                      `json:"pluralPortionName,omitempty"`
+	PortionName         *string                      `json:"portionName,omitempty"`
+	PrepTasks           *[]RecipePrepTask            `json:"prepTasks,omitempty"`
+	SealOfApproval      *bool                        `json:"sealOfApproval,omitempty"`
+	Slug                *string                      `json:"slug,omitempty"`
+	Source              *string                      `json:"source,omitempty"`
+	Steps               *[]RecipeStep                `json:"steps,omitempty"`
+	SupportingRecipes   *[]Recipe                    `json:"supportingRecipes,omitempty"`
+	YieldsComponentType *string                      `json:"yieldsComponentType,omitempty"`
 }
 
 // RecipeCreationRequestInput defines model for RecipeCreationRequestInput.
 type RecipeCreationRequestInput struct {
-	AlsoCreateMeal           *bool                                             `json:"alsoCreateMeal,omitempty"`
-	Description              *string                                           `json:"description,omitempty"`
-	EligibleForMeals         *bool                                             `json:"eligibleForMeals,omitempty"`
-	InspiredByRecipeID       *string                                           `json:"inspiredByRecipeID,omitempty"`
-	MaximumEstimatedPortions *float64                                          `json:"maximumEstimatedPortions,omitempty"`
-	MinimumEstimatedPortions *float64                                          `json:"minimumEstimatedPortions,omitempty"`
-	Name                     *string                                           `json:"name,omitempty"`
-	PluralPortionName        *string                                           `json:"pluralPortionName,omitempty"`
-	PortionName              *string                                           `json:"portionName,omitempty"`
-	PrepTasks                *[]RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks,omitempty"`
-	SealOfApproval           *bool                                             `json:"sealOfApproval,omitempty"`
-	Slug                     *string                                           `json:"slug,omitempty"`
-	Source                   *string                                           `json:"source,omitempty"`
-	Steps                    *[]RecipeStepCreationRequestInput                 `json:"steps,omitempty"`
-	YieldsComponentType      *string                                           `json:"yieldsComponentType,omitempty"`
+	AlsoCreateMeal      *bool                                             `json:"alsoCreateMeal,omitempty"`
+	Description         *string                                           `json:"description,omitempty"`
+	EligibleForMeals    *bool                                             `json:"eligibleForMeals,omitempty"`
+	EstimatedPortions   *Float32RangeWithOptionalMax                      `json:"estimatedPortions,omitempty"`
+	InspiredByRecipeID  *string                                           `json:"inspiredByRecipeID,omitempty"`
+	Name                *string                                           `json:"name,omitempty"`
+	PluralPortionName   *string                                           `json:"pluralPortionName,omitempty"`
+	PortionName         *string                                           `json:"portionName,omitempty"`
+	PrepTasks           *[]RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks,omitempty"`
+	SealOfApproval      *bool                                             `json:"sealOfApproval,omitempty"`
+	Slug                *string                                           `json:"slug,omitempty"`
+	Source              *string                                           `json:"source,omitempty"`
+	Steps               *[]RecipeStepCreationRequestInput                 `json:"steps,omitempty"`
+	YieldsComponentType *string                                           `json:"yieldsComponentType,omitempty"`
 }
 
 // RecipeMedia defines model for RecipeMedia.
@@ -1848,18 +1846,17 @@ type RecipeStepVesselUpdateRequestInput struct {
 
 // RecipeUpdateRequestInput defines model for RecipeUpdateRequestInput.
 type RecipeUpdateRequestInput struct {
-	Description              *string  `json:"description,omitempty"`
-	EligibleForMeals         *bool    `json:"eligibleForMeals,omitempty"`
-	InspiredByRecipeID       *string  `json:"inspiredByRecipeID,omitempty"`
-	MaximumEstimatedPortions *float64 `json:"maximumEstimatedPortions,omitempty"`
-	MinimumEstimatedPortions *float64 `json:"minimumEstimatedPortions,omitempty"`
-	Name                     *string  `json:"name,omitempty"`
-	PluralPortionName        *string  `json:"pluralPortionName,omitempty"`
-	PortionName              *string  `json:"portionName,omitempty"`
-	SealOfApproval           *bool    `json:"sealOfApproval,omitempty"`
-	Slug                     *string  `json:"slug,omitempty"`
-	Source                   *string  `json:"source,omitempty"`
-	YieldsComponentType      *string  `json:"yieldsComponentType,omitempty"`
+	Description         *string                                        `json:"description,omitempty"`
+	EligibleForMeals    *bool                                          `json:"eligibleForMeals,omitempty"`
+	EstimatedPortions   *Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimatedPortions,omitempty"`
+	InspiredByRecipeID  *string                                        `json:"inspiredByRecipeID,omitempty"`
+	Name                *string                                        `json:"name,omitempty"`
+	PluralPortionName   *string                                        `json:"pluralPortionName,omitempty"`
+	PortionName         *string                                        `json:"portionName,omitempty"`
+	SealOfApproval      *bool                                          `json:"sealOfApproval,omitempty"`
+	Slug                *string                                        `json:"slug,omitempty"`
+	Source              *string                                        `json:"source,omitempty"`
+	YieldsComponentType *string                                        `json:"yieldsComponentType,omitempty"`
 }
 
 // ResponseDetails defines model for ResponseDetails.
@@ -2714,29 +2711,14 @@ type WebhookTriggerEventCreationRequestInput struct {
 
 // GetReceivedHouseholdInvitationsParams defines parameters for GetReceivedHouseholdInvitations.
 type GetReceivedHouseholdInvitationsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetReceivedHouseholdInvitationsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetReceivedHouseholdInvitationsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                               `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                               `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                               `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                               `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetReceivedHouseholdInvitationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetReceivedHouseholdInvitationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                  `json:"limit"           form:"limit"`
+	Page            int                                                  `json:"page"            form:"page"`
 }
 
 // GetReceivedHouseholdInvitationsParamsIncludeArchived defines parameters for GetReceivedHouseholdInvitations.
@@ -2747,29 +2729,14 @@ type GetReceivedHouseholdInvitationsParamsSortBy string
 
 // GetSentHouseholdInvitationsParams defines parameters for GetSentHouseholdInvitations.
 type GetSentHouseholdInvitationsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetSentHouseholdInvitationsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetSentHouseholdInvitationsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetSentHouseholdInvitationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetSentHouseholdInvitationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                              `json:"limit"           form:"limit"`
+	Page            int                                              `json:"page"            form:"page"`
 }
 
 // GetSentHouseholdInvitationsParamsIncludeArchived defines parameters for GetSentHouseholdInvitations.
@@ -2780,29 +2747,14 @@ type GetSentHouseholdInvitationsParamsSortBy string
 
 // GetHouseholdsParams defines parameters for GetHouseholds.
 type GetHouseholdsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetHouseholdsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetHouseholdsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                             `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                             `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                             `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                             `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetHouseholdsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetHouseholdsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                `json:"limit"           form:"limit"`
+	Page            int                                `json:"page"            form:"page"`
 }
 
 // GetHouseholdsParamsIncludeArchived defines parameters for GetHouseholds.
@@ -2813,29 +2765,14 @@ type GetHouseholdsParamsSortBy string
 
 // GetHouseholdInstrumentOwnershipsParams defines parameters for GetHouseholdInstrumentOwnerships.
 type GetHouseholdInstrumentOwnershipsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetHouseholdInstrumentOwnershipsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetHouseholdInstrumentOwnershipsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetHouseholdInstrumentOwnershipsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetHouseholdInstrumentOwnershipsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                   `json:"limit"           form:"limit"`
+	Page            int                                                   `json:"page"            form:"page"`
 }
 
 // GetHouseholdInstrumentOwnershipsParamsIncludeArchived defines parameters for GetHouseholdInstrumentOwnerships.
@@ -2846,29 +2783,14 @@ type GetHouseholdInstrumentOwnershipsParamsSortBy string
 
 // GetMealPlansParams defines parameters for GetMealPlans.
 type GetMealPlansParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetMealPlansParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetMealPlansParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                            `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                            `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                            `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                            `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetMealPlansParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetMealPlansParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                               `json:"limit"           form:"limit"`
+	Page            int                               `json:"page"            form:"page"`
 }
 
 // GetMealPlansParamsIncludeArchived defines parameters for GetMealPlans.
@@ -2879,29 +2801,14 @@ type GetMealPlansParamsSortBy string
 
 // GetMealPlanEventsParams defines parameters for GetMealPlanEvents.
 type GetMealPlanEventsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetMealPlanEventsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetMealPlanEventsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                 `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                 `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                 `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                 `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetMealPlanEventsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetMealPlanEventsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                    `json:"limit"           form:"limit"`
+	Page            int                                    `json:"page"            form:"page"`
 }
 
 // GetMealPlanEventsParamsIncludeArchived defines parameters for GetMealPlanEvents.
@@ -2912,29 +2819,14 @@ type GetMealPlanEventsParamsSortBy string
 
 // GetMealPlanOptionsParams defines parameters for GetMealPlanOptions.
 type GetMealPlanOptionsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetMealPlanOptionsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetMealPlanOptionsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                  `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                  `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                  `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                  `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetMealPlanOptionsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetMealPlanOptionsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                     `json:"limit"           form:"limit"`
+	Page            int                                     `json:"page"            form:"page"`
 }
 
 // GetMealPlanOptionsParamsIncludeArchived defines parameters for GetMealPlanOptions.
@@ -2945,29 +2837,14 @@ type GetMealPlanOptionsParamsSortBy string
 
 // GetMealPlanOptionVotesParams defines parameters for GetMealPlanOptionVotes.
 type GetMealPlanOptionVotesParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetMealPlanOptionVotesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetMealPlanOptionVotesParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                      `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                      `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                      `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                      `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetMealPlanOptionVotesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetMealPlanOptionVotesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                         `json:"limit"           form:"limit"`
+	Page            int                                         `json:"page"            form:"page"`
 }
 
 // GetMealPlanOptionVotesParamsIncludeArchived defines parameters for GetMealPlanOptionVotes.
@@ -2978,29 +2855,14 @@ type GetMealPlanOptionVotesParamsSortBy string
 
 // GetMealPlanGroceryListItemsForMealPlanParams defines parameters for GetMealPlanGroceryListItemsForMealPlan.
 type GetMealPlanGroceryListItemsForMealPlanParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetMealPlanGroceryListItemsForMealPlanParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                      `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                      `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                      `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                      `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetMealPlanGroceryListItemsForMealPlanParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                         `json:"limit"           form:"limit"`
+	Page            int                                                         `json:"page"            form:"page"`
 }
 
 // GetMealPlanGroceryListItemsForMealPlanParamsIncludeArchived defines parameters for GetMealPlanGroceryListItemsForMealPlan.
@@ -3011,29 +2873,14 @@ type GetMealPlanGroceryListItemsForMealPlanParamsSortBy string
 
 // GetMealPlanTasksParams defines parameters for GetMealPlanTasks.
 type GetMealPlanTasksParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetMealPlanTasksParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetMealPlanTasksParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetMealPlanTasksParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetMealPlanTasksParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                   `json:"limit"           form:"limit"`
+	Page            int                                   `json:"page"            form:"page"`
 }
 
 // GetMealPlanTasksParamsIncludeArchived defines parameters for GetMealPlanTasks.
@@ -3044,29 +2891,14 @@ type GetMealPlanTasksParamsSortBy string
 
 // GetMealsParams defines parameters for GetMeals.
 type GetMealsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetMealsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetMealsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetMealsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetMealsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                           `json:"limit"           form:"limit"`
+	Page            int                           `json:"page"            form:"page"`
 }
 
 // GetMealsParamsIncludeArchived defines parameters for GetMeals.
@@ -3077,32 +2909,15 @@ type GetMealsParamsSortBy string
 
 // SearchForMealsParams defines parameters for SearchForMeals.
 type SearchForMealsParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForMealsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForMealsParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                              `json:"q"               form:"q"`
+	CreatedBefore   string                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForMealsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForMealsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                 `json:"limit"           form:"limit"`
+	Page            int                                 `json:"page"            form:"page"`
 }
 
 // SearchForMealsParamsIncludeArchived defines parameters for SearchForMeals.
@@ -3113,29 +2928,14 @@ type SearchForMealsParamsSortBy string
 
 // GetOAuth2ClientsParams defines parameters for GetOAuth2Clients.
 type GetOAuth2ClientsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetOAuth2ClientsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetOAuth2ClientsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetOAuth2ClientsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetOAuth2ClientsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                   `json:"limit"           form:"limit"`
+	Page            int                                   `json:"page"            form:"page"`
 }
 
 // GetOAuth2ClientsParamsIncludeArchived defines parameters for GetOAuth2Clients.
@@ -3146,29 +2946,14 @@ type GetOAuth2ClientsParamsSortBy string
 
 // GetRecipesParams defines parameters for GetRecipes.
 type GetRecipesParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetRecipesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetRecipesParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                          `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                          `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                          `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                          `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetRecipesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetRecipesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                             `json:"limit"           form:"limit"`
+	Page            int                             `json:"page"            form:"page"`
 }
 
 // GetRecipesParamsIncludeArchived defines parameters for GetRecipes.
@@ -3179,32 +2964,15 @@ type GetRecipesParamsSortBy string
 
 // SearchForRecipesParams defines parameters for SearchForRecipes.
 type SearchForRecipesParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForRecipesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForRecipesParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                `json:"q"               form:"q"`
+	CreatedBefore   string                                `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForRecipesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForRecipesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                   `json:"limit"           form:"limit"`
+	Page            int                                   `json:"page"            form:"page"`
 }
 
 // SearchForRecipesParamsIncludeArchived defines parameters for SearchForRecipes.
@@ -3215,29 +2983,14 @@ type SearchForRecipesParamsSortBy string
 
 // GetRecipePrepTasksParams defines parameters for GetRecipePrepTasks.
 type GetRecipePrepTasksParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetRecipePrepTasksParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetRecipePrepTasksParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                  `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                  `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                  `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                  `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetRecipePrepTasksParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetRecipePrepTasksParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                     `json:"limit"           form:"limit"`
+	Page            int                                     `json:"page"            form:"page"`
 }
 
 // GetRecipePrepTasksParamsIncludeArchived defines parameters for GetRecipePrepTasks.
@@ -3248,29 +3001,14 @@ type GetRecipePrepTasksParamsSortBy string
 
 // GetRecipeRatingsParams defines parameters for GetRecipeRatings.
 type GetRecipeRatingsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetRecipeRatingsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetRecipeRatingsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetRecipeRatingsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetRecipeRatingsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                   `json:"limit"           form:"limit"`
+	Page            int                                   `json:"page"            form:"page"`
 }
 
 // GetRecipeRatingsParamsIncludeArchived defines parameters for GetRecipeRatings.
@@ -3281,29 +3019,14 @@ type GetRecipeRatingsParamsSortBy string
 
 // GetRecipeStepsParams defines parameters for GetRecipeSteps.
 type GetRecipeStepsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetRecipeStepsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetRecipeStepsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetRecipeStepsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetRecipeStepsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                 `json:"limit"           form:"limit"`
+	Page            int                                 `json:"page"            form:"page"`
 }
 
 // GetRecipeStepsParamsIncludeArchived defines parameters for GetRecipeSteps.
@@ -3314,29 +3037,14 @@ type GetRecipeStepsParamsSortBy string
 
 // GetRecipeStepCompletionConditionsParams defines parameters for GetRecipeStepCompletionConditions.
 type GetRecipeStepCompletionConditionsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetRecipeStepCompletionConditionsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetRecipeStepCompletionConditionsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                 `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                 `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                 `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                 `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetRecipeStepCompletionConditionsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetRecipeStepCompletionConditionsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                    `json:"limit"           form:"limit"`
+	Page            int                                                    `json:"page"            form:"page"`
 }
 
 // GetRecipeStepCompletionConditionsParamsIncludeArchived defines parameters for GetRecipeStepCompletionConditions.
@@ -3347,29 +3055,14 @@ type GetRecipeStepCompletionConditionsParamsSortBy string
 
 // GetRecipeStepIngredientsParams defines parameters for GetRecipeStepIngredients.
 type GetRecipeStepIngredientsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetRecipeStepIngredientsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetRecipeStepIngredientsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetRecipeStepIngredientsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetRecipeStepIngredientsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                           `json:"limit"           form:"limit"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // GetRecipeStepIngredientsParamsIncludeArchived defines parameters for GetRecipeStepIngredients.
@@ -3380,29 +3073,14 @@ type GetRecipeStepIngredientsParamsSortBy string
 
 // GetRecipeStepInstrumentsParams defines parameters for GetRecipeStepInstruments.
 type GetRecipeStepInstrumentsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetRecipeStepInstrumentsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetRecipeStepInstrumentsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetRecipeStepInstrumentsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetRecipeStepInstrumentsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                           `json:"limit"           form:"limit"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // GetRecipeStepInstrumentsParamsIncludeArchived defines parameters for GetRecipeStepInstruments.
@@ -3413,29 +3091,14 @@ type GetRecipeStepInstrumentsParamsSortBy string
 
 // GetRecipeStepProductsParams defines parameters for GetRecipeStepProducts.
 type GetRecipeStepProductsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetRecipeStepProductsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetRecipeStepProductsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                     `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                     `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                     `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                     `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetRecipeStepProductsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetRecipeStepProductsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                        `json:"limit"           form:"limit"`
+	Page            int                                        `json:"page"            form:"page"`
 }
 
 // GetRecipeStepProductsParamsIncludeArchived defines parameters for GetRecipeStepProducts.
@@ -3446,29 +3109,14 @@ type GetRecipeStepProductsParamsSortBy string
 
 // GetRecipeStepVesselsParams defines parameters for GetRecipeStepVessels.
 type GetRecipeStepVesselsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetRecipeStepVesselsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetRecipeStepVesselsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                    `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                    `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                    `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                    `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetRecipeStepVesselsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetRecipeStepVesselsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                       `json:"limit"           form:"limit"`
+	Page            int                                       `json:"page"            form:"page"`
 }
 
 // GetRecipeStepVesselsParamsIncludeArchived defines parameters for GetRecipeStepVessels.
@@ -3479,29 +3127,14 @@ type GetRecipeStepVesselsParamsSortBy string
 
 // GetServiceSettingsParams defines parameters for GetServiceSettings.
 type GetServiceSettingsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetServiceSettingsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetServiceSettingsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                  `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                  `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                  `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                  `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetServiceSettingsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetServiceSettingsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                     `json:"limit"           form:"limit"`
+	Page            int                                     `json:"page"            form:"page"`
 }
 
 // GetServiceSettingsParamsIncludeArchived defines parameters for GetServiceSettings.
@@ -3512,29 +3145,14 @@ type GetServiceSettingsParamsSortBy string
 
 // GetServiceSettingConfigurationsForHouseholdParams defines parameters for GetServiceSettingConfigurationsForHousehold.
 type GetServiceSettingConfigurationsForHouseholdParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetServiceSettingConfigurationsForHouseholdParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetServiceSettingConfigurationsForHouseholdParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetServiceSettingConfigurationsForHouseholdParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetServiceSettingConfigurationsForHouseholdParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                              `json:"limit"           form:"limit"`
+	Page            int                                                              `json:"page"            form:"page"`
 }
 
 // GetServiceSettingConfigurationsForHouseholdParamsIncludeArchived defines parameters for GetServiceSettingConfigurationsForHousehold.
@@ -3545,29 +3163,14 @@ type GetServiceSettingConfigurationsForHouseholdParamsSortBy string
 
 // GetServiceSettingConfigurationsForUserParams defines parameters for GetServiceSettingConfigurationsForUser.
 type GetServiceSettingConfigurationsForUserParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetServiceSettingConfigurationsForUserParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetServiceSettingConfigurationsForUserParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                      `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                      `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                      `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                      `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetServiceSettingConfigurationsForUserParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetServiceSettingConfigurationsForUserParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                         `json:"limit"           form:"limit"`
+	Page            int                                                         `json:"page"            form:"page"`
 }
 
 // GetServiceSettingConfigurationsForUserParamsIncludeArchived defines parameters for GetServiceSettingConfigurationsForUser.
@@ -3578,29 +3181,14 @@ type GetServiceSettingConfigurationsForUserParamsSortBy string
 
 // GetServiceSettingConfigurationByNameParams defines parameters for GetServiceSettingConfigurationByName.
 type GetServiceSettingConfigurationByNameParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetServiceSettingConfigurationByNameParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetServiceSettingConfigurationByNameParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                    `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                    `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                    `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                    `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetServiceSettingConfigurationByNameParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetServiceSettingConfigurationByNameParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                       `json:"limit"           form:"limit"`
+	Page            int                                                       `json:"page"            form:"page"`
 }
 
 // GetServiceSettingConfigurationByNameParamsIncludeArchived defines parameters for GetServiceSettingConfigurationByName.
@@ -3611,32 +3199,15 @@ type GetServiceSettingConfigurationByNameParamsSortBy string
 
 // SearchForServiceSettingsParams defines parameters for SearchForServiceSettings.
 type SearchForServiceSettingsParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForServiceSettingsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForServiceSettingsParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                        `json:"q"               form:"q"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForServiceSettingsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForServiceSettingsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                           `json:"limit"           form:"limit"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // SearchForServiceSettingsParamsIncludeArchived defines parameters for SearchForServiceSettings.
@@ -3647,29 +3218,14 @@ type SearchForServiceSettingsParamsSortBy string
 
 // GetUserIngredientPreferencesParams defines parameters for GetUserIngredientPreferences.
 type GetUserIngredientPreferencesParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetUserIngredientPreferencesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetUserIngredientPreferencesParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                            `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                            `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                            `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                            `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetUserIngredientPreferencesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetUserIngredientPreferencesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                               `json:"limit"           form:"limit"`
+	Page            int                                               `json:"page"            form:"page"`
 }
 
 // GetUserIngredientPreferencesParamsIncludeArchived defines parameters for GetUserIngredientPreferences.
@@ -3680,29 +3236,14 @@ type GetUserIngredientPreferencesParamsSortBy string
 
 // GetUserNotificationsParams defines parameters for GetUserNotifications.
 type GetUserNotificationsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetUserNotificationsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetUserNotificationsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                    `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                    `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                    `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                    `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetUserNotificationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetUserNotificationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                       `json:"limit"           form:"limit"`
+	Page            int                                       `json:"page"            form:"page"`
 }
 
 // GetUserNotificationsParamsIncludeArchived defines parameters for GetUserNotifications.
@@ -3713,29 +3254,14 @@ type GetUserNotificationsParamsSortBy string
 
 // GetUsersParams defines parameters for GetUsers.
 type GetUsersParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetUsersParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetUsersParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetUsersParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetUsersParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                           `json:"limit"           form:"limit"`
+	Page            int                           `json:"page"            form:"page"`
 }
 
 // GetUsersParamsIncludeArchived defines parameters for GetUsers.
@@ -3746,32 +3272,15 @@ type GetUsersParamsSortBy string
 
 // SearchForUsersParams defines parameters for SearchForUsers.
 type SearchForUsersParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForUsersParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForUsersParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                              `json:"q"               form:"q"`
+	CreatedBefore   string                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForUsersParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForUsersParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                 `json:"limit"           form:"limit"`
+	Page            int                                 `json:"page"            form:"page"`
 }
 
 // SearchForUsersParamsIncludeArchived defines parameters for SearchForUsers.
@@ -3782,29 +3291,14 @@ type SearchForUsersParamsSortBy string
 
 // GetValidIngredientGroupsParams defines parameters for GetValidIngredientGroups.
 type GetValidIngredientGroupsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientGroupsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientGroupsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientGroupsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientGroupsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                           `json:"limit"           form:"limit"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // GetValidIngredientGroupsParamsIncludeArchived defines parameters for GetValidIngredientGroups.
@@ -3815,32 +3309,15 @@ type GetValidIngredientGroupsParamsSortBy string
 
 // SearchForValidIngredientGroupsParams defines parameters for SearchForValidIngredientGroups.
 type SearchForValidIngredientGroupsParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForValidIngredientGroupsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForValidIngredientGroupsParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                              `json:"q"               form:"q"`
+	CreatedBefore   string                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForValidIngredientGroupsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForValidIngredientGroupsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                 `json:"limit"           form:"limit"`
+	Page            int                                                 `json:"page"            form:"page"`
 }
 
 // SearchForValidIngredientGroupsParamsIncludeArchived defines parameters for SearchForValidIngredientGroups.
@@ -3851,29 +3328,14 @@ type SearchForValidIngredientGroupsParamsSortBy string
 
 // GetValidIngredientMeasurementUnitsParams defines parameters for GetValidIngredientMeasurementUnits.
 type GetValidIngredientMeasurementUnitsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientMeasurementUnitsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientMeasurementUnitsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                  `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                  `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                  `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                  `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientMeasurementUnitsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientMeasurementUnitsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                     `json:"limit"           form:"limit"`
+	Page            int                                                     `json:"page"            form:"page"`
 }
 
 // GetValidIngredientMeasurementUnitsParamsIncludeArchived defines parameters for GetValidIngredientMeasurementUnits.
@@ -3884,29 +3346,14 @@ type GetValidIngredientMeasurementUnitsParamsSortBy string
 
 // GetValidIngredientMeasurementUnitsByIngredientParams defines parameters for GetValidIngredientMeasurementUnitsByIngredient.
 type GetValidIngredientMeasurementUnitsByIngredientParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientMeasurementUnitsByIngredientParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientMeasurementUnitsByIngredientParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientMeasurementUnitsByIngredientParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientMeasurementUnitsByIngredientParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                                 `json:"limit"           form:"limit"`
+	Page            int                                                                 `json:"page"            form:"page"`
 }
 
 // GetValidIngredientMeasurementUnitsByIngredientParamsIncludeArchived defines parameters for GetValidIngredientMeasurementUnitsByIngredient.
@@ -3917,29 +3364,14 @@ type GetValidIngredientMeasurementUnitsByIngredientParamsSortBy string
 
 // GetValidIngredientMeasurementUnitsByMeasurementUnitParams defines parameters for GetValidIngredientMeasurementUnitsByMeasurementUnit.
 type GetValidIngredientMeasurementUnitsByMeasurementUnitParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientMeasurementUnitsByMeasurementUnitParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientMeasurementUnitsByMeasurementUnitParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                                   `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                                   `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                                   `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                                   `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientMeasurementUnitsByMeasurementUnitParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientMeasurementUnitsByMeasurementUnitParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                                      `json:"limit"           form:"limit"`
+	Page            int                                                                      `json:"page"            form:"page"`
 }
 
 // GetValidIngredientMeasurementUnitsByMeasurementUnitParamsIncludeArchived defines parameters for GetValidIngredientMeasurementUnitsByMeasurementUnit.
@@ -3950,29 +3382,14 @@ type GetValidIngredientMeasurementUnitsByMeasurementUnitParamsSortBy string
 
 // GetValidIngredientPreparationsParams defines parameters for GetValidIngredientPreparations.
 type GetValidIngredientPreparationsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientPreparationsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientPreparationsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientPreparationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientPreparationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                 `json:"limit"           form:"limit"`
+	Page            int                                                 `json:"page"            form:"page"`
 }
 
 // GetValidIngredientPreparationsParamsIncludeArchived defines parameters for GetValidIngredientPreparations.
@@ -3983,29 +3400,14 @@ type GetValidIngredientPreparationsParamsSortBy string
 
 // GetValidIngredientPreparationsByIngredientParams defines parameters for GetValidIngredientPreparationsByIngredient.
 type GetValidIngredientPreparationsByIngredientParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientPreparationsByIngredientParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientPreparationsByIngredientParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                          `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                          `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                          `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                          `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientPreparationsByIngredientParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientPreparationsByIngredientParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                             `json:"limit"           form:"limit"`
+	Page            int                                                             `json:"page"            form:"page"`
 }
 
 // GetValidIngredientPreparationsByIngredientParamsIncludeArchived defines parameters for GetValidIngredientPreparationsByIngredient.
@@ -4016,29 +3418,14 @@ type GetValidIngredientPreparationsByIngredientParamsSortBy string
 
 // GetValidIngredientPreparationsByPreparationParams defines parameters for GetValidIngredientPreparationsByPreparation.
 type GetValidIngredientPreparationsByPreparationParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientPreparationsByPreparationParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientPreparationsByPreparationParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientPreparationsByPreparationParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientPreparationsByPreparationParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                              `json:"limit"           form:"limit"`
+	Page            int                                                              `json:"page"            form:"page"`
 }
 
 // GetValidIngredientPreparationsByPreparationParamsIncludeArchived defines parameters for GetValidIngredientPreparationsByPreparation.
@@ -4049,29 +3436,14 @@ type GetValidIngredientPreparationsByPreparationParamsSortBy string
 
 // GetValidIngredientStateIngredientsParams defines parameters for GetValidIngredientStateIngredients.
 type GetValidIngredientStateIngredientsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientStateIngredientsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientStateIngredientsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                  `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                  `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                  `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                  `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientStateIngredientsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientStateIngredientsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                     `json:"limit"           form:"limit"`
+	Page            int                                                     `json:"page"            form:"page"`
 }
 
 // GetValidIngredientStateIngredientsParamsIncludeArchived defines parameters for GetValidIngredientStateIngredients.
@@ -4082,29 +3454,14 @@ type GetValidIngredientStateIngredientsParamsSortBy string
 
 // GetValidIngredientStateIngredientsByIngredientParams defines parameters for GetValidIngredientStateIngredientsByIngredient.
 type GetValidIngredientStateIngredientsByIngredientParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientStateIngredientsByIngredientParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientStateIngredientsByIngredientParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientStateIngredientsByIngredientParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientStateIngredientsByIngredientParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                                 `json:"limit"           form:"limit"`
+	Page            int                                                                 `json:"page"            form:"page"`
 }
 
 // GetValidIngredientStateIngredientsByIngredientParamsIncludeArchived defines parameters for GetValidIngredientStateIngredientsByIngredient.
@@ -4115,29 +3472,14 @@ type GetValidIngredientStateIngredientsByIngredientParamsSortBy string
 
 // GetValidIngredientStateIngredientsByIngredientStateParams defines parameters for GetValidIngredientStateIngredientsByIngredientState.
 type GetValidIngredientStateIngredientsByIngredientStateParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientStateIngredientsByIngredientStateParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientStateIngredientsByIngredientStateParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                                   `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                                   `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                                   `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                                   `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientStateIngredientsByIngredientStateParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientStateIngredientsByIngredientStateParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                                      `json:"limit"           form:"limit"`
+	Page            int                                                                      `json:"page"            form:"page"`
 }
 
 // GetValidIngredientStateIngredientsByIngredientStateParamsIncludeArchived defines parameters for GetValidIngredientStateIngredientsByIngredientState.
@@ -4148,29 +3490,14 @@ type GetValidIngredientStateIngredientsByIngredientStateParamsSortBy string
 
 // GetValidIngredientStatesParams defines parameters for GetValidIngredientStates.
 type GetValidIngredientStatesParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientStatesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientStatesParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientStatesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientStatesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                           `json:"limit"           form:"limit"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // GetValidIngredientStatesParamsIncludeArchived defines parameters for GetValidIngredientStates.
@@ -4181,32 +3508,15 @@ type GetValidIngredientStatesParamsSortBy string
 
 // SearchForValidIngredientStatesParams defines parameters for SearchForValidIngredientStates.
 type SearchForValidIngredientStatesParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForValidIngredientStatesParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForValidIngredientStatesParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                              `json:"q"               form:"q"`
+	CreatedBefore   string                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForValidIngredientStatesParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForValidIngredientStatesParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                 `json:"limit"           form:"limit"`
+	Page            int                                                 `json:"page"            form:"page"`
 }
 
 // SearchForValidIngredientStatesParamsIncludeArchived defines parameters for SearchForValidIngredientStates.
@@ -4217,29 +3527,14 @@ type SearchForValidIngredientStatesParamsSortBy string
 
 // GetValidIngredientsParams defines parameters for GetValidIngredients.
 type GetValidIngredientsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                   `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                   `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                   `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                   `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                      `json:"limit"           form:"limit"`
+	Page            int                                      `json:"page"            form:"page"`
 }
 
 // GetValidIngredientsParamsIncludeArchived defines parameters for GetValidIngredients.
@@ -4250,32 +3545,15 @@ type GetValidIngredientsParamsSortBy string
 
 // GetValidIngredientsByPreparationParams defines parameters for GetValidIngredientsByPreparation.
 type GetValidIngredientsByPreparationParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidIngredientsByPreparationParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidIngredientsByPreparationParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                                `json:"q"               form:"q"`
+	CreatedBefore   string                                                `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidIngredientsByPreparationParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidIngredientsByPreparationParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                   `json:"limit"           form:"limit"`
+	Page            int                                                   `json:"page"            form:"page"`
 }
 
 // GetValidIngredientsByPreparationParamsIncludeArchived defines parameters for GetValidIngredientsByPreparation.
@@ -4286,32 +3564,15 @@ type GetValidIngredientsByPreparationParamsSortBy string
 
 // SearchForValidIngredientsParams defines parameters for SearchForValidIngredients.
 type SearchForValidIngredientsParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForValidIngredientsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForValidIngredientsParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                         `json:"q"               form:"q"`
+	CreatedBefore   string                                         `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                         `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                         `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                         `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForValidIngredientsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForValidIngredientsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                            `json:"limit"           form:"limit"`
+	Page            int                                            `json:"page"            form:"page"`
 }
 
 // SearchForValidIngredientsParamsIncludeArchived defines parameters for SearchForValidIngredients.
@@ -4322,29 +3583,14 @@ type SearchForValidIngredientsParamsSortBy string
 
 // GetValidInstrumentsParams defines parameters for GetValidInstruments.
 type GetValidInstrumentsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidInstrumentsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidInstrumentsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                   `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                   `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                   `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                   `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidInstrumentsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidInstrumentsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                      `json:"limit"           form:"limit"`
+	Page            int                                      `json:"page"            form:"page"`
 }
 
 // GetValidInstrumentsParamsIncludeArchived defines parameters for GetValidInstruments.
@@ -4355,32 +3601,15 @@ type GetValidInstrumentsParamsSortBy string
 
 // SearchForValidInstrumentsParams defines parameters for SearchForValidInstruments.
 type SearchForValidInstrumentsParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForValidInstrumentsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForValidInstrumentsParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                         `json:"q"               form:"q"`
+	CreatedBefore   string                                         `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                         `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                         `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                         `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForValidInstrumentsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForValidInstrumentsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                            `json:"limit"           form:"limit"`
+	Page            int                                            `json:"page"            form:"page"`
 }
 
 // SearchForValidInstrumentsParamsIncludeArchived defines parameters for SearchForValidInstruments.
@@ -4391,29 +3620,14 @@ type SearchForValidInstrumentsParamsSortBy string
 
 // GetValidMeasurementUnitsParams defines parameters for GetValidMeasurementUnits.
 type GetValidMeasurementUnitsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidMeasurementUnitsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidMeasurementUnitsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                        `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                        `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                        `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                        `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidMeasurementUnitsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidMeasurementUnitsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                           `json:"limit"           form:"limit"`
+	Page            int                                           `json:"page"            form:"page"`
 }
 
 // GetValidMeasurementUnitsParamsIncludeArchived defines parameters for GetValidMeasurementUnits.
@@ -4424,32 +3638,15 @@ type GetValidMeasurementUnitsParamsSortBy string
 
 // SearchValidMeasurementUnitsByIngredientParams defines parameters for SearchValidMeasurementUnitsByIngredient.
 type SearchValidMeasurementUnitsByIngredientParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchValidMeasurementUnitsByIngredientParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchValidMeasurementUnitsByIngredientParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                                       `json:"q"               form:"q"`
+	CreatedBefore   string                                                       `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                       `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                       `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                       `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchValidMeasurementUnitsByIngredientParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchValidMeasurementUnitsByIngredientParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                          `json:"limit"           form:"limit"`
+	Page            int                                                          `json:"page"            form:"page"`
 }
 
 // SearchValidMeasurementUnitsByIngredientParamsIncludeArchived defines parameters for SearchValidMeasurementUnitsByIngredient.
@@ -4460,32 +3657,15 @@ type SearchValidMeasurementUnitsByIngredientParamsSortBy string
 
 // SearchForValidMeasurementUnitsParams defines parameters for SearchForValidMeasurementUnits.
 type SearchForValidMeasurementUnitsParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForValidMeasurementUnitsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForValidMeasurementUnitsParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                              `json:"q"               form:"q"`
+	CreatedBefore   string                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForValidMeasurementUnitsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForValidMeasurementUnitsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                 `json:"limit"           form:"limit"`
+	Page            int                                                 `json:"page"            form:"page"`
 }
 
 // SearchForValidMeasurementUnitsParamsIncludeArchived defines parameters for SearchForValidMeasurementUnits.
@@ -4496,29 +3676,14 @@ type SearchForValidMeasurementUnitsParamsSortBy string
 
 // GetValidPreparationInstrumentsParams defines parameters for GetValidPreparationInstruments.
 type GetValidPreparationInstrumentsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidPreparationInstrumentsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidPreparationInstrumentsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                              `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                              `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                              `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                              `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidPreparationInstrumentsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidPreparationInstrumentsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                 `json:"limit"           form:"limit"`
+	Page            int                                                 `json:"page"            form:"page"`
 }
 
 // GetValidPreparationInstrumentsParamsIncludeArchived defines parameters for GetValidPreparationInstruments.
@@ -4529,29 +3694,14 @@ type GetValidPreparationInstrumentsParamsSortBy string
 
 // GetValidPreparationInstrumentsByInstrumentParams defines parameters for GetValidPreparationInstrumentsByInstrument.
 type GetValidPreparationInstrumentsByInstrumentParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidPreparationInstrumentsByInstrumentParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidPreparationInstrumentsByInstrumentParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                          `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                          `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                          `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                          `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidPreparationInstrumentsByInstrumentParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidPreparationInstrumentsByInstrumentParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                             `json:"limit"           form:"limit"`
+	Page            int                                                             `json:"page"            form:"page"`
 }
 
 // GetValidPreparationInstrumentsByInstrumentParamsIncludeArchived defines parameters for GetValidPreparationInstrumentsByInstrument.
@@ -4562,29 +3712,14 @@ type GetValidPreparationInstrumentsByInstrumentParamsSortBy string
 
 // GetValidPreparationInstrumentsByPreparationParams defines parameters for GetValidPreparationInstrumentsByPreparation.
 type GetValidPreparationInstrumentsByPreparationParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidPreparationInstrumentsByPreparationParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidPreparationInstrumentsByPreparationParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidPreparationInstrumentsByPreparationParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidPreparationInstrumentsByPreparationParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                              `json:"limit"           form:"limit"`
+	Page            int                                                              `json:"page"            form:"page"`
 }
 
 // GetValidPreparationInstrumentsByPreparationParamsIncludeArchived defines parameters for GetValidPreparationInstrumentsByPreparation.
@@ -4595,29 +3730,14 @@ type GetValidPreparationInstrumentsByPreparationParamsSortBy string
 
 // GetValidPreparationVesselsParams defines parameters for GetValidPreparationVessels.
 type GetValidPreparationVesselsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidPreparationVesselsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidPreparationVesselsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                          `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                          `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                          `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                          `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidPreparationVesselsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidPreparationVesselsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                             `json:"limit"           form:"limit"`
+	Page            int                                             `json:"page"            form:"page"`
 }
 
 // GetValidPreparationVesselsParamsIncludeArchived defines parameters for GetValidPreparationVessels.
@@ -4628,29 +3748,14 @@ type GetValidPreparationVesselsParamsSortBy string
 
 // GetValidPreparationVesselsByPreparationParams defines parameters for GetValidPreparationVesselsByPreparation.
 type GetValidPreparationVesselsByPreparationParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidPreparationVesselsByPreparationParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidPreparationVesselsByPreparationParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                       `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                       `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                       `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                       `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidPreparationVesselsByPreparationParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidPreparationVesselsByPreparationParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                          `json:"limit"           form:"limit"`
+	Page            int                                                          `json:"page"            form:"page"`
 }
 
 // GetValidPreparationVesselsByPreparationParamsIncludeArchived defines parameters for GetValidPreparationVesselsByPreparation.
@@ -4661,29 +3766,14 @@ type GetValidPreparationVesselsByPreparationParamsSortBy string
 
 // GetValidPreparationVesselsByVesselParams defines parameters for GetValidPreparationVesselsByVessel.
 type GetValidPreparationVesselsByVesselParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidPreparationVesselsByVesselParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidPreparationVesselsByVesselParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                                  `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                                  `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                                  `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                                  `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidPreparationVesselsByVesselParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidPreparationVesselsByVesselParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                                     `json:"limit"           form:"limit"`
+	Page            int                                                     `json:"page"            form:"page"`
 }
 
 // GetValidPreparationVesselsByVesselParamsIncludeArchived defines parameters for GetValidPreparationVesselsByVessel.
@@ -4694,29 +3784,14 @@ type GetValidPreparationVesselsByVesselParamsSortBy string
 
 // GetValidPreparationsParams defines parameters for GetValidPreparations.
 type GetValidPreparationsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidPreparationsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidPreparationsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                                    `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                    `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                    `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                    `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidPreparationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidPreparationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                       `json:"limit"           form:"limit"`
+	Page            int                                       `json:"page"            form:"page"`
 }
 
 // GetValidPreparationsParamsIncludeArchived defines parameters for GetValidPreparations.
@@ -4727,32 +3802,15 @@ type GetValidPreparationsParamsSortBy string
 
 // SearchForValidPreparationsParams defines parameters for SearchForValidPreparations.
 type SearchForValidPreparationsParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForValidPreparationsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForValidPreparationsParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                          `json:"q"               form:"q"`
+	CreatedBefore   string                                          `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                          `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                          `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                          `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForValidPreparationsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForValidPreparationsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                             `json:"limit"           form:"limit"`
+	Page            int                                             `json:"page"            form:"page"`
 }
 
 // SearchForValidPreparationsParamsIncludeArchived defines parameters for SearchForValidPreparations.
@@ -4763,29 +3821,14 @@ type SearchForValidPreparationsParamsSortBy string
 
 // GetValidVesselsParams defines parameters for GetValidVessels.
 type GetValidVesselsParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetValidVesselsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetValidVesselsParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                               `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                               `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                               `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                               `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetValidVesselsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetValidVesselsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                  `json:"limit"           form:"limit"`
+	Page            int                                  `json:"page"            form:"page"`
 }
 
 // GetValidVesselsParamsIncludeArchived defines parameters for GetValidVessels.
@@ -4796,32 +3839,15 @@ type GetValidVesselsParamsSortBy string
 
 // SearchForValidVesselsParams defines parameters for SearchForValidVessels.
 type SearchForValidVesselsParams struct {
-	// Q the search query parameter
-	Q string `form:"q" json:"q"`
-
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived SearchForValidVesselsParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy SearchForValidVesselsParamsSortBy `form:"sortBy" json:"sortBy"`
+	Q               string                                     `json:"q"               form:"q"`
+	CreatedBefore   string                                     `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                                     `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                                     `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                                     `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived SearchForValidVesselsParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          SearchForValidVesselsParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                                        `json:"limit"           form:"limit"`
+	Page            int                                        `json:"page"            form:"page"`
 }
 
 // SearchForValidVesselsParamsIncludeArchived defines parameters for SearchForValidVessels.
@@ -4832,29 +3858,14 @@ type SearchForValidVesselsParamsSortBy string
 
 // GetWebhooksParams defines parameters for GetWebhooks.
 type GetWebhooksParams struct {
-	// Limit How many results should appear in output, max is 250.
-	Limit int `form:"limit" json:"limit"`
-
-	// Page What page of results should appear in output.
-	Page int `form:"page" json:"page"`
-
-	// CreatedBefore The latest CreatedAt date that should appear in output.
-	CreatedBefore string `form:"createdBefore" json:"createdBefore"`
-
-	// CreatedAfter The earliest CreatedAt date that should appear in output.
-	CreatedAfter string `form:"createdAfter" json:"createdAfter"`
-
-	// UpdatedBefore The latest UpdatedAt date that should appear in output.
-	UpdatedBefore string `form:"updatedBefore" json:"updatedBefore"`
-
-	// UpdatedAfter The earliest UpdatedAt date that should appear in output.
-	UpdatedAfter string `form:"updatedAfter" json:"updatedAfter"`
-
-	// IncludeArchived Whether or not to include archived results in output, limited to service admins.
-	IncludeArchived GetWebhooksParamsIncludeArchived `form:"includeArchived" json:"includeArchived"`
-
-	// SortBy The direction in which results should be sorted.
-	SortBy GetWebhooksParamsSortBy `form:"sortBy" json:"sortBy"`
+	CreatedBefore   string                           `json:"createdBefore"   form:"createdBefore"`
+	CreatedAfter    string                           `json:"createdAfter"    form:"createdAfter"`
+	UpdatedBefore   string                           `json:"updatedBefore"   form:"updatedBefore"`
+	UpdatedAfter    string                           `json:"updatedAfter"    form:"updatedAfter"`
+	IncludeArchived GetWebhooksParamsIncludeArchived `json:"includeArchived" form:"includeArchived"`
+	SortBy          GetWebhooksParamsSortBy          `json:"sortBy"          form:"sortBy"`
+	Limit           int                              `json:"limit"           form:"limit"`
+	Page            int                              `json:"page"            form:"page"`
 }
 
 // GetWebhooksParamsIncludeArchived defines parameters for GetWebhooks.
@@ -28271,8 +27282,8 @@ type ClientWithResponsesInterface interface {
 }
 
 type CheckForLivenessResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28292,8 +27303,8 @@ func (r CheckForLivenessResponse) StatusCode() int {
 }
 
 type CheckForReadinessResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28313,7 +27324,6 @@ func (r CheckForReadinessResponse) StatusCode() int {
 }
 
 type AdminUpdateUserStatusResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserStatusResponse `json:"data,omitempty"`
@@ -28333,6 +27343,7 @@ type AdminUpdateUserStatusResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28352,7 +27363,6 @@ func (r AdminUpdateUserStatusResponse) StatusCode() int {
 }
 
 type GetAuditLogEntriesForHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *AuditLogEntry   `json:"data,omitempty"`
@@ -28372,6 +27382,7 @@ type GetAuditLogEntriesForHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28391,7 +27402,6 @@ func (r GetAuditLogEntriesForHouseholdResponse) StatusCode() int {
 }
 
 type GetAuditLogEntriesForUserResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *AuditLogEntry   `json:"data,omitempty"`
@@ -28411,6 +27421,7 @@ type GetAuditLogEntriesForUserResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28430,7 +27441,6 @@ func (r GetAuditLogEntriesForUserResponse) StatusCode() int {
 }
 
 type GetAuditLogEntryByIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *AuditLogEntry   `json:"data,omitempty"`
@@ -28450,6 +27460,7 @@ type GetAuditLogEntryByIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28469,7 +27480,6 @@ func (r GetAuditLogEntryByIDResponse) StatusCode() int {
 }
 
 type GetReceivedHouseholdInvitationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]HouseholdInvitation `json:"data,omitempty"`
@@ -28489,6 +27499,7 @@ type GetReceivedHouseholdInvitationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28508,7 +27519,6 @@ func (r GetReceivedHouseholdInvitationsResponse) StatusCode() int {
 }
 
 type GetSentHouseholdInvitationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]HouseholdInvitation `json:"data,omitempty"`
@@ -28528,6 +27538,7 @@ type GetSentHouseholdInvitationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28547,7 +27558,6 @@ func (r GetSentHouseholdInvitationsResponse) StatusCode() int {
 }
 
 type GetHouseholdInvitationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -28567,6 +27577,7 @@ type GetHouseholdInvitationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28586,7 +27597,6 @@ func (r GetHouseholdInvitationResponse) StatusCode() int {
 }
 
 type AcceptHouseholdInvitationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -28606,6 +27616,7 @@ type AcceptHouseholdInvitationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28625,7 +27636,6 @@ func (r AcceptHouseholdInvitationResponse) StatusCode() int {
 }
 
 type CancelHouseholdInvitationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -28645,6 +27655,7 @@ type CancelHouseholdInvitationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28664,7 +27675,6 @@ func (r CancelHouseholdInvitationResponse) StatusCode() int {
 }
 
 type RejectHouseholdInvitationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -28684,6 +27694,7 @@ type RejectHouseholdInvitationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28703,7 +27714,6 @@ func (r RejectHouseholdInvitationResponse) StatusCode() int {
 }
 
 type GetHouseholdsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Household     `json:"data,omitempty"`
@@ -28723,6 +27733,7 @@ type GetHouseholdsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28742,7 +27753,6 @@ func (r GetHouseholdsResponse) StatusCode() int {
 }
 
 type CreateHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -28762,6 +27772,7 @@ type CreateHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28781,7 +27792,6 @@ func (r CreateHouseholdResponse) StatusCode() int {
 }
 
 type GetActiveHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -28801,6 +27811,7 @@ type GetActiveHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28820,7 +27831,6 @@ func (r GetActiveHouseholdResponse) StatusCode() int {
 }
 
 type GetHouseholdInstrumentOwnershipsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -28840,6 +27850,7 @@ type GetHouseholdInstrumentOwnershipsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28859,7 +27870,6 @@ func (r GetHouseholdInstrumentOwnershipsResponse) StatusCode() int {
 }
 
 type CreateHouseholdInstrumentOwnershipResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -28879,6 +27889,7 @@ type CreateHouseholdInstrumentOwnershipResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28898,7 +27909,6 @@ func (r CreateHouseholdInstrumentOwnershipResponse) StatusCode() int {
 }
 
 type ArchiveHouseholdInstrumentOwnershipResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -28918,6 +27928,7 @@ type ArchiveHouseholdInstrumentOwnershipResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28937,7 +27948,6 @@ func (r ArchiveHouseholdInstrumentOwnershipResponse) StatusCode() int {
 }
 
 type GetHouseholdInstrumentOwnershipResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -28957,6 +27967,7 @@ type GetHouseholdInstrumentOwnershipResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -28976,7 +27987,6 @@ func (r GetHouseholdInstrumentOwnershipResponse) StatusCode() int {
 }
 
 type UpdateHouseholdInstrumentOwnershipResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInstrumentOwnership `json:"data,omitempty"`
@@ -28996,6 +28006,7 @@ type UpdateHouseholdInstrumentOwnershipResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29015,7 +28026,6 @@ func (r UpdateHouseholdInstrumentOwnershipResponse) StatusCode() int {
 }
 
 type ArchiveHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -29035,6 +28045,7 @@ type ArchiveHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29054,7 +28065,6 @@ func (r ArchiveHouseholdResponse) StatusCode() int {
 }
 
 type GetHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -29074,6 +28084,7 @@ type GetHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29093,7 +28104,6 @@ func (r GetHouseholdResponse) StatusCode() int {
 }
 
 type UpdateHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -29113,6 +28123,7 @@ type UpdateHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29132,7 +28143,6 @@ func (r UpdateHouseholdResponse) StatusCode() int {
 }
 
 type SetDefaultHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -29152,6 +28162,7 @@ type SetDefaultHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29171,7 +28182,6 @@ func (r SetDefaultHouseholdResponse) StatusCode() int {
 }
 
 type CreateHouseholdInvitationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -29191,6 +28201,7 @@ type CreateHouseholdInvitationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29210,7 +28221,6 @@ func (r CreateHouseholdInvitationResponse) StatusCode() int {
 }
 
 type GetHouseholdInvitationByIDResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -29230,6 +28240,7 @@ type GetHouseholdInvitationByIDResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29249,7 +28260,6 @@ func (r GetHouseholdInvitationByIDResponse) StatusCode() int {
 }
 
 type POSTHouseholdsHouseholdIDInviteResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *HouseholdInvitation `json:"data,omitempty"`
@@ -29269,6 +28279,7 @@ type POSTHouseholdsHouseholdIDInviteResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29288,7 +28299,6 @@ func (r POSTHouseholdsHouseholdIDInviteResponse) StatusCode() int {
 }
 
 type ArchiveUserMembershipResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *HouseholdUserMembership `json:"data,omitempty"`
@@ -29308,6 +28318,7 @@ type ArchiveUserMembershipResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29327,7 +28338,6 @@ func (r ArchiveUserMembershipResponse) StatusCode() int {
 }
 
 type UpdateHouseholdMemberPermissionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserPermissionsResponse `json:"data,omitempty"`
@@ -29347,6 +28357,7 @@ type UpdateHouseholdMemberPermissionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29366,7 +28377,6 @@ func (r UpdateHouseholdMemberPermissionsResponse) StatusCode() int {
 }
 
 type TransferHouseholdOwnershipResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Household       `json:"data,omitempty"`
@@ -29386,6 +28396,7 @@ type TransferHouseholdOwnershipResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29405,7 +28416,6 @@ func (r TransferHouseholdOwnershipResponse) StatusCode() int {
 }
 
 type GetMealPlansResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlan      `json:"data,omitempty"`
@@ -29425,6 +28435,7 @@ type GetMealPlansResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29444,7 +28455,6 @@ func (r GetMealPlansResponse) StatusCode() int {
 }
 
 type CreateMealPlanResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlan        `json:"data,omitempty"`
@@ -29464,6 +28474,7 @@ type CreateMealPlanResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29483,7 +28494,6 @@ func (r CreateMealPlanResponse) StatusCode() int {
 }
 
 type ArchiveMealPlanResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlan        `json:"data,omitempty"`
@@ -29503,6 +28513,7 @@ type ArchiveMealPlanResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29522,7 +28533,6 @@ func (r ArchiveMealPlanResponse) StatusCode() int {
 }
 
 type GetMealPlanResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlan        `json:"data,omitempty"`
@@ -29542,6 +28552,7 @@ type GetMealPlanResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29561,7 +28572,6 @@ func (r GetMealPlanResponse) StatusCode() int {
 }
 
 type UpdateMealPlanResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlan        `json:"data,omitempty"`
@@ -29581,6 +28591,7 @@ type UpdateMealPlanResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29600,7 +28611,6 @@ func (r UpdateMealPlanResponse) StatusCode() int {
 }
 
 type GetMealPlanEventsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanEvent `json:"data,omitempty"`
@@ -29620,6 +28630,7 @@ type GetMealPlanEventsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29639,7 +28650,6 @@ func (r GetMealPlanEventsResponse) StatusCode() int {
 }
 
 type CreateMealPlanEventResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanEvent   `json:"data,omitempty"`
@@ -29659,6 +28669,7 @@ type CreateMealPlanEventResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29678,7 +28689,6 @@ func (r CreateMealPlanEventResponse) StatusCode() int {
 }
 
 type ArchiveMealPlanEventResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlanEvent   `json:"data,omitempty"`
@@ -29698,6 +28708,7 @@ type ArchiveMealPlanEventResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29717,7 +28728,6 @@ func (r ArchiveMealPlanEventResponse) StatusCode() int {
 }
 
 type GetMealPlanEventResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanEvent   `json:"data,omitempty"`
@@ -29737,6 +28747,7 @@ type GetMealPlanEventResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29756,7 +28767,6 @@ func (r GetMealPlanEventResponse) StatusCode() int {
 }
 
 type UpdateMealPlanEventResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanEvent   `json:"data,omitempty"`
@@ -29776,6 +28786,7 @@ type UpdateMealPlanEventResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29795,7 +28806,6 @@ func (r UpdateMealPlanEventResponse) StatusCode() int {
 }
 
 type GetMealPlanOptionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanOption `json:"data,omitempty"`
@@ -29815,6 +28825,7 @@ type GetMealPlanOptionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29834,7 +28845,6 @@ func (r GetMealPlanOptionsResponse) StatusCode() int {
 }
 
 type CreateMealPlanOptionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanOption  `json:"data,omitempty"`
@@ -29854,6 +28864,7 @@ type CreateMealPlanOptionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29873,7 +28884,6 @@ func (r CreateMealPlanOptionResponse) StatusCode() int {
 }
 
 type ArchiveMealPlanOptionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlanOption  `json:"data,omitempty"`
@@ -29893,6 +28903,7 @@ type ArchiveMealPlanOptionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29912,7 +28923,6 @@ func (r ArchiveMealPlanOptionResponse) StatusCode() int {
 }
 
 type GetMealPlanOptionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanOption  `json:"data,omitempty"`
@@ -29932,6 +28942,7 @@ type GetMealPlanOptionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29951,7 +28962,6 @@ func (r GetMealPlanOptionResponse) StatusCode() int {
 }
 
 type UpdateMealPlanOptionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanOption  `json:"data,omitempty"`
@@ -29971,6 +28981,7 @@ type UpdateMealPlanOptionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -29990,7 +29001,6 @@ func (r UpdateMealPlanOptionResponse) StatusCode() int {
 }
 
 type GetMealPlanOptionVotesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanOptionVote `json:"data,omitempty"`
@@ -30010,6 +29020,7 @@ type GetMealPlanOptionVotesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30029,7 +29040,6 @@ func (r GetMealPlanOptionVotesResponse) StatusCode() int {
 }
 
 type ArchiveMealPlanOptionVoteResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlanOptionVote `json:"data,omitempty"`
@@ -30049,6 +29059,7 @@ type ArchiveMealPlanOptionVoteResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30068,7 +29079,6 @@ func (r ArchiveMealPlanOptionVoteResponse) StatusCode() int {
 }
 
 type GetMealPlanOptionVoteResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanOptionVote `json:"data,omitempty"`
@@ -30088,6 +29098,7 @@ type GetMealPlanOptionVoteResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30107,7 +29118,6 @@ func (r GetMealPlanOptionVoteResponse) StatusCode() int {
 }
 
 type UpdateMealPlanOptionVoteResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanOptionVote `json:"data,omitempty"`
@@ -30127,6 +29137,7 @@ type UpdateMealPlanOptionVoteResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30146,7 +29157,6 @@ func (r UpdateMealPlanOptionVoteResponse) StatusCode() int {
 }
 
 type CreateMealPlanOptionVoteResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanOptionVote `json:"data,omitempty"`
@@ -30166,6 +29176,7 @@ type CreateMealPlanOptionVoteResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30185,7 +29196,6 @@ func (r CreateMealPlanOptionVoteResponse) StatusCode() int {
 }
 
 type FinalizeMealPlanResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *FinalizeMealPlansResponse `json:"data,omitempty"`
@@ -30205,6 +29215,7 @@ type FinalizeMealPlanResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30224,7 +29235,6 @@ func (r FinalizeMealPlanResponse) StatusCode() int {
 }
 
 type GetMealPlanGroceryListItemsForMealPlanResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanGroceryListItem `json:"data,omitempty"`
@@ -30244,6 +29254,7 @@ type GetMealPlanGroceryListItemsForMealPlanResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30263,7 +29274,6 @@ func (r GetMealPlanGroceryListItemsForMealPlanResponse) StatusCode() int {
 }
 
 type CreateMealPlanGroceryListItemResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanGroceryListItem `json:"data,omitempty"`
@@ -30283,6 +29293,7 @@ type CreateMealPlanGroceryListItemResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30302,7 +29313,6 @@ func (r CreateMealPlanGroceryListItemResponse) StatusCode() int {
 }
 
 type ArchiveMealPlanGroceryListItemResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *MealPlanGroceryListItem `json:"data,omitempty"`
@@ -30322,6 +29332,7 @@ type ArchiveMealPlanGroceryListItemResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30341,7 +29352,6 @@ func (r ArchiveMealPlanGroceryListItemResponse) StatusCode() int {
 }
 
 type GetMealPlanGroceryListItemResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanGroceryListItem `json:"data,omitempty"`
@@ -30361,6 +29371,7 @@ type GetMealPlanGroceryListItemResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30380,7 +29391,6 @@ func (r GetMealPlanGroceryListItemResponse) StatusCode() int {
 }
 
 type UpdateMealPlanGroceryListItemResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanGroceryListItem `json:"data,omitempty"`
@@ -30400,6 +29410,7 @@ type UpdateMealPlanGroceryListItemResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30419,7 +29430,6 @@ func (r UpdateMealPlanGroceryListItemResponse) StatusCode() int {
 }
 
 type GetMealPlanTasksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]MealPlanTask  `json:"data,omitempty"`
@@ -30439,6 +29449,7 @@ type GetMealPlanTasksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30458,7 +29469,6 @@ func (r GetMealPlanTasksResponse) StatusCode() int {
 }
 
 type CreateMealPlanTaskResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *MealPlanTask    `json:"data,omitempty"`
@@ -30478,6 +29488,7 @@ type CreateMealPlanTaskResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30497,7 +29508,6 @@ func (r CreateMealPlanTaskResponse) StatusCode() int {
 }
 
 type GetMealPlanTaskResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanTask    `json:"data,omitempty"`
@@ -30517,6 +29527,7 @@ type GetMealPlanTaskResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30536,7 +29547,6 @@ func (r GetMealPlanTaskResponse) StatusCode() int {
 }
 
 type UpdateMealPlanTaskStatusResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *MealPlanTask    `json:"data,omitempty"`
@@ -30556,6 +29566,7 @@ type UpdateMealPlanTaskStatusResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30575,7 +29586,6 @@ func (r UpdateMealPlanTaskStatusResponse) StatusCode() int {
 }
 
 type GetMealsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Meal          `json:"data,omitempty"`
@@ -30595,6 +29605,7 @@ type GetMealsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30614,7 +29625,6 @@ func (r GetMealsResponse) StatusCode() int {
 }
 
 type CreateMealResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Meal            `json:"data,omitempty"`
@@ -30634,6 +29644,7 @@ type CreateMealResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30653,7 +29664,6 @@ func (r CreateMealResponse) StatusCode() int {
 }
 
 type SearchForMealsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Meal          `json:"data,omitempty"`
@@ -30673,6 +29683,7 @@ type SearchForMealsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30692,7 +29703,6 @@ func (r SearchForMealsResponse) StatusCode() int {
 }
 
 type ArchiveMealResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *Meal            `json:"data,omitempty"`
@@ -30712,6 +29722,7 @@ type ArchiveMealResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30731,7 +29742,6 @@ func (r ArchiveMealResponse) StatusCode() int {
 }
 
 type GetMealResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Meal            `json:"data,omitempty"`
@@ -30751,6 +29761,7 @@ type GetMealResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30770,7 +29781,6 @@ func (r GetMealResponse) StatusCode() int {
 }
 
 type GetOAuth2ClientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]OAuth2Client  `json:"data,omitempty"`
@@ -30790,6 +29800,7 @@ type GetOAuth2ClientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30809,7 +29820,6 @@ func (r GetOAuth2ClientsResponse) StatusCode() int {
 }
 
 type CreateOAuth2ClientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *OAuth2ClientCreationResponse `json:"data,omitempty"`
@@ -30829,6 +29839,7 @@ type CreateOAuth2ClientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30848,7 +29859,6 @@ func (r CreateOAuth2ClientResponse) StatusCode() int {
 }
 
 type ArchiveOAuth2ClientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *OAuth2Client    `json:"data,omitempty"`
@@ -30868,6 +29878,7 @@ type ArchiveOAuth2ClientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30887,7 +29898,6 @@ func (r ArchiveOAuth2ClientResponse) StatusCode() int {
 }
 
 type GetOAuth2ClientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *OAuth2Client    `json:"data,omitempty"`
@@ -30907,6 +29917,7 @@ type GetOAuth2ClientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30926,7 +29937,6 @@ func (r GetOAuth2ClientResponse) StatusCode() int {
 }
 
 type GetRecipesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Recipe        `json:"data,omitempty"`
@@ -30946,6 +29956,7 @@ type GetRecipesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30965,7 +29976,6 @@ func (r GetRecipesResponse) StatusCode() int {
 }
 
 type CreateRecipeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -30985,6 +29995,7 @@ type CreateRecipeResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31004,7 +30015,6 @@ func (r CreateRecipeResponse) StatusCode() int {
 }
 
 type SearchForRecipesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Recipe        `json:"data,omitempty"`
@@ -31024,6 +30034,7 @@ type SearchForRecipesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31043,7 +30054,6 @@ func (r SearchForRecipesResponse) StatusCode() int {
 }
 
 type ArchiveRecipeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -31063,6 +30073,7 @@ type ArchiveRecipeResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31082,7 +30093,6 @@ func (r ArchiveRecipeResponse) StatusCode() int {
 }
 
 type GetRecipeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -31102,6 +30112,7 @@ type GetRecipeResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31121,7 +30132,6 @@ func (r GetRecipeResponse) StatusCode() int {
 }
 
 type UpdateRecipeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -31141,6 +30151,7 @@ type UpdateRecipeResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31160,7 +30171,6 @@ func (r UpdateRecipeResponse) StatusCode() int {
 }
 
 type CloneRecipeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Recipe          `json:"data,omitempty"`
@@ -31180,6 +30190,7 @@ type CloneRecipeResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31199,7 +30210,6 @@ func (r CloneRecipeResponse) StatusCode() int {
 }
 
 type GetRecipeDAGResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *APIError        `json:"data,omitempty"`
@@ -31219,6 +30229,7 @@ type GetRecipeDAGResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31238,8 +30249,8 @@ func (r GetRecipeDAGResponse) StatusCode() int {
 }
 
 type UploadMediaForRecipeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31259,8 +30270,8 @@ func (r UploadMediaForRecipeResponse) StatusCode() int {
 }
 
 type GetMermaidDiagramForRecipeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31280,7 +30291,6 @@ func (r GetMermaidDiagramForRecipeResponse) StatusCode() int {
 }
 
 type GetRecipeMealPlanTasksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipePrepTaskStep `json:"data,omitempty"`
@@ -31300,6 +30310,7 @@ type GetRecipeMealPlanTasksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31319,7 +30330,6 @@ func (r GetRecipeMealPlanTasksResponse) StatusCode() int {
 }
 
 type GetRecipePrepTasksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipePrepTask `json:"data,omitempty"`
@@ -31339,6 +30349,7 @@ type GetRecipePrepTasksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31358,7 +30369,6 @@ func (r GetRecipePrepTasksResponse) StatusCode() int {
 }
 
 type CreateRecipePrepTaskResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipePrepTask  `json:"data,omitempty"`
@@ -31378,6 +30388,7 @@ type CreateRecipePrepTaskResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31397,7 +30408,6 @@ func (r CreateRecipePrepTaskResponse) StatusCode() int {
 }
 
 type ArchiveRecipePrepTaskResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipePrepTask  `json:"data,omitempty"`
@@ -31417,6 +30427,7 @@ type ArchiveRecipePrepTaskResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31436,7 +30447,6 @@ func (r ArchiveRecipePrepTaskResponse) StatusCode() int {
 }
 
 type GetRecipePrepTaskResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipePrepTask  `json:"data,omitempty"`
@@ -31456,6 +30466,7 @@ type GetRecipePrepTaskResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31475,7 +30486,6 @@ func (r GetRecipePrepTaskResponse) StatusCode() int {
 }
 
 type UpdateRecipePrepTaskResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipePrepTask  `json:"data,omitempty"`
@@ -31495,6 +30505,7 @@ type UpdateRecipePrepTaskResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31514,7 +30525,6 @@ func (r UpdateRecipePrepTaskResponse) StatusCode() int {
 }
 
 type GetRecipeRatingsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeRating  `json:"data,omitempty"`
@@ -31534,6 +30544,7 @@ type GetRecipeRatingsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31553,7 +30564,6 @@ func (r GetRecipeRatingsResponse) StatusCode() int {
 }
 
 type CreateRecipeRatingResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeRating    `json:"data,omitempty"`
@@ -31573,6 +30583,7 @@ type CreateRecipeRatingResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31592,7 +30603,6 @@ func (r CreateRecipeRatingResponse) StatusCode() int {
 }
 
 type ArchiveRecipeRatingResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeRating    `json:"data,omitempty"`
@@ -31612,6 +30622,7 @@ type ArchiveRecipeRatingResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31631,7 +30642,6 @@ func (r ArchiveRecipeRatingResponse) StatusCode() int {
 }
 
 type GetRecipeRatingResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeRating    `json:"data,omitempty"`
@@ -31651,6 +30661,7 @@ type GetRecipeRatingResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31670,7 +30681,6 @@ func (r GetRecipeRatingResponse) StatusCode() int {
 }
 
 type UpdateRecipeRatingResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeRating    `json:"data,omitempty"`
@@ -31690,6 +30700,7 @@ type UpdateRecipeRatingResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31709,7 +30720,6 @@ func (r UpdateRecipeRatingResponse) StatusCode() int {
 }
 
 type GetRecipeStepsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStep    `json:"data,omitempty"`
@@ -31729,6 +30739,7 @@ type GetRecipeStepsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31748,7 +30759,6 @@ func (r GetRecipeStepsResponse) StatusCode() int {
 }
 
 type CreateRecipeStepResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStep      `json:"data,omitempty"`
@@ -31768,6 +30778,7 @@ type CreateRecipeStepResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31787,7 +30798,6 @@ func (r CreateRecipeStepResponse) StatusCode() int {
 }
 
 type ArchiveRecipeStepResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStep      `json:"data,omitempty"`
@@ -31807,6 +30817,7 @@ type ArchiveRecipeStepResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31826,7 +30837,6 @@ func (r ArchiveRecipeStepResponse) StatusCode() int {
 }
 
 type GetRecipeStepResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStep      `json:"data,omitempty"`
@@ -31846,6 +30856,7 @@ type GetRecipeStepResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31865,7 +30876,6 @@ func (r GetRecipeStepResponse) StatusCode() int {
 }
 
 type UpdateRecipeStepResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStep      `json:"data,omitempty"`
@@ -31885,6 +30895,7 @@ type UpdateRecipeStepResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31904,7 +30915,6 @@ func (r UpdateRecipeStepResponse) StatusCode() int {
 }
 
 type GetRecipeStepCompletionConditionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -31924,6 +30934,7 @@ type GetRecipeStepCompletionConditionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31943,7 +30954,6 @@ func (r GetRecipeStepCompletionConditionsResponse) StatusCode() int {
 }
 
 type CreateRecipeStepCompletionConditionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -31963,6 +30973,7 @@ type CreateRecipeStepCompletionConditionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31982,7 +30993,6 @@ func (r CreateRecipeStepCompletionConditionResponse) StatusCode() int {
 }
 
 type ArchiveRecipeStepCompletionConditionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -32002,6 +31012,7 @@ type ArchiveRecipeStepCompletionConditionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32021,7 +31032,6 @@ func (r ArchiveRecipeStepCompletionConditionResponse) StatusCode() int {
 }
 
 type GetRecipeStepCompletionConditionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -32041,6 +31051,7 @@ type GetRecipeStepCompletionConditionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32060,7 +31071,6 @@ func (r GetRecipeStepCompletionConditionResponse) StatusCode() int {
 }
 
 type UpdateRecipeStepCompletionConditionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepCompletionCondition `json:"data,omitempty"`
@@ -32080,6 +31090,7 @@ type UpdateRecipeStepCompletionConditionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32099,8 +31110,8 @@ func (r UpdateRecipeStepCompletionConditionResponse) StatusCode() int {
 }
 
 type UploadMediaForRecipeStepResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32120,7 +31131,6 @@ func (r UploadMediaForRecipeStepResponse) StatusCode() int {
 }
 
 type GetRecipeStepIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepIngredient `json:"data,omitempty"`
@@ -32140,6 +31150,7 @@ type GetRecipeStepIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32159,7 +31170,6 @@ func (r GetRecipeStepIngredientsResponse) StatusCode() int {
 }
 
 type CreateRecipeStepIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepIngredient `json:"data,omitempty"`
@@ -32179,6 +31189,7 @@ type CreateRecipeStepIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32198,7 +31209,6 @@ func (r CreateRecipeStepIngredientResponse) StatusCode() int {
 }
 
 type ArchiveRecipeStepIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepIngredient `json:"data,omitempty"`
@@ -32218,6 +31228,7 @@ type ArchiveRecipeStepIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32237,7 +31248,6 @@ func (r ArchiveRecipeStepIngredientResponse) StatusCode() int {
 }
 
 type GetRecipeStepIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepIngredient `json:"data,omitempty"`
@@ -32257,6 +31267,7 @@ type GetRecipeStepIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32276,7 +31287,6 @@ func (r GetRecipeStepIngredientResponse) StatusCode() int {
 }
 
 type UpdateRecipeStepIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepIngredient `json:"data,omitempty"`
@@ -32296,6 +31306,7 @@ type UpdateRecipeStepIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32315,7 +31326,6 @@ func (r UpdateRecipeStepIngredientResponse) StatusCode() int {
 }
 
 type GetRecipeStepInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepInstrument `json:"data,omitempty"`
@@ -32335,6 +31345,7 @@ type GetRecipeStepInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32354,7 +31365,6 @@ func (r GetRecipeStepInstrumentsResponse) StatusCode() int {
 }
 
 type CreateRecipeStepInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepInstrument `json:"data,omitempty"`
@@ -32374,6 +31384,7 @@ type CreateRecipeStepInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32393,7 +31404,6 @@ func (r CreateRecipeStepInstrumentResponse) StatusCode() int {
 }
 
 type ArchiveRecipeStepInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepInstrument `json:"data,omitempty"`
@@ -32413,6 +31423,7 @@ type ArchiveRecipeStepInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32432,7 +31443,6 @@ func (r ArchiveRecipeStepInstrumentResponse) StatusCode() int {
 }
 
 type GetRecipeStepInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepInstrument `json:"data,omitempty"`
@@ -32452,6 +31462,7 @@ type GetRecipeStepInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32471,7 +31482,6 @@ func (r GetRecipeStepInstrumentResponse) StatusCode() int {
 }
 
 type UpdateRecipeStepInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepInstrument `json:"data,omitempty"`
@@ -32491,6 +31501,7 @@ type UpdateRecipeStepInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32510,7 +31521,6 @@ func (r UpdateRecipeStepInstrumentResponse) StatusCode() int {
 }
 
 type GetRecipeStepProductsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepProduct `json:"data,omitempty"`
@@ -32530,6 +31540,7 @@ type GetRecipeStepProductsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32549,7 +31560,6 @@ func (r GetRecipeStepProductsResponse) StatusCode() int {
 }
 
 type CreateRecipeStepProductResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepProduct `json:"data,omitempty"`
@@ -32569,6 +31579,7 @@ type CreateRecipeStepProductResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32588,7 +31599,6 @@ func (r CreateRecipeStepProductResponse) StatusCode() int {
 }
 
 type ArchiveRecipeStepProductResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepProduct `json:"data,omitempty"`
@@ -32608,6 +31618,7 @@ type ArchiveRecipeStepProductResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32627,7 +31638,6 @@ func (r ArchiveRecipeStepProductResponse) StatusCode() int {
 }
 
 type GetRecipeStepProductResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepProduct `json:"data,omitempty"`
@@ -32647,6 +31657,7 @@ type GetRecipeStepProductResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32666,7 +31677,6 @@ func (r GetRecipeStepProductResponse) StatusCode() int {
 }
 
 type UpdateRecipeStepProductResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepProduct `json:"data,omitempty"`
@@ -32686,6 +31696,7 @@ type UpdateRecipeStepProductResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32705,7 +31716,6 @@ func (r UpdateRecipeStepProductResponse) StatusCode() int {
 }
 
 type GetRecipeStepVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]RecipeStepVessel `json:"data,omitempty"`
@@ -32725,6 +31735,7 @@ type GetRecipeStepVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32744,7 +31755,6 @@ func (r GetRecipeStepVesselsResponse) StatusCode() int {
 }
 
 type CreateRecipeStepVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *RecipeStepVessel `json:"data,omitempty"`
@@ -32764,6 +31774,7 @@ type CreateRecipeStepVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32783,7 +31794,6 @@ func (r CreateRecipeStepVesselResponse) StatusCode() int {
 }
 
 type ArchiveRecipeStepVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *RecipeStepVessel `json:"data,omitempty"`
@@ -32803,6 +31813,7 @@ type ArchiveRecipeStepVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32822,7 +31833,6 @@ func (r ArchiveRecipeStepVesselResponse) StatusCode() int {
 }
 
 type GetRecipeStepVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepVessel `json:"data,omitempty"`
@@ -32842,6 +31852,7 @@ type GetRecipeStepVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32861,7 +31872,6 @@ func (r GetRecipeStepVesselResponse) StatusCode() int {
 }
 
 type UpdateRecipeStepVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *RecipeStepVessel `json:"data,omitempty"`
@@ -32881,6 +31891,7 @@ type UpdateRecipeStepVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32900,7 +31911,6 @@ func (r UpdateRecipeStepVesselResponse) StatusCode() int {
 }
 
 type GetServiceSettingsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ServiceSetting `json:"data,omitempty"`
@@ -32920,6 +31930,7 @@ type GetServiceSettingsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32939,7 +31950,6 @@ func (r GetServiceSettingsResponse) StatusCode() int {
 }
 
 type CreateServiceSettingResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ServiceSetting  `json:"data,omitempty"`
@@ -32959,6 +31969,7 @@ type CreateServiceSettingResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -32978,7 +31989,6 @@ func (r CreateServiceSettingResponse) StatusCode() int {
 }
 
 type CreateServiceSettingConfigurationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ServiceSettingConfiguration `json:"data,omitempty"`
@@ -32998,6 +32008,7 @@ type CreateServiceSettingConfigurationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33017,7 +32028,6 @@ func (r CreateServiceSettingConfigurationResponse) StatusCode() int {
 }
 
 type GetServiceSettingConfigurationsForHouseholdResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ServiceSettingConfiguration `json:"data,omitempty"`
@@ -33037,6 +32047,7 @@ type GetServiceSettingConfigurationsForHouseholdResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33056,7 +32067,6 @@ func (r GetServiceSettingConfigurationsForHouseholdResponse) StatusCode() int {
 }
 
 type GetServiceSettingConfigurationsForUserResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ServiceSettingConfiguration `json:"data,omitempty"`
@@ -33076,6 +32086,7 @@ type GetServiceSettingConfigurationsForUserResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33095,7 +32106,6 @@ func (r GetServiceSettingConfigurationsForUserResponse) StatusCode() int {
 }
 
 type GetServiceSettingConfigurationByNameResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ServiceSettingConfiguration `json:"data,omitempty"`
@@ -33115,6 +32125,7 @@ type GetServiceSettingConfigurationByNameResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33134,7 +32145,6 @@ func (r GetServiceSettingConfigurationByNameResponse) StatusCode() int {
 }
 
 type ArchiveServiceSettingConfigurationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ServiceSettingConfiguration `json:"data,omitempty"`
@@ -33154,6 +32164,7 @@ type ArchiveServiceSettingConfigurationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33173,7 +32184,6 @@ func (r ArchiveServiceSettingConfigurationResponse) StatusCode() int {
 }
 
 type UpdateServiceSettingConfigurationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ServiceSettingConfiguration `json:"data,omitempty"`
@@ -33193,6 +32203,7 @@ type UpdateServiceSettingConfigurationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33212,7 +32223,6 @@ func (r UpdateServiceSettingConfigurationResponse) StatusCode() int {
 }
 
 type SearchForServiceSettingsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ServiceSetting `json:"data,omitempty"`
@@ -33232,6 +32242,7 @@ type SearchForServiceSettingsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33251,7 +32262,6 @@ func (r SearchForServiceSettingsResponse) StatusCode() int {
 }
 
 type ArchiveServiceSettingResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ServiceSetting  `json:"data,omitempty"`
@@ -33271,6 +32281,7 @@ type ArchiveServiceSettingResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33290,7 +32301,6 @@ func (r ArchiveServiceSettingResponse) StatusCode() int {
 }
 
 type GetServiceSettingResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ServiceSetting  `json:"data,omitempty"`
@@ -33310,6 +32320,7 @@ type GetServiceSettingResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33329,7 +32340,6 @@ func (r GetServiceSettingResponse) StatusCode() int {
 }
 
 type GetUserIngredientPreferencesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]UserIngredientPreference `json:"data,omitempty"`
@@ -33349,6 +32359,7 @@ type GetUserIngredientPreferencesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33368,7 +32379,6 @@ func (r GetUserIngredientPreferencesResponse) StatusCode() int {
 }
 
 type CreateUserIngredientPreferenceResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserIngredientPreference `json:"data,omitempty"`
@@ -33388,6 +32398,7 @@ type CreateUserIngredientPreferenceResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33407,7 +32418,6 @@ func (r CreateUserIngredientPreferenceResponse) StatusCode() int {
 }
 
 type ArchiveUserIngredientPreferenceResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *UserIngredientPreference `json:"data,omitempty"`
@@ -33427,6 +32437,7 @@ type ArchiveUserIngredientPreferenceResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33446,7 +32457,6 @@ func (r ArchiveUserIngredientPreferenceResponse) StatusCode() int {
 }
 
 type UpdateUserIngredientPreferenceResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserIngredientPreference `json:"data,omitempty"`
@@ -33466,6 +32476,7 @@ type UpdateUserIngredientPreferenceResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33485,7 +32496,6 @@ func (r UpdateUserIngredientPreferenceResponse) StatusCode() int {
 }
 
 type GetUserNotificationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]UserNotification `json:"data,omitempty"`
@@ -33505,6 +32515,7 @@ type GetUserNotificationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33524,7 +32535,6 @@ func (r GetUserNotificationsResponse) StatusCode() int {
 }
 
 type CreateUserNotificationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserNotification `json:"data,omitempty"`
@@ -33544,6 +32554,7 @@ type CreateUserNotificationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33563,7 +32574,6 @@ func (r CreateUserNotificationResponse) StatusCode() int {
 }
 
 type GetUserNotificationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserNotification `json:"data,omitempty"`
@@ -33583,6 +32593,7 @@ type GetUserNotificationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33602,7 +32613,6 @@ func (r GetUserNotificationResponse) StatusCode() int {
 }
 
 type UpdateUserNotificationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserNotification `json:"data,omitempty"`
@@ -33622,6 +32632,7 @@ type UpdateUserNotificationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33641,7 +32652,6 @@ func (r UpdateUserNotificationResponse) StatusCode() int {
 }
 
 type GetUsersResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]User          `json:"data,omitempty"`
@@ -33661,6 +32671,7 @@ type GetUsersResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33680,7 +32691,6 @@ func (r GetUsersResponse) StatusCode() int {
 }
 
 type UploadUserAvatarResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -33700,6 +32710,7 @@ type UploadUserAvatarResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33719,7 +32730,6 @@ func (r UploadUserAvatarResponse) StatusCode() int {
 }
 
 type UpdateUserDetailsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -33739,6 +32749,7 @@ type UpdateUserDetailsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33758,7 +32769,6 @@ func (r UpdateUserDetailsResponse) StatusCode() int {
 }
 
 type UpdateUserEmailAddressResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -33778,6 +32788,7 @@ type UpdateUserEmailAddressResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33797,7 +32808,6 @@ func (r UpdateUserEmailAddressResponse) StatusCode() int {
 }
 
 type VerifyUserEmailAddressResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -33817,6 +32827,7 @@ type VerifyUserEmailAddressResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33836,8 +32847,8 @@ func (r VerifyUserEmailAddressResponse) StatusCode() int {
 }
 
 type UpdatePasswordResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33857,7 +32868,6 @@ func (r UpdatePasswordResponse) StatusCode() int {
 }
 
 type CheckPermissionsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserPermissionsResponse `json:"data,omitempty"`
@@ -33877,6 +32887,7 @@ type CheckPermissionsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33896,7 +32907,6 @@ func (r CheckPermissionsResponse) StatusCode() int {
 }
 
 type SearchForUsersResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]User          `json:"data,omitempty"`
@@ -33916,6 +32926,7 @@ type SearchForUsersResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33935,7 +32946,6 @@ func (r SearchForUsersResponse) StatusCode() int {
 }
 
 type GetSelfResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -33955,6 +32965,7 @@ type GetSelfResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -33974,7 +32985,6 @@ func (r GetSelfResponse) StatusCode() int {
 }
 
 type RefreshTOTPSecretResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *TOTPSecretRefreshResponse `json:"data,omitempty"`
@@ -33994,6 +33004,7 @@ type RefreshTOTPSecretResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34013,7 +33024,6 @@ func (r RefreshTOTPSecretResponse) StatusCode() int {
 }
 
 type UpdateUserUsernameResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -34033,6 +33043,7 @@ type UpdateUserUsernameResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34052,7 +33063,6 @@ func (r UpdateUserUsernameResponse) StatusCode() int {
 }
 
 type ArchiveUserResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -34072,6 +33082,7 @@ type ArchiveUserResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34091,7 +33102,6 @@ func (r ArchiveUserResponse) StatusCode() int {
 }
 
 type GetUserResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -34111,6 +33121,7 @@ type GetUserResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34130,7 +33141,6 @@ func (r GetUserResponse) StatusCode() int {
 }
 
 type GetValidIngredientGroupsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientGroup `json:"data,omitempty"`
@@ -34150,6 +33160,7 @@ type GetValidIngredientGroupsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34169,7 +33180,6 @@ func (r GetValidIngredientGroupsResponse) StatusCode() int {
 }
 
 type CreateValidIngredientGroupResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientGroup `json:"data,omitempty"`
@@ -34189,6 +33199,7 @@ type CreateValidIngredientGroupResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34208,7 +33219,6 @@ func (r CreateValidIngredientGroupResponse) StatusCode() int {
 }
 
 type SearchForValidIngredientGroupsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientGroup `json:"data,omitempty"`
@@ -34228,6 +33238,7 @@ type SearchForValidIngredientGroupsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34247,7 +33258,6 @@ func (r SearchForValidIngredientGroupsResponse) StatusCode() int {
 }
 
 type ArchiveValidIngredientGroupResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientGroup `json:"data,omitempty"`
@@ -34267,6 +33277,7 @@ type ArchiveValidIngredientGroupResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34286,7 +33297,6 @@ func (r ArchiveValidIngredientGroupResponse) StatusCode() int {
 }
 
 type GetValidIngredientGroupResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientGroup `json:"data,omitempty"`
@@ -34306,6 +33316,7 @@ type GetValidIngredientGroupResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34325,7 +33336,6 @@ func (r GetValidIngredientGroupResponse) StatusCode() int {
 }
 
 type UpdateValidIngredientGroupResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientGroup `json:"data,omitempty"`
@@ -34345,6 +33355,7 @@ type UpdateValidIngredientGroupResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34364,7 +33375,6 @@ func (r UpdateValidIngredientGroupResponse) StatusCode() int {
 }
 
 type GetValidIngredientMeasurementUnitsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -34384,6 +33394,7 @@ type GetValidIngredientMeasurementUnitsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34403,7 +33414,6 @@ func (r GetValidIngredientMeasurementUnitsResponse) StatusCode() int {
 }
 
 type CreateValidIngredientMeasurementUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -34423,6 +33433,7 @@ type CreateValidIngredientMeasurementUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34442,7 +33453,6 @@ func (r CreateValidIngredientMeasurementUnitResponse) StatusCode() int {
 }
 
 type GetValidIngredientMeasurementUnitsByIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -34462,6 +33472,7 @@ type GetValidIngredientMeasurementUnitsByIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34481,7 +33492,6 @@ func (r GetValidIngredientMeasurementUnitsByIngredientResponse) StatusCode() int
 }
 
 type GetValidIngredientMeasurementUnitsByMeasurementUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -34501,6 +33511,7 @@ type GetValidIngredientMeasurementUnitsByMeasurementUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34520,7 +33531,6 @@ func (r GetValidIngredientMeasurementUnitsByMeasurementUnitResponse) StatusCode(
 }
 
 type ArchiveValidIngredientMeasurementUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -34540,6 +33550,7 @@ type ArchiveValidIngredientMeasurementUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34559,7 +33570,6 @@ func (r ArchiveValidIngredientMeasurementUnitResponse) StatusCode() int {
 }
 
 type GetValidIngredientMeasurementUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -34579,6 +33589,7 @@ type GetValidIngredientMeasurementUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34598,7 +33609,6 @@ func (r GetValidIngredientMeasurementUnitResponse) StatusCode() int {
 }
 
 type UpdateValidIngredientMeasurementUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientMeasurementUnit `json:"data,omitempty"`
@@ -34618,6 +33628,7 @@ type UpdateValidIngredientMeasurementUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34637,7 +33648,6 @@ func (r UpdateValidIngredientMeasurementUnitResponse) StatusCode() int {
 }
 
 type GetValidIngredientPreparationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientPreparation `json:"data,omitempty"`
@@ -34657,6 +33667,7 @@ type GetValidIngredientPreparationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34676,7 +33687,6 @@ func (r GetValidIngredientPreparationsResponse) StatusCode() int {
 }
 
 type CreateValidIngredientPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -34696,6 +33706,7 @@ type CreateValidIngredientPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34715,7 +33726,6 @@ func (r CreateValidIngredientPreparationResponse) StatusCode() int {
 }
 
 type GetValidIngredientPreparationsByIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientPreparation `json:"data,omitempty"`
@@ -34735,6 +33745,7 @@ type GetValidIngredientPreparationsByIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34754,7 +33765,6 @@ func (r GetValidIngredientPreparationsByIngredientResponse) StatusCode() int {
 }
 
 type GetValidIngredientPreparationsByPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientPreparation `json:"data,omitempty"`
@@ -34774,6 +33784,7 @@ type GetValidIngredientPreparationsByPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34793,7 +33804,6 @@ func (r GetValidIngredientPreparationsByPreparationResponse) StatusCode() int {
 }
 
 type ArchiveValidIngredientPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -34813,6 +33823,7 @@ type ArchiveValidIngredientPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34832,7 +33843,6 @@ func (r ArchiveValidIngredientPreparationResponse) StatusCode() int {
 }
 
 type GetValidIngredientPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -34852,6 +33862,7 @@ type GetValidIngredientPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34871,7 +33882,6 @@ func (r GetValidIngredientPreparationResponse) StatusCode() int {
 }
 
 type UpdateValidIngredientPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientPreparation `json:"data,omitempty"`
@@ -34891,6 +33901,7 @@ type UpdateValidIngredientPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34910,7 +33921,6 @@ func (r UpdateValidIngredientPreparationResponse) StatusCode() int {
 }
 
 type GetValidIngredientStateIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -34930,6 +33940,7 @@ type GetValidIngredientStateIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34949,7 +33960,6 @@ func (r GetValidIngredientStateIngredientsResponse) StatusCode() int {
 }
 
 type CreateValidIngredientStateIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -34969,6 +33979,7 @@ type CreateValidIngredientStateIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -34988,7 +33999,6 @@ func (r CreateValidIngredientStateIngredientResponse) StatusCode() int {
 }
 
 type GetValidIngredientStateIngredientsByIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -35008,6 +34018,7 @@ type GetValidIngredientStateIngredientsByIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35027,7 +34038,6 @@ func (r GetValidIngredientStateIngredientsByIngredientResponse) StatusCode() int
 }
 
 type GetValidIngredientStateIngredientsByIngredientStateResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -35047,6 +34057,7 @@ type GetValidIngredientStateIngredientsByIngredientStateResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35066,7 +34077,6 @@ func (r GetValidIngredientStateIngredientsByIngredientStateResponse) StatusCode(
 }
 
 type ArchiveValidIngredientStateIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -35086,6 +34096,7 @@ type ArchiveValidIngredientStateIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35105,7 +34116,6 @@ func (r ArchiveValidIngredientStateIngredientResponse) StatusCode() int {
 }
 
 type GetValidIngredientStateIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -35125,6 +34135,7 @@ type GetValidIngredientStateIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35144,7 +34155,6 @@ func (r GetValidIngredientStateIngredientResponse) StatusCode() int {
 }
 
 type UpdateValidIngredientStateIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientStateIngredient `json:"data,omitempty"`
@@ -35164,6 +34174,7 @@ type UpdateValidIngredientStateIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35183,7 +34194,6 @@ func (r UpdateValidIngredientStateIngredientResponse) StatusCode() int {
 }
 
 type GetValidIngredientStatesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientState `json:"data,omitempty"`
@@ -35203,6 +34213,7 @@ type GetValidIngredientStatesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35222,7 +34233,6 @@ func (r GetValidIngredientStatesResponse) StatusCode() int {
 }
 
 type CreateValidIngredientStateResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredientState `json:"data,omitempty"`
@@ -35242,6 +34252,7 @@ type CreateValidIngredientStateResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35261,7 +34272,6 @@ func (r CreateValidIngredientStateResponse) StatusCode() int {
 }
 
 type SearchForValidIngredientStatesResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredientState `json:"data,omitempty"`
@@ -35281,6 +34291,7 @@ type SearchForValidIngredientStatesResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35300,7 +34311,6 @@ func (r SearchForValidIngredientStatesResponse) StatusCode() int {
 }
 
 type ArchiveValidIngredientStateResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredientState `json:"data,omitempty"`
@@ -35320,6 +34330,7 @@ type ArchiveValidIngredientStateResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35339,7 +34350,6 @@ func (r ArchiveValidIngredientStateResponse) StatusCode() int {
 }
 
 type GetValidIngredientStateResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientState `json:"data,omitempty"`
@@ -35359,6 +34369,7 @@ type GetValidIngredientStateResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35378,7 +34389,6 @@ func (r GetValidIngredientStateResponse) StatusCode() int {
 }
 
 type UpdateValidIngredientStateResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredientState `json:"data,omitempty"`
@@ -35398,6 +34408,7 @@ type UpdateValidIngredientStateResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35417,7 +34428,6 @@ func (r UpdateValidIngredientStateResponse) StatusCode() int {
 }
 
 type GetValidIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredient `json:"data,omitempty"`
@@ -35437,6 +34447,7 @@ type GetValidIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35456,7 +34467,6 @@ func (r GetValidIngredientsResponse) StatusCode() int {
 }
 
 type CreateValidIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -35476,6 +34486,7 @@ type CreateValidIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35495,7 +34506,6 @@ func (r CreateValidIngredientResponse) StatusCode() int {
 }
 
 type GetValidIngredientsByPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredient `json:"data,omitempty"`
@@ -35515,6 +34525,7 @@ type GetValidIngredientsByPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35534,7 +34545,6 @@ func (r GetValidIngredientsByPreparationResponse) StatusCode() int {
 }
 
 type GetRandomValidIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -35554,6 +34564,7 @@ type GetRandomValidIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35573,7 +34584,6 @@ func (r GetRandomValidIngredientResponse) StatusCode() int {
 }
 
 type SearchForValidIngredientsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidIngredient `json:"data,omitempty"`
@@ -35593,6 +34603,7 @@ type SearchForValidIngredientsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35612,7 +34623,6 @@ func (r SearchForValidIngredientsResponse) StatusCode() int {
 }
 
 type ArchiveValidIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -35632,6 +34642,7 @@ type ArchiveValidIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35651,7 +34662,6 @@ func (r ArchiveValidIngredientResponse) StatusCode() int {
 }
 
 type GetValidIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -35671,6 +34681,7 @@ type GetValidIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35690,7 +34701,6 @@ func (r GetValidIngredientResponse) StatusCode() int {
 }
 
 type UpdateValidIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidIngredient `json:"data,omitempty"`
@@ -35710,6 +34720,7 @@ type UpdateValidIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35729,7 +34740,6 @@ func (r UpdateValidIngredientResponse) StatusCode() int {
 }
 
 type GetValidInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidInstrument `json:"data,omitempty"`
@@ -35749,6 +34759,7 @@ type GetValidInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35768,7 +34779,6 @@ func (r GetValidInstrumentsResponse) StatusCode() int {
 }
 
 type CreateValidInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -35788,6 +34798,7 @@ type CreateValidInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35807,7 +34818,6 @@ func (r CreateValidInstrumentResponse) StatusCode() int {
 }
 
 type GetRandomValidInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -35827,6 +34837,7 @@ type GetRandomValidInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35846,7 +34857,6 @@ func (r GetRandomValidInstrumentResponse) StatusCode() int {
 }
 
 type SearchForValidInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidInstrument `json:"data,omitempty"`
@@ -35866,6 +34876,7 @@ type SearchForValidInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35885,7 +34896,6 @@ func (r SearchForValidInstrumentsResponse) StatusCode() int {
 }
 
 type ArchiveValidInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -35905,6 +34915,7 @@ type ArchiveValidInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35924,7 +34935,6 @@ func (r ArchiveValidInstrumentResponse) StatusCode() int {
 }
 
 type GetValidInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -35944,6 +34954,7 @@ type GetValidInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -35963,7 +34974,6 @@ func (r GetValidInstrumentResponse) StatusCode() int {
 }
 
 type UpdateValidInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidInstrument `json:"data,omitempty"`
@@ -35983,6 +34993,7 @@ type UpdateValidInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36002,7 +35013,6 @@ func (r UpdateValidInstrumentResponse) StatusCode() int {
 }
 
 type CreateValidMeasurementUnitConversionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -36022,6 +35032,7 @@ type CreateValidMeasurementUnitConversionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36041,7 +35052,6 @@ func (r CreateValidMeasurementUnitConversionResponse) StatusCode() int {
 }
 
 type GetValidMeasurementUnitConversionsFromUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -36061,6 +35071,7 @@ type GetValidMeasurementUnitConversionsFromUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36080,7 +35091,6 @@ func (r GetValidMeasurementUnitConversionsFromUnitResponse) StatusCode() int {
 }
 
 type ValidMeasurementUnitConversionsToUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -36100,6 +35110,7 @@ type ValidMeasurementUnitConversionsToUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36119,7 +35130,6 @@ func (r ValidMeasurementUnitConversionsToUnitResponse) StatusCode() int {
 }
 
 type ArchiveValidMeasurementUnitConversionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -36139,6 +35149,7 @@ type ArchiveValidMeasurementUnitConversionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36158,7 +35169,6 @@ func (r ArchiveValidMeasurementUnitConversionResponse) StatusCode() int {
 }
 
 type GetValidMeasurementUnitConversionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -36178,6 +35188,7 @@ type GetValidMeasurementUnitConversionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36197,7 +35208,6 @@ func (r GetValidMeasurementUnitConversionResponse) StatusCode() int {
 }
 
 type UpdateValidMeasurementUnitConversionResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnitConversion `json:"data,omitempty"`
@@ -36217,6 +35227,7 @@ type UpdateValidMeasurementUnitConversionResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36236,7 +35247,6 @@ func (r UpdateValidMeasurementUnitConversionResponse) StatusCode() int {
 }
 
 type GetValidMeasurementUnitsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidMeasurementUnit `json:"data,omitempty"`
@@ -36256,6 +35266,7 @@ type GetValidMeasurementUnitsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36275,7 +35286,6 @@ func (r GetValidMeasurementUnitsResponse) StatusCode() int {
 }
 
 type CreateValidMeasurementUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -36295,6 +35305,7 @@ type CreateValidMeasurementUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36314,7 +35325,6 @@ func (r CreateValidMeasurementUnitResponse) StatusCode() int {
 }
 
 type SearchValidMeasurementUnitsByIngredientResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidMeasurementUnit `json:"data,omitempty"`
@@ -36334,6 +35344,7 @@ type SearchValidMeasurementUnitsByIngredientResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36353,7 +35364,6 @@ func (r SearchValidMeasurementUnitsByIngredientResponse) StatusCode() int {
 }
 
 type SearchForValidMeasurementUnitsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidMeasurementUnit `json:"data,omitempty"`
@@ -36373,6 +35383,7 @@ type SearchForValidMeasurementUnitsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36392,7 +35403,6 @@ func (r SearchForValidMeasurementUnitsResponse) StatusCode() int {
 }
 
 type ArchiveValidMeasurementUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -36412,6 +35422,7 @@ type ArchiveValidMeasurementUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36431,7 +35442,6 @@ func (r ArchiveValidMeasurementUnitResponse) StatusCode() int {
 }
 
 type GetValidMeasurementUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -36451,6 +35461,7 @@ type GetValidMeasurementUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36470,7 +35481,6 @@ func (r GetValidMeasurementUnitResponse) StatusCode() int {
 }
 
 type UpdateValidMeasurementUnitResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidMeasurementUnit `json:"data,omitempty"`
@@ -36490,6 +35500,7 @@ type UpdateValidMeasurementUnitResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36509,7 +35520,6 @@ func (r UpdateValidMeasurementUnitResponse) StatusCode() int {
 }
 
 type GetValidPreparationInstrumentsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparationInstrument `json:"data,omitempty"`
@@ -36529,6 +35539,7 @@ type GetValidPreparationInstrumentsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36548,7 +35559,6 @@ func (r GetValidPreparationInstrumentsResponse) StatusCode() int {
 }
 
 type CreateValidPreparationInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -36568,6 +35578,7 @@ type CreateValidPreparationInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36587,7 +35598,6 @@ func (r CreateValidPreparationInstrumentResponse) StatusCode() int {
 }
 
 type GetValidPreparationInstrumentsByInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparationInstrument `json:"data,omitempty"`
@@ -36607,6 +35617,7 @@ type GetValidPreparationInstrumentsByInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36626,7 +35637,6 @@ func (r GetValidPreparationInstrumentsByInstrumentResponse) StatusCode() int {
 }
 
 type GetValidPreparationInstrumentsByPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparationInstrument `json:"data,omitempty"`
@@ -36646,6 +35656,7 @@ type GetValidPreparationInstrumentsByPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36665,7 +35676,6 @@ func (r GetValidPreparationInstrumentsByPreparationResponse) StatusCode() int {
 }
 
 type ArchiveValidPreparationInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -36685,6 +35695,7 @@ type ArchiveValidPreparationInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36704,7 +35715,6 @@ func (r ArchiveValidPreparationInstrumentResponse) StatusCode() int {
 }
 
 type GetValidPreparationInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -36724,6 +35734,7 @@ type GetValidPreparationInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36743,7 +35754,6 @@ func (r GetValidPreparationInstrumentResponse) StatusCode() int {
 }
 
 type UpdateValidPreparationInstrumentResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationInstrument `json:"data,omitempty"`
@@ -36763,6 +35773,7 @@ type UpdateValidPreparationInstrumentResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36782,7 +35793,6 @@ func (r UpdateValidPreparationInstrumentResponse) StatusCode() int {
 }
 
 type GetValidPreparationVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparationVessel `json:"data,omitempty"`
@@ -36802,6 +35812,7 @@ type GetValidPreparationVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36821,7 +35832,6 @@ func (r GetValidPreparationVesselsResponse) StatusCode() int {
 }
 
 type CreateValidPreparationVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -36841,6 +35851,7 @@ type CreateValidPreparationVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36860,7 +35871,6 @@ func (r CreateValidPreparationVesselResponse) StatusCode() int {
 }
 
 type GetValidPreparationVesselsByPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparationVessel `json:"data,omitempty"`
@@ -36880,6 +35890,7 @@ type GetValidPreparationVesselsByPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36899,7 +35910,6 @@ func (r GetValidPreparationVesselsByPreparationResponse) StatusCode() int {
 }
 
 type GetValidPreparationVesselsByVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparationVessel `json:"data,omitempty"`
@@ -36919,6 +35929,7 @@ type GetValidPreparationVesselsByVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36938,7 +35949,6 @@ func (r GetValidPreparationVesselsByVesselResponse) StatusCode() int {
 }
 
 type ArchiveValidPreparationVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -36958,6 +35968,7 @@ type ArchiveValidPreparationVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36977,7 +35988,6 @@ func (r ArchiveValidPreparationVesselResponse) StatusCode() int {
 }
 
 type GetValidPreparationVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -36997,6 +36007,7 @@ type GetValidPreparationVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37016,7 +36027,6 @@ func (r GetValidPreparationVesselResponse) StatusCode() int {
 }
 
 type UpdateValidPreparationVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparationVessel `json:"data,omitempty"`
@@ -37036,6 +36046,7 @@ type UpdateValidPreparationVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37055,7 +36066,6 @@ func (r UpdateValidPreparationVesselResponse) StatusCode() int {
 }
 
 type GetValidPreparationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparation `json:"data,omitempty"`
@@ -37075,6 +36085,7 @@ type GetValidPreparationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37094,7 +36105,6 @@ func (r GetValidPreparationsResponse) StatusCode() int {
 }
 
 type CreateValidPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -37114,6 +36124,7 @@ type CreateValidPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37133,7 +36144,6 @@ func (r CreateValidPreparationResponse) StatusCode() int {
 }
 
 type GetRandomValidPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -37153,6 +36163,7 @@ type GetRandomValidPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37172,7 +36183,6 @@ func (r GetRandomValidPreparationResponse) StatusCode() int {
 }
 
 type SearchForValidPreparationsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidPreparation `json:"data,omitempty"`
@@ -37192,6 +36202,7 @@ type SearchForValidPreparationsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37211,7 +36222,6 @@ func (r SearchForValidPreparationsResponse) StatusCode() int {
 }
 
 type ArchiveValidPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -37231,6 +36241,7 @@ type ArchiveValidPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37250,7 +36261,6 @@ func (r ArchiveValidPreparationResponse) StatusCode() int {
 }
 
 type GetValidPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -37270,6 +36280,7 @@ type GetValidPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37289,7 +36300,6 @@ func (r GetValidPreparationResponse) StatusCode() int {
 }
 
 type UpdateValidPreparationResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidPreparation `json:"data,omitempty"`
@@ -37309,6 +36319,7 @@ type UpdateValidPreparationResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37328,7 +36339,6 @@ func (r UpdateValidPreparationResponse) StatusCode() int {
 }
 
 type GetValidVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidVessel   `json:"data,omitempty"`
@@ -37348,6 +36358,7 @@ type GetValidVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37367,7 +36378,6 @@ func (r GetValidVesselsResponse) StatusCode() int {
 }
 
 type CreateValidVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -37387,6 +36397,7 @@ type CreateValidVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37406,7 +36417,6 @@ func (r CreateValidVesselResponse) StatusCode() int {
 }
 
 type GetRandomValidVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -37426,6 +36436,7 @@ type GetRandomValidVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37445,7 +36456,6 @@ func (r GetRandomValidVesselResponse) StatusCode() int {
 }
 
 type SearchForValidVesselsResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]ValidVessel   `json:"data,omitempty"`
@@ -37465,6 +36475,7 @@ type SearchForValidVesselsResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37484,7 +36495,6 @@ func (r SearchForValidVesselsResponse) StatusCode() int {
 }
 
 type ArchiveValidVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -37504,6 +36514,7 @@ type ArchiveValidVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37523,7 +36534,6 @@ func (r ArchiveValidVesselResponse) StatusCode() int {
 }
 
 type GetValidVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -37543,6 +36553,7 @@ type GetValidVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37562,7 +36573,6 @@ func (r GetValidVesselResponse) StatusCode() int {
 }
 
 type UpdateValidVesselResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *ValidVessel     `json:"data,omitempty"`
@@ -37582,6 +36592,7 @@ type UpdateValidVesselResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37601,7 +36612,6 @@ func (r UpdateValidVesselResponse) StatusCode() int {
 }
 
 type GetWebhooksResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *[]Webhook       `json:"data,omitempty"`
@@ -37621,6 +36631,7 @@ type GetWebhooksResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37640,7 +36651,6 @@ func (r GetWebhooksResponse) StatusCode() int {
 }
 
 type CreateWebhookResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *Webhook         `json:"data,omitempty"`
@@ -37660,6 +36670,7 @@ type CreateWebhookResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37679,7 +36690,6 @@ func (r CreateWebhookResponse) StatusCode() int {
 }
 
 type ArchiveWebhookResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *Webhook         `json:"data,omitempty"`
@@ -37699,6 +36709,7 @@ type ArchiveWebhookResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37718,7 +36729,6 @@ func (r ArchiveWebhookResponse) StatusCode() int {
 }
 
 type GetWebhookResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *Webhook         `json:"data,omitempty"`
@@ -37738,6 +36748,7 @@ type GetWebhookResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37757,7 +36768,6 @@ func (r GetWebhookResponse) StatusCode() int {
 }
 
 type CreateWebhookTriggerEventResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *WebhookTriggerEvent `json:"data,omitempty"`
@@ -37777,6 +36787,7 @@ type CreateWebhookTriggerEventResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37796,7 +36807,6 @@ func (r CreateWebhookTriggerEventResponse) StatusCode() int {
 }
 
 type ArchiveWebhookTriggerEventResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON202      *struct {
 		Data       *WebhookTriggerEvent `json:"data,omitempty"`
@@ -37816,6 +36826,7 @@ type ArchiveWebhookTriggerEventResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37835,7 +36846,6 @@ func (r ArchiveWebhookTriggerEventResponse) StatusCode() int {
 }
 
 type RunFinalizeMealPlanWorkerResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *FinalizeMealPlansRequest `json:"data,omitempty"`
@@ -37855,6 +36865,7 @@ type RunFinalizeMealPlanWorkerResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37874,8 +36885,8 @@ func (r RunFinalizeMealPlanWorkerResponse) StatusCode() int {
 }
 
 type RunMealPlanGroceryListInitializerWorkerResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37895,8 +36906,8 @@ func (r RunMealPlanGroceryListInitializerWorkerResponse) StatusCode() int {
 }
 
 type RunMealPlanTaskCreatorWorkerResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37916,7 +36927,6 @@ func (r RunMealPlanTaskCreatorWorkerResponse) StatusCode() int {
 }
 
 type GetAuthStatusResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data       *UserStatusResponse `json:"data,omitempty"`
@@ -37936,6 +36946,7 @@ type GetAuthStatusResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37955,8 +36966,8 @@ func (r GetAuthStatusResponse) StatusCode() int {
 }
 
 type GETOauth2AuthorizeResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37976,8 +36987,8 @@ func (r GETOauth2AuthorizeResponse) StatusCode() int {
 }
 
 type POSTOauth2TokenResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -37997,7 +37008,6 @@ func (r POSTOauth2TokenResponse) StatusCode() int {
 }
 
 type CreateUserResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *UserCreationResponse `json:"data,omitempty"`
@@ -38017,6 +37027,7 @@ type CreateUserResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -38036,7 +37047,6 @@ func (r CreateUserResponse) StatusCode() int {
 }
 
 type VerifyEmailAddressResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -38056,6 +37066,7 @@ type VerifyEmailAddressResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -38075,7 +37086,6 @@ func (r VerifyEmailAddressResponse) StatusCode() int {
 }
 
 type LoginForJWTResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *JWTResponse     `json:"data,omitempty"`
@@ -38095,6 +37105,7 @@ type LoginForJWTResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -38114,7 +37125,6 @@ func (r LoginForJWTResponse) StatusCode() int {
 }
 
 type AdminLoginForJWTResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *JWTResponse     `json:"data,omitempty"`
@@ -38134,6 +37144,7 @@ type AdminLoginForJWTResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -38153,7 +37164,6 @@ func (r AdminLoginForJWTResponse) StatusCode() int {
 }
 
 type RequestPasswordResetTokenResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *PasswordResetToken `json:"data,omitempty"`
@@ -38173,6 +37183,7 @@ type RequestPasswordResetTokenResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -38192,7 +37203,6 @@ func (r RequestPasswordResetTokenResponse) StatusCode() int {
 }
 
 type RedeemPasswordResetTokenResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -38212,6 +37222,7 @@ type RedeemPasswordResetTokenResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -38231,7 +37242,6 @@ func (r RedeemPasswordResetTokenResponse) StatusCode() int {
 }
 
 type VerifyTOTPSecretResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -38251,6 +37261,7 @@ type VerifyTOTPSecretResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -38270,7 +37281,6 @@ func (r VerifyTOTPSecretResponse) StatusCode() int {
 }
 
 type RequestUsernameReminderResponse struct {
-	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *struct {
 		Data       *User            `json:"data,omitempty"`
@@ -38290,6 +37300,7 @@ type RequestUsernameReminderResponse struct {
 	XML401  *APIResponseWithError
 	JSON500 *APIResponseWithError
 	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status

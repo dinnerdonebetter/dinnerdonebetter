@@ -164,8 +164,8 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 					},
 				},
 			},
-			SealOfApproval:           fake.Bool(),
-			MinimumEstimatedPortions: fake.Float32(),
+			SealOfApproval:    fake.Bool(),
+			EstimatedPortions: Float32RangeWithOptionalMax{Min: fake.Float32()},
 		}
 
 		assert.NoError(t, x.ValidateWithContext(context.Background()))
@@ -208,8 +208,8 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 					},
 				},
 			},
-			SealOfApproval:           fake.Bool(),
-			MinimumEstimatedPortions: fake.Float32(),
+			SealOfApproval:    fake.Bool(),
+			EstimatedPortions: Float32RangeWithOptionalMax{Min: fake.Float32()},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -314,12 +314,12 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeUpdateRequestInput{
-			Name:                     pointer.To(t.Name()),
-			Source:                   pointer.To(t.Name()),
-			Description:              pointer.To(t.Name()),
-			InspiredByRecipeID:       pointer.To(t.Name()),
-			SealOfApproval:           pointer.To(fake.Bool()),
-			MinimumEstimatedPortions: pointer.To(fake.Float32()),
+			Name:               pointer.To(t.Name()),
+			Source:             pointer.To(t.Name()),
+			Description:        pointer.To(t.Name()),
+			InspiredByRecipeID: pointer.To(t.Name()),
+			SealOfApproval:     pointer.To(fake.Bool()),
+			EstimatedPortions:  Float32RangeWithOptionalMaxUpdateRequestInput{Min: pointer.To(fake.Float32())},
 		}
 
 		actual := x.ValidateWithContext(context.Background())

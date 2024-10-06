@@ -21662,6 +21662,8 @@ components:
           type: string
         eligibleForMeals:
           type: boolean
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         id:
           type: string
         inspiredByRecipeID:
@@ -21669,16 +21671,10 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumEstimatedPortions:
-          format: double
-          type: number
         media:
           items:
             $ref: '#/components/schemas/RecipeMedia'
           type: array
-        minimumEstimatedPortions:
-          format: double
-          type: number
         name:
           type: string
         pluralPortionName:
@@ -21714,14 +21710,10 @@ components:
           type: string
         eligibleForMeals:
           type: boolean
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         inspiredByRecipeID:
           type: string
-        maximumEstimatedPortions:
-          format: double
-          type: number
-        minimumEstimatedPortions:
-          format: double
-          type: number
         name:
           type: string
         pluralPortionName:
@@ -22709,14 +22701,10 @@ components:
           type: string
         eligibleForMeals:
           type: boolean
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         inspiredByRecipeID:
           type: string
-        maximumEstimatedPortions:
-          format: double
-          type: number
-        minimumEstimatedPortions:
-          format: double
-          type: number
         name:
           type: string
         pluralPortionName:

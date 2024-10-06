@@ -8,18 +8,20 @@ import (
 // ConvertRecipeToRecipeUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeUpdateRequestInput {
 	x := &types.RecipeUpdateRequestInput{
-		Name:                     &input.Name,
-		Slug:                     &input.Slug,
-		Source:                   &input.Source,
-		Description:              &input.Description,
-		InspiredByRecipeID:       input.InspiredByRecipeID,
-		YieldsComponentType:      &input.YieldsComponentType,
-		SealOfApproval:           &input.SealOfApproval,
-		MinimumEstimatedPortions: &input.MinimumEstimatedPortions,
-		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
-		PortionName:              &input.PortionName,
-		PluralPortionName:        &input.PluralPortionName,
-		EligibleForMeals:         &input.EligibleForMeals,
+		Name:                &input.Name,
+		Slug:                &input.Slug,
+		Source:              &input.Source,
+		Description:         &input.Description,
+		InspiredByRecipeID:  input.InspiredByRecipeID,
+		YieldsComponentType: &input.YieldsComponentType,
+		SealOfApproval:      &input.SealOfApproval,
+		EstimatedPortions: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+			Max: input.EstimatedPortions.Max,
+			Min: &input.EstimatedPortions.Min,
+		},
+		PortionName:       &input.PortionName,
+		PluralPortionName: &input.PluralPortionName,
+		EligibleForMeals:  &input.EligibleForMeals,
 	}
 
 	return x
@@ -28,20 +30,22 @@ func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeU
 // ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *types.RecipeCreationRequestInput) (*types.RecipeDatabaseCreationInput, error) {
 	x := &types.RecipeDatabaseCreationInput{
-		ID:                       identifiers.New(),
-		AlsoCreateMeal:           input.AlsoCreateMeal,
-		Name:                     input.Name,
-		Slug:                     input.Slug,
-		Source:                   input.Source,
-		Description:              input.Description,
-		InspiredByRecipeID:       input.InspiredByRecipeID,
-		SealOfApproval:           input.SealOfApproval,
-		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
-		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
-		PortionName:              input.PortionName,
-		PluralPortionName:        input.PluralPortionName,
-		EligibleForMeals:         input.EligibleForMeals,
-		YieldsComponentType:      input.YieldsComponentType,
+		ID:                 identifiers.New(),
+		AlsoCreateMeal:     input.AlsoCreateMeal,
+		Name:               input.Name,
+		Slug:               input.Slug,
+		Source:             input.Source,
+		Description:        input.Description,
+		InspiredByRecipeID: input.InspiredByRecipeID,
+		SealOfApproval:     input.SealOfApproval,
+		EstimatedPortions: types.Float32RangeWithOptionalMax{
+			Max: input.EstimatedPortions.Max,
+			Min: input.EstimatedPortions.Min,
+		},
+		PortionName:         input.PortionName,
+		PluralPortionName:   input.PluralPortionName,
+		EligibleForMeals:    input.EligibleForMeals,
+		YieldsComponentType: input.YieldsComponentType,
 	}
 
 	for _, step := range input.Steps {
@@ -75,20 +79,22 @@ func ConvertRecipeToRecipeCreationRequestInput(input *types.Recipe) *types.Recip
 	}
 
 	return &types.RecipeCreationRequestInput{
-		Name:                     input.Name,
-		Slug:                     input.Slug,
-		Source:                   input.Source,
-		Description:              input.Description,
-		InspiredByRecipeID:       input.InspiredByRecipeID,
-		SealOfApproval:           input.SealOfApproval,
-		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
-		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
-		PortionName:              input.PortionName,
-		PluralPortionName:        input.PluralPortionName,
-		Steps:                    steps,
-		PrepTasks:                prepTasks,
-		EligibleForMeals:         input.EligibleForMeals,
-		YieldsComponentType:      input.YieldsComponentType,
+		Name:               input.Name,
+		Slug:               input.Slug,
+		Source:             input.Source,
+		Description:        input.Description,
+		InspiredByRecipeID: input.InspiredByRecipeID,
+		SealOfApproval:     input.SealOfApproval,
+		EstimatedPortions: types.Float32RangeWithOptionalMax{
+			Max: input.EstimatedPortions.Max,
+			Min: input.EstimatedPortions.Min,
+		},
+		PortionName:         input.PortionName,
+		PluralPortionName:   input.PluralPortionName,
+		Steps:               steps,
+		PrepTasks:           prepTasks,
+		EligibleForMeals:    input.EligibleForMeals,
+		YieldsComponentType: input.YieldsComponentType,
 	}
 }
 
@@ -105,22 +111,24 @@ func ConvertRecipeToRecipeDatabaseCreationInput(input *types.Recipe) *types.Reci
 	}
 
 	return &types.RecipeDatabaseCreationInput{
-		ID:                       input.ID,
-		Name:                     input.Name,
-		Slug:                     input.Slug,
-		Source:                   input.Source,
-		Description:              input.Description,
-		InspiredByRecipeID:       input.InspiredByRecipeID,
-		CreatedByUser:            input.CreatedByUser,
-		SealOfApproval:           input.SealOfApproval,
-		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
-		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
-		PortionName:              input.PortionName,
-		PluralPortionName:        input.PluralPortionName,
-		Steps:                    steps,
-		PrepTasks:                prepTasks,
-		EligibleForMeals:         input.EligibleForMeals,
-		YieldsComponentType:      input.YieldsComponentType,
+		ID:                 input.ID,
+		Name:               input.Name,
+		Slug:               input.Slug,
+		Source:             input.Source,
+		Description:        input.Description,
+		InspiredByRecipeID: input.InspiredByRecipeID,
+		CreatedByUser:      input.CreatedByUser,
+		SealOfApproval:     input.SealOfApproval,
+		EstimatedPortions: types.Float32RangeWithOptionalMax{
+			Max: input.EstimatedPortions.Max,
+			Min: input.EstimatedPortions.Min,
+		},
+		PortionName:         input.PortionName,
+		PluralPortionName:   input.PluralPortionName,
+		Steps:               steps,
+		PrepTasks:           prepTasks,
+		EligibleForMeals:    input.EligibleForMeals,
+		YieldsComponentType: input.YieldsComponentType,
 	}
 }
 

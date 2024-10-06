@@ -26,8 +26,7 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 	assert.Equal(t, expected.Source, actual.Source, "expected Source for recipe %s to be %v, but it was %v", expected.ID, expected.Source, actual.Source)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for recipe %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe %s to be %v, but it was %v", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
-	assert.Equal(t, expected.MinimumEstimatedPortions, actual.MinimumEstimatedPortions, "expected MinimumEstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.MinimumEstimatedPortions, actual.MinimumEstimatedPortions)
-	assert.Equal(t, expected.MaximumEstimatedPortions, actual.MaximumEstimatedPortions, "expected MaximumEstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.MaximumEstimatedPortions, actual.MaximumEstimatedPortions)
+	assert.Equal(t, expected.EstimatedPortions, actual.EstimatedPortions, "expected EstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.EstimatedPortions, actual.EstimatedPortions)
 	assert.Equal(t, expected.YieldsComponentType, actual.YieldsComponentType, "expected YieldsComponentType for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsComponentType, actual.YieldsComponentType)
 	assert.Equal(t, expected.PortionName, actual.PortionName, "expected PortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PortionName, actual.PortionName)
 	assert.Equal(t, expected.PluralPortionName, actual.PluralPortionName, "expected PluralPortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PluralPortionName, actual.PluralPortionName)
@@ -182,12 +181,15 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
 			expected := &types.Recipe{
-				Name:                     "sopa de frijol",
-				Slug:                     "sopa-de-frijol-whatever-who-cares",
-				YieldsComponentType:      types.MealComponentTypesMain,
-				PortionName:              t.Name(),
-				PluralPortionName:        t.Name(),
-				MinimumEstimatedPortions: 1,
+				Name:                "sopa de frijol",
+				Slug:                "sopa-de-frijol-whatever-who-cares",
+				YieldsComponentType: types.MealComponentTypesMain,
+				PortionName:         t.Name(),
+				PluralPortionName:   t.Name(),
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Max: nil,
+					Min: 1,
+				},
 				Steps: []*types.RecipeStep{
 					{
 						Products: []*types.RecipeStepProduct{
@@ -268,13 +270,16 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			}
 
 			expectedInput := &types.RecipeCreationRequestInput{
-				Name:                     expected.Name,
-				Description:              expected.Description,
-				Slug:                     expected.Slug,
-				YieldsComponentType:      expected.YieldsComponentType,
-				PortionName:              expected.PortionName,
-				PluralPortionName:        expected.PluralPortionName,
-				MinimumEstimatedPortions: expected.MinimumEstimatedPortions,
+				Name:                expected.Name,
+				Description:         expected.Description,
+				Slug:                expected.Slug,
+				YieldsComponentType: expected.YieldsComponentType,
+				PortionName:         expected.PortionName,
+				PluralPortionName:   expected.PluralPortionName,
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Max: expected.EstimatedPortions.Max,
+					Min: expected.EstimatedPortions.Min,
+				},
 				Steps: []*types.RecipeStepCreationRequestInput{
 					{
 						MinimumTemperatureInCelsius: expected.Steps[0].MinimumTemperatureInCelsius,
@@ -614,12 +619,15 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			require.NoError(t, err)
 
 			expected := &types.Recipe{
-				Name:                     "sopa de frijol",
-				Slug:                     "whatever-who-cares-sopa-de-frijol",
-				YieldsComponentType:      types.MealComponentTypesMain,
-				PortionName:              t.Name(),
-				PluralPortionName:        t.Name(),
-				MinimumEstimatedPortions: 1,
+				Name:                "sopa de frijol",
+				Slug:                "whatever-who-cares-sopa-de-frijol",
+				YieldsComponentType: types.MealComponentTypesMain,
+				PortionName:         t.Name(),
+				PluralPortionName:   t.Name(),
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Max: nil,
+					Min: 1,
+				},
 				Steps: []*types.RecipeStep{
 					{
 						MinimumTemperatureInCelsius: nil,
@@ -687,12 +695,15 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			}
 
 			expectedInput := &types.RecipeCreationRequestInput{
-				Name:                     expected.Name,
-				Slug:                     expected.Slug,
-				YieldsComponentType:      expected.YieldsComponentType,
-				PortionName:              expected.PortionName,
-				PluralPortionName:        expected.PluralPortionName,
-				MinimumEstimatedPortions: expected.MinimumEstimatedPortions,
+				Name:                expected.Name,
+				Slug:                expected.Slug,
+				YieldsComponentType: expected.YieldsComponentType,
+				PortionName:         expected.PortionName,
+				PluralPortionName:   expected.PluralPortionName,
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Min: expected.EstimatedPortions.Min,
+					Max: expected.EstimatedPortions.Max,
+				},
 				Steps: []*types.RecipeStepCreationRequestInput{
 					{
 						MinimumTemperatureInCelsius: nil,

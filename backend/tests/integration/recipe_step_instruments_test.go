@@ -154,12 +154,15 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 			linedBakingSheetName := "lined baking sheet"
 
 			expected := &types.Recipe{
-				Name:                     t.Name(),
-				Slug:                     "whatever-who-cares",
-				YieldsComponentType:      types.MealComponentTypesMain,
-				PortionName:              t.Name(),
-				PluralPortionName:        t.Name(),
-				MinimumEstimatedPortions: 1,
+				Name:                t.Name(),
+				Slug:                "whatever-who-cares",
+				YieldsComponentType: types.MealComponentTypesMain,
+				PortionName:         t.Name(),
+				PluralPortionName:   t.Name(),
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Max: nil,
+					Min: 1,
+				},
 				Steps: []*types.RecipeStep{
 					{
 						Products: []*types.RecipeStepProduct{
