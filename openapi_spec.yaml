@@ -13,10 +13,16 @@ paths:
     get:
       description: checks for service liveness
       operationId: CheckForLiveness
+      responses:
+        "200":
+          description: The service is live.
   /_meta_/ready:
     get:
       description: checks for service readiness
       operationId: CheckForReadiness
+      responses:
+        "200":
+          description: The service is ready.
   /api/v1/admin/users/status:
     post:
       description: Operation for creating UserStatusResponse

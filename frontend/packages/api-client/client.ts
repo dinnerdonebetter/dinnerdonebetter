@@ -1,4 +1,11 @@
-import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse, HeadersDefaults, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosInstance,
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  HeadersDefaults,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import { Span } from '@opentelemetry/api';
 
 import { buildServerSideLogger, LoggerType } from '@dinnerdonebetter/logger';
@@ -365,7 +372,7 @@ export class DinnerDoneBetterAPIClient {
         // console.log(_curlFromAxiosConfig(request));
 
         if (spanContext.traceId) {
-          request.headers.set('traceparent', spanContext.traceId)
+          request.headers.set('traceparent', spanContext.traceId);
         }
 
         return request;
