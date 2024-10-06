@@ -13,14 +13,17 @@ func BuildFakeMeal() *types.Meal {
 	}
 
 	return &types.Meal{
-		ID:                       BuildFakeID(),
-		Name:                     buildUniqueString(),
-		Description:              buildUniqueString(),
-		MinimumEstimatedPortions: float32(buildFakeNumber()),
-		CreatedAt:                BuildFakeTime(),
-		CreatedByUser:            BuildFakeID(),
-		Components:               recipes,
-		EligibleForMealPlans:     true,
+		ID:          BuildFakeID(),
+		Name:        buildUniqueString(),
+		Description: buildUniqueString(),
+		EstimatedPortions: types.Float32RangeWithOptionalMax{
+			Min: float32(buildFakeNumber()),
+			Max: nil,
+		},
+		CreatedAt:            BuildFakeTime(),
+		CreatedByUser:        BuildFakeID(),
+		Components:           recipes,
+		EligibleForMealPlans: true,
 	}
 }
 

@@ -49,17 +49,16 @@ type (
 	Meal struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt                time.Time        `json:"createdAt"`
-		ArchivedAt               *time.Time       `json:"archivedAt"`
-		LastUpdatedAt            *time.Time       `json:"lastUpdatedAt"`
-		MaximumEstimatedPortions *float32         `json:"maximumEstimatedPortions"`
-		ID                       string           `json:"id"`
-		Description              string           `json:"description"`
-		CreatedByUser            string           `json:"createdByUser"`
-		Name                     string           `json:"name"`
-		Components               []*MealComponent `json:"components"`
-		MinimumEstimatedPortions float32          `json:"minimumEstimatedPortions"`
-		EligibleForMealPlans     bool             `json:"eligibleForMealPlans"`
+		CreatedAt            time.Time                   `json:"createdAt"`
+		ArchivedAt           *time.Time                  `json:"archivedAt"`
+		LastUpdatedAt        *time.Time                  `json:"lastUpdatedAt"`
+		EstimatedPortions    Float32RangeWithOptionalMax `json:"estimatedPortions"`
+		ID                   string                      `json:"id"`
+		Description          string                      `json:"description"`
+		CreatedByUser        string                      `json:"createdByUser"`
+		Name                 string                      `json:"name"`
+		Components           []*MealComponent            `json:"components"`
+		EligibleForMealPlans bool                        `json:"eligibleForMealPlans"`
 	}
 
 	// MealComponent is a recipe with some extra data attached to it.
@@ -75,12 +74,11 @@ type (
 	MealCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		MaximumEstimatedPortions *float32                             `json:"maximumEstimatedPortions"`
-		Name                     string                               `json:"name"`
-		Description              string                               `json:"description"`
-		Components               []*MealComponentCreationRequestInput `json:"components"`
-		MinimumEstimatedPortions float32                              `json:"minimumEstimatedPortions"`
-		EligibleForMealPlans     bool                                 `json:"eligibleForMealPlans"`
+		EstimatedPortions    Float32RangeWithOptionalMax          `json:"estimatedPortions"`
+		Name                 string                               `json:"name"`
+		Description          string                               `json:"description"`
+		Components           []*MealComponentCreationRequestInput `json:"components"`
+		EligibleForMealPlans bool                                 `json:"eligibleForMealPlans"`
 	}
 
 	// MealComponentCreationRequestInput represents what a user could set as input for creating meal recipes.
@@ -96,14 +94,13 @@ type (
 	MealDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		MaximumEstimatedPortions *float32
-		ID                       string
-		Name                     string
-		Description              string
-		CreatedByUser            string
-		Components               []*MealComponentDatabaseCreationInput
-		MinimumEstimatedPortions float32
-		EligibleForMealPlans     bool
+		EstimatedPortions    Float32RangeWithOptionalMax
+		ID                   string
+		Name                 string
+		Description          string
+		CreatedByUser        string
+		Components           []*MealComponentDatabaseCreationInput
+		EligibleForMealPlans bool
 	}
 
 	// MealComponentDatabaseCreationInput represents what a user could set as input for creating meal recipes.
@@ -119,13 +116,12 @@ type (
 	MealUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Name                     *string                            `json:"name,omitempty"`
-		Description              *string                            `json:"description,omitempty"`
-		CreatedByUser            *string                            `json:"-"`
-		MinimumEstimatedPortions *float32                           `json:"minimumEstimatedPortions"`
-		MaximumEstimatedPortions *float32                           `json:"maximumEstimatedPortions"`
-		EligibleForMealPlans     *bool                              `json:"eligibleForMealPlans"`
-		Components               []*MealComponentUpdateRequestInput `json:"recipes,omitempty"`
+		Name                 *string                                       `json:"name,omitempty"`
+		Description          *string                                       `json:"description,omitempty"`
+		CreatedByUser        *string                                       `json:"-"`
+		EstimatedPortions    Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimatedPortions"`
+		EligibleForMealPlans *bool                                         `json:"eligibleForMealPlans"`
+		Components           []*MealComponentUpdateRequestInput            `json:"recipes,omitempty"`
 	}
 
 	// MealComponentUpdateRequestInput represents what a user could set as input for creating meal recipes.
@@ -180,12 +176,12 @@ func (x *Meal) Update(input *MealUpdateRequestInput) {
 		x.Description = *input.Description
 	}
 
-	if input.MinimumEstimatedPortions != nil && *input.MinimumEstimatedPortions != x.MinimumEstimatedPortions {
-		x.MinimumEstimatedPortions = *input.MinimumEstimatedPortions
+	if input.EstimatedPortions.Min != nil && *input.EstimatedPortions.Min != x.EstimatedPortions.Min {
+		x.EstimatedPortions.Min = *input.EstimatedPortions.Min
 	}
 
-	if input.MaximumEstimatedPortions != nil && input.MaximumEstimatedPortions != x.MaximumEstimatedPortions {
-		x.MaximumEstimatedPortions = input.MaximumEstimatedPortions
+	if input.EstimatedPortions.Max != nil && input.EstimatedPortions.Max != x.EstimatedPortions.Max {
+		x.EstimatedPortions.Max = input.EstimatedPortions.Max
 	}
 
 	if input.EligibleForMealPlans != nil && *input.EligibleForMealPlans != x.EligibleForMealPlans {

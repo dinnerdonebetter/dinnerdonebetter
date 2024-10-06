@@ -13,16 +13,10 @@ paths:
     get:
       description: checks for service liveness
       operationId: CheckForLiveness
-      responses:
-        "200":
-          description: The service is live.
   /_meta_/ready:
     get:
       description: checks for service readiness
       operationId: CheckForReadiness
-      responses:
-        "200":
-          description: The service is ready.
   /api/v1/admin/users/status:
     post:
       description: Operation for creating UserStatusResponse
@@ -20823,6 +20817,24 @@ components:
           format: int32
           type: integer
       type: object
+    Float32RangeWithOptionalMax:
+      properties:
+        max:
+          format: double
+          type: number
+        min:
+          format: double
+          type: number
+      type: object
+    Float32RangeWithOptionalMaxUpdateRequestInput:
+      properties:
+        max:
+          format: double
+          type: number
+        min:
+          format: double
+          type: number
+      type: object
     Household:
       properties:
         addressLine1:
@@ -21100,17 +21112,13 @@ components:
           type: string
         eligibleForMealPlans:
           type: boolean
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         id:
           type: string
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumEstimatedPortions:
-          format: double
-          type: number
-        minimumEstimatedPortions:
-          format: double
-          type: number
         name:
           type: string
       type: object
@@ -21144,12 +21152,8 @@ components:
           type: string
         eligibleForMealPlans:
           type: boolean
-        maximumEstimatedPortions:
-          format: double
-          type: number
-        minimumEstimatedPortions:
-          format: double
-          type: number
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         name:
           type: string
       type: object

@@ -13,13 +13,15 @@ func ConvertMealCreationRequestInputToMealDatabaseCreationInput(input *types.Mea
 	}
 
 	x := &types.MealDatabaseCreationInput{
-		ID:                       identifiers.New(),
-		Name:                     input.Name,
-		Description:              input.Description,
-		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
-		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
-		Components:               convertedComponents,
-		EligibleForMealPlans:     input.EligibleForMealPlans,
+		ID:          identifiers.New(),
+		Name:        input.Name,
+		Description: input.Description,
+		EstimatedPortions: types.Float32RangeWithOptionalMax{
+			Min: input.EstimatedPortions.Min,
+			Max: input.EstimatedPortions.Max,
+		},
+		Components:           convertedComponents,
+		EligibleForMealPlans: input.EligibleForMealPlans,
 	}
 
 	return x
@@ -44,12 +46,14 @@ func ConvertMealToMealCreationRequestInput(meal *types.Meal) *types.MealCreation
 	}
 
 	return &types.MealCreationRequestInput{
-		Name:                     meal.Name,
-		Description:              meal.Description,
-		MinimumEstimatedPortions: meal.MinimumEstimatedPortions,
-		MaximumEstimatedPortions: meal.MaximumEstimatedPortions,
-		Components:               convertedComponents,
-		EligibleForMealPlans:     meal.EligibleForMealPlans,
+		Name:        meal.Name,
+		Description: meal.Description,
+		EstimatedPortions: types.Float32RangeWithOptionalMax{
+			Min: meal.EstimatedPortions.Min,
+			Max: meal.EstimatedPortions.Max,
+		},
+		Components:           convertedComponents,
+		EligibleForMealPlans: meal.EligibleForMealPlans,
 	}
 }
 
@@ -72,14 +76,16 @@ func ConvertMealToMealDatabaseCreationInput(meal *types.Meal) *types.MealDatabas
 	}
 
 	return &types.MealDatabaseCreationInput{
-		ID:                       meal.ID,
-		Name:                     meal.Name,
-		Description:              meal.Description,
-		MinimumEstimatedPortions: meal.MinimumEstimatedPortions,
-		MaximumEstimatedPortions: meal.MaximumEstimatedPortions,
-		CreatedByUser:            meal.CreatedByUser,
-		Components:               convertedComponents,
-		EligibleForMealPlans:     meal.EligibleForMealPlans,
+		ID:          meal.ID,
+		Name:        meal.Name,
+		Description: meal.Description,
+		EstimatedPortions: types.Float32RangeWithOptionalMax{
+			Min: meal.EstimatedPortions.Min,
+			Max: meal.EstimatedPortions.Max,
+		},
+		CreatedByUser:        meal.CreatedByUser,
+		Components:           convertedComponents,
+		EligibleForMealPlans: meal.EligibleForMealPlans,
 	}
 }
 
@@ -102,13 +108,15 @@ func ConvertMealToMealUpdateRequestInput(meal *types.Meal) *types.MealUpdateRequ
 	}
 
 	return &types.MealUpdateRequestInput{
-		Name:                     &meal.Name,
-		Description:              &meal.Description,
-		MinimumEstimatedPortions: &meal.MinimumEstimatedPortions,
-		MaximumEstimatedPortions: meal.MaximumEstimatedPortions,
-		CreatedByUser:            &meal.CreatedByUser,
-		Components:               convertedComponents,
-		EligibleForMealPlans:     &meal.EligibleForMealPlans,
+		Name:        &meal.Name,
+		Description: &meal.Description,
+		EstimatedPortions: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+			Min: &meal.EstimatedPortions.Min,
+			Max: meal.EstimatedPortions.Max,
+		},
+		CreatedByUser:        &meal.CreatedByUser,
+		Components:           convertedComponents,
+		EligibleForMealPlans: &meal.EligibleForMealPlans,
 	}
 }
 

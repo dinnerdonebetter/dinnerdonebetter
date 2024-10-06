@@ -79,6 +79,16 @@ type (
 		Max float64 `json:"max"`
 	}
 
+	Float32RangeWithOptionalMax struct {
+		Max *float32 `json:"max"`
+		Min float32  `json:"min"`
+	}
+
+	Float32RangeWithOptionalMaxUpdateRequestInput struct {
+		Min *float32 `json:"min"`
+		Max *float32 `json:"max"`
+	}
+
 	UintRange struct {
 		Min uint64 `json:"min"`
 		Max uint64 `json:"max"`
