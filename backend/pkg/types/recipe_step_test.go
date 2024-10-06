@@ -40,7 +40,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 				MeasurementUnitID: "MeasurementUnitID",
 				QuantityNotes:     "QuantityNotes",
 				IngredientNotes:   "IngredientNotes",
-				MinimumQuantity:   1,
+				Quantity:          Float32RangeWithOptionalMax{Min: 1},
 			},
 		},
 	}
@@ -112,7 +112,7 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 				MeasurementUnitID: t.Name(),
 				QuantityNotes:     t.Name(),
 				IngredientNotes:   t.Name(),
-				MinimumQuantity:   1,
+				Quantity:          Float32RangeWithOptionalMax{Min: 1},
 			})
 		}
 

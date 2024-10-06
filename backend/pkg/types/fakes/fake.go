@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
@@ -41,4 +43,12 @@ func buildUniqueString() string {
 // buildFakePassword builds a fake password.
 func buildFakePassword() string {
 	return fake.Password(true, true, true, true, false, 32)
+}
+
+func BuildFakeFloat32RangeWithOptionalMax() types.Float32RangeWithOptionalMax {
+	minimum := float32(buildFakeNumber())
+	return types.Float32RangeWithOptionalMax{
+		Min: minimum,
+		Max: pointer.To(float32(buildFakeNumber()) + minimum),
+	}
 }

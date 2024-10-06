@@ -21,7 +21,7 @@ func TestRecipeStepIngredient_Update(T *testing.T) {
 
 		assert.NoError(t, fake.Struct(&input))
 		input.RecipeStepProductRecipeID = pointer.To(t.Name())
-		input.MaximumQuantity = pointer.To(fake.Float32())
+		input.Quantity.Max = pointer.To(fake.Float32())
 		input.Optional = pointer.To(true)
 		input.VesselIndex = pointer.To(fake.Uint16())
 		input.ProductPercentageToUse = pointer.To(fake.Float32())
@@ -39,7 +39,7 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepIngredientCreationRequestInput{
 			IngredientID:      pointer.To(t.Name()),
 			MeasurementUnitID: t.Name(),
-			MinimumQuantity:   fake.Float32(),
+			Quantity:          Float32RangeWithOptionalMax{Min: fake.Float32()},
 			QuantityNotes:     t.Name(),
 			IngredientNotes:   t.Name(),
 			Optional:          fake.Bool(),
@@ -68,7 +68,7 @@ func TestRecipeStepIngredientDatabaseCreationInput_Validate(T *testing.T) {
 		x := &RecipeStepIngredientDatabaseCreationInput{
 			ID:                t.Name(),
 			MeasurementUnitID: t.Name(),
-			MinimumQuantity:   fake.Float32(),
+			Quantity:          Float32RangeWithOptionalMax{Min: fake.Float32()},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -94,7 +94,7 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepIngredientUpdateRequestInput{
 			IngredientID:      pointer.To(t.Name()),
 			MeasurementUnitID: pointer.To(t.Name()),
-			MinimumQuantity:   pointer.To(fake.Float32()),
+			Quantity:          Float32RangeWithOptionalMaxUpdateRequestInput{Min: pointer.To(fake.Float32())},
 			QuantityNotes:     pointer.To(t.Name()),
 			IngredientNotes:   pointer.To(t.Name()),
 			Optional:          pointer.To(fake.Bool()),

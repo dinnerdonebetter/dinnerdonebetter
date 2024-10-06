@@ -854,6 +854,12 @@ type Float32RangeWithOptionalMax struct {
 	Min *float64 `json:"min,omitempty"`
 }
 
+// Float32RangeWithOptionalMaxUpdateRequestInput defines model for Float32RangeWithOptionalMaxUpdateRequestInput.
+type Float32RangeWithOptionalMaxUpdateRequestInput struct {
+	Max *float64 `json:"max,omitempty"`
+	Min *float64 `json:"min,omitempty"`
+}
+
 // Household defines model for Household.
 type Household struct {
 	AddressLine1             *string                            `json:"addressLine1,omitempty"`
@@ -1614,63 +1620,60 @@ type RecipeStepCreationRequestInput struct {
 
 // RecipeStepIngredient defines model for RecipeStepIngredient.
 type RecipeStepIngredient struct {
-	ArchivedAt             *time.Time            `json:"archivedAt,omitempty"`
-	BelongsToRecipeStep    *string               `json:"belongsToRecipeStep,omitempty"`
-	CreatedAt              *time.Time            `json:"createdAt,omitempty"`
-	Id                     *string               `json:"id,omitempty"`
-	Ingredient             *ValidIngredient      `json:"ingredient,omitempty"`
-	IngredientNotes        *string               `json:"ingredientNotes,omitempty"`
-	LastUpdatedAt          *time.Time            `json:"lastUpdatedAt,omitempty"`
-	MaximumQuantity        *float64              `json:"maximumQuantity,omitempty"`
-	MeasurementUnit        *ValidMeasurementUnit `json:"measurementUnit,omitempty"`
-	MinimumQuantity        *float64              `json:"minimumQuantity,omitempty"`
-	Name                   *string               `json:"name,omitempty"`
-	OptionIndex            *int64                `json:"optionIndex,omitempty"`
-	Optional               *bool                 `json:"optional,omitempty"`
-	ProductOfRecipeID      *string               `json:"productOfRecipeID,omitempty"`
-	ProductPercentageToUse *float64              `json:"productPercentageToUse,omitempty"`
-	QuantityNotes          *string               `json:"quantityNotes,omitempty"`
-	RecipeStepProductID    *string               `json:"recipeStepProductID,omitempty"`
-	ToTaste                *bool                 `json:"toTaste,omitempty"`
-	VesselIndex            *int64                `json:"vesselIndex,omitempty"`
+	ArchivedAt             *time.Time                   `json:"archivedAt,omitempty"`
+	BelongsToRecipeStep    *string                      `json:"belongsToRecipeStep,omitempty"`
+	CreatedAt              *time.Time                   `json:"createdAt,omitempty"`
+	Id                     *string                      `json:"id,omitempty"`
+	Ingredient             *ValidIngredient             `json:"ingredient,omitempty"`
+	IngredientNotes        *string                      `json:"ingredientNotes,omitempty"`
+	LastUpdatedAt          *time.Time                   `json:"lastUpdatedAt,omitempty"`
+	MeasurementUnit        *ValidMeasurementUnit        `json:"measurementUnit,omitempty"`
+	Name                   *string                      `json:"name,omitempty"`
+	OptionIndex            *int64                       `json:"optionIndex,omitempty"`
+	Optional               *bool                        `json:"optional,omitempty"`
+	ProductOfRecipeID      *string                      `json:"productOfRecipeID,omitempty"`
+	ProductPercentageToUse *float64                     `json:"productPercentageToUse,omitempty"`
+	Quantity               *Float32RangeWithOptionalMax `json:"quantity,omitempty"`
+	QuantityNotes          *string                      `json:"quantityNotes,omitempty"`
+	RecipeStepProductID    *string                      `json:"recipeStepProductID,omitempty"`
+	ToTaste                *bool                        `json:"toTaste,omitempty"`
+	VesselIndex            *int64                       `json:"vesselIndex,omitempty"`
 }
 
 // RecipeStepIngredientCreationRequestInput defines model for RecipeStepIngredientCreationRequestInput.
 type RecipeStepIngredientCreationRequestInput struct {
-	IngredientID                    *string  `json:"ingredientID,omitempty"`
-	IngredientNotes                 *string  `json:"ingredientNotes,omitempty"`
-	MaximumQuantity                 *float64 `json:"maximumQuantity,omitempty"`
-	MeasurementUnitID               *string  `json:"measurementUnitID,omitempty"`
-	MinimumQuantity                 *float64 `json:"minimumQuantity,omitempty"`
-	Name                            *string  `json:"name,omitempty"`
-	OptionIndex                     *int64   `json:"optionIndex,omitempty"`
-	Optional                        *bool    `json:"optional,omitempty"`
-	ProductOfRecipeID               *string  `json:"productOfRecipeID,omitempty"`
-	ProductOfRecipeStepIndex        *int64   `json:"productOfRecipeStepIndex,omitempty"`
-	ProductOfRecipeStepProductIndex *int64   `json:"productOfRecipeStepProductIndex,omitempty"`
-	ProductPercentageToUse          *float64 `json:"productPercentageToUse,omitempty"`
-	QuantityNotes                   *string  `json:"quantityNotes,omitempty"`
-	ToTaste                         *bool    `json:"toTaste,omitempty"`
-	VesselIndex                     *int64   `json:"vesselIndex,omitempty"`
+	IngredientID                    *string                      `json:"ingredientID,omitempty"`
+	IngredientNotes                 *string                      `json:"ingredientNotes,omitempty"`
+	MeasurementUnitID               *string                      `json:"measurementUnitID,omitempty"`
+	Name                            *string                      `json:"name,omitempty"`
+	OptionIndex                     *int64                       `json:"optionIndex,omitempty"`
+	Optional                        *bool                        `json:"optional,omitempty"`
+	ProductOfRecipeID               *string                      `json:"productOfRecipeID,omitempty"`
+	ProductOfRecipeStepIndex        *int64                       `json:"productOfRecipeStepIndex,omitempty"`
+	ProductOfRecipeStepProductIndex *int64                       `json:"productOfRecipeStepProductIndex,omitempty"`
+	ProductPercentageToUse          *float64                     `json:"productPercentageToUse,omitempty"`
+	Quantity                        *Float32RangeWithOptionalMax `json:"quantity,omitempty"`
+	QuantityNotes                   *string                      `json:"quantityNotes,omitempty"`
+	ToTaste                         *bool                        `json:"toTaste,omitempty"`
+	VesselIndex                     *int64                       `json:"vesselIndex,omitempty"`
 }
 
 // RecipeStepIngredientUpdateRequestInput defines model for RecipeStepIngredientUpdateRequestInput.
 type RecipeStepIngredientUpdateRequestInput struct {
-	BelongsToRecipeStep    *string  `json:"belongsToRecipeStep,omitempty"`
-	IngredientID           *string  `json:"ingredientID,omitempty"`
-	IngredientNotes        *string  `json:"ingredientNotes,omitempty"`
-	MaximumQuantity        *float64 `json:"maximumQuantity,omitempty"`
-	MeasurementUnitID      *string  `json:"measurementUnitID,omitempty"`
-	MinimumQuantity        *float64 `json:"minimumQuantity,omitempty"`
-	Name                   *string  `json:"name,omitempty"`
-	OptionIndex            *int64   `json:"optionIndex,omitempty"`
-	Optional               *bool    `json:"optional,omitempty"`
-	ProductOfRecipeID      *string  `json:"productOfRecipeID,omitempty"`
-	ProductPercentageToUse *float64 `json:"productPercentageToUse,omitempty"`
-	QuantityNotes          *string  `json:"quantityNotes,omitempty"`
-	RecipeStepProductID    *string  `json:"recipeStepProductID,omitempty"`
-	ToTaste                *bool    `json:"toTaste,omitempty"`
-	VesselIndex            *int64   `json:"vesselIndex,omitempty"`
+	BelongsToRecipeStep    *string                                        `json:"belongsToRecipeStep,omitempty"`
+	IngredientID           *string                                        `json:"ingredientID,omitempty"`
+	IngredientNotes        *string                                        `json:"ingredientNotes,omitempty"`
+	MeasurementUnitID      *string                                        `json:"measurementUnitID,omitempty"`
+	Name                   *string                                        `json:"name,omitempty"`
+	OptionIndex            *int64                                         `json:"optionIndex,omitempty"`
+	Optional               *bool                                          `json:"optional,omitempty"`
+	ProductOfRecipeID      *string                                        `json:"productOfRecipeID,omitempty"`
+	ProductPercentageToUse *float64                                       `json:"productPercentageToUse,omitempty"`
+	Quantity               *Float32RangeWithOptionalMaxUpdateRequestInput `json:"quantity,omitempty"`
+	QuantityNotes          *string                                        `json:"quantityNotes,omitempty"`
+	RecipeStepProductID    *string                                        `json:"recipeStepProductID,omitempty"`
+	ToTaste                *bool                                          `json:"toTaste,omitempty"`
+	VesselIndex            *int64                                         `json:"vesselIndex,omitempty"`
 }
 
 // RecipeStepInstrument defines model for RecipeStepInstrument.

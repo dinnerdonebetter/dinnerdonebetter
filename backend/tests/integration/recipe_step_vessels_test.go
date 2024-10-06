@@ -174,7 +174,10 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Ingredient:          aluminumFoil,
 								Name:                "aluminum foil",
 								MeasurementUnit:     *sheets,
-								MinimumQuantity:     3,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: 3,
+								},
 							},
 						},
 						Vessels: []*types.RecipeStepVessel{
@@ -209,7 +212,10 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Ingredient:      garlic,
 								Name:            "garlic",
 								MeasurementUnit: *head,
-								MinimumQuantity: 1,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: 1,
+								},
 							},
 						},
 						Index: 1,

@@ -212,13 +212,17 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Ingredient:      pintoBeans,
 								Name:            "pinto beans",
 								MeasurementUnit: *grams,
-								MinimumQuantity: 500,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Min: 500,
+								},
 							},
 							{
 								Ingredient:      water,
 								Name:            "water",
 								MeasurementUnit: *cups,
-								MinimumQuantity: 5,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Min: 5,
+								},
 							},
 						},
 						Index: 0,
@@ -245,13 +249,17 @@ func (s *TestSuite) TestRecipes_Realistic() {
 							{
 								Name:            "soaked pinto beans",
 								MeasurementUnit: *grams,
-								MinimumQuantity: 1000,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Min: 1000,
+								},
 							},
 							{
 								Ingredient:      garlicPaste,
 								Name:            "garlic paste",
 								MeasurementUnit: *grams,
-								MinimumQuantity: 10,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Min: 10,
+								},
 							},
 						},
 						Index: 1,
@@ -292,13 +300,19 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								IngredientID:      &expected.Steps[0].Ingredients[0].Ingredient.ID,
 								Name:              expected.Steps[0].Ingredients[0].Name,
 								MeasurementUnitID: expected.Steps[0].Ingredients[0].MeasurementUnit.ID,
-								MinimumQuantity:   expected.Steps[0].Ingredients[0].MinimumQuantity,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: expected.Steps[0].Ingredients[0].Quantity.Min,
+								},
 							},
 							{
 								IngredientID:      &expected.Steps[0].Ingredients[1].Ingredient.ID,
 								Name:              expected.Steps[0].Ingredients[1].Name,
 								MeasurementUnitID: expected.Steps[0].Ingredients[1].MeasurementUnit.ID,
-								MinimumQuantity:   expected.Steps[0].Ingredients[1].MinimumQuantity,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: expected.Steps[0].Ingredients[1].Quantity.Min,
+								},
 							},
 						},
 						Index: expected.Steps[0].Index,
@@ -326,15 +340,21 @@ func (s *TestSuite) TestRecipes_Realistic() {
 							{
 								Name:                            expected.Steps[1].Ingredients[0].Name,
 								MeasurementUnitID:               expected.Steps[1].Ingredients[0].MeasurementUnit.ID,
-								MinimumQuantity:                 expected.Steps[1].Ingredients[0].MinimumQuantity,
 								ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
 								ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: expected.Steps[1].Ingredients[0].Quantity.Min,
+								},
 							},
 							{
 								IngredientID:      &expected.Steps[1].Ingredients[1].Ingredient.ID,
 								Name:              expected.Steps[1].Ingredients[1].Name,
 								MeasurementUnitID: expected.Steps[1].Ingredients[1].MeasurementUnit.ID,
-								MinimumQuantity:   expected.Steps[1].Ingredients[1].MinimumQuantity,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: expected.Steps[1].Ingredients[1].Quantity.Min,
+								},
 							},
 						},
 						Index: expected.Steps[1].Index,
@@ -626,7 +646,9 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Ingredient:          chickenBreast,
 								Name:                "pinto beans",
 								MeasurementUnit:     *grams,
-								MinimumQuantity:     500,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Min: 500,
+								},
 							},
 						},
 						Index: 0,
@@ -654,7 +676,9 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 							{
 								Name:            "diced chicken breast",
 								MeasurementUnit: *grams,
-								MinimumQuantity: 1000,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Min: 1000,
+								},
 							},
 						},
 						Index: 1,
@@ -694,7 +718,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								IngredientID:      &chickenBreast.ID,
 								Name:              "pinto beans",
 								MeasurementUnitID: grams.ID,
-								MinimumQuantity:   500,
+								Quantity:          types.Float32RangeWithOptionalMax{Min: 500},
 							},
 						},
 						Index: 0,
@@ -722,7 +746,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 							{
 								Name:                            "diced chicken breast",
 								MeasurementUnitID:               grams.ID,
-								MinimumQuantity:                 1000,
+								Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
 								ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
 								ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 							},

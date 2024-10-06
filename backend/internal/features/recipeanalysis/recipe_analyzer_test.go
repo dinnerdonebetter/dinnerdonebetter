@@ -135,9 +135,11 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
-							MinimumQuantity:     900,
-							MaximumQuantity:     pointer.To(float32(900)),
-							Optional:            false,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Min: 900,
+								Max: pointer.To(float32(900)),
+							},
+							Optional: false,
 						},
 					},
 					Products: []*types.RecipeStepProduct{

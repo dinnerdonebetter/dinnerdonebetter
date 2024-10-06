@@ -22260,14 +22260,8 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumQuantity:
-          format: double
-          type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
-        minimumQuantity:
-          format: double
-          type: number
         name:
           type: string
         optionIndex:
@@ -22280,6 +22274,8 @@ components:
         productPercentageToUse:
           format: double
           type: number
+        quantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityNotes:
           type: string
         recipeStepProductID:
@@ -22296,14 +22292,8 @@ components:
           type: string
         ingredientNotes:
           type: string
-        maximumQuantity:
-          format: double
-          type: number
         measurementUnitID:
           type: string
-        minimumQuantity:
-          format: double
-          type: number
         name:
           type: string
         optionIndex:
@@ -22322,6 +22312,8 @@ components:
         productPercentageToUse:
           format: double
           type: number
+        quantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityNotes:
           type: string
         toTaste:
@@ -22338,14 +22330,8 @@ components:
           type: string
         ingredientNotes:
           type: string
-        maximumQuantity:
-          format: double
-          type: number
         measurementUnitID:
           type: string
-        minimumQuantity:
-          format: double
-          type: number
         name:
           type: string
         optionIndex:
@@ -22358,6 +22344,8 @@ components:
         productPercentageToUse:
           format: double
           type: number
+        quantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         quantityNotes:
           type: string
         recipeStepProductID:

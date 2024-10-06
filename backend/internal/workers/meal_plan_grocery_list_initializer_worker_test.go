@@ -73,9 +73,11 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*types.RecipeStepIngredient{
 															{
-																Ingredient:      onion,
-																MinimumQuantity: 100,
-																MaximumQuantity: pointer.To(float32(100)),
+																Ingredient: onion,
+																Quantity: types.Float32RangeWithOptionalMax{
+																	Max: pointer.To(float32(100)),
+																	Min: 100,
+																},
 																MeasurementUnit: *grams,
 															},
 														},
@@ -100,9 +102,11 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*types.RecipeStepIngredient{
 															{
-																Ingredient:      carrot,
-																MinimumQuantity: 100,
-																MaximumQuantity: pointer.To(float32(100)),
+																Ingredient: carrot,
+																Quantity: types.Float32RangeWithOptionalMax{
+																	Max: pointer.To(float32(100)),
+																	Min: 100,
+																},
 																MeasurementUnit: *grams,
 															},
 														},
@@ -127,9 +131,11 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*types.RecipeStepIngredient{
 															{
-																Ingredient:      celery,
-																MinimumQuantity: 100,
-																MaximumQuantity: pointer.To(float32(100)),
+																Ingredient: celery,
+																Quantity: types.Float32RangeWithOptionalMax{
+																	Max: pointer.To(float32(100)),
+																	Min: 100,
+																},
 																MeasurementUnit: *grams,
 															},
 														},
@@ -154,9 +160,11 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*types.RecipeStepIngredient{
 															{
-																Ingredient:      salt,
-																MinimumQuantity: 100,
-																MaximumQuantity: pointer.To(float32(100)),
+																Ingredient: salt,
+																Quantity: types.Float32RangeWithOptionalMax{
+																	Max: pointer.To(float32(100)),
+																	Min: 100,
+																},
 																MeasurementUnit: *grams,
 															},
 														},
@@ -181,9 +189,11 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 													{
 														Ingredients: []*types.RecipeStepIngredient{
 															{
-																Ingredient:      onion,
-																MinimumQuantity: 100,
-																MaximumQuantity: pointer.To(float32(100)),
+																Ingredient: onion,
+																Quantity: types.Float32RangeWithOptionalMax{
+																	Max: pointer.To(float32(100)),
+																	Min: 100,
+																},
 																MeasurementUnit: *grams,
 															},
 														},

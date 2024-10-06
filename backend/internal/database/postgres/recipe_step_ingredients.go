@@ -91,7 +91,6 @@ func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeS
 		RecipeStepProductID:       database.StringPointerFromNullString(result.RecipeStepProductID),
 		ArchivedAt:                database.TimePointerFromNullTime(result.ArchivedAt),
 		LastUpdatedAt:             database.TimePointerFromNullTime(result.LastUpdatedAt),
-		MaximumQuantity:           database.Float32PointerFromNullString(result.MaximumQuantityValue),
 		VesselIndex:               database.Uint16PointerFromNullInt32(result.VesselIndex),
 		ProductPercentageToUse:    database.Float32PointerFromNullString(result.ProductPercentageToUse),
 		RecipeStepProductRecipeID: database.StringPointerFromNullString(result.RecipeStepProductRecipeID),
@@ -115,10 +114,13 @@ func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeS
 			Metric:        result.ValidMeasurementUnitMetric,
 			Imperial:      result.ValidMeasurementUnitImperial,
 		},
-		MinimumQuantity: database.Float32FromString(result.MinimumQuantityValue),
-		OptionIndex:     uint16(result.OptionIndex),
-		Optional:        result.Optional,
-		ToTaste:         result.ToTaste,
+		Quantity: types.Float32RangeWithOptionalMax{
+			Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
+			Min: database.Float32FromString(result.MinimumQuantityValue),
+		},
+		OptionIndex: uint16(result.OptionIndex),
+		Optional:    result.Optional,
+		ToTaste:     result.ToTaste,
 	}
 
 	if result.ValidIngredientID.Valid && result.ValidIngredientID.String != "" {
@@ -192,7 +194,6 @@ func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeI
 			RecipeStepProductID:       database.StringPointerFromNullString(result.RecipeStepProductID),
 			ArchivedAt:                database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt:             database.TimePointerFromNullTime(result.LastUpdatedAt),
-			MaximumQuantity:           database.Float32PointerFromNullString(result.MaximumQuantityValue),
 			VesselIndex:               database.Uint16PointerFromNullInt32(result.VesselIndex),
 			ProductPercentageToUse:    database.Float32PointerFromNullString(result.ProductPercentageToUse),
 			RecipeStepProductRecipeID: database.StringPointerFromNullString(result.RecipeStepProductRecipeID),
@@ -216,10 +217,13 @@ func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeI
 				Metric:        result.ValidMeasurementUnitMetric,
 				Imperial:      result.ValidMeasurementUnitImperial,
 			},
-			MinimumQuantity: database.Float32FromString(result.MinimumQuantityValue),
-			OptionIndex:     uint16(result.OptionIndex),
-			Optional:        result.Optional,
-			ToTaste:         result.ToTaste,
+			Quantity: types.Float32RangeWithOptionalMax{
+				Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
+				Min: database.Float32FromString(result.MinimumQuantityValue),
+			},
+			OptionIndex: uint16(result.OptionIndex),
+			Optional:    result.Optional,
+			ToTaste:     result.ToTaste,
 		}
 
 		if result.ValidIngredientID.Valid {
@@ -320,7 +324,6 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 			RecipeStepProductID:       database.StringPointerFromNullString(result.RecipeStepProductID),
 			ArchivedAt:                database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt:             database.TimePointerFromNullTime(result.LastUpdatedAt),
-			MaximumQuantity:           database.Float32PointerFromNullString(result.MaximumQuantityValue),
 			VesselIndex:               database.Uint16PointerFromNullInt32(result.VesselIndex),
 			ProductPercentageToUse:    database.Float32PointerFromNullString(result.ProductPercentageToUse),
 			RecipeStepProductRecipeID: database.StringPointerFromNullString(result.RecipeStepProductRecipeID),
@@ -344,10 +347,13 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 				Metric:        result.ValidMeasurementUnitMetric,
 				Imperial:      result.ValidMeasurementUnitImperial,
 			},
-			MinimumQuantity: database.Float32FromString(result.MinimumQuantityValue),
-			OptionIndex:     uint16(result.OptionIndex),
-			Optional:        result.Optional,
-			ToTaste:         result.ToTaste,
+			Quantity: types.Float32RangeWithOptionalMax{
+				Max: database.Float32PointerFromNullString(result.MaximumQuantityValue),
+				Min: database.Float32FromString(result.MinimumQuantityValue),
+			},
+			OptionIndex: uint16(result.OptionIndex),
+			Optional:    result.Optional,
+			ToTaste:     result.ToTaste,
 		}
 
 		if result.ValidIngredientID.Valid {
@@ -417,9 +423,9 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		BelongsToRecipeStep:       input.BelongsToRecipeStep,
 		IngredientNotes:           input.IngredientNotes,
 		ID:                        input.ID,
-		MinimumQuantityValue:      database.StringFromFloat32(input.MinimumQuantity),
+		MinimumQuantityValue:      database.StringFromFloat32(input.Quantity.Min),
 		RecipeStepProductID:       database.NullStringFromStringPointer(input.RecipeStepProductID),
-		MaximumQuantityValue:      database.NullStringFromFloat32Pointer(input.MaximumQuantity),
+		MaximumQuantityValue:      database.NullStringFromFloat32Pointer(input.Quantity.Max),
 		MeasurementUnit:           database.NullStringFromString(input.MeasurementUnitID),
 		IngredientID:              database.NullStringFromStringPointer(input.IngredientID),
 		ProductPercentageToUse:    database.NullStringFromFloat32Pointer(input.ProductPercentageToUse),
@@ -433,12 +439,14 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 	}
 
 	x := &types.RecipeStepIngredient{
-		ID:                        input.ID,
-		Name:                      input.Name,
-		Optional:                  input.Optional,
-		MeasurementUnit:           types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
-		MinimumQuantity:           input.MinimumQuantity,
-		MaximumQuantity:           input.MaximumQuantity,
+		ID:              input.ID,
+		Name:            input.Name,
+		Optional:        input.Optional,
+		MeasurementUnit: types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
+		Quantity: types.Float32RangeWithOptionalMax{
+			Max: input.Quantity.Max,
+			Min: input.Quantity.Min,
+		},
 		QuantityNotes:             input.QuantityNotes,
 		IngredientNotes:           input.IngredientNotes,
 		BelongsToRecipeStep:       input.BelongsToRecipeStep,
@@ -486,8 +494,8 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 		Name:                      updated.Name,
 		Optional:                  updated.Optional,
 		MeasurementUnit:           database.NullStringFromString(updated.MeasurementUnit.ID),
-		MinimumQuantityValue:      database.StringFromFloat32(updated.MinimumQuantity),
-		MaximumQuantityValue:      database.NullStringFromFloat32Pointer(updated.MaximumQuantity),
+		MinimumQuantityValue:      database.StringFromFloat32(updated.Quantity.Min),
+		MaximumQuantityValue:      database.NullStringFromFloat32Pointer(updated.Quantity.Max),
 		QuantityNotes:             updated.QuantityNotes,
 		RecipeStepProductID:       database.NullStringFromStringPointer(updated.RecipeStepProductID),
 		IngredientNotes:           updated.IngredientNotes,

@@ -150,9 +150,11 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
-							MinimumQuantity:     900,
-							MaximumQuantity:     pointer.To(float32(900)),
-							Optional:            false,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Max: pointer.To(float32(900)),
+								Min: 900,
+							},
+							Optional: false,
 						},
 					},
 					Products: []*types.RecipeStepProduct{
@@ -300,8 +302,10 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStep1ID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
-							MinimumQuantity:     500,
-							MaximumQuantity:     pointer.To(float32(1000)),
+							Quantity: types.Float32RangeWithOptionalMax{
+								Max: pointer.To(float32(1000)),
+								Min: 500,
+							},
 						},
 					},
 					Products: []*types.RecipeStepProduct{
@@ -342,8 +346,10 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStep1ID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
-							MinimumQuantity:     500,
-							MaximumQuantity:     pointer.To(float32(1000)),
+							Quantity: types.Float32RangeWithOptionalMax{
+								Max: pointer.To(float32(1000)),
+								Min: 500,
+							},
 						},
 					},
 					Products: []*types.RecipeStepProduct{

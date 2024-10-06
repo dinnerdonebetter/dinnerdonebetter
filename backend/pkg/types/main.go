@@ -1,7 +1,10 @@
 package types
 
 import (
+	"context"
 	"fmt"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
@@ -80,13 +83,13 @@ type (
 	}
 
 	Float32RangeWithOptionalMax struct {
-		Max *float32 `json:"max"`
+		Max *float32 `json:"max,omitempty"`
 		Min float32  `json:"min"`
 	}
 
 	Float32RangeWithOptionalMaxUpdateRequestInput struct {
-		Min *float32 `json:"min"`
-		Max *float32 `json:"max"`
+		Min *float32 `json:"min,omitempty"`
+		Max *float32 `json:"max,omitempty"`
 	}
 
 	UintRange struct {
@@ -117,4 +120,36 @@ func NewAPIErrorResponse(issue string, code ErrorCode, details ResponseDetails) 
 		},
 		Details: details,
 	}
+}
+
+var _ validation.ValidatableWithContext = (*FloatRange)(nil)
+
+func (x *FloatRange) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.Min, validation.Required),
+		validation.Field(&x.Max, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*Float32RangeWithOptionalMax)(nil)
+
+func (x *Float32RangeWithOptionalMax) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.Min, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*UintRange)(nil)
+
+func (x *UintRange) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.Min, validation.Required),
+		validation.Field(&x.Max, validation.Required),
+	)
 }
