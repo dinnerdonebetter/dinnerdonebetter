@@ -29,35 +29,33 @@ type (
 	RecipeStepVessel struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt            time.Time    `json:"createdAt"`
-		MaximumQuantity      *uint32      `json:"maximumQuantity"`
-		LastUpdatedAt        *time.Time   `json:"lastUpdatedAt"`
-		ArchivedAt           *time.Time   `json:"archivedAt"`
-		RecipeStepProductID  *string      `json:"recipeStepProductID"`
-		Vessel               *ValidVessel `json:"vessel"`
-		ID                   string       `json:"id"`
-		Notes                string       `json:"notes"`
-		BelongsToRecipeStep  string       `json:"belongsToRecipeStep"`
-		VesselPreposition    string       `json:"vesselPreposition"`
-		Name                 string       `json:"name"`
-		MinimumQuantity      uint32       `json:"minimumQuantity"`
-		UnavailableAfterStep bool         `json:"unavailableAfterStep"`
+		CreatedAt            time.Time                  `json:"createdAt"`
+		Quantity             Uint16RangeWithOptionalMax `json:"quantity"`
+		LastUpdatedAt        *time.Time                 `json:"lastUpdatedAt"`
+		ArchivedAt           *time.Time                 `json:"archivedAt"`
+		RecipeStepProductID  *string                    `json:"recipeStepProductID"`
+		Vessel               *ValidVessel               `json:"vessel"`
+		ID                   string                     `json:"id"`
+		Notes                string                     `json:"notes"`
+		BelongsToRecipeStep  string                     `json:"belongsToRecipeStep"`
+		VesselPreposition    string                     `json:"vesselPreposition"`
+		Name                 string                     `json:"name"`
+		UnavailableAfterStep bool                       `json:"unavailableAfterStep"`
 	}
 
 	// RecipeStepVesselCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepVesselCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		RecipeStepProductID             *string `json:"recipeStepProductID"`
-		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
-		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
-		VesselID                        *string `json:"vesselID"`
-		MaximumQuantity                 *uint32 `json:"maximumQuantity"`
-		Name                            string  `json:"name"`
-		Notes                           string  `json:"notes"`
-		VesselPreposition               string  `json:"vesselPreposition"`
-		MinimumQuantity                 uint32  `json:"minimumQuantity"`
-		UnavailableAfterStep            bool    `json:"unavailableAfterStep"`
+		RecipeStepProductID             *string                    `json:"recipeStepProductID"`
+		ProductOfRecipeStepIndex        *uint64                    `json:"productOfRecipeStepIndex"`
+		ProductOfRecipeStepProductIndex *uint64                    `json:"productOfRecipeStepProductIndex"`
+		VesselID                        *string                    `json:"vesselID"`
+		Quantity                        Uint16RangeWithOptionalMax `json:"quantity"`
+		Name                            string                     `json:"name"`
+		Notes                           string                     `json:"notes"`
+		VesselPreposition               string                     `json:"vesselPreposition"`
+		UnavailableAfterStep            bool                       `json:"unavailableAfterStep"`
 	}
 
 	// RecipeStepVesselDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
@@ -68,13 +66,12 @@ type (
 		RecipeStepProductID             *string
 		ProductOfRecipeStepIndex        *uint64
 		ProductOfRecipeStepProductIndex *uint64
-		MaximumQuantity                 *uint32
+		Quantity                        Uint16RangeWithOptionalMax
 		ID                              string
 		Notes                           string
 		BelongsToRecipeStep             string
 		VesselPreposition               string
 		Name                            string
-		MinimumQuantity                 uint32
 		UnavailableAfterStep            bool
 	}
 
@@ -82,15 +79,14 @@ type (
 	RecipeStepVesselUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		RecipeStepProductID  *string `json:"recipeStepProductID,omitempty"`
-		Name                 *string `json:"name,omitempty"`
-		Notes                *string `json:"notes,omitempty"`
-		BelongsToRecipeStep  *string `json:"belongsToRecipeStep,omitempty"`
-		VesselID             *string `json:"vesselID,omitempty"`
-		MinimumQuantity      *uint32 `json:"minimumQuantity,omitempty"`
-		MaximumQuantity      *uint32 `json:"maximumQuantity,omitempty"`
-		VesselPreposition    *string `json:"vesselPreposition,omitempty"`
-		UnavailableAfterStep *bool   `json:"unavailableAfterStep,omitempty"`
+		RecipeStepProductID  *string                                      `json:"recipeStepProductID,omitempty"`
+		Name                 *string                                      `json:"name,omitempty"`
+		Notes                *string                                      `json:"notes,omitempty"`
+		BelongsToRecipeStep  *string                                      `json:"belongsToRecipeStep,omitempty"`
+		VesselID             *string                                      `json:"vesselID,omitempty"`
+		Quantity             Uint16RangeWithOptionalMaxUpdateRequestInput `json:"quantity"`
+		VesselPreposition    *string                                      `json:"vesselPreposition,omitempty"`
+		UnavailableAfterStep *bool                                        `json:"unavailableAfterStep,omitempty"`
 	}
 
 	// RecipeStepVesselDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -127,12 +123,12 @@ func (x *RecipeStepVessel) Update(input *RecipeStepVesselUpdateRequestInput) {
 		x.BelongsToRecipeStep = *input.BelongsToRecipeStep
 	}
 
-	if input.MinimumQuantity != nil && *input.MinimumQuantity != x.MinimumQuantity {
-		x.MinimumQuantity = *input.MinimumQuantity
+	if input.Quantity.Min != nil && *input.Quantity.Min != x.Quantity.Min {
+		x.Quantity.Min = *input.Quantity.Min
 	}
 
-	if input.MaximumQuantity != nil && x.MaximumQuantity != nil && *input.MaximumQuantity != *x.MaximumQuantity {
-		x.MaximumQuantity = input.MaximumQuantity
+	if input.Quantity.Max != nil && x.Quantity.Max != nil && *input.Quantity.Max != *x.Quantity.Max {
+		x.Quantity.Max = input.Quantity.Max
 	}
 
 	if input.VesselPreposition != nil && *input.VesselPreposition != x.VesselPreposition {
@@ -159,7 +155,8 @@ func (x *RecipeStepVesselCreationRequestInput) ValidateWithContext(ctx context.C
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.MinimumQuantity, validation.Required),
+		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Quantity, validation.Required),
 	)
 }
 

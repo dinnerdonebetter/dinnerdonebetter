@@ -16,34 +16,7 @@ func TestValidIngredient_Update(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := &ValidIngredient{
-			MaximumIdealStorageTemperatureInCelsius: nil,
-			MinimumIdealStorageTemperatureInCelsius: nil,
-			IconPath:                                "",
-			Warning:                                 "",
-			PluralName:                              "",
-			StorageInstructions:                     "",
-			Name:                                    "",
-			Description:                             "",
-			Slug:                                    "",
-			ShoppingSuggestions:                     "",
-			ContainsShellfish:                       false,
-			IsMeasuredVolumetrically:                false,
-			IsLiquid:                                false,
-			ContainsPeanut:                          false,
-			ContainsTreeNut:                         false,
-			ContainsEgg:                             false,
-			ContainsWheat:                           false,
-			ContainsSoy:                             false,
-			AnimalDerived:                           false,
-			RestrictToPreparations:                  false,
-			ContainsSesame:                          false,
-			ContainsFish:                            false,
-			ContainsGluten:                          false,
-			ContainsDairy:                           false,
-			ContainsAlcohol:                         false,
-			AnimalFlesh:                             false,
-		}
+		actual := &ValidIngredient{}
 
 		input := &ValidIngredientUpdateRequestInput{}
 		assert.NoError(t, fake.Struct(&input))

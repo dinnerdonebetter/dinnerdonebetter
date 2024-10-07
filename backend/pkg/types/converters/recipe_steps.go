@@ -8,18 +8,16 @@ import (
 // ConvertRecipeStepToRecipeStepUpdateRequestInput creates a RecipeStepUpdateRequestInput from a RecipeStep.
 func ConvertRecipeStepToRecipeStepUpdateRequestInput(input *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
 	x := &types.RecipeStepUpdateRequestInput{
-		MinimumTemperatureInCelsius:   input.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   input.MaximumTemperatureInCelsius,
-		Notes:                         &input.Notes,
-		BelongsToRecipe:               input.BelongsToRecipe,
-		Preparation:                   &input.Preparation,
-		Index:                         &input.Index,
-		MinimumEstimatedTimeInSeconds: input.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: input.MaximumEstimatedTimeInSeconds,
-		Optional:                      &input.Optional,
-		ExplicitInstructions:          &input.ExplicitInstructions,
-		ConditionExpression:           &input.ConditionExpression,
-		StartTimerAutomatically:       &input.StartTimerAutomatically,
+		Notes:                   &input.Notes,
+		BelongsToRecipe:         input.BelongsToRecipe,
+		Preparation:             &input.Preparation,
+		Index:                   &input.Index,
+		EstimatedTimeInSeconds:  input.EstimatedTimeInSeconds,
+		TemperatureInCelsius:    input.TemperatureInCelsius,
+		Optional:                &input.Optional,
+		ExplicitInstructions:    &input.ExplicitInstructions,
+		ConditionExpression:     &input.ConditionExpression,
+		StartTimerAutomatically: &input.StartTimerAutomatically,
 	}
 
 	return x
@@ -28,18 +26,16 @@ func ConvertRecipeStepToRecipeStepUpdateRequestInput(input *types.RecipeStep) *t
 // ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput creates a RecipeStepDatabaseCreationInput from a RecipeStepCreationRequestInput.
 func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *types.RecipeStepCreationRequestInput) *types.RecipeStepDatabaseCreationInput {
 	x := &types.RecipeStepDatabaseCreationInput{
-		ID:                            identifiers.New(),
-		Index:                         input.Index,
-		PreparationID:                 input.PreparationID,
-		MinimumEstimatedTimeInSeconds: input.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: input.MaximumEstimatedTimeInSeconds,
-		MinimumTemperatureInCelsius:   input.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   input.MaximumTemperatureInCelsius,
-		Notes:                         input.Notes,
-		Optional:                      input.Optional,
-		ExplicitInstructions:          input.ExplicitInstructions,
-		ConditionExpression:           input.ConditionExpression,
-		StartTimerAutomatically:       input.StartTimerAutomatically,
+		ID:                      identifiers.New(),
+		Index:                   input.Index,
+		PreparationID:           input.PreparationID,
+		EstimatedTimeInSeconds:  input.EstimatedTimeInSeconds,
+		TemperatureInCelsius:    input.TemperatureInCelsius,
+		Notes:                   input.Notes,
+		Optional:                input.Optional,
+		ExplicitInstructions:    input.ExplicitInstructions,
+		ConditionExpression:     input.ConditionExpression,
+		StartTimerAutomatically: input.StartTimerAutomatically,
 	}
 
 	x.Ingredients = []*types.RecipeStepIngredientDatabaseCreationInput{}
@@ -113,22 +109,20 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 	}
 
 	return &types.RecipeStepCreationRequestInput{
-		Optional:                      recipeStep.Optional,
-		Index:                         recipeStep.Index,
-		PreparationID:                 recipeStep.Preparation.ID,
-		MinimumEstimatedTimeInSeconds: recipeStep.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: recipeStep.MaximumEstimatedTimeInSeconds,
-		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
-		Notes:                         recipeStep.Notes,
-		ExplicitInstructions:          recipeStep.ExplicitInstructions,
-		ConditionExpression:           recipeStep.ConditionExpression,
-		StartTimerAutomatically:       recipeStep.StartTimerAutomatically,
-		Products:                      products,
-		Ingredients:                   ingredients,
-		Instruments:                   instruments,
-		Vessels:                       vessels,
-		CompletionConditions:          completionConditions,
+		Optional:                recipeStep.Optional,
+		Index:                   recipeStep.Index,
+		PreparationID:           recipeStep.Preparation.ID,
+		EstimatedTimeInSeconds:  recipeStep.EstimatedTimeInSeconds,
+		TemperatureInCelsius:    recipeStep.TemperatureInCelsius,
+		Notes:                   recipeStep.Notes,
+		ExplicitInstructions:    recipeStep.ExplicitInstructions,
+		ConditionExpression:     recipeStep.ConditionExpression,
+		StartTimerAutomatically: recipeStep.StartTimerAutomatically,
+		Products:                products,
+		Ingredients:             ingredients,
+		Instruments:             instruments,
+		Vessels:                 vessels,
+		CompletionConditions:    completionConditions,
 	}
 }
 
@@ -160,24 +154,22 @@ func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.Recipe
 	}
 
 	return &types.RecipeStepDatabaseCreationInput{
-		ID:                            recipeStep.ID,
-		Index:                         recipeStep.Index,
-		PreparationID:                 recipeStep.Preparation.ID,
-		Optional:                      recipeStep.Optional,
-		MinimumEstimatedTimeInSeconds: recipeStep.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: recipeStep.MaximumEstimatedTimeInSeconds,
-		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
-		StartTimerAutomatically:       recipeStep.StartTimerAutomatically,
-		Notes:                         recipeStep.Notes,
-		ExplicitInstructions:          recipeStep.ExplicitInstructions,
-		ConditionExpression:           recipeStep.ConditionExpression,
-		Ingredients:                   ingredients,
-		Instruments:                   instruments,
-		Products:                      products,
-		Vessels:                       vessels,
-		BelongsToRecipe:               recipeStep.BelongsToRecipe,
-		CompletionConditions:          completionConditions,
+		ID:                      recipeStep.ID,
+		Index:                   recipeStep.Index,
+		PreparationID:           recipeStep.Preparation.ID,
+		Optional:                recipeStep.Optional,
+		EstimatedTimeInSeconds:  recipeStep.EstimatedTimeInSeconds,
+		TemperatureInCelsius:    recipeStep.TemperatureInCelsius,
+		StartTimerAutomatically: recipeStep.StartTimerAutomatically,
+		Notes:                   recipeStep.Notes,
+		ExplicitInstructions:    recipeStep.ExplicitInstructions,
+		ConditionExpression:     recipeStep.ConditionExpression,
+		Ingredients:             ingredients,
+		Instruments:             instruments,
+		Products:                products,
+		Vessels:                 vessels,
+		BelongsToRecipe:         recipeStep.BelongsToRecipe,
+		CompletionConditions:    completionConditions,
 	}
 }
 

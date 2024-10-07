@@ -524,8 +524,6 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 			Description: "",
 			Steps: []*types.RecipeStepDatabaseCreationInput{
 				{
-					MinimumTemperatureInCelsius: nil,
-					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProductDatabaseCreationInput{
 						{
 							ID:   fakes.BuildFakeID(),
@@ -554,8 +552,6 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 					Index: 0,
 				},
 				{
-					MinimumTemperatureInCelsius: nil,
-					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProductDatabaseCreationInput{
 						{
 							ID:   fakes.BuildFakeID(),

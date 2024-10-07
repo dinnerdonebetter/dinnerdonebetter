@@ -10,29 +10,29 @@ import (
 
 // BuildFakeRecipeStepProduct builds a faked recipe step product.
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
-	minQty := float32(buildFakeNumber())
-	storageTemp := buildFakeNumber()
-
-	return &types.RecipeStepProduct{
-		ID:                                 BuildFakeID(),
-		Name:                               buildUniqueString(),
-		Type:                               types.RecipeStepProductIngredientType,
-		MinimumQuantity:                    pointer.To(minQty),
-		MaximumQuantity:                    pointer.To(minQty + 1),
-		QuantityNotes:                      buildUniqueString(),
-		MeasurementUnit:                    BuildFakeValidMeasurementUnit(),
-		CreatedAt:                          BuildFakeTime(),
-		BelongsToRecipeStep:                fake.UUID(),
-		Compostable:                        fake.Bool(),
-		IsLiquid:                           fake.Bool(),
-		IsWaste:                            fake.Bool(),
-		MaximumStorageDurationInSeconds:    pointer.To(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius: pointer.To(float32(storageTemp)),
-		MaximumStorageTemperatureInCelsius: pointer.To(float32(storageTemp + 1)),
-		StorageInstructions:                buildUniqueString(),
-		Index:                              fake.Uint16(),
-		ContainedInVesselIndex:             pointer.To(fake.Uint16()),
+	p := &types.RecipeStepProduct{
+		ID:                          BuildFakeID(),
+		Name:                        buildUniqueString(),
+		Type:                        types.RecipeStepProductIngredientType,
+		QuantityNotes:               buildUniqueString(),
+		MeasurementUnit:             BuildFakeValidMeasurementUnit(),
+		CreatedAt:                   BuildFakeTime(),
+		BelongsToRecipeStep:         fake.UUID(),
+		Compostable:                 fake.Bool(),
+		IsLiquid:                    fake.Bool(),
+		IsWaste:                     fake.Bool(),
+		Quantity:                    BuildFakeOptionalFloat32Range(),
+		StorageDurationInSeconds:    BuildFakeOptionalUint32Range(),
+		StorageTemperatureInCelsius: BuildFakeOptionalFloat32Range(),
+		StorageInstructions:         buildUniqueString(),
+		Index:                       fake.Uint16(),
+		ContainedInVesselIndex:      pointer.To(fake.Uint16()),
 	}
+
+	// TODO: there's no database field for this
+	p.StorageDurationInSeconds.Min = nil
+
+	return p
 }
 
 // BuildFakeRecipeStepProductList builds a faked RecipeStepProductList.

@@ -18,10 +18,8 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Index, actual.Index, "expected Index for recipe step %s to be %v, but it was %v", expected.ID, expected.Index, actual.Index)
-	assert.Equal(t, expected.MinimumEstimatedTimeInSeconds, actual.MinimumEstimatedTimeInSeconds, "expected MinimumEstimatedTimeInSeconds for recipe step %s to be %v, but it was %v", expected.ID, expected.MinimumEstimatedTimeInSeconds, actual.MinimumEstimatedTimeInSeconds)
-	assert.Equal(t, expected.MaximumEstimatedTimeInSeconds, actual.MaximumEstimatedTimeInSeconds, "expected MaximumEstimatedTimeInSeconds for recipe step %s to be %v, but it was %v", expected.ID, expected.MaximumEstimatedTimeInSeconds, actual.MaximumEstimatedTimeInSeconds)
-	assert.Equal(t, expected.MinimumTemperatureInCelsius, actual.MinimumTemperatureInCelsius, "expected MinimumTemperatureInCelsius for recipe step %s to be %v, but it was %v", expected.ID, expected.MinimumTemperatureInCelsius, actual.MinimumTemperatureInCelsius)
-	assert.Equal(t, expected.MaximumTemperatureInCelsius, actual.MaximumTemperatureInCelsius, "expected MaximumTemperatureInCelsius for recipe step %s to be %v, but it was %v", expected.ID, expected.MaximumTemperatureInCelsius, actual.MaximumTemperatureInCelsius)
+	assert.Equal(t, expected.EstimatedTimeInSeconds, actual.EstimatedTimeInSeconds, "expected EstimatedTimeInSeconds for recipe step %s to be %v, but it was %v", expected.ID, expected.EstimatedTimeInSeconds, actual.EstimatedTimeInSeconds)
+	assert.Equal(t, expected.TemperatureInCelsius, actual.TemperatureInCelsius, "expected TemperatureInCelsius for recipe step %s to be %v, but it was %v", expected.ID, expected.TemperatureInCelsius, actual.TemperatureInCelsius)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for recipe step %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.ConditionExpression, actual.ConditionExpression, "expected StatusExplanation for recipe step %s to be %v, but it was %v", expected.ID, expected.ConditionExpression, actual.ConditionExpression)
 	assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected ExplicitInstructions for recipe step %s to be %v, but it was %v", expected.ID, expected.ExplicitInstructions, actual.ExplicitInstructions)

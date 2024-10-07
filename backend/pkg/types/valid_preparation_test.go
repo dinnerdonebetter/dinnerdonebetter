@@ -75,18 +75,18 @@ func TestValidPreparation_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparation{
-			MaximumInstrumentCount: pointer.To(uint16(0)),
-			MaximumIngredientCount: pointer.To(uint16(0)),
-			MaximumVesselCount:     pointer.To(uint16(0)),
+			InstrumentCount: Uint16RangeWithOptionalMax{Max: pointer.To(uint16(0))},
+			IngredientCount: Uint16RangeWithOptionalMax{Max: pointer.To(uint16(0))},
+			VesselCount:     Uint16RangeWithOptionalMax{Max: pointer.To(uint16(0))},
 		}
 		input := &ValidPreparationUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
 		input.YieldsNothing = pointer.To(true)
 		input.RestrictToIngredients = pointer.To(true)
-		input.MaximumIngredientCount = pointer.To(uint16(1))
-		input.MaximumInstrumentCount = pointer.To(uint16(1))
-		input.MaximumVesselCount = pointer.To(uint16(1))
+		input.IngredientCount.Max = pointer.To(uint16(1))
+		input.InstrumentCount.Max = pointer.To(uint16(1))
+		input.VesselCount.Max = pointer.To(uint16(1))
 		input.TemperatureRequired = pointer.To(true)
 		input.TimeEstimateRequired = pointer.To(true)
 		input.OnlyForVessels = pointer.To(true)

@@ -39,95 +39,85 @@ type (
 	RecipePrepTask struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt                              time.Time             `json:"createdAt"`
-		MaximumStorageTemperatureInCelsius     *float32              `json:"maximumStorageTemperatureInCelsius"`
-		ArchivedAt                             *time.Time            `json:"archivedAt"`
-		LastUpdatedAt                          *time.Time            `json:"lastUpdatedAt"`
-		MinimumStorageTemperatureInCelsius     *float32              `json:"minimumStorageTemperatureInCelsius"`
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32               `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		ID                                     string                `json:"id"`
-		StorageType                            string                `json:"storageType"`
-		BelongsToRecipe                        string                `json:"belongsToRecipe"`
-		ExplicitStorageInstructions            string                `json:"explicitStorageInstructions"`
-		Notes                                  string                `json:"notes"`
-		Name                                   string                `json:"name"`
-		Description                            string                `json:"description"`
-		TaskSteps                              []*RecipePrepTaskStep `json:"recipeSteps"`
-		MinimumTimeBufferBeforeRecipeInSeconds uint32                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
-		Optional                               bool                  `json:"optional"`
+		CreatedAt                       time.Time                  `json:"createdAt"`
+		StorageTemperatureInCelsius     OptionalFloat32Range       `json:"storageTemperatureInCelsius"`
+		TimeBufferBeforeRecipeInSeconds Uint32RangeWithOptionalMax `json:"timeBufferBeforeRecipeInSeconds"`
+		ArchivedAt                      *time.Time                 `json:"archivedAt"`
+		LastUpdatedAt                   *time.Time                 `json:"lastUpdatedAt"`
+		ID                              string                     `json:"id"`
+		StorageType                     string                     `json:"storageType"`
+		BelongsToRecipe                 string                     `json:"belongsToRecipe"`
+		ExplicitStorageInstructions     string                     `json:"explicitStorageInstructions"`
+		Notes                           string                     `json:"notes"`
+		Name                            string                     `json:"name"`
+		Description                     string                     `json:"description"`
+		TaskSteps                       []*RecipePrepTaskStep      `json:"recipeSteps"`
+		Optional                        bool                       `json:"optional"`
 	}
 
 	// RecipePrepTaskCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                   `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		MinimumStorageTemperatureInCelsius     *float32                                  `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius     *float32                                  `json:"maximumStorageTemperatureInCelsius"`
-		StorageType                            string                                    `json:"storageType"`
-		ExplicitStorageInstructions            string                                    `json:"explicitStorageInstructions"`
-		Notes                                  string                                    `json:"notes"`
-		Name                                   string                                    `json:"name"`
-		Description                            string                                    `json:"description"`
-		BelongsToRecipe                        string                                    `json:"belongsToRecipe"`
-		RecipeSteps                            []*RecipePrepTaskStepCreationRequestInput `json:"recipeSteps"`
-		MinimumTimeBufferBeforeRecipeInSeconds uint32                                    `json:"minimumTimeBufferBeforeRecipeInSeconds"`
-		Optional                               bool                                      `json:"optional"`
+		StorageTemperatureInCelsius     OptionalFloat32Range                      `json:"storageTemperatureInCelsius"`
+		TimeBufferBeforeRecipeInSeconds Uint32RangeWithOptionalMax                `json:"timeBufferBeforeRecipeInSeconds"`
+		StorageType                     string                                    `json:"storageType"`
+		ExplicitStorageInstructions     string                                    `json:"explicitStorageInstructions"`
+		Notes                           string                                    `json:"notes"`
+		Name                            string                                    `json:"name"`
+		Description                     string                                    `json:"description"`
+		BelongsToRecipe                 string                                    `json:"belongsToRecipe"`
+		RecipeSteps                     []*RecipePrepTaskStepCreationRequestInput `json:"recipeSteps"`
+		Optional                        bool                                      `json:"optional"`
 	}
 
 	// RecipePrepTaskWithinRecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskWithinRecipeCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                               `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		MinimumStorageTemperatureInCelsius     *float32                                              `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius     *float32                                              `json:"maximumStorageTemperatureInCelsius"`
-		StorageType                            string                                                `json:"storageType"`
-		Name                                   string                                                `json:"name"`
-		Description                            string                                                `json:"description"`
-		ExplicitStorageInstructions            string                                                `json:"explicitStorageInstructions"`
-		Notes                                  string                                                `json:"notes"`
-		BelongsToRecipe                        string                                                `json:"belongsToRecipe"`
-		RecipeSteps                            []*RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps"`
-		MinimumTimeBufferBeforeRecipeInSeconds uint32                                                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
-		Optional                               bool                                                  `json:"optional"`
+		StorageTemperatureInCelsius     OptionalFloat32Range                                  `json:"storageTemperatureInCelsius"`
+		TimeBufferBeforeRecipeInSeconds Uint32RangeWithOptionalMax                            `json:"timeBufferBeforeRecipeInSeconds"`
+		StorageType                     string                                                `json:"storageType"`
+		Name                            string                                                `json:"name"`
+		Description                     string                                                `json:"description"`
+		ExplicitStorageInstructions     string                                                `json:"explicitStorageInstructions"`
+		Notes                           string                                                `json:"notes"`
+		BelongsToRecipe                 string                                                `json:"belongsToRecipe"`
+		RecipeSteps                     []*RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps"`
+		Optional                        bool                                                  `json:"optional"`
 	}
 
 	// RecipePrepTaskDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32
-		MinimumStorageTemperatureInCelsius     *float32
-		MaximumStorageTemperatureInCelsius     *float32
-		ExplicitStorageInstructions            string
-		Notes                                  string
-		ID                                     string
-		Name                                   string
-		Description                            string
-		StorageType                            string
-		BelongsToRecipe                        string
-		TaskSteps                              []*RecipePrepTaskStepDatabaseCreationInput
-		MinimumTimeBufferBeforeRecipeInSeconds uint32
-		Optional                               bool
+		StorageTemperatureInCelsius     OptionalFloat32Range
+		TimeBufferBeforeRecipeInSeconds Uint32RangeWithOptionalMax
+		ExplicitStorageInstructions     string
+		Notes                           string
+		ID                              string
+		Name                            string
+		Description                     string
+		StorageType                     string
+		BelongsToRecipe                 string
+		TaskSteps                       []*RecipePrepTaskStepDatabaseCreationInput
+		Optional                        bool
 	}
 
 	// RecipePrepTaskUpdateRequestInput represents what a user could set as input for updating recipes.
 	RecipePrepTaskUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Notes                                  *string                                 `json:"notes,omitempty"`
-		ExplicitStorageInstructions            *string                                 `json:"explicitStorageInstructions,omitempty"`
-		MinimumTimeBufferBeforeRecipeInSeconds *uint32                                 `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                 `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-		StorageType                            *string                                 `json:"storageType,omitempty"`
-		Name                                   *string                                 `json:"name"`
-		Optional                               *bool                                   `json:"optional"`
-		Description                            *string                                 `json:"description"`
-		MinimumStorageTemperatureInCelsius     *float32                                `json:"minimumStorageTemperatureInCelsius,omitempty"`
-		MaximumStorageTemperatureInCelsius     *float32                                `json:"maximumStorageTemperatureInCelsius,omitempty"`
-		BelongsToRecipe                        *string                                 `json:"belongsToRecipe,omitempty"`
-		TaskSteps                              []*RecipePrepTaskStepUpdateRequestInput `json:"recipeSteps,omitempty"`
+		Notes                           *string                                      `json:"notes,omitempty"`
+		ExplicitStorageInstructions     *string                                      `json:"explicitStorageInstructions,omitempty"`
+		StorageType                     *string                                      `json:"storageType,omitempty"`
+		Name                            *string                                      `json:"name"`
+		Optional                        *bool                                        `json:"optional"`
+		Description                     *string                                      `json:"description"`
+		StorageTemperatureInCelsius     OptionalFloat32Range                         `json:"storageTemperatureInCelsius"`
+		TimeBufferBeforeRecipeInSeconds Uint32RangeWithOptionalMaxUpdateRequestInput `json:"timeBufferBeforeRecipeInSeconds"`
+		BelongsToRecipe                 *string                                      `json:"belongsToRecipe,omitempty"`
+		TaskSteps                       []*RecipePrepTaskStepUpdateRequestInput      `json:"recipeSteps,omitempty"`
 	}
 
 	// RecipePrepTaskDataManager describes a structure capable of storing recipes permanently.
@@ -164,24 +154,24 @@ func (x *RecipePrepTask) Update(input *RecipePrepTaskUpdateRequestInput) {
 		x.ExplicitStorageInstructions = *input.ExplicitStorageInstructions
 	}
 
-	if input.MinimumTimeBufferBeforeRecipeInSeconds != nil && *input.MinimumTimeBufferBeforeRecipeInSeconds != x.MinimumTimeBufferBeforeRecipeInSeconds {
-		x.MinimumTimeBufferBeforeRecipeInSeconds = *input.MinimumTimeBufferBeforeRecipeInSeconds
+	if input.TimeBufferBeforeRecipeInSeconds.Min != nil && *input.TimeBufferBeforeRecipeInSeconds.Min != x.TimeBufferBeforeRecipeInSeconds.Min {
+		x.TimeBufferBeforeRecipeInSeconds.Min = *input.TimeBufferBeforeRecipeInSeconds.Min
 	}
 
-	if input.MaximumTimeBufferBeforeRecipeInSeconds != nil && input.MaximumTimeBufferBeforeRecipeInSeconds != x.MaximumTimeBufferBeforeRecipeInSeconds {
-		x.MaximumTimeBufferBeforeRecipeInSeconds = input.MaximumTimeBufferBeforeRecipeInSeconds
+	if input.TimeBufferBeforeRecipeInSeconds.Max != nil && input.TimeBufferBeforeRecipeInSeconds.Max != x.TimeBufferBeforeRecipeInSeconds.Max {
+		x.TimeBufferBeforeRecipeInSeconds.Max = input.TimeBufferBeforeRecipeInSeconds.Max
 	}
 
 	if input.StorageType != nil && *input.StorageType != x.StorageType {
 		x.StorageType = *input.StorageType
 	}
 
-	if input.MinimumStorageTemperatureInCelsius != nil && input.MinimumStorageTemperatureInCelsius != x.MinimumStorageTemperatureInCelsius {
-		x.MinimumStorageTemperatureInCelsius = input.MinimumStorageTemperatureInCelsius
+	if input.StorageTemperatureInCelsius.Min != nil && input.StorageTemperatureInCelsius.Min != x.StorageTemperatureInCelsius.Min {
+		x.StorageTemperatureInCelsius.Min = input.StorageTemperatureInCelsius.Min
 	}
 
-	if input.MaximumStorageTemperatureInCelsius != nil && input.MaximumStorageTemperatureInCelsius != x.MaximumStorageTemperatureInCelsius {
-		x.MaximumStorageTemperatureInCelsius = input.MaximumStorageTemperatureInCelsius
+	if input.StorageTemperatureInCelsius.Max != nil && input.StorageTemperatureInCelsius.Max != x.StorageTemperatureInCelsius.Max {
+		x.StorageTemperatureInCelsius.Max = input.StorageTemperatureInCelsius.Max
 	}
 
 	if input.Name != nil && *input.Name != x.Name {
@@ -209,17 +199,15 @@ func (x *RecipePrepTaskCreationRequestInput) ValidateWithContext(ctx context.Con
 		validation.Field(&x.BelongsToRecipe, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.StorageType, validation.Required),
-		validation.Field(&x.MaximumTimeBufferBeforeRecipeInSeconds, validation.Required),
-		validation.Field(&x.MinimumStorageTemperatureInCelsius, validation.Required),
-		validation.Field(&x.MaximumStorageTemperatureInCelsius, validation.Required),
-		validation.Field(&x.MinimumTimeBufferBeforeRecipeInSeconds, validation.Required),
+		validation.Field(&x.TimeBufferBeforeRecipeInSeconds, validation.Required),
+		validation.Field(&x.StorageTemperatureInCelsius, validation.Required),
 	); err != nil {
 		result = multierror.Append(err, result)
 	}
 
 	// TODO: uncomment me
-	// if x.MinimumStorageTemperatureInCelsius != nil && x.MaximumStorageTemperatureInCelsius != nil && *x.MinimumStorageTemperatureInCelsius > *x.MaximumStorageTemperatureInCelsius {
-	// 	result = multierror.Append(fmt.Errorf("minimum storage temperature (%d) is greater than maximum storage temperature (%d)", x.MinimumStorageTemperatureInCelsius, x.MaximumStorageTemperatureInCelsius))
+	// if x.StorageTemperatureInCelsius.Min != nil && x.StorageTemperatureInCelsius.Max != nil && *x.StorageTemperatureInCelsius.Min > *x.StorageTemperatureInCelsius.Max {
+	//	result = multierror.Append(fmt.Errorf("minimum storage temperature (%d) is greater than maximum storage temperature (%d)", x.StorageTemperatureInCelsius.Min, x.StorageTemperatureInCelsius.Max))
 	// }
 
 	return result.ErrorOrNil()

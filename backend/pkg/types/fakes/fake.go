@@ -52,3 +52,43 @@ func BuildFakeFloat32RangeWithOptionalMax() types.Float32RangeWithOptionalMax {
 		Max: pointer.To(float32(buildFakeNumber()) + minimum),
 	}
 }
+
+func BuildFakeOptionalFloat32Range() types.OptionalFloat32Range {
+	minimum := float32(buildFakeNumber())
+	return types.OptionalFloat32Range{
+		Min: pointer.To(minimum),
+		Max: pointer.To(float32(buildFakeNumber()) + minimum),
+	}
+}
+
+func BuildFakeOptionalUint32Range() types.OptionalUint32Range {
+	minimum := uint32(buildFakeNumber())
+	return types.OptionalUint32Range{
+		Min: pointer.To(minimum),
+		Max: pointer.To(uint32(buildFakeNumber()) + minimum),
+	}
+}
+
+func BuildFakeUint16RangeWithOptionalMax() types.Uint16RangeWithOptionalMax {
+	minimum := uint16(buildFakeNumber())
+	return types.Uint16RangeWithOptionalMax{
+		Min: minimum,
+		Max: pointer.To(uint16(buildFakeNumber()) + minimum),
+	}
+}
+
+func BuildFakeUint32RangeWithOptionalMax() types.Uint32RangeWithOptionalMax {
+	minimum := uint32(buildFakeNumber())
+	return types.Uint32RangeWithOptionalMax{
+		Min: minimum,
+		Max: pointer.To(uint32(buildFakeNumber()) + minimum),
+	}
+}
+
+func BuildFakeUint32RangeWithOptionalMaxUpdateRequestInput() types.Uint32RangeWithOptionalMaxUpdateRequestInput {
+	minimum := uint32(buildFakeNumber())
+	return types.Uint32RangeWithOptionalMaxUpdateRequestInput{
+		Min: &minimum,
+		Max: pointer.To(uint32(buildFakeNumber()) + minimum),
+	}
+}

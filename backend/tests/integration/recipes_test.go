@@ -198,7 +198,10 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1000)),
+								Quantity: types.OptionalFloat32Range{
+									Max: nil,
+									Min: pointer.To(float32(1000)),
+								},
 							},
 						},
 						Notes:       "first step",
@@ -236,7 +239,10 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1010)),
+								Quantity: types.OptionalFloat32Range{
+									Max: nil,
+									Min: pointer.To(float32(1010)),
+								},
 							},
 						},
 						Notes:       "second step",
@@ -282,14 +288,14 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				},
 				Steps: []*types.RecipeStepCreationRequestInput{
 					{
-						MinimumTemperatureInCelsius: expected.Steps[0].MinimumTemperatureInCelsius,
+						TemperatureInCelsius: expected.Steps[0].TemperatureInCelsius,
 						Products: []*types.RecipeStepProductCreationRequestInput{
 							{
 								Name:              expected.Steps[0].Products[0].Name,
 								Type:              expected.Steps[0].Products[0].Type,
 								MeasurementUnitID: &expected.Steps[0].Products[0].MeasurementUnit.ID,
 								QuantityNotes:     expected.Steps[0].Products[0].QuantityNotes,
-								MinimumQuantity:   expected.Steps[0].Products[0].MinimumQuantity,
+								Quantity:          expected.Steps[0].Products[0].Quantity,
 							},
 						},
 						Notes:         expected.Steps[0].Notes,
@@ -323,14 +329,14 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Index: expected.Steps[0].Index,
 					},
 					{
-						MinimumTemperatureInCelsius: expected.Steps[1].MinimumTemperatureInCelsius,
+						TemperatureInCelsius: expected.Steps[1].TemperatureInCelsius,
 						Products: []*types.RecipeStepProductCreationRequestInput{
 							{
 								Name:              expected.Steps[1].Products[0].Name,
 								Type:              expected.Steps[1].Products[0].Type,
 								MeasurementUnitID: &expected.Steps[1].Products[0].MeasurementUnit.ID,
 								QuantityNotes:     expected.Steps[1].Products[0].QuantityNotes,
-								MinimumQuantity:   expected.Steps[1].Products[0].MinimumQuantity,
+								Quantity:          expected.Steps[1].Products[0].Quantity,
 							},
 						},
 						Notes:         expected.Steps[1].Notes,
@@ -603,7 +609,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 
 			chickenBreastBase := fakes.BuildFakeValidIngredient()
 			chickenBreastInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(chickenBreastBase)
-			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointer.To(float32(2.5))
+			chickenBreastInput.StorageTemperatureInCelsius.Min = pointer.To(float32(2.5))
 			chickenBreast, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, chickenBreastInput)
 			require.NoError(t, createdValidIngredientErr)
 
@@ -630,14 +636,16 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 				},
 				Steps: []*types.RecipeStep{
 					{
-						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:            "diced chicken breast",
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1000)),
+								Quantity: types.OptionalFloat32Range{
+									Max: nil,
+									Min: pointer.To(float32(1000)),
+								},
 							},
 						},
 						Notes:       "first step",
@@ -662,14 +670,16 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Index: 0,
 					},
 					{
-						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:            "final output",
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1010)),
+								Quantity: types.OptionalFloat32Range{
+									Max: nil,
+									Min: pointer.To(float32(1010)),
+								},
 							},
 						},
 						Notes:       "second step",
@@ -706,14 +716,13 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 				},
 				Steps: []*types.RecipeStepCreationRequestInput{
 					{
-						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProductCreationRequestInput{
 							{
 								Name:              "diced chicken breast",
 								Type:              types.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   pointer.To(float32(1000)),
+								Quantity:          types.OptionalFloat32Range{Min: pointer.To(float32(1000))},
 							},
 						},
 						Notes:         "first step",
@@ -735,14 +744,13 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Index: 0,
 					},
 					{
-						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProductCreationRequestInput{
 							{
 								Name:              "final output",
 								Type:              types.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   pointer.To(float32(1010)),
+								Quantity:          types.OptionalFloat32Range{Min: pointer.To(float32(1010))},
 							},
 						},
 						Notes:         "second step",

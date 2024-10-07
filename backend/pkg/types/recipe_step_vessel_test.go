@@ -17,16 +17,20 @@ func TestRecipeStepVessel_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVessel{
-			MinimumQuantity: 1234,
-			MaximumQuantity: pointer.To(uint32(1234)),
-			Vessel:          &ValidVessel{},
+			Quantity: Uint16RangeWithOptionalMax{
+				Max: pointer.To(uint16(1234)),
+				Min: 1234,
+			},
+			Vessel: &ValidVessel{},
 		}
 		input := &RecipeStepVesselUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
 		input.UnavailableAfterStep = pointer.To(true)
-		input.MinimumQuantity = pointer.To(uint32(1))
-		input.MaximumQuantity = pointer.To(uint32(1))
+		input.Quantity = Uint16RangeWithOptionalMaxUpdateRequestInput{
+			Min: pointer.To(uint16(1)),
+			Max: pointer.To(uint16(1)),
+		}
 		input.VesselID = pointer.To(t.Name())
 
 		x.Update(input)
@@ -43,8 +47,10 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 			Name:                t.Name(),
 			RecipeStepProductID: pointer.To(t.Name()),
 			Notes:               t.Name(),
-			MinimumQuantity:     fake.Uint32(),
-			MaximumQuantity:     pointer.To(fake.Uint32()),
+			Quantity: Uint16RangeWithOptionalMax{
+				Max: pointer.To(fake.Uint16()),
+				Min: fake.Uint16(),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -97,8 +103,10 @@ func TestRecipeStepVesselUpdateRequestInput_Validate(T *testing.T) {
 			BelongsToRecipeStep: pointer.To(t.Name()),
 			RecipeStepProductID: pointer.To(t.Name()),
 			Notes:               pointer.To(t.Name()),
-			MinimumQuantity:     pointer.To(fake.Uint32()),
-			MaximumQuantity:     pointer.To(fake.Uint32()),
+			Quantity: Uint16RangeWithOptionalMaxUpdateRequestInput{
+				Max: pointer.To(fake.Uint16()),
+				Min: pointer.To(fake.Uint16()),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())

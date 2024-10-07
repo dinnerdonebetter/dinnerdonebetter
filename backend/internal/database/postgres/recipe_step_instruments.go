@@ -92,12 +92,14 @@ func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeS
 		LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 		RecipeStepProductID: database.StringPointerFromNullString(result.RecipeStepProductID),
 		ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
-		MaximumQuantity:     database.Uint32PointerFromNullInt32(result.MaximumQuantity),
+		Quantity: types.Uint32RangeWithOptionalMax{
+			Max: database.Uint32PointerFromNullInt32(result.MaximumQuantity),
+			Min: uint32(result.MinimumQuantity),
+		},
 		Notes:               result.Notes,
 		Name:                result.Name,
 		BelongsToRecipeStep: result.BelongsToRecipeStep,
 		ID:                  result.ID,
-		MinimumQuantity:     uint32(result.MinimumQuantity),
 		OptionIndex:         uint16(result.OptionIndex),
 		PreferenceRank:      uint8(result.PreferenceRank),
 		Optional:            result.Optional,
@@ -173,15 +175,17 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 			RecipeStepProductID: database.StringPointerFromNullString(result.RecipeStepProductID),
 			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
-			MaximumQuantity:     database.Uint32PointerFromNullInt32(result.MaximumQuantity),
 			Notes:               result.Notes,
 			Name:                result.Name,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,
 			ID:                  result.ID,
-			MinimumQuantity:     uint32(result.MinimumQuantity),
-			OptionIndex:         uint16(result.OptionIndex),
-			PreferenceRank:      uint8(result.PreferenceRank),
-			Optional:            result.Optional,
+			Quantity: types.Uint32RangeWithOptionalMax{
+				Max: database.Uint32PointerFromNullInt32(result.MaximumQuantity),
+				Min: uint32(result.MinimumQuantity),
+			},
+			OptionIndex:    uint16(result.OptionIndex),
+			PreferenceRank: uint8(result.PreferenceRank),
+			Optional:       result.Optional,
 		}
 
 		if result.ValidInstrumentID.Valid {
@@ -235,15 +239,17 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 			RecipeStepProductID: database.StringPointerFromNullString(result.RecipeStepProductID),
 			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
-			MaximumQuantity:     database.Uint32PointerFromNullInt32(result.MaximumQuantity),
 			Notes:               result.Notes,
 			Name:                result.Name,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,
 			ID:                  result.ID,
-			MinimumQuantity:     uint32(result.MinimumQuantity),
-			OptionIndex:         uint16(result.OptionIndex),
-			PreferenceRank:      uint8(result.PreferenceRank),
-			Optional:            result.Optional,
+			Quantity: types.Uint32RangeWithOptionalMax{
+				Max: database.Uint32PointerFromNullInt32(result.MaximumQuantity),
+				Min: uint32(result.MinimumQuantity),
+			},
+			OptionIndex:    uint16(result.OptionIndex),
+			PreferenceRank: uint8(result.PreferenceRank),
+			Optional:       result.Optional,
 		}
 
 		if result.ValidInstrumentID.Valid {
@@ -289,10 +295,10 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		InstrumentID:        database.NullStringFromStringPointer(input.InstrumentID),
 		RecipeStepProductID: database.NullStringFromStringPointer(input.RecipeStepProductID),
-		MaximumQuantity:     database.NullInt32FromUint32Pointer(input.MaximumQuantity),
+		MaximumQuantity:     database.NullInt32FromUint32Pointer(input.Quantity.Max),
 		PreferenceRank:      int32(input.PreferenceRank),
 		OptionIndex:         int32(input.OptionIndex),
-		MinimumQuantity:     int32(input.MinimumQuantity),
+		MinimumQuantity:     int32(input.Quantity.Min),
 		Optional:            input.Optional,
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step instrument creation query")
@@ -308,8 +314,7 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Optional:            input.Optional,
 		OptionIndex:         input.OptionIndex,
-		MinimumQuantity:     input.MinimumQuantity,
-		MaximumQuantity:     input.MaximumQuantity,
+		Quantity:            input.Quantity,
 		CreatedAt:           q.currentTime(),
 	}
 
@@ -351,8 +356,8 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 		PreferenceRank:      int32(updated.PreferenceRank),
 		Optional:            updated.Optional,
 		OptionIndex:         int32(updated.OptionIndex),
-		MinimumQuantity:     int32(updated.MinimumQuantity),
-		MaximumQuantity:     database.NullInt32FromUint32Pointer(updated.MaximumQuantity),
+		MinimumQuantity:     int32(updated.Quantity.Min),
+		MaximumQuantity:     database.NullInt32FromUint32Pointer(updated.Quantity.Max),
 		BelongsToRecipeStep: updated.BelongsToRecipeStep,
 		ID:                  updated.ID,
 	}); err != nil {

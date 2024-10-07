@@ -68,9 +68,11 @@ var skipTypes = map[string]bool{
 	"RecipeMediaCreationRequestInput":      true,
 	"RecipeMediaUpdateRequestInput":        true,
 	// one day...
-	"NamedID":    true,
-	"FloatRange": true,
-	"UintRange":  true,
+	"NamedID":                     true,
+	"OptionalRange":               true,
+	"Range":                       true,
+	"RangeUpdateRequestInput":     true,
+	"RangeWithOptionalUpperBound": true,
 }
 
 type openapiProperty struct {
@@ -253,10 +255,6 @@ var openAPITypeMap = map[string]string{
 }
 
 func deriveOpenAPIFieldType(typeName, fieldName string, field *ast.Field) (value, format string, isArray bool) {
-	if typeName == "WebhookCreationRequestInput" && fieldName == "events" {
-		println("here")
-	}
-
 	switch t := field.Type.(type) {
 	case *ast.SelectorExpr:
 		if x, ok := t.X.(*ast.Ident); ok && x.Obj == nil {

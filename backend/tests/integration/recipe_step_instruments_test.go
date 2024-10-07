@@ -27,8 +27,7 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected PreferenceRank for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.PreferenceRank, actual.PreferenceRank)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected Optional for recipe step instrument %s to be %v, but was %v", expected.ID, expected.Optional, actual.Optional)
-	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step instrument %s to be %v, but was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
-	assert.Equal(t, expected.MaximumQuantity, actual.MaximumQuantity, "expected MaximumQuantity for recipe step instrument %s to be %v, but was %v", expected.ID, expected.MaximumQuantity, actual.MaximumQuantity)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected Quantity for recipe step instrument %s to be %v, but was %v", expected.ID, expected.Quantity, actual.Quantity)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
@@ -171,7 +170,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductInstrumentType,
 								MeasurementUnit: unit,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1)),
+								Quantity:        types.OptionalFloat32Range{Min: pointer.To(float32(1))},
 							},
 						},
 						Notes:       "first step",
@@ -209,7 +208,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: head,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1)),
+								Quantity:        types.OptionalFloat32Range{Min: pointer.To(float32(1))},
 							},
 						},
 						Notes: "second step",

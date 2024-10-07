@@ -87,8 +87,11 @@ func (q *Querier) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepI
 	}
 
 	recipeStepVessel := &types.RecipeStepVessel{
-		CreatedAt:            result.CreatedAt,
-		MaximumQuantity:      database.Uint32PointerFromNullInt32(result.MaximumQuantity),
+		CreatedAt: result.CreatedAt,
+		Quantity: types.Uint16RangeWithOptionalMax{
+			Max: database.Uint16PointerFromNullInt32(result.MaximumQuantity),
+			Min: uint16(result.MinimumQuantity),
+		},
 		LastUpdatedAt:        database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:           database.TimePointerFromNullTime(result.ArchivedAt),
 		RecipeStepProductID:  database.StringPointerFromNullString(result.RecipeStepProductID),
@@ -98,7 +101,6 @@ func (q *Querier) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepI
 		BelongsToRecipeStep:  result.BelongsToRecipeStep,
 		VesselPreposition:    result.VesselPredicate,
 		Name:                 result.Name,
-		MinimumQuantity:      uint32(result.MinimumQuantity),
 		UnavailableAfterStep: result.UnavailableAfterStep,
 	}
 
@@ -191,8 +193,11 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 
 	for _, result := range results {
 		recipeStepVessel := &types.RecipeStepVessel{
-			CreatedAt:            result.CreatedAt,
-			MaximumQuantity:      database.Uint32PointerFromNullInt32(result.MaximumQuantity),
+			CreatedAt: result.CreatedAt,
+			Quantity: types.Uint16RangeWithOptionalMax{
+				Max: database.Uint16PointerFromNullInt32(result.MaximumQuantity),
+				Min: uint16(result.MinimumQuantity),
+			},
 			LastUpdatedAt:        database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:           database.TimePointerFromNullTime(result.ArchivedAt),
 			RecipeStepProductID:  database.StringPointerFromNullString(result.RecipeStepProductID),
@@ -202,7 +207,6 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 			BelongsToRecipeStep:  result.BelongsToRecipeStep,
 			VesselPreposition:    result.VesselPredicate,
 			Name:                 result.Name,
-			MinimumQuantity:      uint32(result.MinimumQuantity),
 			UnavailableAfterStep: result.UnavailableAfterStep,
 		}
 
@@ -276,8 +280,11 @@ func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID st
 	recipeStepVessels := []*types.RecipeStepVessel{}
 	for _, result := range results {
 		recipeStepVessel := &types.RecipeStepVessel{
-			CreatedAt:            result.CreatedAt,
-			MaximumQuantity:      database.Uint32PointerFromNullInt32(result.MaximumQuantity),
+			CreatedAt: result.CreatedAt,
+			Quantity: types.Uint16RangeWithOptionalMax{
+				Max: database.Uint16PointerFromNullInt32(result.MaximumQuantity),
+				Min: uint16(result.MinimumQuantity),
+			},
 			LastUpdatedAt:        database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:           database.TimePointerFromNullTime(result.ArchivedAt),
 			RecipeStepProductID:  database.StringPointerFromNullString(result.RecipeStepProductID),
@@ -287,7 +294,6 @@ func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID st
 			BelongsToRecipeStep:  result.BelongsToRecipeStep,
 			VesselPreposition:    result.VesselPredicate,
 			Name:                 result.Name,
-			MinimumQuantity:      uint32(result.MinimumQuantity),
 			UnavailableAfterStep: result.UnavailableAfterStep,
 		}
 
@@ -358,21 +364,23 @@ func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.S
 		VesselPredicate:      input.VesselPreposition,
 		RecipeStepProductID:  database.NullStringFromStringPointer(input.RecipeStepProductID),
 		ValidVesselID:        database.NullStringFromStringPointer(input.VesselID),
-		MaximumQuantity:      database.NullInt32FromUint32Pointer(input.MaximumQuantity),
-		MinimumQuantity:      int32(input.MinimumQuantity),
+		MaximumQuantity:      database.NullInt32FromUint16Pointer(input.Quantity.Max),
+		MinimumQuantity:      int32(input.Quantity.Min),
 		UnavailableAfterStep: input.UnavailableAfterStep,
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step vessel creation query")
 	}
 
 	x := &types.RecipeStepVessel{
-		ID:                   input.ID,
-		RecipeStepProductID:  input.RecipeStepProductID,
-		Name:                 input.Name,
-		Notes:                input.Notes,
-		BelongsToRecipeStep:  input.BelongsToRecipeStep,
-		MinimumQuantity:      input.MinimumQuantity,
-		MaximumQuantity:      input.MaximumQuantity,
+		ID:                  input.ID,
+		RecipeStepProductID: input.RecipeStepProductID,
+		Name:                input.Name,
+		Notes:               input.Notes,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		Quantity: types.Uint16RangeWithOptionalMax{
+			Max: input.Quantity.Max,
+			Min: input.Quantity.Min,
+		},
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
 		CreatedAt:            q.currentTime(),
@@ -417,8 +425,8 @@ func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *types.Rec
 		ID:                   updated.ID,
 		RecipeStepProductID:  database.NullStringFromStringPointer(updated.RecipeStepProductID),
 		ValidVesselID:        database.NullStringFromStringPointer(vesselID),
-		MaximumQuantity:      database.NullInt32FromUint32Pointer(updated.MaximumQuantity),
-		MinimumQuantity:      int32(updated.MinimumQuantity),
+		MaximumQuantity:      database.NullInt32FromUint16Pointer(updated.Quantity.Max),
+		MinimumQuantity:      int32(updated.Quantity.Min),
 		UnavailableAfterStep: updated.UnavailableAfterStep,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step vessel")

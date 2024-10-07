@@ -34,13 +34,17 @@ func TestRecipePrepTaskCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipePrepTaskCreationRequestInput{
-			BelongsToRecipe:                        t.Name(),
-			Name:                                   t.Name(),
-			StorageType:                            t.Name(),
-			MinimumStorageTemperatureInCelsius:     pointer.To(fake.Float32()),
-			MaximumStorageTemperatureInCelsius:     pointer.To(fake.Float32()),
-			MinimumTimeBufferBeforeRecipeInSeconds: fake.Uint32(),
-			MaximumTimeBufferBeforeRecipeInSeconds: pointer.To(fake.Uint32()),
+			BelongsToRecipe: t.Name(),
+			Name:            t.Name(),
+			StorageType:     t.Name(),
+			StorageTemperatureInCelsius: OptionalFloat32Range{
+				Max: pointer.To(fake.Float32()),
+				Min: pointer.To(fake.Float32()),
+			},
+			TimeBufferBeforeRecipeInSeconds: Uint32RangeWithOptionalMax{
+				Max: pointer.To(fake.Uint32()),
+				Min: fake.Uint32(),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())

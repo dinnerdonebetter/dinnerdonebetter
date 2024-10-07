@@ -75,21 +75,25 @@ func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTas
 	for _, result := range results {
 		if x == nil {
 			x = &types.RecipePrepTask{
-				CreatedAt:                              result.CreatedAt,
-				MaximumStorageTemperatureInCelsius:     database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
-				ArchivedAt:                             database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt:                          database.TimePointerFromNullTime(result.LastUpdatedAt),
-				MinimumStorageTemperatureInCelsius:     database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
-				MaximumTimeBufferBeforeRecipeInSeconds: database.Uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
-				ID:                                     result.ID,
-				BelongsToRecipe:                        result.BelongsToRecipe,
-				ExplicitStorageInstructions:            result.ExplicitStorageInstructions,
-				Notes:                                  result.Notes,
-				Name:                                   result.Name,
-				Description:                            result.Description,
-				TaskSteps:                              []*types.RecipePrepTaskStep{},
-				MinimumTimeBufferBeforeRecipeInSeconds: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
-				Optional:                               result.Optional,
+				CreatedAt: result.CreatedAt,
+				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+					Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
+					Min: database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
+				},
+				TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+					Max: database.Uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
+					Min: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
+				},
+				ArchivedAt:                  database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:                          result.ID,
+				BelongsToRecipe:             result.BelongsToRecipe,
+				ExplicitStorageInstructions: result.ExplicitStorageInstructions,
+				Notes:                       result.Notes,
+				Name:                        result.Name,
+				Description:                 result.Description,
+				TaskSteps:                   []*types.RecipePrepTaskStep{},
+				Optional:                    result.Optional,
 			}
 
 			logger.WithValue("storage_type", result.StorageType).Info("storage type")
@@ -136,10 +140,10 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		BelongsToRecipe:                        input.BelongsToRecipe,
 		StorageType:                            generated.NullStorageContainerType{StorageContainerType: generated.StorageContainerType(input.StorageType), Valid: true},
-		MinimumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(input.MinimumStorageTemperatureInCelsius),
-		MaximumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(input.MaximumStorageTemperatureInCelsius),
-		MaximumTimeBufferBeforeRecipeInSeconds: database.NullInt32FromUint32Pointer(input.MaximumTimeBufferBeforeRecipeInSeconds),
-		MinimumTimeBufferBeforeRecipeInSeconds: int32(input.MinimumTimeBufferBeforeRecipeInSeconds),
+		MinimumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Min),
+		MaximumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Max),
+		MaximumTimeBufferBeforeRecipeInSeconds: database.NullInt32FromUint32Pointer(input.TimeBufferBeforeRecipeInSeconds.Max),
+		MinimumTimeBufferBeforeRecipeInSeconds: int32(input.TimeBufferBeforeRecipeInSeconds.Min),
 		Optional:                               input.Optional,
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
@@ -147,19 +151,23 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 	}
 
 	x := &types.RecipePrepTask{
-		CreatedAt:                              q.timeFunc(),
-		ID:                                     input.ID,
-		Name:                                   input.Name,
-		Description:                            input.Description,
-		Notes:                                  input.Notes,
-		Optional:                               input.Optional,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		StorageType:                            input.StorageType,
-		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
-		BelongsToRecipe:                        input.BelongsToRecipe,
+		CreatedAt:                   q.timeFunc(),
+		ID:                          input.ID,
+		Name:                        input.Name,
+		Description:                 input.Description,
+		Notes:                       input.Notes,
+		Optional:                    input.Optional,
+		ExplicitStorageInstructions: input.ExplicitStorageInstructions,
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Max: input.StorageTemperatureInCelsius.Max,
+			Min: input.StorageTemperatureInCelsius.Min,
+		},
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
+			Min: input.TimeBufferBeforeRecipeInSeconds.Min,
+		},
+		StorageType:     input.StorageType,
+		BelongsToRecipe: input.BelongsToRecipe,
 	}
 
 	for _, recipePrepTaskStep := range input.TaskSteps {
@@ -280,22 +288,26 @@ func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID stri
 
 		if currentRecipePrepTask == nil {
 			currentRecipePrepTask = &types.RecipePrepTask{
-				CreatedAt:                              result.CreatedAt,
-				MaximumStorageTemperatureInCelsius:     database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
-				ArchivedAt:                             database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt:                          database.TimePointerFromNullTime(result.LastUpdatedAt),
-				MinimumStorageTemperatureInCelsius:     database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
-				MaximumTimeBufferBeforeRecipeInSeconds: database.Uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
-				ID:                                     result.ID,
-				StorageType:                            string(result.StorageType.StorageContainerType),
-				BelongsToRecipe:                        result.BelongsToRecipe,
-				ExplicitStorageInstructions:            result.ExplicitStorageInstructions,
-				Notes:                                  result.Notes,
-				Name:                                   result.Name,
-				Description:                            result.Description,
-				TaskSteps:                              []*types.RecipePrepTaskStep{},
-				MinimumTimeBufferBeforeRecipeInSeconds: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
-				Optional:                               result.Optional,
+				CreatedAt:     result.CreatedAt,
+				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+				StorageTemperatureInCelsius: types.OptionalFloat32Range{
+					Max: database.Float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
+					Min: database.Float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
+				},
+				TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMax{
+					Max: database.Uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
+					Min: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
+				},
+				ID:                          result.ID,
+				StorageType:                 string(result.StorageType.StorageContainerType),
+				BelongsToRecipe:             result.BelongsToRecipe,
+				ExplicitStorageInstructions: result.ExplicitStorageInstructions,
+				Notes:                       result.Notes,
+				Name:                        result.Name,
+				Description:                 result.Description,
+				TaskSteps:                   []*types.RecipePrepTaskStep{},
+				Optional:                    result.Optional,
 			}
 		}
 		currentRecipePrepTask.TaskSteps = append(currentRecipePrepTask.TaskSteps, prepTaskStep)
@@ -330,11 +342,11 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 		Notes:                                  updated.Notes,
 		Optional:                               updated.Optional,
 		ExplicitStorageInstructions:            updated.ExplicitStorageInstructions,
-		MinimumTimeBufferBeforeRecipeInSeconds: int32(updated.MinimumTimeBufferBeforeRecipeInSeconds),
-		MaximumTimeBufferBeforeRecipeInSeconds: database.NullInt32FromUint32Pointer(updated.MaximumTimeBufferBeforeRecipeInSeconds),
+		MinimumTimeBufferBeforeRecipeInSeconds: int32(updated.TimeBufferBeforeRecipeInSeconds.Min),
+		MaximumTimeBufferBeforeRecipeInSeconds: database.NullInt32FromUint32Pointer(updated.TimeBufferBeforeRecipeInSeconds.Max),
 		StorageType:                            generated.NullStorageContainerType{StorageContainerType: generated.StorageContainerType(updated.StorageType), Valid: true},
-		MinimumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(updated.MinimumStorageTemperatureInCelsius),
-		MaximumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(updated.MaximumStorageTemperatureInCelsius),
+		MinimumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(updated.StorageTemperatureInCelsius.Min),
+		MaximumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(updated.StorageTemperatureInCelsius.Max),
 		BelongsToRecipe:                        updated.BelongsToRecipe,
 		ID:                                     updated.ID,
 	}); err != nil {

@@ -1285,6 +1285,18 @@ type OAuth2ClientCreationResponse struct {
 	Name         *string `json:"name,omitempty"`
 }
 
+// OptionalFloat32Range defines model for OptionalFloat32Range.
+type OptionalFloat32Range struct {
+	Max *float64 `json:"max,omitempty"`
+	Min *float64 `json:"min,omitempty"`
+}
+
+// OptionalUint32Range defines model for OptionalUint32Range.
+type OptionalUint32Range struct {
+	Max *int64 `json:"max,omitempty"`
+	Min *int64 `json:"min,omitempty"`
+}
+
 // Pagination defines model for Pagination.
 type Pagination struct {
 	FilteredCount *int64 `json:"filteredCount,omitempty"`
@@ -1380,38 +1392,34 @@ type RecipeMedia struct {
 
 // RecipePrepTask defines model for RecipePrepTask.
 type RecipePrepTask struct {
-	ArchivedAt                             *time.Time            `json:"archivedAt,omitempty"`
-	BelongsToRecipe                        *string               `json:"belongsToRecipe,omitempty"`
-	CreatedAt                              *time.Time            `json:"createdAt,omitempty"`
-	Description                            *string               `json:"description,omitempty"`
-	ExplicitStorageInstructions            *string               `json:"explicitStorageInstructions,omitempty"`
-	Id                                     *string               `json:"id,omitempty"`
-	LastUpdatedAt                          *time.Time            `json:"lastUpdatedAt,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float64              `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *int64                `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float64              `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds *int64                `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Name                                   *string               `json:"name,omitempty"`
-	Notes                                  *string               `json:"notes,omitempty"`
-	Optional                               *bool                 `json:"optional,omitempty"`
-	RecipeSteps                            *[]RecipePrepTaskStep `json:"recipeSteps,omitempty"`
-	StorageType                            *string               `json:"storageType,omitempty"`
+	ArchivedAt                      *time.Time                  `json:"archivedAt,omitempty"`
+	BelongsToRecipe                 *string                     `json:"belongsToRecipe,omitempty"`
+	CreatedAt                       *time.Time                  `json:"createdAt,omitempty"`
+	Description                     *string                     `json:"description,omitempty"`
+	ExplicitStorageInstructions     *string                     `json:"explicitStorageInstructions,omitempty"`
+	Id                              *string                     `json:"id,omitempty"`
+	LastUpdatedAt                   *time.Time                  `json:"lastUpdatedAt,omitempty"`
+	Name                            *string                     `json:"name,omitempty"`
+	Notes                           *string                     `json:"notes,omitempty"`
+	Optional                        *bool                       `json:"optional,omitempty"`
+	RecipeSteps                     *[]RecipePrepTaskStep       `json:"recipeSteps,omitempty"`
+	StorageTemperatureInCelsius     *OptionalFloat32Range       `json:"storageTemperatureInCelsius,omitempty"`
+	StorageType                     *string                     `json:"storageType,omitempty"`
+	TimeBufferBeforeRecipeInSeconds *Uint32RangeWithOptionalMax `json:"timeBufferBeforeRecipeInSeconds,omitempty"`
 }
 
 // RecipePrepTaskCreationRequestInput defines model for RecipePrepTaskCreationRequestInput.
 type RecipePrepTaskCreationRequestInput struct {
-	BelongsToRecipe                        *string                                   `json:"belongsToRecipe,omitempty"`
-	Description                            *string                                   `json:"description,omitempty"`
-	ExplicitStorageInstructions            *string                                   `json:"explicitStorageInstructions,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float64                                  `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *int64                                    `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float64                                  `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds *int64                                    `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Name                                   *string                                   `json:"name,omitempty"`
-	Notes                                  *string                                   `json:"notes,omitempty"`
-	Optional                               *bool                                     `json:"optional,omitempty"`
-	RecipeSteps                            *[]RecipePrepTaskStepCreationRequestInput `json:"recipeSteps,omitempty"`
-	StorageType                            *string                                   `json:"storageType,omitempty"`
+	BelongsToRecipe                 *string                                   `json:"belongsToRecipe,omitempty"`
+	Description                     *string                                   `json:"description,omitempty"`
+	ExplicitStorageInstructions     *string                                   `json:"explicitStorageInstructions,omitempty"`
+	Name                            *string                                   `json:"name,omitempty"`
+	Notes                           *string                                   `json:"notes,omitempty"`
+	Optional                        *bool                                     `json:"optional,omitempty"`
+	RecipeSteps                     *[]RecipePrepTaskStepCreationRequestInput `json:"recipeSteps,omitempty"`
+	StorageTemperatureInCelsius     *OptionalFloat32Range                     `json:"storageTemperatureInCelsius,omitempty"`
+	StorageType                     *string                                   `json:"storageType,omitempty"`
+	TimeBufferBeforeRecipeInSeconds *Uint32RangeWithOptionalMax               `json:"timeBufferBeforeRecipeInSeconds,omitempty"`
 }
 
 // RecipePrepTaskStep defines model for RecipePrepTaskStep.
@@ -1443,34 +1451,30 @@ type RecipePrepTaskStepWithinRecipeCreationRequestInput struct {
 
 // RecipePrepTaskUpdateRequestInput defines model for RecipePrepTaskUpdateRequestInput.
 type RecipePrepTaskUpdateRequestInput struct {
-	BelongsToRecipe                        *string                                 `json:"belongsToRecipe,omitempty"`
-	Description                            *string                                 `json:"description,omitempty"`
-	ExplicitStorageInstructions            *string                                 `json:"explicitStorageInstructions,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float64                                `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *int64                                  `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float64                                `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds *int64                                  `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Name                                   *string                                 `json:"name,omitempty"`
-	Notes                                  *string                                 `json:"notes,omitempty"`
-	Optional                               *bool                                   `json:"optional,omitempty"`
-	RecipeSteps                            *[]RecipePrepTaskStepUpdateRequestInput `json:"recipeSteps,omitempty"`
-	StorageType                            *string                                 `json:"storageType,omitempty"`
+	BelongsToRecipe                 *string                                       `json:"belongsToRecipe,omitempty"`
+	Description                     *string                                       `json:"description,omitempty"`
+	ExplicitStorageInstructions     *string                                       `json:"explicitStorageInstructions,omitempty"`
+	Name                            *string                                       `json:"name,omitempty"`
+	Notes                           *string                                       `json:"notes,omitempty"`
+	Optional                        *bool                                         `json:"optional,omitempty"`
+	RecipeSteps                     *[]RecipePrepTaskStepUpdateRequestInput       `json:"recipeSteps,omitempty"`
+	StorageTemperatureInCelsius     *OptionalFloat32Range                         `json:"storageTemperatureInCelsius,omitempty"`
+	StorageType                     *string                                       `json:"storageType,omitempty"`
+	TimeBufferBeforeRecipeInSeconds *Uint32RangeWithOptionalMaxUpdateRequestInput `json:"timeBufferBeforeRecipeInSeconds,omitempty"`
 }
 
 // RecipePrepTaskWithinRecipeCreationRequestInput defines model for RecipePrepTaskWithinRecipeCreationRequestInput.
 type RecipePrepTaskWithinRecipeCreationRequestInput struct {
-	BelongsToRecipe                        *string                                               `json:"belongsToRecipe,omitempty"`
-	Description                            *string                                               `json:"description,omitempty"`
-	ExplicitStorageInstructions            *string                                               `json:"explicitStorageInstructions,omitempty"`
-	MaximumStorageTemperatureInCelsius     *float64                                              `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MaximumTimeBufferBeforeRecipeInSeconds *int64                                                `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	MinimumStorageTemperatureInCelsius     *float64                                              `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	MinimumTimeBufferBeforeRecipeInSeconds *int64                                                `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
-	Name                                   *string                                               `json:"name,omitempty"`
-	Notes                                  *string                                               `json:"notes,omitempty"`
-	Optional                               *bool                                                 `json:"optional,omitempty"`
-	RecipeSteps                            *[]RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps,omitempty"`
-	StorageType                            *string                                               `json:"storageType,omitempty"`
+	BelongsToRecipe                 *string                                               `json:"belongsToRecipe,omitempty"`
+	Description                     *string                                               `json:"description,omitempty"`
+	ExplicitStorageInstructions     *string                                               `json:"explicitStorageInstructions,omitempty"`
+	Name                            *string                                               `json:"name,omitempty"`
+	Notes                           *string                                               `json:"notes,omitempty"`
+	Optional                        *bool                                                 `json:"optional,omitempty"`
+	RecipeSteps                     *[]RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps,omitempty"`
+	StorageTemperatureInCelsius     *OptionalFloat32Range                                 `json:"storageTemperatureInCelsius,omitempty"`
+	StorageType                     *string                                               `json:"storageType,omitempty"`
+	TimeBufferBeforeRecipeInSeconds *Uint32RangeWithOptionalMax                           `json:"timeBufferBeforeRecipeInSeconds,omitempty"`
 }
 
 // RecipeRating defines model for RecipeRating.
@@ -1515,28 +1519,26 @@ type RecipeRatingUpdateRequestInput struct {
 
 // RecipeStep defines model for RecipeStep.
 type RecipeStep struct {
-	ArchivedAt                    *time.Time                       `json:"archivedAt,omitempty"`
-	BelongsToRecipe               *string                          `json:"belongsToRecipe,omitempty"`
-	CompletionConditions          *[]RecipeStepCompletionCondition `json:"completionConditions,omitempty"`
-	ConditionExpression           *string                          `json:"conditionExpression,omitempty"`
-	CreatedAt                     *time.Time                       `json:"createdAt,omitempty"`
-	ExplicitInstructions          *string                          `json:"explicitInstructions,omitempty"`
-	Id                            *string                          `json:"id,omitempty"`
-	Index                         *int64                           `json:"index,omitempty"`
-	Ingredients                   *[]RecipeStepIngredient          `json:"ingredients,omitempty"`
-	Instruments                   *[]RecipeStepInstrument          `json:"instruments,omitempty"`
-	LastUpdatedAt                 *time.Time                       `json:"lastUpdatedAt,omitempty"`
-	MaximumEstimatedTimeInSeconds *int64                           `json:"maximumEstimatedTimeInSeconds,omitempty"`
-	MaximumTemperatureInCelsius   *float64                         `json:"maximumTemperatureInCelsius,omitempty"`
-	Media                         *[]RecipeMedia                   `json:"media,omitempty"`
-	MinimumEstimatedTimeInSeconds *int64                           `json:"minimumEstimatedTimeInSeconds,omitempty"`
-	MinimumTemperatureInCelsius   *float64                         `json:"minimumTemperatureInCelsius,omitempty"`
-	Notes                         *string                          `json:"notes,omitempty"`
-	Optional                      *bool                            `json:"optional,omitempty"`
-	Preparation                   *ValidPreparation                `json:"preparation,omitempty"`
-	Products                      *[]RecipeStepProduct             `json:"products,omitempty"`
-	StartTimerAutomatically       *bool                            `json:"startTimerAutomatically,omitempty"`
-	Vessels                       *[]RecipeStepVessel              `json:"vessels,omitempty"`
+	ArchivedAt              *time.Time                       `json:"archivedAt,omitempty"`
+	BelongsToRecipe         *string                          `json:"belongsToRecipe,omitempty"`
+	CompletionConditions    *[]RecipeStepCompletionCondition `json:"completionConditions,omitempty"`
+	ConditionExpression     *string                          `json:"conditionExpression,omitempty"`
+	CreatedAt               *time.Time                       `json:"createdAt,omitempty"`
+	EstimatedTimeInSeconds  *OptionalUint32Range             `json:"estimatedTimeInSeconds,omitempty"`
+	ExplicitInstructions    *string                          `json:"explicitInstructions,omitempty"`
+	Id                      *string                          `json:"id,omitempty"`
+	Index                   *int64                           `json:"index,omitempty"`
+	Ingredients             *[]RecipeStepIngredient          `json:"ingredients,omitempty"`
+	Instruments             *[]RecipeStepInstrument          `json:"instruments,omitempty"`
+	LastUpdatedAt           *time.Time                       `json:"lastUpdatedAt,omitempty"`
+	Media                   *[]RecipeMedia                   `json:"media,omitempty"`
+	Notes                   *string                          `json:"notes,omitempty"`
+	Optional                *bool                            `json:"optional,omitempty"`
+	Preparation             *ValidPreparation                `json:"preparation,omitempty"`
+	Products                *[]RecipeStepProduct             `json:"products,omitempty"`
+	StartTimerAutomatically *bool                            `json:"startTimerAutomatically,omitempty"`
+	TemperatureInCelsius    *OptionalFloat32Range            `json:"temperatureInCelsius,omitempty"`
+	Vessels                 *[]RecipeStepVessel              `json:"vessels,omitempty"`
 }
 
 // RecipeStepCompletionCondition defines model for RecipeStepCompletionCondition.
@@ -1595,22 +1597,20 @@ type RecipeStepCompletionConditionUpdateRequestInput struct {
 
 // RecipeStepCreationRequestInput defines model for RecipeStepCreationRequestInput.
 type RecipeStepCreationRequestInput struct {
-	CompletionConditions          *[]RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions,omitempty"`
-	ConditionExpression           *string                                              `json:"conditionExpression,omitempty"`
-	ExplicitInstructions          *string                                              `json:"explicitInstructions,omitempty"`
-	Index                         *int64                                               `json:"index,omitempty"`
-	Ingredients                   *[]RecipeStepIngredientCreationRequestInput          `json:"ingredients,omitempty"`
-	Instruments                   *[]RecipeStepInstrumentCreationRequestInput          `json:"instruments,omitempty"`
-	MaximumEstimatedTimeInSeconds *int64                                               `json:"maximumEstimatedTimeInSeconds,omitempty"`
-	MaximumTemperatureInCelsius   *float64                                             `json:"maximumTemperatureInCelsius,omitempty"`
-	MinimumEstimatedTimeInSeconds *int64                                               `json:"minimumEstimatedTimeInSeconds,omitempty"`
-	MinimumTemperatureInCelsius   *float64                                             `json:"minimumTemperatureInCelsius,omitempty"`
-	Notes                         *string                                              `json:"notes,omitempty"`
-	Optional                      *bool                                                `json:"optional,omitempty"`
-	PreparationID                 *string                                              `json:"preparationID,omitempty"`
-	Products                      *[]RecipeStepProductCreationRequestInput             `json:"products,omitempty"`
-	StartTimerAutomatically       *bool                                                `json:"startTimerAutomatically,omitempty"`
-	Vessels                       *[]RecipeStepVesselCreationRequestInput              `json:"vessels,omitempty"`
+	CompletionConditions    *[]RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions,omitempty"`
+	ConditionExpression     *string                                              `json:"conditionExpression,omitempty"`
+	EstimatedTimeInSeconds  *OptionalUint32Range                                 `json:"estimatedTimeInSeconds,omitempty"`
+	ExplicitInstructions    *string                                              `json:"explicitInstructions,omitempty"`
+	Index                   *int64                                               `json:"index,omitempty"`
+	Ingredients             *[]RecipeStepIngredientCreationRequestInput          `json:"ingredients,omitempty"`
+	Instruments             *[]RecipeStepInstrumentCreationRequestInput          `json:"instruments,omitempty"`
+	Notes                   *string                                              `json:"notes,omitempty"`
+	Optional                *bool                                                `json:"optional,omitempty"`
+	PreparationID           *string                                              `json:"preparationID,omitempty"`
+	Products                *[]RecipeStepProductCreationRequestInput             `json:"products,omitempty"`
+	StartTimerAutomatically *bool                                                `json:"startTimerAutomatically,omitempty"`
+	TemperatureInCelsius    *OptionalFloat32Range                                `json:"temperatureInCelsius,omitempty"`
+	Vessels                 *[]RecipeStepVesselCreationRequestInput              `json:"vessels,omitempty"`
 }
 
 // RecipeStepIngredient defines model for RecipeStepIngredient.
@@ -1673,172 +1673,158 @@ type RecipeStepIngredientUpdateRequestInput struct {
 
 // RecipeStepInstrument defines model for RecipeStepInstrument.
 type RecipeStepInstrument struct {
-	ArchivedAt          *time.Time       `json:"archivedAt,omitempty"`
-	BelongsToRecipeStep *string          `json:"belongsToRecipeStep,omitempty"`
-	CreatedAt           *time.Time       `json:"createdAt,omitempty"`
-	Id                  *string          `json:"id,omitempty"`
-	Instrument          *ValidInstrument `json:"instrument,omitempty"`
-	LastUpdatedAt       *time.Time       `json:"lastUpdatedAt,omitempty"`
-	MaximumQuantity     *int64           `json:"maximumQuantity,omitempty"`
-	MinimumQuantity     *int64           `json:"minimumQuantity,omitempty"`
-	Name                *string          `json:"name,omitempty"`
-	Notes               *string          `json:"notes,omitempty"`
-	OptionIndex         *int64           `json:"optionIndex,omitempty"`
-	Optional            *bool            `json:"optional,omitempty"`
-	PreferenceRank      *int32           `json:"preferenceRank,omitempty"`
-	RecipeStepProductID *string          `json:"recipeStepProductID,omitempty"`
+	ArchivedAt          *time.Time                  `json:"archivedAt,omitempty"`
+	BelongsToRecipeStep *string                     `json:"belongsToRecipeStep,omitempty"`
+	CreatedAt           *time.Time                  `json:"createdAt,omitempty"`
+	Id                  *string                     `json:"id,omitempty"`
+	Instrument          *ValidInstrument            `json:"instrument,omitempty"`
+	LastUpdatedAt       *time.Time                  `json:"lastUpdatedAt,omitempty"`
+	Name                *string                     `json:"name,omitempty"`
+	Notes               *string                     `json:"notes,omitempty"`
+	OptionIndex         *int64                      `json:"optionIndex,omitempty"`
+	Optional            *bool                       `json:"optional,omitempty"`
+	PreferenceRank      *int32                      `json:"preferenceRank,omitempty"`
+	Quantity            *Uint32RangeWithOptionalMax `json:"quantity,omitempty"`
+	RecipeStepProductID *string                     `json:"recipeStepProductID,omitempty"`
 }
 
 // RecipeStepInstrumentCreationRequestInput defines model for RecipeStepInstrumentCreationRequestInput.
 type RecipeStepInstrumentCreationRequestInput struct {
-	InstrumentID                    *string `json:"instrumentID,omitempty"`
-	MaximumQuantity                 *int64  `json:"maximumQuantity,omitempty"`
-	MinimumQuantity                 *int64  `json:"minimumQuantity,omitempty"`
-	Name                            *string `json:"name,omitempty"`
-	Notes                           *string `json:"notes,omitempty"`
-	OptionIndex                     *int64  `json:"optionIndex,omitempty"`
-	Optional                        *bool   `json:"optional,omitempty"`
-	PreferenceRank                  *int32  `json:"preferenceRank,omitempty"`
-	ProductOfRecipeStepIndex        *int64  `json:"productOfRecipeStepIndex,omitempty"`
-	ProductOfRecipeStepProductIndex *int64  `json:"productOfRecipeStepProductIndex,omitempty"`
-	RecipeStepProductID             *string `json:"recipeStepProductID,omitempty"`
+	InstrumentID                    *string                     `json:"instrumentID,omitempty"`
+	Name                            *string                     `json:"name,omitempty"`
+	Notes                           *string                     `json:"notes,omitempty"`
+	OptionIndex                     *int64                      `json:"optionIndex,omitempty"`
+	Optional                        *bool                       `json:"optional,omitempty"`
+	PreferenceRank                  *int32                      `json:"preferenceRank,omitempty"`
+	ProductOfRecipeStepIndex        *int64                      `json:"productOfRecipeStepIndex,omitempty"`
+	ProductOfRecipeStepProductIndex *int64                      `json:"productOfRecipeStepProductIndex,omitempty"`
+	Quantity                        *Uint32RangeWithOptionalMax `json:"quantity,omitempty"`
+	RecipeStepProductID             *string                     `json:"recipeStepProductID,omitempty"`
 }
 
 // RecipeStepInstrumentUpdateRequestInput defines model for RecipeStepInstrumentUpdateRequestInput.
 type RecipeStepInstrumentUpdateRequestInput struct {
-	BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`
-	InstrumentID        *string `json:"instrumentID,omitempty"`
-	MaximumQuantity     *int64  `json:"maximumQuantity,omitempty"`
-	MinimumQuantity     *int64  `json:"minimumQuantity,omitempty"`
-	Name                *string `json:"name,omitempty"`
-	Notes               *string `json:"notes,omitempty"`
-	OptionIndex         *int64  `json:"optionIndex,omitempty"`
-	Optional            *bool   `json:"optional,omitempty"`
-	PreferenceRank      *int32  `json:"preferenceRank,omitempty"`
-	RecipeStepProductID *string `json:"recipeStepProductID,omitempty"`
+	BelongsToRecipeStep *string                                       `json:"belongsToRecipeStep,omitempty"`
+	InstrumentID        *string                                       `json:"instrumentID,omitempty"`
+	Name                *string                                       `json:"name,omitempty"`
+	Notes               *string                                       `json:"notes,omitempty"`
+	OptionIndex         *int64                                        `json:"optionIndex,omitempty"`
+	Optional            *bool                                         `json:"optional,omitempty"`
+	PreferenceRank      *int32                                        `json:"preferenceRank,omitempty"`
+	Quantity            *Uint32RangeWithOptionalMaxUpdateRequestInput `json:"quantity,omitempty"`
+	RecipeStepProductID *string                                       `json:"recipeStepProductID,omitempty"`
 }
 
 // RecipeStepProduct defines model for RecipeStepProduct.
 type RecipeStepProduct struct {
-	ArchivedAt                         *time.Time            `json:"archivedAt,omitempty"`
-	BelongsToRecipeStep                *string               `json:"belongsToRecipeStep,omitempty"`
-	Compostable                        *bool                 `json:"compostable,omitempty"`
-	ContainedInVesselIndex             *int64                `json:"containedInVesselIndex,omitempty"`
-	CreatedAt                          *time.Time            `json:"createdAt,omitempty"`
-	Id                                 *string               `json:"id,omitempty"`
-	Index                              *int64                `json:"index,omitempty"`
-	IsLiquid                           *bool                 `json:"isLiquid,omitempty"`
-	IsWaste                            *bool                 `json:"isWaste,omitempty"`
-	LastUpdatedAt                      *time.Time            `json:"lastUpdatedAt,omitempty"`
-	MaximumQuantity                    *float64              `json:"maximumQuantity,omitempty"`
-	MaximumStorageDurationInSeconds    *int64                `json:"maximumStorageDurationInSeconds,omitempty"`
-	MaximumStorageTemperatureInCelsius *float64              `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MeasurementUnit                    *ValidMeasurementUnit `json:"measurementUnit,omitempty"`
-	MinimumQuantity                    *float64              `json:"minimumQuantity,omitempty"`
-	MinimumStorageTemperatureInCelsius *float64              `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	Name                               *string               `json:"name,omitempty"`
-	QuantityNotes                      *string               `json:"quantityNotes,omitempty"`
-	StorageInstructions                *string               `json:"storageInstructions,omitempty"`
-	Type                               *string               `json:"type,omitempty"`
+	ArchivedAt                  *time.Time            `json:"archivedAt,omitempty"`
+	BelongsToRecipeStep         *string               `json:"belongsToRecipeStep,omitempty"`
+	Compostable                 *bool                 `json:"compostable,omitempty"`
+	ContainedInVesselIndex      *int64                `json:"containedInVesselIndex,omitempty"`
+	CreatedAt                   *time.Time            `json:"createdAt,omitempty"`
+	Id                          *string               `json:"id,omitempty"`
+	Index                       *int64                `json:"index,omitempty"`
+	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
+	IsWaste                     *bool                 `json:"isWaste,omitempty"`
+	LastUpdatedAt               *time.Time            `json:"lastUpdatedAt,omitempty"`
+	MeasurementUnit             *ValidMeasurementUnit `json:"measurementUnit,omitempty"`
+	Name                        *string               `json:"name,omitempty"`
+	Quantity                    *OptionalFloat32Range `json:"quantity,omitempty"`
+	QuantityNotes               *string               `json:"quantityNotes,omitempty"`
+	StorageDurationInSeconds    *OptionalUint32Range  `json:"storageDurationInSeconds,omitempty"`
+	StorageInstructions         *string               `json:"storageInstructions,omitempty"`
+	StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius,omitempty"`
+	Type                        *string               `json:"type,omitempty"`
 }
 
 // RecipeStepProductCreationRequestInput defines model for RecipeStepProductCreationRequestInput.
 type RecipeStepProductCreationRequestInput struct {
-	Compostable                        *bool    `json:"compostable,omitempty"`
-	ContainedInVesselIndex             *int64   `json:"containedInVesselIndex,omitempty"`
-	Index                              *int64   `json:"index,omitempty"`
-	IsLiquid                           *bool    `json:"isLiquid,omitempty"`
-	IsWaste                            *bool    `json:"isWaste,omitempty"`
-	MaximumQuantity                    *float64 `json:"maximumQuantity,omitempty"`
-	MaximumStorageDurationInSeconds    *int64   `json:"maximumStorageDurationInSeconds,omitempty"`
-	MaximumStorageTemperatureInCelsius *float64 `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MeasurementUnitID                  *string  `json:"measurementUnitID,omitempty"`
-	MinimumQuantity                    *float64 `json:"minimumQuantity,omitempty"`
-	MinimumStorageTemperatureInCelsius *float64 `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	Name                               *string  `json:"name,omitempty"`
-	QuantityNotes                      *string  `json:"quantityNotes,omitempty"`
-	StorageInstructions                *string  `json:"storageInstructions,omitempty"`
-	Type                               *string  `json:"type,omitempty"`
+	Compostable                 *bool                 `json:"compostable,omitempty"`
+	ContainedInVesselIndex      *int64                `json:"containedInVesselIndex,omitempty"`
+	Index                       *int64                `json:"index,omitempty"`
+	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
+	IsWaste                     *bool                 `json:"isWaste,omitempty"`
+	MeasurementUnitID           *string               `json:"measurementUnitID,omitempty"`
+	Name                        *string               `json:"name,omitempty"`
+	Quantity                    *OptionalFloat32Range `json:"quantity,omitempty"`
+	QuantityNotes               *string               `json:"quantityNotes,omitempty"`
+	StorageDurationInSeconds    *OptionalUint32Range  `json:"storageDurationInSeconds,omitempty"`
+	StorageInstructions         *string               `json:"storageInstructions,omitempty"`
+	StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius,omitempty"`
+	Type                        *string               `json:"type,omitempty"`
 }
 
 // RecipeStepProductUpdateRequestInput defines model for RecipeStepProductUpdateRequestInput.
 type RecipeStepProductUpdateRequestInput struct {
-	BelongsToRecipeStep                *string  `json:"belongsToRecipeStep,omitempty"`
-	Compostable                        *bool    `json:"compostable,omitempty"`
-	ContainedInVesselIndex             *int64   `json:"containedInVesselIndex,omitempty"`
-	Index                              *int64   `json:"index,omitempty"`
-	IsLiquid                           *bool    `json:"isLiquid,omitempty"`
-	IsWaste                            *bool    `json:"isWaste,omitempty"`
-	MaximumQuantity                    *float64 `json:"maximumQuantity,omitempty"`
-	MaximumStorageDurationInSeconds    *int64   `json:"maximumStorageDurationInSeconds,omitempty"`
-	MaximumStorageTemperatureInCelsius *float64 `json:"maximumStorageTemperatureInCelsius,omitempty"`
-	MeasurementUnitID                  *string  `json:"measurementUnitID,omitempty"`
-	MinimumQuantity                    *float64 `json:"minimumQuantity,omitempty"`
-	MinimumStorageTemperatureInCelsius *float64 `json:"minimumStorageTemperatureInCelsius,omitempty"`
-	Name                               *string  `json:"name,omitempty"`
-	QuantityNotes                      *string  `json:"quantityNotes,omitempty"`
-	StorageInstructions                *string  `json:"storageInstructions,omitempty"`
-	Type                               *string  `json:"type,omitempty"`
+	BelongsToRecipeStep         *string               `json:"belongsToRecipeStep,omitempty"`
+	Compostable                 *bool                 `json:"compostable,omitempty"`
+	ContainedInVesselIndex      *int64                `json:"containedInVesselIndex,omitempty"`
+	Index                       *int64                `json:"index,omitempty"`
+	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
+	IsWaste                     *bool                 `json:"isWaste,omitempty"`
+	MeasurementUnitID           *string               `json:"measurementUnitID,omitempty"`
+	Name                        *string               `json:"name,omitempty"`
+	Quantity                    *OptionalFloat32Range `json:"quantity,omitempty"`
+	QuantityNotes               *string               `json:"quantityNotes,omitempty"`
+	StorageDurationInSeconds    *OptionalUint32Range  `json:"storageDurationInSeconds,omitempty"`
+	StorageInstructions         *string               `json:"storageInstructions,omitempty"`
+	StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius,omitempty"`
+	Type                        *string               `json:"type,omitempty"`
 }
 
 // RecipeStepUpdateRequestInput defines model for RecipeStepUpdateRequestInput.
 type RecipeStepUpdateRequestInput struct {
-	BelongsToRecipe               *string           `json:"belongsToRecipe,omitempty"`
-	ConditionExpression           *string           `json:"conditionExpression,omitempty"`
-	ExplicitInstructions          *string           `json:"explicitInstructions,omitempty"`
-	Index                         *int64            `json:"index,omitempty"`
-	MaximumEstimatedTimeInSeconds *int64            `json:"maximumEstimatedTimeInSeconds,omitempty"`
-	MaximumTemperatureInCelsius   *float64          `json:"maximumTemperatureInCelsius,omitempty"`
-	MinimumEstimatedTimeInSeconds *int64            `json:"minimumEstimatedTimeInSeconds,omitempty"`
-	MinimumTemperatureInCelsius   *float64          `json:"minimumTemperatureInCelsius,omitempty"`
-	Notes                         *string           `json:"notes,omitempty"`
-	Optional                      *bool             `json:"optional,omitempty"`
-	Preparation                   *ValidPreparation `json:"preparation,omitempty"`
-	StartTimerAutomatically       *bool             `json:"startTimerAutomatically,omitempty"`
+	BelongsToRecipe         *string               `json:"belongsToRecipe,omitempty"`
+	ConditionExpression     *string               `json:"conditionExpression,omitempty"`
+	EstimatedTimeInSeconds  *OptionalUint32Range  `json:"estimatedTimeInSeconds,omitempty"`
+	ExplicitInstructions    *string               `json:"explicitInstructions,omitempty"`
+	Index                   *int64                `json:"index,omitempty"`
+	Notes                   *string               `json:"notes,omitempty"`
+	Optional                *bool                 `json:"optional,omitempty"`
+	Preparation             *ValidPreparation     `json:"preparation,omitempty"`
+	StartTimerAutomatically *bool                 `json:"startTimerAutomatically,omitempty"`
+	TemperatureInCelsius    *OptionalFloat32Range `json:"temperatureInCelsius,omitempty"`
 }
 
 // RecipeStepVessel defines model for RecipeStepVessel.
 type RecipeStepVessel struct {
-	ArchivedAt           *time.Time   `json:"archivedAt,omitempty"`
-	BelongsToRecipeStep  *string      `json:"belongsToRecipeStep,omitempty"`
-	CreatedAt            *time.Time   `json:"createdAt,omitempty"`
-	Id                   *string      `json:"id,omitempty"`
-	LastUpdatedAt        *time.Time   `json:"lastUpdatedAt,omitempty"`
-	MaximumQuantity      *int64       `json:"maximumQuantity,omitempty"`
-	MinimumQuantity      *int64       `json:"minimumQuantity,omitempty"`
-	Name                 *string      `json:"name,omitempty"`
-	Notes                *string      `json:"notes,omitempty"`
-	RecipeStepProductID  *string      `json:"recipeStepProductID,omitempty"`
-	UnavailableAfterStep *bool        `json:"unavailableAfterStep,omitempty"`
-	Vessel               *ValidVessel `json:"vessel,omitempty"`
-	VesselPreposition    *string      `json:"vesselPreposition,omitempty"`
+	ArchivedAt           *time.Time                  `json:"archivedAt,omitempty"`
+	BelongsToRecipeStep  *string                     `json:"belongsToRecipeStep,omitempty"`
+	CreatedAt            *time.Time                  `json:"createdAt,omitempty"`
+	Id                   *string                     `json:"id,omitempty"`
+	LastUpdatedAt        *time.Time                  `json:"lastUpdatedAt,omitempty"`
+	Name                 *string                     `json:"name,omitempty"`
+	Notes                *string                     `json:"notes,omitempty"`
+	Quantity             *Uint16RangeWithOptionalMax `json:"quantity,omitempty"`
+	RecipeStepProductID  *string                     `json:"recipeStepProductID,omitempty"`
+	UnavailableAfterStep *bool                       `json:"unavailableAfterStep,omitempty"`
+	Vessel               *ValidVessel                `json:"vessel,omitempty"`
+	VesselPreposition    *string                     `json:"vesselPreposition,omitempty"`
 }
 
 // RecipeStepVesselCreationRequestInput defines model for RecipeStepVesselCreationRequestInput.
 type RecipeStepVesselCreationRequestInput struct {
-	MaximumQuantity                 *int64  `json:"maximumQuantity,omitempty"`
-	MinimumQuantity                 *int64  `json:"minimumQuantity,omitempty"`
-	Name                            *string `json:"name,omitempty"`
-	Notes                           *string `json:"notes,omitempty"`
-	ProductOfRecipeStepIndex        *int64  `json:"productOfRecipeStepIndex,omitempty"`
-	ProductOfRecipeStepProductIndex *int64  `json:"productOfRecipeStepProductIndex,omitempty"`
-	RecipeStepProductID             *string `json:"recipeStepProductID,omitempty"`
-	UnavailableAfterStep            *bool   `json:"unavailableAfterStep,omitempty"`
-	VesselID                        *string `json:"vesselID,omitempty"`
-	VesselPreposition               *string `json:"vesselPreposition,omitempty"`
+	Name                            *string                     `json:"name,omitempty"`
+	Notes                           *string                     `json:"notes,omitempty"`
+	ProductOfRecipeStepIndex        *int64                      `json:"productOfRecipeStepIndex,omitempty"`
+	ProductOfRecipeStepProductIndex *int64                      `json:"productOfRecipeStepProductIndex,omitempty"`
+	Quantity                        *Uint16RangeWithOptionalMax `json:"quantity,omitempty"`
+	RecipeStepProductID             *string                     `json:"recipeStepProductID,omitempty"`
+	UnavailableAfterStep            *bool                       `json:"unavailableAfterStep,omitempty"`
+	VesselID                        *string                     `json:"vesselID,omitempty"`
+	VesselPreposition               *string                     `json:"vesselPreposition,omitempty"`
 }
 
 // RecipeStepVesselUpdateRequestInput defines model for RecipeStepVesselUpdateRequestInput.
 type RecipeStepVesselUpdateRequestInput struct {
-	BelongsToRecipeStep  *string `json:"belongsToRecipeStep,omitempty"`
-	MaximumQuantity      *int64  `json:"maximumQuantity,omitempty"`
-	MinimumQuantity      *int64  `json:"minimumQuantity,omitempty"`
-	Name                 *string `json:"name,omitempty"`
-	Notes                *string `json:"notes,omitempty"`
-	RecipeStepProductID  *string `json:"recipeStepProductID,omitempty"`
-	UnavailableAfterStep *bool   `json:"unavailableAfterStep,omitempty"`
-	VesselID             *string `json:"vesselID,omitempty"`
-	VesselPreposition    *string `json:"vesselPreposition,omitempty"`
+	BelongsToRecipeStep  *string                                       `json:"belongsToRecipeStep,omitempty"`
+	Name                 *string                                       `json:"name,omitempty"`
+	Notes                *string                                       `json:"notes,omitempty"`
+	Quantity             *Uint16RangeWithOptionalMaxUpdateRequestInput `json:"quantity,omitempty"`
+	RecipeStepProductID  *string                                       `json:"recipeStepProductID,omitempty"`
+	UnavailableAfterStep *bool                                         `json:"unavailableAfterStep,omitempty"`
+	VesselID             *string                                       `json:"vesselID,omitempty"`
+	VesselPreposition    *string                                       `json:"vesselPreposition,omitempty"`
 }
 
 // RecipeUpdateRequestInput defines model for RecipeUpdateRequestInput.
@@ -1933,6 +1919,30 @@ type TOTPSecretRefreshResponse struct {
 type TOTPSecretVerificationInput struct {
 	TotpToken *string `json:"totpToken,omitempty"`
 	UserID    *string `json:"userID,omitempty"`
+}
+
+// Uint16RangeWithOptionalMax defines model for Uint16RangeWithOptionalMax.
+type Uint16RangeWithOptionalMax struct {
+	Max *int64 `json:"max,omitempty"`
+	Min *int64 `json:"min,omitempty"`
+}
+
+// Uint16RangeWithOptionalMaxUpdateRequestInput defines model for Uint16RangeWithOptionalMaxUpdateRequestInput.
+type Uint16RangeWithOptionalMaxUpdateRequestInput struct {
+	Max *int64 `json:"max,omitempty"`
+	Min *int64 `json:"min,omitempty"`
+}
+
+// Uint32RangeWithOptionalMax defines model for Uint32RangeWithOptionalMax.
+type Uint32RangeWithOptionalMax struct {
+	Max *int64 `json:"max,omitempty"`
+	Min *int64 `json:"min,omitempty"`
+}
+
+// Uint32RangeWithOptionalMaxUpdateRequestInput defines model for Uint32RangeWithOptionalMaxUpdateRequestInput.
+type Uint32RangeWithOptionalMaxUpdateRequestInput struct {
+	Max *int64 `json:"max,omitempty"`
+	Min *int64 `json:"min,omitempty"`
 }
 
 // User defines model for User.
@@ -2104,82 +2114,80 @@ type UsernameUpdateInput struct {
 
 // ValidIngredient defines model for ValidIngredient.
 type ValidIngredient struct {
-	AnimalDerived                           *bool      `json:"animalDerived,omitempty"`
-	AnimalFlesh                             *bool      `json:"animalFlesh,omitempty"`
-	ArchivedAt                              *time.Time `json:"archivedAt,omitempty"`
-	ContainsAlcohol                         *bool      `json:"containsAlcohol,omitempty"`
-	ContainsDairy                           *bool      `json:"containsDairy,omitempty"`
-	ContainsEgg                             *bool      `json:"containsEgg,omitempty"`
-	ContainsFish                            *bool      `json:"containsFish,omitempty"`
-	ContainsGluten                          *bool      `json:"containsGluten,omitempty"`
-	ContainsPeanut                          *bool      `json:"containsPeanut,omitempty"`
-	ContainsSesame                          *bool      `json:"containsSesame,omitempty"`
-	ContainsShellfish                       *bool      `json:"containsShellfish,omitempty"`
-	ContainsSoy                             *bool      `json:"containsSoy,omitempty"`
-	ContainsTreeNut                         *bool      `json:"containsTreeNut,omitempty"`
-	ContainsWheat                           *bool      `json:"containsWheat,omitempty"`
-	CreatedAt                               *time.Time `json:"createdAt,omitempty"`
-	Description                             *string    `json:"description,omitempty"`
-	IconPath                                *string    `json:"iconPath,omitempty"`
-	Id                                      *string    `json:"id,omitempty"`
-	IsAcid                                  *bool      `json:"isAcid,omitempty"`
-	IsFat                                   *bool      `json:"isFat,omitempty"`
-	IsFruit                                 *bool      `json:"isFruit,omitempty"`
-	IsGrain                                 *bool      `json:"isGrain,omitempty"`
-	IsHeat                                  *bool      `json:"isHeat,omitempty"`
-	IsLiquid                                *bool      `json:"isLiquid,omitempty"`
-	IsMeasuredVolumetrically                *bool      `json:"isMeasuredVolumetrically,omitempty"`
-	IsProtein                               *bool      `json:"isProtein,omitempty"`
-	IsSalt                                  *bool      `json:"isSalt,omitempty"`
-	IsStarch                                *bool      `json:"isStarch,omitempty"`
-	LastUpdatedAt                           *time.Time `json:"lastUpdatedAt,omitempty"`
-	MaximumIdealStorageTemperatureInCelsius *float64   `json:"maximumIdealStorageTemperatureInCelsius,omitempty"`
-	MinimumIdealStorageTemperatureInCelsius *float64   `json:"minimumIdealStorageTemperatureInCelsius,omitempty"`
-	Name                                    *string    `json:"name,omitempty"`
-	PluralName                              *string    `json:"pluralName,omitempty"`
-	RestrictToPreparations                  *bool      `json:"restrictToPreparations,omitempty"`
-	ShoppingSuggestions                     *string    `json:"shoppingSuggestions,omitempty"`
-	Slug                                    *string    `json:"slug,omitempty"`
-	StorageInstructions                     *string    `json:"storageInstructions,omitempty"`
-	Warning                                 *string    `json:"warning,omitempty"`
+	AnimalDerived               *bool                 `json:"animalDerived,omitempty"`
+	AnimalFlesh                 *bool                 `json:"animalFlesh,omitempty"`
+	ArchivedAt                  *time.Time            `json:"archivedAt,omitempty"`
+	ContainsAlcohol             *bool                 `json:"containsAlcohol,omitempty"`
+	ContainsDairy               *bool                 `json:"containsDairy,omitempty"`
+	ContainsEgg                 *bool                 `json:"containsEgg,omitempty"`
+	ContainsFish                *bool                 `json:"containsFish,omitempty"`
+	ContainsGluten              *bool                 `json:"containsGluten,omitempty"`
+	ContainsPeanut              *bool                 `json:"containsPeanut,omitempty"`
+	ContainsSesame              *bool                 `json:"containsSesame,omitempty"`
+	ContainsShellfish           *bool                 `json:"containsShellfish,omitempty"`
+	ContainsSoy                 *bool                 `json:"containsSoy,omitempty"`
+	ContainsTreeNut             *bool                 `json:"containsTreeNut,omitempty"`
+	ContainsWheat               *bool                 `json:"containsWheat,omitempty"`
+	CreatedAt                   *time.Time            `json:"createdAt,omitempty"`
+	Description                 *string               `json:"description,omitempty"`
+	IconPath                    *string               `json:"iconPath,omitempty"`
+	Id                          *string               `json:"id,omitempty"`
+	IsAcid                      *bool                 `json:"isAcid,omitempty"`
+	IsFat                       *bool                 `json:"isFat,omitempty"`
+	IsFruit                     *bool                 `json:"isFruit,omitempty"`
+	IsGrain                     *bool                 `json:"isGrain,omitempty"`
+	IsHeat                      *bool                 `json:"isHeat,omitempty"`
+	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
+	IsMeasuredVolumetrically    *bool                 `json:"isMeasuredVolumetrically,omitempty"`
+	IsProtein                   *bool                 `json:"isProtein,omitempty"`
+	IsSalt                      *bool                 `json:"isSalt,omitempty"`
+	IsStarch                    *bool                 `json:"isStarch,omitempty"`
+	LastUpdatedAt               *time.Time            `json:"lastUpdatedAt,omitempty"`
+	Name                        *string               `json:"name,omitempty"`
+	PluralName                  *string               `json:"pluralName,omitempty"`
+	RestrictToPreparations      *bool                 `json:"restrictToPreparations,omitempty"`
+	ShoppingSuggestions         *string               `json:"shoppingSuggestions,omitempty"`
+	Slug                        *string               `json:"slug,omitempty"`
+	StorageInstructions         *string               `json:"storageInstructions,omitempty"`
+	StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius,omitempty"`
+	Warning                     *string               `json:"warning,omitempty"`
 }
 
 // ValidIngredientCreationRequestInput defines model for ValidIngredientCreationRequestInput.
 type ValidIngredientCreationRequestInput struct {
-	AnimalDerived                           *bool    `json:"animalDerived,omitempty"`
-	AnimalFlesh                             *bool    `json:"animalFlesh,omitempty"`
-	ContainsAlcohol                         *bool    `json:"containsAlcohol,omitempty"`
-	ContainsDairy                           *bool    `json:"containsDairy,omitempty"`
-	ContainsEgg                             *bool    `json:"containsEgg,omitempty"`
-	ContainsFish                            *bool    `json:"containsFish,omitempty"`
-	ContainsGluten                          *bool    `json:"containsGluten,omitempty"`
-	ContainsPeanut                          *bool    `json:"containsPeanut,omitempty"`
-	ContainsSesame                          *bool    `json:"containsSesame,omitempty"`
-	ContainsShellfish                       *bool    `json:"containsShellfish,omitempty"`
-	ContainsSoy                             *bool    `json:"containsSoy,omitempty"`
-	ContainsTreeNut                         *bool    `json:"containsTreeNut,omitempty"`
-	ContainsWheat                           *bool    `json:"containsWheat,omitempty"`
-	Description                             *string  `json:"description,omitempty"`
-	IconPath                                *string  `json:"iconPath,omitempty"`
-	IsAcid                                  *bool    `json:"isAcid,omitempty"`
-	IsFat                                   *bool    `json:"isFat,omitempty"`
-	IsFruit                                 *bool    `json:"isFruit,omitempty"`
-	IsGrain                                 *bool    `json:"isGrain,omitempty"`
-	IsHeat                                  *bool    `json:"isHeat,omitempty"`
-	IsLiquid                                *bool    `json:"isLiquid,omitempty"`
-	IsMeasuredVolumetrically                *bool    `json:"isMeasuredVolumetrically,omitempty"`
-	IsProtein                               *bool    `json:"isProtein,omitempty"`
-	IsSalt                                  *bool    `json:"isSalt,omitempty"`
-	IsStarch                                *bool    `json:"isStarch,omitempty"`
-	MaximumIdealStorageTemperatureInCelsius *float64 `json:"maximumIdealStorageTemperatureInCelsius,omitempty"`
-	MinimumIdealStorageTemperatureInCelsius *float64 `json:"minimumIdealStorageTemperatureInCelsius,omitempty"`
-	Name                                    *string  `json:"name,omitempty"`
-	PluralName                              *string  `json:"pluralName,omitempty"`
-	RestrictToPreparations                  *bool    `json:"restrictToPreparations,omitempty"`
-	ShoppingSuggestions                     *string  `json:"shoppingSuggestions,omitempty"`
-	Slug                                    *string  `json:"slug,omitempty"`
-	StorageInstructions                     *string  `json:"storageInstructions,omitempty"`
-	Warning                                 *string  `json:"warning,omitempty"`
+	AnimalDerived               *bool                 `json:"animalDerived,omitempty"`
+	AnimalFlesh                 *bool                 `json:"animalFlesh,omitempty"`
+	ContainsAlcohol             *bool                 `json:"containsAlcohol,omitempty"`
+	ContainsDairy               *bool                 `json:"containsDairy,omitempty"`
+	ContainsEgg                 *bool                 `json:"containsEgg,omitempty"`
+	ContainsFish                *bool                 `json:"containsFish,omitempty"`
+	ContainsGluten              *bool                 `json:"containsGluten,omitempty"`
+	ContainsPeanut              *bool                 `json:"containsPeanut,omitempty"`
+	ContainsSesame              *bool                 `json:"containsSesame,omitempty"`
+	ContainsShellfish           *bool                 `json:"containsShellfish,omitempty"`
+	ContainsSoy                 *bool                 `json:"containsSoy,omitempty"`
+	ContainsTreeNut             *bool                 `json:"containsTreeNut,omitempty"`
+	ContainsWheat               *bool                 `json:"containsWheat,omitempty"`
+	Description                 *string               `json:"description,omitempty"`
+	IconPath                    *string               `json:"iconPath,omitempty"`
+	IsAcid                      *bool                 `json:"isAcid,omitempty"`
+	IsFat                       *bool                 `json:"isFat,omitempty"`
+	IsFruit                     *bool                 `json:"isFruit,omitempty"`
+	IsGrain                     *bool                 `json:"isGrain,omitempty"`
+	IsHeat                      *bool                 `json:"isHeat,omitempty"`
+	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
+	IsMeasuredVolumetrically    *bool                 `json:"isMeasuredVolumetrically,omitempty"`
+	IsProtein                   *bool                 `json:"isProtein,omitempty"`
+	IsSalt                      *bool                 `json:"isSalt,omitempty"`
+	IsStarch                    *bool                 `json:"isStarch,omitempty"`
+	Name                        *string               `json:"name,omitempty"`
+	PluralName                  *string               `json:"pluralName,omitempty"`
+	RestrictToPreparations      *bool                 `json:"restrictToPreparations,omitempty"`
+	ShoppingSuggestions         *string               `json:"shoppingSuggestions,omitempty"`
+	Slug                        *string               `json:"slug,omitempty"`
+	StorageInstructions         *string               `json:"storageInstructions,omitempty"`
+	StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius,omitempty"`
+	Warning                     *string               `json:"warning,omitempty"`
 }
 
 // ValidIngredientGroup defines model for ValidIngredientGroup.
@@ -2337,40 +2345,39 @@ type ValidIngredientStateUpdateRequestInput struct {
 
 // ValidIngredientUpdateRequestInput defines model for ValidIngredientUpdateRequestInput.
 type ValidIngredientUpdateRequestInput struct {
-	AnimalDerived                           *bool    `json:"animalDerived,omitempty"`
-	AnimalFlesh                             *bool    `json:"animalFlesh,omitempty"`
-	ContainsAlcohol                         *bool    `json:"containsAlcohol,omitempty"`
-	ContainsDairy                           *bool    `json:"containsDairy,omitempty"`
-	ContainsEgg                             *bool    `json:"containsEgg,omitempty"`
-	ContainsFish                            *bool    `json:"containsFish,omitempty"`
-	ContainsGluten                          *bool    `json:"containsGluten,omitempty"`
-	ContainsPeanut                          *bool    `json:"containsPeanut,omitempty"`
-	ContainsSesame                          *bool    `json:"containsSesame,omitempty"`
-	ContainsShellfish                       *bool    `json:"containsShellfish,omitempty"`
-	ContainsSoy                             *bool    `json:"containsSoy,omitempty"`
-	ContainsTreeNut                         *bool    `json:"containsTreeNut,omitempty"`
-	ContainsWheat                           *bool    `json:"containsWheat,omitempty"`
-	Description                             *string  `json:"description,omitempty"`
-	IconPath                                *string  `json:"iconPath,omitempty"`
-	IsAcid                                  *bool    `json:"isAcid,omitempty"`
-	IsFat                                   *bool    `json:"isFat,omitempty"`
-	IsFruit                                 *bool    `json:"isFruit,omitempty"`
-	IsGrain                                 *bool    `json:"isGrain,omitempty"`
-	IsHeat                                  *bool    `json:"isHeat,omitempty"`
-	IsLiquid                                *bool    `json:"isLiquid,omitempty"`
-	IsMeasuredVolumetrically                *bool    `json:"isMeasuredVolumetrically,omitempty"`
-	IsProtein                               *bool    `json:"isProtein,omitempty"`
-	IsSalt                                  *bool    `json:"isSalt,omitempty"`
-	IsStarch                                *bool    `json:"isStarch,omitempty"`
-	MaximumIdealStorageTemperatureInCelsius *float64 `json:"maximumIdealStorageTemperatureInCelsius,omitempty"`
-	MinimumIdealStorageTemperatureInCelsius *float64 `json:"minimumIdealStorageTemperatureInCelsius,omitempty"`
-	Name                                    *string  `json:"name,omitempty"`
-	PluralName                              *string  `json:"pluralName,omitempty"`
-	RestrictToPreparations                  *bool    `json:"restrictToPreparations,omitempty"`
-	ShoppingSuggestions                     *string  `json:"shoppingSuggestions,omitempty"`
-	Slug                                    *string  `json:"slug,omitempty"`
-	StorageInstructions                     *string  `json:"storageInstructions,omitempty"`
-	Warning                                 *string  `json:"warning,omitempty"`
+	AnimalDerived               *bool                 `json:"animalDerived,omitempty"`
+	AnimalFlesh                 *bool                 `json:"animalFlesh,omitempty"`
+	ContainsAlcohol             *bool                 `json:"containsAlcohol,omitempty"`
+	ContainsDairy               *bool                 `json:"containsDairy,omitempty"`
+	ContainsEgg                 *bool                 `json:"containsEgg,omitempty"`
+	ContainsFish                *bool                 `json:"containsFish,omitempty"`
+	ContainsGluten              *bool                 `json:"containsGluten,omitempty"`
+	ContainsPeanut              *bool                 `json:"containsPeanut,omitempty"`
+	ContainsSesame              *bool                 `json:"containsSesame,omitempty"`
+	ContainsShellfish           *bool                 `json:"containsShellfish,omitempty"`
+	ContainsSoy                 *bool                 `json:"containsSoy,omitempty"`
+	ContainsTreeNut             *bool                 `json:"containsTreeNut,omitempty"`
+	ContainsWheat               *bool                 `json:"containsWheat,omitempty"`
+	Description                 *string               `json:"description,omitempty"`
+	IconPath                    *string               `json:"iconPath,omitempty"`
+	IsAcid                      *bool                 `json:"isAcid,omitempty"`
+	IsFat                       *bool                 `json:"isFat,omitempty"`
+	IsFruit                     *bool                 `json:"isFruit,omitempty"`
+	IsGrain                     *bool                 `json:"isGrain,omitempty"`
+	IsHeat                      *bool                 `json:"isHeat,omitempty"`
+	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
+	IsMeasuredVolumetrically    *bool                 `json:"isMeasuredVolumetrically,omitempty"`
+	IsProtein                   *bool                 `json:"isProtein,omitempty"`
+	IsSalt                      *bool                 `json:"isSalt,omitempty"`
+	IsStarch                    *bool                 `json:"isStarch,omitempty"`
+	Name                        *string               `json:"name,omitempty"`
+	PluralName                  *string               `json:"pluralName,omitempty"`
+	RestrictToPreparations      *bool                 `json:"restrictToPreparations,omitempty"`
+	ShoppingSuggestions         *string               `json:"shoppingSuggestions,omitempty"`
+	Slug                        *string               `json:"slug,omitempty"`
+	StorageInstructions         *string               `json:"storageInstructions,omitempty"`
+	StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius,omitempty"`
+	Warning                     *string               `json:"warning,omitempty"`
 }
 
 // ValidInstrument defines model for ValidInstrument.
@@ -2489,50 +2496,44 @@ type ValidMeasurementUnitUpdateRequestInput struct {
 
 // ValidPreparation defines model for ValidPreparation.
 type ValidPreparation struct {
-	ArchivedAt                  *time.Time `json:"archivedAt,omitempty"`
-	ConditionExpressionRequired *bool      `json:"conditionExpressionRequired,omitempty"`
-	ConsumesVessel              *bool      `json:"consumesVessel,omitempty"`
-	CreatedAt                   *time.Time `json:"createdAt,omitempty"`
-	Description                 *string    `json:"description,omitempty"`
-	IconPath                    *string    `json:"iconPath,omitempty"`
-	Id                          *string    `json:"id,omitempty"`
-	LastUpdatedAt               *time.Time `json:"lastUpdatedAt,omitempty"`
-	MaximumIngredientCount      *int32     `json:"maximumIngredientCount,omitempty"`
-	MaximumInstrumentCount      *int32     `json:"maximumInstrumentCount,omitempty"`
-	MaximumVesselCount          *int32     `json:"maximumVesselCount,omitempty"`
-	MinimumIngredientCount      *int32     `json:"minimumIngredientCount,omitempty"`
-	MinimumInstrumentCount      *int32     `json:"minimumInstrumentCount,omitempty"`
-	MinimumVesselCount          *int32     `json:"minimumVesselCount,omitempty"`
-	Name                        *string    `json:"name,omitempty"`
-	OnlyForVessels              *bool      `json:"onlyForVessels,omitempty"`
-	PastTense                   *string    `json:"pastTense,omitempty"`
-	RestrictToIngredients       *bool      `json:"restrictToIngredients,omitempty"`
-	Slug                        *string    `json:"slug,omitempty"`
-	TemperatureRequired         *bool      `json:"temperatureRequired,omitempty"`
-	TimeEstimateRequired        *bool      `json:"timeEstimateRequired,omitempty"`
-	YieldsNothing               *bool      `json:"yieldsNothing,omitempty"`
+	ArchivedAt                  *time.Time                  `json:"archivedAt,omitempty"`
+	ConditionExpressionRequired *bool                       `json:"conditionExpressionRequired,omitempty"`
+	ConsumesVessel              *bool                       `json:"consumesVessel,omitempty"`
+	CreatedAt                   *time.Time                  `json:"createdAt,omitempty"`
+	Description                 *string                     `json:"description,omitempty"`
+	IconPath                    *string                     `json:"iconPath,omitempty"`
+	Id                          *string                     `json:"id,omitempty"`
+	IngredientCount             *Uint16RangeWithOptionalMax `json:"ingredientCount,omitempty"`
+	InstrumentCount             *Uint16RangeWithOptionalMax `json:"instrumentCount,omitempty"`
+	LastUpdatedAt               *time.Time                  `json:"lastUpdatedAt,omitempty"`
+	Name                        *string                     `json:"name,omitempty"`
+	OnlyForVessels              *bool                       `json:"onlyForVessels,omitempty"`
+	PastTense                   *string                     `json:"pastTense,omitempty"`
+	RestrictToIngredients       *bool                       `json:"restrictToIngredients,omitempty"`
+	Slug                        *string                     `json:"slug,omitempty"`
+	TemperatureRequired         *bool                       `json:"temperatureRequired,omitempty"`
+	TimeEstimateRequired        *bool                       `json:"timeEstimateRequired,omitempty"`
+	VesselCount                 *Uint16RangeWithOptionalMax `json:"vesselCount,omitempty"`
+	YieldsNothing               *bool                       `json:"yieldsNothing,omitempty"`
 }
 
 // ValidPreparationCreationRequestInput defines model for ValidPreparationCreationRequestInput.
 type ValidPreparationCreationRequestInput struct {
-	ConditionExpressionRequired *bool   `json:"conditionExpressionRequired,omitempty"`
-	ConsumesVessel              *bool   `json:"consumesVessel,omitempty"`
-	Description                 *string `json:"description,omitempty"`
-	IconPath                    *string `json:"iconPath,omitempty"`
-	MaximumIngredientCount      *int32  `json:"maximumIngredientCount,omitempty"`
-	MaximumInstrumentCount      *int32  `json:"maximumInstrumentCount,omitempty"`
-	MaximumVesselCount          *int32  `json:"maximumVesselCount,omitempty"`
-	MinimumIngredientCount      *int32  `json:"minimumIngredientCount,omitempty"`
-	MinimumInstrumentCount      *int32  `json:"minimumInstrumentCount,omitempty"`
-	MinimumVesselCount          *int32  `json:"minimumVesselCount,omitempty"`
-	Name                        *string `json:"name,omitempty"`
-	OnlyForVessels              *bool   `json:"onlyForVessels,omitempty"`
-	PastTense                   *string `json:"pastTense,omitempty"`
-	RestrictToIngredients       *bool   `json:"restrictToIngredients,omitempty"`
-	Slug                        *string `json:"slug,omitempty"`
-	TemperatureRequired         *bool   `json:"temperatureRequired,omitempty"`
-	TimeEstimateRequired        *bool   `json:"timeEstimateRequired,omitempty"`
-	YieldsNothing               *bool   `json:"yieldsNothing,omitempty"`
+	ConditionExpressionRequired *bool                       `json:"conditionExpressionRequired,omitempty"`
+	ConsumesVessel              *bool                       `json:"consumesVessel,omitempty"`
+	Description                 *string                     `json:"description,omitempty"`
+	IconPath                    *string                     `json:"iconPath,omitempty"`
+	IngredientCount             *Uint16RangeWithOptionalMax `json:"ingredientCount,omitempty"`
+	InstrumentCount             *Uint16RangeWithOptionalMax `json:"instrumentCount,omitempty"`
+	Name                        *string                     `json:"name,omitempty"`
+	OnlyForVessels              *bool                       `json:"onlyForVessels,omitempty"`
+	PastTense                   *string                     `json:"pastTense,omitempty"`
+	RestrictToIngredients       *bool                       `json:"restrictToIngredients,omitempty"`
+	Slug                        *string                     `json:"slug,omitempty"`
+	TemperatureRequired         *bool                       `json:"temperatureRequired,omitempty"`
+	TimeEstimateRequired        *bool                       `json:"timeEstimateRequired,omitempty"`
+	VesselCount                 *Uint16RangeWithOptionalMax `json:"vesselCount,omitempty"`
+	YieldsNothing               *bool                       `json:"yieldsNothing,omitempty"`
 }
 
 // ValidPreparationInstrument defines model for ValidPreparationInstrument.
@@ -2562,24 +2563,21 @@ type ValidPreparationInstrumentUpdateRequestInput struct {
 
 // ValidPreparationUpdateRequestInput defines model for ValidPreparationUpdateRequestInput.
 type ValidPreparationUpdateRequestInput struct {
-	ConditionExpressionRequired *bool   `json:"conditionExpressionRequired,omitempty"`
-	ConsumesVessel              *bool   `json:"consumesVessel,omitempty"`
-	Description                 *string `json:"description,omitempty"`
-	IconPath                    *string `json:"iconPath,omitempty"`
-	MaximumIngredientCount      *int32  `json:"maximumIngredientCount,omitempty"`
-	MaximumInstrumentCount      *int32  `json:"maximumInstrumentCount,omitempty"`
-	MaximumVesselCount          *int32  `json:"maximumVesselCount,omitempty"`
-	MinimumIngredientCount      *int32  `json:"minimumIngredientCount,omitempty"`
-	MinimumInstrumentCount      *int32  `json:"minimumInstrumentCount,omitempty"`
-	MinimumVesselCount          *int32  `json:"minimumVesselCount,omitempty"`
-	Name                        *string `json:"name,omitempty"`
-	OnlyForVessels              *bool   `json:"onlyForVessels,omitempty"`
-	PastTense                   *string `json:"pastTense,omitempty"`
-	RestrictToIngredients       *bool   `json:"restrictToIngredients,omitempty"`
-	Slug                        *string `json:"slug,omitempty"`
-	TemperatureRequired         *bool   `json:"temperatureRequired,omitempty"`
-	TimeEstimateRequired        *bool   `json:"timeEstimateRequired,omitempty"`
-	YieldsNothing               *bool   `json:"yieldsNothing,omitempty"`
+	ConditionExpressionRequired *bool                                         `json:"conditionExpressionRequired,omitempty"`
+	ConsumesVessel              *bool                                         `json:"consumesVessel,omitempty"`
+	Description                 *string                                       `json:"description,omitempty"`
+	IconPath                    *string                                       `json:"iconPath,omitempty"`
+	IngredientCount             *Uint16RangeWithOptionalMaxUpdateRequestInput `json:"ingredientCount,omitempty"`
+	InstrumentCount             *Uint16RangeWithOptionalMaxUpdateRequestInput `json:"instrumentCount,omitempty"`
+	Name                        *string                                       `json:"name,omitempty"`
+	OnlyForVessels              *bool                                         `json:"onlyForVessels,omitempty"`
+	PastTense                   *string                                       `json:"pastTense,omitempty"`
+	RestrictToIngredients       *bool                                         `json:"restrictToIngredients,omitempty"`
+	Slug                        *string                                       `json:"slug,omitempty"`
+	TemperatureRequired         *bool                                         `json:"temperatureRequired,omitempty"`
+	TimeEstimateRequired        *bool                                         `json:"timeEstimateRequired,omitempty"`
+	VesselCount                 *Uint16RangeWithOptionalMaxUpdateRequestInput `json:"vesselCount,omitempty"`
+	YieldsNothing               *bool                                         `json:"yieldsNothing,omitempty"`
 }
 
 // ValidPreparationVessel defines model for ValidPreparationVessel.

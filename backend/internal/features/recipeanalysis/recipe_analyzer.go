@@ -275,9 +275,9 @@ func frozenIngredientDefrostStepsFilter(recipe *types.Recipe) map[string][]int {
 			// if it's a valid ingredient
 			if ingredient.Ingredient != nil &&
 				// if the ingredient has storage temperature set
-				ingredient.Ingredient.MinimumIdealStorageTemperatureInCelsius != nil &&
+				ingredient.Ingredient.StorageTemperatureInCelsius.Min != nil &&
 				// the ingredient's storage temperature is set to something about freezing temperature.
-				*ingredient.Ingredient.MinimumIdealStorageTemperatureInCelsius <= 3 {
+				*ingredient.Ingredient.StorageTemperatureInCelsius.Min <= 3 {
 				ingredientIndices = append(ingredientIndices, i)
 			}
 		}
@@ -503,8 +503,8 @@ func (g *recipeAnalyzer) RenderGraphvizDiagramForRecipe(ctx context.Context, rec
 
 			if provides := stepProvidesWhatToOtherStep(recipe, uint(i), uint(j)); provides != "" {
 				stepLabel := ""
-				if recipe.Steps[i].MinimumEstimatedTimeInSeconds != nil && *recipe.Steps[i].MinimumEstimatedTimeInSeconds > 0 {
-					stepLabel = durafmt.Parse(time.Duration(*recipe.Steps[i].MinimumEstimatedTimeInSeconds) * time.Second).String()
+				if recipe.Steps[i].EstimatedTimeInSeconds.Min != nil && *recipe.Steps[i].EstimatedTimeInSeconds.Min > 0 {
+					stepLabel = durafmt.Parse(time.Duration(*recipe.Steps[i].EstimatedTimeInSeconds.Min) * time.Second).String()
 				}
 
 				graphViz.WriteString(fmt.Sprintf("\tStep%d -> Step%d [color=\"black\" label=%q];\n", graphIDForStep(recipe.Steps[i]), graphIDForStep(recipe.Steps[j]), stepLabel))
