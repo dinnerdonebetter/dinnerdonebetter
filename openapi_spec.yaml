@@ -23333,6 +23333,8 @@ components:
       type: object
     ValidIngredientMeasurementUnit:
       properties:
+        allowableQuantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         archivedAt:
           format: date-time
           type: string
@@ -23346,25 +23348,15 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumAllowableQuantity:
-          format: double
-          type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
-        minimumAllowableQuantity:
-          format: double
-          type: number
         notes:
           type: string
       type: object
     ValidIngredientMeasurementUnitCreationRequestInput:
       properties:
-        maximumAllowableQuantity:
-          format: double
-          type: number
-        minimumAllowableQuantity:
-          format: double
-          type: number
+        allowableQuantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         notes:
           type: string
         validIngredientID:
@@ -23374,12 +23366,8 @@ components:
       type: object
     ValidIngredientMeasurementUnitUpdateRequestInput:
       properties:
-        maximumAllowableQuantity:
-          format: double
-          type: number
-        minimumAllowableQuantity:
-          format: double
-          type: number
+        allowableQuantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         notes:
           type: string
         validIngredientID:

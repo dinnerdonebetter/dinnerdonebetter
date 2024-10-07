@@ -2225,33 +2225,30 @@ type ValidIngredientGroupUpdateRequestInput struct {
 
 // ValidIngredientMeasurementUnit defines model for ValidIngredientMeasurementUnit.
 type ValidIngredientMeasurementUnit struct {
-	ArchivedAt               *time.Time            `json:"archivedAt,omitempty"`
-	CreatedAt                *time.Time            `json:"createdAt,omitempty"`
-	Id                       *string               `json:"id,omitempty"`
-	Ingredient               *ValidIngredient      `json:"ingredient,omitempty"`
-	LastUpdatedAt            *time.Time            `json:"lastUpdatedAt,omitempty"`
-	MaximumAllowableQuantity *float64              `json:"maximumAllowableQuantity,omitempty"`
-	MeasurementUnit          *ValidMeasurementUnit `json:"measurementUnit,omitempty"`
-	MinimumAllowableQuantity *float64              `json:"minimumAllowableQuantity,omitempty"`
-	Notes                    *string               `json:"notes,omitempty"`
+	AllowableQuantity *Float32RangeWithOptionalMax `json:"allowableQuantity,omitempty"`
+	ArchivedAt        *time.Time                   `json:"archivedAt,omitempty"`
+	CreatedAt         *time.Time                   `json:"createdAt,omitempty"`
+	Id                *string                      `json:"id,omitempty"`
+	Ingredient        *ValidIngredient             `json:"ingredient,omitempty"`
+	LastUpdatedAt     *time.Time                   `json:"lastUpdatedAt,omitempty"`
+	MeasurementUnit   *ValidMeasurementUnit        `json:"measurementUnit,omitempty"`
+	Notes             *string                      `json:"notes,omitempty"`
 }
 
 // ValidIngredientMeasurementUnitCreationRequestInput defines model for ValidIngredientMeasurementUnitCreationRequestInput.
 type ValidIngredientMeasurementUnitCreationRequestInput struct {
-	MaximumAllowableQuantity *float64 `json:"maximumAllowableQuantity,omitempty"`
-	MinimumAllowableQuantity *float64 `json:"minimumAllowableQuantity,omitempty"`
-	Notes                    *string  `json:"notes,omitempty"`
-	ValidIngredientID        *string  `json:"validIngredientID,omitempty"`
-	ValidMeasurementUnitID   *string  `json:"validMeasurementUnitID,omitempty"`
+	AllowableQuantity      *Float32RangeWithOptionalMax `json:"allowableQuantity,omitempty"`
+	Notes                  *string                      `json:"notes,omitempty"`
+	ValidIngredientID      *string                      `json:"validIngredientID,omitempty"`
+	ValidMeasurementUnitID *string                      `json:"validMeasurementUnitID,omitempty"`
 }
 
 // ValidIngredientMeasurementUnitUpdateRequestInput defines model for ValidIngredientMeasurementUnitUpdateRequestInput.
 type ValidIngredientMeasurementUnitUpdateRequestInput struct {
-	MaximumAllowableQuantity *float64 `json:"maximumAllowableQuantity,omitempty"`
-	MinimumAllowableQuantity *float64 `json:"minimumAllowableQuantity,omitempty"`
-	Notes                    *string  `json:"notes,omitempty"`
-	ValidIngredientID        *string  `json:"validIngredientID,omitempty"`
-	ValidMeasurementUnitID   *string  `json:"validMeasurementUnitID,omitempty"`
+	AllowableQuantity      *Float32RangeWithOptionalMaxUpdateRequestInput `json:"allowableQuantity,omitempty"`
+	Notes                  *string                                        `json:"notes,omitempty"`
+	ValidIngredientID      *string                                        `json:"validIngredientID,omitempty"`
+	ValidMeasurementUnitID *string                                        `json:"validMeasurementUnitID,omitempty"`
 }
 
 // ValidIngredientPreparation defines model for ValidIngredientPreparation.

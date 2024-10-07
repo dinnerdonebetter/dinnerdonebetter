@@ -55,12 +55,15 @@ func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIn
 	}
 
 	validIngredientMeasurementUnit := &types.ValidIngredientMeasurementUnit{
-		CreatedAt:                result.ValidIngredientMeasurementUnitCreatedAt,
-		LastUpdatedAt:            database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
-		ArchivedAt:               database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-		MaximumAllowableQuantity: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
-		Notes:                    result.ValidIngredientMeasurementUnitNotes,
-		ID:                       result.ValidIngredientMeasurementUnitID,
+		CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
+		LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
+		AllowableQuantity: types.Float32RangeWithOptionalMax{
+			Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
+			Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+		},
+		Notes: result.ValidIngredientMeasurementUnitNotes,
+		ID:    result.ValidIngredientMeasurementUnitID,
 		MeasurementUnit: types.ValidMeasurementUnit{
 			CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
@@ -116,7 +119,6 @@ func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIn
 			IsAcid:                                  result.ValidIngredientIsAcid,
 			IsHeat:                                  result.ValidIngredientIsHeat,
 		},
-		MinimumAllowableQuantity: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 	}
 
 	return validIngredientMeasurementUnit, nil
@@ -161,12 +163,11 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 
 	for _, result := range results {
 		x.Data = append(x.Data, &types.ValidIngredientMeasurementUnit{
-			CreatedAt:                result.ValidIngredientMeasurementUnitCreatedAt,
-			LastUpdatedAt:            database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
-			ArchivedAt:               database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-			MaximumAllowableQuantity: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
-			Notes:                    result.ValidIngredientMeasurementUnitNotes,
-			ID:                       result.ValidIngredientMeasurementUnitID,
+			CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
+			Notes:         result.ValidIngredientMeasurementUnitNotes,
+			ID:            result.ValidIngredientMeasurementUnitID,
 			MeasurementUnit: types.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
@@ -222,7 +223,10 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 				IsAcid:                                  result.ValidIngredientIsAcid,
 				IsHeat:                                  result.ValidIngredientIsHeat,
 			},
-			MinimumAllowableQuantity: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+			AllowableQuantity: types.Float32RangeWithOptionalMax{
+				Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
+				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+			},
 		})
 
 		x.FilteredCount = uint64(result.FilteredCount)
@@ -271,12 +275,11 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 
 	for _, result := range results {
 		x.Data = append(x.Data, &types.ValidIngredientMeasurementUnit{
-			CreatedAt:                result.ValidIngredientMeasurementUnitCreatedAt,
-			LastUpdatedAt:            database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
-			ArchivedAt:               database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-			MaximumAllowableQuantity: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
-			Notes:                    result.ValidIngredientMeasurementUnitNotes,
-			ID:                       result.ValidIngredientMeasurementUnitID,
+			CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
+			Notes:         result.ValidIngredientMeasurementUnitNotes,
+			ID:            result.ValidIngredientMeasurementUnitID,
 			MeasurementUnit: types.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
@@ -332,7 +335,10 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 				IsAcid:                                  result.ValidIngredientIsAcid,
 				IsHeat:                                  result.ValidIngredientIsHeat,
 			},
-			MinimumAllowableQuantity: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+			AllowableQuantity: types.Float32RangeWithOptionalMax{
+				Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
+				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+			},
 		})
 
 		x.FilteredCount = uint64(result.FilteredCount)
@@ -374,12 +380,15 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 
 	for _, result := range results {
 		x.Data = append(x.Data, &types.ValidIngredientMeasurementUnit{
-			CreatedAt:                result.ValidIngredientMeasurementUnitCreatedAt,
-			LastUpdatedAt:            database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
-			ArchivedAt:               database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-			MaximumAllowableQuantity: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
-			Notes:                    result.ValidIngredientMeasurementUnitNotes,
-			ID:                       result.ValidIngredientMeasurementUnitID,
+			CreatedAt:     result.ValidIngredientMeasurementUnitCreatedAt,
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
+			AllowableQuantity: types.Float32RangeWithOptionalMax{
+				Max: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
+				Min: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+			},
+			Notes: result.ValidIngredientMeasurementUnitNotes,
+			ID:    result.ValidIngredientMeasurementUnitID,
 			MeasurementUnit: types.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
@@ -435,7 +444,6 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 				IsAcid:                                  result.ValidIngredientIsAcid,
 				IsHeat:                                  result.ValidIngredientIsHeat,
 			},
-			MinimumAllowableQuantity: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 		})
 
 		x.FilteredCount = uint64(result.FilteredCount)
@@ -462,20 +470,22 @@ func (q *Querier) CreateValidIngredientMeasurementUnit(ctx context.Context, inpu
 		Notes:                    input.Notes,
 		ValidMeasurementUnitID:   input.ValidMeasurementUnitID,
 		ValidIngredientID:        input.ValidIngredientID,
-		MinimumAllowableQuantity: database.StringFromFloat32(input.MinimumAllowableQuantity),
-		MaximumAllowableQuantity: database.NullStringFromFloat32Pointer(input.MaximumAllowableQuantity),
+		MinimumAllowableQuantity: database.StringFromFloat32(input.AllowableQuantity.Min),
+		MaximumAllowableQuantity: database.NullStringFromFloat32Pointer(input.AllowableQuantity.Max),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient measurement unit creation query")
 	}
 
 	x := &types.ValidIngredientMeasurementUnit{
-		ID:                       input.ID,
-		Notes:                    input.Notes,
-		MeasurementUnit:          types.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
-		Ingredient:               types.ValidIngredient{ID: input.ValidIngredientID},
-		MinimumAllowableQuantity: input.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: input.MaximumAllowableQuantity,
-		CreatedAt:                q.currentTime(),
+		ID:              input.ID,
+		Notes:           input.Notes,
+		MeasurementUnit: types.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
+		Ingredient:      types.ValidIngredient{ID: input.ValidIngredientID},
+		AllowableQuantity: types.Float32RangeWithOptionalMax{
+			Max: input.AllowableQuantity.Max,
+			Min: input.AllowableQuantity.Min,
+		},
+		CreatedAt: q.currentTime(),
 	}
 
 	logger.Info("valid ingredient measurement unit created")
@@ -498,8 +508,8 @@ func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, upda
 		Notes:                    updated.Notes,
 		ValidMeasurementUnitID:   updated.MeasurementUnit.ID,
 		ValidIngredientID:        updated.Ingredient.ID,
-		MinimumAllowableQuantity: database.StringFromFloat32(updated.MinimumAllowableQuantity),
-		MaximumAllowableQuantity: database.NullStringFromFloat32Pointer(updated.MaximumAllowableQuantity),
+		MinimumAllowableQuantity: database.StringFromFloat32(updated.AllowableQuantity.Min),
+		MaximumAllowableQuantity: database.NullStringFromFloat32Pointer(updated.AllowableQuantity.Max),
 		ID:                       updated.ID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient measurement unit")

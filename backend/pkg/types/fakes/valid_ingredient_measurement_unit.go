@@ -1,23 +1,19 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
 // BuildFakeValidIngredientMeasurementUnit builds a faked valid ingredient measurement unit.
 func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurementUnit {
-	minQty := buildFakeNumber()
-
 	return &types.ValidIngredientMeasurementUnit{
-		ID:                       BuildFakeID(),
-		Notes:                    buildUniqueString(),
-		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
-		Ingredient:               *BuildFakeValidIngredient(),
-		MinimumAllowableQuantity: float32(minQty),
-		MaximumAllowableQuantity: pointer.To(float32(minQty + 1)),
-		CreatedAt:                BuildFakeTime(),
+		ID:                BuildFakeID(),
+		Notes:             buildUniqueString(),
+		MeasurementUnit:   *BuildFakeValidMeasurementUnit(),
+		Ingredient:        *BuildFakeValidIngredient(),
+		AllowableQuantity: BuildFakeFloat32RangeWithOptionalMax(),
+		CreatedAt:         BuildFakeTime(),
 	}
 }
 
@@ -43,11 +39,13 @@ func BuildFakeValidIngredientMeasurementUnitList() *types.QueryFilteredResult[ty
 func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *types.ValidIngredientMeasurementUnitUpdateRequestInput {
 	validIngredientMeasurementUnit := BuildFakeValidIngredientMeasurementUnit()
 	return &types.ValidIngredientMeasurementUnitUpdateRequestInput{
-		Notes:                    &validIngredientMeasurementUnit.Notes,
-		ValidMeasurementUnitID:   &validIngredientMeasurementUnit.MeasurementUnit.ID,
-		ValidIngredientID:        &validIngredientMeasurementUnit.Ingredient.ID,
-		MinimumAllowableQuantity: &validIngredientMeasurementUnit.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: validIngredientMeasurementUnit.MaximumAllowableQuantity,
+		Notes:                  &validIngredientMeasurementUnit.Notes,
+		ValidMeasurementUnitID: &validIngredientMeasurementUnit.MeasurementUnit.ID,
+		ValidIngredientID:      &validIngredientMeasurementUnit.Ingredient.ID,
+		AllowableQuantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+			Min: &validIngredientMeasurementUnit.AllowableQuantity.Min,
+			Max: validIngredientMeasurementUnit.AllowableQuantity.Max,
+		},
 	}
 }
 

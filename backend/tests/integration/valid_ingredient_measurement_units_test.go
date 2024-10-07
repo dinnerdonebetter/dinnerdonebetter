@@ -19,8 +19,7 @@ func checkValidIngredientMeasurementUnitEquality(t *testing.T, expected, actual 
 	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected MeasurementUnit for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID)
 	assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected Ingredient for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.Ingredient.ID, actual.Ingredient.ID)
-	assert.Equal(t, expected.MinimumAllowableQuantity, actual.MinimumAllowableQuantity, "expected MinimumAllowableQuantity for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.MinimumAllowableQuantity, actual.MinimumAllowableQuantity)
-	assert.Equal(t, expected.MaximumAllowableQuantity, actual.MaximumAllowableQuantity, "expected MaximumAllowableQuantity for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.MaximumAllowableQuantity, actual.MaximumAllowableQuantity)
+	assert.Equal(t, expected.AllowableQuantity, actual.AllowableQuantity, "expected AllowableQuantity for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.AllowableQuantity, actual.AllowableQuantity)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
