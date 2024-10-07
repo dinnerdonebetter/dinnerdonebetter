@@ -77,9 +77,19 @@ type (
 		Name string `json:"name,omitempty"`
 	}
 
-	FloatRange struct {
-		Min float64 `json:"min"`
-		Max float64 `json:"max"`
+	Range[T comparable] struct {
+		Min T `json:"min"`
+		Max T `json:"max"`
+	}
+
+	RangeWithOptionalUpperBound[T comparable] struct {
+		Min T  `json:"min"`
+		Max *T `json:"max"`
+	}
+
+	RangeUpdateRequestInput[T comparable] struct {
+		Min *T `json:"min"`
+		Max *T `json:"max"`
 	}
 
 	Float32RangeWithOptionalMax struct {
@@ -90,11 +100,6 @@ type (
 	Float32RangeWithOptionalMaxUpdateRequestInput struct {
 		Min *float32 `json:"min,omitempty"`
 		Max *float32 `json:"max,omitempty"`
-	}
-
-	UintRange struct {
-		Min uint64 `json:"min"`
-		Max uint64 `json:"max"`
 	}
 )
 
@@ -122,17 +127,6 @@ func NewAPIErrorResponse(issue string, code ErrorCode, details ResponseDetails) 
 	}
 }
 
-var _ validation.ValidatableWithContext = (*FloatRange)(nil)
-
-func (x *FloatRange) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
-		ctx,
-		x,
-		validation.Field(&x.Min, validation.Required),
-		validation.Field(&x.Max, validation.Required),
-	)
-}
-
 var _ validation.ValidatableWithContext = (*Float32RangeWithOptionalMax)(nil)
 
 func (x *Float32RangeWithOptionalMax) ValidateWithContext(ctx context.Context) error {
@@ -143,13 +137,23 @@ func (x *Float32RangeWithOptionalMax) ValidateWithContext(ctx context.Context) e
 	)
 }
 
-var _ validation.ValidatableWithContext = (*UintRange)(nil)
+var _ validation.ValidatableWithContext = (*Range[string])(nil)
 
-func (x *UintRange) ValidateWithContext(ctx context.Context) error {
+func (x *Range[T]) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Min, validation.Required),
 		validation.Field(&x.Max, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*RangeWithOptionalUpperBound[string])(nil)
+
+func (x *RangeWithOptionalUpperBound[T]) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.Min, validation.Required),
 	)
 }
