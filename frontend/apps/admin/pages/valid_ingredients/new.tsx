@@ -112,12 +112,12 @@ export default function ValidIngredientCreator(): JSX.Element {
           <NumberInput
             label="Min Storage Temp (C°)"
             precision={5}
-            {...creationForm.getInputProps('minimumIdealStorageTemperatureInCelsius')}
+            {...creationForm.getInputProps('storageTemperatureInCelsius.min')}
           />
           <NumberInput
             label="Max Storage Temp (C°)"
             precision={5}
-            {...creationForm.getInputProps('maximumIdealStorageTemperatureInCelsius')}
+            {...creationForm.getInputProps('storageTemperatureInCelsius.max')}
           />
           <Switch
             checked={creationForm.values.containsDairy}

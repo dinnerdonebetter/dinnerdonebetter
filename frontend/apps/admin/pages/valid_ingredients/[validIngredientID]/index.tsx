@@ -357,14 +357,8 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
             {...updateForm.getInputProps('description')}
           />
           <TextInput label="Warning" placeholder="warning" {...updateForm.getInputProps('warning')} />
-          <NumberInput
-            label="Min Storage Temp (C°)"
-            {...updateForm.getInputProps('minimumIdealStorageTemperatureInCelsius')}
-          />
-          <NumberInput
-            label="Max Storage Temp (C°)"
-            {...updateForm.getInputProps('maximumIdealStorageTemperatureInCelsius')}
-          />
+          <NumberInput label="Min Storage Temp (C°)" {...updateForm.getInputProps('storageTemperatureInCelsius.min')} />
+          <NumberInput label="Max Storage Temp (C°)" {...updateForm.getInputProps('storageTemperatureInCelsius.max')} />
 
           <Switch
             checked={updateForm.values.containsDairy}

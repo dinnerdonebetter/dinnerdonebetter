@@ -104,10 +104,10 @@ export default function ValidPreparationCreator(): JSX.Element {
             {...creationForm.getInputProps('timeEstimateRequired')}
           />
 
-          <NumberInput label="Minimum Ingredient Count" {...creationForm.getInputProps('minimumIngredientCount')} />
-          <NumberInput label="Maximum Ingredient Count" {...creationForm.getInputProps('maximumIngredientCount')} />
-          <NumberInput label="Minimum Instrument Count" {...creationForm.getInputProps('minimumInstrumentCount')} />
-          <NumberInput label="Maximum Instrument Count" {...creationForm.getInputProps('maximumInstrumentCount')} />
+          <NumberInput label="Minimum Ingredient Count" {...creationForm.getInputProps('ingredientCount.min')} />
+          <NumberInput label="Maximum Ingredient Count" {...creationForm.getInputProps('ingredientCount.max')} />
+          <NumberInput label="Minimum Instrument Count" {...creationForm.getInputProps('instrumentCount.min')} />
+          <NumberInput label="Maximum Instrument Count" {...creationForm.getInputProps('instrumentCount.max')} />
 
           <Switch
             checked={creationForm.values.consumesVessel}
@@ -119,8 +119,8 @@ export default function ValidPreparationCreator(): JSX.Element {
             label="Only For Vessels"
             {...creationForm.getInputProps('onlyForVessels')}
           />
-          <NumberInput label="Minimum Vessel Count" {...creationForm.getInputProps('minimumVesselCount')} />
-          <NumberInput label="Maximum Vessel Count" {...creationForm.getInputProps('maximumVesselCount')} />
+          <NumberInput label="Minimum Vessel Count" {...creationForm.getInputProps('vesselCount.min')} />
+          <NumberInput label="Maximum Vessel Count" {...creationForm.getInputProps('vesselCount.max')} />
 
           <Group position="center">
             <Button type="submit" mt="sm" fullWidth>
