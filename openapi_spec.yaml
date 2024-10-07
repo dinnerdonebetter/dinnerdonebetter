@@ -21283,14 +21283,8 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumQuantityNeeded:
-          format: double
-          type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
-        minimumQuantityNeeded:
-          format: double
-          type: number
         purchasePrice:
           format: double
           type: number
@@ -21298,6 +21292,8 @@ components:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         purchasedUPC:
           type: string
+        quantityNeeded:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityPurchased:
           format: double
           type: number
@@ -21310,12 +21306,6 @@ components:
       properties:
         belongsToMealPlan:
           type: string
-        maximumQuantityNeeded:
-          format: double
-          type: number
-        minimumQuantityNeeded:
-          format: double
-          type: number
         purchasePrice:
           format: double
           type: number
@@ -21323,6 +21313,8 @@ components:
           type: string
         purchasedUPC:
           type: string
+        quantityNeeded:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityPurchased:
           format: double
           type: number
@@ -21339,12 +21331,6 @@ components:
       properties:
         belongsToMealPlan:
           type: string
-        maximumQuantityNeeded:
-          format: double
-          type: number
-        minimumQuantityNeeded:
-          format: double
-          type: number
         purchasePrice:
           format: double
           type: number
@@ -21352,6 +21338,8 @@ components:
           type: string
         purchasedUPC:
           type: string
+        quantityNeeded:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         quantityPurchased:
           format: double
           type: number

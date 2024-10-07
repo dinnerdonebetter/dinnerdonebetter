@@ -1103,51 +1103,48 @@ type MealPlanEventUpdateRequestInput struct {
 
 // MealPlanGroceryListItem defines model for MealPlanGroceryListItem.
 type MealPlanGroceryListItem struct {
-	ArchivedAt               *time.Time            `json:"archivedAt,omitempty"`
-	BelongsToMealPlan        *string               `json:"belongsToMealPlan,omitempty"`
-	CreatedAt                *time.Time            `json:"createdAt,omitempty"`
-	Id                       *string               `json:"id,omitempty"`
-	Ingredient               *ValidIngredient      `json:"ingredient,omitempty"`
-	LastUpdatedAt            *time.Time            `json:"lastUpdatedAt,omitempty"`
-	MaximumQuantityNeeded    *float64              `json:"maximumQuantityNeeded,omitempty"`
-	MeasurementUnit          *ValidMeasurementUnit `json:"measurementUnit,omitempty"`
-	MinimumQuantityNeeded    *float64              `json:"minimumQuantityNeeded,omitempty"`
-	PurchasePrice            *float64              `json:"purchasePrice,omitempty"`
-	PurchasedMeasurementUnit *ValidMeasurementUnit `json:"purchasedMeasurementUnit,omitempty"`
-	PurchasedUPC             *string               `json:"purchasedUPC,omitempty"`
-	QuantityPurchased        *float64              `json:"quantityPurchased,omitempty"`
-	Status                   *string               `json:"status,omitempty"`
-	StatusExplanation        *string               `json:"statusExplanation,omitempty"`
+	ArchivedAt               *time.Time                   `json:"archivedAt,omitempty"`
+	BelongsToMealPlan        *string                      `json:"belongsToMealPlan,omitempty"`
+	CreatedAt                *time.Time                   `json:"createdAt,omitempty"`
+	Id                       *string                      `json:"id,omitempty"`
+	Ingredient               *ValidIngredient             `json:"ingredient,omitempty"`
+	LastUpdatedAt            *time.Time                   `json:"lastUpdatedAt,omitempty"`
+	MeasurementUnit          *ValidMeasurementUnit        `json:"measurementUnit,omitempty"`
+	PurchasePrice            *float64                     `json:"purchasePrice,omitempty"`
+	PurchasedMeasurementUnit *ValidMeasurementUnit        `json:"purchasedMeasurementUnit,omitempty"`
+	PurchasedUPC             *string                      `json:"purchasedUPC,omitempty"`
+	QuantityNeeded           *Float32RangeWithOptionalMax `json:"quantityNeeded,omitempty"`
+	QuantityPurchased        *float64                     `json:"quantityPurchased,omitempty"`
+	Status                   *string                      `json:"status,omitempty"`
+	StatusExplanation        *string                      `json:"statusExplanation,omitempty"`
 }
 
 // MealPlanGroceryListItemCreationRequestInput defines model for MealPlanGroceryListItemCreationRequestInput.
 type MealPlanGroceryListItemCreationRequestInput struct {
-	BelongsToMealPlan          *string  `json:"belongsToMealPlan,omitempty"`
-	MaximumQuantityNeeded      *float64 `json:"maximumQuantityNeeded,omitempty"`
-	MinimumQuantityNeeded      *float64 `json:"minimumQuantityNeeded,omitempty"`
-	PurchasePrice              *float64 `json:"purchasePrice,omitempty"`
-	PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID,omitempty"`
-	PurchasedUPC               *string  `json:"purchasedUPC,omitempty"`
-	QuantityPurchased          *float64 `json:"quantityPurchased,omitempty"`
-	Status                     *string  `json:"status,omitempty"`
-	StatusExplanation          *string  `json:"statusExplanation,omitempty"`
-	ValidIngredientID          *string  `json:"validIngredientID,omitempty"`
-	ValidMeasurementUnitID     *string  `json:"validMeasurementUnitID,omitempty"`
+	BelongsToMealPlan          *string                      `json:"belongsToMealPlan,omitempty"`
+	PurchasePrice              *float64                     `json:"purchasePrice,omitempty"`
+	PurchasedMeasurementUnitID *string                      `json:"purchasedMeasurementUnitID,omitempty"`
+	PurchasedUPC               *string                      `json:"purchasedUPC,omitempty"`
+	QuantityNeeded             *Float32RangeWithOptionalMax `json:"quantityNeeded,omitempty"`
+	QuantityPurchased          *float64                     `json:"quantityPurchased,omitempty"`
+	Status                     *string                      `json:"status,omitempty"`
+	StatusExplanation          *string                      `json:"statusExplanation,omitempty"`
+	ValidIngredientID          *string                      `json:"validIngredientID,omitempty"`
+	ValidMeasurementUnitID     *string                      `json:"validMeasurementUnitID,omitempty"`
 }
 
 // MealPlanGroceryListItemUpdateRequestInput defines model for MealPlanGroceryListItemUpdateRequestInput.
 type MealPlanGroceryListItemUpdateRequestInput struct {
-	BelongsToMealPlan          *string  `json:"belongsToMealPlan,omitempty"`
-	MaximumQuantityNeeded      *float64 `json:"maximumQuantityNeeded,omitempty"`
-	MinimumQuantityNeeded      *float64 `json:"minimumQuantityNeeded,omitempty"`
-	PurchasePrice              *float64 `json:"purchasePrice,omitempty"`
-	PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID,omitempty"`
-	PurchasedUPC               *string  `json:"purchasedUPC,omitempty"`
-	QuantityPurchased          *float64 `json:"quantityPurchased,omitempty"`
-	Status                     *string  `json:"status,omitempty"`
-	StatusExplanation          *string  `json:"statusExplanation,omitempty"`
-	ValidIngredientID          *string  `json:"validIngredientID,omitempty"`
-	ValidMeasurementUnitID     *string  `json:"validMeasurementUnitID,omitempty"`
+	BelongsToMealPlan          *string                                        `json:"belongsToMealPlan,omitempty"`
+	PurchasePrice              *float64                                       `json:"purchasePrice,omitempty"`
+	PurchasedMeasurementUnitID *string                                        `json:"purchasedMeasurementUnitID,omitempty"`
+	PurchasedUPC               *string                                        `json:"purchasedUPC,omitempty"`
+	QuantityNeeded             *Float32RangeWithOptionalMaxUpdateRequestInput `json:"quantityNeeded,omitempty"`
+	QuantityPurchased          *float64                                       `json:"quantityPurchased,omitempty"`
+	Status                     *string                                        `json:"status,omitempty"`
+	StatusExplanation          *string                                        `json:"statusExplanation,omitempty"`
+	ValidIngredientID          *string                                        `json:"validIngredientID,omitempty"`
+	ValidMeasurementUnitID     *string                                        `json:"validMeasurementUnitID,omitempty"`
 }
 
 // MealPlanOption defines model for MealPlanOption.

@@ -199,32 +199,40 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
-				MinimumQuantityNeeded:  200,
-				MaximumQuantityNeeded:  pointer.To(float32(200)),
+				QuantityNeeded: types.Float32RangeWithOptionalMax{
+					Max: pointer.To(float32(200)),
+					Min: 200,
+				},
 			},
 			carrot.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
-				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointer.To(float32(100)),
+				QuantityNeeded: types.Float32RangeWithOptionalMax{
+					Max: pointer.To(float32(100)),
+					Min: 100,
+				},
 			},
 			celery.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
-				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointer.To(float32(100)),
+				QuantityNeeded: types.Float32RangeWithOptionalMax{
+					Max: pointer.To(float32(100)),
+					Min: 100,
+				},
 			},
 			salt.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
-				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointer.To(float32(100)),
+				QuantityNeeded: types.Float32RangeWithOptionalMax{
+					Max: pointer.To(float32(100)),
+					Min: 100,
+				},
 			},
 		}
 
@@ -360,24 +368,30 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
-				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointer.To(float32(100)),
+				QuantityNeeded: types.Float32RangeWithOptionalMax{
+					Max: pointer.To(float32(100)),
+					Min: 100,
+				},
 			},
 			carrot.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
-				MinimumQuantityNeeded:  200,
-				MaximumQuantityNeeded:  pointer.To(float32(200)),
+				QuantityNeeded: types.Float32RangeWithOptionalMax{
+					Max: pointer.To(float32(200)),
+					Min: 200,
+				},
 			},
 			celery.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
-				MinimumQuantityNeeded:  300,
-				MaximumQuantityNeeded:  pointer.To(float32(300)),
+				QuantityNeeded: types.Float32RangeWithOptionalMax{
+					Max: pointer.To(float32(300)),
+					Min: 300,
+				},
 			},
 		}
 
