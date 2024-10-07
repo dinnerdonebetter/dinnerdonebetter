@@ -365,13 +365,11 @@ export default function NewMealPlanPage(): JSX.Element {
                 mt="-sm"
                 step={0.25}
                 descriptionProps={{ fontSize: 'sm' }}
-                description={`This recipe will yield ${option.mealScale * option.meal.minimumEstimatedPortions}${
-                  option.meal.maximumEstimatedPortions
-                    ? `- ${option.mealScale * option.meal.maximumEstimatedPortions}`
-                    : ''
-                } ${option.mealScale * option.meal.minimumEstimatedPortions == 1 ? 'portion' : 'portions'}`}
+                description={`This recipe will yield ${option.mealScale * option.meal.estimatedPortions.min}${
+                  option.meal.estimatedPortions.max ? `- ${option.mealScale * option.meal.estimatedPortions.max}` : ''
+                } ${option.mealScale * option.meal.estimatedPortions.min == 1 ? 'portion' : 'portions'}`}
                 value={option.mealScale}
-                min={1 / option.meal.minimumEstimatedPortions}
+                min={1 / option.meal.estimatedPortions.min}
                 onChange={(value: number) => {
                   dispatchMealPlanUpdate({
                     type: 'SET_MEAL_SCALE_FOR_INDEX',

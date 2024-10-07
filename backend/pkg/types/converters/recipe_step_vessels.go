@@ -8,13 +8,15 @@ import (
 // ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput creates a RecipeStepVesselUpdateRequestInput from a RecipeStepVessel.
 func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *types.RecipeStepVessel) *types.RecipeStepVesselUpdateRequestInput {
 	x := &types.RecipeStepVesselUpdateRequestInput{
-		VesselID:             &input.Vessel.ID,
-		Notes:                &input.Notes,
-		RecipeStepProductID:  input.RecipeStepProductID,
-		Name:                 &input.Name,
-		BelongsToRecipeStep:  &input.BelongsToRecipeStep,
-		MinimumQuantity:      &input.MinimumQuantity,
-		MaximumQuantity:      input.MaximumQuantity,
+		VesselID:            &input.Vessel.ID,
+		Notes:               &input.Notes,
+		RecipeStepProductID: input.RecipeStepProductID,
+		Name:                &input.Name,
+		BelongsToRecipeStep: &input.BelongsToRecipeStep,
+		Quantity: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
+			Min: &input.Quantity.Min,
+			Max: input.Quantity.Max,
+		},
 		VesselPreposition:    &input.VesselPreposition,
 		UnavailableAfterStep: &input.UnavailableAfterStep,
 	}
@@ -30,8 +32,7 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 		RecipeStepProductID:             input.RecipeStepProductID,
 		Name:                            input.Name,
 		Notes:                           input.Notes,
-		MinimumQuantity:                 input.MinimumQuantity,
-		MaximumQuantity:                 input.MaximumQuantity,
+		Quantity:                        input.Quantity,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
 		VesselPreposition:               input.VesselPreposition,
@@ -55,8 +56,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *types.
 		Notes:                input.Notes,
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
-		MinimumQuantity:      input.MinimumQuantity,
-		MaximumQuantity:      input.MaximumQuantity,
+		Quantity:             input.Quantity,
 	}
 }
 
@@ -76,7 +76,6 @@ func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(input *types
 		BelongsToRecipeStep:  input.BelongsToRecipeStep,
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
-		MinimumQuantity:      input.MinimumQuantity,
-		MaximumQuantity:      input.MaximumQuantity,
+		Quantity:             input.Quantity,
 	}
 }

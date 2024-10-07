@@ -28,8 +28,7 @@ func checkRecipeStepVesselEquality(t *testing.T, expected, actual *types.RecipeS
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.BelongsToRecipeStep, actual.BelongsToRecipeStep, "expected BelongsToRecipeStep for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.BelongsToRecipeStep, actual.BelongsToRecipeStep)
 	assert.Equal(t, expected.VesselPreposition, actual.VesselPreposition, "expected VesselPreposition for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.VesselPreposition, actual.VesselPreposition)
-	assert.Equal(t, expected.MaximumQuantity, actual.MaximumQuantity, "expected MaximumQuantity for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.MaximumQuantity, actual.MaximumQuantity)
-	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected Quantity for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.Quantity, actual.Quantity)
 	assert.Equal(t, expected.UnavailableAfterStep, actual.UnavailableAfterStep, "expected UnavailableAfterStep for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.UnavailableAfterStep, actual.UnavailableAfterStep)
 
 	assert.NotZero(t, actual.CreatedAt)
@@ -149,12 +148,15 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			linedBakingSheetName := "lined baking sheet"
 
 			expected := &types.Recipe{
-				Name:                     t.Name(),
-				Slug:                     "whatever-who-cares-yadda-yadda-vessels",
-				YieldsComponentType:      types.MealComponentTypesMain,
-				PortionName:              t.Name(),
-				PluralPortionName:        t.Name(),
-				MinimumEstimatedPortions: 1,
+				Name:                t.Name(),
+				Slug:                "whatever-who-cares-yadda-yadda-vessels",
+				YieldsComponentType: types.MealComponentTypesMain,
+				PortionName:         t.Name(),
+				PluralPortionName:   t.Name(),
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Max: nil,
+					Min: 1,
+				},
 				Steps: []*types.RecipeStep{
 					{
 						Products: []*types.RecipeStepProduct{
@@ -163,7 +165,10 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductVesselType,
 								MeasurementUnit: unit,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1)),
+								Quantity: types.OptionalFloat32Range{
+									Max: nil,
+									Min: pointer.To(float32(1)),
+								},
 							},
 						},
 						Notes:       "first step",
@@ -174,14 +179,20 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Ingredient:          aluminumFoil,
 								Name:                "aluminum foil",
 								MeasurementUnit:     *sheets,
-								MinimumQuantity:     3,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: 3,
+								},
 							},
 						},
 						Vessels: []*types.RecipeStepVessel{
 							{
-								Vessel:          bakingSheet,
-								Name:            "baking sheet",
-								MinimumQuantity: 1,
+								Vessel: bakingSheet,
+								Name:   "baking sheet",
+								Quantity: types.Uint16RangeWithOptionalMax{
+									Max: nil,
+									Min: 1,
+								},
 							},
 						},
 						Index: 0,
@@ -200,7 +211,10 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: head,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1)),
+								Quantity: types.OptionalFloat32Range{
+									Max: nil,
+									Min: pointer.To(float32(1)),
+								},
 							},
 						},
 						Notes: "second step",
@@ -209,7 +223,10 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Ingredient:      garlic,
 								Name:            "garlic",
 								MeasurementUnit: *head,
-								MinimumQuantity: 1,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: 1,
+								},
 							},
 						},
 						Index: 1,

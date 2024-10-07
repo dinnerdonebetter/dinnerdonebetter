@@ -52,10 +52,10 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 							if ingredient.Ingredient != nil {
 								logger = logger.WithValue(keys.RecipeStepIngredientIDKey, ingredient.ID)
 								if _, ok := inputs[ingredient.Ingredient.ID]; !ok {
-									minQty := float32(recipeScale.Mul(decimal.NewFromFloat32(ingredient.MinimumQuantity)).Truncate(2).InexactFloat64())
+									minQty := float32(recipeScale.Mul(decimal.NewFromFloat32(ingredient.Quantity.Min)).Truncate(2).InexactFloat64())
 									var maxQty *float32
-									if ingredient.MaximumQuantity != nil {
-										maximum := float32(recipeScale.Mul(decimal.NewFromFloat32(*ingredient.MaximumQuantity)).Truncate(2).InexactFloat64())
+									if ingredient.Quantity.Max != nil {
+										maximum := float32(recipeScale.Mul(decimal.NewFromFloat32(*ingredient.Quantity.Max)).Truncate(2).InexactFloat64())
 										maxQty = &maximum
 									}
 
@@ -65,19 +65,21 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 										ValidIngredientID:      ingredient.Ingredient.ID,
 										BelongsToMealPlan:      mealPlan.ID,
 										ID:                     identifiers.New(),
-										MinimumQuantityNeeded:  minQty,
-										MaximumQuantityNeeded:  maxQty,
+										QuantityNeeded: types.Float32RangeWithOptionalMax{
+											Max: maxQty,
+											Min: minQty,
+										},
 									}
 								} else {
 									if inputs[ingredient.Ingredient.ID].ValidMeasurementUnitID == ingredient.MeasurementUnit.ID {
-										inputs[ingredient.Ingredient.ID].MinimumQuantityNeeded += ingredient.MinimumQuantity
+										inputs[ingredient.Ingredient.ID].QuantityNeeded.Min += ingredient.Quantity.Min
 
-										if inputs[ingredient.Ingredient.ID].MaximumQuantityNeeded != nil {
-											if ingredient.MaximumQuantity != nil {
-												*inputs[ingredient.Ingredient.ID].MaximumQuantityNeeded += *ingredient.MaximumQuantity
+										if inputs[ingredient.Ingredient.ID].QuantityNeeded.Max != nil {
+											if ingredient.Quantity.Max != nil {
+												*inputs[ingredient.Ingredient.ID].QuantityNeeded.Max += *ingredient.Quantity.Max
 											}
-										} else if ingredient.MaximumQuantity != nil {
-											inputs[ingredient.Ingredient.ID].MaximumQuantityNeeded = ingredient.MaximumQuantity
+										} else if ingredient.Quantity.Max != nil {
+											inputs[ingredient.Ingredient.ID].QuantityNeeded.Max = ingredient.Quantity.Max
 										}
 									} else {
 										logger.Error(fmt.Errorf("mismatched measurement units: %s and %s", inputs[ingredient.Ingredient.ID].ValidMeasurementUnitID, ingredient.MeasurementUnit.ID), "creating grocery list")

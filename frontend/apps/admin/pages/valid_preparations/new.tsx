@@ -26,16 +26,13 @@ export default function ValidPreparationCreator(): JSX.Element {
       restrictToIngredients: true,
       pastTense: '',
       slug: '',
-      minimumIngredientCount: 1,
-      maximumIngredientCount: undefined,
-      minimumInstrumentCount: 1,
-      maximumInstrumentCount: undefined,
+      ingredientCount: { min: 1 },
+      instrumentCount: { min: 1 },
+      vesselCount: { min: 1 },
       temperatureRequired: false,
       timeEstimateRequired: false,
       consumesVessel: false,
       onlyForVessels: false,
-      minimumVesselCount: 1,
-      maximumVesselCount: undefined,
     },
     validate: zodResolver(validPreparationCreationFormSchema),
   });
@@ -54,16 +51,13 @@ export default function ValidPreparationCreator(): JSX.Element {
       restrictToIngredients: creationForm.values.restrictToIngredients,
       pastTense: creationForm.values.pastTense,
       slug: creationForm.values.slug,
-      minimumIngredientCount: creationForm.values.minimumIngredientCount,
-      maximumIngredientCount: creationForm.values.maximumIngredientCount,
-      minimumInstrumentCount: creationForm.values.minimumInstrumentCount,
-      maximumInstrumentCount: creationForm.values.maximumInstrumentCount,
+      ingredientCount: creationForm.values.ingredientCount,
+      instrumentCount: creationForm.values.instrumentCount,
+      vesselCount: creationForm.values.vesselCount,
       temperatureRequired: creationForm.values.temperatureRequired,
       timeEstimateRequired: creationForm.values.timeEstimateRequired,
       consumesVessel: creationForm.values.consumesVessel,
       onlyForVessels: creationForm.values.onlyForVessels,
-      minimumVesselCount: creationForm.values.minimumVesselCount,
-      maximumVesselCount: creationForm.values.maximumVesselCount,
     });
 
     const apiClient = buildLocalClient();
@@ -110,10 +104,10 @@ export default function ValidPreparationCreator(): JSX.Element {
             {...creationForm.getInputProps('timeEstimateRequired')}
           />
 
-          <NumberInput label="Minimum Ingredient Count" {...creationForm.getInputProps('minimumIngredientCount')} />
-          <NumberInput label="Maximum Ingredient Count" {...creationForm.getInputProps('maximumIngredientCount')} />
-          <NumberInput label="Minimum Instrument Count" {...creationForm.getInputProps('minimumInstrumentCount')} />
-          <NumberInput label="Maximum Instrument Count" {...creationForm.getInputProps('maximumInstrumentCount')} />
+          <NumberInput label="Minimum Ingredient Count" {...creationForm.getInputProps('ingredientCount.min')} />
+          <NumberInput label="Maximum Ingredient Count" {...creationForm.getInputProps('ingredientCount.max')} />
+          <NumberInput label="Minimum Instrument Count" {...creationForm.getInputProps('instrumentCount.min')} />
+          <NumberInput label="Maximum Instrument Count" {...creationForm.getInputProps('instrumentCount.max')} />
 
           <Switch
             checked={creationForm.values.consumesVessel}
@@ -125,8 +119,8 @@ export default function ValidPreparationCreator(): JSX.Element {
             label="Only For Vessels"
             {...creationForm.getInputProps('onlyForVessels')}
           />
-          <NumberInput label="Minimum Vessel Count" {...creationForm.getInputProps('minimumVesselCount')} />
-          <NumberInput label="Maximum Vessel Count" {...creationForm.getInputProps('maximumVesselCount')} />
+          <NumberInput label="Minimum Vessel Count" {...creationForm.getInputProps('vesselCount.min')} />
+          <NumberInput label="Maximum Vessel Count" {...creationForm.getInputProps('vesselCount.max')} />
 
           <Group position="center">
             <Button type="submit" mt="sm" fullWidth>

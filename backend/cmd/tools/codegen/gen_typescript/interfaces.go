@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 	"text/template"
 
@@ -35,6 +36,26 @@ func typescriptInterface[T any](x T) (out string, imports []string, err error) {
 
 		if fieldType == "UserLoginInput" {
 			continue
+		}
+
+		switch {
+		case slices.Contains([]string{
+			"OptionalFloat32Range",
+			"OptionalUint32Range",
+		}, fieldType):
+			fieldType = typeNameNumberRange
+		case slices.Contains([]string{
+			"Float32RangeWithOptionalMax",
+			"Uint16RangeWithOptionalMax",
+			"Uint32RangeWithOptionalMax",
+		}, fieldType):
+			fieldType = typeNameNumberRangeWithOptionalMax
+		case slices.Contains([]string{
+			"Float32RangeWithOptionalMaxUpdateRequestInput",
+			"Uint16RangeWithOptionalMaxUpdateRequestInput",
+			"Uint32RangeWithOptionalMaxUpdateRequestInput",
+		}, fieldType):
+			fieldType = typeNameOptionalNumberRange
 		}
 
 		if isCustomType(fieldType) {

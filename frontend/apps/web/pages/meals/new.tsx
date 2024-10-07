@@ -51,7 +51,7 @@ type mealCreationReducerAction =
   | { type: 'REMOVE_RECIPE'; recipe: Recipe };
 
 export class MealCreationPageState {
-  meal: Meal = new Meal({ minimumEstimatedPortions: 1, maximumEstimatedPortions: undefined });
+  meal: Meal = new Meal({ estimatedPortions: { min: 1 } });
   submissionShouldBePrevented: boolean = true;
   recipeQuery: string = '';
   mealScales: number[] = [1.0];
@@ -103,13 +103,13 @@ const useMealCreationReducer: Reducer<MealCreationPageState, mealCreationReducer
     case 'UPDATE_MINIMUM_PORTION_ESTIMATE':
       return {
         ...state,
-        meal: { ...state.meal, minimumEstimatedPortions: action.newValue },
+        meal: { ...state.meal, estimatedPortions: { ...state.meal.estimatedPortions, min: action.newValue } },
       };
 
     case 'UPDATE_MAXIMUM_PORTION_ESTIMATE':
       return {
         ...state,
-        meal: { ...state.meal, maximumEstimatedPortions: action.newValue },
+        meal: { ...state.meal, estimatedPortions: { ...state.meal.estimatedPortions, max: action.newValue } },
       };
 
     case 'UPDATE_DESCRIPTION':
@@ -235,13 +235,13 @@ export default function NewMealPage(): JSX.Element {
               step={0.25}
               descriptionProps={{ fontSize: 'sm' }}
               description={`This recipe will yield ${
-                mealComponent.recipeScale * mealComponent.recipe.minimumEstimatedPortions
+                mealComponent.recipeScale * mealComponent.recipe.estimatedPortions.min
               }${
-                mealComponent.recipe.maximumEstimatedPortions
-                  ? `- ${mealComponent.recipeScale * mealComponent.recipe.maximumEstimatedPortions}`
+                mealComponent.recipe.estimatedPortions.max
+                  ? `- ${mealComponent.recipeScale * mealComponent.recipe.estimatedPortions.max}`
                   : ''
               } ${
-                mealComponent.recipeScale * mealComponent.recipe.minimumEstimatedPortions == 1
+                mealComponent.recipeScale * mealComponent.recipe.estimatedPortions.min == 1
                   ? mealComponent.recipe.portionName
                   : mealComponent.recipe.pluralPortionName
               }`}
@@ -306,7 +306,7 @@ export default function NewMealPage(): JSX.Element {
             <Group position="center" spacing="xl" grow>
               <NumberInput
                 label="Min. Portions"
-                value={pageState.meal.minimumEstimatedPortions}
+                value={pageState.meal.estimatedPortions.min}
                 onChange={(value: number) => {
                   if (value <= 0) {
                     return;
@@ -322,7 +322,7 @@ export default function NewMealPage(): JSX.Element {
 
               <NumberInput
                 label="Max Portions"
-                value={pageState.meal.maximumEstimatedPortions}
+                value={pageState.meal.estimatedPortions.max}
                 onChange={(value: number) => {
                   if (value <= 0) {
                     return;

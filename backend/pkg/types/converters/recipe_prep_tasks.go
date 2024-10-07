@@ -20,18 +20,19 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *types.Recipe
 		})
 	}
 	x := &types.RecipePrepTaskUpdateRequestInput{
-		Name:                                   &input.Name,
-		Description:                            &input.Description,
-		Notes:                                  &input.Notes,
-		ExplicitStorageInstructions:            &input.ExplicitStorageInstructions,
-		Optional:                               &input.Optional,
-		MinimumTimeBufferBeforeRecipeInSeconds: &input.MinimumTimeBufferBeforeRecipeInSeconds,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		StorageType:                            &input.StorageType,
-		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
-		BelongsToRecipe:                        &input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
+		Name:                        &input.Name,
+		Description:                 &input.Description,
+		Notes:                       &input.Notes,
+		ExplicitStorageInstructions: &input.ExplicitStorageInstructions,
+		Optional:                    &input.Optional,
+		StorageTemperatureInCelsius: input.StorageTemperatureInCelsius,
+		TimeBufferBeforeRecipeInSeconds: types.Uint32RangeWithOptionalMaxUpdateRequestInput{
+			Min: &input.TimeBufferBeforeRecipeInSeconds.Min,
+			Max: input.TimeBufferBeforeRecipeInSeconds.Max,
+		},
+		StorageType:     &input.StorageType,
+		BelongsToRecipe: &input.BelongsToRecipe,
+		TaskSteps:       taskSteps,
 	}
 
 	return x
@@ -48,19 +49,17 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 	}
 
 	x := &types.RecipePrepTaskDatabaseCreationInput{
-		ID:                                     identifiers.New(),
-		Name:                                   input.Name,
-		Description:                            input.Description,
-		Notes:                                  input.Notes,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		Optional:                               input.Optional,
-		StorageType:                            input.StorageType,
-		BelongsToRecipe:                        input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
+		ID:                              identifiers.New(),
+		Name:                            input.Name,
+		Description:                     input.Description,
+		Notes:                           input.Notes,
+		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
+		Optional:                        input.Optional,
+		StorageType:                     input.StorageType,
+		BelongsToRecipe:                 input.BelongsToRecipe,
+		TaskSteps:                       taskSteps,
+		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
+		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
 	}
 
 	return x
@@ -69,18 +68,16 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 // ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput(recipe *types.RecipeDatabaseCreationInput, input *types.RecipePrepTaskWithinRecipeCreationRequestInput) (*types.RecipePrepTaskDatabaseCreationInput, error) {
 	x := &types.RecipePrepTaskDatabaseCreationInput{
-		ID:                                     identifiers.New(),
-		Name:                                   input.Name,
-		Description:                            input.Description,
-		Notes:                                  input.Notes,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		Optional:                               input.Optional,
-		StorageType:                            input.StorageType,
-		BelongsToRecipe:                        input.BelongsToRecipe,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
+		ID:                              identifiers.New(),
+		Name:                            input.Name,
+		Description:                     input.Description,
+		Notes:                           input.Notes,
+		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
+		Optional:                        input.Optional,
+		StorageType:                     input.StorageType,
+		BelongsToRecipe:                 input.BelongsToRecipe,
+		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
+		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
 	}
 
 	x.TaskSteps = []*types.RecipePrepTaskStepDatabaseCreationInput{}
@@ -108,19 +105,17 @@ func ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(input *types.Rec
 	}
 
 	return &types.RecipePrepTaskDatabaseCreationInput{
-		ID:                                     input.ID,
-		Name:                                   input.Name,
-		Description:                            input.Description,
-		Notes:                                  input.Notes,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		Optional:                               input.Optional,
-		StorageType:                            input.StorageType,
-		TaskSteps:                              taskSteps,
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
-		BelongsToRecipe:                        input.BelongsToRecipe,
+		ID:                              input.ID,
+		Name:                            input.Name,
+		Description:                     input.Description,
+		Notes:                           input.Notes,
+		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
+		Optional:                        input.Optional,
+		StorageType:                     input.StorageType,
+		TaskSteps:                       taskSteps,
+		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
+		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
+		BelongsToRecipe:                 input.BelongsToRecipe,
 	}
 }
 
@@ -138,18 +133,16 @@ func ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(input *types.Reci
 	}
 
 	return &types.RecipePrepTaskCreationRequestInput{
-		Name:                                   input.Name,
-		Description:                            input.Description,
-		Notes:                                  input.Notes,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		Optional:                               input.Optional,
-		StorageType:                            input.StorageType,
-		BelongsToRecipe:                        input.BelongsToRecipe,
-		RecipeSteps:                            taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
+		Name:                            input.Name,
+		Description:                     input.Description,
+		Notes:                           input.Notes,
+		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
+		Optional:                        input.Optional,
+		StorageType:                     input.StorageType,
+		BelongsToRecipe:                 input.BelongsToRecipe,
+		RecipeSteps:                     taskSteps,
+		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
+		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
 	}
 }
 
@@ -160,18 +153,16 @@ func ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(recip
 	}
 
 	return &types.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Name:                                   input.Name,
-		Description:                            input.Description,
-		Notes:                                  input.Notes,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		Optional:                               input.Optional,
-		StorageType:                            input.StorageType,
-		BelongsToRecipe:                        input.BelongsToRecipe,
-		RecipeSteps:                            taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
+		Name:                            input.Name,
+		Description:                     input.Description,
+		Notes:                           input.Notes,
+		ExplicitStorageInstructions:     input.ExplicitStorageInstructions,
+		Optional:                        input.Optional,
+		StorageType:                     input.StorageType,
+		BelongsToRecipe:                 input.BelongsToRecipe,
+		RecipeSteps:                     taskSteps,
+		StorageTemperatureInCelsius:     input.StorageTemperatureInCelsius,
+		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
 	}
 }
 

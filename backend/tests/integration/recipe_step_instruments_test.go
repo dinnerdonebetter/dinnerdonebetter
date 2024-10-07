@@ -27,8 +27,7 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected PreferenceRank for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.PreferenceRank, actual.PreferenceRank)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected Optional for recipe step instrument %s to be %v, but was %v", expected.ID, expected.Optional, actual.Optional)
-	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step instrument %s to be %v, but was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
-	assert.Equal(t, expected.MaximumQuantity, actual.MaximumQuantity, "expected MaximumQuantity for recipe step instrument %s to be %v, but was %v", expected.ID, expected.MaximumQuantity, actual.MaximumQuantity)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected Quantity for recipe step instrument %s to be %v, but was %v", expected.ID, expected.Quantity, actual.Quantity)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
@@ -154,12 +153,15 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 			linedBakingSheetName := "lined baking sheet"
 
 			expected := &types.Recipe{
-				Name:                     t.Name(),
-				Slug:                     "whatever-who-cares",
-				YieldsComponentType:      types.MealComponentTypesMain,
-				PortionName:              t.Name(),
-				PluralPortionName:        t.Name(),
-				MinimumEstimatedPortions: 1,
+				Name:                t.Name(),
+				Slug:                "whatever-who-cares",
+				YieldsComponentType: types.MealComponentTypesMain,
+				PortionName:         t.Name(),
+				PluralPortionName:   t.Name(),
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Max: nil,
+					Min: 1,
+				},
 				Steps: []*types.RecipeStep{
 					{
 						Products: []*types.RecipeStepProduct{
@@ -168,7 +170,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductInstrumentType,
 								MeasurementUnit: unit,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1)),
+								Quantity:        types.OptionalFloat32Range{Min: pointer.To(float32(1))},
 							},
 						},
 						Notes:       "first step",
@@ -179,7 +181,10 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 								Ingredient:          aluminumFoil,
 								Name:                "aluminum foil",
 								MeasurementUnit:     *sheets,
-								MinimumQuantity:     3,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: 3,
+								},
 							},
 						},
 						Instruments: []*types.RecipeStepInstrument{
@@ -203,7 +208,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: head,
 								QuantityNotes:   "",
-								MinimumQuantity: pointer.To(float32(1)),
+								Quantity:        types.OptionalFloat32Range{Min: pointer.To(float32(1))},
 							},
 						},
 						Notes: "second step",
@@ -212,7 +217,10 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 								Ingredient:      garlic,
 								Name:            "garlic",
 								MeasurementUnit: *head,
-								MinimumQuantity: 1,
+								Quantity: types.Float32RangeWithOptionalMax{
+									Max: nil,
+									Min: 1,
+								},
 							},
 						},
 						Index: 1,

@@ -130,7 +130,9 @@ const recipeCreationFormSchema = z.object({
               instrumentID: z.string().trim().optional(),
               productOfRecipeStepIndex: z.number().optional(),
               productOfRecipeStepProductIndex: z.number().optional(),
-              minimumQuantity: z.number().min(1),
+              quantity: z.object({
+                min: z.number().min(1),
+              }),
             })
             .refine((instrument) => {
               return (
@@ -147,7 +149,9 @@ const recipeCreationFormSchema = z.object({
               instrumentID: z.string().trim().optional(),
               productOfRecipeStepIndex: z.number().optional(),
               productOfRecipeStepProductIndex: z.number().optional(),
-              minimumQuantity: z.number().min(1),
+              quantity: z.object({
+                min: z.number().min(1),
+              }),
             })
             .refine((vessel) => {
               return (
@@ -163,7 +167,9 @@ const recipeCreationFormSchema = z.object({
               ingredientID: z.string().trim().optional(),
               productOfRecipeStepIndex: z.number().optional(),
               productOfRecipeStepProductIndex: z.number().optional(),
-              minimumQuantity: z.number().min(0.01),
+              quantity: z.object({
+                min: z.number().min(0.01),
+              }),
             })
             .refine((ingredient) => {
               return (
@@ -178,7 +184,9 @@ const recipeCreationFormSchema = z.object({
             z.object({
               type: z.enum(['ingredient', 'instrument', 'vessel']), // for some reason, ALL_RECIPE_STEP_PRODUCT_TYPES doesn't work here
               name: z.string().trim().min(1, 'product name is required'),
-              minimumQuantity: z.number().min(0.01),
+              quantity: z.object({
+                min: z.number().min(0.01),
+              }),
             }),
           )
           .min(1),
@@ -317,7 +325,7 @@ function RecipeCreator() {
 
       const selectedInstrument = new RecipeStepInstrument({
         ...rawSelectedInstrument,
-        minimumQuantity: 1,
+        quantity: { min: 1 },
       });
 
       if (instrument) {
@@ -374,7 +382,7 @@ function RecipeCreator() {
 
       const selectedInstrument = new RecipeStepInstrument({
         ...rawSelectedInstrument?.product,
-        minimumQuantity: 1,
+        quantity: { min: 1 },
       });
 
       dispatchPageEvent({
@@ -441,7 +449,7 @@ function RecipeCreator() {
     const selectedVessel = new RecipeStepVessel({
       name: chosenVessel.name,
       vessel: chosenVessel,
-      minimumQuantity: 1,
+      quantity: { min: 1 },
     });
 
     dispatchPageEvent({
@@ -493,7 +501,7 @@ function RecipeCreator() {
                 return new RecipeStepIngredient({
                   name: x.name,
                   ingredient: x,
-                  minimumQuantity: 1,
+                  quantity: { min: 1 },
                 });
               }),
             });
@@ -951,7 +959,7 @@ function RecipeCreator() {
                             newMinTimeEstimate: value,
                           });
                         }}
-                        value={step.minimumEstimatedTimeInSeconds}
+                        value={step.estimatedTimeInSeconds.min}
                         maxLength={0}
                       />
                     </Grid.Col>
@@ -973,7 +981,7 @@ function RecipeCreator() {
                             newMaxTimeEstimate: value,
                           });
                         }}
-                        value={step.maximumEstimatedTimeInSeconds}
+                        value={step.estimatedTimeInSeconds.max}
                         maxLength={0}
                       />
                     </Grid.Col>
@@ -995,7 +1003,7 @@ function RecipeCreator() {
                             newMinTempInCelsius: value,
                           });
                         }}
-                        value={step.minimumTemperatureInCelsius}
+                        value={step.temperatureInCelsius.min}
                         maxLength={0}
                       />
                     </Grid.Col>
@@ -1017,7 +1025,7 @@ function RecipeCreator() {
                             newMaxTempInCelsius: value,
                           });
                         }}
-                        value={step.maximumTemperatureInCelsius}
+                        value={step.temperatureInCelsius.max}
                         maxLength={0}
                       />
                     </Grid.Col>
@@ -1111,7 +1119,7 @@ function RecipeCreator() {
                                   newAmount: value,
                                 });
                               }}
-                              value={step.instruments[recipeStepInstrumentIndex].minimumQuantity}
+                              value={step.instruments[recipeStepInstrumentIndex].quantity.min}
                               maxLength={0}
                             />
                           </Grid.Col>
@@ -1135,7 +1143,7 @@ function RecipeCreator() {
                                     newAmount: value,
                                   });
                                 }}
-                                value={step.instruments[recipeStepInstrumentIndex].maximumQuantity}
+                                value={step.instruments[recipeStepInstrumentIndex].quantity.max}
                               />
                             </Grid.Col>
                           )}
@@ -1337,7 +1345,7 @@ function RecipeCreator() {
                                 newAmount: value,
                               });
                             }}
-                            value={ingredient.minimumQuantity}
+                            value={ingredient.quantity.min}
                           />
                         </Grid.Col>
 
@@ -1363,7 +1371,7 @@ function RecipeCreator() {
                                   newAmount: value,
                                 });
                               }}
-                              value={ingredient.maximumQuantity}
+                              value={ingredient.quantity.max}
                             />
                           </Grid.Col>
                         )}
@@ -1584,7 +1592,7 @@ function RecipeCreator() {
                                 newAmount: value,
                               });
                             }}
-                            value={step.vessels[recipeStepVesselIndex].minimumQuantity}
+                            value={step.vessels[recipeStepVesselIndex].quantity.min}
                             maxLength={0}
                           />
                         </Grid.Col>
@@ -1631,7 +1639,7 @@ function RecipeCreator() {
                                   newAmount: value,
                                 });
                               }}
-                              value={step.vessels[recipeStepVesselIndex].maximumQuantity}
+                              value={step.vessels[recipeStepVesselIndex].quantity.max}
                             />
                           </Grid.Col>
                         )}
@@ -1829,7 +1837,7 @@ function RecipeCreator() {
                               newAmount: value,
                             });
                           }}
-                          value={product.minimumQuantity}
+                          value={product.quantity.min}
                         />
                       </Grid.Col>
 
@@ -1854,7 +1862,7 @@ function RecipeCreator() {
                                 newAmount: value,
                               });
                             }}
-                            value={product.maximumQuantity}
+                            value={product.quantity.max}
                           />
                         </Grid.Col>
                       )}
@@ -2114,7 +2122,7 @@ function RecipeCreator() {
                   data-qa="recipe-minimum-estimated-portions-input"
                   label="Estimated Portion Quantity"
                   required
-                  value={pageState.recipe.minimumEstimatedPortions}
+                  value={pageState.recipe.estimatedPortions.min}
                   onChange={(value: number) => {
                     if (value <= 0) {
                       return;

@@ -581,20 +581,20 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                                                         intervalToDuration({
                                                           start: subSeconds(
                                                             new Date(event.startsAt),
-                                                            mealPlanTask.recipePrepTask
-                                                              .maximumTimeBufferBeforeRecipeInSeconds || 0,
+                                                            mealPlanTask.recipePrepTask.timeBufferBeforeRecipeInSeconds
+                                                              .max || 0,
                                                           ),
                                                           end: new Date(event.startsAt),
                                                         }),
                                                       )} before and `}
-                                                      {mealPlanTask.recipePrepTask
-                                                        .minimumTimeBufferBeforeRecipeInSeconds === 0
+                                                      {mealPlanTask.recipePrepTask.timeBufferBeforeRecipeInSeconds
+                                                        .min === 0
                                                         ? `time of ${event.mealName} prep, ${mealPlanTask.recipePrepTask.name}`
                                                         : format(
                                                             subSeconds(
                                                               new Date(event.startsAt),
                                                               mealPlanTask.recipePrepTask
-                                                                .minimumTimeBufferBeforeRecipeInSeconds,
+                                                                .timeBufferBeforeRecipeInSeconds.min,
                                                             ),
                                                             "h aa 'on' M/d/yy",
                                                           )}
@@ -681,7 +681,7 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                             <tr key={groceryListItemIndex}>
                               <td>
                                 <Text strikethrough={['already owned', 'acquired'].includes(groceryListItem.status)}>
-                                  {groceryListItem.minimumQuantityNeeded === 1
+                                  {groceryListItem.quantityNeeded.min === 1
                                     ? groceryListItem.ingredient.name
                                     : groceryListItem.ingredient.pluralName}
                                 </Text>
@@ -690,10 +690,10 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                                 <Grid>
                                   <Grid.Col span={12} md={6}>
                                     {(!['already owned', 'acquired'].includes(groceryListItem.status) && (
-                                      <NumberInput hideControls value={groceryListItem.minimumQuantityNeeded} />
+                                      <NumberInput hideControls value={groceryListItem.quantityNeeded.min} />
                                     )) || (
                                       <Text strikethrough size="sm" mt="xs">
-                                        {groceryListItem.minimumQuantityNeeded}
+                                        {groceryListItem.quantityNeeded.min}
                                       </Text>
                                     )}
                                   </Grid.Col>
@@ -701,7 +701,7 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                                     <Text
                                       strikethrough={['already owned', 'acquired'].includes(groceryListItem.status)}
                                     >
-                                      {groceryListItem.minimumQuantityNeeded === 1
+                                      {groceryListItem.quantityNeeded.min === 1
                                         ? groceryListItem.measurementUnit.name
                                         : groceryListItem.measurementUnit.pluralName}
                                     </Text>

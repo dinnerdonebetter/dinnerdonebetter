@@ -1,7 +1,6 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -18,8 +17,7 @@ func BuildFakeRecipeStepVessel() *types.RecipeStepVessel {
 		Notes:                buildUniqueString(),
 		CreatedAt:            BuildFakeTime(),
 		BelongsToRecipeStep:  fake.UUID(),
-		MinimumQuantity:      fake.Uint32(),
-		MaximumQuantity:      pointer.To(fake.Uint32()),
+		Quantity:             BuildFakeUint16RangeWithOptionalMax(),
 		VesselPreposition:    buildUniqueString(),
 		UnavailableAfterStep: fake.Bool(),
 	}

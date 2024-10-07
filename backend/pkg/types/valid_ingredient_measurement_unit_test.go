@@ -17,12 +17,12 @@ func TestValidIngredientMeasurementUnit_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnit{
-			MaximumAllowableQuantity: pointer.To(float32(3.21)),
+			AllowableQuantity: Float32RangeWithOptionalMax{Max: pointer.To(float32(3.21))},
 		}
 		input := &ValidIngredientMeasurementUnitUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.MaximumAllowableQuantity = pointer.To(float32(1.23))
+		input.AllowableQuantity.Max = pointer.To(float32(1.23))
 
 		x.Update(input)
 	})
@@ -35,11 +35,13 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitCreationRequestInput{
-			Notes:                    t.Name(),
-			ValidMeasurementUnitID:   t.Name(),
-			ValidIngredientID:        t.Name(),
-			MinimumAllowableQuantity: fake.Float32(),
-			MaximumAllowableQuantity: pointer.To(fake.Float32()),
+			Notes:                  t.Name(),
+			ValidMeasurementUnitID: t.Name(),
+			ValidIngredientID:      t.Name(),
+			AllowableQuantity: Float32RangeWithOptionalMax{
+				Max: pointer.To(fake.Float32()),
+				Min: fake.Float32(),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -63,10 +65,12 @@ func TestValidIngredientMeasurementUnitDatabaseCreationInput_Validate(T *testing
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitDatabaseCreationInput{
-			ID:                       t.Name(),
-			ValidMeasurementUnitID:   t.Name(),
-			ValidIngredientID:        t.Name(),
-			MinimumAllowableQuantity: fake.Float32(),
+			ID:                     t.Name(),
+			ValidMeasurementUnitID: t.Name(),
+			ValidIngredientID:      t.Name(),
+			AllowableQuantity: Float32RangeWithOptionalMax{
+				Min: fake.Float32(),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -90,11 +94,13 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitUpdateRequestInput{
-			Notes:                    pointer.To(t.Name()),
-			ValidMeasurementUnitID:   pointer.To(t.Name()),
-			ValidIngredientID:        pointer.To(t.Name()),
-			MinimumAllowableQuantity: pointer.To(fake.Float32()),
-			MaximumAllowableQuantity: pointer.To(fake.Float32()),
+			Notes:                  pointer.To(t.Name()),
+			ValidMeasurementUnitID: pointer.To(t.Name()),
+			ValidIngredientID:      pointer.To(t.Name()),
+			AllowableQuantity: Float32RangeWithOptionalMaxUpdateRequestInput{
+				Min: pointer.To(fake.Float32()),
+				Max: pointer.To(fake.Float32()),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -40,8 +40,7 @@ export default function ValidIngredientCreator(): JSX.Element {
       containsSoy: false,
       animalDerived: false,
       restrictToPreparations: true,
-      minimumIdealStorageTemperatureInCelsius: undefined,
-      maximumIdealStorageTemperatureInCelsius: undefined,
+      storageTemperatureInCelsius: undefined,
       slug: '',
       shoppingSuggestions: '',
       containsAlcohol: false,
@@ -78,8 +77,7 @@ export default function ValidIngredientCreator(): JSX.Element {
       animalDerived: creationForm.values.animalDerived,
       restrictToPreparations: creationForm.values.restrictToPreparations,
       containsAlcohol: creationForm.values.containsAlcohol,
-      minimumIdealStorageTemperatureInCelsius: creationForm.values.minimumIdealStorageTemperatureInCelsius,
-      maximumIdealStorageTemperatureInCelsius: creationForm.values.maximumIdealStorageTemperatureInCelsius,
+      storageTemperatureInCelsius: creationForm.values.storageTemperatureInCelsius,
       slug: creationForm.values.slug,
       shoppingSuggestions: creationForm.values.shoppingSuggestions,
     });
@@ -114,12 +112,12 @@ export default function ValidIngredientCreator(): JSX.Element {
           <NumberInput
             label="Min Storage Temp (C°)"
             precision={5}
-            {...creationForm.getInputProps('minimumIdealStorageTemperatureInCelsius')}
+            {...creationForm.getInputProps('storageTemperatureInCelsius.min')}
           />
           <NumberInput
             label="Max Storage Temp (C°)"
             precision={5}
-            {...creationForm.getInputProps('maximumIdealStorageTemperatureInCelsius')}
+            {...creationForm.getInputProps('storageTemperatureInCelsius.max')}
           />
           <Switch
             checked={creationForm.values.containsDairy}

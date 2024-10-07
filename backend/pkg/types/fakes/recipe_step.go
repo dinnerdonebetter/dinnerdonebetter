@@ -1,7 +1,6 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -11,8 +10,6 @@ import (
 // BuildFakeRecipeStep builds a faked recipe step.
 func BuildFakeRecipeStep() *types.RecipeStep {
 	recipeStepID := BuildFakeID()
-
-	minTemp := buildFakeNumber()
 
 	var ingredients []*types.RecipeStepIngredient
 	for i := 0; i < exampleQuantity; i++ {
@@ -61,25 +58,23 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 	}
 
 	return &types.RecipeStep{
-		ID:                            recipeStepID,
-		Index:                         fake.Uint32(),
-		Preparation:                   *BuildFakeValidPreparation(),
-		MinimumEstimatedTimeInSeconds: func(x uint32) *uint32 { return &x }(fake.Uint32()),
-		MaximumEstimatedTimeInSeconds: func(x uint32) *uint32 { return &x }(fake.Uint32()),
-		MinimumTemperatureInCelsius:   pointer.To(float32(minTemp)),
-		MaximumTemperatureInCelsius:   pointer.To(float32(minTemp + 1)),
-		Notes:                         buildUniqueString(),
-		Products:                      products,
-		Optional:                      false,
-		CreatedAt:                     BuildFakeTime(),
-		BelongsToRecipe:               BuildFakeID(),
-		Ingredients:                   ingredients,
-		ExplicitInstructions:          buildUniqueString(),
-		ConditionExpression:           buildUniqueString(),
-		Instruments:                   instruments,
-		Vessels:                       vessels,
-		CompletionConditions:          completionConditions,
-		StartTimerAutomatically:       fake.Bool(),
+		ID:                      recipeStepID,
+		Index:                   fake.Uint32(),
+		Preparation:             *BuildFakeValidPreparation(),
+		EstimatedTimeInSeconds:  BuildFakeOptionalUint32Range(),
+		TemperatureInCelsius:    BuildFakeOptionalFloat32Range(),
+		Notes:                   buildUniqueString(),
+		Products:                products,
+		Optional:                false,
+		CreatedAt:               BuildFakeTime(),
+		BelongsToRecipe:         BuildFakeID(),
+		Ingredients:             ingredients,
+		ExplicitInstructions:    buildUniqueString(),
+		ConditionExpression:     buildUniqueString(),
+		Instruments:             instruments,
+		Vessels:                 vessels,
+		CompletionConditions:    completionConditions,
+		StartTimerAutomatically: fake.Bool(),
 	}
 }
 

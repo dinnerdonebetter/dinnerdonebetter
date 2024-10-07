@@ -1,3 +1,7 @@
+/* 
+NOTE: this should be the only hand-written file in this directory. Eventually it should not even be hand-written.
+*/
+
 import { Span } from '@opentelemetry/api';
 import { IAPIError } from './errors';
 
@@ -200,4 +204,19 @@ export class QueryFilter {
       limit: 20,
     });
   }
+}
+
+export interface NumberRange {
+  min: number;
+  max: number;
+}
+
+export interface NumberRangeWithOptionalMax {
+  min: number;
+  max?: number;
+}
+
+export interface OptionalNumberRange {
+  min?: number;
+  max?: number;
 }

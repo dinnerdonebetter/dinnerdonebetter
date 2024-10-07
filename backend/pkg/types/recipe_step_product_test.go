@@ -39,15 +39,20 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductCreationRequestInput{
-			Name:                               t.Name(),
-			Type:                               RecipeStepProductIngredientType,
-			MeasurementUnitID:                  pointer.To(t.Name()),
-			MinimumQuantity:                    pointer.To(fake.Float32()),
-			QuantityNotes:                      t.Name(),
-			Compostable:                        fake.Bool(),
-			MaximumStorageDurationInSeconds:    pointer.To(fake.Uint32()),
-			MinimumStorageTemperatureInCelsius: pointer.To(fake.Float32()),
-			MaximumStorageTemperatureInCelsius: pointer.To(fake.Float32()),
+			Name:              t.Name(),
+			Type:              RecipeStepProductIngredientType,
+			MeasurementUnitID: pointer.To(t.Name()),
+			Quantity: OptionalFloat32Range{
+				Max: nil,
+				Min: pointer.To(fake.Float32()),
+			},
+			QuantityNotes:            t.Name(),
+			Compostable:              fake.Bool(),
+			StorageDurationInSeconds: OptionalUint32Range{Max: pointer.To(fake.Uint32())},
+			StorageTemperatureInCelsius: OptionalFloat32Range{
+				Max: pointer.To(fake.Float32()),
+				Min: pointer.To(fake.Float32()),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -71,16 +76,14 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{
-			Name:                               pointer.To(t.Name()),
-			Type:                               pointer.To(RecipeStepProductIngredientType),
-			MeasurementUnitID:                  pointer.To(t.Name()),
-			MinimumQuantity:                    pointer.To(fake.Float32()),
-			MaximumQuantity:                    pointer.To(fake.Float32()),
-			QuantityNotes:                      pointer.To(t.Name()),
-			Compostable:                        pointer.To(fake.Bool()),
-			MaximumStorageDurationInSeconds:    pointer.To(fake.Uint32()),
-			MinimumStorageTemperatureInCelsius: pointer.To(fake.Float32()),
-			MaximumStorageTemperatureInCelsius: pointer.To(fake.Float32()),
+			Name:                        pointer.To(t.Name()),
+			Type:                        pointer.To(RecipeStepProductIngredientType),
+			MeasurementUnitID:           pointer.To(t.Name()),
+			Quantity:                    OptionalFloat32Range{Max: pointer.To(fake.Float32()), Min: pointer.To(fake.Float32())},
+			QuantityNotes:               pointer.To(t.Name()),
+			Compostable:                 pointer.To(fake.Bool()),
+			StorageTemperatureInCelsius: OptionalFloat32Range{Max: pointer.To(fake.Float32()), Min: pointer.To(fake.Float32())},
+			StorageDurationInSeconds:    OptionalUint32Range{Max: pointer.To(fake.Uint32()), Min: pointer.To(fake.Uint32())},
 		}
 
 		actual := x.ValidateWithContext(context.Background())

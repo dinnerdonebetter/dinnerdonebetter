@@ -1,7 +1,6 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -10,10 +9,6 @@ import (
 
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *types.ValidPreparation {
-	minIngredients := buildFakeNumber()
-	minInstruments := buildFakeNumber()
-	minVessels := buildFakeNumber()
-
 	return &types.ValidPreparation{
 		ID:                          BuildFakeID(),
 		Name:                        buildUniqueString(),
@@ -24,17 +19,14 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 		Slug:                        buildUniqueString(),
 		PastTense:                   buildUniqueString(),
 		CreatedAt:                   BuildFakeTime(),
-		MinimumIngredientCount:      int32(minIngredients),
-		MaximumIngredientCount:      pointer.To(int32(minIngredients + 1)),
-		MinimumInstrumentCount:      int32(minInstruments),
-		MaximumInstrumentCount:      pointer.To(int32(minInstruments + 1)),
+		IngredientCount:             BuildFakeUint16RangeWithOptionalMax(),
+		InstrumentCount:             BuildFakeUint16RangeWithOptionalMax(),
 		TemperatureRequired:         fake.Bool(),
 		TimeEstimateRequired:        fake.Bool(),
 		ConditionExpressionRequired: fake.Bool(),
 		ConsumesVessel:              fake.Bool(),
 		OnlyForVessels:              fake.Bool(),
-		MinimumVesselCount:          int32(minVessels),
-		MaximumVesselCount:          pointer.To(int32(minVessels + 1)),
+		VesselCount:                 BuildFakeUint16RangeWithOptionalMax(),
 	}
 }
 

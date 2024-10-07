@@ -9,8 +9,8 @@ export interface IValidIngredientPreparation {
   archivedAt?: string;
   notes: NonNullable<string>;
   id: NonNullable<string>;
-  ingredient: NonNullable<ValidIngredient>;
   preparation: NonNullable<ValidPreparation>;
+  ingredient: NonNullable<ValidIngredient>;
 }
 
 export class ValidIngredientPreparation implements IValidIngredientPreparation {
@@ -19,8 +19,8 @@ export class ValidIngredientPreparation implements IValidIngredientPreparation {
   archivedAt?: string;
   notes: NonNullable<string> = '';
   id: NonNullable<string> = '';
-  ingredient: NonNullable<ValidIngredient> = new ValidIngredient();
   preparation: NonNullable<ValidPreparation> = new ValidPreparation();
+  ingredient: NonNullable<ValidIngredient> = new ValidIngredient();
 
   constructor(input: Partial<ValidIngredientPreparation> = {}) {
     this.createdAt = input.createdAt ?? '1970-01-01T00:00:00Z';
@@ -28,8 +28,8 @@ export class ValidIngredientPreparation implements IValidIngredientPreparation {
     this.archivedAt = input.archivedAt;
     this.notes = input.notes ?? '';
     this.id = input.id ?? '';
-    this.ingredient = input.ingredient ?? new ValidIngredient();
     this.preparation = input.preparation ?? new ValidPreparation();
+    this.ingredient = input.ingredient ?? new ValidIngredient();
   }
 }
 

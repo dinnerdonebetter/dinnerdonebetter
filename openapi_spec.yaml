@@ -13,16 +13,10 @@ paths:
     get:
       description: checks for service liveness
       operationId: CheckForLiveness
-      responses:
-        "200":
-          description: The service is live.
   /_meta_/ready:
     get:
       description: checks for service readiness
       operationId: CheckForReadiness
-      responses:
-        "200":
-          description: The service is ready.
   /api/v1/admin/users/status:
     post:
       description: Operation for creating UserStatusResponse
@@ -20823,6 +20817,24 @@ components:
           format: int32
           type: integer
       type: object
+    Float32RangeWithOptionalMax:
+      properties:
+        max:
+          format: double
+          type: number
+        min:
+          format: double
+          type: number
+      type: object
+    Float32RangeWithOptionalMaxUpdateRequestInput:
+      properties:
+        max:
+          format: double
+          type: number
+        min:
+          format: double
+          type: number
+      type: object
     Household:
       properties:
         addressLine1:
@@ -21100,17 +21112,13 @@ components:
           type: string
         eligibleForMealPlans:
           type: boolean
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         id:
           type: string
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumEstimatedPortions:
-          format: double
-          type: number
-        minimumEstimatedPortions:
-          format: double
-          type: number
         name:
           type: string
       type: object
@@ -21144,12 +21152,8 @@ components:
           type: string
         eligibleForMealPlans:
           type: boolean
-        maximumEstimatedPortions:
-          format: double
-          type: number
-        minimumEstimatedPortions:
-          format: double
-          type: number
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         name:
           type: string
       type: object
@@ -21279,14 +21283,8 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumQuantityNeeded:
-          format: double
-          type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
-        minimumQuantityNeeded:
-          format: double
-          type: number
         purchasePrice:
           format: double
           type: number
@@ -21294,6 +21292,8 @@ components:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         purchasedUPC:
           type: string
+        quantityNeeded:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityPurchased:
           format: double
           type: number
@@ -21306,12 +21306,6 @@ components:
       properties:
         belongsToMealPlan:
           type: string
-        maximumQuantityNeeded:
-          format: double
-          type: number
-        minimumQuantityNeeded:
-          format: double
-          type: number
         purchasePrice:
           format: double
           type: number
@@ -21319,6 +21313,8 @@ components:
           type: string
         purchasedUPC:
           type: string
+        quantityNeeded:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityPurchased:
           format: double
           type: number
@@ -21335,12 +21331,6 @@ components:
       properties:
         belongsToMealPlan:
           type: string
-        maximumQuantityNeeded:
-          format: double
-          type: number
-        minimumQuantityNeeded:
-          format: double
-          type: number
         purchasePrice:
           format: double
           type: number
@@ -21348,6 +21338,8 @@ components:
           type: string
         purchasedUPC:
           type: string
+        quantityNeeded:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         quantityPurchased:
           format: double
           type: number
@@ -21583,6 +21575,24 @@ components:
         name:
           type: string
       type: object
+    OptionalFloat32Range:
+      properties:
+        max:
+          format: double
+          type: number
+        min:
+          format: double
+          type: number
+      type: object
+    OptionalUint32Range:
+      properties:
+        max:
+          format: int64
+          type: integer
+        min:
+          format: int64
+          type: integer
+      type: object
     Pagination:
       properties:
         filteredCount:
@@ -21658,6 +21668,8 @@ components:
           type: string
         eligibleForMeals:
           type: boolean
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         id:
           type: string
         inspiredByRecipeID:
@@ -21665,16 +21677,10 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumEstimatedPortions:
-          format: double
-          type: number
         media:
           items:
             $ref: '#/components/schemas/RecipeMedia'
           type: array
-        minimumEstimatedPortions:
-          format: double
-          type: number
         name:
           type: string
         pluralPortionName:
@@ -21710,14 +21716,10 @@ components:
           type: string
         eligibleForMeals:
           type: boolean
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         inspiredByRecipeID:
           type: string
-        maximumEstimatedPortions:
-          format: double
-          type: number
-        minimumEstimatedPortions:
-          format: double
-          type: number
         name:
           type: string
         pluralPortionName:
@@ -21787,18 +21789,6 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumStorageTemperatureInCelsius:
-          format: double
-          type: number
-        maximumTimeBufferBeforeRecipeInSeconds:
-          format: int64
-          type: integer
-        minimumStorageTemperatureInCelsius:
-          format: double
-          type: number
-        minimumTimeBufferBeforeRecipeInSeconds:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
@@ -21809,8 +21799,12 @@ components:
           items:
             $ref: '#/components/schemas/RecipePrepTaskStep'
           type: array
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         storageType:
           type: string
+        timeBufferBeforeRecipeInSeconds:
+          $ref: '#/components/schemas/Uint32RangeWithOptionalMax'
       type: object
     RecipePrepTaskCreationRequestInput:
       properties:
@@ -21820,18 +21814,6 @@ components:
           type: string
         explicitStorageInstructions:
           type: string
-        maximumStorageTemperatureInCelsius:
-          format: double
-          type: number
-        maximumTimeBufferBeforeRecipeInSeconds:
-          format: int64
-          type: integer
-        minimumStorageTemperatureInCelsius:
-          format: double
-          type: number
-        minimumTimeBufferBeforeRecipeInSeconds:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
@@ -21842,8 +21824,12 @@ components:
           items:
             $ref: '#/components/schemas/RecipePrepTaskStepCreationRequestInput'
           type: array
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         storageType:
           type: string
+        timeBufferBeforeRecipeInSeconds:
+          $ref: '#/components/schemas/Uint32RangeWithOptionalMax'
       type: object
     RecipePrepTaskStep:
       properties:
@@ -21888,18 +21874,6 @@ components:
           type: string
         explicitStorageInstructions:
           type: string
-        maximumStorageTemperatureInCelsius:
-          format: double
-          type: number
-        maximumTimeBufferBeforeRecipeInSeconds:
-          format: int64
-          type: integer
-        minimumStorageTemperatureInCelsius:
-          format: double
-          type: number
-        minimumTimeBufferBeforeRecipeInSeconds:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
@@ -21910,8 +21884,12 @@ components:
           items:
             $ref: '#/components/schemas/RecipePrepTaskStepUpdateRequestInput'
           type: array
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         storageType:
           type: string
+        timeBufferBeforeRecipeInSeconds:
+          $ref: '#/components/schemas/Uint32RangeWithOptionalMaxUpdateRequestInput'
       type: object
     RecipePrepTaskWithinRecipeCreationRequestInput:
       properties:
@@ -21921,18 +21899,6 @@ components:
           type: string
         explicitStorageInstructions:
           type: string
-        maximumStorageTemperatureInCelsius:
-          format: double
-          type: number
-        maximumTimeBufferBeforeRecipeInSeconds:
-          format: int64
-          type: integer
-        minimumStorageTemperatureInCelsius:
-          format: double
-          type: number
-        minimumTimeBufferBeforeRecipeInSeconds:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
@@ -21943,8 +21909,12 @@ components:
           items:
             $ref: '#/components/schemas/RecipePrepTaskStepWithinRecipeCreationRequestInput'
           type: array
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         storageType:
           type: string
+        timeBufferBeforeRecipeInSeconds:
+          $ref: '#/components/schemas/Uint32RangeWithOptionalMax'
       type: object
     RecipeRating:
       properties:
@@ -22045,6 +22015,8 @@ components:
         createdAt:
           format: date-time
           type: string
+        estimatedTimeInSeconds:
+          $ref: '#/components/schemas/OptionalUint32Range'
         explicitInstructions:
           type: string
         id:
@@ -22063,22 +22035,10 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumEstimatedTimeInSeconds:
-          format: int64
-          type: integer
-        maximumTemperatureInCelsius:
-          format: double
-          type: number
         media:
           items:
             $ref: '#/components/schemas/RecipeMedia'
           type: array
-        minimumEstimatedTimeInSeconds:
-          format: int64
-          type: integer
-        minimumTemperatureInCelsius:
-          format: double
-          type: number
         notes:
           type: string
         optional:
@@ -22091,6 +22051,8 @@ components:
           type: array
         startTimerAutomatically:
           type: boolean
+        temperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         vessels:
           items:
             $ref: '#/components/schemas/RecipeStepVessel'
@@ -22195,6 +22157,8 @@ components:
           type: array
         conditionExpression:
           type: string
+        estimatedTimeInSeconds:
+          $ref: '#/components/schemas/OptionalUint32Range'
         explicitInstructions:
           type: string
         index:
@@ -22208,18 +22172,6 @@ components:
           items:
             $ref: '#/components/schemas/RecipeStepInstrumentCreationRequestInput'
           type: array
-        maximumEstimatedTimeInSeconds:
-          format: int64
-          type: integer
-        maximumTemperatureInCelsius:
-          format: double
-          type: number
-        minimumEstimatedTimeInSeconds:
-          format: int64
-          type: integer
-        minimumTemperatureInCelsius:
-          format: double
-          type: number
         notes:
           type: string
         optional:
@@ -22232,6 +22184,8 @@ components:
           type: array
         startTimerAutomatically:
           type: boolean
+        temperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         vessels:
           items:
             $ref: '#/components/schemas/RecipeStepVesselCreationRequestInput'
@@ -22256,14 +22210,8 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumQuantity:
-          format: double
-          type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
-        minimumQuantity:
-          format: double
-          type: number
         name:
           type: string
         optionIndex:
@@ -22276,6 +22224,8 @@ components:
         productPercentageToUse:
           format: double
           type: number
+        quantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityNotes:
           type: string
         recipeStepProductID:
@@ -22292,14 +22242,8 @@ components:
           type: string
         ingredientNotes:
           type: string
-        maximumQuantity:
-          format: double
-          type: number
         measurementUnitID:
           type: string
-        minimumQuantity:
-          format: double
-          type: number
         name:
           type: string
         optionIndex:
@@ -22318,6 +22262,8 @@ components:
         productPercentageToUse:
           format: double
           type: number
+        quantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityNotes:
           type: string
         toTaste:
@@ -22334,14 +22280,8 @@ components:
           type: string
         ingredientNotes:
           type: string
-        maximumQuantity:
-          format: double
-          type: number
         measurementUnitID:
           type: string
-        minimumQuantity:
-          format: double
-          type: number
         name:
           type: string
         optionIndex:
@@ -22354,6 +22294,8 @@ components:
         productPercentageToUse:
           format: double
           type: number
+        quantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         quantityNotes:
           type: string
         recipeStepProductID:
@@ -22381,12 +22323,6 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumQuantity:
-          format: int64
-          type: integer
-        minimumQuantity:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
@@ -22399,6 +22335,8 @@ components:
         preferenceRank:
           format: int32
           type: integer
+        quantity:
+          $ref: '#/components/schemas/Uint32RangeWithOptionalMax'
         recipeStepProductID:
           type: string
       type: object
@@ -22406,12 +22344,6 @@ components:
       properties:
         instrumentID:
           type: string
-        maximumQuantity:
-          format: int64
-          type: integer
-        minimumQuantity:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
@@ -22430,6 +22362,8 @@ components:
         productOfRecipeStepProductIndex:
           format: int64
           type: integer
+        quantity:
+          $ref: '#/components/schemas/Uint32RangeWithOptionalMax'
         recipeStepProductID:
           type: string
       type: object
@@ -22439,12 +22373,6 @@ components:
           type: string
         instrumentID:
           type: string
-        maximumQuantity:
-          format: int64
-          type: integer
-        minimumQuantity:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
@@ -22457,6 +22385,8 @@ components:
         preferenceRank:
           format: int32
           type: integer
+        quantity:
+          $ref: '#/components/schemas/Uint32RangeWithOptionalMaxUpdateRequestInput'
         recipeStepProductID:
           type: string
       type: object
@@ -22487,29 +22417,20 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumQuantity:
-          format: double
-          type: number
-        maximumStorageDurationInSeconds:
-          format: int64
-          type: integer
-        maximumStorageTemperatureInCelsius:
-          format: double
-          type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
-        minimumQuantity:
-          format: double
-          type: number
-        minimumStorageTemperatureInCelsius:
-          format: double
-          type: number
         name:
           type: string
+        quantity:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         quantityNotes:
           type: string
+        storageDurationInSeconds:
+          $ref: '#/components/schemas/OptionalUint32Range'
         storageInstructions:
           type: string
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         type:
           type: string
       type: object
@@ -22527,29 +22448,20 @@ components:
           type: boolean
         isWaste:
           type: boolean
-        maximumQuantity:
-          format: double
-          type: number
-        maximumStorageDurationInSeconds:
-          format: int64
-          type: integer
-        maximumStorageTemperatureInCelsius:
-          format: double
-          type: number
         measurementUnitID:
           type: string
-        minimumQuantity:
-          format: double
-          type: number
-        minimumStorageTemperatureInCelsius:
-          format: double
-          type: number
         name:
           type: string
+        quantity:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         quantityNotes:
           type: string
+        storageDurationInSeconds:
+          $ref: '#/components/schemas/OptionalUint32Range'
         storageInstructions:
           type: string
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         type:
           type: string
       type: object
@@ -22569,29 +22481,20 @@ components:
           type: boolean
         isWaste:
           type: boolean
-        maximumQuantity:
-          format: double
-          type: number
-        maximumStorageDurationInSeconds:
-          format: int64
-          type: integer
-        maximumStorageTemperatureInCelsius:
-          format: double
-          type: number
         measurementUnitID:
           type: string
-        minimumQuantity:
-          format: double
-          type: number
-        minimumStorageTemperatureInCelsius:
-          format: double
-          type: number
         name:
           type: string
+        quantity:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         quantityNotes:
           type: string
+        storageDurationInSeconds:
+          $ref: '#/components/schemas/OptionalUint32Range'
         storageInstructions:
           type: string
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         type:
           type: string
       type: object
@@ -22601,23 +22504,13 @@ components:
           type: string
         conditionExpression:
           type: string
+        estimatedTimeInSeconds:
+          $ref: '#/components/schemas/OptionalUint32Range'
         explicitInstructions:
           type: string
         index:
           format: int64
           type: integer
-        maximumEstimatedTimeInSeconds:
-          format: int64
-          type: integer
-        maximumTemperatureInCelsius:
-          format: double
-          type: number
-        minimumEstimatedTimeInSeconds:
-          format: int64
-          type: integer
-        minimumTemperatureInCelsius:
-          format: double
-          type: number
         notes:
           type: string
         optional:
@@ -22626,6 +22519,8 @@ components:
           $ref: '#/components/schemas/ValidPreparation'
         startTimerAutomatically:
           type: boolean
+        temperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
       type: object
     RecipeStepVessel:
       properties:
@@ -22642,16 +22537,12 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumQuantity:
-          format: int64
-          type: integer
-        minimumQuantity:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
           type: string
+        quantity:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
         recipeStepProductID:
           type: string
         unavailableAfterStep:
@@ -22663,12 +22554,6 @@ components:
       type: object
     RecipeStepVesselCreationRequestInput:
       properties:
-        maximumQuantity:
-          format: int64
-          type: integer
-        minimumQuantity:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
@@ -22679,6 +22564,8 @@ components:
         productOfRecipeStepProductIndex:
           format: int64
           type: integer
+        quantity:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
         recipeStepProductID:
           type: string
         unavailableAfterStep:
@@ -22692,16 +22579,12 @@ components:
       properties:
         belongsToRecipeStep:
           type: string
-        maximumQuantity:
-          format: int64
-          type: integer
-        minimumQuantity:
-          format: int64
-          type: integer
         name:
           type: string
         notes:
           type: string
+        quantity:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMaxUpdateRequestInput'
         recipeStepProductID:
           type: string
         unavailableAfterStep:
@@ -22717,14 +22600,10 @@ components:
           type: string
         eligibleForMeals:
           type: boolean
+        estimatedPortions:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         inspiredByRecipeID:
           type: string
-        maximumEstimatedPortions:
-          format: double
-          type: number
-        minimumEstimatedPortions:
-          format: double
-          type: number
         name:
           type: string
         pluralPortionName:
@@ -22863,6 +22742,42 @@ components:
           type: string
         userID:
           type: string
+      type: object
+    Uint16RangeWithOptionalMax:
+      properties:
+        max:
+          format: int64
+          type: integer
+        min:
+          format: int64
+          type: integer
+      type: object
+    Uint16RangeWithOptionalMaxUpdateRequestInput:
+      properties:
+        max:
+          format: int64
+          type: integer
+        min:
+          format: int64
+          type: integer
+      type: object
+    Uint32RangeWithOptionalMax:
+      properties:
+        max:
+          format: int64
+          type: integer
+        min:
+          format: int64
+          type: integer
+      type: object
+    Uint32RangeWithOptionalMaxUpdateRequestInput:
+      properties:
+        max:
+          format: int64
+          type: integer
+        min:
+          format: int64
+          type: integer
       type: object
     User:
       properties:
@@ -23203,12 +23118,6 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumIdealStorageTemperatureInCelsius:
-          format: double
-          type: number
-        minimumIdealStorageTemperatureInCelsius:
-          format: double
-          type: number
         name:
           type: string
         pluralName:
@@ -23221,6 +23130,8 @@ components:
           type: string
         storageInstructions:
           type: string
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         warning:
           type: string
       type: object
@@ -23276,12 +23187,6 @@ components:
           type: boolean
         isStarch:
           type: boolean
-        maximumIdealStorageTemperatureInCelsius:
-          format: double
-          type: number
-        minimumIdealStorageTemperatureInCelsius:
-          format: double
-          type: number
         name:
           type: string
         pluralName:
@@ -23294,6 +23199,8 @@ components:
           type: string
         storageInstructions:
           type: string
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         warning:
           type: string
       type: object
@@ -23365,6 +23272,8 @@ components:
       type: object
     ValidIngredientMeasurementUnit:
       properties:
+        allowableQuantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         archivedAt:
           format: date-time
           type: string
@@ -23378,25 +23287,15 @@ components:
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumAllowableQuantity:
-          format: double
-          type: number
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
-        minimumAllowableQuantity:
-          format: double
-          type: number
         notes:
           type: string
       type: object
     ValidIngredientMeasurementUnitCreationRequestInput:
       properties:
-        maximumAllowableQuantity:
-          format: double
-          type: number
-        minimumAllowableQuantity:
-          format: double
-          type: number
+        allowableQuantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         notes:
           type: string
         validIngredientID:
@@ -23406,12 +23305,8 @@ components:
       type: object
     ValidIngredientMeasurementUnitUpdateRequestInput:
       properties:
-        maximumAllowableQuantity:
-          format: double
-          type: number
-        minimumAllowableQuantity:
-          format: double
-          type: number
+        allowableQuantity:
+          $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         notes:
           type: string
         validIngredientID:
@@ -23603,12 +23498,6 @@ components:
           type: boolean
         isStarch:
           type: boolean
-        maximumIdealStorageTemperatureInCelsius:
-          format: double
-          type: number
-        minimumIdealStorageTemperatureInCelsius:
-          format: double
-          type: number
         name:
           type: string
         pluralName:
@@ -23621,6 +23510,8 @@ components:
           type: string
         storageInstructions:
           type: string
+        storageTemperatureInCelsius:
+          $ref: '#/components/schemas/OptionalFloat32Range'
         warning:
           type: string
       type: object
@@ -23837,27 +23728,13 @@ components:
           type: string
         id:
           type: string
+        ingredientCount:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
+        instrumentCount:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
         lastUpdatedAt:
           format: date-time
           type: string
-        maximumIngredientCount:
-          format: int32
-          type: integer
-        maximumInstrumentCount:
-          format: int32
-          type: integer
-        maximumVesselCount:
-          format: int32
-          type: integer
-        minimumIngredientCount:
-          format: int32
-          type: integer
-        minimumInstrumentCount:
-          format: int32
-          type: integer
-        minimumVesselCount:
-          format: int32
-          type: integer
         name:
           type: string
         onlyForVessels:
@@ -23872,6 +23749,8 @@ components:
           type: boolean
         timeEstimateRequired:
           type: boolean
+        vesselCount:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
         yieldsNothing:
           type: boolean
       type: object
@@ -23885,24 +23764,10 @@ components:
           type: string
         iconPath:
           type: string
-        maximumIngredientCount:
-          format: int32
-          type: integer
-        maximumInstrumentCount:
-          format: int32
-          type: integer
-        maximumVesselCount:
-          format: int32
-          type: integer
-        minimumIngredientCount:
-          format: int32
-          type: integer
-        minimumInstrumentCount:
-          format: int32
-          type: integer
-        minimumVesselCount:
-          format: int32
-          type: integer
+        ingredientCount:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
+        instrumentCount:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
         name:
           type: string
         onlyForVessels:
@@ -23917,6 +23782,8 @@ components:
           type: boolean
         timeEstimateRequired:
           type: boolean
+        vesselCount:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
         yieldsNothing:
           type: boolean
       type: object
@@ -23968,24 +23835,10 @@ components:
           type: string
         iconPath:
           type: string
-        maximumIngredientCount:
-          format: int32
-          type: integer
-        maximumInstrumentCount:
-          format: int32
-          type: integer
-        maximumVesselCount:
-          format: int32
-          type: integer
-        minimumIngredientCount:
-          format: int32
-          type: integer
-        minimumInstrumentCount:
-          format: int32
-          type: integer
-        minimumVesselCount:
-          format: int32
-          type: integer
+        ingredientCount:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMaxUpdateRequestInput'
+        instrumentCount:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMaxUpdateRequestInput'
         name:
           type: string
         onlyForVessels:
@@ -24000,6 +23853,8 @@ components:
           type: boolean
         timeEstimateRequired:
           type: boolean
+        vesselCount:
+          $ref: '#/components/schemas/Uint16RangeWithOptionalMaxUpdateRequestInput'
         yieldsNothing:
           type: boolean
       type: object

@@ -12,13 +12,15 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInpu
 		BelongsToMealPlan:      input.BelongsToMealPlan,
 		ValidIngredientID:      input.Ingredient.ID,
 		ValidMeasurementUnitID: input.MeasurementUnit.ID,
-		MinimumQuantityNeeded:  input.MinimumQuantityNeeded,
-		MaximumQuantityNeeded:  input.MaximumQuantityNeeded,
-		QuantityPurchased:      input.QuantityPurchased,
-		PurchasedUPC:           input.PurchasedUPC,
-		PurchasePrice:          input.PurchasePrice,
-		StatusExplanation:      input.StatusExplanation,
-		Status:                 input.Status,
+		QuantityNeeded: types.Float32RangeWithOptionalMax{
+			Max: input.QuantityNeeded.Max,
+			Min: input.QuantityNeeded.Min,
+		},
+		QuantityPurchased: input.QuantityPurchased,
+		PurchasedUPC:      input.PurchasedUPC,
+		PurchasePrice:     input.PurchasePrice,
+		StatusExplanation: input.StatusExplanation,
+		Status:            input.Status,
 	}
 
 	if input.PurchasedMeasurementUnit != nil {
@@ -39,8 +41,10 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput
 		BelongsToMealPlan:      input.BelongsToMealPlan,
 		ValidIngredientID:      input.Ingredient.ID,
 		ValidMeasurementUnitID: input.MeasurementUnit.ID,
-		MinimumQuantityNeeded:  input.MinimumQuantityNeeded,
-		MaximumQuantityNeeded:  input.MaximumQuantityNeeded,
+		QuantityNeeded: types.Float32RangeWithOptionalMax{
+			Max: input.QuantityNeeded.Max,
+			Min: input.QuantityNeeded.Min,
+		},
 	}
 
 	if input.PurchasedMeasurementUnit != nil {
@@ -62,8 +66,10 @@ func ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItem
 		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
 		ValidIngredientID:          input.ValidIngredientID,
 		BelongsToMealPlan:          input.BelongsToMealPlan,
-		MinimumQuantityNeeded:      input.MinimumQuantityNeeded,
-		MaximumQuantityNeeded:      input.MaximumQuantityNeeded,
+		QuantityNeeded: types.Float32RangeWithOptionalMax{
+			Max: input.QuantityNeeded.Max,
+			Min: input.QuantityNeeded.Min,
+		},
 	}
 }
 
@@ -74,11 +80,13 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(i
 	}
 
 	return &types.MealPlanGroceryListItemUpdateRequestInput{
-		BelongsToMealPlan:          &input.BelongsToMealPlan,
-		ValidIngredientID:          &input.Ingredient.ID,
-		ValidMeasurementUnitID:     &input.MeasurementUnit.ID,
-		MinimumQuantityNeeded:      &input.MinimumQuantityNeeded,
-		MaximumQuantityNeeded:      input.MaximumQuantityNeeded,
+		BelongsToMealPlan:      &input.BelongsToMealPlan,
+		ValidIngredientID:      &input.Ingredient.ID,
+		ValidMeasurementUnitID: &input.MeasurementUnit.ID,
+		QuantityNeeded: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+			Max: input.QuantityNeeded.Max,
+			Min: &input.QuantityNeeded.Min,
+		},
 		QuantityPurchased:          input.QuantityPurchased,
 		PurchasedMeasurementUnitID: purchasedMeasurementUnitID,
 		PurchasedUPC:               input.PurchasedUPC,

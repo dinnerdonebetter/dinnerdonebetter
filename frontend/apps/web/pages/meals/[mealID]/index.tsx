@@ -106,13 +106,13 @@ function MealPage({ meal }: MealPageProps) {
           precision={2}
           step={0.25}
           removeTrailingZeros={true}
-          description={`this meal normally yields about ${meal.minimumEstimatedPortions} ${
-            meal.minimumEstimatedPortions === 1 ? 'portion' : 'portions'
+          description={`this meal normally yields about ${meal.estimatedPortions.min} ${
+            meal.estimatedPortions.min === 1 ? 'portion' : 'portions'
           }${
             mealScale === 1.0
               ? ''
-              : `, but is now set up to yield ${meal.minimumEstimatedPortions * mealScale}  ${
-                  meal.minimumEstimatedPortions === 1 ? 'portion' : 'portions'
+              : `, but is now set up to yield ${meal.estimatedPortions.min * mealScale}  ${
+                  meal.estimatedPortions.min === 1 ? 'portion' : 'portions'
                 }`
           }`}
           onChange={(value: number | undefined) => {

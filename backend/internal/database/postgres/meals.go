@@ -60,17 +60,19 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 	for _, result := range results {
 		if meal == nil {
 			meal = &types.Meal{
-				CreatedAt:                result.CreatedAt,
-				ArchivedAt:               database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt:            database.TimePointerFromNullTime(result.LastUpdatedAt),
-				MaximumEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-				ID:                       result.ID,
-				Description:              result.Description,
-				CreatedByUser:            result.CreatedByUser,
-				Name:                     result.Name,
-				Components:               nil,
-				MinimumEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
-				EligibleForMealPlans:     result.EligibleForMealPlans,
+				CreatedAt:     result.CreatedAt,
+				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:            result.ID,
+				Description:   result.Description,
+				CreatedByUser: result.CreatedByUser,
+				Name:          result.Name,
+				Components:    nil,
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Min: database.Float32FromString(result.MinEstimatedPortions),
+					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+				},
+				EligibleForMealPlans: result.EligibleForMealPlans,
 			}
 		}
 
@@ -131,17 +133,19 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 
 	for _, result := range results {
 		x.Data = append(x.Data, &types.Meal{
-			CreatedAt:                result.CreatedAt,
-			ArchivedAt:               database.TimePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:            database.TimePointerFromNullTime(result.LastUpdatedAt),
-			MaximumEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-			ID:                       result.ID,
-			Description:              result.Description,
-			CreatedByUser:            result.CreatedByUser,
-			Name:                     result.Name,
-			Components:               nil,
-			MinimumEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
-			EligibleForMealPlans:     result.EligibleForMealPlans,
+			CreatedAt:     result.CreatedAt,
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ID:            result.ID,
+			Description:   result.Description,
+			CreatedByUser: result.CreatedByUser,
+			Name:          result.Name,
+			Components:    nil,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: database.Float32FromString(result.MinEstimatedPortions),
+				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+			},
+			EligibleForMealPlans: result.EligibleForMealPlans,
 		})
 
 		x.FilteredCount = uint64(result.FilteredCount)
@@ -223,17 +227,19 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 
 		if meal == nil {
 			meal = &types.Meal{
-				CreatedAt:                result.CreatedAt,
-				ArchivedAt:               database.TimePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt:            database.TimePointerFromNullTime(result.LastUpdatedAt),
-				MaximumEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
-				ID:                       result.ID,
-				Description:              result.Description,
-				CreatedByUser:            result.CreatedByUser,
-				Name:                     result.Name,
-				Components:               []*types.MealComponent{},
-				MinimumEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
-				EligibleForMealPlans:     result.EligibleForMealPlans,
+				CreatedAt:     result.CreatedAt,
+				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ID:            result.ID,
+				Description:   result.Description,
+				CreatedByUser: result.CreatedByUser,
+				Name:          result.Name,
+				Components:    []*types.MealComponent{},
+				EstimatedPortions: types.Float32RangeWithOptionalMax{
+					Min: database.Float32FromString(result.MinEstimatedPortions),
+					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+				},
+				EligibleForMealPlans: result.EligibleForMealPlans,
 			}
 		}
 
@@ -271,9 +277,9 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 		ID:                   input.ID,
 		Name:                 input.Name,
 		Description:          input.Description,
-		MinEstimatedPortions: database.StringFromFloat32(input.MinimumEstimatedPortions),
+		MinEstimatedPortions: database.StringFromFloat32(input.EstimatedPortions.Min),
 		CreatedByUser:        input.CreatedByUser,
-		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(input.MaximumEstimatedPortions),
+		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(input.EstimatedPortions.Max),
 		EligibleForMealPlans: input.EligibleForMealPlans,
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
@@ -281,14 +287,16 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 	}
 
 	x := &types.Meal{
-		ID:                       input.ID,
-		Name:                     input.Name,
-		Description:              input.Description,
-		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
-		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
-		EligibleForMealPlans:     input.EligibleForMealPlans,
-		CreatedByUser:            input.CreatedByUser,
-		CreatedAt:                q.currentTime(),
+		ID:          input.ID,
+		Name:        input.Name,
+		Description: input.Description,
+		EstimatedPortions: types.Float32RangeWithOptionalMax{
+			Min: input.EstimatedPortions.Min,
+			Max: input.EstimatedPortions.Max,
+		},
+		EligibleForMealPlans: input.EligibleForMealPlans,
+		CreatedByUser:        input.CreatedByUser,
+		CreatedAt:            q.currentTime(),
 	}
 
 	for _, recipeID := range input.Components {

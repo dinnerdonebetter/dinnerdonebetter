@@ -21,12 +21,12 @@ export const RecipeIngredientListComponent = ({ recipes, scale }: IngredientList
         }),
       ).map((ingredient: RecipeStepIngredient) => {
         let measurmentUnitName =
-          ingredient.minimumQuantity === 1 ? ingredient.measurementUnit.name : ingredient.measurementUnit.pluralName;
+          ingredient.quantity.min === 1 ? ingredient.measurementUnit.name : ingredient.measurementUnit.pluralName;
 
-        let minQty = cleanFloat(scale === 1.0 ? ingredient.minimumQuantity : ingredient.minimumQuantity * scale);
+        let minQty = cleanFloat(scale === 1.0 ? ingredient.quantity.min : ingredient.quantity.min * scale);
 
         let maxQty = cleanFloat(
-          scale === 1.0 ? (ingredient.maximumQuantity ?? 0) : (ingredient.maximumQuantity ?? 0 * scale),
+          scale === 1.0 ? (ingredient.quantity.max ?? 0) : (ingredient.quantity.max ?? 0 * scale),
         );
 
         return (

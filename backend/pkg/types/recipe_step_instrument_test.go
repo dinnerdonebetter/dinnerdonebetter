@@ -19,14 +19,14 @@ func TestRecipeStepInstrument_Update(T *testing.T) {
 
 		x := &RecipeStepInstrument{
 			RecipeStepProductID: pointer.To(t.Name()),
-			MaximumQuantity:     pointer.To(uint32(321)),
+			Quantity:            Uint32RangeWithOptionalMax{Max: pointer.To(uint32(321))},
 		}
 		input := &RecipeStepInstrumentUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
 		input.Optional = pointer.To(true)
 		input.RecipeStepProductID = pointer.To("whatever")
-		input.MaximumQuantity = pointer.To(uint32(123))
+		input.Quantity.Max = pointer.To(uint32(123))
 
 		x.Update(input)
 	})
@@ -45,8 +45,10 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			Notes:               t.Name(),
 			PreferenceRank:      uint8(fake.Number(1, math.MaxUint8)),
 			Optional:            fake.Bool(),
-			MinimumQuantity:     fake.Uint32(),
-			MaximumQuantity:     pointer.To(fake.Uint32()),
+			Quantity: Uint32RangeWithOptionalMax{
+				Max: pointer.To(fake.Uint32()),
+				Min: fake.Uint32(),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -103,8 +105,10 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			Notes:               pointer.To(t.Name()),
 			PreferenceRank:      pointer.To(uint8(fake.Number(1, math.MaxUint8))),
 			Optional:            pointer.To(fake.Bool()),
-			MinimumQuantity:     pointer.To(fake.Uint32()),
-			MaximumQuantity:     pointer.To(fake.Uint32()),
+			Quantity: Uint32RangeWithOptionalMaxUpdateRequestInput{
+				Min: pointer.To(fake.Uint32()),
+				Max: pointer.To(fake.Uint32()),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
