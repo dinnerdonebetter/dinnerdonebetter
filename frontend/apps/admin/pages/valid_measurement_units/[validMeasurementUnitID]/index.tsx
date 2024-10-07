@@ -158,7 +158,7 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
     useState<ValidIngredientMeasurementUnitCreationRequestInput>(
       new ValidIngredientMeasurementUnitCreationRequestInput({
         validMeasurementUnitID: validMeasurementUnit.id,
-        minimumAllowableQuantity: 1,
+        allowableQuantity: { min: 1 },
       }),
     );
   const [ingredientQuery, setIngredientQuery] = useState('');
@@ -471,10 +471,10 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                                 </Link>
                               </td>
                               <td>
-                                <Text>{validIngredientMeasurementUnit.minimumAllowableQuantity}</Text>
+                                <Text>{validIngredientMeasurementUnit.allowableQuantity.min}</Text>
                               </td>
                               <td>
-                                <Text>{validIngredientMeasurementUnit.maximumAllowableQuantity}</Text>
+                                <Text>{validIngredientMeasurementUnit.allowableQuantity.max}</Text>
                               </td>
                               <td>
                                 <Text>{validIngredientMeasurementUnit.notes}</Text>
@@ -558,24 +558,30 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                 </Grid.Col>
                 <Grid.Col span={2}>
                   <NumberInput
-                    value={newIngredientForMeasurementUnitInput.minimumAllowableQuantity}
+                    value={newIngredientForMeasurementUnitInput.allowableQuantity.min}
                     label="Min. Qty"
                     onChange={(value: number) =>
                       setNewIngredientForMeasurementUnitInput({
                         ...newIngredientForMeasurementUnitInput,
-                        minimumAllowableQuantity: value,
+                        allowableQuantity: {
+                          ...newIngredientForMeasurementUnitInput.allowableQuantity,
+                          min: value,
+                        },
                       })
                     }
                   />
                 </Grid.Col>
                 <Grid.Col span={2}>
                   <NumberInput
-                    value={newIngredientForMeasurementUnitInput.maximumAllowableQuantity}
+                    value={newIngredientForMeasurementUnitInput.allowableQuantity.max}
                     label="Max. Qty"
                     onChange={(value: number) =>
                       setNewIngredientForMeasurementUnitInput({
                         ...newIngredientForMeasurementUnitInput,
-                        maximumAllowableQuantity: value,
+                        allowableQuantity: {
+                          ...newIngredientForMeasurementUnitInput.allowableQuantity,
+                          max: value,
+                        },
                       })
                     }
                   />
@@ -615,7 +621,7 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                               setNewIngredientForMeasurementUnitInput(
                                 new ValidIngredientMeasurementUnitCreationRequestInput({
                                   validMeasurementUnitID: validMeasurementUnit.id,
-                                  minimumAllowableQuantity: 1,
+                                  allowableQuantity: { min: 1 },
                                   validIngredientID: '',
                                   notes: '',
                                 }),

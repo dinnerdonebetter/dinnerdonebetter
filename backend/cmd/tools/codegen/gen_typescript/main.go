@@ -32,7 +32,11 @@ type CodeLine struct {
 }
 
 func buildImportMap() map[string]string {
-	importMap := map[string]string{}
+	importMap := map[string]string{
+		"NumberRange":                "main.ts",
+		"NumberRangeWithOptionalMax": "main.ts",
+		"OptionalNumberRange":        "main.ts",
+	}
 	for _, u := range unions {
 		importMap[u.Name] = "_unions.ts"
 	}
@@ -75,8 +79,8 @@ export * from './main';
 
 	importMap := buildImportMap()
 	for _, filename := range sortedMapKeys(codegen.TypeDefinitionFilesToGenerate) {
-		typesToGenerateFor := codegen.TypeDefinitionFilesToGenerate[filename]
 		output := ""
+		typesToGenerateFor := codegen.TypeDefinitionFilesToGenerate[filename]
 		filesToImportsMapForFile := map[string]map[string]struct{}{}
 
 		for _, typ := range typesToGenerateFor {

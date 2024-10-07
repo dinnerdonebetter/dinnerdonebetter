@@ -9,8 +9,8 @@ export interface IValidPreparationVessel {
   archivedAt?: string;
   id: NonNullable<string>;
   notes: NonNullable<string>;
-  instrument: NonNullable<ValidVessel>;
   preparation: NonNullable<ValidPreparation>;
+  instrument: NonNullable<ValidVessel>;
 }
 
 export class ValidPreparationVessel implements IValidPreparationVessel {
@@ -19,8 +19,8 @@ export class ValidPreparationVessel implements IValidPreparationVessel {
   archivedAt?: string;
   id: NonNullable<string> = '';
   notes: NonNullable<string> = '';
-  instrument: NonNullable<ValidVessel> = new ValidVessel();
   preparation: NonNullable<ValidPreparation> = new ValidPreparation();
+  instrument: NonNullable<ValidVessel> = new ValidVessel();
 
   constructor(input: Partial<ValidPreparationVessel> = {}) {
     this.createdAt = input.createdAt ?? '1970-01-01T00:00:00Z';
@@ -28,8 +28,8 @@ export class ValidPreparationVessel implements IValidPreparationVessel {
     this.archivedAt = input.archivedAt;
     this.id = input.id ?? '';
     this.notes = input.notes ?? '';
-    this.instrument = input.instrument ?? new ValidVessel();
     this.preparation = input.preparation ?? new ValidPreparation();
+    this.instrument = input.instrument ?? new ValidVessel();
   }
 }
 

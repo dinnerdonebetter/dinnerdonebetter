@@ -214,16 +214,16 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
       originalValidPreparation.restrictToIngredients !== updateForm.values.restrictToIngredients ||
       originalValidPreparation.pastTense !== updateForm.values.pastTense ||
       originalValidPreparation.slug !== updateForm.values.slug ||
-      originalValidPreparation.minimumIngredientCount !== updateForm.values.minimumIngredientCount ||
-      originalValidPreparation.maximumIngredientCount !== updateForm.values.maximumIngredientCount ||
-      originalValidPreparation.minimumInstrumentCount !== updateForm.values.minimumInstrumentCount ||
-      originalValidPreparation.maximumInstrumentCount !== updateForm.values.maximumInstrumentCount ||
+      originalValidPreparation.ingredientCount.min !== updateForm.values.ingredientCount.min ||
+      originalValidPreparation.ingredientCount.max !== updateForm.values.ingredientCount.max ||
+      originalValidPreparation.instrumentCount.min !== updateForm.values.instrumentCount.min ||
+      originalValidPreparation.instrumentCount.max !== updateForm.values.instrumentCount.max ||
       originalValidPreparation.temperatureRequired !== updateForm.values.temperatureRequired ||
       originalValidPreparation.timeEstimateRequired !== updateForm.values.timeEstimateRequired ||
       originalValidPreparation.consumesVessel !== updateForm.values.consumesVessel ||
       originalValidPreparation.onlyForVessels !== updateForm.values.onlyForVessels ||
-      originalValidPreparation.minimumVesselCount !== updateForm.values.minimumVesselCount ||
-      originalValidPreparation.maximumVesselCount !== updateForm.values.maximumVesselCount
+      originalValidPreparation.vesselCount.min !== updateForm.values.vesselCount.min ||
+      originalValidPreparation.vesselCount.max !== updateForm.values.vesselCount.max
     );
   };
 
@@ -241,16 +241,13 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
       restrictToIngredients: updateForm.values.restrictToIngredients,
       pastTense: updateForm.values.pastTense,
       slug: updateForm.values.slug,
-      minimumIngredientCount: updateForm.values.minimumIngredientCount,
-      maximumIngredientCount: updateForm.values.maximumIngredientCount,
-      minimumInstrumentCount: updateForm.values.minimumInstrumentCount,
-      maximumInstrumentCount: updateForm.values.maximumInstrumentCount,
+      ingredientCount: updateForm.values.ingredientCount,
+      instrumentCount: updateForm.values.instrumentCount,
+      vesselCount: updateForm.values.vesselCount,
       temperatureRequired: updateForm.values.temperatureRequired,
       timeEstimateRequired: updateForm.values.timeEstimateRequired,
       consumesVessel: updateForm.values.consumesVessel,
       onlyForVessels: updateForm.values.onlyForVessels,
-      minimumVesselCount: updateForm.values.minimumVesselCount,
-      maximumVesselCount: updateForm.values.maximumVesselCount,
     });
 
     const apiClient = buildLocalClient();
@@ -299,10 +296,10 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
             {...updateForm.getInputProps('timeEstimateRequired')}
           />
 
-          <NumberInput label="Minimum Ingredient Count" {...updateForm.getInputProps('minimumIngredientCount')} />
-          <NumberInput label="Maximum Ingredient Count" {...updateForm.getInputProps('maximumIngredientCount')} />
-          <NumberInput label="Minimum Instrument Count" {...updateForm.getInputProps('minimumInstrumentCount')} />
-          <NumberInput label="Maximum Instrument Count" {...updateForm.getInputProps('maximumInstrumentCount')} />
+          <NumberInput label="Minimum Ingredient Count" {...updateForm.getInputProps('ingredientCount.min')} />
+          <NumberInput label="Maximum Ingredient Count" {...updateForm.getInputProps('ingredientCount.max')} />
+          <NumberInput label="Minimum Instrument Count" {...updateForm.getInputProps('instrumentCount.min')} />
+          <NumberInput label="Maximum Instrument Count" {...updateForm.getInputProps('instrumentCount.max')} />
 
           <Switch
             checked={updateForm.values.consumesVessel}
@@ -314,8 +311,8 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
             label="Only For Vessels"
             {...updateForm.getInputProps('onlyForVessels')}
           />
-          <NumberInput label="Minimum Vessel Count" {...updateForm.getInputProps('minimumVesselCount')} />
-          <NumberInput label="Maximum Vessel Count" {...updateForm.getInputProps('maximumVesselCount')} />
+          <NumberInput label="Minimum Vessel Count" {...updateForm.getInputProps('vesselCount.min')} />
+          <NumberInput label="Maximum Vessel Count" {...updateForm.getInputProps('vesselCount.max')} />
 
           <Group position="center">
             <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>

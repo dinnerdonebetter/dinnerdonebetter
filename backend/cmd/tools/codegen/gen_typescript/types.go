@@ -2,6 +2,13 @@ package main
 
 import (
 	"regexp"
+	"slices"
+)
+
+const (
+	typeNameNumberRange                = "NumberRange"
+	typeNameNumberRangeWithOptionalMax = "NumberRangeWithOptionalMax"
+	typeNameOptionalNumberRange        = "OptionalNumberRange"
 )
 
 var (
@@ -10,12 +17,12 @@ var (
 	// Times I've tried to optimize this regex before realizing it already accounts for
 	// every edge case and there is no value (in either performance or readability terms)
 	// in making it smaller: 1.
-	numberMatcherRegex = regexp.MustCompile(`((u)?int(8|16|32|64)?|float(32|64))`)
+	numberMatcherRegex = regexp.MustCompile(`((u)?int(8|16|32|64)?|float(32|64))$`)
 )
 
 func isCustomType(x string) bool {
-	switch x {
-	case "int",
+	return !slices.Contains([]string{
+		"int",
 		"int8",
 		"int16",
 		"int32",
@@ -32,9 +39,6 @@ func isCustomType(x string) bool {
 		boolType,
 		mapStringToBoolType,
 		timeType,
-		stringType:
-		return false
-	default:
-		return true
-	}
+		stringType,
+	}, x)
 }

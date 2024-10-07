@@ -324,7 +324,7 @@ export class RecipeCreationPageState {
   stepHelpers: StepHelper[] = [new StepHelper()];
 
   recipe: RecipeCreationRequestInput = new RecipeCreationRequestInput({
-    minimumEstimatedPortions: 1,
+    estimatedPortions: { min: 1 },
     portionName: 'portion',
     pluralPortionName: 'portions',
     steps: [
@@ -453,7 +453,13 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
 
     case 'UPDATE_MINIMUM_ESTIMATED_PORTIONS': {
       if ((action.newPortions || -1) > 0) {
-        newState = { ...state, recipe: { ...state.recipe, minimumEstimatedPortions: action.newPortions! } };
+        newState = {
+          ...state,
+          recipe: {
+            ...state.recipe,
+            estimatedPortions: { ...state.recipe.estimatedPortions, min: action.newPortions! },
+          },
+        };
       }
       break;
     }
@@ -515,8 +521,7 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
         name: action.selectedValidIngredient.name,
         ingredientID: action.selectedValidIngredient.ingredient?.id,
         measurementUnitID: action.selectedValidIngredient.measurementUnit.id,
-        minimumQuantity: action.selectedValidIngredient.minimumQuantity,
-        maximumQuantity: action.selectedValidIngredient.maximumQuantity,
+        quantity: action.selectedValidIngredient.quantity,
         productOfRecipeStepIndex: action.productOfRecipeStepIndex,
         productOfRecipeStepProductIndex: action.productOfRecipeStepProductIndex,
       });
@@ -532,8 +537,7 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
           name: action.selectedValidIngredient.name,
           ingredientID: action.selectedValidIngredient.ingredient?.id,
           measurementUnitID: action.selectedValidIngredient.measurementUnit.id,
-          minimumQuantity: action.selectedValidIngredient.minimumQuantity,
-          maximumQuantity: action.selectedValidIngredient.maximumQuantity,
+          quantity: action.selectedValidIngredient.quantity,
           productOfRecipeStepIndex: action.productOfRecipeStepIndex,
           productOfRecipeStepProductIndex: action.productOfRecipeStepProductIndex,
         });
@@ -558,8 +562,7 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
         new RecipeStepVesselCreationRequestInput({
           name: action.selectedVessel.name,
           vesselID: action.selectedVessel.vessel?.id,
-          minimumQuantity: action.selectedVessel.minimumQuantity,
-          maximumQuantity: action.selectedVessel.maximumQuantity,
+          quantity: action.selectedVessel.quantity,
           productOfRecipeStepIndex: action.productOfRecipeStepIndex,
           productOfRecipeStepProductIndex: action.productOfRecipeStepProductIndex,
           // TODO: vesselPreposition:
@@ -690,7 +693,10 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
         new RecipeStepInstrumentCreationRequestInput({
           name: action.selectedValidInstrument.name,
           instrumentID: action.selectedValidInstrument.instrument?.id,
-          minimumQuantity: 1,
+          quantity: {
+            ...action.selectedValidInstrument.quantity,
+            min: 1,
+          },
         });
 
       break;
@@ -704,17 +710,20 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
         new RecipeStepVesselCreationRequestInput({
           name: action.selectedVessel.name,
           vesselID: action.selectedVessel.vessel?.id,
-          minimumQuantity: 1,
+          quantity: {
+            ...action.selectedVessel.quantity,
+            min: 1,
+          },
         });
 
       // TODO: upsert product instead of always pushing
       newState.recipe.steps[action.stepIndex].products.push(
         new RecipeStepProductCreationRequestInput({
           name: action.selectedVessel.name,
-          minimumQuantity:
-            newState.recipe.steps[action.stepIndex].vessels[action.recipeStepVesselIndex].minimumQuantity,
-          maximumQuantity:
-            newState.recipe.steps[action.stepIndex].vessels[action.recipeStepVesselIndex].maximumQuantity,
+          quantity: {
+            min: newState.recipe.steps[action.stepIndex].vessels[action.recipeStepVesselIndex].quantity.min,
+            max: newState.recipe.steps[action.stepIndex].vessels[action.recipeStepVesselIndex].quantity.max || 0,
+          },
           type: 'vessel',
         }),
       );
@@ -730,7 +739,10 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
         new RecipeStepInstrumentCreationRequestInput({
           name: action.selectedValidInstrument.name,
           instrumentID: action.selectedValidInstrument.instrument?.id,
-          minimumQuantity: 1,
+          quantity: {
+            ...action.selectedValidInstrument.quantity,
+            min: 1,
+          },
           productOfRecipeStepIndex: action.productOfRecipeStepIndex,
           productOfRecipeStepProductIndex: action.productOfRecipeStepProductIndex,
         });
@@ -746,7 +758,10 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
         new RecipeStepVesselCreationRequestInput({
           name: action.selectedValidInstrument.name,
           vesselID: action.selectedValidInstrument.instrument?.id,
-          minimumQuantity: 1,
+          quantity: {
+            ...action.selectedValidInstrument.quantity,
+            min: 1,
+          },
           productOfRecipeStepIndex: action.productOfRecipeStepIndex,
           productOfRecipeStepProductIndex: action.productOfRecipeStepProductIndex,
           vesselPreposition: 'in',
@@ -976,8 +991,10 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
       newState.recipe.steps[action.stepIndex].products.push(
         new RecipeStepProductCreationRequestInput({
           name: action.selectedVessel.name,
-          minimumQuantity: newState.recipe.steps[action.stepIndex].vessels[action.vesselIndex].minimumQuantity,
-          maximumQuantity: newState.recipe.steps[action.stepIndex].vessels[action.vesselIndex].maximumQuantity,
+          quantity: {
+            min: newState.recipe.steps[action.stepIndex].vessels[action.vesselIndex].quantity.min,
+            max: newState.recipe.steps[action.stepIndex].vessels[action.vesselIndex].quantity.max || 0,
+          },
           type: 'vessel',
         }),
       );
@@ -988,7 +1005,7 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
     case 'UPDATE_STEP_PRODUCT_TYPE': {
       newState.stepHelpers[action.stepIndex].productMeasurementUnitSuggestions[action.productIndex] = [];
       newState.recipe.steps[action.stepIndex].products[action.productIndex].type = action.newType;
-      newState.recipe.steps[action.stepIndex].products[action.productIndex].minimumQuantity = 1;
+      newState.recipe.steps[action.stepIndex].products[action.productIndex].quantity.min = 1;
       break;
     }
 
@@ -998,46 +1015,46 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
     }
 
     case 'UPDATE_STEP_INGREDIENT_MINIMUM_QUANTITY': {
-      newState.recipe.steps[action.stepIndex].ingredients[action.recipeStepIngredientIndex].minimumQuantity =
+      newState.recipe.steps[action.stepIndex].ingredients[action.recipeStepIngredientIndex].quantity.min =
         action.newAmount;
       break;
     }
 
     case 'UPDATE_STEP_INGREDIENT_MAXIMUM_QUANTITY': {
-      newState.recipe.steps[action.stepIndex].ingredients[action.recipeStepIngredientIndex].maximumQuantity =
+      newState.recipe.steps[action.stepIndex].ingredients[action.recipeStepIngredientIndex].quantity.max =
         action.newAmount;
       break;
     }
 
     case 'UPDATE_STEP_PRODUCT_MINIMUM_QUANTITY': {
-      newState.recipe.steps[action.stepIndex].products[action.productIndex].minimumQuantity = action.newAmount;
+      newState.recipe.steps[action.stepIndex].products[action.productIndex].quantity.min = action.newAmount;
       break;
     }
 
     case 'UPDATE_STEP_PRODUCT_MAXIMUM_QUANTITY': {
-      newState.recipe.steps[action.stepIndex].products[action.productIndex].maximumQuantity = action.newAmount;
+      newState.recipe.steps[action.stepIndex].products[action.productIndex].quantity.max = action.newAmount;
       break;
     }
 
     case 'UPDATE_STEP_INSTRUMENT_MINIMUM_QUANTITY': {
-      newState.recipe.steps[action.stepIndex].instruments[action.recipeStepInstrumentIndex].minimumQuantity =
+      newState.recipe.steps[action.stepIndex].instruments[action.recipeStepInstrumentIndex].quantity.min =
         action.newAmount;
       break;
     }
 
     case 'UPDATE_STEP_INSTRUMENT_MAXIMUM_QUANTITY': {
-      newState.recipe.steps[action.stepIndex].instruments[action.recipeStepInstrumentIndex].maximumQuantity =
+      newState.recipe.steps[action.stepIndex].instruments[action.recipeStepInstrumentIndex].quantity.max =
         action.newAmount;
       break;
     }
 
     case 'UPDATE_STEP_VESSEL_MINIMUM_QUANTITY': {
-      newState.recipe.steps[action.stepIndex].vessels[action.recipeStepVesselIndex].minimumQuantity = action.newAmount;
+      newState.recipe.steps[action.stepIndex].vessels[action.recipeStepVesselIndex].quantity.min = action.newAmount;
       break;
     }
 
     case 'UPDATE_STEP_VESSEL_MAXIMUM_QUANTITY': {
-      newState.recipe.steps[action.stepIndex].vessels[action.recipeStepVesselIndex].maximumQuantity = action.newAmount;
+      newState.recipe.steps[action.stepIndex].vessels[action.recipeStepVesselIndex].quantity.max = action.newAmount;
       break;
     }
 
@@ -1096,22 +1113,22 @@ export const useRecipeCreationReducer: Reducer<RecipeCreationPageState, RecipeCr
     }
 
     case 'UPDATE_STEP_MINIMUM_TIME_ESTIMATE': {
-      newState.recipe.steps[action.stepIndex].minimumEstimatedTimeInSeconds = action.newMinTimeEstimate;
+      newState.recipe.steps[action.stepIndex].estimatedTimeInSeconds.min = action.newMinTimeEstimate;
       break;
     }
 
     case 'UPDATE_STEP_MAXIMUM_TIME_ESTIMATE': {
-      newState.recipe.steps[action.stepIndex].maximumEstimatedTimeInSeconds = action.newMaxTimeEstimate;
+      newState.recipe.steps[action.stepIndex].estimatedTimeInSeconds.max = action.newMaxTimeEstimate;
       break;
     }
 
     case 'UPDATE_STEP_MINIMUM_TEMPERATURE': {
-      newState.recipe.steps[action.stepIndex].minimumTemperatureInCelsius = action.newMinTempInCelsius;
+      newState.recipe.steps[action.stepIndex].temperatureInCelsius.min = action.newMinTempInCelsius;
       break;
     }
 
     case 'UPDATE_STEP_MAXIMUM_TEMPERATURE': {
-      newState.recipe.steps[action.stepIndex].maximumTemperatureInCelsius = action.newMaxTempInCelsius;
+      newState.recipe.steps[action.stepIndex].temperatureInCelsius.max = action.newMaxTempInCelsius;
       break;
     }
 

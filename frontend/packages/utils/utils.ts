@@ -167,7 +167,7 @@ export const determineAvailableRecipeStepProducts = (
         name: candidate.product.name,
         measurementUnit: new ValidMeasurementUnit({ id: candidate.product.measurementUnitID }),
         quantityNotes: candidate.product.quantityNotes,
-        minimumQuantity: candidate.product.minimumQuantity,
+        quantity: { ...candidate.product.quantity },
       }),
     });
   }
@@ -237,7 +237,7 @@ export const determinePreparedInstrumentOptions = (
         notes: '',
         preferenceRank: 0,
         optional: false,
-        minimumQuantity: 1,
+        quantity: { min: 1 },
       }),
     });
   }
@@ -300,7 +300,7 @@ export const determineAvailableRecipeStepVessels = (
       productIndex: candidate.productIndex,
       vessel: new RecipeStepVessel({
         name: candidate.product.name,
-        minimumQuantity: candidate.product.minimumQuantity,
+        quantity: { ...candidate.product.quantity },
       }),
     });
   }
@@ -338,8 +338,7 @@ export const ConvertMealToMealCreationRequestInput = (x: Meal): MealCreationRequ
   const y = new MealCreationRequestInput({
     name: x.name,
     description: x.description,
-    minimumEstimatedPortions: x.minimumEstimatedPortions,
-    maximumEstimatedPortions: x.maximumEstimatedPortions,
+    estimatedPortions: x.estimatedPortions,
     components: x.components.map(
       (x: MealComponent) =>
         ({
@@ -362,11 +361,11 @@ export const buildRecipeStepText = (recipe: Recipe, recipeStep: RecipeStep, reci
     (recipeStep.vessels || []).map((x: RecipeStepVessel) => {
       const elementIsProduct = stepElementIsProduct(x);
       return (
-        (x.minimumQuantity === 1
+        (x.quantity.min === 1
           ? `${x.vesselPreposition ? `${x.vesselPreposition} ` : ''}${elementIsProduct ? 'the' : 'a'} ${
               x.vessel?.name || x.name
             }`
-          : `${x.minimumQuantity}${(x.maximumQuantity ?? -1) > x.minimumQuantity ? ` to ${x.maximumQuantity}` : ''} ${
+          : `${x.quantity.min}${(x.quantity.max ?? -1) > x.quantity.min ? ` to ${x.quantity.max}` : ''} ${
               x.vessel?.pluralName || x.name
             }`) +
         `${elementIsProduct ? ` from step #${getRecipeStepIndexByProductID(recipe, x.recipeStepProductID!)}` : ''}`
@@ -378,9 +377,9 @@ export const buildRecipeStepText = (recipe: Recipe, recipeStep: RecipeStep, reci
     (recipeStep.instruments || []).map((x: RecipeStepInstrument) => {
       const elementIsProduct = stepElementIsProduct(x);
       return (
-        (x.minimumQuantity === 1
+        (x.quantity.min === 1
           ? `${elementIsProduct ? 'the' : 'a'} ${x.instrument?.name || x.name}`
-          : `${x.minimumQuantity}${(x.maximumQuantity ?? -1) > x.minimumQuantity ? ` to ${x.maximumQuantity}` : ''} ${
+          : `${x.quantity.min}${(x.quantity.max ?? -1) > x.quantity.min ? ` to ${x.quantity.max}` : ''} ${
               x.instrument?.pluralName || x.name
             }`) +
         `${elementIsProduct ? ` from step #${getRecipeStepIndexByProductID(recipe, x.recipeStepProductID!)}` : ''}`
@@ -396,19 +395,17 @@ export const buildRecipeStepText = (recipe: Recipe, recipeStep: RecipeStep, reci
     (recipeStep.ingredients || []).map((x: RecipeStepIngredient) => {
       const elementIsProduct = stepElementIsProduct(x);
       let measurementUnit =
-        cleanFloat(x.minimumQuantity * recipeScale) === 1 ? x.measurementUnit.name : x.measurementUnit.pluralName;
+        cleanFloat(x.quantity.min * recipeScale) === 1 ? x.measurementUnit.name : x.measurementUnit.pluralName;
       measurementUnit = ['unit', 'units'].includes(measurementUnit) ? '' : measurementUnit;
 
       const intro = elementIsProduct
         ? ''
-        : `${cleanFloat(x.minimumQuantity * recipeScale)}${
-            (x.maximumQuantity ?? -1) > x.minimumQuantity
-              ? ` to ${cleanFloat((x.maximumQuantity ?? 0) * recipeScale)} `
-              : ''
+        : `${cleanFloat(x.quantity.min * recipeScale)}${
+            (x.quantity.max ?? -1) > x.quantity.min ? ` to ${cleanFloat((x.quantity.max ?? 0) * recipeScale)} ` : ''
           } ${measurementUnit}`;
 
       const name =
-        cleanFloat(x.minimumQuantity * recipeScale) === 1
+        cleanFloat(x.quantity.min * recipeScale) === 1
           ? x.ingredient?.name || x.name
           : x.ingredient?.pluralName || x.name;
 
@@ -440,14 +437,14 @@ export const buildRecipeStepText = (recipe: Recipe, recipeStep: RecipeStep, reci
         ? ''
         : `a${englishListFormatter.format(
             productMap['instrument'].map(
-              (x: RecipeStepProduct) => `${(x.minimumQuantity ?? 1) === 1 ? 'a' : 'the'} ${x.name}`,
+              (x: RecipeStepProduct) => `${(x.quantity.min ?? 1) === 1 ? 'a' : 'the'} ${x.name}`,
             ),
           )}`,
       productMap['vessel'].length <= 0
         ? ''
         : `${englishListFormatter.format(
             productMap['vessel'].map(
-              (x: RecipeStepProduct) => `${(x.minimumQuantity ?? 1) === 1 ? 'a' : 'the'} ${x.name}`,
+              (x: RecipeStepProduct) => `${(x.quantity.min ?? 1) === 1 ? 'a' : 'the'} ${x.name}`,
             ),
           )}`,
     ].filter((x: string) => x.length > 0),
@@ -479,10 +476,10 @@ export const determineVesselsForRecipes = (recipes: Recipe[]): RecipeStepVessel[
   (allVessels || []).map((vessel: RecipeStepVessel) => {
     if (vessel.vessel !== null) {
       if (uniqueVessels.hasOwnProperty(vessel.vessel!.id)) {
-        uniqueVessels[vessel.vessel!.id].minimumQuantity += vessel.minimumQuantity;
-        if (vessel.maximumQuantity) {
-          uniqueVessels[vessel.vessel!.id].maximumQuantity =
-            (uniqueVessels[vessel.vessel!.id].maximumQuantity || 0) + vessel.maximumQuantity;
+        uniqueVessels[vessel.vessel!.id].quantity.min += vessel.quantity.min;
+        if (vessel.quantity.max) {
+          uniqueVessels[vessel.vessel!.id].quantity.max =
+            (uniqueVessels[vessel.vessel!.id].quantity.max || 0) + vessel.quantity.max;
         }
       } else {
         uniqueVessels[vessel.vessel!.id] = vessel;
@@ -507,8 +504,10 @@ export const determineAllIngredientsForRecipes = (input: mealRecipeInput[]): Rec
         return ingredients.map((y) => {
           return {
             ...y,
-            minimumQuantity: y.minimumQuantity * x.scale,
-            maximumQuantity: y.maximumQuantity ? y.maximumQuantity * x.scale : undefined,
+            quantity: {
+              min: y.quantity.min * x.scale,
+              max: y.quantity.max ? y.quantity.max * x.scale : undefined,
+            },
           };
         });
       });
@@ -520,10 +519,10 @@ export const determineAllIngredientsForRecipes = (input: mealRecipeInput[]): Rec
   (allIngredients || []).map((ingredient: RecipeStepIngredient) => {
     if (ingredient.ingredient !== null) {
       if (uniqueIngredients.hasOwnProperty(ingredient.ingredient!.id)) {
-        uniqueIngredients[ingredient.ingredient!.id].minimumQuantity += ingredient.minimumQuantity;
-        if (ingredient.maximumQuantity) {
-          uniqueIngredients[ingredient.ingredient!.id].maximumQuantity =
-            (uniqueIngredients[ingredient.ingredient!.id].maximumQuantity || 0) + ingredient.maximumQuantity;
+        uniqueIngredients[ingredient.ingredient!.id].quantity.min += ingredient.quantity.min;
+        if (ingredient.quantity.max) {
+          uniqueIngredients[ingredient.ingredient!.id].quantity.max =
+            (uniqueIngredients[ingredient.ingredient!.id].quantity.max || 0) + ingredient.quantity.max;
         }
       } else {
         uniqueIngredients[ingredient.ingredient!.id] = ingredient;
@@ -696,7 +695,7 @@ export const renderMermaidDiagramForRecipe = (
   });
 
   (recipe.prepTasks || []).forEach((prepTask: RecipePrepTask, i: number) => {
-    const bufferTime = prepTask.maximumTimeBufferBeforeRecipeInSeconds ?? 0;
+    const bufferTime = prepTask.timeBufferBeforeRecipeInSeconds.max ?? 0;
     const minimumDuration = intervalToDuration({ start: 0, end: bufferTime * 1000 });
     const subgraphLabel =
       bufferTime === 0 ? `prep task: ${prepTask.name}` : `(up to ${formatDuration(minimumDuration)} in advance)`;

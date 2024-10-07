@@ -146,8 +146,8 @@ export const RecipeStepComponent = ({
                 {recipeStep.notes}
               </Text>
 
-              {recipeStep.minimumEstimatedTimeInSeconds && (
-                <TimerComponent durationInSeconds={recipeStep.minimumEstimatedTimeInSeconds} />
+              {recipeStep.estimatedTimeInSeconds.min && (
+                <TimerComponent durationInSeconds={recipeStep.estimatedTimeInSeconds.min} />
               )}
             </Grid.Col>
 
@@ -171,28 +171,28 @@ export const RecipeStepComponent = ({
                       const shouldDisplayMinQuantity = !stepElementIsProduct(ingredient);
                       const shouldDisplayMaxQuantity =
                         shouldDisplayMinQuantity &&
-                        ingredient.maximumQuantity !== undefined &&
-                        ingredient.maximumQuantity !== null &&
-                        (ingredient.maximumQuantity ?? -1) > ingredient.minimumQuantity &&
-                        ingredient.minimumQuantity != ingredient.maximumQuantity;
+                        ingredient.quantity.max !== undefined &&
+                        ingredient.quantity.max !== null &&
+                        (ingredient.quantity.max ?? -1) > ingredient.quantity.min &&
+                        ingredient.quantity.min != ingredient.quantity.max;
                       const elementIsProduct = stepElementIsProduct(ingredient);
 
                       let measurementName = shouldDisplayMinQuantity
-                        ? cleanFloat(ingredient.minimumQuantity * scale) === 1
+                        ? cleanFloat(ingredient.quantity.min * scale) === 1
                           ? ingredient.measurementUnit.name
                           : ingredient.measurementUnit.pluralName
                         : '';
                       measurementName = ['unit', 'units'].includes(measurementName) ? '' : measurementName;
 
                       const ingredientName =
-                        cleanFloat(ingredient.minimumQuantity * scale) === 1
+                        cleanFloat(ingredient.quantity.min * scale) === 1
                           ? ingredient.ingredient?.name || ingredient.name
                           : ingredient.ingredient?.pluralName || ingredient.name;
 
                       const lineText = (
                         <>
-                          {`${shouldDisplayMinQuantity ? cleanFloat(ingredient.minimumQuantity * scale) : ''}${
-                            shouldDisplayMaxQuantity ? `- ${cleanFloat((ingredient.maximumQuantity ?? 0) * scale)}` : ''
+                          {`${shouldDisplayMinQuantity ? cleanFloat(ingredient.quantity.min * scale) : ''}${
+                            shouldDisplayMaxQuantity ? `- ${cleanFloat((ingredient.quantity.max ?? 0) * scale)}` : ''
                           } ${measurementName}`}
                           {elementIsProduct ? <em>{ingredientName}</em> : <>{ingredientName}</>}
                           {`${

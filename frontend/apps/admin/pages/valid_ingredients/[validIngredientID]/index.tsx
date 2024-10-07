@@ -160,7 +160,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     useState<ValidIngredientMeasurementUnitCreationRequestInput>(
       new ValidIngredientMeasurementUnitCreationRequestInput({
         validIngredientID: validIngredient.id,
-        minimumAllowableQuantity: 0.01,
+        allowableQuantity: { min: 0.01 },
       }),
     );
   const [measurementUnitQuery, setMeasurementUnitQuery] = useState('');
@@ -289,10 +289,8 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       originalValidIngredient.animalDerived !== updateForm.values.animalDerived ||
       originalValidIngredient.restrictToPreparations !== updateForm.values.restrictToPreparations ||
       originalValidIngredient.containsAlcohol !== updateForm.values.containsAlcohol ||
-      originalValidIngredient.minimumIdealStorageTemperatureInCelsius !==
-        updateForm.values.minimumIdealStorageTemperatureInCelsius ||
-      originalValidIngredient.maximumIdealStorageTemperatureInCelsius !==
-        updateForm.values.maximumIdealStorageTemperatureInCelsius ||
+      originalValidIngredient.storageTemperatureInCelsius.min !== updateForm.values.storageTemperatureInCelsius.min ||
+      originalValidIngredient.storageTemperatureInCelsius.max !== updateForm.values.storageTemperatureInCelsius.max ||
       originalValidIngredient.slug !== updateForm.values.slug ||
       originalValidIngredient.shoppingSuggestions !== updateForm.values.shoppingSuggestions
     );
@@ -327,8 +325,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       animalDerived: updateForm.values.animalDerived,
       restrictToPreparations: updateForm.values.restrictToPreparations,
       containsAlcohol: updateForm.values.containsAlcohol,
-      minimumIdealStorageTemperatureInCelsius: updateForm.values.minimumIdealStorageTemperatureInCelsius,
-      maximumIdealStorageTemperatureInCelsius: updateForm.values.maximumIdealStorageTemperatureInCelsius,
+      storageTemperatureInCelsius: updateForm.values.storageTemperatureInCelsius,
       slug: updateForm.values.slug,
       shoppingSuggestions: updateForm.values.shoppingSuggestions,
     });
@@ -503,17 +500,17 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                     return (
                       <tr key={measurementUnit.id}>
                         <td>
-                          {measurementUnit.minimumAllowableQuantity}{' '}
+                          {measurementUnit.allowableQuantity.min}{' '}
                           <Link href={`/valid_measurement_units/${measurementUnit.id}`}>
-                            {measurementUnit.minimumAllowableQuantity === 1
+                            {measurementUnit.allowableQuantity.min === 1
                               ? measurementUnit.measurementUnit.name
                               : measurementUnit.measurementUnit.pluralName}
                           </Link>
                         </td>
                         <td>
-                          {measurementUnit.maximumAllowableQuantity}{' '}
+                          {measurementUnit.allowableQuantity.max}{' '}
                           <Link href={`/valid_measurement_units/${measurementUnit.id}`}>
-                            {measurementUnit.minimumAllowableQuantity === 1
+                            {measurementUnit.allowableQuantity.min === 1
                               ? measurementUnit.measurementUnit.name
                               : measurementUnit.measurementUnit.pluralName}
                           </Link>
@@ -595,26 +592,32 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
             </Grid.Col>
             <Grid.Col span={2}>
               <NumberInput
-                value={newMeasurementUnitForIngredientInput.minimumAllowableQuantity}
+                value={newMeasurementUnitForIngredientInput.allowableQuantity.min}
                 label="Min. Qty"
                 precision={2}
                 onChange={(value: number) =>
                   setNewMeasurementUnitForIngredientInput({
                     ...newMeasurementUnitForIngredientInput,
-                    minimumAllowableQuantity: value,
+                    allowableQuantity: {
+                      ...newMeasurementUnitForIngredientInput.allowableQuantity,
+                      min: value,
+                    },
                   })
                 }
               />
             </Grid.Col>
             <Grid.Col span={2}>
               <NumberInput
-                value={newMeasurementUnitForIngredientInput.maximumAllowableQuantity}
+                value={newMeasurementUnitForIngredientInput.allowableQuantity.max}
                 label="Max. Qty"
                 precision={2}
                 onChange={(value: number) =>
                   setNewMeasurementUnitForIngredientInput({
                     ...newMeasurementUnitForIngredientInput,
-                    maximumAllowableQuantity: value,
+                    allowableQuantity: {
+                      ...newMeasurementUnitForIngredientInput.allowableQuantity,
+                      max: value,
+                    },
                   })
                 }
               />
@@ -637,7 +640,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                 disabled={
                   newMeasurementUnitForIngredientInput.validIngredientID === '' ||
                   newMeasurementUnitForIngredientInput.validMeasurementUnitID === '' ||
-                  newMeasurementUnitForIngredientInput.minimumAllowableQuantity === 0
+                  newMeasurementUnitForIngredientInput.allowableQuantity.min === 0
                 }
                 onClick={async () => {
                   await apiClient
@@ -656,7 +659,10 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                             new ValidIngredientMeasurementUnitCreationRequestInput({
                               validIngredientID: validIngredient.id,
                               validMeasurementUnitID: '',
-                              minimumAllowableQuantity: 0.01,
+                              allowableQuantity: {
+                                ...newMeasurementUnitForIngredientInput.allowableQuantity,
+                                min: 0.01,
+                              },
                             }),
                           );
 

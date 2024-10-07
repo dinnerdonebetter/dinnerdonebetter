@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 	"text/template"
 
@@ -47,11 +48,37 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			defaultValue = "[]"
 		}
 
+		switch {
+		case slices.Contains([]string{
+			"OptionalFloat32Range",
+			"OptionalUint32Range",
+		}, fieldType):
+			fieldType = typeNameNumberRange
+		case slices.Contains([]string{
+			"Float32RangeWithOptionalMax",
+			"Uint16RangeWithOptionalMax",
+			"Uint32RangeWithOptionalMax",
+		}, fieldType):
+			fieldType = typeNameNumberRangeWithOptionalMax
+		case slices.Contains([]string{
+			"Float32RangeWithOptionalMaxUpdateRequestInput",
+			"Uint16RangeWithOptionalMaxUpdateRequestInput",
+			"Uint32RangeWithOptionalMaxUpdateRequestInput",
+		}, fieldType):
+			fieldType = typeNameOptionalNumberRange
+		}
+
 		if isCustomType(fieldType) {
 			importedTypes = append(importedTypes, fieldType)
 		}
 
 		switch fieldType {
+		case typeNameNumberRange:
+			defaultValue = "{ min: 0, max: 0 }"
+		case typeNameNumberRangeWithOptionalMax:
+			defaultValue = "{ min: 0 }"
+		case typeNameOptionalNumberRange:
+			defaultValue = "{}"
 		case stringType:
 			if !isSlice {
 				defaultValue = `''`
@@ -84,7 +111,10 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			}
 		}
 
-		if customType && !isSlice && !isPointer {
+		if customType && !isSlice && !isPointer && !slices.Contains([]string{
+			typeNameNumberRange,
+			typeNameNumberRangeWithOptionalMax,
+			typeNameOptionalNumberRange}, fieldType) {
 			defaultValue = fmt.Sprintf("new %s()", fieldType)
 		}
 

@@ -22,8 +22,8 @@ export const RecipeInstrumentListComponent = ({ recipes }: InstrumentListCompone
             <List.Item key={x.id} my="-sm">
               <Checkbox
                 size="sm"
-                label={`${x.minimumQuantity}${
-                  (x.maximumQuantity ?? 0) > 0 && x.maximumQuantity != x.minimumQuantity ? `- ${x.maximumQuantity}` : ''
+                label={`${x.quantity.min}${
+                  (x.quantity.max ?? 0) > 0 && x.quantity.max != x.quantity.min ? `- ${x.quantity.max}` : ''
                 } ${(x as RecipeStepInstrument).instrument?.name}`}
               />
             </List.Item>
@@ -33,8 +33,8 @@ export const RecipeInstrumentListComponent = ({ recipes }: InstrumentListCompone
             <List.Item key={x.id} my="-sm">
               <Checkbox
                 size="sm"
-                label={`${x.minimumQuantity}${
-                  (x.maximumQuantity ?? 0) > 0 && x.maximumQuantity != x.minimumQuantity ? `- ${x.maximumQuantity}` : ''
+                label={`${x.quantity.min}${
+                  (x.quantity.max ?? 0) > 0 && x.quantity.max != x.quantity.min ? `- ${x.quantity.max}` : ''
                 } ${(x as RecipeStepVessel).vessel?.name}`}
               />
             </List.Item>
