@@ -24,17 +24,17 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 		Slug:                        buildUniqueString(),
 		PastTense:                   buildUniqueString(),
 		CreatedAt:                   BuildFakeTime(),
-		MinimumIngredientCount:      int32(minIngredients),
-		MaximumIngredientCount:      pointer.To(int32(minIngredients + 1)),
-		MinimumInstrumentCount:      int32(minInstruments),
-		MaximumInstrumentCount:      pointer.To(int32(minInstruments + 1)),
+		MinimumIngredientCount:      uint16(minIngredients),
+		MaximumIngredientCount:      pointer.To(uint16(minIngredients + 1)),
+		MinimumInstrumentCount:      uint16(minInstruments),
+		MaximumInstrumentCount:      pointer.To(uint16(minInstruments + 1)),
 		TemperatureRequired:         fake.Bool(),
 		TimeEstimateRequired:        fake.Bool(),
 		ConditionExpressionRequired: fake.Bool(),
 		ConsumesVessel:              fake.Bool(),
 		OnlyForVessels:              fake.Bool(),
-		MinimumVesselCount:          int32(minVessels),
-		MaximumVesselCount:          pointer.To(int32(minVessels + 1)),
+		MinimumVesselCount:          uint16(minVessels),
+		MaximumVesselCount:          pointer.To(uint16(minVessels + 1)),
 	}
 }
 

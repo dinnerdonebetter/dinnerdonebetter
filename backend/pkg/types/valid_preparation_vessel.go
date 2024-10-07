@@ -27,15 +27,14 @@ func init() {
 type (
 	// ValidPreparationVessel represents a valid preparation instrument.
 	ValidPreparationVessel struct {
-		_ struct{} `json:"-"`
-
+		_             struct{}         `json:"-"`
 		CreatedAt     time.Time        `json:"createdAt"`
 		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
 		ArchivedAt    *time.Time       `json:"archivedAt"`
 		ID            string           `json:"id"`
 		Notes         string           `json:"notes"`
-		Vessel        ValidVessel      `json:"instrument"`
 		Preparation   ValidPreparation `json:"preparation"`
+		Vessel        ValidVessel      `json:"instrument"`
 	}
 
 	// ValidPreparationVesselCreationRequestInput represents what a user could set as input for creating valid preparation instruments.

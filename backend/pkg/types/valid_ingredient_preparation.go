@@ -27,15 +27,14 @@ func init() {
 type (
 	// ValidIngredientPreparation represents a valid ingredient preparation.
 	ValidIngredientPreparation struct {
-		_ struct{} `json:"-"`
-
+		_             struct{}         `json:"-"`
 		CreatedAt     time.Time        `json:"createdAt"`
 		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
 		ArchivedAt    *time.Time       `json:"archivedAt"`
 		Notes         string           `json:"notes"`
 		ID            string           `json:"id"`
-		Ingredient    ValidIngredient  `json:"ingredient"`
 		Preparation   ValidPreparation `json:"preparation"`
+		Ingredient    ValidIngredient  `json:"ingredient"`
 	}
 
 	// ValidIngredientPreparationCreationRequestInput represents what a user could set as input for creating valid ingredient preparations.
