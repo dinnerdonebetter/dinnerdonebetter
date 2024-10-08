@@ -283,7 +283,6 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       originalValidIngredient.containsFish !== updateForm.values.containsFish ||
       originalValidIngredient.containsGluten !== updateForm.values.containsGluten ||
       originalValidIngredient.animalFlesh !== updateForm.values.animalFlesh ||
-      originalValidIngredient.isMeasuredVolumetrically !== updateForm.values.isMeasuredVolumetrically ||
       originalValidIngredient.isLiquid !== updateForm.values.isLiquid ||
       originalValidIngredient.containsSoy !== updateForm.values.containsSoy ||
       originalValidIngredient.animalDerived !== updateForm.values.animalDerived ||
@@ -319,7 +318,6 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       containsFish: updateForm.values.containsFish,
       containsGluten: updateForm.values.containsGluten,
       animalFlesh: updateForm.values.animalFlesh,
-      isMeasuredVolumetrically: updateForm.values.isMeasuredVolumetrically,
       isLiquid: updateForm.values.isLiquid,
       containsSoy: updateForm.values.containsSoy,
       animalDerived: updateForm.values.animalDerived,
@@ -424,11 +422,6 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
             checked={updateForm.values.animalDerived}
             label="Animal Derived"
             {...updateForm.getInputProps('animalDerived')}
-          />
-          <Switch
-            checked={updateForm.values.isMeasuredVolumetrically}
-            label="Measured Volumetrically"
-            {...updateForm.getInputProps('isMeasuredVolumetrically')}
           />
           <Switch checked={updateForm.values.isLiquid} label="Liquid" {...updateForm.getInputProps('isLiquid')} />
           <Switch

@@ -35,7 +35,6 @@ export default function ValidIngredientCreator(): JSX.Element {
       containsFish: false,
       containsGluten: false,
       animalFlesh: false,
-      isMeasuredVolumetrically: false,
       isLiquid: false,
       containsSoy: false,
       animalDerived: false,
@@ -71,7 +70,6 @@ export default function ValidIngredientCreator(): JSX.Element {
       containsFish: creationForm.values.containsFish,
       containsGluten: creationForm.values.containsGluten,
       animalFlesh: creationForm.values.animalFlesh,
-      isMeasuredVolumetrically: creationForm.values.isMeasuredVolumetrically,
       isLiquid: creationForm.values.isLiquid,
       containsSoy: creationForm.values.containsSoy,
       animalDerived: creationForm.values.animalDerived,
@@ -183,11 +181,6 @@ export default function ValidIngredientCreator(): JSX.Element {
             checked={creationForm.values.animalDerived}
             label="Animal Derived"
             {...creationForm.getInputProps('animalDerived')}
-          />
-          <Switch
-            checked={creationForm.values.isMeasuredVolumetrically}
-            label="Measured Volumetrically"
-            {...creationForm.getInputProps('isMeasuredVolumetrically')}
           />
           <Switch checked={creationForm.values.isLiquid} label="Liquid" {...creationForm.getInputProps('isLiquid')} />
           <Switch
