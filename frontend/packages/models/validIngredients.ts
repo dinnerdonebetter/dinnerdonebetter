@@ -17,7 +17,6 @@ export interface IValidIngredient {
   slug: NonNullable<string>;
   shoppingSuggestions: NonNullable<string>;
   containsShellfish: NonNullable<boolean>;
-  isMeasuredVolumetrically: NonNullable<boolean>;
   isLiquid: NonNullable<boolean>;
   containsPeanut: NonNullable<boolean>;
   containsTreeNut: NonNullable<boolean>;
@@ -57,7 +56,6 @@ export class ValidIngredient implements IValidIngredient {
   slug: NonNullable<string> = '';
   shoppingSuggestions: NonNullable<string> = '';
   containsShellfish: NonNullable<boolean> = false;
-  isMeasuredVolumetrically: NonNullable<boolean> = false;
   isLiquid: NonNullable<boolean> = false;
   containsPeanut: NonNullable<boolean> = false;
   containsTreeNut: NonNullable<boolean> = false;
@@ -96,7 +94,6 @@ export class ValidIngredient implements IValidIngredient {
     this.slug = input.slug ?? '';
     this.shoppingSuggestions = input.shoppingSuggestions ?? '';
     this.containsShellfish = input.containsShellfish ?? false;
-    this.isMeasuredVolumetrically = input.isMeasuredVolumetrically ?? false;
     this.isLiquid = input.isLiquid ?? false;
     this.containsPeanut = input.containsPeanut ?? false;
     this.containsTreeNut = input.containsTreeNut ?? false;
@@ -132,7 +129,6 @@ export interface IValidIngredientCreationRequestInput {
   description: NonNullable<string>;
   slug: NonNullable<string>;
   shoppingSuggestions: NonNullable<string>;
-  isMeasuredVolumetrically: NonNullable<boolean>;
   containsFish: NonNullable<boolean>;
   containsShellfish: NonNullable<boolean>;
   animalFlesh: NonNullable<boolean>;
@@ -168,7 +164,6 @@ export class ValidIngredientCreationRequestInput implements IValidIngredientCrea
   description: NonNullable<string> = '';
   slug: NonNullable<string> = '';
   shoppingSuggestions: NonNullable<string> = '';
-  isMeasuredVolumetrically: NonNullable<boolean> = false;
   containsFish: NonNullable<boolean> = false;
   containsShellfish: NonNullable<boolean> = false;
   animalFlesh: NonNullable<boolean> = false;
@@ -203,7 +198,6 @@ export class ValidIngredientCreationRequestInput implements IValidIngredientCrea
     this.description = input.description ?? '';
     this.slug = input.slug ?? '';
     this.shoppingSuggestions = input.shoppingSuggestions ?? '';
-    this.isMeasuredVolumetrically = input.isMeasuredVolumetrically ?? false;
     this.containsFish = input.containsFish ?? false;
     this.containsShellfish = input.containsShellfish ?? false;
     this.animalFlesh = input.animalFlesh ?? false;
@@ -245,7 +239,6 @@ export interface IValidIngredientUpdateRequestInput {
   containsFish?: boolean;
   containsGluten?: boolean;
   animalFlesh?: boolean;
-  isMeasuredVolumetrically?: boolean;
   isLiquid?: boolean;
   containsSoy?: boolean;
   pluralName?: string;
@@ -281,7 +274,6 @@ export class ValidIngredientUpdateRequestInput implements IValidIngredientUpdate
   containsFish?: boolean = false;
   containsGluten?: boolean = false;
   animalFlesh?: boolean = false;
-  isMeasuredVolumetrically?: boolean = false;
   isLiquid?: boolean = false;
   containsSoy?: boolean = false;
   pluralName?: string;
@@ -316,7 +308,6 @@ export class ValidIngredientUpdateRequestInput implements IValidIngredientUpdate
     this.containsFish = input.containsFish ?? false;
     this.containsGluten = input.containsGluten ?? false;
     this.animalFlesh = input.animalFlesh ?? false;
-    this.isMeasuredVolumetrically = input.isMeasuredVolumetrically ?? false;
     this.isLiquid = input.isLiquid ?? false;
     this.containsSoy = input.containsSoy ?? false;
     this.pluralName = input.pluralName;

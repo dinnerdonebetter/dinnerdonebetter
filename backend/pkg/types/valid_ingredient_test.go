@@ -31,7 +31,6 @@ func TestValidIngredient_Update(T *testing.T) {
 		input.ContainsFish = pointer.To(true)
 		input.ContainsGluten = pointer.To(true)
 		input.AnimalFlesh = pointer.To(true)
-		input.IsMeasuredVolumetrically = pointer.To(true)
 		input.AnimalDerived = pointer.To(true)
 		input.RestrictToPreparations = pointer.To(true)
 		input.ContainsAlcohol = pointer.To(true)

@@ -128,7 +128,6 @@ SELECT
 	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
 	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
 	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-	valid_ingredients.volumetric as valid_ingredient_volumetric,
 	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
 	valid_ingredients.icon_path as valid_ingredient_icon_path,
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
@@ -192,13 +191,13 @@ type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
 	ToUnitID                                               string
 	ValidMeasurementUnitConversionModifier                 string
 	FromUnitSlug                                           string
-	ValidMeasurementUnitConversionID                       string
+	FromUnitIconPath                                       string
 	ValidMeasurementUnitConversionToUnit                   string
 	ValidMeasurementUnitConversionFromUnit                 string
 	FromUnitName                                           string
 	FromUnitPluralName                                     string
 	ValidMeasurementUnitConversionNotes                    string
-	FromUnitIconPath                                       string
+	ValidMeasurementUnitConversionID                       string
 	ToUnitPluralName                                       string
 	ToUnitSlug                                             string
 	ToUnitDescription                                      string
@@ -209,16 +208,15 @@ type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
 	ValidIngredientID                                      sql.NullString
 	ValidIngredientPluralName                              sql.NullString
 	ValidIngredientDescription                             sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientSlug                                    sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientName                                    sql.NullString
-	ValidIngredientContainsWheat                           sql.NullBool
-	ValidIngredientIsFruit                                 sql.NullBool
-	ValidIngredientVolumetric                              sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientAnimalDerived                           sql.NullBool
 	ValidIngredientAnimalFlesh                             sql.NullBool
 	ValidIngredientRestrictToPreparations                  sql.NullBool
@@ -227,16 +225,16 @@ type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
 	ValidIngredientContainsSesame                          sql.NullBool
 	ValidIngredientContainsShellfish                       sql.NullBool
 	ValidIngredientContainsAlcohol                         sql.NullBool
-	ValidIngredientContainsSoy                             sql.NullBool
+	ValidIngredientContainsWheat                           sql.NullBool
 	ValidIngredientIsStarch                                sql.NullBool
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsGrain                                 sql.NullBool
+	ValidIngredientIsFruit                                 sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientIsHeat                                  sql.NullBool
-	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContainsSoy                             sql.NullBool
 	ValidIngredientContainsPeanut                          sql.NullBool
 	ValidIngredientContainsDairy                           sql.NullBool
 	ValidIngredientContainsEgg                             sql.NullBool
@@ -304,7 +302,6 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx c
 			&i.ValidIngredientContainsFish,
 			&i.ValidIngredientContainsGluten,
 			&i.ValidIngredientAnimalFlesh,
-			&i.ValidIngredientVolumetric,
 			&i.ValidIngredientIsLiquid,
 			&i.ValidIngredientIconPath,
 			&i.ValidIngredientAnimalDerived,
@@ -397,7 +394,6 @@ SELECT
 	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
 	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
 	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-	valid_ingredients.volumetric as valid_ingredient_volumetric,
 	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
 	valid_ingredients.icon_path as valid_ingredient_icon_path,
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
@@ -461,13 +457,13 @@ type GetAllValidMeasurementUnitConversionsToMeasurementUnitRow struct {
 	ToUnitID                                               string
 	ValidMeasurementUnitConversionModifier                 string
 	FromUnitSlug                                           string
-	ValidMeasurementUnitConversionID                       string
+	FromUnitIconPath                                       string
 	ValidMeasurementUnitConversionToUnit                   string
 	ValidMeasurementUnitConversionFromUnit                 string
 	FromUnitName                                           string
 	FromUnitPluralName                                     string
 	ValidMeasurementUnitConversionNotes                    string
-	FromUnitIconPath                                       string
+	ValidMeasurementUnitConversionID                       string
 	ToUnitPluralName                                       string
 	ToUnitSlug                                             string
 	ToUnitDescription                                      string
@@ -478,16 +474,15 @@ type GetAllValidMeasurementUnitConversionsToMeasurementUnitRow struct {
 	ValidIngredientID                                      sql.NullString
 	ValidIngredientPluralName                              sql.NullString
 	ValidIngredientDescription                             sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientSlug                                    sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientName                                    sql.NullString
-	ValidIngredientContainsWheat                           sql.NullBool
-	ValidIngredientIsFruit                                 sql.NullBool
-	ValidIngredientVolumetric                              sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientAnimalDerived                           sql.NullBool
 	ValidIngredientAnimalFlesh                             sql.NullBool
 	ValidIngredientRestrictToPreparations                  sql.NullBool
@@ -496,16 +491,16 @@ type GetAllValidMeasurementUnitConversionsToMeasurementUnitRow struct {
 	ValidIngredientContainsSesame                          sql.NullBool
 	ValidIngredientContainsShellfish                       sql.NullBool
 	ValidIngredientContainsAlcohol                         sql.NullBool
-	ValidIngredientContainsSoy                             sql.NullBool
+	ValidIngredientContainsWheat                           sql.NullBool
 	ValidIngredientIsStarch                                sql.NullBool
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsGrain                                 sql.NullBool
+	ValidIngredientIsFruit                                 sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientIsHeat                                  sql.NullBool
-	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContainsSoy                             sql.NullBool
 	ValidIngredientContainsPeanut                          sql.NullBool
 	ValidIngredientContainsDairy                           sql.NullBool
 	ValidIngredientContainsEgg                             sql.NullBool
@@ -573,7 +568,6 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx con
 			&i.ValidIngredientContainsFish,
 			&i.ValidIngredientContainsGluten,
 			&i.ValidIngredientAnimalFlesh,
-			&i.ValidIngredientVolumetric,
 			&i.ValidIngredientIsLiquid,
 			&i.ValidIngredientIconPath,
 			&i.ValidIngredientAnimalDerived,
@@ -666,7 +660,6 @@ SELECT
 	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
 	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
 	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-	valid_ingredients.volumetric as valid_ingredient_volumetric,
 	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
 	valid_ingredients.icon_path as valid_ingredient_icon_path,
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
@@ -730,13 +723,13 @@ type GetValidMeasurementUnitConversionRow struct {
 	ToUnitID                                               string
 	ValidMeasurementUnitConversionModifier                 string
 	FromUnitSlug                                           string
-	ValidMeasurementUnitConversionID                       string
+	FromUnitIconPath                                       string
 	ValidMeasurementUnitConversionToUnit                   string
 	ValidMeasurementUnitConversionFromUnit                 string
 	FromUnitName                                           string
 	FromUnitPluralName                                     string
 	ValidMeasurementUnitConversionNotes                    string
-	FromUnitIconPath                                       string
+	ValidMeasurementUnitConversionID                       string
 	ToUnitPluralName                                       string
 	ToUnitSlug                                             string
 	ToUnitDescription                                      string
@@ -747,16 +740,15 @@ type GetValidMeasurementUnitConversionRow struct {
 	ValidIngredientID                                      sql.NullString
 	ValidIngredientPluralName                              sql.NullString
 	ValidIngredientDescription                             sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientSlug                                    sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientName                                    sql.NullString
-	ValidIngredientContainsWheat                           sql.NullBool
-	ValidIngredientIsFruit                                 sql.NullBool
-	ValidIngredientVolumetric                              sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientAnimalDerived                           sql.NullBool
 	ValidIngredientAnimalFlesh                             sql.NullBool
 	ValidIngredientRestrictToPreparations                  sql.NullBool
@@ -765,16 +757,16 @@ type GetValidMeasurementUnitConversionRow struct {
 	ValidIngredientContainsSesame                          sql.NullBool
 	ValidIngredientContainsShellfish                       sql.NullBool
 	ValidIngredientContainsAlcohol                         sql.NullBool
-	ValidIngredientContainsSoy                             sql.NullBool
+	ValidIngredientContainsWheat                           sql.NullBool
 	ValidIngredientIsStarch                                sql.NullBool
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsGrain                                 sql.NullBool
+	ValidIngredientIsFruit                                 sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientIsHeat                                  sql.NullBool
-	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContainsSoy                             sql.NullBool
 	ValidIngredientContainsPeanut                          sql.NullBool
 	ValidIngredientContainsDairy                           sql.NullBool
 	ValidIngredientContainsEgg                             sql.NullBool
@@ -836,7 +828,6 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 		&i.ValidIngredientContainsFish,
 		&i.ValidIngredientContainsGluten,
 		&i.ValidIngredientAnimalFlesh,
-		&i.ValidIngredientVolumetric,
 		&i.ValidIngredientIsLiquid,
 		&i.ValidIngredientIconPath,
 		&i.ValidIngredientAnimalDerived,

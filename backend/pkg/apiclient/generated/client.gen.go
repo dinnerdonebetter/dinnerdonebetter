@@ -2138,7 +2138,6 @@ type ValidIngredient struct {
 	IsGrain                     *bool                 `json:"isGrain,omitempty"`
 	IsHeat                      *bool                 `json:"isHeat,omitempty"`
 	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
-	IsMeasuredVolumetrically    *bool                 `json:"isMeasuredVolumetrically,omitempty"`
 	IsProtein                   *bool                 `json:"isProtein,omitempty"`
 	IsSalt                      *bool                 `json:"isSalt,omitempty"`
 	IsStarch                    *bool                 `json:"isStarch,omitempty"`
@@ -2176,7 +2175,6 @@ type ValidIngredientCreationRequestInput struct {
 	IsGrain                     *bool                 `json:"isGrain,omitempty"`
 	IsHeat                      *bool                 `json:"isHeat,omitempty"`
 	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
-	IsMeasuredVolumetrically    *bool                 `json:"isMeasuredVolumetrically,omitempty"`
 	IsProtein                   *bool                 `json:"isProtein,omitempty"`
 	IsSalt                      *bool                 `json:"isSalt,omitempty"`
 	IsStarch                    *bool                 `json:"isStarch,omitempty"`
@@ -2366,7 +2364,6 @@ type ValidIngredientUpdateRequestInput struct {
 	IsGrain                     *bool                 `json:"isGrain,omitempty"`
 	IsHeat                      *bool                 `json:"isHeat,omitempty"`
 	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
-	IsMeasuredVolumetrically    *bool                 `json:"isMeasuredVolumetrically,omitempty"`
 	IsProtein                   *bool                 `json:"isProtein,omitempty"`
 	IsSalt                      *bool                 `json:"isSalt,omitempty"`
 	IsStarch                    *bool                 `json:"isStarch,omitempty"`

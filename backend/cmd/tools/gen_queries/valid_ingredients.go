@@ -28,7 +28,6 @@ var validIngredientsColumns = []string{
 	"contains_fish",
 	"contains_gluten",
 	"animal_flesh",
-	"volumetric",
 	"is_liquid",
 	iconPathColumn,
 	"animal_derived",

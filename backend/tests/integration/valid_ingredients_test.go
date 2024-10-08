@@ -33,7 +33,6 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.Equal(t, expected.ContainsFish, actual.ContainsFish, "expected ContainsFish for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsFish, actual.ContainsFish)
 	assert.Equal(t, expected.ContainsGluten, actual.ContainsGluten, "expected ContainsGluten for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsGluten, actual.ContainsGluten)
 	assert.Equal(t, expected.AnimalFlesh, actual.AnimalFlesh, "expected AnimalFlesh for valid ingredient %s to be %v, but it was %v", expected.ID, expected.AnimalFlesh, actual.AnimalFlesh)
-	assert.Equal(t, expected.IsMeasuredVolumetrically, actual.IsMeasuredVolumetrically, "expected IsMeasuredVolumetrically for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsMeasuredVolumetrically, actual.IsMeasuredVolumetrically)
 	assert.Equal(t, expected.IsLiquid, actual.IsLiquid, "expected IsLiquid for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsLiquid, actual.IsLiquid)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.Equal(t, expected.PluralName, actual.PluralName, "expected PluralName for valid ingredient %s to be %v, but it was %v", expected.ID, expected.PluralName, actual.PluralName)

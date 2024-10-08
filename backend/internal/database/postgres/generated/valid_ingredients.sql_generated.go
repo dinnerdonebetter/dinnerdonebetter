@@ -61,7 +61,6 @@ INSERT INTO valid_ingredients (
 	contains_fish,
 	contains_gluten,
 	animal_flesh,
-	volumetric,
 	is_liquid,
 	icon_path,
 	animal_derived,
@@ -115,37 +114,35 @@ INSERT INTO valid_ingredients (
 	$31,
 	$32,
 	$33,
-	$34,
-	$35
+	$34
 )
 `
 
 type CreateValidIngredientParams struct {
-	ID                                      string
 	Name                                    string
 	Description                             string
 	Warning                                 string
 	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
+	ID                                      string
 	PluralName                              string
 	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	ContainsTreeNut                         bool
-	IsHeat                                  bool
-	ContainsFish                            bool
-	Volumetric                              bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
-	AnimalDerived                           bool
-	ContainsWheat                           bool
-	RestrictToPreparations                  bool
+	ContainsSoy                             bool
 	ContainsDairy                           bool
 	AnimalFlesh                             bool
+	ContainsFish                            bool
+	ContainsSesame                          bool
+	AnimalDerived                           bool
+	ContainsShellfish                       bool
+	RestrictToPreparations                  bool
+	ContainsWheat                           bool
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
 	ContainsGluten                          bool
-	ContainsSoy                             bool
 	ContainsAlcohol                         bool
 	ContainsEgg                             bool
 	IsStarch                                bool
@@ -155,7 +152,7 @@ type CreateValidIngredientParams struct {
 	IsSalt                                  bool
 	IsFat                                   bool
 	IsAcid                                  bool
-	ContainsPeanut                          bool
+	IsHeat                                  bool
 }
 
 func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *CreateValidIngredientParams) error {
@@ -175,7 +172,6 @@ func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *Creat
 		arg.ContainsFish,
 		arg.ContainsGluten,
 		arg.AnimalFlesh,
-		arg.Volumetric,
 		arg.IsLiquid,
 		arg.IconPath,
 		arg.AnimalDerived,
@@ -217,7 +213,6 @@ SELECT
 	valid_ingredients.contains_fish,
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
 	valid_ingredients.is_liquid,
 	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
@@ -255,27 +250,26 @@ type GetRandomValidIngredientRow struct {
 	Warning                                 string
 	Description                             string
 	Name                                    string
+	IconPath                                string
+	ID                                      string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
-	ID                                      string
-	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsWheat                           bool
+	IsProtein                               bool
 	AnimalFlesh                             bool
-	ContainsGluten                          bool
 	RestrictToPreparations                  bool
+	ContainsGluten                          bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsWheat                           bool
 	ContainsAlcohol                         bool
 	ContainsSoy                             bool
-	Volumetric                              bool
-	IsProtein                               bool
+	IsStarch                                bool
+	AnimalDerived                           bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
@@ -307,7 +301,6 @@ func (q *Queries) GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRa
 		&i.ContainsFish,
 		&i.ContainsGluten,
 		&i.AnimalFlesh,
-		&i.Volumetric,
 		&i.IsLiquid,
 		&i.IconPath,
 		&i.AnimalDerived,
@@ -353,7 +346,6 @@ SELECT
 	valid_ingredients.contains_fish,
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
 	valid_ingredients.is_liquid,
 	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
@@ -391,27 +383,26 @@ type GetValidIngredientRow struct {
 	Warning                                 string
 	Description                             string
 	Name                                    string
+	IconPath                                string
+	ID                                      string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
-	ID                                      string
-	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsWheat                           bool
+	IsProtein                               bool
 	AnimalFlesh                             bool
-	ContainsGluten                          bool
 	RestrictToPreparations                  bool
+	ContainsGluten                          bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsWheat                           bool
 	ContainsAlcohol                         bool
 	ContainsSoy                             bool
-	Volumetric                              bool
-	IsProtein                               bool
+	IsStarch                                bool
+	AnimalDerived                           bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
@@ -443,7 +434,6 @@ func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) (*
 		&i.ContainsFish,
 		&i.ContainsGluten,
 		&i.AnimalFlesh,
-		&i.Volumetric,
 		&i.IsLiquid,
 		&i.IconPath,
 		&i.AnimalDerived,
@@ -489,7 +479,6 @@ SELECT
 	valid_ingredients.contains_fish,
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
 	valid_ingredients.is_liquid,
 	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
@@ -566,33 +555,32 @@ type GetValidIngredientsRow struct {
 	ArchivedAt                              sql.NullTime
 	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
-	StorageInstructions                     string
 	Slug                                    string
+	ShoppingSuggestions                     string
 	IconPath                                string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	ShoppingSuggestions                     string
 	ID                                      string
+	StorageInstructions                     string
 	PluralName                              string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                           int64
 	TotalCount                              int64
 	IsLiquid                                sql.NullBool
-	RestrictToPreparations                  bool
-	IsGrain                                 bool
-	Volumetric                              bool
+	ContainsShellfish                       bool
+	IsFruit                                 bool
+	AnimalDerived                           bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
-	ContainsSesame                          bool
 	ContainsAlcohol                         bool
-	ContainsShellfish                       bool
+	ContainsSesame                          bool
 	IsStarch                                bool
 	IsProtein                               bool
-	AnimalDerived                           bool
-	IsFruit                                 bool
+	IsGrain                                 bool
+	RestrictToPreparations                  bool
 	IsSalt                                  bool
 	IsFat                                   bool
 	IsAcid                                  bool
@@ -637,7 +625,6 @@ func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX, arg *GetVali
 			&i.ContainsFish,
 			&i.ContainsGluten,
 			&i.AnimalFlesh,
-			&i.Volumetric,
 			&i.IsLiquid,
 			&i.IconPath,
 			&i.AnimalDerived,
@@ -729,7 +716,6 @@ SELECT
 	valid_ingredients.contains_fish,
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
 	valid_ingredients.is_liquid,
 	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
@@ -767,27 +753,26 @@ type GetValidIngredientsWithIDsRow struct {
 	Warning                                 string
 	Description                             string
 	Name                                    string
+	IconPath                                string
+	ID                                      string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
-	ID                                      string
-	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsWheat                           bool
+	IsProtein                               bool
 	AnimalFlesh                             bool
-	ContainsGluten                          bool
 	RestrictToPreparations                  bool
+	ContainsGluten                          bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsWheat                           bool
 	ContainsAlcohol                         bool
 	ContainsSoy                             bool
-	Volumetric                              bool
-	IsProtein                               bool
+	IsStarch                                bool
+	AnimalDerived                           bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
@@ -825,7 +810,6 @@ func (q *Queries) GetValidIngredientsWithIDs(ctx context.Context, db DBTX, ids [
 			&i.ContainsFish,
 			&i.ContainsGluten,
 			&i.AnimalFlesh,
-			&i.Volumetric,
 			&i.IsLiquid,
 			&i.IconPath,
 			&i.AnimalDerived,
@@ -881,7 +865,6 @@ SELECT
 	valid_ingredients.contains_fish,
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
 	valid_ingredients.is_liquid,
 	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
@@ -920,27 +903,26 @@ type SearchForValidIngredientsRow struct {
 	Warning                                 string
 	Description                             string
 	Name                                    string
+	IconPath                                string
+	ID                                      string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
-	ID                                      string
-	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsWheat                           bool
+	IsProtein                               bool
 	AnimalFlesh                             bool
-	ContainsGluten                          bool
 	RestrictToPreparations                  bool
+	ContainsGluten                          bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsWheat                           bool
 	ContainsAlcohol                         bool
 	ContainsSoy                             bool
-	Volumetric                              bool
-	IsProtein                               bool
+	IsStarch                                bool
+	AnimalDerived                           bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
@@ -978,7 +960,6 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, nameQu
 			&i.ContainsFish,
 			&i.ContainsGluten,
 			&i.AnimalFlesh,
-			&i.Volumetric,
 			&i.IsLiquid,
 			&i.IconPath,
 			&i.AnimalDerived,
@@ -1034,7 +1015,6 @@ SELECT
 	valid_ingredients.contains_fish,
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
 	valid_ingredients.is_liquid,
 	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
@@ -1085,27 +1065,26 @@ type SearchValidIngredientsByPreparationAndIngredientNameRow struct {
 	Warning                                 string
 	Description                             string
 	Name                                    string
+	IconPath                                string
+	ID                                      string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
-	ID                                      string
-	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsWheat                           bool
+	IsProtein                               bool
 	AnimalFlesh                             bool
-	ContainsGluten                          bool
 	RestrictToPreparations                  bool
+	ContainsGluten                          bool
 	ContainsFish                            bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsWheat                           bool
 	ContainsAlcohol                         bool
 	ContainsSoy                             bool
-	Volumetric                              bool
-	IsProtein                               bool
+	IsStarch                                bool
+	AnimalDerived                           bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
@@ -1143,7 +1122,6 @@ func (q *Queries) SearchValidIngredientsByPreparationAndIngredientName(ctx conte
 			&i.ContainsFish,
 			&i.ContainsGluten,
 			&i.AnimalFlesh,
-			&i.Volumetric,
 			&i.IsLiquid,
 			&i.IconPath,
 			&i.AnimalDerived,
@@ -1198,29 +1176,28 @@ UPDATE valid_ingredients SET
 	contains_fish = $12,
 	contains_gluten = $13,
 	animal_flesh = $14,
-	volumetric = $15,
-	is_liquid = $16,
-	icon_path = $17,
-	animal_derived = $18,
-	plural_name = $19,
-	restrict_to_preparations = $20,
-	minimum_ideal_storage_temperature_in_celsius = $21,
-	maximum_ideal_storage_temperature_in_celsius = $22,
-	storage_instructions = $23,
-	slug = $24,
-	contains_alcohol = $25,
-	shopping_suggestions = $26,
-	is_starch = $27,
-	is_protein = $28,
-	is_grain = $29,
-	is_fruit = $30,
-	is_salt = $31,
-	is_fat = $32,
-	is_acid = $33,
-	is_heat = $34,
+	is_liquid = $15,
+	icon_path = $16,
+	animal_derived = $17,
+	plural_name = $18,
+	restrict_to_preparations = $19,
+	minimum_ideal_storage_temperature_in_celsius = $20,
+	maximum_ideal_storage_temperature_in_celsius = $21,
+	storage_instructions = $22,
+	slug = $23,
+	contains_alcohol = $24,
+	shopping_suggestions = $25,
+	is_starch = $26,
+	is_protein = $27,
+	is_grain = $28,
+	is_fruit = $29,
+	is_salt = $30,
+	is_fat = $31,
+	is_acid = $32,
+	is_heat = $33,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $35
+	AND id = $34
 `
 
 type UpdateValidIngredientParams struct {
@@ -1237,8 +1214,7 @@ type UpdateValidIngredientParams struct {
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	ContainsWheat                           bool
-	ContainsPeanut                          bool
-	Volumetric                              bool
+	ContainsAlcohol                         bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
 	AnimalDerived                           bool
@@ -1247,8 +1223,8 @@ type UpdateValidIngredientParams struct {
 	ContainsShellfish                       bool
 	ContainsSoy                             bool
 	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
 	AnimalFlesh                             bool
-	ContainsAlcohol                         bool
 	ContainsDairy                           bool
 	IsStarch                                bool
 	IsProtein                               bool
@@ -1277,7 +1253,6 @@ func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *Updat
 		arg.ContainsFish,
 		arg.ContainsGluten,
 		arg.AnimalFlesh,
-		arg.Volumetric,
 		arg.IsLiquid,
 		arg.IconPath,
 		arg.AnimalDerived,

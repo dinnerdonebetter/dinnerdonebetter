@@ -25,7 +25,6 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		ContainsFish:                fake.Bool(),
 		ContainsGluten:              fake.Bool(),
 		AnimalFlesh:                 fake.Bool(),
-		IsMeasuredVolumetrically:    fake.Bool(),
 		IsLiquid:                    fake.Bool(),
 		IconPath:                    buildUniqueString(),
 		CreatedAt:                   BuildFakeTime(),
