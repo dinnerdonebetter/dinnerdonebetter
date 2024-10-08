@@ -43,7 +43,6 @@ type (
 		Slug                        string               `json:"slug"`
 		ShoppingSuggestions         string               `json:"shoppingSuggestions"`
 		ContainsShellfish           bool                 `json:"containsShellfish"`
-		IsMeasuredVolumetrically    bool                 `json:"isMeasuredVolumetrically"`
 		IsLiquid                    bool                 `json:"isLiquid"`
 		ContainsPeanut              bool                 `json:"containsPeanut"`
 		ContainsTreeNut             bool                 `json:"containsTreeNut"`
@@ -86,7 +85,6 @@ type (
 		ContainsShellfish           *bool
 		ContainsDairy               *bool
 		AnimalFlesh                 *bool
-		IsMeasuredVolumetrically    *bool
 		IsLiquid                    *bool
 		ContainsPeanut              *bool
 		ContainsTreeNut             *bool
@@ -124,7 +122,6 @@ type (
 		Description                 string               `json:"description"`
 		Slug                        string               `json:"slug"`
 		ShoppingSuggestions         string               `json:"shoppingSuggestions"`
-		IsMeasuredVolumetrically    bool                 `json:"isMeasuredVolumetrically"`
 		ContainsFish                bool                 `json:"containsFish"`
 		ContainsShellfish           bool                 `json:"containsShellfish"`
 		AnimalFlesh                 bool                 `json:"animalFlesh"`
@@ -164,7 +161,6 @@ type (
 		Description                 string
 		Slug                        string
 		ShoppingSuggestions         string
-		IsMeasuredVolumetrically    bool
 		ContainsFish                bool
 		ContainsShellfish           bool
 		AnimalFlesh                 bool
@@ -208,7 +204,6 @@ type (
 		ContainsFish                *bool                `json:"containsFish,omitempty"`
 		ContainsGluten              *bool                `json:"containsGluten,omitempty"`
 		AnimalFlesh                 *bool                `json:"animalFlesh,omitempty"`
-		IsMeasuredVolumetrically    *bool                `json:"isMeasuredVolumetrically,omitempty"`
 		IsLiquid                    *bool                `json:"isLiquid,omitempty"`
 		ContainsSoy                 *bool                `json:"containsSoy,omitempty"`
 		PluralName                  *string              `json:"pluralName,omitempty"`
@@ -326,10 +321,6 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 
 	if input.AnimalFlesh != nil && *input.AnimalFlesh != x.AnimalFlesh {
 		x.AnimalFlesh = *input.AnimalFlesh
-	}
-
-	if input.IsMeasuredVolumetrically != nil && *input.IsMeasuredVolumetrically != x.IsMeasuredVolumetrically {
-		x.IsMeasuredVolumetrically = *input.IsMeasuredVolumetrically
 	}
 
 	if input.IsLiquid != nil && *input.IsLiquid != x.IsLiquid {

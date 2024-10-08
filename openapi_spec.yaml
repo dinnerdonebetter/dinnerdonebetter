@@ -23107,8 +23107,6 @@ components:
           type: boolean
         isLiquid:
           type: boolean
-        isMeasuredVolumetrically:
-          type: boolean
         isProtein:
           type: boolean
         isSalt:
@@ -23178,8 +23176,6 @@ components:
         isHeat:
           type: boolean
         isLiquid:
-          type: boolean
-        isMeasuredVolumetrically:
           type: boolean
         isProtein:
           type: boolean
@@ -23489,8 +23485,6 @@ components:
         isHeat:
           type: boolean
         isLiquid:
-          type: boolean
-        isMeasuredVolumetrically:
           type: boolean
         isProtein:
           type: boolean

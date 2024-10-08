@@ -181,7 +181,6 @@ SELECT
 	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
 	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
 	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-	valid_ingredients.volumetric as valid_ingredient_volumetric,
 	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
 	valid_ingredients.icon_path as valid_ingredient_icon_path,
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
@@ -223,39 +222,38 @@ type GetValidIngredientGroupMembersRow struct {
 	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientWarning                                 string
-	ValidIngredientSlug                                    string
+	ID                                                     string
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientDescription                             string
 	ValidIngredientName                                    string
+	ValidIngredientPluralName                              string
 	ValidIngredientID                                      string
 	BelongsToGroup                                         string
-	ValidIngredientShoppingSuggestions                     string
-	ID                                                     string
+	ValidIngredientWarning                                 string
+	ValidIngredientSlug                                    string
 	ValidIngredientStorageInstructions                     string
 	ValidIngredientIconPath                                string
-	ValidIngredientPluralName                              string
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientIsFruit                                 bool
 	ValidIngredientAnimalDerived                           bool
-	ValidIngredientIsGrain                                 bool
-	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
-	ValidIngredientVolumetric                              bool
-	ValidIngredientIsFruit                                 bool
+	ValidIngredientIsGrain                                 bool
+	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientIsSalt                                  bool
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsSoy                             bool
 	ValidIngredientContainsTreeNut                         bool
 	ValidIngredientContainsPeanut                          bool
 	ValidIngredientContainsDairy                           bool
@@ -289,7 +287,6 @@ func (q *Queries) GetValidIngredientGroupMembers(ctx context.Context, db DBTX, b
 			&i.ValidIngredientContainsFish,
 			&i.ValidIngredientContainsGluten,
 			&i.ValidIngredientAnimalFlesh,
-			&i.ValidIngredientVolumetric,
 			&i.ValidIngredientIsLiquid,
 			&i.ValidIngredientIconPath,
 			&i.ValidIngredientAnimalDerived,

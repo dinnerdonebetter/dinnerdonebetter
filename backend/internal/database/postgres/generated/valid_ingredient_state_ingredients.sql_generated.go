@@ -129,7 +129,6 @@ SELECT
 	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
 	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
 	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-	valid_ingredients.volumetric as valid_ingredient_volumetric,
 	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
 	valid_ingredients.icon_path as valid_ingredient_icon_path,
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
@@ -196,17 +195,16 @@ type GetValidIngredientStateIngredientRow struct {
 	ValidIngredientStateID                                 string
 	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientStateIngredientID                       string
 	ValidIngredientSlug                                    string
-	ValidIngredientStorageInstructions                     string
+	ValidIngredientStateIngredientID                       string
 	ValidIngredientIconPath                                string
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
-	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsAlcohol                         bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientIsStarch                                bool
@@ -260,7 +258,6 @@ func (q *Queries) GetValidIngredientStateIngredient(ctx context.Context, db DBTX
 		&i.ValidIngredientContainsFish,
 		&i.ValidIngredientContainsGluten,
 		&i.ValidIngredientAnimalFlesh,
-		&i.ValidIngredientVolumetric,
 		&i.ValidIngredientIsLiquid,
 		&i.ValidIngredientIconPath,
 		&i.ValidIngredientAnimalDerived,
@@ -324,7 +321,6 @@ SELECT
 	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
 	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
 	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-	valid_ingredients.volumetric as valid_ingredient_volumetric,
 	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
 	valid_ingredients.icon_path as valid_ingredient_icon_path,
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
@@ -415,8 +411,8 @@ type GetValidIngredientStateIngredientsRow struct {
 	ValidIngredientStateIngredientArchivedAt               sql.NullTime
 	ValidIngredientStateArchivedAt                         sql.NullTime
 	ValidIngredientStateLastIndexedAt                      sql.NullTime
-	ValidIngredientStateIngredientID                       string
-	ValidIngredientIconPath                                string
+	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
@@ -432,15 +428,14 @@ type GetValidIngredientStateIngredientsRow struct {
 	ValidIngredientStateName                               string
 	ValidIngredientStateID                                 string
 	ValidIngredientStorageInstructions                     string
-	ValidIngredientStateIngredientNotes                    string
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
 	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
 	TotalCount                                             int64
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsAlcohol                         bool
 	ValidIngredientAnimalDerived                           bool
@@ -452,7 +447,7 @@ type GetValidIngredientStateIngredientsRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
@@ -510,7 +505,6 @@ func (q *Queries) GetValidIngredientStateIngredients(ctx context.Context, db DBT
 			&i.ValidIngredientContainsFish,
 			&i.ValidIngredientContainsGluten,
 			&i.ValidIngredientAnimalFlesh,
-			&i.ValidIngredientVolumetric,
 			&i.ValidIngredientIsLiquid,
 			&i.ValidIngredientIconPath,
 			&i.ValidIngredientAnimalDerived,
@@ -586,7 +580,6 @@ SELECT
 	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
 	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
 	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-	valid_ingredients.volumetric as valid_ingredient_volumetric,
 	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
 	valid_ingredients.icon_path as valid_ingredient_icon_path,
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
@@ -679,8 +672,8 @@ type GetValidIngredientStateIngredientsForIngredientRow struct {
 	ValidIngredientStateIngredientArchivedAt               sql.NullTime
 	ValidIngredientStateArchivedAt                         sql.NullTime
 	ValidIngredientStateLastIndexedAt                      sql.NullTime
-	ValidIngredientStateIngredientID                       string
-	ValidIngredientIconPath                                string
+	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
@@ -696,15 +689,14 @@ type GetValidIngredientStateIngredientsForIngredientRow struct {
 	ValidIngredientStateName                               string
 	ValidIngredientStateID                                 string
 	ValidIngredientStorageInstructions                     string
-	ValidIngredientStateIngredientNotes                    string
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
 	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
 	TotalCount                                             int64
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsAlcohol                         bool
 	ValidIngredientAnimalDerived                           bool
@@ -716,7 +708,7 @@ type GetValidIngredientStateIngredientsForIngredientRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
@@ -775,7 +767,6 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 			&i.ValidIngredientContainsFish,
 			&i.ValidIngredientContainsGluten,
 			&i.ValidIngredientAnimalFlesh,
-			&i.ValidIngredientVolumetric,
 			&i.ValidIngredientIsLiquid,
 			&i.ValidIngredientIconPath,
 			&i.ValidIngredientAnimalDerived,
@@ -851,7 +842,6 @@ SELECT
 	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
 	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
 	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-	valid_ingredients.volumetric as valid_ingredient_volumetric,
 	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
 	valid_ingredients.icon_path as valid_ingredient_icon_path,
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
@@ -944,8 +934,8 @@ type GetValidIngredientStateIngredientsForIngredientStateRow struct {
 	ValidIngredientStateIngredientArchivedAt               sql.NullTime
 	ValidIngredientStateArchivedAt                         sql.NullTime
 	ValidIngredientStateLastIndexedAt                      sql.NullTime
-	ValidIngredientStateIngredientID                       string
-	ValidIngredientIconPath                                string
+	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
@@ -961,15 +951,14 @@ type GetValidIngredientStateIngredientsForIngredientStateRow struct {
 	ValidIngredientStateName                               string
 	ValidIngredientStateID                                 string
 	ValidIngredientStorageInstructions                     string
-	ValidIngredientStateIngredientNotes                    string
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
 	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
 	TotalCount                                             int64
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsAlcohol                         bool
 	ValidIngredientAnimalDerived                           bool
@@ -981,7 +970,7 @@ type GetValidIngredientStateIngredientsForIngredientStateRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
@@ -1040,7 +1029,6 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 			&i.ValidIngredientContainsFish,
 			&i.ValidIngredientContainsGluten,
 			&i.ValidIngredientAnimalFlesh,
-			&i.ValidIngredientVolumetric,
 			&i.ValidIngredientIsLiquid,
 			&i.ValidIngredientIconPath,
 			&i.ValidIngredientAnimalDerived,
@@ -1116,7 +1104,6 @@ SELECT
 	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
 	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
 	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-	valid_ingredients.volumetric as valid_ingredient_volumetric,
 	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
 	valid_ingredients.icon_path as valid_ingredient_icon_path,
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
@@ -1183,17 +1170,16 @@ type GetValidIngredientStateIngredientsWithIDsRow struct {
 	ValidIngredientStateID                                 string
 	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientStateIngredientID                       string
 	ValidIngredientSlug                                    string
-	ValidIngredientStorageInstructions                     string
+	ValidIngredientStateIngredientID                       string
 	ValidIngredientIconPath                                string
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
-	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsAlcohol                         bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientIsStarch                                bool
@@ -1253,7 +1239,6 @@ func (q *Queries) GetValidIngredientStateIngredientsWithIDs(ctx context.Context,
 			&i.ValidIngredientContainsFish,
 			&i.ValidIngredientContainsGluten,
 			&i.ValidIngredientAnimalFlesh,
-			&i.ValidIngredientVolumetric,
 			&i.ValidIngredientIsLiquid,
 			&i.ValidIngredientIconPath,
 			&i.ValidIngredientAnimalDerived,

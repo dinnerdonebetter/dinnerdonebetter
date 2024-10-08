@@ -72,5 +72,10 @@ var (
 			Description: "audit log table",
 			Script:      fetchMigration("00004_audit_log"),
 		},
+		{
+			Version:     5,
+			Description: "remove volumetric field",
+			Script:      fetchMigration("00005_remove_volumetric_field"),
+		},
 	}
 )
