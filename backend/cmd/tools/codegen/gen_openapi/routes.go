@@ -604,11 +604,6 @@ var routeInfoMap = map[string]routeDetails{
 		InputType:    &types.RecipeStepUpdateRequestInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
-	"POST /api/v1/recipes/{recipeID}/steps/{recipeStepID}/images": {
-		ID:           "UploadMediaForRecipeStep",
-		OAuth2Scopes: []string{householdMember},
-		ResponseType: []*types.RecipeMedia{},
-	},
 	"POST /api/v1/recipes/": {
 		ID:           "CreateRecipe",
 		ResponseType: &types.Recipe{},
@@ -654,13 +649,10 @@ var routeInfoMap = map[string]routeDetails{
 		ResponseType: &types.APIError{},
 		OAuth2Scopes: []string{householdMember},
 	},
-	"POST /api/v1/recipes/{recipeID}/images": {
-		ID:           "UploadMediaForRecipe",
-		OAuth2Scopes: []string{householdMember},
-		ResponseType: []*types.RecipeMedia{},
-	},
 	"GET /api/v1/recipes/{recipeID}/mermaid": {
-		ID: "GetMermaidDiagramForRecipe",
+		ID:           "GetMermaidDiagramForRecipe",
+		OAuth2Scopes: []string{householdMember},
+		ResponseType: "string",
 	},
 	"GET /api/v1/recipes/{recipeID}/prep_steps": {
 		ID:           "GetRecipeMealPlanTasks",
@@ -837,6 +829,7 @@ var routeInfoMap = map[string]routeDetails{
 	"PUT /api/v1/users/password/new": {
 		ID:           "UpdatePassword",
 		InputType:    &types.PasswordUpdateInput{},
+		ResponseType: &types.PasswordResetResponse{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"POST /api/v1/users/permissions/check": {
@@ -1418,19 +1411,21 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"POST /api/v1/workers/finalize_meal_plans": {
 		ID:           "RunFinalizeMealPlanWorker",
-		ResponseType: &types.FinalizeMealPlansRequest{},
+		ResponseType: &types.FinalizeMealPlansResponse{},
 		InputType:    &types.FinalizeMealPlansRequest{},
-		OAuth2Scopes: []string{householdAdmin},
+		OAuth2Scopes: []string{serviceAdmin},
 	},
 	"POST /api/v1/workers/meal_plan_grocery_list_init": {
-		ID: "RunMealPlanGroceryListInitializerWorker",
-		// no input or output types for this route
-		OAuth2Scopes: []string{householdAdmin},
+		ID:           "RunMealPlanGroceryListInitializerWorker",
+		ResponseType: &types.InitializeMealPlanGroceryListResponse{},
+		InputType:    &types.InitializeMealPlanGroceryListRequest{},
+		OAuth2Scopes: []string{serviceAdmin},
 	},
 	"POST /api/v1/workers/meal_plan_tasks": {
-		ID: "RunMealPlanTaskCreatorWorker",
-		// no input or output types for this route
-		OAuth2Scopes: []string{householdAdmin},
+		ID:           "RunMealPlanTaskCreatorWorker",
+		ResponseType: &types.CreateMealPlanTasksResponse{},
+		InputType:    &types.CreateMealPlanTasksRequest{},
+		OAuth2Scopes: []string{serviceAdmin},
 	},
 	"GET /auth/status": {
 		ID:           "GetAuthStatus",

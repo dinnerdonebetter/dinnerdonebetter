@@ -18,35 +18,39 @@ import (
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
 
-func getTypeName(input any) string {
+func getTypeName(input any) (string, bool) {
 	t := reflect.TypeOf(input)
+
+	// Check if the input is an array or slice
+	isArray := false
+	if t.Kind() == reflect.Array || t.Kind() == reflect.Slice {
+		isArray = true
+		// Get the type of the element in the array/slice
+		t = t.Elem()
+	}
 
 	// Dereference pointer types
 	if t.Kind() == reflect.Ptr {
 		t = t.Elem()
 	}
 
-	return t.Name()
+	return t.Name(), isArray
+}
+
+var skipRoutes = map[string]bool{
+	"/_meta_/live":                                           true,
+	"/auth/{auth_provider}":                                  true,
+	"/auth/{auth_provider}/callback":                         true,
+	"/oauth2/authorize":                                      true,
+	"/oauth2/token":                                          true,
+	"/api/v1/recipes/{recipeID}/steps/{recipeStepID}":        true,
+	"/api/v1/recipes/{recipeID}/images":                      true,
+	"/api/v1/recipes/{recipeID}/steps/{recipeStepID}/images": true,
+	"": true,
 }
 
 func main() {
 	ctx := context.Background()
-
-	schemas, err := parseTypes("pkg/types")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	slices.SortFunc(schemas, func(a, b *openapiSchema) int {
-		switch {
-		case a.name < b.name:
-			return -1
-		case a.name == b.name:
-			return 0
-		default:
-			return 1
-		}
-	})
 
 	rawCfg, err := os.ReadFile("environments/local/config_files/service-config.json")
 	if err != nil {
@@ -70,7 +74,7 @@ func main() {
 
 	routeDefinitions := []*RouteDefinition{}
 	for _, route := range srv.Router().Routes() {
-		if route.Path == "/auth/{auth_provider}" || route.Path == "/auth/{auth_provider}/callback" {
+		if _, ok := skipRoutes[route.Path]; ok {
 			continue
 		}
 
@@ -85,23 +89,27 @@ func main() {
 		}
 
 		routeDef := &RouteDefinition{
-			ID:            routeInfo.ID,
-			Method:        route.Method,
-			Path:          route.Path,
-			SearchRoute:   routeInfo.SearchRoute,
-			PathArguments: pathArgs,
-			ListRoute:     routeInfo.ListRoute,
-			Description:   routeInfo.Description,
-			Authless:      routeInfo.Authless,
-			OAuth2Scopes:  routeInfo.OAuth2Scopes,
+			ID:                 routeInfo.ID,
+			Method:             route.Method,
+			Path:               route.Path,
+			SearchRoute:        routeInfo.SearchRoute,
+			PathArguments:      pathArgs,
+			QueryFilteredRoute: routeInfo.ListRoute,
+			Description:        routeInfo.Description,
+			Authless:           routeInfo.Authless,
+			OAuth2Scopes:       routeInfo.OAuth2Scopes,
 		}
 
 		if routeInfo.ResponseType != nil {
-			routeDef.ResponseType = getTypeName(routeInfo.ResponseType)
+			routeDef.ResponseType, routeDef.ReturnsList = getTypeName(routeInfo.ResponseType)
 		}
 
 		if routeInfo.InputType != nil {
-			routeDef.InputType = getTypeName(routeInfo.InputType)
+			routeDef.InputType, _ = getTypeName(routeInfo.InputType)
+		}
+
+		if routeDef.Path == "/_meta_/live" || routeDef.Path == "/_meta_/ready" {
+			routeDef.ResponseType = "empty"
 		}
 
 		pathParts := strings.Split(route.Path, "/")
@@ -130,7 +138,9 @@ func main() {
 
 	spec := baseSpec()
 
-	tags := []openapi.Tag{}
+	tags := []openapi.Tag{
+		{Name: "meta"},
+	}
 	for tag := range allTags {
 		rawDescription := tagDescriptions[tag]
 
@@ -190,6 +200,22 @@ func main() {
 
 	spec.Paths = paths
 
+	schemas, err := parseTypes("pkg/types")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	slices.SortFunc(schemas, func(a, b *openapiSchema) int {
+		switch {
+		case a.name < b.name:
+			return -1
+		case a.name == b.name:
+			return 0
+		default:
+			return 1
+		}
+	})
+
 	convertedMap := map[string]map[string]any{}
 	for _, schema := range schemas {
 		if schema.name == "" {
@@ -204,7 +230,14 @@ func main() {
 		for k, v := range schema.Properties {
 			propertiesMap[k] = v
 		}
-		tcm["properties"] = propertiesMap
+
+		if len(propertiesMap) > 0 {
+			tcm["properties"] = propertiesMap
+		}
+
+		if len(schema.Enum) > 0 {
+			tcm["enum"] = schema.Enum
+		}
 
 		convertedMap[schema.name] = tcm
 	}

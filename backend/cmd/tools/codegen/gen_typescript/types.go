@@ -38,6 +38,7 @@ func isCustomType(x string) bool {
 		errorCodeType,
 		boolType,
 		mapStringToBoolType,
+		mapStringToChangeLogType,
 		timeType,
 		stringType,
 	}, x)

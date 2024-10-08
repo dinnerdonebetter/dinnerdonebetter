@@ -67,6 +67,10 @@ func typescriptInterface[T any](x T) (out string, imports []string, err error) {
 			fieldType = stringType
 		case mapStringToBoolType:
 			fieldType = "Record<string, boolean>"
+		case mapStringToChangeLogType:
+			fieldType = "Record<string, ChangeLog>"
+		case "AuditLogEntryEventType":
+			fieldType = "string"
 		case boolType:
 			fieldType = "boolean"
 		}

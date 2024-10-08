@@ -86,3 +86,18 @@ export class WebhookCreationRequestInput implements IWebhookCreationRequestInput
     this.events = input.events ?? [];
   }
 }
+
+export interface IWebhookTriggerEventCreationRequestInput {
+  belongsToWebhook: NonNullable<string>;
+  triggerEvent: NonNullable<string>;
+}
+
+export class WebhookTriggerEventCreationRequestInput implements IWebhookTriggerEventCreationRequestInput {
+  belongsToWebhook: NonNullable<string> = '';
+  triggerEvent: NonNullable<string> = '';
+
+  constructor(input: Partial<WebhookTriggerEventCreationRequestInput> = {}) {
+    this.belongsToWebhook = input.belongsToWebhook ?? '';
+    this.triggerEvent = input.triggerEvent ?? '';
+  }
+}

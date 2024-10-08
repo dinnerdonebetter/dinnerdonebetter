@@ -92,6 +92,13 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 		case mapStringToBoolType:
 			fieldType = "Record<string, boolean>"
 			defaultValue = "{}"
+		case mapStringToChangeLogType:
+			fieldType = "Record<string, ChangeLog>"
+			defaultValue = "{}"
+		case "AuditLogEntryEventType":
+			fieldType = "string"
+			defaultValue = "''"
+			customType = false
 		case timeType:
 			fieldType = stringType
 			if !isPointer {
@@ -114,7 +121,8 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 		if customType && !isSlice && !isPointer && !slices.Contains([]string{
 			typeNameNumberRange,
 			typeNameNumberRangeWithOptionalMax,
-			typeNameOptionalNumberRange}, fieldType) {
+			typeNameOptionalNumberRange,
+		}, fieldType) {
 			defaultValue = fmt.Sprintf("new %s()", fieldType)
 		}
 

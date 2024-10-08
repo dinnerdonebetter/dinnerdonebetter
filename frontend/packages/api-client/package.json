@@ -9,7 +9,6 @@
   ],
   "scripts": {
     "lint": "eslint *.ts*",
-    "coverage": "npm run test -- --coverage",
     "format": "prettier --write .",
     "format-check": "prettier --check ."
   },

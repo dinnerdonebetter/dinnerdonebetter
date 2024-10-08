@@ -248,3 +248,75 @@ export class AvatarUpdateInput implements IAvatarUpdateInput {
     this.base64EncodedData = input.base64EncodedData ?? '';
   }
 }
+
+export interface IUsernameUpdateInput {
+  newUsername: NonNullable<string>;
+  currentPassword: NonNullable<string>;
+  totpToken: NonNullable<string>;
+}
+
+export class UsernameUpdateInput implements IUsernameUpdateInput {
+  newUsername: NonNullable<string> = '';
+  currentPassword: NonNullable<string> = '';
+  totpToken: NonNullable<string> = '';
+
+  constructor(input: Partial<UsernameUpdateInput> = {}) {
+    this.newUsername = input.newUsername ?? '';
+    this.currentPassword = input.currentPassword ?? '';
+    this.totpToken = input.totpToken ?? '';
+  }
+}
+
+export interface IUserDetailsUpdateRequestInput {
+  firstName: NonNullable<string>;
+  lastName: NonNullable<string>;
+  birthday: NonNullable<string>;
+  currentPassword: NonNullable<string>;
+  totpToken: NonNullable<string>;
+}
+
+export class UserDetailsUpdateRequestInput implements IUserDetailsUpdateRequestInput {
+  firstName: NonNullable<string> = '';
+  lastName: NonNullable<string> = '';
+  birthday: NonNullable<string> = '1970-01-01T00:00:00Z';
+  currentPassword: NonNullable<string> = '';
+  totpToken: NonNullable<string> = '';
+
+  constructor(input: Partial<UserDetailsUpdateRequestInput> = {}) {
+    this.firstName = input.firstName ?? '';
+    this.lastName = input.lastName ?? '';
+    this.birthday = input.birthday ?? '1970-01-01T00:00:00Z';
+    this.currentPassword = input.currentPassword ?? '';
+    this.totpToken = input.totpToken ?? '';
+  }
+}
+
+export interface IUserEmailAddressUpdateInput {
+  newEmailAddress: NonNullable<string>;
+  currentPassword: NonNullable<string>;
+  totpToken: NonNullable<string>;
+}
+
+export class UserEmailAddressUpdateInput implements IUserEmailAddressUpdateInput {
+  newEmailAddress: NonNullable<string> = '';
+  currentPassword: NonNullable<string> = '';
+  totpToken: NonNullable<string> = '';
+
+  constructor(input: Partial<UserEmailAddressUpdateInput> = {}) {
+    this.newEmailAddress = input.newEmailAddress ?? '';
+    this.currentPassword = input.currentPassword ?? '';
+    this.totpToken = input.totpToken ?? '';
+  }
+}
+
+export interface IPasswordResetResponse {
+  successful: NonNullable<boolean>;
+}
+
+export class PasswordResetResponse implements IPasswordResetResponse {
+  successful: NonNullable<boolean> = false;
+
+  constructor(input: Partial<PasswordResetResponse> = {}) {
+    this.successful = input.successful ?? false;
+  }
+}

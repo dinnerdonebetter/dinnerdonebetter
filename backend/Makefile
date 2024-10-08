@@ -195,13 +195,11 @@ configs:
 queries:
 	go run $(THIS)/cmd/tools/gen_queries
 
-clean_ts:
-	rm -rf $(ARTIFACTS_DIR)/typescript
-
-typescript: clean_ts
-	mkdir --parents $(ARTIFACTS_DIR)/typescript
+typescript:
 	go run $(THIS)/cmd/tools/codegen/gen_typescript
-	(cd ../frontend && make format)
+
+new_ts:
+	go run $(THIS)/cmd/tools/codegen/v2
 
 .PHONY: querier
 querier: queries queries_lint  ## TODO: This target is broken

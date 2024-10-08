@@ -14,11 +14,12 @@ import (
 const (
 	destinationDirectory = "../frontend/packages/models"
 
-	timeType            = "time.Time"
-	mapStringToBoolType = "map[string]bool"
-	stringType          = "string"
-	boolType            = "bool"
-	errorCodeType       = "ErrorCode"
+	timeType                 = "time.Time"
+	mapStringToBoolType      = "map[string]bool"
+	mapStringToChangeLogType = "map[string]ChangeLog"
+	stringType               = "string"
+	boolType                 = "bool"
+	errorCodeType            = "ErrorCode"
 )
 
 type CodeLine struct {
@@ -37,7 +38,7 @@ func buildImportMap() map[string]string {
 		"NumberRangeWithOptionalMax": "main.ts",
 		"OptionalNumberRange":        "main.ts",
 	}
-	for _, u := range unions {
+	for _, u := range codegen.Enums {
 		importMap[u.Name] = "_unions.ts"
 	}
 

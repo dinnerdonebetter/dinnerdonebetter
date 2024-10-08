@@ -65,6 +65,10 @@ var (
 			types.OAuth2ClientCreationRequestInput{},
 			types.OAuth2ClientCreationResponse{},
 		},
+		"auditLogEntries": {
+			types.ChangeLog{},
+			types.AuditLogEntry{},
+		},
 		"auth": {
 			types.ChangeActiveHouseholdInput{},
 			types.PasswordResetToken{},
@@ -214,11 +218,20 @@ var (
 			types.UserAccountStatusUpdateInput{},
 			types.EmailAddressVerificationRequestInput{},
 			types.AvatarUpdateInput{},
+			types.UsernameUpdateInput{},
+			types.UserDetailsUpdateRequestInput{},
+			types.UserEmailAddressUpdateInput{},
+			types.PasswordResetResponse{},
 		},
 		"userIngredientPreferences": {
 			types.UserIngredientPreference{},
 			types.UserIngredientPreferenceCreationRequestInput{},
 			types.UserIngredientPreferenceUpdateRequestInput{},
+		},
+		"userNotifications": {
+			types.UserNotification{},
+			types.UserNotificationCreationRequestInput{},
+			types.UserNotificationUpdateRequestInput{},
 		},
 		"validIngredientMeasurementUnits": {
 			types.ValidIngredientMeasurementUnit{},
@@ -300,6 +313,15 @@ var (
 			types.Webhook{},
 			types.WebhookTriggerEvent{},
 			types.WebhookCreationRequestInput{},
+			types.WebhookTriggerEventCreationRequestInput{},
+		},
+		"workers": {
+			types.FinalizeMealPlansRequest{},
+			types.FinalizeMealPlansResponse{},
+			types.InitializeMealPlanGroceryListRequest{},
+			types.InitializeMealPlanGroceryListResponse{},
+			types.CreateMealPlanTasksRequest{},
+			types.CreateMealPlanTasksResponse{},
 		},
 	}
 )
