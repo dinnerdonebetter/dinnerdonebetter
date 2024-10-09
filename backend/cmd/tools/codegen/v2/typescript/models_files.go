@@ -45,21 +45,29 @@ var defaultTypeValues = map[string]string{
 	"integer": `0`,
 }
 
-func defaultValueForType(typeName string) string {
-	if x, ok := defaultTypeValues[typeName]; ok {
+func (f Field) defaultValueForType() string {
+	if f.Array {
+		return "[]"
+	}
+
+	if x, ok := defaultTypeValues[f.Type]; ok {
 		return x
 	}
 
-	switch typeName {
+	switch f.Type {
 	case "":
 		return ""
 	default:
-		return fmt.Sprintf("new %s()", typeName)
+		return fmt.Sprintf("new %s()", f.Type)
 	}
 }
 
 var typeReplacementMap = map[string]string{
 	"integer": "number",
+}
+
+var skipTypes = map[string]bool{
+	"APIResponse": true,
 }
 
 func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error) {
@@ -80,6 +88,10 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 			Imports: map[string][]string{},
 		}
 
+		if _, ok := skipTypes[name]; ok {
+			continue
+		}
+
 		// we'll handle these later
 		if _, isEnum := component["enum"]; isEnum {
 			continue
@@ -90,6 +102,10 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 				for k, v := range propMap {
 					field := Field{
 						Name: k,
+					}
+
+					if name == "WebhookCreationRequestInput" && k == "events" {
+						println("yo")
 					}
 
 					if typeMap, ok3 := v.(map[string]any); ok3 {
@@ -216,7 +232,7 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 					}
 
 					if field.DefaultValue == "" {
-						field.DefaultValue = defaultValueForType(field.Type)
+						field.DefaultValue = field.defaultValueForType()
 					}
 
 					def.Fields = append(def.Fields, field)
@@ -247,16 +263,16 @@ func (d *TypeDefinition) Render() (string, error) {
 {{ end }}
 
 export interface I{{ .Name }} {
-  {{ range .Fields}} {{ .Name }}{{ if .Nullable}}?{{ end }}: {{ .Type }};
+  {{ range .Fields}} {{ .Name }}{{ if .Nullable}}?{{ end }}: {{ .Type }}{{ if .Array }}[]{{ end }};
 {{ end }}
 }
 
 export class {{ .Name }} implements I{{ .Name }} {
-  {{ range .Fields}} {{ .Name }}{{ if .Nullable}}?{{ end }}: {{ .Type }};
+  {{ range .Fields}} {{ .Name }}{{ if .Nullable}}?{{ end }}: {{ .Type }}{{ if .Array }}[]{{ end }};
 {{ end -}}
 
   constructor(input: Partial<{{ .Name }}> = {}) {
-	{{ range .Fields}} this.{{.Name}} = input.{{.Name}}{{ if not .Nullable }} = {{ .DefaultValue }}{{ end }};
+	{{ range .Fields}} this.{{.Name}} = input.{{.Name}}{{ if not .Nullable }} || {{ .DefaultValue }}{{ end }};
 {{ end -}}
   }
 }`

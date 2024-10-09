@@ -2,7 +2,6 @@ package typescript
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"strings"
 	"text/template"
@@ -148,10 +147,6 @@ export const mock{{ .Name }}{{ if .QueryFiltered }}s{{ end }} = (resCfg: Mock{{ 
       { times: resCfg.times },
     );
 };`
-
-	if fmt.Sprintf("mockGETHouseholdInstrumentOwnership%s", f.ResponseType) == "HouseholdInstrumentOwnership" {
-		println("yo")
-	}
 
 	t := template.Must(template.New("function").Funcs(map[string]any{
 		"uppercase": strings.ToUpper,

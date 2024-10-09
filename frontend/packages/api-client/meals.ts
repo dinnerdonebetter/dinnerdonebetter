@@ -4,7 +4,6 @@ import format from 'string-format';
 import {
   MealCreationRequestInput,
   Meal,
-  MealUpdateRequestInput,
   QueryFilter,
   QueryFilteredResult,
   APIResponse,
@@ -59,17 +58,6 @@ export async function getMeals(
   });
 }
 
-export async function updateMeal(client: Axios, mealID: string, input: MealUpdateRequestInput): Promise<Meal> {
-  return new Promise(async function (resolve, reject) {
-    const response = await client.put<APIResponse<Meal>>(format(backendRoutes.MEAL, mealID), input);
-
-    if (response.data.error) {
-      reject(new Error(response.data.error.message));
-    }
-
-    resolve(response.data.data);
-  });
-}
 
 export async function deleteMeal(client: Axios, mealID: string): Promise<Meal> {
   return new Promise(async function (resolve, reject) {

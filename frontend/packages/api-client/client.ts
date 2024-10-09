@@ -23,7 +23,6 @@ import {
   MealPlanOptionVote,
   MealPlanOptionVoteCreationRequestInput,
   MealPlanUpdateRequestInput,
-  MealUpdateRequestInput,
   PasswordResetTokenCreationRequestInput,
   PasswordResetTokenRedemptionRequestInput,
   QueryFilter,
@@ -93,7 +92,7 @@ import {
   APIResponse,
 } from '@dinnerdonebetter/models';
 
-import { createMeal, getMeal, getMeals, updateMeal, deleteMeal, searchForMeals } from './meals';
+import { createMeal, getMeal, getMeals, deleteMeal, searchForMeals } from './meals';
 import {
   createValidPreparation,
   getValidPreparation,
@@ -559,10 +558,6 @@ export class DinnerDoneBetterAPIClient {
 
   async getMeals(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Meal>> {
     return getMeals(this.client, filter);
-  }
-
-  async updateMeal(mealID: string, input: MealUpdateRequestInput): Promise<Meal> {
-    return updateMeal(this.client, mealID, input);
   }
 
   async deleteMeal(mealID: string): Promise<Meal> {

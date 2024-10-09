@@ -13,7 +13,7 @@ import (
 const (
 	specFilepath                  = "../openapi_spec.yaml"
 	typescriptAPIClientOutputPath = "../frontend/packages/generated-client"
-	typescriptModelsOutputPath    = "../frontend/packages/generated-models"
+	typescriptModelsOutputPath    = "../frontend/packages/models"
 	typescriptMockAPIOutputPath   = "../frontend/packages/generated-mock-playwright-api"
 )
 

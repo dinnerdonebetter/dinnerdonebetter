@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   contact:
     email: support@dinnerdonebetter.dev
@@ -9,6 +9,10 @@ servers:
 - description: dev API server
   url: https://api.dinnerdonebetter.dev
 paths:
+  /_meta_/live:
+    get:
+      description: checks for service liveness
+      operationId: CheckForLiveness
   /_meta_/ready:
     get:
       description: checks for service readiness

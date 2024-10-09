@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Container, Divider, Grid, List, NumberInput, Space, Title } from '@mantine/core';
 import { ReactNode, useState } from 'react';
 
-import { ALL_MEAL_COMPONENT_TYPES, Meal, MealComponent } from '@dinnerdonebetter/models';
+import { ALL_MEAL_COMPONENT_TYPE, Meal, MealComponent } from '@dinnerdonebetter/models';
 import { determineAllIngredientsForRecipes, determineAllInstrumentsForRecipes } from '@dinnerdonebetter/utils';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
@@ -72,8 +72,8 @@ export const getServerSideProps: GetServerSideProps = async (
 
 // https://stackoverflow.com/a/14872766
 const ordering: Record<string, number> = {};
-for (let i = 0; i < ALL_MEAL_COMPONENT_TYPES.length; i++) {
-  ordering[ALL_MEAL_COMPONENT_TYPES[i]] = i;
+for (let i = 0; i < ALL_MEAL_COMPONENT_TYPE.length; i++) {
+  ordering[ALL_MEAL_COMPONENT_TYPE[i]] = i;
 }
 
 const formatRecipeList = (meal: Meal): ReactNode => {

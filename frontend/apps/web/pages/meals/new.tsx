@@ -23,7 +23,7 @@ import { AxiosError } from 'axios';
 import { ReactNode, Reducer, useReducer, useEffect } from 'react';
 
 import {
-  ALL_MEAL_COMPONENT_TYPES,
+  ALL_MEAL_COMPONENT_TYPE,
   Meal,
   MealComponent,
   MealComponentType,
@@ -220,7 +220,7 @@ export default function NewMealPage(): JSX.Element {
                   componentType: value,
                 })
               }
-              data={ALL_MEAL_COMPONENT_TYPES.filter((x) => x != 'unspecified').map((x) => ({ label: x, value: x }))}
+              data={ALL_MEAL_COMPONENT_TYPE.filter((x) => x != 'unspecified').map((x) => ({ label: x, value: x }))}
             />
           </div>
 
