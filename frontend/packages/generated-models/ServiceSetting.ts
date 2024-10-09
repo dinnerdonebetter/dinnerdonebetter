@@ -1,39 +1,39 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IServiceSetting {
-  description: string;
-  name: string;
-  archivedAt?: string;
-  createdAt: string;
-  enumeration: string;
   id: string;
+  name: string;
+  adminsOnly: boolean;
+  archivedAt?: string;
+  description: string;
+  enumeration: string;
   lastUpdatedAt?: string;
   type: string;
-  adminsOnly: boolean;
+  createdAt: string;
   defaultValue?: string;
 }
 
 export class ServiceSetting implements IServiceSetting {
-  description: string;
-  name: string;
-  archivedAt?: string;
-  createdAt: string;
-  enumeration: string;
   id: string;
+  name: string;
+  adminsOnly: boolean;
+  archivedAt?: string;
+  description: string;
+  enumeration: string;
   lastUpdatedAt?: string;
   type: string;
-  adminsOnly: boolean;
+  createdAt: string;
   defaultValue?: string;
   constructor(input: Partial<ServiceSetting> = {}) {
-    this.description = input.description = '';
-    this.name = input.name = '';
-    this.archivedAt = input.archivedAt;
-    this.createdAt = input.createdAt = '';
-    this.enumeration = input.enumeration = '';
     this.id = input.id = '';
+    this.name = input.name = '';
+    this.adminsOnly = input.adminsOnly = false;
+    this.archivedAt = input.archivedAt;
+    this.description = input.description = '';
+    this.enumeration = input.enumeration = '';
     this.lastUpdatedAt = input.lastUpdatedAt;
     this.type = input.type = '';
-    this.adminsOnly = input.adminsOnly = false;
+    this.createdAt = input.createdAt = '';
     this.defaultValue = input.defaultValue;
   }
 }

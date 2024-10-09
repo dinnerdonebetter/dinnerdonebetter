@@ -15,6 +15,9 @@ import (
 const (
 	componentSchemaPrefix = "#/components/schemas/"
 
+	enumsFileName       = "./enums"
+	numberRangeFileName = "./number_range"
+
 	typeNameNumberRange                = "NumberRange"
 	typeNameNumberRangeWithOptionalMax = "NumberRangeWithOptionalMax"
 	typeNameOptionalNumberRange        = "OptionalNumberRange"
@@ -82,7 +85,7 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 			continue
 		}
 
-		if properties, ok := component["properties"]; ok {
+		if properties, ok := component[propertiesKey]; ok {
 			if propMap, ok2 := properties.(map[string]any); ok2 {
 				for k, v := range propMap {
 					field := Field{
@@ -91,7 +94,9 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 
 					if typeMap, ok3 := v.(map[string]any); ok3 {
 						if typ, ok5 := typeMap["type"]; ok5 {
-							field.Type = typ.(string)
+							if fieldStr, ok6 := typ.(string); ok6 {
+								field.Type = fieldStr
+							}
 
 							if field.Type == "array" {
 								field.Array = true
@@ -101,7 +106,7 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 											if typeStr, ok9 := typeData.(string); ok9 {
 												field.Type = typeStr
 											}
-										} else if refData, ok9 := itemsMap["$ref"]; ok9 {
+										} else if refData, ok9 := itemsMap[refKey]; ok9 {
 											if typeStr, ok0 := refData.(string); ok0 {
 												field.Type = strings.TrimPrefix(typeStr, componentSchemaPrefix)
 											}
@@ -115,14 +120,22 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 							if oneOf, ok5 := oo.([]any); ok5 {
 								for _, x := range oneOf {
 									if y, ok6 := x.(map[string]any); ok6 {
-										if z, ok7 := y["type"]; ok7 && z.(string) != "null" {
-											field.Type = z.(string)
-										} else if z, ok7 = y["type"]; ok7 && z.(string) == "null" {
-											field.Nullable = true
-										} else if ref, ok8 := typeMap["$ref"]; ok8 {
-											field.Type = strings.TrimPrefix(ref.(string), componentSchemaPrefix)
-										} else if yRef, ok9 := y["$ref"]; ok9 {
-											field.Type = strings.TrimPrefix(yRef.(string), componentSchemaPrefix)
+										if z, ok7 := y["type"]; ok7 {
+											if zstr, ok8 := z.(string); ok8 && zstr != "null" {
+												field.Type = zstr
+											}
+										} else if z, ok7 = y["type"]; ok7 {
+											if zstr, ok8 := z.(string); ok8 && zstr != "null" {
+												field.Nullable = true
+											}
+										} else if ref, ok8 := typeMap[refKey]; ok8 {
+											if refString, ok9 := ref.(string); ok9 {
+												field.Type = strings.TrimPrefix(refString, componentSchemaPrefix)
+											}
+										} else if yRef, ok9 := y[refKey]; ok9 {
+											if yRefString, ok0 := yRef.(string); ok0 {
+												field.Type = strings.TrimPrefix(yRefString, componentSchemaPrefix)
+											}
 										}
 									}
 								}
@@ -130,8 +143,10 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 						}
 
 						if field.Type == "" {
-							if ref, ok4 := typeMap["$ref"]; ok4 {
-								field.Type = strings.TrimPrefix(ref.(string), componentSchemaPrefix)
+							if ref, ok4 := typeMap[refKey]; ok4 {
+								if refString, ok5 := ref.(string); ok5 {
+									field.Type = strings.TrimPrefix(refString, componentSchemaPrefix)
+								}
 							}
 						}
 
@@ -151,12 +166,7 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 						"OptionalFloat32Range",
 						"OptionalUint32Range",
 					}, field.Type):
-						if _, ok3 := def.Imports["./number_range"]; ok3 {
-							def.Imports["./number_range"] = append(def.Imports["./number_range"], typeNameNumberRange)
-						} else {
-							def.Imports["./number_range"] = []string{typeNameNumberRange}
-						}
-
+						def.Imports[numberRangeFileName] = append(def.Imports[numberRangeFileName], typeNameNumberRange)
 						field.Type = typeNameNumberRange
 						field.DefaultValue = "{ min: 0, max: 0 }"
 					case slices.Contains([]string{
@@ -164,12 +174,7 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 						"Uint16RangeWithOptionalMax",
 						"Uint32RangeWithOptionalMax",
 					}, field.Type):
-						if _, ok3 := def.Imports["./number_range"]; ok3 {
-							def.Imports["./number_range"] = append(def.Imports["./number_range"], typeNameNumberRangeWithOptionalMax)
-						} else {
-							def.Imports["./number_range"] = []string{typeNameNumberRangeWithOptionalMax}
-						}
-
+						def.Imports[numberRangeFileName] = append(def.Imports[numberRangeFileName], typeNameNumberRangeWithOptionalMax)
 						field.Type = typeNameNumberRangeWithOptionalMax
 						field.DefaultValue = "{ min: 0 }"
 					case slices.Contains([]string{
@@ -177,12 +182,7 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 						"Uint16RangeWithOptionalMaxUpdateRequestInput",
 						"Uint32RangeWithOptionalMaxUpdateRequestInput",
 					}, field.Type):
-						if _, ok3 := def.Imports["./number_range"]; ok3 {
-							def.Imports["./number_range"] = append(def.Imports["./number_range"], typeNameOptionalNumberRange)
-						} else {
-							def.Imports["./number_range"] = []string{typeNameOptionalNumberRange}
-						}
-
+						def.Imports[numberRangeFileName] = append(def.Imports[numberRangeFileName], typeNameOptionalNumberRange)
 						field.Type = typeNameOptionalNumberRange
 						field.DefaultValue = "{}"
 					}
@@ -191,11 +191,8 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 						field.Type = x
 						field.Enum = true
 						field.DefaultValue = codegen.DefaultEnumValues[x]
-						if _, ok4 := def.Imports["./enums"]; ok4 {
-							def.Imports["./enums"] = append(def.Imports["./enums"], x)
-						} else {
-							def.Imports["./enums"] = []string{x}
-						}
+
+						def.Imports[enumsFileName] = append(def.Imports[enumsFileName], x)
 					}
 
 					nativeTypes := []string{

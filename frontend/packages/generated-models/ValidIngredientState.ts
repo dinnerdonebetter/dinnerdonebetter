@@ -3,39 +3,39 @@
 import { ValidIngredientStateAttributeType } from './enums';
 
 export interface IValidIngredientState {
-  description: string;
   iconPath: string;
-  lastUpdatedAt?: string;
+  id: string;
   name: string;
-  pastTense: string;
   slug: string;
-  archivedAt?: string;
+  description: string;
   attributeType: ValidIngredientStateAttributeType;
   createdAt: string;
-  id: string;
+  lastUpdatedAt?: string;
+  pastTense: string;
+  archivedAt?: string;
 }
 
 export class ValidIngredientState implements IValidIngredientState {
-  description: string;
   iconPath: string;
-  lastUpdatedAt?: string;
+  id: string;
   name: string;
-  pastTense: string;
   slug: string;
-  archivedAt?: string;
+  description: string;
   attributeType: ValidIngredientStateAttributeType;
   createdAt: string;
-  id: string;
+  lastUpdatedAt?: string;
+  pastTense: string;
+  archivedAt?: string;
   constructor(input: Partial<ValidIngredientState> = {}) {
-    this.description = input.description = '';
     this.iconPath = input.iconPath = '';
-    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.id = input.id = '';
     this.name = input.name = '';
-    this.pastTense = input.pastTense = '';
     this.slug = input.slug = '';
-    this.archivedAt = input.archivedAt;
+    this.description = input.description = '';
     this.attributeType = input.attributeType = 'other';
     this.createdAt = input.createdAt = '';
-    this.id = input.id = '';
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.pastTense = input.pastTense = '';
+    this.archivedAt = input.archivedAt;
   }
 }

@@ -18,6 +18,14 @@ import (
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
 
+const (
+	metaReadyPath   = "/_meta_/ready"
+	metaLivePath    = "/_meta/live"
+	jsonContentType = "application/json"
+	refKey          = "$ref"
+	propertiesKey   = "properties"
+)
+
 func getTypeName(input any) (string, bool) {
 	t := reflect.TypeOf(input)
 
@@ -38,11 +46,11 @@ func getTypeName(input any) (string, bool) {
 }
 
 var skipRoutes = map[string]bool{
-	"/_meta_/live":                                           true,
-	"/auth/{auth_provider}":                                  true,
-	"/auth/{auth_provider}/callback":                         true,
-	"/oauth2/authorize":                                      true,
-	"/oauth2/token":                                          true,
+	metaLivePath:                     true,
+	"/auth/{auth_provider}":          true,
+	"/auth/{auth_provider}/callback": true,
+	"/oauth2/authorize":              true,
+	"/oauth2/token":                  true,
 	"/api/v1/recipes/{recipeID}/steps/{recipeStepID}":        true,
 	"/api/v1/recipes/{recipeID}/images":                      true,
 	"/api/v1/recipes/{recipeID}/steps/{recipeStepID}/images": true,
@@ -108,7 +116,7 @@ func main() {
 			routeDef.InputType, _ = getTypeName(routeInfo.InputType)
 		}
 
-		if routeDef.Path == "/_meta_/live" || routeDef.Path == "/_meta_/ready" {
+		if routeDef.Path == metaLivePath || routeDef.Path == metaReadyPath {
 			routeDef.ResponseType = "empty"
 		}
 
@@ -232,7 +240,7 @@ func main() {
 		}
 
 		if len(propertiesMap) > 0 {
-			tcm["properties"] = propertiesMap
+			tcm[propertiesKey] = propertiesMap
 		}
 
 		if len(schema.Enum) > 0 {

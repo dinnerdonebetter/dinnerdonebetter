@@ -3,51 +3,51 @@
 import { NumberRangeWithOptionalMax } from './number_range';
 
 export interface IRecipeStepIngredientCreationRequestInput {
-  productOfRecipeID?: string;
-  quantity: NumberRangeWithOptionalMax;
-  vesselIndex?: number;
-  measurementUnitID: string;
   optional: boolean;
+  quantity: NumberRangeWithOptionalMax;
   quantityNotes: string;
-  toTaste: boolean;
-  ingredientID?: string;
   name: string;
   optionIndex: number;
   productOfRecipeStepIndex?: number;
   productOfRecipeStepProductIndex?: number;
-  ingredientNotes: string;
+  ingredientID?: string;
+  productOfRecipeID?: string;
+  toTaste: boolean;
+  vesselIndex?: number;
+  measurementUnitID: string;
   productPercentageToUse?: number;
+  ingredientNotes: string;
 }
 
 export class RecipeStepIngredientCreationRequestInput implements IRecipeStepIngredientCreationRequestInput {
-  productOfRecipeID?: string;
-  quantity: NumberRangeWithOptionalMax;
-  vesselIndex?: number;
-  measurementUnitID: string;
   optional: boolean;
+  quantity: NumberRangeWithOptionalMax;
   quantityNotes: string;
-  toTaste: boolean;
-  ingredientID?: string;
   name: string;
   optionIndex: number;
   productOfRecipeStepIndex?: number;
   productOfRecipeStepProductIndex?: number;
-  ingredientNotes: string;
+  ingredientID?: string;
+  productOfRecipeID?: string;
+  toTaste: boolean;
+  vesselIndex?: number;
+  measurementUnitID: string;
   productPercentageToUse?: number;
+  ingredientNotes: string;
   constructor(input: Partial<RecipeStepIngredientCreationRequestInput> = {}) {
-    this.productOfRecipeID = input.productOfRecipeID;
-    this.quantity = input.quantity = { min: 0 };
-    this.vesselIndex = input.vesselIndex;
-    this.measurementUnitID = input.measurementUnitID = '';
     this.optional = input.optional = false;
+    this.quantity = input.quantity = { min: 0 };
     this.quantityNotes = input.quantityNotes = '';
-    this.toTaste = input.toTaste = false;
-    this.ingredientID = input.ingredientID;
     this.name = input.name = '';
     this.optionIndex = input.optionIndex = 0;
     this.productOfRecipeStepIndex = input.productOfRecipeStepIndex;
     this.productOfRecipeStepProductIndex = input.productOfRecipeStepProductIndex;
-    this.ingredientNotes = input.ingredientNotes = '';
+    this.ingredientID = input.ingredientID;
+    this.productOfRecipeID = input.productOfRecipeID;
+    this.toTaste = input.toTaste = false;
+    this.vesselIndex = input.vesselIndex;
+    this.measurementUnitID = input.measurementUnitID = '';
     this.productPercentageToUse = input.productPercentageToUse;
+    this.ingredientNotes = input.ingredientNotes = '';
   }
 }

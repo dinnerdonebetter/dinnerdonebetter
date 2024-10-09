@@ -4,24 +4,24 @@ import { MealComponentCreationRequestInput } from './MealComponentCreationReques
 import { NumberRangeWithOptionalMax } from './number_range';
 
 export interface IMealCreationRequestInput {
-  estimatedPortions: NumberRangeWithOptionalMax;
   name: string;
   components: MealComponentCreationRequestInput;
   description: string;
   eligibleForMealPlans: boolean;
+  estimatedPortions: NumberRangeWithOptionalMax;
 }
 
 export class MealCreationRequestInput implements IMealCreationRequestInput {
-  estimatedPortions: NumberRangeWithOptionalMax;
   name: string;
   components: MealComponentCreationRequestInput;
   description: string;
   eligibleForMealPlans: boolean;
+  estimatedPortions: NumberRangeWithOptionalMax;
   constructor(input: Partial<MealCreationRequestInput> = {}) {
-    this.estimatedPortions = input.estimatedPortions = { min: 0 };
     this.name = input.name = '';
     this.components = input.components = new MealComponentCreationRequestInput();
     this.description = input.description = '';
     this.eligibleForMealPlans = input.eligibleForMealPlans = false;
+    this.estimatedPortions = input.estimatedPortions = { min: 0 };
   }
 }

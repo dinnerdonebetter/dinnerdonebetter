@@ -4,48 +4,48 @@ import { Meal } from './Meal';
 import { MealPlanOptionVote } from './MealPlanOptionVote';
 
 export interface IMealPlanOption {
-  assignedDishwasher?: string;
-  id: string;
   lastUpdatedAt?: string;
-  meal: Meal;
+  mealScale: number;
+  assignedCook?: string;
+  assignedDishwasher?: string;
+  createdAt: string;
+  id: string;
   notes: string;
   tieBroken: boolean;
   votes: MealPlanOptionVote;
   archivedAt?: string;
-  assignedCook?: string;
   belongsToMealPlanEvent: string;
   chosen: boolean;
-  createdAt: string;
-  mealScale: number;
+  meal: Meal;
 }
 
 export class MealPlanOption implements IMealPlanOption {
-  assignedDishwasher?: string;
-  id: string;
   lastUpdatedAt?: string;
-  meal: Meal;
+  mealScale: number;
+  assignedCook?: string;
+  assignedDishwasher?: string;
+  createdAt: string;
+  id: string;
   notes: string;
   tieBroken: boolean;
   votes: MealPlanOptionVote;
   archivedAt?: string;
-  assignedCook?: string;
   belongsToMealPlanEvent: string;
   chosen: boolean;
-  createdAt: string;
-  mealScale: number;
+  meal: Meal;
   constructor(input: Partial<MealPlanOption> = {}) {
-    this.assignedDishwasher = input.assignedDishwasher;
-    this.id = input.id = '';
     this.lastUpdatedAt = input.lastUpdatedAt;
-    this.meal = input.meal = new Meal();
+    this.mealScale = input.mealScale = 0;
+    this.assignedCook = input.assignedCook;
+    this.assignedDishwasher = input.assignedDishwasher;
+    this.createdAt = input.createdAt = '';
+    this.id = input.id = '';
     this.notes = input.notes = '';
     this.tieBroken = input.tieBroken = false;
     this.votes = input.votes = new MealPlanOptionVote();
     this.archivedAt = input.archivedAt;
-    this.assignedCook = input.assignedCook;
     this.belongsToMealPlanEvent = input.belongsToMealPlanEvent = '';
     this.chosen = input.chosen = false;
-    this.createdAt = input.createdAt = '';
-    this.mealScale = input.mealScale = 0;
+    this.meal = input.meal = new Meal();
   }
 }

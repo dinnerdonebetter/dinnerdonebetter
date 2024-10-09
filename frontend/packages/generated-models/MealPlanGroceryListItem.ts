@@ -6,51 +6,51 @@ import { ValidMealPlanGroceryListItemStatus } from './enums';
 import { NumberRangeWithOptionalMax } from './number_range';
 
 export interface IMealPlanGroceryListItem {
-  measurementUnit: ValidMeasurementUnit;
+  purchasedMeasurementUnit?: ValidMeasurementUnit;
+  archivedAt?: string;
   belongsToMealPlan: string;
   createdAt: string;
-  status: ValidMealPlanGroceryListItemStatus;
-  id: string;
-  purchasePrice?: number;
-  purchasedMeasurementUnit?: ValidMeasurementUnit;
-  statusExplanation: string;
-  quantityNeeded: NumberRangeWithOptionalMax;
-  quantityPurchased?: number;
-  archivedAt?: string;
+  measurementUnit: ValidMeasurementUnit;
   ingredient: ValidIngredient;
   lastUpdatedAt?: string;
+  status: ValidMealPlanGroceryListItemStatus;
+  statusExplanation: string;
+  id: string;
+  purchasePrice?: number;
+  quantityNeeded: NumberRangeWithOptionalMax;
+  quantityPurchased?: number;
   purchasedUPC?: string;
 }
 
 export class MealPlanGroceryListItem implements IMealPlanGroceryListItem {
-  measurementUnit: ValidMeasurementUnit;
+  purchasedMeasurementUnit?: ValidMeasurementUnit;
+  archivedAt?: string;
   belongsToMealPlan: string;
   createdAt: string;
-  status: ValidMealPlanGroceryListItemStatus;
-  id: string;
-  purchasePrice?: number;
-  purchasedMeasurementUnit?: ValidMeasurementUnit;
-  statusExplanation: string;
-  quantityNeeded: NumberRangeWithOptionalMax;
-  quantityPurchased?: number;
-  archivedAt?: string;
+  measurementUnit: ValidMeasurementUnit;
   ingredient: ValidIngredient;
   lastUpdatedAt?: string;
+  status: ValidMealPlanGroceryListItemStatus;
+  statusExplanation: string;
+  id: string;
+  purchasePrice?: number;
+  quantityNeeded: NumberRangeWithOptionalMax;
+  quantityPurchased?: number;
   purchasedUPC?: string;
   constructor(input: Partial<MealPlanGroceryListItem> = {}) {
-    this.measurementUnit = input.measurementUnit = new ValidMeasurementUnit();
+    this.purchasedMeasurementUnit = input.purchasedMeasurementUnit;
+    this.archivedAt = input.archivedAt;
     this.belongsToMealPlan = input.belongsToMealPlan = '';
     this.createdAt = input.createdAt = '';
-    this.status = input.status = 'unknown';
-    this.id = input.id = '';
-    this.purchasePrice = input.purchasePrice;
-    this.purchasedMeasurementUnit = input.purchasedMeasurementUnit;
-    this.statusExplanation = input.statusExplanation = '';
-    this.quantityNeeded = input.quantityNeeded = { min: 0 };
-    this.quantityPurchased = input.quantityPurchased;
-    this.archivedAt = input.archivedAt;
+    this.measurementUnit = input.measurementUnit = new ValidMeasurementUnit();
     this.ingredient = input.ingredient = new ValidIngredient();
     this.lastUpdatedAt = input.lastUpdatedAt;
+    this.status = input.status = 'unknown';
+    this.statusExplanation = input.statusExplanation = '';
+    this.id = input.id = '';
+    this.purchasePrice = input.purchasePrice;
+    this.quantityNeeded = input.quantityNeeded = { min: 0 };
+    this.quantityPurchased = input.quantityPurchased;
     this.purchasedUPC = input.purchasedUPC;
   }
 }

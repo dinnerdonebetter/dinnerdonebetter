@@ -1,51 +1,51 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 import { MealPlanEvent } from './MealPlanEvent';
-import { ValidMealPlanStatus, ValidMealPlanElectionMethod } from './enums';
+import { ValidMealPlanElectionMethod, ValidMealPlanStatus } from './enums';
 
 export interface IMealPlan {
-  archivedAt?: string;
   belongsToHousehold: string;
   createdBy: string;
-  lastUpdatedAt?: string;
-  notes: string;
+  electionMethod: ValidMealPlanElectionMethod;
+  groceryListInitialized: boolean;
   status: ValidMealPlanStatus;
   votingDeadline: string;
-  createdAt: string;
-  electionMethod: ValidMealPlanElectionMethod;
-  events: MealPlanEvent;
-  groceryListInitialized: boolean;
-  id: string;
   tasksCreated: boolean;
+  archivedAt?: string;
+  createdAt: string;
+  events: MealPlanEvent;
+  id: string;
+  lastUpdatedAt?: string;
+  notes: string;
 }
 
 export class MealPlan implements IMealPlan {
-  archivedAt?: string;
   belongsToHousehold: string;
   createdBy: string;
-  lastUpdatedAt?: string;
-  notes: string;
+  electionMethod: ValidMealPlanElectionMethod;
+  groceryListInitialized: boolean;
   status: ValidMealPlanStatus;
   votingDeadline: string;
-  createdAt: string;
-  electionMethod: ValidMealPlanElectionMethod;
-  events: MealPlanEvent;
-  groceryListInitialized: boolean;
-  id: string;
   tasksCreated: boolean;
+  archivedAt?: string;
+  createdAt: string;
+  events: MealPlanEvent;
+  id: string;
+  lastUpdatedAt?: string;
+  notes: string;
   constructor(input: Partial<MealPlan> = {}) {
-    this.archivedAt = input.archivedAt;
     this.belongsToHousehold = input.belongsToHousehold = '';
     this.createdBy = input.createdBy = '';
-    this.lastUpdatedAt = input.lastUpdatedAt;
-    this.notes = input.notes = '';
+    this.electionMethod = input.electionMethod = 'schulze';
+    this.groceryListInitialized = input.groceryListInitialized = false;
     this.status = input.status = 'awaiting_votes';
     this.votingDeadline = input.votingDeadline = '';
-    this.createdAt = input.createdAt = '';
-    this.electionMethod = input.electionMethod = 'schulze';
-    this.events = input.events = new MealPlanEvent();
-    this.groceryListInitialized = input.groceryListInitialized = false;
-    this.id = input.id = '';
     this.tasksCreated = input.tasksCreated = false;
+    this.archivedAt = input.archivedAt;
+    this.createdAt = input.createdAt = '';
+    this.events = input.events = new MealPlanEvent();
+    this.id = input.id = '';
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.notes = input.notes = '';
   }
 }

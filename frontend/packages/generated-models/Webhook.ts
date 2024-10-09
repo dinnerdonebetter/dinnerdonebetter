@@ -3,38 +3,38 @@
 import { WebhookTriggerEvent } from './WebhookTriggerEvent';
 
 export interface IWebhook {
-  belongsToHousehold: string;
+  archivedAt?: string;
   events: WebhookTriggerEvent;
+  id: string;
   name: string;
   url: string;
-  archivedAt?: string;
+  belongsToHousehold: string;
   contentType: string;
   createdAt: string;
-  id: string;
   lastUpdatedAt?: string;
   method: string;
 }
 
 export class Webhook implements IWebhook {
-  belongsToHousehold: string;
+  archivedAt?: string;
   events: WebhookTriggerEvent;
+  id: string;
   name: string;
   url: string;
-  archivedAt?: string;
+  belongsToHousehold: string;
   contentType: string;
   createdAt: string;
-  id: string;
   lastUpdatedAt?: string;
   method: string;
   constructor(input: Partial<Webhook> = {}) {
-    this.belongsToHousehold = input.belongsToHousehold = '';
+    this.archivedAt = input.archivedAt;
     this.events = input.events = new WebhookTriggerEvent();
+    this.id = input.id = '';
     this.name = input.name = '';
     this.url = input.url = '';
-    this.archivedAt = input.archivedAt;
+    this.belongsToHousehold = input.belongsToHousehold = '';
     this.contentType = input.contentType = '';
     this.createdAt = input.createdAt = '';
-    this.id = input.id = '';
     this.lastUpdatedAt = input.lastUpdatedAt;
     this.method = input.method = '';
   }

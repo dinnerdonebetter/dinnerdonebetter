@@ -1,48 +1,48 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IValidMeasurementUnit {
-  description: string;
+  iconPath: string;
   imperial: boolean;
+  name: string;
   pluralName: string;
+  slug: string;
   universal: boolean;
   volumetric: boolean;
-  slug: string;
-  archivedAt?: string;
   createdAt: string;
-  iconPath: string;
+  description: string;
   id: string;
   lastUpdatedAt?: string;
   metric: boolean;
-  name: string;
+  archivedAt?: string;
 }
 
 export class ValidMeasurementUnit implements IValidMeasurementUnit {
-  description: string;
+  iconPath: string;
   imperial: boolean;
+  name: string;
   pluralName: string;
+  slug: string;
   universal: boolean;
   volumetric: boolean;
-  slug: string;
-  archivedAt?: string;
   createdAt: string;
-  iconPath: string;
+  description: string;
   id: string;
   lastUpdatedAt?: string;
   metric: boolean;
-  name: string;
+  archivedAt?: string;
   constructor(input: Partial<ValidMeasurementUnit> = {}) {
-    this.description = input.description = '';
+    this.iconPath = input.iconPath = '';
     this.imperial = input.imperial = false;
+    this.name = input.name = '';
     this.pluralName = input.pluralName = '';
+    this.slug = input.slug = '';
     this.universal = input.universal = false;
     this.volumetric = input.volumetric = false;
-    this.slug = input.slug = '';
-    this.archivedAt = input.archivedAt;
     this.createdAt = input.createdAt = '';
-    this.iconPath = input.iconPath = '';
+    this.description = input.description = '';
     this.id = input.id = '';
     this.lastUpdatedAt = input.lastUpdatedAt;
     this.metric = input.metric = false;
-    this.name = input.name = '';
+    this.archivedAt = input.archivedAt;
   }
 }

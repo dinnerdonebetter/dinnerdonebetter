@@ -4,50 +4,50 @@ import { RecipePrepTaskStep } from './RecipePrepTaskStep';
 import { NumberRange, NumberRangeWithOptionalMax } from './number_range';
 
 export interface IRecipePrepTask {
-  belongsToRecipe: string;
-  lastUpdatedAt?: string;
-  recipeSteps: RecipePrepTaskStep;
   storageTemperatureInCelsius: NumberRange;
-  archivedAt?: string;
   explicitStorageInstructions: string;
+  lastUpdatedAt?: string;
   name: string;
-  createdAt: string;
+  storageType: string;
+  archivedAt?: string;
   id: string;
   notes: string;
+  createdAt: string;
   optional: boolean;
-  storageType: string;
+  recipeSteps: RecipePrepTaskStep;
+  belongsToRecipe: string;
   description: string;
   timeBufferBeforeRecipeInSeconds: NumberRangeWithOptionalMax;
 }
 
 export class RecipePrepTask implements IRecipePrepTask {
-  belongsToRecipe: string;
-  lastUpdatedAt?: string;
-  recipeSteps: RecipePrepTaskStep;
   storageTemperatureInCelsius: NumberRange;
-  archivedAt?: string;
   explicitStorageInstructions: string;
+  lastUpdatedAt?: string;
   name: string;
-  createdAt: string;
+  storageType: string;
+  archivedAt?: string;
   id: string;
   notes: string;
+  createdAt: string;
   optional: boolean;
-  storageType: string;
+  recipeSteps: RecipePrepTaskStep;
+  belongsToRecipe: string;
   description: string;
   timeBufferBeforeRecipeInSeconds: NumberRangeWithOptionalMax;
   constructor(input: Partial<RecipePrepTask> = {}) {
-    this.belongsToRecipe = input.belongsToRecipe = '';
-    this.lastUpdatedAt = input.lastUpdatedAt;
-    this.recipeSteps = input.recipeSteps = new RecipePrepTaskStep();
     this.storageTemperatureInCelsius = input.storageTemperatureInCelsius = { min: 0, max: 0 };
-    this.archivedAt = input.archivedAt;
     this.explicitStorageInstructions = input.explicitStorageInstructions = '';
+    this.lastUpdatedAt = input.lastUpdatedAt;
     this.name = input.name = '';
-    this.createdAt = input.createdAt = '';
+    this.storageType = input.storageType = '';
+    this.archivedAt = input.archivedAt;
     this.id = input.id = '';
     this.notes = input.notes = '';
+    this.createdAt = input.createdAt = '';
     this.optional = input.optional = false;
-    this.storageType = input.storageType = '';
+    this.recipeSteps = input.recipeSteps = new RecipePrepTaskStep();
+    this.belongsToRecipe = input.belongsToRecipe = '';
     this.description = input.description = '';
     this.timeBufferBeforeRecipeInSeconds = input.timeBufferBeforeRecipeInSeconds = { min: 0 };
   }

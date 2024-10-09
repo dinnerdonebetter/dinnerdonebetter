@@ -1,15 +1,15 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IFloat32RangeWithOptionalMaxUpdateRequestInput {
-  max?: number;
   min?: number;
+  max?: number;
 }
 
 export class Float32RangeWithOptionalMaxUpdateRequestInput implements IFloat32RangeWithOptionalMaxUpdateRequestInput {
-  max?: number;
   min?: number;
+  max?: number;
   constructor(input: Partial<Float32RangeWithOptionalMaxUpdateRequestInput> = {}) {
-    this.max = input.max;
     this.min = input.min;
+    this.max = input.max;
   }
 }

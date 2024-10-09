@@ -1,15 +1,15 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IWebhookTriggerEventCreationRequestInput {
-  belongsToWebhook: string;
   triggerEvent: string;
+  belongsToWebhook: string;
 }
 
 export class WebhookTriggerEventCreationRequestInput implements IWebhookTriggerEventCreationRequestInput {
-  belongsToWebhook: string;
   triggerEvent: string;
+  belongsToWebhook: string;
   constructor(input: Partial<WebhookTriggerEventCreationRequestInput> = {}) {
-    this.belongsToWebhook = input.belongsToWebhook = '';
     this.triggerEvent = input.triggerEvent = '';
+    this.belongsToWebhook = input.belongsToWebhook = '';
   }
 }

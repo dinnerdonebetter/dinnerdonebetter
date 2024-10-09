@@ -4,39 +4,39 @@ import { RecipePrepTaskStepUpdateRequestInput } from './RecipePrepTaskStepUpdate
 import { NumberRange, OptionalNumberRange } from './number_range';
 
 export interface IRecipePrepTaskUpdateRequestInput {
-  explicitStorageInstructions?: string;
-  optional?: boolean;
-  recipeSteps: RecipePrepTaskStepUpdateRequestInput;
-  notes?: string;
   storageTemperatureInCelsius: NumberRange;
-  storageType?: string;
+  description?: string;
+  explicitStorageInstructions?: string;
+  notes?: string;
+  optional?: boolean;
   timeBufferBeforeRecipeInSeconds: OptionalNumberRange;
   belongsToRecipe?: string;
-  description?: string;
   name?: string;
+  recipeSteps: RecipePrepTaskStepUpdateRequestInput;
+  storageType?: string;
 }
 
 export class RecipePrepTaskUpdateRequestInput implements IRecipePrepTaskUpdateRequestInput {
-  explicitStorageInstructions?: string;
-  optional?: boolean;
-  recipeSteps: RecipePrepTaskStepUpdateRequestInput;
-  notes?: string;
   storageTemperatureInCelsius: NumberRange;
-  storageType?: string;
+  description?: string;
+  explicitStorageInstructions?: string;
+  notes?: string;
+  optional?: boolean;
   timeBufferBeforeRecipeInSeconds: OptionalNumberRange;
   belongsToRecipe?: string;
-  description?: string;
   name?: string;
+  recipeSteps: RecipePrepTaskStepUpdateRequestInput;
+  storageType?: string;
   constructor(input: Partial<RecipePrepTaskUpdateRequestInput> = {}) {
-    this.explicitStorageInstructions = input.explicitStorageInstructions;
-    this.optional = input.optional;
-    this.recipeSteps = input.recipeSteps = new RecipePrepTaskStepUpdateRequestInput();
-    this.notes = input.notes;
     this.storageTemperatureInCelsius = input.storageTemperatureInCelsius = { min: 0, max: 0 };
-    this.storageType = input.storageType;
+    this.description = input.description;
+    this.explicitStorageInstructions = input.explicitStorageInstructions;
+    this.notes = input.notes;
+    this.optional = input.optional;
     this.timeBufferBeforeRecipeInSeconds = input.timeBufferBeforeRecipeInSeconds = {};
     this.belongsToRecipe = input.belongsToRecipe;
-    this.description = input.description;
     this.name = input.name;
+    this.recipeSteps = input.recipeSteps = new RecipePrepTaskStepUpdateRequestInput();
+    this.storageType = input.storageType;
   }
 }

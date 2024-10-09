@@ -1,15 +1,15 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IChangeLog {
-  oldValue: string;
   newValue: string;
+  oldValue: string;
 }
 
 export class ChangeLog implements IChangeLog {
-  oldValue: string;
   newValue: string;
+  oldValue: string;
   constructor(input: Partial<ChangeLog> = {}) {
-    this.oldValue = input.oldValue = '';
     this.newValue = input.newValue = '';
+    this.oldValue = input.oldValue = '';
   }
 }

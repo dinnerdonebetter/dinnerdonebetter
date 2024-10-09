@@ -175,6 +175,6 @@ export * from './Webhook';
 export * from './WebhookCreationRequestInput';
 export * from './WebhookTriggerEvent';
 export * from './WebhookTriggerEventCreationRequestInput';
+export * from './enums';
 export * from './number_range';
 export * from './query_filter';
-export * from './enums';

@@ -4,35 +4,35 @@ import { ValidIngredient } from './ValidIngredient';
 
 export interface IUserIngredientPreference {
   belongsToUser: string;
+  createdAt: string;
   id: string;
-  ingredient: ValidIngredient;
+  lastUpdatedAt?: string;
+  rating: number;
   allergy: boolean;
   archivedAt?: string;
-  createdAt: string;
-  lastUpdatedAt?: string;
+  ingredient: ValidIngredient;
   notes: string;
-  rating: number;
 }
 
 export class UserIngredientPreference implements IUserIngredientPreference {
   belongsToUser: string;
+  createdAt: string;
   id: string;
-  ingredient: ValidIngredient;
+  lastUpdatedAt?: string;
+  rating: number;
   allergy: boolean;
   archivedAt?: string;
-  createdAt: string;
-  lastUpdatedAt?: string;
+  ingredient: ValidIngredient;
   notes: string;
-  rating: number;
   constructor(input: Partial<UserIngredientPreference> = {}) {
     this.belongsToUser = input.belongsToUser = '';
+    this.createdAt = input.createdAt = '';
     this.id = input.id = '';
-    this.ingredient = input.ingredient = new ValidIngredient();
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.rating = input.rating = 0;
     this.allergy = input.allergy = false;
     this.archivedAt = input.archivedAt;
-    this.createdAt = input.createdAt = '';
-    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.ingredient = input.ingredient = new ValidIngredient();
     this.notes = input.notes = '';
-    this.rating = input.rating = 0;
   }
 }

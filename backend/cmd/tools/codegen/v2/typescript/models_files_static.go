@@ -4,7 +4,7 @@ const (
 	GeneratedDisclaimer = `// GENERATED CODE, DO NOT EDIT MANUALLY`
 )
 
-var StaticFiles = map[string]string{
+var StaticModelsFiles = map[string]string{
 	"number_range": GeneratedDisclaimer + `
 
 export interface NumberRange {

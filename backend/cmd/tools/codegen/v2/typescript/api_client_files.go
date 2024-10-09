@@ -3,7 +3,6 @@ package typescript
 import (
 	"bytes"
 	"net/http"
-	"slices"
 	"strings"
 	"text/template"
 	"unicode"
@@ -135,6 +134,17 @@ func lowercaseFirstLetter(s string) string {
 	return string(r)
 }
 
+func uppercaseFirstLetter(s string) string {
+	if s == "" {
+		return s
+	}
+
+	r := []rune(s)
+	r[0] = unicode.ToUpper(r[0])
+
+	return string(r)
+}
+
 var postSkipPaths = map[string]bool{
 	"/api/v1/households/{householdID}/default": true,
 	"/api/v1/recipes/{recipeID}/clone":         true,
@@ -147,15 +157,21 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 
 	functionParams := []functionParam{}
 	for _, p := range params {
-		functionParams = append(functionParams, functionParam{
-			Name: p.Parameter.Name,
-			Type: p.Parameter.Schema["type"].(string),
-		})
+		if schemaStr, ok := p.Parameter.Schema["type"].(string); ok {
+			functionParams = append(functionParams, functionParam{
+				Name: p.Parameter.Name,
+				Type: schemaStr,
+			})
+		}
 	}
 
-	var schema map[string]any
+	var (
+		defaultStatusCode uint16
+		schema            map[string]any
+	)
 	if responseContainer, ok := op.Responses.MapOfResponseOrReferenceValues["200"]; ok {
-		if response, ok2 := responseContainer.Response.Content["application/json"]; ok2 {
+		defaultStatusCode = 200
+		if response, ok2 := responseContainer.Response.Content[jsonContentType]; ok2 {
 			schema = response.Schema
 		}
 
@@ -166,19 +182,22 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 	}
 
 	if responseContainer, ok := op.Responses.MapOfResponseOrReferenceValues["201"]; ok {
-		if response, ok2 := responseContainer.Response.Content["application/json"]; ok2 {
+		defaultStatusCode = 201
+		if response, ok2 := responseContainer.Response.Content[jsonContentType]; ok2 {
 			schema = response.Schema
 		}
 	}
 
 	if responseContainer, ok := op.Responses.MapOfResponseOrReferenceValues["202"]; ok {
-		if response, ok2 := responseContainer.Response.Content["application/json"]; ok2 {
+		defaultStatusCode = 202
+		if response, ok2 := responseContainer.Response.Content[jsonContentType]; ok2 {
 			schema = response.Schema
 		}
 	}
 
 	if responseContainer, ok := op.Responses.MapOfResponseOrReferenceValues["204"]; ok {
-		if response, ok2 := responseContainer.Response.Content["application/json"]; ok2 {
+		defaultStatusCode = 204
+		if response, ok2 := responseContainer.Response.Content[jsonContentType]; ok2 {
 			schema = response.Schema
 		}
 	}
@@ -191,10 +210,12 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		}
 
 		if op.RequestBody != nil {
-			if jsonContent, ok := op.RequestBody.RequestBody.Content["application/json"]; ok {
-				if refContent, ok2 := jsonContent.Schema["$ref"]; ok2 {
-					ip.Name = lowercaseFirstLetter(strings.TrimPrefix(refContent.(string), "#/components/schemas/"))
-					ip.Type = strings.TrimPrefix(refContent.(string), "#/components/schemas/")
+			if jsonContent, ok := op.RequestBody.RequestBody.Content[jsonContentType]; ok {
+				if refContent, ok2 := jsonContent.Schema[refKey]; ok2 {
+					if refContentStr, ok3 := refContent.(string); ok3 {
+						ip.Name = lowercaseFirstLetter(strings.TrimPrefix(refContentStr, componentSchemaPrefix))
+						ip.Type = strings.TrimPrefix(refContentStr, componentSchemaPrefix)
+					}
 				}
 			}
 		}
@@ -206,22 +227,26 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		case []any:
 			for _, yy := range x {
 				if y, ok := yy.(map[string]interface{}); ok {
-					if allOfRef, ok2 := y["$ref"]; ok2 {
+					if allOfRef, ok2 := y[refKey]; ok2 {
 						if allOfRefStr, ok3 := allOfRef.(string); ok3 {
 							rt.GenericContainer = allOfRefStr
 						}
 					}
 
-					if properties, ok2 := y["properties"]; ok2 {
+					if properties, ok2 := y[propertiesKey]; ok2 {
 						if props, ok3 := properties.(map[string]any); ok3 {
 							if rawData, ok4 := props["data"]; ok4 {
 								if data, ok5 := rawData.(map[string]any); ok5 {
-									if dataRef, ok6 := data["$ref"]; ok6 {
-										rt.TypeName = dataRef.(string)
+									if dataRef, ok6 := data[refKey]; ok6 {
+										if z, ok7 := dataRef.(string); ok7 {
+											rt.TypeName = z
+										}
 									} else if itemsRef, ok7 := data["items"]; ok7 {
 										if z, ok9 := itemsRef.(map[string]any); ok9 {
-											if itemsDataRef, ok8 := z["$ref"]; ok8 {
-												rt.TypeName = itemsDataRef.(string)
+											if itemsDataRef, ok8 := z[refKey]; ok8 {
+												if zz, ok0 := itemsDataRef.(string); ok0 {
+													rt.TypeName = zz
+												}
 											}
 										}
 									} else if rawType, ok8 := data["type"]; ok8 {
@@ -237,22 +262,24 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 			}
 		}
 	} else if schema != nil {
-		// if this fails, I want it to panic
-		rt.TypeName = schema["type"].(string)
+		if typeStr, ok := schema["type"].(string); ok {
+			rt.TypeName = typeStr
+		}
 	}
 
-	rt.GenericContainer = strings.TrimPrefix(rt.GenericContainer, "#/components/schemas/")
-	rt.TypeName = strings.TrimPrefix(rt.TypeName, "#/components/schemas/")
+	rt.GenericContainer = strings.TrimPrefix(rt.GenericContainer, componentSchemaPrefix)
+	rt.TypeName = strings.TrimPrefix(rt.TypeName, componentSchemaPrefix)
 
 	return &APIClientFunction{
-		Name:          functionName,
-		Method:        method,
-		QueryFiltered: containsQF,
-		ReturnsList:   containsQF,
-		Params:        functionParams,
-		InputType:     ip,
-		ResponseType:  rt,
-		PathTemplate:  strings.ReplaceAll(path, "{", "${"),
+		Name:              functionName,
+		Method:            method,
+		QueryFiltered:     containsQF,
+		DefaultStatusCode: defaultStatusCode,
+		ReturnsList:       containsQF,
+		Params:            functionParams,
+		InputType:         ip,
+		ResponseType:      rt,
+		PathTemplate:      strings.ReplaceAll(path, "{", "${"),
 	}
 }
 
@@ -265,18 +292,18 @@ type functionParam struct {
 	Name,
 	Type,
 	DefaultValue string
-	InQuery bool
 }
 
 type APIClientFunction struct {
-	InputType     functionInputParam
-	ResponseType  functionResponseType
-	Method        string
-	Name          string
-	PathTemplate  string
-	Params        []functionParam
-	QueryFiltered bool
-	ReturnsList   bool
+	InputType         functionInputParam
+	ResponseType      functionResponseType
+	Method            string
+	Name              string
+	PathTemplate      string
+	Params            []functionParam
+	DefaultStatusCode uint16
+	QueryFiltered     bool
+	ReturnsList       bool
 }
 
 type functionResponseType struct {
@@ -296,8 +323,9 @@ func (f *APIClientFunction) Render() (string, error) {
   filter: QueryFilter = QueryFilter.Default(),
   {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
 	{{ end -}}): Promise< QueryFilteredResult< {{ .ResponseType.TypeName }} >> {
+  let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await this.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
+    const response = await self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
       params: filter.asRecord(),
     });
 
@@ -320,8 +348,9 @@ func (f *APIClientFunction) Render() (string, error) {
 			tmpl = `async {{ .Name }}(
   {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
 	{{ end -}}): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }} {{ .ResponseType.TypeName }} >   {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}  {
+  let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await this.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {});
+    const response = await self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {});
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));
@@ -337,8 +366,9 @@ func (f *APIClientFunction) Render() (string, error) {
   {{ range .Params }}{{ .Name }}: {{ .Type }},{{ end }}
   {{ if ne .InputType.Type "" }}input: {{ .InputType.Type }},{{ end }}
 ): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }} {{ .ResponseType.TypeName }} > {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {
+  let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await this.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }});
+    const response = await self.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }});
 	    if (response.data.error) {
 	      reject(new Error(response.data.error.message));
 	    }
@@ -354,11 +384,6 @@ func (f *APIClientFunction) Render() (string, error) {
 
 	t := template.Must(template.New("function").Funcs(map[string]any{
 		"lowercase": strings.ToLower,
-		"typeIsNative": func(x string) bool {
-			return slices.Contains([]string{
-				"string",
-			}, x)
-		},
 	}).Parse(tmpl))
 
 	var b bytes.Buffer

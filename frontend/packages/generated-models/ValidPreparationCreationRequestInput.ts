@@ -3,54 +3,54 @@
 import { NumberRangeWithOptionalMax } from './number_range';
 
 export interface IValidPreparationCreationRequestInput {
-  vesselCount: NumberRangeWithOptionalMax;
-  slug: string;
-  instrumentCount: NumberRangeWithOptionalMax;
-  name: string;
-  onlyForVessels: boolean;
-  pastTense: string;
-  timeEstimateRequired: boolean;
-  conditionExpressionRequired: boolean;
-  temperatureRequired: boolean;
-  restrictToIngredients: boolean;
   description: string;
-  iconPath: string;
-  ingredientCount: NumberRangeWithOptionalMax;
-  yieldsNothing: boolean;
+  instrumentCount: NumberRangeWithOptionalMax;
+  pastTense: string;
+  conditionExpressionRequired: boolean;
   consumesVessel: boolean;
+  timeEstimateRequired: boolean;
+  iconPath: string;
+  name: string;
+  restrictToIngredients: boolean;
+  yieldsNothing: boolean;
+  vesselCount: NumberRangeWithOptionalMax;
+  ingredientCount: NumberRangeWithOptionalMax;
+  onlyForVessels: boolean;
+  slug: string;
+  temperatureRequired: boolean;
 }
 
 export class ValidPreparationCreationRequestInput implements IValidPreparationCreationRequestInput {
-  vesselCount: NumberRangeWithOptionalMax;
-  slug: string;
-  instrumentCount: NumberRangeWithOptionalMax;
-  name: string;
-  onlyForVessels: boolean;
-  pastTense: string;
-  timeEstimateRequired: boolean;
-  conditionExpressionRequired: boolean;
-  temperatureRequired: boolean;
-  restrictToIngredients: boolean;
   description: string;
-  iconPath: string;
-  ingredientCount: NumberRangeWithOptionalMax;
-  yieldsNothing: boolean;
+  instrumentCount: NumberRangeWithOptionalMax;
+  pastTense: string;
+  conditionExpressionRequired: boolean;
   consumesVessel: boolean;
+  timeEstimateRequired: boolean;
+  iconPath: string;
+  name: string;
+  restrictToIngredients: boolean;
+  yieldsNothing: boolean;
+  vesselCount: NumberRangeWithOptionalMax;
+  ingredientCount: NumberRangeWithOptionalMax;
+  onlyForVessels: boolean;
+  slug: string;
+  temperatureRequired: boolean;
   constructor(input: Partial<ValidPreparationCreationRequestInput> = {}) {
-    this.vesselCount = input.vesselCount = { min: 0 };
-    this.slug = input.slug = '';
-    this.instrumentCount = input.instrumentCount = { min: 0 };
-    this.name = input.name = '';
-    this.onlyForVessels = input.onlyForVessels = false;
-    this.pastTense = input.pastTense = '';
-    this.timeEstimateRequired = input.timeEstimateRequired = false;
-    this.conditionExpressionRequired = input.conditionExpressionRequired = false;
-    this.temperatureRequired = input.temperatureRequired = false;
-    this.restrictToIngredients = input.restrictToIngredients = false;
     this.description = input.description = '';
-    this.iconPath = input.iconPath = '';
-    this.ingredientCount = input.ingredientCount = { min: 0 };
-    this.yieldsNothing = input.yieldsNothing = false;
+    this.instrumentCount = input.instrumentCount = { min: 0 };
+    this.pastTense = input.pastTense = '';
+    this.conditionExpressionRequired = input.conditionExpressionRequired = false;
     this.consumesVessel = input.consumesVessel = false;
+    this.timeEstimateRequired = input.timeEstimateRequired = false;
+    this.iconPath = input.iconPath = '';
+    this.name = input.name = '';
+    this.restrictToIngredients = input.restrictToIngredients = false;
+    this.yieldsNothing = input.yieldsNothing = false;
+    this.vesselCount = input.vesselCount = { min: 0 };
+    this.ingredientCount = input.ingredientCount = { min: 0 };
+    this.onlyForVessels = input.onlyForVessels = false;
+    this.slug = input.slug = '';
+    this.temperatureRequired = input.temperatureRequired = false;
   }
 }

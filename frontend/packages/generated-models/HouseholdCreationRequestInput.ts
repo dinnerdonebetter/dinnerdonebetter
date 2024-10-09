@@ -1,39 +1,39 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IHouseholdCreationRequestInput {
-  addressLine2: string;
   city: string;
+  country: string;
   latitude?: number;
   longitude?: number;
+  name: string;
   state: string;
   addressLine1: string;
-  country: string;
-  name: string;
-  zipCode: string;
+  addressLine2: string;
   contactPhone: string;
+  zipCode: string;
 }
 
 export class HouseholdCreationRequestInput implements IHouseholdCreationRequestInput {
-  addressLine2: string;
   city: string;
+  country: string;
   latitude?: number;
   longitude?: number;
+  name: string;
   state: string;
   addressLine1: string;
-  country: string;
-  name: string;
-  zipCode: string;
+  addressLine2: string;
   contactPhone: string;
+  zipCode: string;
   constructor(input: Partial<HouseholdCreationRequestInput> = {}) {
-    this.addressLine2 = input.addressLine2 = '';
     this.city = input.city = '';
+    this.country = input.country = '';
     this.latitude = input.latitude;
     this.longitude = input.longitude;
+    this.name = input.name = '';
     this.state = input.state = '';
     this.addressLine1 = input.addressLine1 = '';
-    this.country = input.country = '';
-    this.name = input.name = '';
-    this.zipCode = input.zipCode = '';
+    this.addressLine2 = input.addressLine2 = '';
     this.contactPhone = input.contactPhone = '';
+    this.zipCode = input.zipCode = '';
   }
 }

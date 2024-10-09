@@ -240,13 +240,13 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 					}
 
 					if _, isPointer := field.Type.(*ast.StarExpr); isPointer {
-						marshalled, err := json.Marshal(property)
-						if err != nil {
-							panic(err)
+						marshaled, marshalErr := json.Marshal(property)
+						if marshalErr != nil {
+							panic(marshalErr)
 						}
 
 						newPropMap := map[string]string{}
-						if err = json.Unmarshal(marshalled, &newPropMap); err != nil {
+						if err = json.Unmarshal(marshaled, &newPropMap); err != nil {
 							panic(err)
 						}
 

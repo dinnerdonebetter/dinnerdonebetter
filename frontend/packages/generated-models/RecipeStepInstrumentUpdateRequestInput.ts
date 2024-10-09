@@ -3,36 +3,36 @@
 import { OptionalNumberRange } from './number_range';
 
 export interface IRecipeStepInstrumentUpdateRequestInput {
-  belongsToRecipeStep?: string;
-  instrumentID?: string;
-  optional?: boolean;
   quantity: OptionalNumberRange;
-  recipeStepProductID?: string;
+  instrumentID?: string;
   name?: string;
   notes?: string;
-  optionIndex?: number;
   preferenceRank?: number;
+  recipeStepProductID?: string;
+  belongsToRecipeStep?: string;
+  optionIndex?: number;
+  optional?: boolean;
 }
 
 export class RecipeStepInstrumentUpdateRequestInput implements IRecipeStepInstrumentUpdateRequestInput {
-  belongsToRecipeStep?: string;
-  instrumentID?: string;
-  optional?: boolean;
   quantity: OptionalNumberRange;
-  recipeStepProductID?: string;
+  instrumentID?: string;
   name?: string;
   notes?: string;
-  optionIndex?: number;
   preferenceRank?: number;
+  recipeStepProductID?: string;
+  belongsToRecipeStep?: string;
+  optionIndex?: number;
+  optional?: boolean;
   constructor(input: Partial<RecipeStepInstrumentUpdateRequestInput> = {}) {
-    this.belongsToRecipeStep = input.belongsToRecipeStep;
-    this.instrumentID = input.instrumentID;
-    this.optional = input.optional;
     this.quantity = input.quantity = {};
-    this.recipeStepProductID = input.recipeStepProductID;
+    this.instrumentID = input.instrumentID;
     this.name = input.name;
     this.notes = input.notes;
-    this.optionIndex = input.optionIndex;
     this.preferenceRank = input.preferenceRank;
+    this.recipeStepProductID = input.recipeStepProductID;
+    this.belongsToRecipeStep = input.belongsToRecipeStep;
+    this.optionIndex = input.optionIndex;
+    this.optional = input.optional;
   }
 }

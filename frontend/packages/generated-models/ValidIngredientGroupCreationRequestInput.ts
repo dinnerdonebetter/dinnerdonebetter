@@ -3,21 +3,21 @@
 import { ValidIngredientGroupMemberCreationRequestInput } from './ValidIngredientGroupMemberCreationRequestInput';
 
 export interface IValidIngredientGroupCreationRequestInput {
+  slug: string;
   description: string;
   members: ValidIngredientGroupMemberCreationRequestInput;
   name: string;
-  slug: string;
 }
 
 export class ValidIngredientGroupCreationRequestInput implements IValidIngredientGroupCreationRequestInput {
+  slug: string;
   description: string;
   members: ValidIngredientGroupMemberCreationRequestInput;
   name: string;
-  slug: string;
   constructor(input: Partial<ValidIngredientGroupCreationRequestInput> = {}) {
+    this.slug = input.slug = '';
     this.description = input.description = '';
     this.members = input.members = new ValidIngredientGroupMemberCreationRequestInput();
     this.name = input.name = '';
-    this.slug = input.slug = '';
   }
 }

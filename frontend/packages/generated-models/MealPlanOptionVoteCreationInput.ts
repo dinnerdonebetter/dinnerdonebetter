@@ -1,21 +1,21 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IMealPlanOptionVoteCreationInput {
+  abstain: boolean;
   belongsToMealPlanOption: string;
   notes: string;
   rank: number;
-  abstain: boolean;
 }
 
 export class MealPlanOptionVoteCreationInput implements IMealPlanOptionVoteCreationInput {
+  abstain: boolean;
   belongsToMealPlanOption: string;
   notes: string;
   rank: number;
-  abstain: boolean;
   constructor(input: Partial<MealPlanOptionVoteCreationInput> = {}) {
+    this.abstain = input.abstain = false;
     this.belongsToMealPlanOption = input.belongsToMealPlanOption = '';
     this.notes = input.notes = '';
     this.rank = input.rank = 0;
-    this.abstain = input.abstain = false;
   }
 }

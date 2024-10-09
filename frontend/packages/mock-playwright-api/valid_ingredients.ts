@@ -2,7 +2,7 @@ import type { Page, Route } from '@playwright/test';
 
 import { QueryFilteredResult, ValidIngredient, ValidIngredientUpdateRequestInput } from '@dinnerdonebetter/models';
 import { spellWord } from './utils';
-import { assertClient, assertMethod, methods, ResponseConfig } from './helpers';
+import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
 export class MockValidIngredientResponseConfig extends ResponseConfig<ValidIngredient> {
   validIngredientID: string;

@@ -3,51 +3,51 @@
 import { ValidVesselShapeType } from './enums';
 
 export interface IValidVesselCreationRequestInput {
-  capacityUnitID?: string;
-  displayInSummaryLists: boolean;
-  lengthInMillimeters: number;
-  description: string;
-  iconPath: string;
-  name: string;
-  shape: ValidVesselShapeType;
-  pluralName: string;
-  slug: string;
-  usableForStorage: boolean;
-  capacity: number;
-  heightInMillimeters: number;
-  includeInGeneratedInstructions: boolean;
   widthInMillimeters: number;
+  lengthInMillimeters: number;
+  name: string;
+  pluralName: string;
+  shape: ValidVesselShapeType;
+  usableForStorage: boolean;
+  description: string;
+  heightInMillimeters: number;
+  iconPath: string;
+  slug: string;
+  capacityUnitID?: string;
+  capacity: number;
+  displayInSummaryLists: boolean;
+  includeInGeneratedInstructions: boolean;
 }
 
 export class ValidVesselCreationRequestInput implements IValidVesselCreationRequestInput {
-  capacityUnitID?: string;
-  displayInSummaryLists: boolean;
-  lengthInMillimeters: number;
-  description: string;
-  iconPath: string;
-  name: string;
-  shape: ValidVesselShapeType;
-  pluralName: string;
-  slug: string;
-  usableForStorage: boolean;
-  capacity: number;
-  heightInMillimeters: number;
-  includeInGeneratedInstructions: boolean;
   widthInMillimeters: number;
+  lengthInMillimeters: number;
+  name: string;
+  pluralName: string;
+  shape: ValidVesselShapeType;
+  usableForStorage: boolean;
+  description: string;
+  heightInMillimeters: number;
+  iconPath: string;
+  slug: string;
+  capacityUnitID?: string;
+  capacity: number;
+  displayInSummaryLists: boolean;
+  includeInGeneratedInstructions: boolean;
   constructor(input: Partial<ValidVesselCreationRequestInput> = {}) {
-    this.capacityUnitID = input.capacityUnitID;
-    this.displayInSummaryLists = input.displayInSummaryLists = false;
-    this.lengthInMillimeters = input.lengthInMillimeters = 0;
-    this.description = input.description = '';
-    this.iconPath = input.iconPath = '';
-    this.name = input.name = '';
-    this.shape = input.shape = 'other';
-    this.pluralName = input.pluralName = '';
-    this.slug = input.slug = '';
-    this.usableForStorage = input.usableForStorage = false;
-    this.capacity = input.capacity = 0;
-    this.heightInMillimeters = input.heightInMillimeters = 0;
-    this.includeInGeneratedInstructions = input.includeInGeneratedInstructions = false;
     this.widthInMillimeters = input.widthInMillimeters = 0;
+    this.lengthInMillimeters = input.lengthInMillimeters = 0;
+    this.name = input.name = '';
+    this.pluralName = input.pluralName = '';
+    this.shape = input.shape = 'other';
+    this.usableForStorage = input.usableForStorage = false;
+    this.description = input.description = '';
+    this.heightInMillimeters = input.heightInMillimeters = 0;
+    this.iconPath = input.iconPath = '';
+    this.slug = input.slug = '';
+    this.capacityUnitID = input.capacityUnitID;
+    this.capacity = input.capacity = 0;
+    this.displayInSummaryLists = input.displayInSummaryLists = false;
+    this.includeInGeneratedInstructions = input.includeInGeneratedInstructions = false;
   }
 }

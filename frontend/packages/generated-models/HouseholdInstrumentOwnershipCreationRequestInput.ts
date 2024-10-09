@@ -1,23 +1,23 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IHouseholdInstrumentOwnershipCreationRequestInput {
+  validInstrumentID: string;
   belongsToHousehold: string;
   notes: string;
   quantity: number;
-  validInstrumentID: string;
 }
 
 export class HouseholdInstrumentOwnershipCreationRequestInput
   implements IHouseholdInstrumentOwnershipCreationRequestInput
 {
+  validInstrumentID: string;
   belongsToHousehold: string;
   notes: string;
   quantity: number;
-  validInstrumentID: string;
   constructor(input: Partial<HouseholdInstrumentOwnershipCreationRequestInput> = {}) {
+    this.validInstrumentID = input.validInstrumentID = '';
     this.belongsToHousehold = input.belongsToHousehold = '';
     this.notes = input.notes = '';
     this.quantity = input.quantity = 0;
-    this.validInstrumentID = input.validInstrumentID = '';
   }
 }

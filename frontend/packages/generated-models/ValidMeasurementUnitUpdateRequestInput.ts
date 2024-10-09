@@ -1,36 +1,36 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IValidMeasurementUnitUpdateRequestInput {
-  imperial?: boolean;
+  universal?: boolean;
+  volumetric?: boolean;
   name?: string;
+  iconPath?: string;
+  imperial?: boolean;
+  metric?: boolean;
   pluralName?: string;
   slug?: string;
   description?: string;
-  metric?: boolean;
-  universal?: boolean;
-  volumetric?: boolean;
-  iconPath?: string;
 }
 
 export class ValidMeasurementUnitUpdateRequestInput implements IValidMeasurementUnitUpdateRequestInput {
-  imperial?: boolean;
+  universal?: boolean;
+  volumetric?: boolean;
   name?: string;
+  iconPath?: string;
+  imperial?: boolean;
+  metric?: boolean;
   pluralName?: string;
   slug?: string;
   description?: string;
-  metric?: boolean;
-  universal?: boolean;
-  volumetric?: boolean;
-  iconPath?: string;
   constructor(input: Partial<ValidMeasurementUnitUpdateRequestInput> = {}) {
-    this.imperial = input.imperial;
+    this.universal = input.universal;
+    this.volumetric = input.volumetric;
     this.name = input.name;
+    this.iconPath = input.iconPath;
+    this.imperial = input.imperial;
+    this.metric = input.metric;
     this.pluralName = input.pluralName;
     this.slug = input.slug;
     this.description = input.description;
-    this.metric = input.metric;
-    this.universal = input.universal;
-    this.volumetric = input.volumetric;
-    this.iconPath = input.iconPath;
   }
 }

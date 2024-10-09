@@ -3,36 +3,36 @@
 import { ServiceSetting } from './ServiceSetting';
 
 export interface IServiceSettingConfiguration {
-  belongsToUser: string;
-  createdAt: string;
-  value: string;
-  serviceSetting: ServiceSetting;
-  archivedAt?: string;
   belongsToHousehold: string;
+  belongsToUser: string;
   id: string;
-  lastUpdatedAt?: string;
   notes: string;
+  archivedAt?: string;
+  createdAt: string;
+  lastUpdatedAt?: string;
+  serviceSetting: ServiceSetting;
+  value: string;
 }
 
 export class ServiceSettingConfiguration implements IServiceSettingConfiguration {
-  belongsToUser: string;
-  createdAt: string;
-  value: string;
-  serviceSetting: ServiceSetting;
-  archivedAt?: string;
   belongsToHousehold: string;
+  belongsToUser: string;
   id: string;
-  lastUpdatedAt?: string;
   notes: string;
+  archivedAt?: string;
+  createdAt: string;
+  lastUpdatedAt?: string;
+  serviceSetting: ServiceSetting;
+  value: string;
   constructor(input: Partial<ServiceSettingConfiguration> = {}) {
-    this.belongsToUser = input.belongsToUser = '';
-    this.createdAt = input.createdAt = '';
-    this.value = input.value = '';
-    this.serviceSetting = input.serviceSetting = new ServiceSetting();
-    this.archivedAt = input.archivedAt;
     this.belongsToHousehold = input.belongsToHousehold = '';
+    this.belongsToUser = input.belongsToUser = '';
     this.id = input.id = '';
-    this.lastUpdatedAt = input.lastUpdatedAt;
     this.notes = input.notes = '';
+    this.archivedAt = input.archivedAt;
+    this.createdAt = input.createdAt = '';
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.serviceSetting = input.serviceSetting = new ServiceSetting();
+    this.value = input.value = '';
   }
 }
