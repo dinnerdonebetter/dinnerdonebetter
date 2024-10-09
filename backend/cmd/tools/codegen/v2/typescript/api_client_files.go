@@ -2,13 +2,15 @@ package typescript
 
 import (
 	"bytes"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/swaggest/openapi-go/openapi31"
 	"net/http"
 	"slices"
 	"strings"
 	"text/template"
 	"unicode"
+
+	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/swaggest/openapi-go/openapi31"
 )
 
 var skipOps = map[string]bool{
@@ -267,14 +269,14 @@ type functionParam struct {
 }
 
 type APIClientFunction struct {
+	InputType     functionInputParam
+	ResponseType  functionResponseType
 	Method        string
 	Name          string
+	PathTemplate  string
+	Params        []functionParam
 	QueryFiltered bool
 	ReturnsList   bool
-	PathTemplate  string
-	InputType     functionInputParam
-	Params        []functionParam
-	ResponseType  functionResponseType
 }
 
 type functionResponseType struct {

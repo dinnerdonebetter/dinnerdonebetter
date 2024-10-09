@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	generatedDisclaimer           = `// GENERATED CODE, DO NOT EDIT MANUALLY`
 	specFilepath                  = "../openapi_spec.yaml"
 	typescriptAPIClientOutputPath = "../frontend/packages/generated-client"
 	typescriptModelsOutputPath    = "../frontend/packages/generated-models"
@@ -99,7 +98,7 @@ func writeTypescriptAPIClientFiles(spec *openapi31.Spec) error {
 			return fmt.Errorf("failed to render: %w", renderErr)
 		}
 
-		fileContents := fmt.Sprintf("%s\n\n%s", generatedDisclaimer, rawFileContents)
+		fileContents := fmt.Sprintf("%s\n\n%s", typescript.GeneratedDisclaimer, rawFileContents)
 		if err = os.WriteFile(actualFilepath, []byte(fileContents), 0o0644); err != nil {
 			return fmt.Errorf("failed to write file %s: %w", actualFilepath, err)
 		}
@@ -109,7 +108,7 @@ func writeTypescriptAPIClientFiles(spec *openapi31.Spec) error {
 
 	fmt.Printf("Wrote %d files, had %d Operations\n", len(createdFiles), getOpCountForSpec(spec))
 
-	indexFile := fmt.Sprintf("%s\n\n", generatedDisclaimer)
+	indexFile := fmt.Sprintf("%s\n\n", typescript.GeneratedDisclaimer)
 	for _, createdFile := range createdFiles {
 		indexFile += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", typescriptAPIClientOutputPath)), ".ts"))
 	}
@@ -122,6 +121,24 @@ func writeTypescriptAPIClientFiles(spec *openapi31.Spec) error {
 }
 
 func writeTypescriptModelFiles(spec *openapi31.Spec) error {
+	// first do enums
+	enums, err := typescript.GenerateEnumDefinitions(spec)
+	if err != nil {
+		return fmt.Errorf("could not generate enums file: %w", err)
+	}
+
+	enumsFile := typescript.GeneratedDisclaimer + "\n\n"
+	for _, enum := range enums {
+		def, renderErr := enum.Render()
+		if renderErr != nil {
+			return fmt.Errorf("could not render enum definition: %w", renderErr)
+		}
+
+		enumsFile += fmt.Sprintf("%s\n\n", def)
+	}
+
+	// next do models
+
 	typescriptModelFiles, err := typescript.GenerateModelFiles(spec)
 	if err != nil {
 		return fmt.Errorf("failed to generate typescript models files: %w", err)
@@ -144,7 +161,7 @@ func writeTypescriptModelFiles(spec *openapi31.Spec) error {
 			return fmt.Errorf("failed to render: %w", renderErr)
 		}
 
-		fileContents := fmt.Sprintf("%s\n\n%s", generatedDisclaimer, rawFileContents)
+		fileContents := fmt.Sprintf("%s\n\n%s", typescript.GeneratedDisclaimer, rawFileContents)
 		if err = os.WriteFile(actualFilepath, []byte(fileContents), 0o0644); err != nil {
 			return fmt.Errorf("failed to write file %s: %w", actualFilepath, err)
 		}
@@ -154,13 +171,28 @@ func writeTypescriptModelFiles(spec *openapi31.Spec) error {
 
 	fmt.Printf("Wrote %d files, had %d Operations\n", len(createdFiles), getOpCountForSpec(spec))
 
-	indexFile := fmt.Sprintf("%s\n\n", generatedDisclaimer)
+	indexFile := fmt.Sprintf("%s\n\n", typescript.GeneratedDisclaimer)
 	for _, createdFile := range createdFiles {
-		indexFile += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", typescriptAPIClientOutputPath)), ".ts"))
+		indexFile += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", typescriptModelsOutputPath)), ".ts"))
 	}
 
+	if err = os.WriteFile(fmt.Sprintf("%s/enums.ts", typescriptModelsOutputPath), []byte(enumsFile), 0o644); err != nil {
+		return fmt.Errorf("failed to write enums file: %w", err)
+	}
+
+	for name := range typescript.StaticFiles {
+		indexFile += fmt.Sprintf("export * from './%s';\n", name)
+	}
+	indexFile += "export * from './enums';\n"
+
 	if err = os.WriteFile(fmt.Sprintf("%s/index.ts", typescriptModelsOutputPath), []byte(indexFile), 0o644); err != nil {
-		return fmt.Errorf("failed to write main file: %w", err)
+		return fmt.Errorf("failed to write index file: %w", err)
+	}
+
+	for name, content := range typescript.StaticFiles {
+		if err = os.WriteFile(fmt.Sprintf("%s/%s.ts", typescriptModelsOutputPath, name), []byte(content), 0o644); err != nil {
+			return fmt.Errorf("failed to write index file: %w", err)
+		}
 	}
 
 	return nil
@@ -176,7 +208,7 @@ func main() {
 		log.Fatalf("failed to write typescript model files: %v", err)
 	}
 
-	//if err = writeTypescriptAPIClientFiles(spec); err != nil {
-	//	log.Fatalf("failed to write typescript API client files: %v", err)
-	//}
+	if err = writeTypescriptAPIClientFiles(spec); err != nil {
+		log.Fatalf("failed to write typescript API client files: %v", err)
+	}
 }

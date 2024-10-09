@@ -17,7 +17,7 @@ func (d *TypeDefinition) Name() string {
 }
 
 var (
-	CustomTypeMap = map[string]string{
+	EnumTypeMap = map[string]string{
 		"ValidIngredientState.attributeType":                     "ValidIngredientStateAttributeType",
 		"ValidIngredientStateCreationRequestInput.attributeType": "ValidIngredientStateAttributeType",
 		"ValidIngredientStateUpdateRequestInput.attributeType":   "ValidIngredientStateAttributeType",

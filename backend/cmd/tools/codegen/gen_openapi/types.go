@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"strings"
+
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
 
 	"github.com/fatih/structtag"
 )
@@ -89,9 +90,9 @@ type openapiProperty struct {
 
 type openapiSchema struct {
 	Properties map[string]*openapiProperty `json:"properties,omitempty" yaml:"properties,omitempty"`
-	Enum       []string                    `json:"enum,omitempty" yaml:"enum,omitempty"`
 	name       string
-	Type       string `json:"type" yaml:"type"`
+	Type       string   `json:"type"           yaml:"type"`
+	Enum       []string `json:"enum,omitempty" yaml:"enum,omitempty"`
 }
 
 func getJSONTagForField(field *ast.Field) string {
@@ -233,7 +234,7 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 						}
 					}
 
-					if x, ok2 := codegen.CustomTypeMap[fmt.Sprintf("%s.%s", typeName, fieldName)]; ok2 {
+					if x, ok2 := codegen.EnumTypeMap[fmt.Sprintf("%s.%s", typeName, fieldName)]; ok2 {
 						property.Type = ""
 						property.Ref = fmt.Sprintf("#/components/schemas/%s", x)
 					}

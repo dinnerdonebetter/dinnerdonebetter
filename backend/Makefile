@@ -196,10 +196,8 @@ queries:
 	go run $(THIS)/cmd/tools/gen_queries
 
 typescript:
-	go run $(THIS)/cmd/tools/codegen/gen_typescript
-
-new_ts:
 	go run $(THIS)/cmd/tools/codegen/v2
+	(cd ../frontend && $(MAKE) format)
 
 .PHONY: querier
 querier: queries queries_lint  ## TODO: This target is broken
