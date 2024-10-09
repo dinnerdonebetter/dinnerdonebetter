@@ -1,21 +1,18 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-
-
 export interface IRecipePrepTaskStepUpdateRequestInput {
-   satisfiesRecipeStep?: boolean;
- belongsToRecipeStep?: string;
- belongsToRecipeStepTask?: string;
-
+  belongsToRecipeStep?: string;
+  belongsToRecipeStepTask?: string;
+  satisfiesRecipeStep?: boolean;
 }
 
 export class RecipePrepTaskStepUpdateRequestInput implements IRecipePrepTaskStepUpdateRequestInput {
-   satisfiesRecipeStep?: boolean;
- belongsToRecipeStep?: string;
- belongsToRecipeStepTask?: string;
-constructor(input: Partial<RecipePrepTaskStepUpdateRequestInput> = {}) {
-	 this.satisfiesRecipeStep = input.satisfiesRecipeStep;
- this.belongsToRecipeStep = input.belongsToRecipeStep;
- this.belongsToRecipeStepTask = input.belongsToRecipeStepTask;
-}
+  belongsToRecipeStep?: string;
+  belongsToRecipeStepTask?: string;
+  satisfiesRecipeStep?: boolean;
+  constructor(input: Partial<RecipePrepTaskStepUpdateRequestInput> = {}) {
+    this.belongsToRecipeStep = input.belongsToRecipeStep;
+    this.belongsToRecipeStepTask = input.belongsToRecipeStepTask;
+    this.satisfiesRecipeStep = input.satisfiesRecipeStep;
+  }
 }

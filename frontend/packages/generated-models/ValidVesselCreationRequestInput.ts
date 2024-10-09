@@ -1,55 +1,53 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
- import { ValidVesselShapeType } from './enums';
-
+import { ValidVesselShapeType } from './enums';
 
 export interface IValidVesselCreationRequestInput {
-   heightInMillimeters: number;
- capacityUnitID?: string;
- usableForStorage: boolean;
- widthInMillimeters: number;
- slug: string;
- iconPath: string;
- lengthInMillimeters: number;
- pluralName: string;
- description: string;
- displayInSummaryLists: boolean;
- includeInGeneratedInstructions: boolean;
- name: string;
- shape: ValidVesselShapeType;
- capacity: number;
-
+  capacityUnitID?: string;
+  displayInSummaryLists: boolean;
+  lengthInMillimeters: number;
+  description: string;
+  iconPath: string;
+  name: string;
+  shape: ValidVesselShapeType;
+  pluralName: string;
+  slug: string;
+  usableForStorage: boolean;
+  capacity: number;
+  heightInMillimeters: number;
+  includeInGeneratedInstructions: boolean;
+  widthInMillimeters: number;
 }
 
 export class ValidVesselCreationRequestInput implements IValidVesselCreationRequestInput {
-   heightInMillimeters: number;
- capacityUnitID?: string;
- usableForStorage: boolean;
- widthInMillimeters: number;
- slug: string;
- iconPath: string;
- lengthInMillimeters: number;
- pluralName: string;
- description: string;
- displayInSummaryLists: boolean;
- includeInGeneratedInstructions: boolean;
- name: string;
- shape: ValidVesselShapeType;
- capacity: number;
-constructor(input: Partial<ValidVesselCreationRequestInput> = {}) {
-	 this.heightInMillimeters = input.heightInMillimeters = 0;
- this.capacityUnitID = input.capacityUnitID;
- this.usableForStorage = input.usableForStorage = false;
- this.widthInMillimeters = input.widthInMillimeters = 0;
- this.slug = input.slug = '';
- this.iconPath = input.iconPath = '';
- this.lengthInMillimeters = input.lengthInMillimeters = 0;
- this.pluralName = input.pluralName = '';
- this.description = input.description = '';
- this.displayInSummaryLists = input.displayInSummaryLists = false;
- this.includeInGeneratedInstructions = input.includeInGeneratedInstructions = false;
- this.name = input.name = '';
- this.shape = input.shape = 'other';
- this.capacity = input.capacity = 0;
-}
+  capacityUnitID?: string;
+  displayInSummaryLists: boolean;
+  lengthInMillimeters: number;
+  description: string;
+  iconPath: string;
+  name: string;
+  shape: ValidVesselShapeType;
+  pluralName: string;
+  slug: string;
+  usableForStorage: boolean;
+  capacity: number;
+  heightInMillimeters: number;
+  includeInGeneratedInstructions: boolean;
+  widthInMillimeters: number;
+  constructor(input: Partial<ValidVesselCreationRequestInput> = {}) {
+    this.capacityUnitID = input.capacityUnitID;
+    this.displayInSummaryLists = input.displayInSummaryLists = false;
+    this.lengthInMillimeters = input.lengthInMillimeters = 0;
+    this.description = input.description = '';
+    this.iconPath = input.iconPath = '';
+    this.name = input.name = '';
+    this.shape = input.shape = 'other';
+    this.pluralName = input.pluralName = '';
+    this.slug = input.slug = '';
+    this.usableForStorage = input.usableForStorage = false;
+    this.capacity = input.capacity = 0;
+    this.heightInMillimeters = input.heightInMillimeters = 0;
+    this.includeInGeneratedInstructions = input.includeInGeneratedInstructions = false;
+    this.widthInMillimeters = input.widthInMillimeters = 0;
+  }
 }

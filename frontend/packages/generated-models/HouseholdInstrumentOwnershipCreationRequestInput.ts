@@ -1,24 +1,23 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-
-
 export interface IHouseholdInstrumentOwnershipCreationRequestInput {
-   notes: string;
- quantity: number;
- validInstrumentID: string;
- belongsToHousehold: string;
-
+  belongsToHousehold: string;
+  notes: string;
+  quantity: number;
+  validInstrumentID: string;
 }
 
-export class HouseholdInstrumentOwnershipCreationRequestInput implements IHouseholdInstrumentOwnershipCreationRequestInput {
-   notes: string;
- quantity: number;
- validInstrumentID: string;
- belongsToHousehold: string;
-constructor(input: Partial<HouseholdInstrumentOwnershipCreationRequestInput> = {}) {
-	 this.notes = input.notes = '';
- this.quantity = input.quantity = 0;
- this.validInstrumentID = input.validInstrumentID = '';
- this.belongsToHousehold = input.belongsToHousehold = '';
-}
+export class HouseholdInstrumentOwnershipCreationRequestInput
+  implements IHouseholdInstrumentOwnershipCreationRequestInput
+{
+  belongsToHousehold: string;
+  notes: string;
+  quantity: number;
+  validInstrumentID: string;
+  constructor(input: Partial<HouseholdInstrumentOwnershipCreationRequestInput> = {}) {
+    this.belongsToHousehold = input.belongsToHousehold = '';
+    this.notes = input.notes = '';
+    this.quantity = input.quantity = 0;
+    this.validInstrumentID = input.validInstrumentID = '';
+  }
 }

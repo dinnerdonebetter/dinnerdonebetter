@@ -1,56 +1,54 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
- import { ValidRecipeStepProductType } from './enums';
- import { NumberRange } from './number_range';
-
+import { ValidRecipeStepProductType } from './enums';
+import { NumberRange } from './number_range';
 
 export interface IRecipeStepProductUpdateRequestInput {
-   isWaste?: boolean;
- storageDurationInSeconds: NumberRange;
- isLiquid?: boolean;
- quantity: NumberRange;
- quantityNotes?: string;
- storageInstructions?: string;
- storageTemperatureInCelsius: NumberRange;
- belongsToRecipeStep?: string;
- containedInVesselIndex?: number;
- measurementUnitID?: string;
- name?: string;
- type?: ValidRecipeStepProductType;
- compostable?: boolean;
- index?: number;
-
+  compostable?: boolean;
+  name?: string;
+  quantityNotes?: string;
+  storageDurationInSeconds: NumberRange;
+  storageTemperatureInCelsius: NumberRange;
+  type?: ValidRecipeStepProductType;
+  containedInVesselIndex?: number;
+  index?: number;
+  measurementUnitID?: string;
+  quantity: NumberRange;
+  storageInstructions?: string;
+  belongsToRecipeStep?: string;
+  isLiquid?: boolean;
+  isWaste?: boolean;
 }
 
 export class RecipeStepProductUpdateRequestInput implements IRecipeStepProductUpdateRequestInput {
-   isWaste?: boolean;
- storageDurationInSeconds: NumberRange;
- isLiquid?: boolean;
- quantity: NumberRange;
- quantityNotes?: string;
- storageInstructions?: string;
- storageTemperatureInCelsius: NumberRange;
- belongsToRecipeStep?: string;
- containedInVesselIndex?: number;
- measurementUnitID?: string;
- name?: string;
- type?: ValidRecipeStepProductType;
- compostable?: boolean;
- index?: number;
-constructor(input: Partial<RecipeStepProductUpdateRequestInput> = {}) {
-	 this.isWaste = input.isWaste;
- this.storageDurationInSeconds = input.storageDurationInSeconds = { min: 0, max: 0 };
- this.isLiquid = input.isLiquid;
- this.quantity = input.quantity = { min: 0, max: 0 };
- this.quantityNotes = input.quantityNotes;
- this.storageInstructions = input.storageInstructions;
- this.storageTemperatureInCelsius = input.storageTemperatureInCelsius = { min: 0, max: 0 };
- this.belongsToRecipeStep = input.belongsToRecipeStep;
- this.containedInVesselIndex = input.containedInVesselIndex;
- this.measurementUnitID = input.measurementUnitID;
- this.name = input.name;
- this.type = input.type;
- this.compostable = input.compostable;
- this.index = input.index;
-}
+  compostable?: boolean;
+  name?: string;
+  quantityNotes?: string;
+  storageDurationInSeconds: NumberRange;
+  storageTemperatureInCelsius: NumberRange;
+  type?: ValidRecipeStepProductType;
+  containedInVesselIndex?: number;
+  index?: number;
+  measurementUnitID?: string;
+  quantity: NumberRange;
+  storageInstructions?: string;
+  belongsToRecipeStep?: string;
+  isLiquid?: boolean;
+  isWaste?: boolean;
+  constructor(input: Partial<RecipeStepProductUpdateRequestInput> = {}) {
+    this.compostable = input.compostable;
+    this.name = input.name;
+    this.quantityNotes = input.quantityNotes;
+    this.storageDurationInSeconds = input.storageDurationInSeconds = { min: 0, max: 0 };
+    this.storageTemperatureInCelsius = input.storageTemperatureInCelsius = { min: 0, max: 0 };
+    this.type = input.type;
+    this.containedInVesselIndex = input.containedInVesselIndex;
+    this.index = input.index;
+    this.measurementUnitID = input.measurementUnitID;
+    this.quantity = input.quantity = { min: 0, max: 0 };
+    this.storageInstructions = input.storageInstructions;
+    this.belongsToRecipeStep = input.belongsToRecipeStep;
+    this.isLiquid = input.isLiquid;
+    this.isWaste = input.isWaste;
+  }
 }

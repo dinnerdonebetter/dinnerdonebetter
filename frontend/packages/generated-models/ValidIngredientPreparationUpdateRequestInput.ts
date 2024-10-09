@@ -1,21 +1,18 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-
-
 export interface IValidIngredientPreparationUpdateRequestInput {
-   validPreparationID?: string;
- notes?: string;
- validIngredientID?: string;
-
+  notes?: string;
+  validIngredientID?: string;
+  validPreparationID?: string;
 }
 
 export class ValidIngredientPreparationUpdateRequestInput implements IValidIngredientPreparationUpdateRequestInput {
-   validPreparationID?: string;
- notes?: string;
- validIngredientID?: string;
-constructor(input: Partial<ValidIngredientPreparationUpdateRequestInput> = {}) {
-	 this.validPreparationID = input.validPreparationID;
- this.notes = input.notes;
- this.validIngredientID = input.validIngredientID;
-}
+  notes?: string;
+  validIngredientID?: string;
+  validPreparationID?: string;
+  constructor(input: Partial<ValidIngredientPreparationUpdateRequestInput> = {}) {
+    this.notes = input.notes;
+    this.validIngredientID = input.validIngredientID;
+    this.validPreparationID = input.validPreparationID;
+  }
 }

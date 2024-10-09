@@ -1,40 +1,38 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
- import { OptionalNumberRange } from './number_range';
-
+import { OptionalNumberRange } from './number_range';
 
 export interface IRecipeStepInstrumentUpdateRequestInput {
-   quantity: OptionalNumberRange;
- belongsToRecipeStep?: string;
- instrumentID?: string;
- name?: string;
- optionIndex?: number;
- preferenceRank?: number;
- notes?: string;
- optional?: boolean;
- recipeStepProductID?: string;
-
+  belongsToRecipeStep?: string;
+  instrumentID?: string;
+  optional?: boolean;
+  quantity: OptionalNumberRange;
+  recipeStepProductID?: string;
+  name?: string;
+  notes?: string;
+  optionIndex?: number;
+  preferenceRank?: number;
 }
 
 export class RecipeStepInstrumentUpdateRequestInput implements IRecipeStepInstrumentUpdateRequestInput {
-   quantity: OptionalNumberRange;
- belongsToRecipeStep?: string;
- instrumentID?: string;
- name?: string;
- optionIndex?: number;
- preferenceRank?: number;
- notes?: string;
- optional?: boolean;
- recipeStepProductID?: string;
-constructor(input: Partial<RecipeStepInstrumentUpdateRequestInput> = {}) {
-	 this.quantity = input.quantity = {};
- this.belongsToRecipeStep = input.belongsToRecipeStep;
- this.instrumentID = input.instrumentID;
- this.name = input.name;
- this.optionIndex = input.optionIndex;
- this.preferenceRank = input.preferenceRank;
- this.notes = input.notes;
- this.optional = input.optional;
- this.recipeStepProductID = input.recipeStepProductID;
-}
+  belongsToRecipeStep?: string;
+  instrumentID?: string;
+  optional?: boolean;
+  quantity: OptionalNumberRange;
+  recipeStepProductID?: string;
+  name?: string;
+  notes?: string;
+  optionIndex?: number;
+  preferenceRank?: number;
+  constructor(input: Partial<RecipeStepInstrumentUpdateRequestInput> = {}) {
+    this.belongsToRecipeStep = input.belongsToRecipeStep;
+    this.instrumentID = input.instrumentID;
+    this.optional = input.optional;
+    this.quantity = input.quantity = {};
+    this.recipeStepProductID = input.recipeStepProductID;
+    this.name = input.name;
+    this.notes = input.notes;
+    this.optionIndex = input.optionIndex;
+    this.preferenceRank = input.preferenceRank;
+  }
 }

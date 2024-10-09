@@ -1,42 +1,39 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-
-
 export interface IServiceSetting {
-   id: string;
- adminsOnly: boolean;
- createdAt: string;
- defaultValue?: string;
- enumeration: string;
- type: string;
- archivedAt?: string;
- description: string;
- lastUpdatedAt?: string;
- name: string;
-
+  description: string;
+  name: string;
+  archivedAt?: string;
+  createdAt: string;
+  enumeration: string;
+  id: string;
+  lastUpdatedAt?: string;
+  type: string;
+  adminsOnly: boolean;
+  defaultValue?: string;
 }
 
 export class ServiceSetting implements IServiceSetting {
-   id: string;
- adminsOnly: boolean;
- createdAt: string;
- defaultValue?: string;
- enumeration: string;
- type: string;
- archivedAt?: string;
- description: string;
- lastUpdatedAt?: string;
- name: string;
-constructor(input: Partial<ServiceSetting> = {}) {
-	 this.id = input.id = '';
- this.adminsOnly = input.adminsOnly = false;
- this.createdAt = input.createdAt = '';
- this.defaultValue = input.defaultValue;
- this.enumeration = input.enumeration = '';
- this.type = input.type = '';
- this.archivedAt = input.archivedAt;
- this.description = input.description = '';
- this.lastUpdatedAt = input.lastUpdatedAt;
- this.name = input.name = '';
-}
+  description: string;
+  name: string;
+  archivedAt?: string;
+  createdAt: string;
+  enumeration: string;
+  id: string;
+  lastUpdatedAt?: string;
+  type: string;
+  adminsOnly: boolean;
+  defaultValue?: string;
+  constructor(input: Partial<ServiceSetting> = {}) {
+    this.description = input.description = '';
+    this.name = input.name = '';
+    this.archivedAt = input.archivedAt;
+    this.createdAt = input.createdAt = '';
+    this.enumeration = input.enumeration = '';
+    this.id = input.id = '';
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.type = input.type = '';
+    this.adminsOnly = input.adminsOnly = false;
+    this.defaultValue = input.defaultValue;
+  }
 }

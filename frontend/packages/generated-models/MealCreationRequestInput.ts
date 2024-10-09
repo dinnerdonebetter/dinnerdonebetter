@@ -1,29 +1,27 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
- import { MealComponentCreationRequestInput } from './MealComponentCreationRequestInput';
- import { NumberRangeWithOptionalMax } from './number_range';
-
+import { MealComponentCreationRequestInput } from './MealComponentCreationRequestInput';
+import { NumberRangeWithOptionalMax } from './number_range';
 
 export interface IMealCreationRequestInput {
-   name: string;
- components: MealComponentCreationRequestInput;
- description: string;
- eligibleForMealPlans: boolean;
- estimatedPortions: NumberRangeWithOptionalMax;
-
+  estimatedPortions: NumberRangeWithOptionalMax;
+  name: string;
+  components: MealComponentCreationRequestInput;
+  description: string;
+  eligibleForMealPlans: boolean;
 }
 
 export class MealCreationRequestInput implements IMealCreationRequestInput {
-   name: string;
- components: MealComponentCreationRequestInput;
- description: string;
- eligibleForMealPlans: boolean;
- estimatedPortions: NumberRangeWithOptionalMax;
-constructor(input: Partial<MealCreationRequestInput> = {}) {
-	 this.name = input.name = '';
- this.components = input.components = new MealComponentCreationRequestInput();
- this.description = input.description = '';
- this.eligibleForMealPlans = input.eligibleForMealPlans = false;
- this.estimatedPortions = input.estimatedPortions = { min: 0 };
-}
+  estimatedPortions: NumberRangeWithOptionalMax;
+  name: string;
+  components: MealComponentCreationRequestInput;
+  description: string;
+  eligibleForMealPlans: boolean;
+  constructor(input: Partial<MealCreationRequestInput> = {}) {
+    this.estimatedPortions = input.estimatedPortions = { min: 0 };
+    this.name = input.name = '';
+    this.components = input.components = new MealComponentCreationRequestInput();
+    this.description = input.description = '';
+    this.eligibleForMealPlans = input.eligibleForMealPlans = false;
+  }
 }

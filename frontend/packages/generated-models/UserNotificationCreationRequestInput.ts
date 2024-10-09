@@ -1,21 +1,18 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-
-
 export interface IUserNotificationCreationRequestInput {
-   status: string;
- belongsToUser: string;
- content: string;
-
+  content: string;
+  status: string;
+  belongsToUser: string;
 }
 
 export class UserNotificationCreationRequestInput implements IUserNotificationCreationRequestInput {
-   status: string;
- belongsToUser: string;
- content: string;
-constructor(input: Partial<UserNotificationCreationRequestInput> = {}) {
-	 this.status = input.status = '';
- this.belongsToUser = input.belongsToUser = '';
- this.content = input.content = '';
-}
+  content: string;
+  status: string;
+  belongsToUser: string;
+  constructor(input: Partial<UserNotificationCreationRequestInput> = {}) {
+    this.content = input.content = '';
+    this.status = input.status = '';
+    this.belongsToUser = input.belongsToUser = '';
+  }
 }

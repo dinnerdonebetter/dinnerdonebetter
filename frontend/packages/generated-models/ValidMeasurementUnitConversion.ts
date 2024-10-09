@@ -1,41 +1,39 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
- import { ValidIngredient } from './ValidIngredient';
- import { ValidMeasurementUnit } from './ValidMeasurementUnit';
-
+import { ValidIngredient } from './ValidIngredient';
+import { ValidMeasurementUnit } from './ValidMeasurementUnit';
 
 export interface IValidMeasurementUnitConversion {
-   from: ValidMeasurementUnit;
- modifier: number;
- notes: string;
- onlyForIngredient?: ValidIngredient;
- archivedAt?: string;
- createdAt: string;
- id: string;
- lastUpdatedAt?: string;
- to: ValidMeasurementUnit;
-
+  archivedAt?: string;
+  id: string;
+  notes: string;
+  onlyForIngredient?: ValidIngredient;
+  createdAt: string;
+  from: ValidMeasurementUnit;
+  lastUpdatedAt?: string;
+  modifier: number;
+  to: ValidMeasurementUnit;
 }
 
 export class ValidMeasurementUnitConversion implements IValidMeasurementUnitConversion {
-   from: ValidMeasurementUnit;
- modifier: number;
- notes: string;
- onlyForIngredient?: ValidIngredient;
- archivedAt?: string;
- createdAt: string;
- id: string;
- lastUpdatedAt?: string;
- to: ValidMeasurementUnit;
-constructor(input: Partial<ValidMeasurementUnitConversion> = {}) {
-	 this.from = input.from = new ValidMeasurementUnit();
- this.modifier = input.modifier = 0;
- this.notes = input.notes = '';
- this.onlyForIngredient = input.onlyForIngredient;
- this.archivedAt = input.archivedAt;
- this.createdAt = input.createdAt = '';
- this.id = input.id = '';
- this.lastUpdatedAt = input.lastUpdatedAt;
- this.to = input.to = new ValidMeasurementUnit();
-}
+  archivedAt?: string;
+  id: string;
+  notes: string;
+  onlyForIngredient?: ValidIngredient;
+  createdAt: string;
+  from: ValidMeasurementUnit;
+  lastUpdatedAt?: string;
+  modifier: number;
+  to: ValidMeasurementUnit;
+  constructor(input: Partial<ValidMeasurementUnitConversion> = {}) {
+    this.archivedAt = input.archivedAt;
+    this.id = input.id = '';
+    this.notes = input.notes = '';
+    this.onlyForIngredient = input.onlyForIngredient;
+    this.createdAt = input.createdAt = '';
+    this.from = input.from = new ValidMeasurementUnit();
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.modifier = input.modifier = 0;
+    this.to = input.to = new ValidMeasurementUnit();
+  }
 }

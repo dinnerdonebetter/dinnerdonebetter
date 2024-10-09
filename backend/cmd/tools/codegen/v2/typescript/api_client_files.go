@@ -292,22 +292,12 @@ func (f *APIClientFunction) Render() (string, error) {
 		if f.QueryFiltered {
 			// GET routes that return lists
 
-			tmpl = `import { Axios } from 'axios';
-
-import {
-  {{ if and (ne .ResponseType.TypeName "") (not (typeIsNative .ResponseType.TypeName)) }}{{ .ResponseType.TypeName }}, {{ end }}
-  QueryFilter,
-  QueryFilteredResult,
-  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}, {{ end }}
-} from '@dinnerdonebetter/models'; 
-
-export async function {{ .Name }}(
-  client: Axios,
+			tmpl = `async {{ .Name }}(
   filter: QueryFilter = QueryFilter.Default(),
   {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
 	{{ end -}}): Promise< QueryFilteredResult< {{ .ResponseType.TypeName }} >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
+    const response = await this.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
       params: filter.asRecord(),
     });
 
@@ -327,20 +317,11 @@ export async function {{ .Name }}(
 }`
 		} else {
 			// GET routes that don't return lists
-
-			tmpl = `import { Axios } from 'axios';
-
-import {
-  {{ if and (ne .ResponseType.TypeName "") (not (typeIsNative .ResponseType.TypeName)) }}{{ .ResponseType.TypeName }}, {{ end }}
-  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}, {{ end }}
-} from '@dinnerdonebetter/models'; 
-
-export async function {{ .Name }}(
-  client: Axios,
+			tmpl = `async {{ .Name }}(
   {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
 	{{ end -}}): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }} {{ .ResponseType.TypeName }} >   {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}  {
   return new Promise(async function (resolve, reject) {
-    const response = await client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {});
+    const response = await this.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {});
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));
@@ -352,21 +333,12 @@ export async function {{ .Name }}(
 		}
 
 	case http.MethodPost, http.MethodPut, http.MethodPatch:
-		tmpl = `import { Axios } from 'axios';
-
-import {
-  {{ if and (ne .ResponseType.TypeName "") (not (typeIsNative .ResponseType.TypeName)) }}{{ .ResponseType.TypeName }}, {{ end }}
-  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}, {{ end }}
-  {{ if ne .InputType.Type "" }}{{ .InputType.Type }}, {{ end }}
-} from '@dinnerdonebetter/models';
-
-export async function {{ .Name }}(
-  client: Axios,
+		tmpl = `async {{ .Name }}(
   {{ range .Params }}{{ .Name }}: {{ .Type }},{{ end }}
   {{ if ne .InputType.Type "" }}input: {{ .InputType.Type }},{{ end }}
 ): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }} {{ .ResponseType.TypeName }} > {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {
   return new Promise(async function (resolve, reject) {
-    const response = await client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }});
+    const response = await this.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }});
 	    if (response.data.error) {
 	      reject(new Error(response.data.error.message));
 	    }

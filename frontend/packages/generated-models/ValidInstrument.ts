@@ -1,48 +1,45 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-
-
 export interface IValidInstrument {
-   pluralName: string;
- slug: string;
- description: string;
- iconPath: string;
- lastUpdatedAt?: string;
- id: string;
- includeInGeneratedInstructions: boolean;
- name: string;
- usableForStorage: boolean;
- archivedAt?: string;
- createdAt: string;
- displayInSummaryLists: boolean;
-
+  displayInSummaryLists: boolean;
+  iconPath: string;
+  includeInGeneratedInstructions: boolean;
+  lastUpdatedAt?: string;
+  pluralName: string;
+  archivedAt?: string;
+  createdAt: string;
+  description: string;
+  slug: string;
+  usableForStorage: boolean;
+  id: string;
+  name: string;
 }
 
 export class ValidInstrument implements IValidInstrument {
-   pluralName: string;
- slug: string;
- description: string;
- iconPath: string;
- lastUpdatedAt?: string;
- id: string;
- includeInGeneratedInstructions: boolean;
- name: string;
- usableForStorage: boolean;
- archivedAt?: string;
- createdAt: string;
- displayInSummaryLists: boolean;
-constructor(input: Partial<ValidInstrument> = {}) {
-	 this.pluralName = input.pluralName = '';
- this.slug = input.slug = '';
- this.description = input.description = '';
- this.iconPath = input.iconPath = '';
- this.lastUpdatedAt = input.lastUpdatedAt;
- this.id = input.id = '';
- this.includeInGeneratedInstructions = input.includeInGeneratedInstructions = false;
- this.name = input.name = '';
- this.usableForStorage = input.usableForStorage = false;
- this.archivedAt = input.archivedAt;
- this.createdAt = input.createdAt = '';
- this.displayInSummaryLists = input.displayInSummaryLists = false;
-}
+  displayInSummaryLists: boolean;
+  iconPath: string;
+  includeInGeneratedInstructions: boolean;
+  lastUpdatedAt?: string;
+  pluralName: string;
+  archivedAt?: string;
+  createdAt: string;
+  description: string;
+  slug: string;
+  usableForStorage: boolean;
+  id: string;
+  name: string;
+  constructor(input: Partial<ValidInstrument> = {}) {
+    this.displayInSummaryLists = input.displayInSummaryLists = false;
+    this.iconPath = input.iconPath = '';
+    this.includeInGeneratedInstructions = input.includeInGeneratedInstructions = false;
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.pluralName = input.pluralName = '';
+    this.archivedAt = input.archivedAt;
+    this.createdAt = input.createdAt = '';
+    this.description = input.description = '';
+    this.slug = input.slug = '';
+    this.usableForStorage = input.usableForStorage = false;
+    this.id = input.id = '';
+    this.name = input.name = '';
+  }
 }

@@ -1,53 +1,51 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
- import { ValidInstrument } from './ValidInstrument';
- import { NumberRangeWithOptionalMax } from './number_range';
-
+import { ValidInstrument } from './ValidInstrument';
+import { NumberRangeWithOptionalMax } from './number_range';
 
 export interface IRecipeStepInstrument {
-   quantity: NumberRangeWithOptionalMax;
- id: string;
- instrument?: ValidInstrument;
- lastUpdatedAt?: string;
- name: string;
- optionIndex: number;
- preferenceRank: number;
- recipeStepProductID?: string;
- archivedAt?: string;
- belongsToRecipeStep: string;
- createdAt: string;
- notes: string;
- optional: boolean;
-
+  archivedAt?: string;
+  belongsToRecipeStep: string;
+  optional: boolean;
+  quantity: NumberRangeWithOptionalMax;
+  optionIndex: number;
+  preferenceRank: number;
+  createdAt: string;
+  id: string;
+  instrument?: ValidInstrument;
+  lastUpdatedAt?: string;
+  name: string;
+  notes: string;
+  recipeStepProductID?: string;
 }
 
 export class RecipeStepInstrument implements IRecipeStepInstrument {
-   quantity: NumberRangeWithOptionalMax;
- id: string;
- instrument?: ValidInstrument;
- lastUpdatedAt?: string;
- name: string;
- optionIndex: number;
- preferenceRank: number;
- recipeStepProductID?: string;
- archivedAt?: string;
- belongsToRecipeStep: string;
- createdAt: string;
- notes: string;
- optional: boolean;
-constructor(input: Partial<RecipeStepInstrument> = {}) {
-	 this.quantity = input.quantity = { min: 0 };
- this.id = input.id = '';
- this.instrument = input.instrument;
- this.lastUpdatedAt = input.lastUpdatedAt;
- this.name = input.name = '';
- this.optionIndex = input.optionIndex = 0;
- this.preferenceRank = input.preferenceRank = 0;
- this.recipeStepProductID = input.recipeStepProductID;
- this.archivedAt = input.archivedAt;
- this.belongsToRecipeStep = input.belongsToRecipeStep = '';
- this.createdAt = input.createdAt = '';
- this.notes = input.notes = '';
- this.optional = input.optional = false;
-}
+  archivedAt?: string;
+  belongsToRecipeStep: string;
+  optional: boolean;
+  quantity: NumberRangeWithOptionalMax;
+  optionIndex: number;
+  preferenceRank: number;
+  createdAt: string;
+  id: string;
+  instrument?: ValidInstrument;
+  lastUpdatedAt?: string;
+  name: string;
+  notes: string;
+  recipeStepProductID?: string;
+  constructor(input: Partial<RecipeStepInstrument> = {}) {
+    this.archivedAt = input.archivedAt;
+    this.belongsToRecipeStep = input.belongsToRecipeStep = '';
+    this.optional = input.optional = false;
+    this.quantity = input.quantity = { min: 0 };
+    this.optionIndex = input.optionIndex = 0;
+    this.preferenceRank = input.preferenceRank = 0;
+    this.createdAt = input.createdAt = '';
+    this.id = input.id = '';
+    this.instrument = input.instrument;
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.name = input.name = '';
+    this.notes = input.notes = '';
+    this.recipeStepProductID = input.recipeStepProductID;
+  }
 }

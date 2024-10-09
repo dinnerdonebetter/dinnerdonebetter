@@ -49,7 +49,6 @@ func defaultValueForType(typeName string) string {
 
 	switch typeName {
 	case "":
-		println("whoa")
 		return ""
 	default:
 		return fmt.Sprintf("new %s()", typeName)
@@ -186,10 +185,6 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 
 						field.Type = typeNameOptionalNumberRange
 						field.DefaultValue = "{}"
-					}
-
-					if name == "MealPlan" && k == "status" {
-						println("")
 					}
 
 					if x, ok3 := codegen.EnumTypeMap[fmt.Sprintf("%s.%s", name, k)]; ok3 {

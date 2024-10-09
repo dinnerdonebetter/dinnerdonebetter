@@ -1,24 +1,21 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-
-
 export interface IUserIngredientPreferenceUpdateRequestInput {
-   allergy?: boolean;
- ingredientID?: string;
- notes?: string;
- rating?: number;
-
+  notes?: string;
+  rating?: number;
+  allergy?: boolean;
+  ingredientID?: string;
 }
 
 export class UserIngredientPreferenceUpdateRequestInput implements IUserIngredientPreferenceUpdateRequestInput {
-   allergy?: boolean;
- ingredientID?: string;
- notes?: string;
- rating?: number;
-constructor(input: Partial<UserIngredientPreferenceUpdateRequestInput> = {}) {
-	 this.allergy = input.allergy;
- this.ingredientID = input.ingredientID;
- this.notes = input.notes;
- this.rating = input.rating;
-}
+  notes?: string;
+  rating?: number;
+  allergy?: boolean;
+  ingredientID?: string;
+  constructor(input: Partial<UserIngredientPreferenceUpdateRequestInput> = {}) {
+    this.notes = input.notes;
+    this.rating = input.rating;
+    this.allergy = input.allergy;
+    this.ingredientID = input.ingredientID;
+  }
 }

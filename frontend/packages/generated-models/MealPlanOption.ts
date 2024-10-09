@@ -1,53 +1,51 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
- import { Meal } from './Meal';
- import { MealPlanOptionVote } from './MealPlanOptionVote';
-
+import { Meal } from './Meal';
+import { MealPlanOptionVote } from './MealPlanOptionVote';
 
 export interface IMealPlanOption {
-   createdAt: string;
- id: string;
- mealScale: number;
- tieBroken: boolean;
- assignedCook?: string;
- assignedDishwasher?: string;
- chosen: boolean;
- meal: Meal;
- notes: string;
- votes: MealPlanOptionVote;
- archivedAt?: string;
- belongsToMealPlanEvent: string;
- lastUpdatedAt?: string;
-
+  assignedDishwasher?: string;
+  id: string;
+  lastUpdatedAt?: string;
+  meal: Meal;
+  notes: string;
+  tieBroken: boolean;
+  votes: MealPlanOptionVote;
+  archivedAt?: string;
+  assignedCook?: string;
+  belongsToMealPlanEvent: string;
+  chosen: boolean;
+  createdAt: string;
+  mealScale: number;
 }
 
 export class MealPlanOption implements IMealPlanOption {
-   createdAt: string;
- id: string;
- mealScale: number;
- tieBroken: boolean;
- assignedCook?: string;
- assignedDishwasher?: string;
- chosen: boolean;
- meal: Meal;
- notes: string;
- votes: MealPlanOptionVote;
- archivedAt?: string;
- belongsToMealPlanEvent: string;
- lastUpdatedAt?: string;
-constructor(input: Partial<MealPlanOption> = {}) {
-	 this.createdAt = input.createdAt = '';
- this.id = input.id = '';
- this.mealScale = input.mealScale = 0;
- this.tieBroken = input.tieBroken = false;
- this.assignedCook = input.assignedCook;
- this.assignedDishwasher = input.assignedDishwasher;
- this.chosen = input.chosen = false;
- this.meal = input.meal = new Meal();
- this.notes = input.notes = '';
- this.votes = input.votes = new MealPlanOptionVote();
- this.archivedAt = input.archivedAt;
- this.belongsToMealPlanEvent = input.belongsToMealPlanEvent = '';
- this.lastUpdatedAt = input.lastUpdatedAt;
-}
+  assignedDishwasher?: string;
+  id: string;
+  lastUpdatedAt?: string;
+  meal: Meal;
+  notes: string;
+  tieBroken: boolean;
+  votes: MealPlanOptionVote;
+  archivedAt?: string;
+  assignedCook?: string;
+  belongsToMealPlanEvent: string;
+  chosen: boolean;
+  createdAt: string;
+  mealScale: number;
+  constructor(input: Partial<MealPlanOption> = {}) {
+    this.assignedDishwasher = input.assignedDishwasher;
+    this.id = input.id = '';
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.meal = input.meal = new Meal();
+    this.notes = input.notes = '';
+    this.tieBroken = input.tieBroken = false;
+    this.votes = input.votes = new MealPlanOptionVote();
+    this.archivedAt = input.archivedAt;
+    this.assignedCook = input.assignedCook;
+    this.belongsToMealPlanEvent = input.belongsToMealPlanEvent = '';
+    this.chosen = input.chosen = false;
+    this.createdAt = input.createdAt = '';
+    this.mealScale = input.mealScale = 0;
+  }
 }

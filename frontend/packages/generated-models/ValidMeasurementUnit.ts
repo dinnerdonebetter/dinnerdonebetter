@@ -1,51 +1,48 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-
-
 export interface IValidMeasurementUnit {
-   name: string;
- slug: string;
- volumetric: boolean;
- archivedAt?: string;
- createdAt: string;
- iconPath: string;
- metric: boolean;
- pluralName: string;
- universal: boolean;
- description: string;
- id: string;
- imperial: boolean;
- lastUpdatedAt?: string;
-
+  description: string;
+  imperial: boolean;
+  pluralName: string;
+  universal: boolean;
+  volumetric: boolean;
+  slug: string;
+  archivedAt?: string;
+  createdAt: string;
+  iconPath: string;
+  id: string;
+  lastUpdatedAt?: string;
+  metric: boolean;
+  name: string;
 }
 
 export class ValidMeasurementUnit implements IValidMeasurementUnit {
-   name: string;
- slug: string;
- volumetric: boolean;
- archivedAt?: string;
- createdAt: string;
- iconPath: string;
- metric: boolean;
- pluralName: string;
- universal: boolean;
- description: string;
- id: string;
- imperial: boolean;
- lastUpdatedAt?: string;
-constructor(input: Partial<ValidMeasurementUnit> = {}) {
-	 this.name = input.name = '';
- this.slug = input.slug = '';
- this.volumetric = input.volumetric = false;
- this.archivedAt = input.archivedAt;
- this.createdAt = input.createdAt = '';
- this.iconPath = input.iconPath = '';
- this.metric = input.metric = false;
- this.pluralName = input.pluralName = '';
- this.universal = input.universal = false;
- this.description = input.description = '';
- this.id = input.id = '';
- this.imperial = input.imperial = false;
- this.lastUpdatedAt = input.lastUpdatedAt;
-}
+  description: string;
+  imperial: boolean;
+  pluralName: string;
+  universal: boolean;
+  volumetric: boolean;
+  slug: string;
+  archivedAt?: string;
+  createdAt: string;
+  iconPath: string;
+  id: string;
+  lastUpdatedAt?: string;
+  metric: boolean;
+  name: string;
+  constructor(input: Partial<ValidMeasurementUnit> = {}) {
+    this.description = input.description = '';
+    this.imperial = input.imperial = false;
+    this.pluralName = input.pluralName = '';
+    this.universal = input.universal = false;
+    this.volumetric = input.volumetric = false;
+    this.slug = input.slug = '';
+    this.archivedAt = input.archivedAt;
+    this.createdAt = input.createdAt = '';
+    this.iconPath = input.iconPath = '';
+    this.id = input.id = '';
+    this.lastUpdatedAt = input.lastUpdatedAt;
+    this.metric = input.metric = false;
+    this.name = input.name = '';
+  }
 }

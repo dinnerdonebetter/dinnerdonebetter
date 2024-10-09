@@ -2,7 +2,6 @@ package typescript
 
 import (
 	"bytes"
-	"fmt"
 	"text/template"
 	"unicode"
 
@@ -64,8 +63,6 @@ func GenerateEnumDefinitions(spec *openapi31.Spec) ([]EnumDefinition, error) {
 					ed.Values = append(ed.Values, cString)
 				}
 			}
-		} else {
-			fmt.Println("fart")
 		}
 
 		output = append(output, ed)
