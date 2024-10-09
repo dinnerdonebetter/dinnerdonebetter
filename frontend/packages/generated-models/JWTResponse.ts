@@ -1,18 +1,21 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
+
+
 export interface IJWTResponse {
-  token: string;
-  userID: string;
-  householdID: string;
+   householdID: string;
+ token: string;
+ userID: string;
+
 }
 
 export class JWTResponse implements IJWTResponse {
-  token: string;
-  userID: string;
-  householdID: string;
-  constructor(input: Partial<JWTResponse> = {}) {
-    this.token = input.token = '';
-    this.userID = input.userID = '';
-    this.householdID = input.householdID = '';
-  }
+   householdID: string;
+ token: string;
+ userID: string;
+constructor(input: Partial<JWTResponse> = {}) {
+	 this.householdID = input.householdID = '';
+ this.token = input.token = '';
+ this.userID = input.userID = '';
+}
 }

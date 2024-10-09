@@ -1,26 +1,27 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
+
+
 export interface IValidMeasurementUnitConversionCreationRequestInput {
-  onlyForIngredient?: string;
-  to: string;
-  from: string;
-  modifier: number;
-  notes: string;
+   from: string;
+ modifier: number;
+ notes: string;
+ onlyForIngredient?: string;
+ to: string;
+
 }
 
-export class ValidMeasurementUnitConversionCreationRequestInput
-  implements IValidMeasurementUnitConversionCreationRequestInput
-{
-  onlyForIngredient?: string;
-  to: string;
-  from: string;
-  modifier: number;
-  notes: string;
-  constructor(input: Partial<ValidMeasurementUnitConversionCreationRequestInput> = {}) {
-    this.onlyForIngredient = input.onlyForIngredient;
-    this.to = input.to = '';
-    this.from = input.from = '';
-    this.modifier = input.modifier = 0;
-    this.notes = input.notes = '';
-  }
+export class ValidMeasurementUnitConversionCreationRequestInput implements IValidMeasurementUnitConversionCreationRequestInput {
+   from: string;
+ modifier: number;
+ notes: string;
+ onlyForIngredient?: string;
+ to: string;
+constructor(input: Partial<ValidMeasurementUnitConversionCreationRequestInput> = {}) {
+	 this.from = input.from = '';
+ this.modifier = input.modifier = 0;
+ this.notes = input.notes = '';
+ this.onlyForIngredient = input.onlyForIngredient;
+ this.to = input.to = '';
+}
 }

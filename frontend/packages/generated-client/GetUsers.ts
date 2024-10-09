@@ -2,14 +2,19 @@
 
 import { Axios } from 'axios';
 
-import { User, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  User, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getUsers(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
-): Promise<QueryFilteredResult<User>> {
+  ): Promise< QueryFilteredResult< User >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<User>>>(`/api/v1/users`, {
+    const response = await client.get< APIResponse < Array<User>  >  >(`/api/v1/users`, {
       params: filter.asRecord(),
     });
 

@@ -2,14 +2,19 @@
 
 import { Axios } from 'axios';
 
-import { OAuth2Client, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  OAuth2Client, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getOAuth2Clients(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
-): Promise<QueryFilteredResult<OAuth2Client>> {
+  ): Promise< QueryFilteredResult< OAuth2Client >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<OAuth2Client>>>(`/api/v1/oauth2_clients`, {
+    const response = await client.get< APIResponse < Array<OAuth2Client>  >  >(`/api/v1/oauth2_clients`, {
       params: filter.asRecord(),
     });
 

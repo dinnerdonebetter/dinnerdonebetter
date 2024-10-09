@@ -3,24 +3,21 @@
 import { Axios } from 'axios';
 
 import {
-  ValidIngredientStateIngredient,
+  ValidIngredientStateIngredient, 
   QueryFilter,
   QueryFilteredResult,
-  APIResponse,
-} from '@dinnerdonebetter/models';
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getValidIngredientStateIngredientsByIngredient(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
   validIngredientID: string,
-): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
+	): Promise< QueryFilteredResult< ValidIngredientStateIngredient >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<ValidIngredientStateIngredient>>>(
-      `/api/v1/valid_ingredient_state_ingredients/by_ingredient/${validIngredientID}`,
-      {
-        params: filter.asRecord(),
-      },
-    );
+    const response = await client.get< APIResponse < Array<ValidIngredientStateIngredient>  >  >(`/api/v1/valid_ingredient_state_ingredients/by_ingredient/${validIngredientID}`, {
+      params: filter.asRecord(),
+    });
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));

@@ -2,17 +2,17 @@
 
 import { Axios } from 'axios';
 
-import { ValidMeasurementUnit, APIResponse } from '@dinnerdonebetter/models';
+import {
+  ValidMeasurementUnit, 
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function archiveValidMeasurementUnit(
   client: Axios,
   validMeasurementUnitID: string,
-): Promise<APIResponse<ValidMeasurementUnit>> {
+	): Promise<  APIResponse <  ValidMeasurementUnit >    >   {
   return new Promise(async function (resolve, reject) {
-    const response = await client.delete<APIResponse<ValidMeasurementUnit>>(
-      `/api/v1/valid_measurement_units/${validMeasurementUnitID}`,
-      {},
-    );
+    const response = await client.delete< APIResponse < ValidMeasurementUnit  >  >(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`, {});
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));

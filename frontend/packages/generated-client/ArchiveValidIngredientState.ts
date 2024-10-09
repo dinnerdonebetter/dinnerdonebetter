@@ -2,17 +2,17 @@
 
 import { Axios } from 'axios';
 
-import { ValidIngredientState, APIResponse } from '@dinnerdonebetter/models';
+import {
+  ValidIngredientState, 
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function archiveValidIngredientState(
   client: Axios,
   validIngredientStateID: string,
-): Promise<APIResponse<ValidIngredientState>> {
+	): Promise<  APIResponse <  ValidIngredientState >    >   {
   return new Promise(async function (resolve, reject) {
-    const response = await client.delete<APIResponse<ValidIngredientState>>(
-      `/api/v1/valid_ingredient_states/${validIngredientStateID}`,
-      {},
-    );
+    const response = await client.delete< APIResponse < ValidIngredientState  >  >(`/api/v1/valid_ingredient_states/${validIngredientStateID}`, {});
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));

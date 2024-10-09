@@ -1,20 +1,22 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { MealComponentType } from './enums';
+ import { MealComponentType } from './enums';
+
 
 export interface IMealComponentCreationRequestInput {
-  recipeID: string;
-  recipeScale: number;
-  componentType: MealComponentType;
+   componentType: MealComponentType;
+ recipeID: string;
+ recipeScale: number;
+
 }
 
 export class MealComponentCreationRequestInput implements IMealComponentCreationRequestInput {
-  recipeID: string;
-  recipeScale: number;
-  componentType: MealComponentType;
-  constructor(input: Partial<MealComponentCreationRequestInput> = {}) {
-    this.recipeID = input.recipeID = '';
-    this.recipeScale = input.recipeScale = 0;
-    this.componentType = input.componentType = 'unspecified';
-  }
+   componentType: MealComponentType;
+ recipeID: string;
+ recipeScale: number;
+constructor(input: Partial<MealComponentCreationRequestInput> = {}) {
+	 this.componentType = input.componentType = 'unspecified';
+ this.recipeID = input.recipeID = '';
+ this.recipeScale = input.recipeScale = 0;
+}
 }

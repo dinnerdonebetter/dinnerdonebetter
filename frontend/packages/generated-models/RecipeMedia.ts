@@ -1,39 +1,42 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
+
+
 export interface IRecipeMedia {
-  mimeType: string;
-  archivedAt?: string;
-  belongsToRecipe?: string;
-  createdAt: string;
-  externalPath: string;
-  id: string;
-  internalPath: string;
-  lastUpdatedAt?: string;
-  belongsToRecipeStep?: string;
-  index: number;
+   belongsToRecipe?: string;
+ internalPath: string;
+ createdAt: string;
+ externalPath: string;
+ id: string;
+ index: number;
+ lastUpdatedAt?: string;
+ mimeType: string;
+ archivedAt?: string;
+ belongsToRecipeStep?: string;
+
 }
 
 export class RecipeMedia implements IRecipeMedia {
-  mimeType: string;
-  archivedAt?: string;
-  belongsToRecipe?: string;
-  createdAt: string;
-  externalPath: string;
-  id: string;
-  internalPath: string;
-  lastUpdatedAt?: string;
-  belongsToRecipeStep?: string;
-  index: number;
-  constructor(input: Partial<RecipeMedia> = {}) {
-    this.mimeType = input.mimeType = '';
-    this.archivedAt = input.archivedAt;
-    this.belongsToRecipe = input.belongsToRecipe;
-    this.createdAt = input.createdAt = '';
-    this.externalPath = input.externalPath = '';
-    this.id = input.id = '';
-    this.internalPath = input.internalPath = '';
-    this.lastUpdatedAt = input.lastUpdatedAt;
-    this.belongsToRecipeStep = input.belongsToRecipeStep;
-    this.index = input.index = 0;
-  }
+   belongsToRecipe?: string;
+ internalPath: string;
+ createdAt: string;
+ externalPath: string;
+ id: string;
+ index: number;
+ lastUpdatedAt?: string;
+ mimeType: string;
+ archivedAt?: string;
+ belongsToRecipeStep?: string;
+constructor(input: Partial<RecipeMedia> = {}) {
+	 this.belongsToRecipe = input.belongsToRecipe;
+ this.internalPath = input.internalPath = '';
+ this.createdAt = input.createdAt = '';
+ this.externalPath = input.externalPath = '';
+ this.id = input.id = '';
+ this.index = input.index = 0;
+ this.lastUpdatedAt = input.lastUpdatedAt;
+ this.mimeType = input.mimeType = '';
+ this.archivedAt = input.archivedAt;
+ this.belongsToRecipeStep = input.belongsToRecipeStep;
+}
 }

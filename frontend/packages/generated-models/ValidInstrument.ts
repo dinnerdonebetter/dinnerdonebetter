@@ -1,45 +1,48 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
+
+
 export interface IValidInstrument {
-  archivedAt?: string;
-  createdAt: string;
-  id: string;
-  lastUpdatedAt?: string;
-  usableForStorage: boolean;
-  slug: string;
-  description: string;
-  displayInSummaryLists: boolean;
-  iconPath: string;
-  includeInGeneratedInstructions: boolean;
-  name: string;
-  pluralName: string;
+   pluralName: string;
+ slug: string;
+ description: string;
+ iconPath: string;
+ lastUpdatedAt?: string;
+ id: string;
+ includeInGeneratedInstructions: boolean;
+ name: string;
+ usableForStorage: boolean;
+ archivedAt?: string;
+ createdAt: string;
+ displayInSummaryLists: boolean;
+
 }
 
 export class ValidInstrument implements IValidInstrument {
-  archivedAt?: string;
-  createdAt: string;
-  id: string;
-  lastUpdatedAt?: string;
-  usableForStorage: boolean;
-  slug: string;
-  description: string;
-  displayInSummaryLists: boolean;
-  iconPath: string;
-  includeInGeneratedInstructions: boolean;
-  name: string;
-  pluralName: string;
-  constructor(input: Partial<ValidInstrument> = {}) {
-    this.archivedAt = input.archivedAt;
-    this.createdAt = input.createdAt = '';
-    this.id = input.id = '';
-    this.lastUpdatedAt = input.lastUpdatedAt;
-    this.usableForStorage = input.usableForStorage = false;
-    this.slug = input.slug = '';
-    this.description = input.description = '';
-    this.displayInSummaryLists = input.displayInSummaryLists = false;
-    this.iconPath = input.iconPath = '';
-    this.includeInGeneratedInstructions = input.includeInGeneratedInstructions = false;
-    this.name = input.name = '';
-    this.pluralName = input.pluralName = '';
-  }
+   pluralName: string;
+ slug: string;
+ description: string;
+ iconPath: string;
+ lastUpdatedAt?: string;
+ id: string;
+ includeInGeneratedInstructions: boolean;
+ name: string;
+ usableForStorage: boolean;
+ archivedAt?: string;
+ createdAt: string;
+ displayInSummaryLists: boolean;
+constructor(input: Partial<ValidInstrument> = {}) {
+	 this.pluralName = input.pluralName = '';
+ this.slug = input.slug = '';
+ this.description = input.description = '';
+ this.iconPath = input.iconPath = '';
+ this.lastUpdatedAt = input.lastUpdatedAt;
+ this.id = input.id = '';
+ this.includeInGeneratedInstructions = input.includeInGeneratedInstructions = false;
+ this.name = input.name = '';
+ this.usableForStorage = input.usableForStorage = false;
+ this.archivedAt = input.archivedAt;
+ this.createdAt = input.createdAt = '';
+ this.displayInSummaryLists = input.displayInSummaryLists = false;
+}
 }

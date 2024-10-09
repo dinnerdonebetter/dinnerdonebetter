@@ -3,27 +3,22 @@
 import { Axios } from 'axios';
 
 import {
-  RecipeStepCompletionCondition,
-  APIResponse,
-  RecipeStepCompletionConditionUpdateRequestInput,
+  RecipeStepCompletionCondition, 
+  APIResponse, 
+  RecipeStepCompletionConditionUpdateRequestInput, 
 } from '@dinnerdonebetter/models';
 
 export async function updateRecipeStepCompletionCondition(
   client: Axios,
-  recipeID: string,
-  recipeStepID: string,
-  recipeStepCompletionConditionID: string,
+  recipeID: string,recipeStepID: string,recipeStepCompletionConditionID: string,
   input: RecipeStepCompletionConditionUpdateRequestInput,
-): Promise<APIResponse<RecipeStepCompletionCondition>> {
+): Promise<  APIResponse <  RecipeStepCompletionCondition >  >  {
   return new Promise(async function (resolve, reject) {
-    const response = await client.put<APIResponse<RecipeStepCompletionCondition>>(
-      `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
-      input,
-    );
-    if (response.data.error) {
-      reject(new Error(response.data.error.message));
-    }
+    const response = await client.put<APIResponse < RecipeStepCompletionCondition  >  >(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`, input);
+	    if (response.data.error) {
+	      reject(new Error(response.data.error.message));
+	    }
 
-    resolve(response.data);
-  });
+	    resolve(response.data);
+	  });
 }

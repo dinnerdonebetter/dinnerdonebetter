@@ -3,24 +3,21 @@
 import { Axios } from 'axios';
 
 import {
-  ValidIngredientMeasurementUnit,
+  ValidIngredientMeasurementUnit, 
   QueryFilter,
   QueryFilteredResult,
-  APIResponse,
-} from '@dinnerdonebetter/models';
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getValidIngredientMeasurementUnitsByMeasurementUnit(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
   validMeasurementUnitID: string,
-): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
+	): Promise< QueryFilteredResult< ValidIngredientMeasurementUnit >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
-      `/api/v1/valid_ingredient_measurement_units/by_measurement_unit/${validMeasurementUnitID}`,
-      {
-        params: filter.asRecord(),
-      },
-    );
+    const response = await client.get< APIResponse < Array<ValidIngredientMeasurementUnit>  >  >(`/api/v1/valid_ingredient_measurement_units/by_measurement_unit/${validMeasurementUnitID}`, {
+      params: filter.asRecord(),
+    });
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));

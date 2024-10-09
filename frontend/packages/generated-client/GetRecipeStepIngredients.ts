@@ -2,21 +2,23 @@
 
 import { Axios } from 'axios';
 
-import { RecipeStepIngredient, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  RecipeStepIngredient, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getRecipeStepIngredients(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
   recipeID: string,
-  recipeStepID: string,
-): Promise<QueryFilteredResult<RecipeStepIngredient>> {
+	recipeStepID: string,
+	): Promise< QueryFilteredResult< RecipeStepIngredient >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<RecipeStepIngredient>>>(
-      `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`,
-      {
-        params: filter.asRecord(),
-      },
-    );
+    const response = await client.get< APIResponse < Array<RecipeStepIngredient>  >  >(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`, {
+      params: filter.asRecord(),
+    });
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));

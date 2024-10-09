@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/v2/typescript"
@@ -103,14 +104,14 @@ func writeTypescriptAPIClientFiles(spec *openapi31.Spec) error {
 			return fmt.Errorf("failed to write file %s: %w", actualFilepath, err)
 		}
 
-		createdFiles = append(createdFiles, actualFilepath)
+		createdFiles = append(createdFiles, filename)
 	}
 
-	fmt.Printf("Wrote %d files, had %d Operations\n", len(createdFiles), getOpCountForSpec(spec))
+	slices.Sort(createdFiles)
 
 	indexFile := fmt.Sprintf("%s\n\n", typescript.GeneratedDisclaimer)
 	for _, createdFile := range createdFiles {
-		indexFile += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", typescriptAPIClientOutputPath)), ".ts"))
+		indexFile += fmt.Sprintf("export * from './%s';\n", createdFile)
 	}
 
 	if err = os.WriteFile(fmt.Sprintf("%s/index.ts", typescriptAPIClientOutputPath), []byte(indexFile), 0o644); err != nil {
@@ -168,6 +169,8 @@ func writeTypescriptModelFiles(spec *openapi31.Spec) error {
 
 		createdFiles = append(createdFiles, actualFilepath)
 	}
+
+	slices.Sort(createdFiles)
 
 	fmt.Printf("Wrote %d files, had %d Operations\n", len(createdFiles), getOpCountForSpec(spec))
 

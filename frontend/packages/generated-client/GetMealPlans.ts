@@ -2,14 +2,19 @@
 
 import { Axios } from 'axios';
 
-import { MealPlan, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  MealPlan, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getMealPlans(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
-): Promise<QueryFilteredResult<MealPlan>> {
+  ): Promise< QueryFilteredResult< MealPlan >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<MealPlan>>>(`/api/v1/meal_plans`, {
+    const response = await client.get< APIResponse < Array<MealPlan>  >  >(`/api/v1/meal_plans`, {
       params: filter.asRecord(),
     });
 

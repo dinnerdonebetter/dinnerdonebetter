@@ -2,22 +2,23 @@
 
 import { Axios } from 'axios';
 
-import { HouseholdInvitation, APIResponse, HouseholdInvitationCreationRequestInput } from '@dinnerdonebetter/models';
+import {
+  HouseholdInvitation, 
+  APIResponse, 
+  HouseholdInvitationCreationRequestInput, 
+} from '@dinnerdonebetter/models';
 
 export async function createHouseholdInvitation(
   client: Axios,
   householdID: string,
   input: HouseholdInvitationCreationRequestInput,
-): Promise<APIResponse<HouseholdInvitation>> {
+): Promise<  APIResponse <  HouseholdInvitation >  >  {
   return new Promise(async function (resolve, reject) {
-    const response = await client.post<APIResponse<HouseholdInvitation>>(
-      `/api/v1/households/${householdID}/invitations`,
-      input,
-    );
-    if (response.data.error) {
-      reject(new Error(response.data.error.message));
-    }
+    const response = await client.post<APIResponse < HouseholdInvitation  >  >(`/api/v1/households/${householdID}/invitations`, input);
+	    if (response.data.error) {
+	      reject(new Error(response.data.error.message));
+	    }
 
-    resolve(response.data);
-  });
+	    resolve(response.data);
+	  });
 }

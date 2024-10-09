@@ -2,15 +2,20 @@
 
 import { Axios } from 'axios';
 
-import { ServiceSetting, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  ServiceSetting, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function searchForServiceSettings(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
   q: string,
-): Promise<QueryFilteredResult<ServiceSetting>> {
+	): Promise< QueryFilteredResult< ServiceSetting >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<ServiceSetting>>>(`/api/v1/settings/search`, {
+    const response = await client.get< APIResponse < Array<ServiceSetting>  >  >(`/api/v1/settings/search`, {
       params: filter.asRecord(),
     });
 

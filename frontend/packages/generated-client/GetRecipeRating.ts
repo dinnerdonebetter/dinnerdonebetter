@@ -2,18 +2,18 @@
 
 import { Axios } from 'axios';
 
-import { RecipeRating, APIResponse } from '@dinnerdonebetter/models';
+import {
+  RecipeRating, 
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getRecipeRating(
   client: Axios,
   recipeID: string,
-  recipeRatingID: string,
-): Promise<APIResponse<RecipeRating>> {
+	recipeRatingID: string,
+	): Promise<  APIResponse <  RecipeRating >    >   {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<RecipeRating>>(
-      `/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`,
-      {},
-    );
+    const response = await client.get< APIResponse < RecipeRating  >  >(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`, {});
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));

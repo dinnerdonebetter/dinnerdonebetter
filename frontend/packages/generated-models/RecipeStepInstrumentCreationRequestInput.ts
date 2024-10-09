@@ -1,41 +1,43 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { NumberRangeWithOptionalMax } from './number_range';
+ import { NumberRangeWithOptionalMax } from './number_range';
+
 
 export interface IRecipeStepInstrumentCreationRequestInput {
-  notes: string;
-  productOfRecipeStepProductIndex?: number;
-  productOfRecipeStepIndex?: number;
-  quantity: NumberRangeWithOptionalMax;
-  recipeStepProductID?: string;
-  instrumentID?: string;
-  name: string;
-  optionIndex: number;
-  optional: boolean;
-  preferenceRank: number;
+   optional: boolean;
+ productOfRecipeStepProductIndex?: number;
+ instrumentID?: string;
+ name: string;
+ notes: string;
+ quantity: NumberRangeWithOptionalMax;
+ recipeStepProductID?: string;
+ optionIndex: number;
+ preferenceRank: number;
+ productOfRecipeStepIndex?: number;
+
 }
 
 export class RecipeStepInstrumentCreationRequestInput implements IRecipeStepInstrumentCreationRequestInput {
-  notes: string;
-  productOfRecipeStepProductIndex?: number;
-  productOfRecipeStepIndex?: number;
-  quantity: NumberRangeWithOptionalMax;
-  recipeStepProductID?: string;
-  instrumentID?: string;
-  name: string;
-  optionIndex: number;
-  optional: boolean;
-  preferenceRank: number;
-  constructor(input: Partial<RecipeStepInstrumentCreationRequestInput> = {}) {
-    this.notes = input.notes = '';
-    this.productOfRecipeStepProductIndex = input.productOfRecipeStepProductIndex;
-    this.productOfRecipeStepIndex = input.productOfRecipeStepIndex;
-    this.quantity = input.quantity = { min: 0 };
-    this.recipeStepProductID = input.recipeStepProductID;
-    this.instrumentID = input.instrumentID;
-    this.name = input.name = '';
-    this.optionIndex = input.optionIndex = 0;
-    this.optional = input.optional = false;
-    this.preferenceRank = input.preferenceRank = 0;
-  }
+   optional: boolean;
+ productOfRecipeStepProductIndex?: number;
+ instrumentID?: string;
+ name: string;
+ notes: string;
+ quantity: NumberRangeWithOptionalMax;
+ recipeStepProductID?: string;
+ optionIndex: number;
+ preferenceRank: number;
+ productOfRecipeStepIndex?: number;
+constructor(input: Partial<RecipeStepInstrumentCreationRequestInput> = {}) {
+	 this.optional = input.optional = false;
+ this.productOfRecipeStepProductIndex = input.productOfRecipeStepProductIndex;
+ this.instrumentID = input.instrumentID;
+ this.name = input.name = '';
+ this.notes = input.notes = '';
+ this.quantity = input.quantity = { min: 0 };
+ this.recipeStepProductID = input.recipeStepProductID;
+ this.optionIndex = input.optionIndex = 0;
+ this.preferenceRank = input.preferenceRank = 0;
+ this.productOfRecipeStepIndex = input.productOfRecipeStepIndex;
+}
 }

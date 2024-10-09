@@ -1,67 +1,69 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidIngredient } from './ValidIngredient';
-import { ValidMeasurementUnit } from './ValidMeasurementUnit';
-import { NumberRangeWithOptionalMax } from './number_range';
+ import { ValidIngredient } from './ValidIngredient';
+ import { ValidMeasurementUnit } from './ValidMeasurementUnit';
+ import { NumberRangeWithOptionalMax } from './number_range';
+
 
 export interface IRecipeStepIngredient {
-  ingredient?: ValidIngredient;
-  ingredientNotes: string;
-  productOfRecipeID?: string;
-  productPercentageToUse?: number;
-  quantityNotes: string;
-  id: string;
-  measurementUnit: ValidMeasurementUnit;
-  optional: boolean;
-  archivedAt?: string;
-  belongsToRecipeStep: string;
-  name: string;
-  optionIndex: number;
-  recipeStepProductID?: string;
-  createdAt: string;
-  lastUpdatedAt?: string;
-  quantity: NumberRangeWithOptionalMax;
-  toTaste: boolean;
-  vesselIndex?: number;
+   name: string;
+ quantity: NumberRangeWithOptionalMax;
+ measurementUnit: ValidMeasurementUnit;
+ optionIndex: number;
+ optional: boolean;
+ quantityNotes: string;
+ recipeStepProductID?: string;
+ ingredientNotes: string;
+ ingredient?: ValidIngredient;
+ lastUpdatedAt?: string;
+ productPercentageToUse?: number;
+ id: string;
+ belongsToRecipeStep: string;
+ createdAt: string;
+ productOfRecipeID?: string;
+ toTaste: boolean;
+ vesselIndex?: number;
+ archivedAt?: string;
+
 }
 
 export class RecipeStepIngredient implements IRecipeStepIngredient {
-  ingredient?: ValidIngredient;
-  ingredientNotes: string;
-  productOfRecipeID?: string;
-  productPercentageToUse?: number;
-  quantityNotes: string;
-  id: string;
-  measurementUnit: ValidMeasurementUnit;
-  optional: boolean;
-  archivedAt?: string;
-  belongsToRecipeStep: string;
-  name: string;
-  optionIndex: number;
-  recipeStepProductID?: string;
-  createdAt: string;
-  lastUpdatedAt?: string;
-  quantity: NumberRangeWithOptionalMax;
-  toTaste: boolean;
-  vesselIndex?: number;
-  constructor(input: Partial<RecipeStepIngredient> = {}) {
-    this.ingredient = input.ingredient;
-    this.ingredientNotes = input.ingredientNotes = '';
-    this.productOfRecipeID = input.productOfRecipeID;
-    this.productPercentageToUse = input.productPercentageToUse;
-    this.quantityNotes = input.quantityNotes = '';
-    this.id = input.id = '';
-    this.measurementUnit = input.measurementUnit = new ValidMeasurementUnit();
-    this.optional = input.optional = false;
-    this.archivedAt = input.archivedAt;
-    this.belongsToRecipeStep = input.belongsToRecipeStep = '';
-    this.name = input.name = '';
-    this.optionIndex = input.optionIndex = 0;
-    this.recipeStepProductID = input.recipeStepProductID;
-    this.createdAt = input.createdAt = '';
-    this.lastUpdatedAt = input.lastUpdatedAt;
-    this.quantity = input.quantity = { min: 0 };
-    this.toTaste = input.toTaste = false;
-    this.vesselIndex = input.vesselIndex;
-  }
+   name: string;
+ quantity: NumberRangeWithOptionalMax;
+ measurementUnit: ValidMeasurementUnit;
+ optionIndex: number;
+ optional: boolean;
+ quantityNotes: string;
+ recipeStepProductID?: string;
+ ingredientNotes: string;
+ ingredient?: ValidIngredient;
+ lastUpdatedAt?: string;
+ productPercentageToUse?: number;
+ id: string;
+ belongsToRecipeStep: string;
+ createdAt: string;
+ productOfRecipeID?: string;
+ toTaste: boolean;
+ vesselIndex?: number;
+ archivedAt?: string;
+constructor(input: Partial<RecipeStepIngredient> = {}) {
+	 this.name = input.name = '';
+ this.quantity = input.quantity = { min: 0 };
+ this.measurementUnit = input.measurementUnit = new ValidMeasurementUnit();
+ this.optionIndex = input.optionIndex = 0;
+ this.optional = input.optional = false;
+ this.quantityNotes = input.quantityNotes = '';
+ this.recipeStepProductID = input.recipeStepProductID;
+ this.ingredientNotes = input.ingredientNotes = '';
+ this.ingredient = input.ingredient;
+ this.lastUpdatedAt = input.lastUpdatedAt;
+ this.productPercentageToUse = input.productPercentageToUse;
+ this.id = input.id = '';
+ this.belongsToRecipeStep = input.belongsToRecipeStep = '';
+ this.createdAt = input.createdAt = '';
+ this.productOfRecipeID = input.productOfRecipeID;
+ this.toTaste = input.toTaste = false;
+ this.vesselIndex = input.vesselIndex;
+ this.archivedAt = input.archivedAt;
+}
 }

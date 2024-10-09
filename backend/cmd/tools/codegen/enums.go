@@ -8,7 +8,46 @@ type Enum struct {
 }
 
 var (
-	// Enums is every defined union in the app.
+	EnumTypeMap = map[string]string{
+		"ValidIngredientState.attributeType":                     "ValidIngredientStateAttributeType",
+		"ValidIngredientStateCreationRequestInput.attributeType": "ValidIngredientStateAttributeType",
+		"ValidIngredientStateUpdateRequestInput.attributeType":   "ValidIngredientStateAttributeType",
+		"RecipeStepProduct.type":                                 "ValidRecipeStepProductType",
+		"RecipeStepProductCreationRequestInput.type":             "ValidRecipeStepProductType",
+		"RecipeStepProductUpdateRequestInput.type":               "ValidRecipeStepProductType",
+		"MealPlanGroceryListItem.status":                         "ValidMealPlanGroceryListItemStatus",
+		"MealPlanGroceryListItemCreationRequestInput.status":     "ValidMealPlanGroceryListItemStatus",
+		"MealPlanGroceryListItemUpdateRequestInput.status":       "ValidMealPlanGroceryListItemStatus",
+		"MealComponent.componentType":                            "MealComponentType",
+		"MealComponentCreationRequestInput.componentType":        "MealComponentType",
+		"MealComponentUpdateRequestInput.componentType":          "MealComponentType",
+		"MealPlanTaskStatusChangeRequestInput.status":            "MealPlanTaskStatus",
+		"MealPlanTask.status":                                    "MealPlanTaskStatus",
+		"MealPlanTaskCreationRequestInput.status":                "MealPlanTaskStatus",
+		"MealPlanTaskUpdateRequestInput.status":                  "MealPlanTaskStatus",
+		"MealPlan.status":                                        "ValidMealPlanStatus",
+		"MealPlanCreationRequestInput.status":                    "ValidMealPlanStatus",
+		"MealPlanUpdateRequestInput.status":                      "ValidMealPlanStatus",
+		"MealPlan.electionMethod":                                "ValidMealPlanElectionMethod",
+		"MealPlanUpdateRequestInput.electionMethod":              "ValidMealPlanElectionMethod",
+		"MealPlanCreationRequestInput.electionMethod":            "ValidMealPlanElectionMethod",
+		"ValidVessel.shape":                                      "ValidVesselShapeType",
+		"ValidVesselUpdateRequestInput.shape":                    "ValidVesselShapeType",
+		"ValidVesselCreationRequestInput.shape":                  "ValidVesselShapeType",
+	}
+
+	DefaultEnumValues = map[string]string{
+		"ValidMealPlanStatus":                "'awaiting_votes'",
+		"ValidMealPlanGroceryListItemStatus": "'unknown'",
+		"ValidMealPlanElectionMethod":        "'schulze'",
+		"ValidIngredientStateAttributeType":  "'other'",
+		"ValidRecipeStepProductType":         "'ingredient'",
+		"MealComponentType":                  "'unspecified'",
+		"MealPlanTaskStatus":                 "'unfinished'",
+		"ValidVesselShapeType":               "'other'",
+	}
+
+	// Enums is every defined union in the app. This list is unfortunately important.
 	Enums = []*Enum{
 		{
 			Comment:   "ingredient state attribute types",

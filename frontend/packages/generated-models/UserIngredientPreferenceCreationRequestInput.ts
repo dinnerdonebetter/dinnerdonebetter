@@ -1,24 +1,27 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
+
+
 export interface IUserIngredientPreferenceCreationRequestInput {
-  allergy: boolean;
-  notes: string;
-  rating: number;
-  validIngredientGroupID: string;
-  validIngredientID: string;
+   notes: string;
+ rating: number;
+ validIngredientGroupID: string;
+ validIngredientID: string;
+ allergy: boolean;
+
 }
 
 export class UserIngredientPreferenceCreationRequestInput implements IUserIngredientPreferenceCreationRequestInput {
-  allergy: boolean;
-  notes: string;
-  rating: number;
-  validIngredientGroupID: string;
-  validIngredientID: string;
-  constructor(input: Partial<UserIngredientPreferenceCreationRequestInput> = {}) {
-    this.allergy = input.allergy = false;
-    this.notes = input.notes = '';
-    this.rating = input.rating = 0;
-    this.validIngredientGroupID = input.validIngredientGroupID = '';
-    this.validIngredientID = input.validIngredientID = '';
-  }
+   notes: string;
+ rating: number;
+ validIngredientGroupID: string;
+ validIngredientID: string;
+ allergy: boolean;
+constructor(input: Partial<UserIngredientPreferenceCreationRequestInput> = {}) {
+	 this.notes = input.notes = '';
+ this.rating = input.rating = 0;
+ this.validIngredientGroupID = input.validIngredientGroupID = '';
+ this.validIngredientID = input.validIngredientID = '';
+ this.allergy = input.allergy = false;
+}
 }

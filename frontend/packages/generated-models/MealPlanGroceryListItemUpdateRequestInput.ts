@@ -1,42 +1,44 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidMealPlanGroceryListItemStatus } from './enums';
-import { OptionalNumberRange } from './number_range';
+ import { ValidMealPlanGroceryListItemStatus } from './enums';
+ import { OptionalNumberRange } from './number_range';
+
 
 export interface IMealPlanGroceryListItemUpdateRequestInput {
-  validMeasurementUnitID?: string;
-  belongsToMealPlan?: string;
-  purchasePrice?: number;
-  purchasedMeasurementUnitID?: string;
-  purchasedUPC?: string;
-  validIngredientID?: string;
-  quantityNeeded: OptionalNumberRange;
-  quantityPurchased?: number;
-  status?: ValidMealPlanGroceryListItemStatus;
-  statusExplanation?: string;
+   statusExplanation?: string;
+ belongsToMealPlan?: string;
+ quantityNeeded: OptionalNumberRange;
+ purchasedUPC?: string;
+ quantityPurchased?: number;
+ status?: ValidMealPlanGroceryListItemStatus;
+ validIngredientID?: string;
+ validMeasurementUnitID?: string;
+ purchasePrice?: number;
+ purchasedMeasurementUnitID?: string;
+
 }
 
 export class MealPlanGroceryListItemUpdateRequestInput implements IMealPlanGroceryListItemUpdateRequestInput {
-  validMeasurementUnitID?: string;
-  belongsToMealPlan?: string;
-  purchasePrice?: number;
-  purchasedMeasurementUnitID?: string;
-  purchasedUPC?: string;
-  validIngredientID?: string;
-  quantityNeeded: OptionalNumberRange;
-  quantityPurchased?: number;
-  status?: ValidMealPlanGroceryListItemStatus;
-  statusExplanation?: string;
-  constructor(input: Partial<MealPlanGroceryListItemUpdateRequestInput> = {}) {
-    this.validMeasurementUnitID = input.validMeasurementUnitID;
-    this.belongsToMealPlan = input.belongsToMealPlan;
-    this.purchasePrice = input.purchasePrice;
-    this.purchasedMeasurementUnitID = input.purchasedMeasurementUnitID;
-    this.purchasedUPC = input.purchasedUPC;
-    this.validIngredientID = input.validIngredientID;
-    this.quantityNeeded = input.quantityNeeded = {};
-    this.quantityPurchased = input.quantityPurchased;
-    this.status = input.status;
-    this.statusExplanation = input.statusExplanation;
-  }
+   statusExplanation?: string;
+ belongsToMealPlan?: string;
+ quantityNeeded: OptionalNumberRange;
+ purchasedUPC?: string;
+ quantityPurchased?: number;
+ status?: ValidMealPlanGroceryListItemStatus;
+ validIngredientID?: string;
+ validMeasurementUnitID?: string;
+ purchasePrice?: number;
+ purchasedMeasurementUnitID?: string;
+constructor(input: Partial<MealPlanGroceryListItemUpdateRequestInput> = {}) {
+	 this.statusExplanation = input.statusExplanation;
+ this.belongsToMealPlan = input.belongsToMealPlan;
+ this.quantityNeeded = input.quantityNeeded = {};
+ this.purchasedUPC = input.purchasedUPC;
+ this.quantityPurchased = input.quantityPurchased;
+ this.status = input.status;
+ this.validIngredientID = input.validIngredientID;
+ this.validMeasurementUnitID = input.validMeasurementUnitID;
+ this.purchasePrice = input.purchasePrice;
+ this.purchasedMeasurementUnitID = input.purchasedMeasurementUnitID;
+}
 }

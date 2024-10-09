@@ -1,12 +1,15 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
+
+
 export interface IFinalizeMealPlansResponse {
-  count: number;
+   count: number;
+
 }
 
 export class FinalizeMealPlansResponse implements IFinalizeMealPlansResponse {
-  count: number;
-  constructor(input: Partial<FinalizeMealPlansResponse> = {}) {
-    this.count = input.count = 0;
-  }
+   count: number;
+constructor(input: Partial<FinalizeMealPlansResponse> = {}) {
+	 this.count = input.count = 0;
+}
 }

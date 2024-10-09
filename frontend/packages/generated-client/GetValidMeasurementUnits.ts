@@ -2,14 +2,19 @@
 
 import { Axios } from 'axios';
 
-import { ValidMeasurementUnit, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  ValidMeasurementUnit, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getValidMeasurementUnits(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
-): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
+  ): Promise< QueryFilteredResult< ValidMeasurementUnit >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<ValidMeasurementUnit>>>(`/api/v1/valid_measurement_units`, {
+    const response = await client.get< APIResponse < Array<ValidMeasurementUnit>  >  >(`/api/v1/valid_measurement_units`, {
       params: filter.asRecord(),
     });
 

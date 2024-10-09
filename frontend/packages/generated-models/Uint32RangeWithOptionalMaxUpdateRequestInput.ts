@@ -1,15 +1,18 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
+
+
 export interface IUint32RangeWithOptionalMaxUpdateRequestInput {
-  max?: number;
-  min?: number;
+   min?: number;
+ max?: number;
+
 }
 
 export class Uint32RangeWithOptionalMaxUpdateRequestInput implements IUint32RangeWithOptionalMaxUpdateRequestInput {
-  max?: number;
-  min?: number;
-  constructor(input: Partial<Uint32RangeWithOptionalMaxUpdateRequestInput> = {}) {
-    this.max = input.max;
-    this.min = input.min;
-  }
+   min?: number;
+ max?: number;
+constructor(input: Partial<Uint32RangeWithOptionalMaxUpdateRequestInput> = {}) {
+	 this.min = input.min;
+ this.max = input.max;
+}
 }

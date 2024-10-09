@@ -2,15 +2,20 @@
 
 import { Axios } from 'axios';
 
-import { RecipeRating, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  RecipeRating, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getRecipeRatings(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
   recipeID: string,
-): Promise<QueryFilteredResult<RecipeRating>> {
+	): Promise< QueryFilteredResult< RecipeRating >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<RecipeRating>>>(`/api/v1/recipes/${recipeID}/ratings`, {
+    const response = await client.get< APIResponse < Array<RecipeRating>  >  >(`/api/v1/recipes/${recipeID}/ratings`, {
       params: filter.asRecord(),
     });
 

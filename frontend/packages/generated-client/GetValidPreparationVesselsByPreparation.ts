@@ -2,20 +2,22 @@
 
 import { Axios } from 'axios';
 
-import { ValidPreparationVessel, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  ValidPreparationVessel, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getValidPreparationVesselsByPreparation(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
   validPreparationID: string,
-): Promise<QueryFilteredResult<ValidPreparationVessel>> {
+	): Promise< QueryFilteredResult< ValidPreparationVessel >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<ValidPreparationVessel>>>(
-      `/api/v1/valid_preparation_vessels/by_preparation/${validPreparationID}`,
-      {
-        params: filter.asRecord(),
-      },
-    );
+    const response = await client.get< APIResponse < Array<ValidPreparationVessel>  >  >(`/api/v1/valid_preparation_vessels/by_preparation/${validPreparationID}`, {
+      params: filter.asRecord(),
+    });
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));

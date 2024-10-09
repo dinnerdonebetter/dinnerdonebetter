@@ -2,20 +2,20 @@
 
 import { Axios } from 'axios';
 
-import { MealPlanOptionVote, APIResponse } from '@dinnerdonebetter/models';
+import {
+  MealPlanOptionVote, 
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getMealPlanOptionVote(
   client: Axios,
   mealPlanID: string,
-  mealPlanEventID: string,
-  mealPlanOptionID: string,
-  mealPlanOptionVoteID: string,
-): Promise<APIResponse<MealPlanOptionVote>> {
+	mealPlanEventID: string,
+	mealPlanOptionID: string,
+	mealPlanOptionVoteID: string,
+	): Promise<  APIResponse <  MealPlanOptionVote >    >   {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<MealPlanOptionVote>>(
-      `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
-      {},
-    );
+    const response = await client.get< APIResponse < MealPlanOptionVote  >  >(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`, {});
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));

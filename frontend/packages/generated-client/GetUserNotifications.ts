@@ -2,14 +2,19 @@
 
 import { Axios } from 'axios';
 
-import { UserNotification, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  UserNotification, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getUserNotifications(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
-): Promise<QueryFilteredResult<UserNotification>> {
+  ): Promise< QueryFilteredResult< UserNotification >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<UserNotification>>>(`/api/v1/user_notifications`, {
+    const response = await client.get< APIResponse < Array<UserNotification>  >  >(`/api/v1/user_notifications`, {
       params: filter.asRecord(),
     });
 

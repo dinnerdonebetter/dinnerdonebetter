@@ -1,53 +1,55 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidVesselShapeType } from './enums';
+ import { ValidVesselShapeType } from './enums';
+
 
 export interface IValidVesselUpdateRequestInput {
-  capacity?: number;
-  includeInGeneratedInstructions?: boolean;
-  widthInMillimeters?: number;
-  displayInSummaryLists?: boolean;
-  iconPath?: string;
-  lengthInMillimeters?: number;
-  name?: string;
-  pluralName?: string;
-  capacityUnitID?: string;
-  heightInMillimeters?: number;
-  shape?: ValidVesselShapeType;
-  usableForStorage?: boolean;
-  description?: string;
-  slug?: string;
+   slug?: string;
+ capacityUnitID?: string;
+ includeInGeneratedInstructions?: boolean;
+ lengthInMillimeters?: number;
+ shape?: ValidVesselShapeType;
+ capacity?: number;
+ displayInSummaryLists?: boolean;
+ iconPath?: string;
+ usableForStorage?: boolean;
+ description?: string;
+ widthInMillimeters?: number;
+ heightInMillimeters?: number;
+ name?: string;
+ pluralName?: string;
+
 }
 
 export class ValidVesselUpdateRequestInput implements IValidVesselUpdateRequestInput {
-  capacity?: number;
-  includeInGeneratedInstructions?: boolean;
-  widthInMillimeters?: number;
-  displayInSummaryLists?: boolean;
-  iconPath?: string;
-  lengthInMillimeters?: number;
-  name?: string;
-  pluralName?: string;
-  capacityUnitID?: string;
-  heightInMillimeters?: number;
-  shape?: ValidVesselShapeType;
-  usableForStorage?: boolean;
-  description?: string;
-  slug?: string;
-  constructor(input: Partial<ValidVesselUpdateRequestInput> = {}) {
-    this.capacity = input.capacity;
-    this.includeInGeneratedInstructions = input.includeInGeneratedInstructions;
-    this.widthInMillimeters = input.widthInMillimeters;
-    this.displayInSummaryLists = input.displayInSummaryLists;
-    this.iconPath = input.iconPath;
-    this.lengthInMillimeters = input.lengthInMillimeters;
-    this.name = input.name;
-    this.pluralName = input.pluralName;
-    this.capacityUnitID = input.capacityUnitID;
-    this.heightInMillimeters = input.heightInMillimeters;
-    this.shape = input.shape;
-    this.usableForStorage = input.usableForStorage;
-    this.description = input.description;
-    this.slug = input.slug;
-  }
+   slug?: string;
+ capacityUnitID?: string;
+ includeInGeneratedInstructions?: boolean;
+ lengthInMillimeters?: number;
+ shape?: ValidVesselShapeType;
+ capacity?: number;
+ displayInSummaryLists?: boolean;
+ iconPath?: string;
+ usableForStorage?: boolean;
+ description?: string;
+ widthInMillimeters?: number;
+ heightInMillimeters?: number;
+ name?: string;
+ pluralName?: string;
+constructor(input: Partial<ValidVesselUpdateRequestInput> = {}) {
+	 this.slug = input.slug;
+ this.capacityUnitID = input.capacityUnitID;
+ this.includeInGeneratedInstructions = input.includeInGeneratedInstructions;
+ this.lengthInMillimeters = input.lengthInMillimeters;
+ this.shape = input.shape;
+ this.capacity = input.capacity;
+ this.displayInSummaryLists = input.displayInSummaryLists;
+ this.iconPath = input.iconPath;
+ this.usableForStorage = input.usableForStorage;
+ this.description = input.description;
+ this.widthInMillimeters = input.widthInMillimeters;
+ this.heightInMillimeters = input.heightInMillimeters;
+ this.name = input.name;
+ this.pluralName = input.pluralName;
+}
 }

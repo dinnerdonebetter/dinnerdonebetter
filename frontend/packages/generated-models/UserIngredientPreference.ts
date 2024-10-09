@@ -1,38 +1,40 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidIngredient } from './ValidIngredient';
+ import { ValidIngredient } from './ValidIngredient';
+
 
 export interface IUserIngredientPreference {
-  belongsToUser: string;
-  createdAt: string;
-  ingredient: ValidIngredient;
-  notes: string;
-  rating: number;
-  archivedAt?: string;
-  id: string;
-  lastUpdatedAt?: string;
-  allergy: boolean;
+   notes: string;
+ rating: number;
+ archivedAt?: string;
+ ingredient: ValidIngredient;
+ createdAt: string;
+ id: string;
+ lastUpdatedAt?: string;
+ allergy: boolean;
+ belongsToUser: string;
+
 }
 
 export class UserIngredientPreference implements IUserIngredientPreference {
-  belongsToUser: string;
-  createdAt: string;
-  ingredient: ValidIngredient;
-  notes: string;
-  rating: number;
-  archivedAt?: string;
-  id: string;
-  lastUpdatedAt?: string;
-  allergy: boolean;
-  constructor(input: Partial<UserIngredientPreference> = {}) {
-    this.belongsToUser = input.belongsToUser = '';
-    this.createdAt = input.createdAt = '';
-    this.ingredient = input.ingredient = new ValidIngredient();
-    this.notes = input.notes = '';
-    this.rating = input.rating = 0;
-    this.archivedAt = input.archivedAt;
-    this.id = input.id = '';
-    this.lastUpdatedAt = input.lastUpdatedAt;
-    this.allergy = input.allergy = false;
-  }
+   notes: string;
+ rating: number;
+ archivedAt?: string;
+ ingredient: ValidIngredient;
+ createdAt: string;
+ id: string;
+ lastUpdatedAt?: string;
+ allergy: boolean;
+ belongsToUser: string;
+constructor(input: Partial<UserIngredientPreference> = {}) {
+	 this.notes = input.notes = '';
+ this.rating = input.rating = 0;
+ this.archivedAt = input.archivedAt;
+ this.ingredient = input.ingredient = new ValidIngredient();
+ this.createdAt = input.createdAt = '';
+ this.id = input.id = '';
+ this.lastUpdatedAt = input.lastUpdatedAt;
+ this.allergy = input.allergy = false;
+ this.belongsToUser = input.belongsToUser = '';
+}
 }

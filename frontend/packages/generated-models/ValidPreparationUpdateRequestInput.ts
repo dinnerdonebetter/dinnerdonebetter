@@ -1,56 +1,58 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { OptionalNumberRange } from './number_range';
+ import { OptionalNumberRange } from './number_range';
+
 
 export interface IValidPreparationUpdateRequestInput {
-  description?: string;
-  onlyForVessels?: boolean;
-  restrictToIngredients?: boolean;
-  instrumentCount: OptionalNumberRange;
-  timeEstimateRequired?: boolean;
-  iconPath?: string;
-  name?: string;
-  pastTense?: string;
-  temperatureRequired?: boolean;
-  vesselCount: OptionalNumberRange;
-  conditionExpressionRequired?: boolean;
-  consumesVessel?: boolean;
-  ingredientCount: OptionalNumberRange;
-  slug?: string;
-  yieldsNothing?: boolean;
+   conditionExpressionRequired?: boolean;
+ pastTense?: string;
+ slug?: string;
+ temperatureRequired?: boolean;
+ description?: string;
+ instrumentCount: OptionalNumberRange;
+ iconPath?: string;
+ ingredientCount: OptionalNumberRange;
+ name?: string;
+ restrictToIngredients?: boolean;
+ yieldsNothing?: boolean;
+ consumesVessel?: boolean;
+ onlyForVessels?: boolean;
+ timeEstimateRequired?: boolean;
+ vesselCount: OptionalNumberRange;
+
 }
 
 export class ValidPreparationUpdateRequestInput implements IValidPreparationUpdateRequestInput {
-  description?: string;
-  onlyForVessels?: boolean;
-  restrictToIngredients?: boolean;
-  instrumentCount: OptionalNumberRange;
-  timeEstimateRequired?: boolean;
-  iconPath?: string;
-  name?: string;
-  pastTense?: string;
-  temperatureRequired?: boolean;
-  vesselCount: OptionalNumberRange;
-  conditionExpressionRequired?: boolean;
-  consumesVessel?: boolean;
-  ingredientCount: OptionalNumberRange;
-  slug?: string;
-  yieldsNothing?: boolean;
-  constructor(input: Partial<ValidPreparationUpdateRequestInput> = {}) {
-    this.description = input.description;
-    this.onlyForVessels = input.onlyForVessels;
-    this.restrictToIngredients = input.restrictToIngredients;
-    this.instrumentCount = input.instrumentCount = {};
-    this.timeEstimateRequired = input.timeEstimateRequired;
-    this.iconPath = input.iconPath;
-    this.name = input.name;
-    this.pastTense = input.pastTense;
-    this.temperatureRequired = input.temperatureRequired;
-    this.vesselCount = input.vesselCount = {};
-    this.conditionExpressionRequired = input.conditionExpressionRequired;
-    this.consumesVessel = input.consumesVessel;
-    this.ingredientCount = input.ingredientCount = {};
-    this.slug = input.slug;
-    this.yieldsNothing = input.yieldsNothing;
-  }
+   conditionExpressionRequired?: boolean;
+ pastTense?: string;
+ slug?: string;
+ temperatureRequired?: boolean;
+ description?: string;
+ instrumentCount: OptionalNumberRange;
+ iconPath?: string;
+ ingredientCount: OptionalNumberRange;
+ name?: string;
+ restrictToIngredients?: boolean;
+ yieldsNothing?: boolean;
+ consumesVessel?: boolean;
+ onlyForVessels?: boolean;
+ timeEstimateRequired?: boolean;
+ vesselCount: OptionalNumberRange;
+constructor(input: Partial<ValidPreparationUpdateRequestInput> = {}) {
+	 this.conditionExpressionRequired = input.conditionExpressionRequired;
+ this.pastTense = input.pastTense;
+ this.slug = input.slug;
+ this.temperatureRequired = input.temperatureRequired;
+ this.description = input.description;
+ this.instrumentCount = input.instrumentCount = {};
+ this.iconPath = input.iconPath;
+ this.ingredientCount = input.ingredientCount = {};
+ this.name = input.name;
+ this.restrictToIngredients = input.restrictToIngredients;
+ this.yieldsNothing = input.yieldsNothing;
+ this.consumesVessel = input.consumesVessel;
+ this.onlyForVessels = input.onlyForVessels;
+ this.timeEstimateRequired = input.timeEstimateRequired;
+ this.vesselCount = input.vesselCount = {};
+}
 }

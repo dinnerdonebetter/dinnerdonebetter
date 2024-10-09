@@ -2,14 +2,19 @@
 
 import { Axios } from 'axios';
 
-import { ValidInstrument, QueryFilter, QueryFilteredResult, APIResponse } from '@dinnerdonebetter/models';
+import {
+  ValidInstrument, 
+  QueryFilter,
+  QueryFilteredResult,
+  APIResponse, 
+} from '@dinnerdonebetter/models'; 
 
 export async function getValidInstruments(
   client: Axios,
   filter: QueryFilter = QueryFilter.Default(),
-): Promise<QueryFilteredResult<ValidInstrument>> {
+  ): Promise< QueryFilteredResult< ValidInstrument >> {
   return new Promise(async function (resolve, reject) {
-    const response = await client.get<APIResponse<Array<ValidInstrument>>>(`/api/v1/valid_instruments`, {
+    const response = await client.get< APIResponse < Array<ValidInstrument>  >  >(`/api/v1/valid_instruments`, {
       params: filter.asRecord(),
     });
 
