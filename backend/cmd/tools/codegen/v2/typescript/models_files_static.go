@@ -54,7 +54,6 @@ export interface OptionalNumberRange {
 	"query_filter": GeneratedDisclaimer + `
 
 import { Span } from '@opentelemetry/api';
-import { IAPIError } from './APIError';
 
 export class QueryFilteredResult<T> {
   data: T[];

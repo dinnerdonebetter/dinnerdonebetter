@@ -1,7 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 import { Span } from '@opentelemetry/api';
-import { IAPIError } from './APIError';
 
 export class QueryFilteredResult<T> {
   data: T[];
