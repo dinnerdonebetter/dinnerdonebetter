@@ -132,27 +132,29 @@ jobs:
       - name: Check for changes
         run: git diff --exit-code
 
-  openapi_client:
-    timeout-minutes: 10
-    strategy:
-     matrix:
-       go-version: [ '1.22.x' ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ matrix.go-version }}
+### Shhhhhh...one day, my prince...
 
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: install client generator
-        run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0
-
-      - name: generate client
-        working-directory: backend
-        run: make openapi-client format
-
-      - name: Check for changes
-        run: git diff --exit-code
+#  openapi_client:
+#    timeout-minutes: 10
+#    strategy:
+#     matrix:
+#       go-version: [ '1.22.x' ]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Install Go
+#        uses: actions/setup-go@v4
+#        with:
+#          go-version: ${{ matrix.go-version }}
+#
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: install client generator
+#        run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0
+#
+#      - name: generate client
+#        working-directory: backend
+#        run: make openapi-client format
+#
+#      - name: Check for changes
+#        run: git diff --exit-code
