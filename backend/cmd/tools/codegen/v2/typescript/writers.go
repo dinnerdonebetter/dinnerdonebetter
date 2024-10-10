@@ -16,33 +16,6 @@ const (
 	propertiesKey   = "properties"
 )
 
-func getOpCountForSpec(spec *openapi31.Spec) uint {
-	var output uint
-
-	for _, path := range spec.Paths.MapOfPathItemValues {
-		if path.Get != nil {
-			output++
-		}
-		if path.Put != nil {
-			output++
-		}
-		if path.Patch != nil {
-			output++
-		}
-		if path.Post != nil {
-			output++
-		}
-		if path.Delete != nil {
-			output++
-		}
-		if path.Head != nil {
-			output++
-		}
-	}
-
-	return output
-}
-
 func removeDuplicates(strList []string) []string {
 	list := []string{}
 	for _, item := range strList {
