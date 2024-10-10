@@ -3,7 +3,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { TextInput, Button, Group, Container, Select } from '@mantine/core';
 import { z } from 'zod';
 
-import { ServiceSetting, ServiceSettingCreationRequestInput } from '@dinnerdonebetter/models';
+import { APIResponse, ServiceSetting, ServiceSettingCreationRequestInput } from '@dinnerdonebetter/models';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
@@ -44,9 +44,9 @@ export default function ServiceSettingCreator(): JSX.Element {
     const apiClient = buildLocalClient();
     await apiClient
       .createServiceSetting(submission)
-      .then((result: ServiceSetting) => {
+      .then((result: APIResponse<ServiceSetting>) => {
         if (result) {
-          router.push(`/service_settings/${result.id}`);
+          router.push(`/service_settings/${result.data.id}`);
         }
       })
       .catch((err) => {

@@ -36,6 +36,8 @@ import {
   PasswordUpdateInput,
   AvatarUpdateInput,
   TOTPSecretRefreshInput,
+  APIResponse,
+  PasswordResetResponse,
 } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
@@ -71,10 +73,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchUserTimer = timing.addEvent('fetch user');
   const userPromise = apiClient
-    .self()
-    .then((result: User) => {
+    .getSelf()
+    .then((result: APIResponse<User>) => {
       span.addEvent('user info retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchUserTimer.end();
@@ -82,7 +84,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchInvitationsTimer = timing.addEvent('fetch received invitations');
   const invitationsPromise = apiClient
-    .getReceivedInvites()
+    .getReceivedHouseholdInvitations()
     .then((result: QueryFilteredResult<HouseholdInvitation>) => {
       span.addEvent('invitations retrieved');
       return result;
@@ -217,7 +219,7 @@ export default function UserSettingsPage({
   });
 
   const requestVerificationEmail = () => {
-    apiClient.requestEmailVerificationEmail().then(() => {
+    apiClient.verifyUserEmailAddress().then(() => {
       setVerificationRequested(true);
     });
   };
@@ -242,8 +244,8 @@ export default function UserSettingsPage({
     });
 
     await apiClient
-      .changePassword(changePasswordInput)
-      .then((result: AxiosResponse) => {
+      .updatePassword(changePasswordInput)
+      .then((result: AxiosResponse<APIResponse<PasswordResetResponse>>) => {
         switch (result.status) {
           case 200:
           case 202:
@@ -282,7 +284,7 @@ export default function UserSettingsPage({
       }
 
       apiClient
-        .newTwoFactorSecret(
+        .refreshTOTPSecret(
           new TOTPSecretRefreshInput({
             currentPassword: newTwoFactorSecretForm.values.currentPassword,
             totpToken: newTwoFactorSecretForm.values.totpToken,
@@ -337,7 +339,7 @@ export default function UserSettingsPage({
                 onDrop={async (files: File[]) => {
                   const newAvatarData = await toBase64(files[0]);
                   await apiClient
-                    .uploadNewAvatar(new AvatarUpdateInput({ base64EncodedData: newAvatarData }))
+                    .uploadUserAvatar(new AvatarUpdateInput({ base64EncodedData: newAvatarData }))
                     .then(() => {
                       setUploadedAvatar(newAvatarData);
                     });

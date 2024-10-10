@@ -82,13 +82,8 @@ function ValidIngredientGroupsPage(props: ValidIngredientGroupsPageProps) {
     } else {
       apiClient
         .searchForValidIngredientGroups(search)
-        .then((res: ValidIngredientGroup[]) => {
-          setValidIngredientGroups({
-            ...QueryFilter.Default(),
-            data: res || [],
-            filteredCount: (res || []).length,
-            totalCount: (res || []).length,
-          });
+        .then((res: QueryFilteredResult<ValidIngredientGroup>) => {
+          setValidIngredientGroups(res);
         })
         .catch((err: AxiosError) => {
           console.error(err);

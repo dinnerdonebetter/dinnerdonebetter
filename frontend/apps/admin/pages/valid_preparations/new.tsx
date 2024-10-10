@@ -3,7 +3,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { TextInput, Button, Group, Container, Switch, NumberInput } from '@mantine/core';
 import { z } from 'zod';
 
-import { ValidPreparation, ValidPreparationCreationRequestInput } from '@dinnerdonebetter/models';
+import { APIResponse, ValidPreparation, ValidPreparationCreationRequestInput } from '@dinnerdonebetter/models';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
@@ -64,9 +64,9 @@ export default function ValidPreparationCreator(): JSX.Element {
 
     await apiClient
       .createValidPreparation(submission)
-      .then((result: ValidPreparation) => {
+      .then((result: APIResponse<ValidPreparation>) => {
         if (result) {
-          router.push(`/valid_preparations/${result.id}`);
+          router.push(`/valid_preparations/${result.data.id}`);
         }
       })
       .catch((err) => {

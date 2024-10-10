@@ -3,36 +3,36 @@
 import { ServiceSetting } from './ServiceSetting';
 
 export interface IServiceSettingConfiguration {
-  serviceSetting: ServiceSetting;
+  archivedAt: string;
+  belongsToHousehold: string;
   belongsToUser: string;
-  notes: string;
   createdAt: string;
   id: string;
   lastUpdatedAt: string;
+  notes: string;
+  serviceSetting: ServiceSetting;
   value: string;
-  archivedAt: string;
-  belongsToHousehold: string;
 }
 
 export class ServiceSettingConfiguration implements IServiceSettingConfiguration {
-  serviceSetting: ServiceSetting;
+  archivedAt: string;
+  belongsToHousehold: string;
   belongsToUser: string;
-  notes: string;
   createdAt: string;
   id: string;
   lastUpdatedAt: string;
+  notes: string;
+  serviceSetting: ServiceSetting;
   value: string;
-  archivedAt: string;
-  belongsToHousehold: string;
   constructor(input: Partial<ServiceSettingConfiguration> = {}) {
-    this.serviceSetting = input.serviceSetting || new ServiceSetting();
+    this.archivedAt = input.archivedAt || '';
+    this.belongsToHousehold = input.belongsToHousehold || '';
     this.belongsToUser = input.belongsToUser || '';
-    this.notes = input.notes || '';
     this.createdAt = input.createdAt || '';
     this.id = input.id || '';
     this.lastUpdatedAt = input.lastUpdatedAt || '';
+    this.notes = input.notes || '';
+    this.serviceSetting = input.serviceSetting || new ServiceSetting();
     this.value = input.value || '';
-    this.archivedAt = input.archivedAt || '';
-    this.belongsToHousehold = input.belongsToHousehold || '';
   }
 }

@@ -3,6 +3,7 @@ package typescript
 import (
 	"bytes"
 	"net/http"
+	"slices"
 	"strings"
 	"text/template"
 	"unicode"
@@ -221,6 +222,8 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		}
 	}
 
+	returnsList := containsQF
+
 	rt := functionResponseType{}
 	if allOf, ok1 := schema["allOf"]; ok1 {
 		switch x := allOf.(type) {
@@ -242,6 +245,11 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 											rt.TypeName = z
 										}
 									} else if itemsRef, ok7 := data["items"]; ok7 {
+										rt.IsArray = true
+										if !returnsList {
+											returnsList = true
+										}
+
 										if z, ok9 := itemsRef.(map[string]any); ok9 {
 											if itemsDataRef, ok8 := z[refKey]; ok8 {
 												if zz, ok0 := itemsDataRef.(string); ok0 {
@@ -275,7 +283,8 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		Method:            method,
 		QueryFiltered:     containsQF,
 		DefaultStatusCode: defaultStatusCode,
-		ReturnsList:       containsQF,
+		ReturnRawResponse: slices.Contains([]string{"updatePassword", "loginForJWT", "adminLoginForJWT"}, functionName),
+		ReturnsList:       returnsList,
 		Params:            functionParams,
 		InputType:         ip,
 		ResponseType:      rt,
@@ -295,20 +304,22 @@ type functionParam struct {
 }
 
 type APIClientFunction struct {
-	InputType         functionInputParam
-	ResponseType      functionResponseType
-	Method            string
-	Name              string
-	PathTemplate      string
+	InputType    functionInputParam
+	ResponseType functionResponseType
+	Method,
+	Name,
+	PathTemplate string
 	Params            []functionParam
 	DefaultStatusCode uint16
-	QueryFiltered     bool
-	ReturnsList       bool
+	ReturnRawResponse,
+	QueryFiltered,
+	ReturnsList bool
 }
 
 type functionResponseType struct {
 	TypeName         string
 	GenericContainer string
+	IsArray          bool
 }
 
 func (f *APIClientFunction) Render() (string, error) {
@@ -320,12 +331,13 @@ func (f *APIClientFunction) Render() (string, error) {
 			// GET routes that return lists
 
 			tmpl = `async {{ .Name }}(
-  filter: QueryFilter = QueryFilter.Default(),
   {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
-	{{ end -}}): Promise< QueryFilteredResult< {{ .ResponseType.TypeName }} >> {
+{{ end -}}
+  filter: QueryFilter = QueryFilter.Default(),
+): Promise< QueryFilteredResult< {{ .ResponseType.TypeName }} > > {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
+    const response = await self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
       params: filter.asRecord(),
     });
 
@@ -347,10 +359,10 @@ func (f *APIClientFunction) Render() (string, error) {
 			// GET routes that don't return lists
 			tmpl = `async {{ .Name }}(
   {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
-	{{ end -}}): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }} {{ .ResponseType.TypeName }} >   {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}  {
+	{{ end -}}): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }} {{ .ResponseType.TypeName }} >  {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}  {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {});
+    const response = await self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {});
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));
@@ -365,15 +377,15 @@ func (f *APIClientFunction) Render() (string, error) {
 		tmpl = `async {{ .Name }}(
   {{ range .Params }}{{ .Name }}: {{ .Type }},{{ end }}
   {{ if ne .InputType.Type "" }}input: {{ .InputType.Type }},{{ end }}
-): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }} {{ .ResponseType.TypeName }} > {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {
+): Promise< {{ if .ReturnRawResponse }} AxiosResponse< {{ end }} {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}  {{ .ResponseType.TypeName }} > {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }}  {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}{{ if .ReturnRawResponse }} > {{ end }} {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if .ReturnsList }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if .ReturnsList }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }});
+    const response = await self.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }});
 	    if (response.data.error) {
 	      reject(new Error(response.data.error.message));
 	    }
 
-	    resolve(response.data);
+	    resolve(response{{ if not .ReturnRawResponse }}.data{{ end }});
 	  });
 }`
 	}

@@ -82,13 +82,8 @@ function ValidMeasurementUnitsPage(props: ValidMeasurementUnitsPageProps) {
     } else {
       apiClient
         .searchForValidMeasurementUnits(search)
-        .then((res: ValidMeasurementUnit[]) => {
-          setValidMeasurementUnits({
-            ...QueryFilter.Default(),
-            data: res || [],
-            filteredCount: (res || []).length,
-            totalCount: (res || []).length,
-          });
+        .then((res: QueryFilteredResult<ValidMeasurementUnit>) => {
+          setValidMeasurementUnits(res);
         })
         .catch((err: AxiosError) => {
           console.error(err);

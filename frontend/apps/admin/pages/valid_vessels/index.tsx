@@ -81,13 +81,8 @@ function ValidVesselsPage(props: ValidVesselsPageProps) {
     } else {
       apiClient
         .searchForValidVessels(search)
-        .then((res: ValidVessel[]) => {
-          setValidVessels({
-            ...QueryFilter.Default(),
-            data: res || [],
-            filteredCount: (res || []).length,
-            totalCount: (res || []).length,
-          });
+        .then((res: QueryFilteredResult<ValidVessel>) => {
+          setValidVessels(res);
         })
         .catch((err: AxiosError) => {
           console.error(err);

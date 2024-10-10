@@ -1,36 +1,36 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IMealPlanOptionVote {
-  createdAt: string;
-  rank: number;
+  abstain: boolean;
   archivedAt: string;
   belongsToMealPlanOption: string;
   byUser: string;
-  notes: string;
-  abstain: boolean;
+  createdAt: string;
   id: string;
   lastUpdatedAt: string;
+  notes: string;
+  rank: number;
 }
 
 export class MealPlanOptionVote implements IMealPlanOptionVote {
-  createdAt: string;
-  rank: number;
+  abstain: boolean;
   archivedAt: string;
   belongsToMealPlanOption: string;
   byUser: string;
-  notes: string;
-  abstain: boolean;
+  createdAt: string;
   id: string;
   lastUpdatedAt: string;
+  notes: string;
+  rank: number;
   constructor(input: Partial<MealPlanOptionVote> = {}) {
-    this.createdAt = input.createdAt || '';
-    this.rank = input.rank || 0;
+    this.abstain = input.abstain || false;
     this.archivedAt = input.archivedAt || '';
     this.belongsToMealPlanOption = input.belongsToMealPlanOption || '';
     this.byUser = input.byUser || '';
-    this.notes = input.notes || '';
-    this.abstain = input.abstain || false;
+    this.createdAt = input.createdAt || '';
     this.id = input.id || '';
     this.lastUpdatedAt = input.lastUpdatedAt || '';
+    this.notes = input.notes || '';
+    this.rank = input.rank || 0;
   }
 }

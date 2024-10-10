@@ -10,15 +10,13 @@
   "scripts": {
     "lint": "eslint *.ts*",
     "format": "prettier --write .",
-    "format-check": "prettier --check ."
+    "format-check": "prettier --check .",
+    "build": "tsc"
   },
   "dependencies": {
-    "@types/string-format": "2.0.0",
     "axios": "1.7.7",
     "tsconfig": "*",
-    "next": "13.0.0",
     "@dinnerdonebetter/models": "*",
-    "@dinnerdonebetter/logger": "*",
-    "string-format": "2.0.0"
+    "@dinnerdonebetter/logger": "*"
   }
 }

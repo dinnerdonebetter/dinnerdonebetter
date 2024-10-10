@@ -2,6 +2,7 @@ package typescript
 
 import (
 	"bytes"
+	"slices"
 	"text/template"
 	"unicode"
 
@@ -67,6 +68,17 @@ func GenerateEnumDefinitions(spec *openapi31.Spec) ([]EnumDefinition, error) {
 
 		output = append(output, ed)
 	}
+
+	slices.SortFunc(output, func(a, b EnumDefinition) int {
+		switch {
+		case a.Name < b.Name:
+			return -1
+		case a.Name == b.Name:
+			return 0
+		default:
+			return 1
+		}
+	})
 
 	return output, nil
 }

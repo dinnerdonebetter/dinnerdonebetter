@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   contact:
     email: support@dinnerdonebetter.dev
@@ -3768,8 +3768,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/MealPlanOptionVote'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/MealPlanOptionVote'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -3777,8 +3778,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/MealPlanOptionVote'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/MealPlanOptionVote'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -11612,15 +11614,6 @@ paths:
     post:
       description: Operation for creating User
       operationId: VerifyUserEmailAddress
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmailAddressVerificationRequestInput'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/EmailAddressVerificationRequestInput'
-        required: true
       responses:
         "201":
           content:
@@ -16535,8 +16528,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnitConversion'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnitConversion'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -16544,8 +16538,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnitConversion'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnitConversion'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -16599,8 +16594,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnitConversion'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnitConversion'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -16608,8 +16604,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnitConversion'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnitConversion'
+                      type: array
                   type: object
           description: ""
         "400":

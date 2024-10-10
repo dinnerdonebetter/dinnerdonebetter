@@ -3,7 +3,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { TextInput, Button, Group, Container, Switch } from '@mantine/core';
 import { z } from 'zod';
 
-import { ValidMeasurementUnit, ValidMeasurementUnitCreationRequestInput } from '@dinnerdonebetter/models';
+import { APIResponse, ValidMeasurementUnit, ValidMeasurementUnitCreationRequestInput } from '@dinnerdonebetter/models';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
@@ -62,9 +62,9 @@ export default function ValidMeasurementUnitCreator(): JSX.Element {
 
     await apiClient
       .createValidMeasurementUnit(submission)
-      .then((result: ValidMeasurementUnit) => {
+      .then((result: APIResponse<ValidMeasurementUnit>) => {
         if (result) {
-          router.push(`/valid_measurement_units/${result.id}`);
+          router.push(`/valid_measurement_units/${result.data.id}`);
         }
       })
       .catch((err) => {

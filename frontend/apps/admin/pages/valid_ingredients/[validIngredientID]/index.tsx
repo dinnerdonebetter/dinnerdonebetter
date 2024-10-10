@@ -27,6 +27,7 @@ import { useRouter } from 'next/router';
 import { IconTrash } from '@tabler/icons';
 
 import {
+  APIResponse,
   QueryFilteredResult,
   ValidIngredient,
   ValidIngredientMeasurementUnit,
@@ -70,9 +71,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchValidIngredientTimer = timing.addEvent('fetch valid ingredient');
   const pageLoadValidIngredientPromise = apiClient
     .getValidIngredient(validIngredientID.toString())
-    .then((result: ValidIngredient) => {
+    .then((result: APIResponse<ValidIngredient>) => {
       span.addEvent('valid ingredient retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchValidIngredientTimer.end();
@@ -80,7 +81,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchMeasurementUnitsTimer = timing.addEvent('fetch valid measurement units fro ingredient');
   const pageLoadMeasurementUnitsPromise = apiClient
-    .validIngredientMeasurementUnitsForIngredientID(validIngredientID.toString())
+    .getValidIngredientMeasurementUnitsByIngredient(validIngredientID.toString())
     .then((res: QueryFilteredResult<ValidIngredientMeasurementUnit>) => {
       span.addEvent('valid ingredient measurement units retrieved');
       return res;
@@ -91,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchIngredientPreparationsTimer = timing.addEvent('fetch valid ingredient preparations for ingredient');
   const pageLoadIngredientPreparationsPromise = apiClient
-    .validIngredientPreparationsForIngredientID(validIngredientID.toString())
+    .getValidIngredientPreparationsByIngredient(validIngredientID.toString())
     .then((res: QueryFilteredResult<ValidIngredientPreparation>) => {
       span.addEvent('valid ingredient preparations retrieved');
       return res;
@@ -102,7 +103,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchValidIngredientStatesTimer = timing.addEvent('fetch valid ingredient states for ingredient');
   const pageLoadValidIngredientStatesPromise = apiClient
-    .validIngredientStateIngredientsForIngredientID(validIngredientID.toString())
+    .getValidIngredientStateIngredientsByIngredient(validIngredientID.toString())
     .then((res: QueryFilteredResult<ValidIngredientStateIngredient>) => {
       span.addEvent('valid ingredient states retrieved');
       return res;
@@ -177,8 +178,8 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     const apiClient = buildLocalClient();
     apiClient
       .searchForValidMeasurementUnits(measurementUnitQuery)
-      .then((res: ValidMeasurementUnit[]) => {
-        const newSuggestions = (res || []).filter((mu: ValidMeasurementUnit) => {
+      .then((res: QueryFilteredResult<ValidMeasurementUnit>) => {
+        const newSuggestions = (res.data || []).filter((mu: ValidMeasurementUnit) => {
           return !(measurementUnitsForIngredient.data || []).some((vimu: ValidIngredientMeasurementUnit) => {
             return vimu.measurementUnit.id === mu.id;
           });
@@ -213,8 +214,8 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     const apiClient = buildLocalClient();
     apiClient
       .searchForValidPreparations(preparationQuery)
-      .then((res: ValidPreparation[]) => {
-        const newSuggestions = (res || []).filter((mu: ValidPreparation) => {
+      .then((res: QueryFilteredResult<ValidPreparation>) => {
+        const newSuggestions = (res.data || []).filter((mu: ValidPreparation) => {
           return !(preparationsForIngredient.data || []).some((vimu: ValidIngredientPreparation) => {
             return vimu.preparation.id === mu.id;
           });
@@ -247,8 +248,8 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     const apiClient = buildLocalClient();
     apiClient
       .searchForValidIngredientStates(ingredientStateQuery)
-      .then((res: ValidIngredientState[]) => {
-        const newSuggestions = res.filter((mu: ValidIngredientState) => {
+      .then((res: QueryFilteredResult<ValidIngredientState>) => {
+        const newSuggestions = res.data.filter((mu: ValidIngredientState) => {
           return !(ingredientStatesForIngredient.data || []).some((vimu: ValidIngredientStateIngredient) => {
             return vimu.ingredientState.id === mu.id;
           });
@@ -330,12 +331,10 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
 
     await apiClient
       .updateValidIngredient(validIngredient.id, submission)
-      .then((result: ValidIngredient) => {
-        if (result) {
-          updateForm.setValues(result);
-          setValidIngredient(result);
-          setOriginalValidIngredient(result);
-        }
+      .then((result: APIResponse<ValidIngredient>) => {
+        updateForm.setValues(result.data);
+        setValidIngredient(result.data);
+        setOriginalValidIngredient(result.data);
       })
       .catch((err) => {
         console.error(err);
@@ -440,7 +439,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
               fullWidth
               onClick={() => {
                 if (confirm('Are you sure you want to delete this valid ingredient?')) {
-                  apiClient.deleteValidIngredient(validIngredient.id).then(() => {
+                  apiClient.archiveValidIngredient(validIngredient.id).then(() => {
                     router.push('/valid_ingredients');
                   });
                 }
@@ -509,7 +508,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                               aria-label="remove valid ingredient measurement unit"
                               onClick={async () => {
                                 await apiClient
-                                  .deleteValidIngredientMeasurementUnit(measurementUnit.id)
+                                  .archiveValidIngredientMeasurementUnit(measurementUnit.id)
                                   .then(() => {
                                     setMeasurementUnitsForIngredient({
                                       ...measurementUnitsForIngredient,
@@ -632,14 +631,14 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                 onClick={async () => {
                   await apiClient
                     .createValidIngredientMeasurementUnit(newMeasurementUnitForIngredientInput)
-                    .then((res: ValidIngredientMeasurementUnit) => {
+                    .then((res: APIResponse<ValidIngredientMeasurementUnit>) => {
                       // the returned value doesn't have enough information to put it in the list, so we have to fetch it
                       apiClient
-                        .getValidIngredientMeasurementUnit(res.id)
-                        .then((res: ValidIngredientMeasurementUnit) => {
+                        .getValidIngredientMeasurementUnit(res.data.id)
+                        .then((res: APIResponse<ValidIngredientMeasurementUnit>) => {
                           setMeasurementUnitsForIngredient({
                             ...measurementUnitsForIngredient,
-                            data: [...measurementUnitsForIngredient.data, res],
+                            data: [...measurementUnitsForIngredient.data, res.data],
                           });
 
                           setNewMeasurementUnitForIngredientInput(
@@ -712,7 +711,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                                 aria-label="remove valid ingredient preparation"
                                 onClick={async () => {
                                   await apiClient
-                                    .deleteValidIngredientPreparation(validIngredientPreparation.id)
+                                    .archiveValidIngredientPreparation(validIngredientPreparation.id)
                                     .then(() => {
                                       setPreparationsForIngredient({
                                         ...preparationsForIngredient,
@@ -803,23 +802,25 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                 onClick={() => {
                   apiClient
                     .createValidIngredientPreparation(newPreparationForIngredientInput)
-                    .then((res: ValidIngredientPreparation) => {
+                    .then((res: APIResponse<ValidIngredientPreparation>) => {
                       // the returned value doesn't have enough information to put it in the list, so we have to fetch it
-                      apiClient.getValidIngredientPreparation(res.id).then((res: ValidIngredientPreparation) => {
-                        setPreparationsForIngredient({
-                          ...preparationsForIngredient,
-                          data: [...(preparationsForIngredient.data || []), res],
-                        });
+                      apiClient
+                        .getValidIngredientPreparation(res.data.id)
+                        .then((res: APIResponse<ValidIngredientPreparation>) => {
+                          setPreparationsForIngredient({
+                            ...preparationsForIngredient,
+                            data: [...(preparationsForIngredient.data || []), res.data],
+                          });
 
-                        setPreparationQuery('');
-                        setNewPreparationForIngredientInput(
-                          new ValidIngredientPreparationCreationRequestInput({
-                            validIngredientID: validIngredient.id,
-                            validPreparationID: '',
-                            notes: '',
-                          }),
-                        );
-                      });
+                          setPreparationQuery('');
+                          setNewPreparationForIngredientInput(
+                            new ValidIngredientPreparationCreationRequestInput({
+                              validIngredientID: validIngredient.id,
+                              validPreparationID: '',
+                              notes: '',
+                            }),
+                          );
+                        });
                     })
                     .catch((error) => {
                       console.error(error);
@@ -875,7 +876,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                                 aria-label="remove valid ingredient ingredientState"
                                 onClick={async () => {
                                   await apiClient
-                                    .deleteValidIngredientStateIngredient(validIngredientStateIngredient.id)
+                                    .archiveValidIngredientStateIngredient(validIngredientStateIngredient.id)
                                     .then(() => {
                                       setIngredientStatesForIngredient({
                                         ...ingredientStatesForIngredient,
@@ -967,14 +968,14 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                 onClick={() => {
                   apiClient
                     .createValidIngredientStateIngredient(newIngredientStateForIngredientInput)
-                    .then((res: ValidIngredientStateIngredient) => {
+                    .then((res: APIResponse<ValidIngredientStateIngredient>) => {
                       // the returned value doesn't have enough information to put it in the list, so we have to fetch it
                       apiClient
-                        .getValidIngredientStateIngredient(res.id)
-                        .then((res: ValidIngredientStateIngredient) => {
+                        .getValidIngredientStateIngredient(res.data.id)
+                        .then((res: APIResponse<ValidIngredientStateIngredient>) => {
                           setIngredientStatesForIngredient({
                             ...ingredientStatesForIngredient,
-                            data: [...ingredientStatesForIngredient.data, res],
+                            data: [...ingredientStatesForIngredient.data, res.data],
                           });
 
                           setPreparationQuery('');

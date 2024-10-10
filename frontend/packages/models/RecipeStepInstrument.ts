@@ -4,48 +4,48 @@ import { ValidInstrument } from './ValidInstrument';
 import { NumberRangeWithOptionalMax } from './number_range';
 
 export interface IRecipeStepInstrument {
-  preferenceRank: number;
-  lastUpdatedAt: string;
-  name: string;
-  optional: boolean;
-  id: string;
-  instrument: ValidInstrument;
-  notes: string;
-  optionIndex: number;
-  quantity: NumberRangeWithOptionalMax;
   archivedAt: string;
   belongsToRecipeStep: string;
   createdAt: string;
+  id: string;
+  instrument: ValidInstrument;
+  lastUpdatedAt: string;
+  name: string;
+  notes: string;
+  optionIndex: number;
+  optional: boolean;
+  preferenceRank: number;
+  quantity: NumberRangeWithOptionalMax;
   recipeStepProductID: string;
 }
 
 export class RecipeStepInstrument implements IRecipeStepInstrument {
-  preferenceRank: number;
-  lastUpdatedAt: string;
-  name: string;
-  optional: boolean;
-  id: string;
-  instrument: ValidInstrument;
-  notes: string;
-  optionIndex: number;
-  quantity: NumberRangeWithOptionalMax;
   archivedAt: string;
   belongsToRecipeStep: string;
   createdAt: string;
+  id: string;
+  instrument: ValidInstrument;
+  lastUpdatedAt: string;
+  name: string;
+  notes: string;
+  optionIndex: number;
+  optional: boolean;
+  preferenceRank: number;
+  quantity: NumberRangeWithOptionalMax;
   recipeStepProductID: string;
   constructor(input: Partial<RecipeStepInstrument> = {}) {
-    this.preferenceRank = input.preferenceRank || 0;
-    this.lastUpdatedAt = input.lastUpdatedAt || '';
-    this.name = input.name || '';
-    this.optional = input.optional || false;
-    this.id = input.id || '';
-    this.instrument = input.instrument || new ValidInstrument();
-    this.notes = input.notes || '';
-    this.optionIndex = input.optionIndex || 0;
-    this.quantity = input.quantity || { min: 0 };
     this.archivedAt = input.archivedAt || '';
     this.belongsToRecipeStep = input.belongsToRecipeStep || '';
     this.createdAt = input.createdAt || '';
+    this.id = input.id || '';
+    this.instrument = input.instrument || new ValidInstrument();
+    this.lastUpdatedAt = input.lastUpdatedAt || '';
+    this.name = input.name || '';
+    this.notes = input.notes || '';
+    this.optionIndex = input.optionIndex || 0;
+    this.optional = input.optional || false;
+    this.preferenceRank = input.preferenceRank || 0;
+    this.quantity = input.quantity || { min: 0 };
     this.recipeStepProductID = input.recipeStepProductID || '';
   }
 }

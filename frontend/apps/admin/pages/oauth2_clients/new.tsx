@@ -3,7 +3,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { TextInput, Button, Group, Container } from '@mantine/core';
 import { z } from 'zod';
 
-import { OAuth2Client, OAuth2ClientCreationRequestInput } from '@dinnerdonebetter/models';
+import { APIResponse, OAuth2ClientCreationRequestInput, OAuth2ClientCreationResponse } from '@dinnerdonebetter/models';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
@@ -39,9 +39,9 @@ export default function OAuth2ClientCreator(): JSX.Element {
 
     await apiClient
       .createOAuth2Client(submission)
-      .then((result: OAuth2Client) => {
+      .then((result: APIResponse<OAuth2ClientCreationResponse>) => {
         if (result) {
-          router.push(`/oauth2_clients/${result.id}`);
+          router.push(`/oauth2_clients/${result.data.id}`);
         }
       })
       .catch((err) => {

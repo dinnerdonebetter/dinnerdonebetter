@@ -46,6 +46,7 @@ import {
   RecipeStepVesselCreationRequestInput,
   RecipeStepVessel,
   ValidVessel,
+  APIResponse,
 } from '@dinnerdonebetter/models';
 import {
   determineAvailableRecipeStepProducts,
@@ -213,8 +214,8 @@ function RecipeCreator() {
   const submitRecipe = async () => {
     apiClient
       .createRecipe(pageState.recipe)
-      .then((res: Recipe) => {
-        router.push(`/recipes/${res.id}`);
+      .then((res: APIResponse<Recipe>) => {
+        router.push(`/recipes/${res.data.id}`);
       })
       .catch((err: AxiosError) => {
         console.error(`Failed to create recipe: ${err}`);
@@ -239,11 +240,11 @@ function RecipeCreator() {
     if (value.length > 2) {
       await apiClient
         .searchForValidPreparations(value)
-        .then((res: ValidPreparation[]) => {
+        .then((res: QueryFilteredResult<ValidPreparation>) => {
           dispatchPageEvent({
             type: 'UPDATE_STEP_PREPARATION_SUGGESTIONS',
             stepIndex: stepIndex,
-            results: res || [],
+            results: res.data || [],
           });
         })
         .catch((err: AxiosError) => {
@@ -273,7 +274,7 @@ function RecipeCreator() {
     });
 
     apiClient
-      .validPreparationInstrumentsForPreparationID(selectedPreparation.id)
+      .getValidPreparationInstrumentsByPreparation(selectedPreparation.id)
       .then((res: QueryFilteredResult<ValidPreparationInstrument>) => {
         dispatchPageEvent({
           type: 'UPDATE_STEP_INSTRUMENT_SUGGESTIONS',
@@ -478,7 +479,7 @@ function RecipeCreator() {
         }
 
         await apiClient
-          .getValidIngredientsForPreparation(chosenPreparationID, value)
+          .getValidIngredientsByPreparation(value, chosenPreparationID)
           .then((res: QueryFilteredResult<ValidIngredient>) => {
             dispatchPageEvent({
               type: 'UPDATE_STEP_INGREDIENT_SUGGESTIONS',
@@ -556,7 +557,7 @@ function RecipeCreator() {
 
       if ((selectedValidIngredient?.ingredient?.id || '').length > 2) {
         await apiClient
-          .searchForValidMeasurementUnitsByIngredientID(selectedValidIngredient!.ingredient!.id)
+          .searchValidMeasurementUnitsByIngredient('', selectedValidIngredient!.ingredient!.id)
           .then((res: QueryFilteredResult<ValidMeasurementUnit>) => {
             dispatchPageEvent({
               type: 'UPDATE_STEP_INGREDIENT_MEASUREMENT_UNIT_SUGGESTIONS',
@@ -679,12 +680,12 @@ function RecipeCreator() {
       if (value.length > 2 && !pageState.recipe.steps[stepIndex].completionConditions[conditionIndex].ingredientState) {
         await apiClient
           .searchForValidIngredientStates(value)
-          .then((res: ValidIngredientState[]) => {
+          .then((res: QueryFilteredResult<ValidIngredientState>) => {
             dispatchPageEvent({
               type: 'UPDATE_COMPLETION_CONDITION_INGREDIENT_STATE_SUGGESTIONS',
               stepIndex: stepIndex,
               conditionIndex: conditionIndex,
-              results: res,
+              results: res.data || [],
             });
           })
           .catch((err: AxiosError) => {
@@ -726,12 +727,12 @@ function RecipeCreator() {
       if (value.length > 2) {
         await apiClient
           .searchForValidMeasurementUnits(value)
-          .then((res: ValidMeasurementUnit[]) => {
+          .then((res: QueryFilteredResult<ValidMeasurementUnit>) => {
             dispatchPageEvent({
               type: 'UPDATE_STEP_PRODUCT_MEASUREMENT_UNIT_SUGGESTIONS',
               stepIndex: stepIndex,
               productIndex: productIndex,
-              results: res || [],
+              results: res.data || [],
             });
           })
           .catch((err: AxiosError) => {
@@ -751,12 +752,12 @@ function RecipeCreator() {
     if (value.length > 2) {
       await apiClient
         .searchForValidVessels(value)
-        .then((res: ValidVessel[]) => {
+        .then((res: QueryFilteredResult<ValidVessel>) => {
           dispatchPageEvent({
             type: 'UPDATE_STEP_VESSEL_SUGGESTIONS',
             stepIndex: stepIndex,
             vesselIndex: vesselIndex,
-            results: res || [],
+            results: res.data || [],
           });
         })
         .catch((err: AxiosError) => {

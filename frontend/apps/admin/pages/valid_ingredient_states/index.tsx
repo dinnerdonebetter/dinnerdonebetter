@@ -82,13 +82,8 @@ function ValidIngredientStatesPage(props: ValidIngredientStatesPageProps) {
     } else {
       apiClient
         .searchForValidIngredientStates(search)
-        .then((res: ValidIngredientState[]) => {
-          setValidIngredientStates({
-            ...QueryFilter.Default(),
-            data: res || [],
-            filteredCount: (res || []).length,
-            totalCount: (res || []).length,
-          });
+        .then((res: QueryFilteredResult<ValidIngredientState>) => {
+          setValidIngredientStates(res);
         })
         .catch((err: AxiosError) => {
           console.error(err);

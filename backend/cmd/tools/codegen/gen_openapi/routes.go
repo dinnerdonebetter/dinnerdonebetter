@@ -269,7 +269,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"POST /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/vote": {
 		ID:           "CreateMealPlanOptionVote",
-		ResponseType: &types.MealPlanOptionVote{},
+		ResponseType: []types.MealPlanOptionVote{},
 		InputType:    &types.MealPlanOptionVoteCreationRequestInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
@@ -823,7 +823,6 @@ var routeInfoMap = map[string]routeDetails{
 	"POST /api/v1/users/email_address_verification": {
 		ID:           "VerifyUserEmailAddress",
 		ResponseType: &types.User{},
-		InputType:    &types.EmailAddressVerificationRequestInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PUT /api/v1/users/password/new": {
@@ -1153,12 +1152,12 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"GET /api/v1/valid_measurement_conversions/from_unit/{validMeasurementUnitID}": {
 		ID:           "GetValidMeasurementUnitConversionsFromUnit",
-		ResponseType: &types.ValidMeasurementUnitConversion{},
+		ResponseType: []types.ValidMeasurementUnitConversion{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_measurement_conversions/to_unit/{validMeasurementUnitID}": {
 		ID:           "ValidMeasurementUnitConversionsToUnit",
-		ResponseType: &types.ValidMeasurementUnitConversion{},
+		ResponseType: []types.ValidMeasurementUnitConversion{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"PUT /api/v1/valid_measurement_conversions/{validMeasurementUnitConversionID}/": {

@@ -14,7 +14,13 @@ import {
 import { z } from 'zod';
 import { AxiosError } from 'axios';
 
-import { ValidMeasurementUnit, ValidVessel, ValidVesselCreationRequestInput } from '@dinnerdonebetter/models';
+import {
+  APIResponse,
+  QueryFilteredResult,
+  ValidMeasurementUnit,
+  ValidVessel,
+  ValidVesselCreationRequestInput,
+} from '@dinnerdonebetter/models';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
@@ -62,9 +68,8 @@ export default function ValidVesselCreator(): JSX.Element {
     const apiClient = buildLocalClient();
     apiClient
       .searchForValidMeasurementUnits(measurementUnitQuery)
-      .then((res: ValidMeasurementUnit[]) => {
-        console.log(`setting suggested measurement units`, res);
-        setSuggestedMeasurementUnits(res || []);
+      .then((res: QueryFilteredResult<ValidMeasurementUnit>) => {
+        setSuggestedMeasurementUnits(res.data || []);
       })
       .catch((err: AxiosError) => {
         console.error(err);
@@ -97,9 +102,9 @@ export default function ValidVesselCreator(): JSX.Element {
 
     await apiClient
       .createValidVessel(submission)
-      .then((result: ValidVessel) => {
+      .then((result: APIResponse<ValidVessel>) => {
         if (result) {
-          router.push(`/valid_vessels/${result.id}`);
+          router.push(`/valid_vessels/${result.data.id}`);
         }
       })
       .catch((err) => {

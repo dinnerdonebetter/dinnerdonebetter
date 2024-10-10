@@ -5,38 +5,38 @@ import { NumberRangeWithOptionalMax } from './number_range';
 
 export interface IMeal {
   archivedAt: string;
+  components: MealComponent[];
   createdAt: string;
   createdByUser: string;
-  estimatedPortions: NumberRangeWithOptionalMax;
-  lastUpdatedAt: string;
-  components: MealComponent[];
   description: string;
   eligibleForMealPlans: boolean;
+  estimatedPortions: NumberRangeWithOptionalMax;
   id: string;
+  lastUpdatedAt: string;
   name: string;
 }
 
 export class Meal implements IMeal {
   archivedAt: string;
+  components: MealComponent[];
   createdAt: string;
   createdByUser: string;
-  estimatedPortions: NumberRangeWithOptionalMax;
-  lastUpdatedAt: string;
-  components: MealComponent[];
   description: string;
   eligibleForMealPlans: boolean;
+  estimatedPortions: NumberRangeWithOptionalMax;
   id: string;
+  lastUpdatedAt: string;
   name: string;
   constructor(input: Partial<Meal> = {}) {
     this.archivedAt = input.archivedAt || '';
+    this.components = input.components || [];
     this.createdAt = input.createdAt || '';
     this.createdByUser = input.createdByUser || '';
-    this.estimatedPortions = input.estimatedPortions || { min: 0 };
-    this.lastUpdatedAt = input.lastUpdatedAt || '';
-    this.components = input.components || [];
     this.description = input.description || '';
     this.eligibleForMealPlans = input.eligibleForMealPlans || false;
+    this.estimatedPortions = input.estimatedPortions || { min: 0 };
     this.id = input.id || '';
+    this.lastUpdatedAt = input.lastUpdatedAt || '';
     this.name = input.name || '';
   }
 }

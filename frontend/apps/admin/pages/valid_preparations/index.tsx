@@ -82,13 +82,8 @@ function ValidPreparationsPage(props: ValidPreparationsPageProps) {
     } else {
       apiClient
         .searchForValidPreparations(search)
-        .then((res: ValidPreparation[]) => {
-          setValidPreparations({
-            ...QueryFilter.Default(),
-            data: res || [],
-            filteredCount: (res || []).length,
-            totalCount: (res || []).length,
-          });
+        .then((res: QueryFilteredResult<ValidPreparation>) => {
+          setValidPreparations(res);
         })
         .catch((err: AxiosError) => {
           console.error(err);

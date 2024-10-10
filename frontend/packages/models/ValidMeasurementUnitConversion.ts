@@ -5,10 +5,10 @@ import { ValidMeasurementUnit } from './ValidMeasurementUnit';
 
 export interface IValidMeasurementUnitConversion {
   archivedAt: string;
+  createdAt: string;
   from: ValidMeasurementUnit;
   id: string;
   lastUpdatedAt: string;
-  createdAt: string;
   modifier: number;
   notes: string;
   onlyForIngredient: ValidIngredient;
@@ -17,20 +17,20 @@ export interface IValidMeasurementUnitConversion {
 
 export class ValidMeasurementUnitConversion implements IValidMeasurementUnitConversion {
   archivedAt: string;
+  createdAt: string;
   from: ValidMeasurementUnit;
   id: string;
   lastUpdatedAt: string;
-  createdAt: string;
   modifier: number;
   notes: string;
   onlyForIngredient: ValidIngredient;
   to: ValidMeasurementUnit;
   constructor(input: Partial<ValidMeasurementUnitConversion> = {}) {
     this.archivedAt = input.archivedAt || '';
+    this.createdAt = input.createdAt || '';
     this.from = input.from || new ValidMeasurementUnit();
     this.id = input.id || '';
     this.lastUpdatedAt = input.lastUpdatedAt || '';
-    this.createdAt = input.createdAt || '';
     this.modifier = input.modifier || 0;
     this.notes = input.notes || '';
     this.onlyForIngredient = input.onlyForIngredient || new ValidIngredient();

@@ -7,6 +7,7 @@ import {
   ValidIngredientState,
   ValidIngredientStateCreationRequestInput,
   ValidIngredientStateAttributeType,
+  APIResponse,
 } from '@dinnerdonebetter/models';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
@@ -63,9 +64,9 @@ export default function ValidIngredientStateCreator(): JSX.Element {
 
     await apiClient
       .createValidIngredientState(submission)
-      .then((result: ValidIngredientState) => {
+      .then((result: APIResponse<ValidIngredientState>) => {
         if (result) {
-          router.push(`/valid_ingredient_states/${result.id}`);
+          router.push(`/valid_ingredient_states/${result.data.id}`);
         }
       })
       .catch((err) => {

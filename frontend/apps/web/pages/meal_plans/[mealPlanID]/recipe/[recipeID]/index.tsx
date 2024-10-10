@@ -1,7 +1,15 @@
 import { AxiosError } from 'axios';
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
-import { Household, MealPlan, MealPlanGroceryListItem, MealPlanTask, Recipe } from '@dinnerdonebetter/models';
+import {
+  APIResponse,
+  Household,
+  MealPlan,
+  MealPlanGroceryListItem,
+  MealPlanTask,
+  QueryFilteredResult,
+  Recipe,
+} from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
 import { buildServerSideClient } from '../../../../../src/client';
@@ -51,9 +59,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchMealPlanTimer = timing.addEvent('fetch meal plan');
   const mealPlanPromise = apiClient
     .getMealPlan(mealPlanID)
-    .then((result: MealPlan) => {
+    .then((result: APIResponse<MealPlan>) => {
       span.addEvent(`meal plan retrieved`);
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchMealPlanTimer.end();
@@ -61,10 +69,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchHouseholdTimer = timing.addEvent('fetch household');
   const householdPromise = apiClient
-    .getCurrentHouseholdInfo()
-    .then((result: Household) => {
+    .getActiveHousehold()
+    .then((result: APIResponse<Household>) => {
       span.addEvent(`household retrieved`);
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchHouseholdTimer.end();
@@ -73,9 +81,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchMealPlanTasksTimer = timing.addEvent('fetch meal plan tasks');
   const tasksPromise = apiClient
     .getMealPlanTasks(mealPlanID)
-    .then((result: MealPlanTask[]) => {
+    .then((result: QueryFilteredResult<MealPlanTask>) => {
       span.addEvent('meal plan grocery list items retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchMealPlanTasksTimer.end();
@@ -83,10 +91,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchMealPlanGroceryListItemsTimer = timing.addEvent('fetch meal plan grocery list items');
   const groceryListPromise = apiClient
-    .getMealPlanGroceryListItems(mealPlanID)
-    .then((result: MealPlanGroceryListItem[]) => {
+    .getMealPlanGroceryListItemsForMealPlan(mealPlanID)
+    .then((result: QueryFilteredResult<MealPlanGroceryListItem>) => {
       span.addEvent('meal plan grocery list items retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchMealPlanGroceryListItemsTimer.end();
@@ -95,9 +103,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchRecipeTimer = timing.addEvent('fetch recipe');
   const recipePromise = apiClient
     .getRecipe(recipeID.toString())
-    .then((result: Recipe) => {
+    .then((result: APIResponse<Recipe>) => {
       span.addEvent(`recipe retrieved`);
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchRecipeTimer.end();

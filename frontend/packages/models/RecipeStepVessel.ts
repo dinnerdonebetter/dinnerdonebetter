@@ -6,43 +6,43 @@ import { NumberRangeWithOptionalMax } from './number_range';
 export interface IRecipeStepVessel {
   archivedAt: string;
   belongsToRecipeStep: string;
-  id: string;
-  recipeStepProductID: string;
-  vesselPreposition: string;
   createdAt: string;
+  id: string;
   lastUpdatedAt: string;
   name: string;
   notes: string;
   quantity: NumberRangeWithOptionalMax;
+  recipeStepProductID: string;
   unavailableAfterStep: boolean;
   vessel: ValidVessel;
+  vesselPreposition: string;
 }
 
 export class RecipeStepVessel implements IRecipeStepVessel {
   archivedAt: string;
   belongsToRecipeStep: string;
-  id: string;
-  recipeStepProductID: string;
-  vesselPreposition: string;
   createdAt: string;
+  id: string;
   lastUpdatedAt: string;
   name: string;
   notes: string;
   quantity: NumberRangeWithOptionalMax;
+  recipeStepProductID: string;
   unavailableAfterStep: boolean;
   vessel: ValidVessel;
+  vesselPreposition: string;
   constructor(input: Partial<RecipeStepVessel> = {}) {
     this.archivedAt = input.archivedAt || '';
     this.belongsToRecipeStep = input.belongsToRecipeStep || '';
-    this.id = input.id || '';
-    this.recipeStepProductID = input.recipeStepProductID || '';
-    this.vesselPreposition = input.vesselPreposition || '';
     this.createdAt = input.createdAt || '';
+    this.id = input.id || '';
     this.lastUpdatedAt = input.lastUpdatedAt || '';
     this.name = input.name || '';
     this.notes = input.notes || '';
     this.quantity = input.quantity || { min: 0 };
+    this.recipeStepProductID = input.recipeStepProductID || '';
     this.unavailableAfterStep = input.unavailableAfterStep || false;
     this.vessel = input.vessel || new ValidVessel();
+    this.vesselPreposition = input.vesselPreposition || '';
   }
 }

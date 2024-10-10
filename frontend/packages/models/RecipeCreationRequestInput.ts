@@ -5,51 +5,51 @@ import { RecipeStepCreationRequestInput } from './RecipeStepCreationRequestInput
 import { NumberRangeWithOptionalMax } from './number_range';
 
 export interface IRecipeCreationRequestInput {
-  inspiredByRecipeID: string;
-  portionName: string;
-  source: string;
-  name: string;
-  pluralPortionName: string;
-  sealOfApproval: boolean;
-  estimatedPortions: NumberRangeWithOptionalMax;
-  steps: RecipeStepCreationRequestInput[];
   alsoCreateMeal: boolean;
   description: string;
   eligibleForMeals: boolean;
+  estimatedPortions: NumberRangeWithOptionalMax;
+  inspiredByRecipeID: string;
+  name: string;
+  pluralPortionName: string;
+  portionName: string;
   prepTasks: RecipePrepTaskWithinRecipeCreationRequestInput[];
+  sealOfApproval: boolean;
   slug: string;
+  source: string;
+  steps: RecipeStepCreationRequestInput[];
   yieldsComponentType: string;
 }
 
 export class RecipeCreationRequestInput implements IRecipeCreationRequestInput {
-  inspiredByRecipeID: string;
-  portionName: string;
-  source: string;
-  name: string;
-  pluralPortionName: string;
-  sealOfApproval: boolean;
-  estimatedPortions: NumberRangeWithOptionalMax;
-  steps: RecipeStepCreationRequestInput[];
   alsoCreateMeal: boolean;
   description: string;
   eligibleForMeals: boolean;
+  estimatedPortions: NumberRangeWithOptionalMax;
+  inspiredByRecipeID: string;
+  name: string;
+  pluralPortionName: string;
+  portionName: string;
   prepTasks: RecipePrepTaskWithinRecipeCreationRequestInput[];
+  sealOfApproval: boolean;
   slug: string;
+  source: string;
+  steps: RecipeStepCreationRequestInput[];
   yieldsComponentType: string;
   constructor(input: Partial<RecipeCreationRequestInput> = {}) {
-    this.inspiredByRecipeID = input.inspiredByRecipeID || '';
-    this.portionName = input.portionName || '';
-    this.source = input.source || '';
-    this.name = input.name || '';
-    this.pluralPortionName = input.pluralPortionName || '';
-    this.sealOfApproval = input.sealOfApproval || false;
-    this.estimatedPortions = input.estimatedPortions || { min: 0 };
-    this.steps = input.steps || [];
     this.alsoCreateMeal = input.alsoCreateMeal || false;
     this.description = input.description || '';
     this.eligibleForMeals = input.eligibleForMeals || false;
+    this.estimatedPortions = input.estimatedPortions || { min: 0 };
+    this.inspiredByRecipeID = input.inspiredByRecipeID || '';
+    this.name = input.name || '';
+    this.pluralPortionName = input.pluralPortionName || '';
+    this.portionName = input.portionName || '';
     this.prepTasks = input.prepTasks || [];
+    this.sealOfApproval = input.sealOfApproval || false;
     this.slug = input.slug || '';
+    this.source = input.source || '';
+    this.steps = input.steps || [];
     this.yieldsComponentType = input.yieldsComponentType || '';
   }
 }

@@ -80,13 +80,8 @@ function UsersPage(props: UsersPageProps) {
     } else {
       apiClient
         .searchForUsers(search)
-        .then((res: User[]) => {
-          setUsers({
-            ...QueryFilter.Default(),
-            data: res || [],
-            filteredCount: (res || []).length,
-            totalCount: (res || []).length,
-          });
+        .then((res: QueryFilteredResult<User>) => {
+          setUsers(res);
         })
         .catch((err: AxiosError) => {
           console.error(err);

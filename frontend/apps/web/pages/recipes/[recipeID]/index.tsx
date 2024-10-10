@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
-import { Recipe } from '@dinnerdonebetter/models';
+import { APIResponse, Recipe } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
 import { buildServerSideClient } from '../../../src/client';
@@ -41,9 +41,9 @@ export const getServerSideProps: GetServerSideProps = async (
   let props!: GetServerSidePropsResult<RecipePageProps>;
   await apiClient
     .getRecipe(recipeID.toString())
-    .then((result: Recipe) => {
+    .then((result: APIResponse<Recipe>) => {
       span.addEvent(`recipe retrieved`);
-      props = { props: { recipe: result } };
+      props = { props: { recipe: result.data } };
     })
     .catch((error: AxiosError) => {
       if (error.response?.status === 404) {

@@ -1,12 +1,17 @@
 import { useState } from 'react';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useForm, zodResolver } from '@mantine/form';
 import { Alert, TextInput, Button, Group, Space, Grid, Text, Container } from '@mantine/core';
 import { z } from 'zod';
 
-import { PasswordResetTokenCreationRequestInput, IAPIError, UserStatusResponse } from '@dinnerdonebetter/models';
+import {
+  PasswordResetTokenCreationRequestInput,
+  IAPIError,
+  APIResponse,
+  PasswordResetToken,
+} from '@dinnerdonebetter/models';
 
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 import { AppLayout } from '../../src/layouts';
@@ -41,7 +46,7 @@ export default function ForgottenPassword(): JSX.Element {
 
     await apiClient
       .requestPasswordResetToken(loginInput)
-      .then((_: AxiosResponse<UserStatusResponse>) => {
+      .then((_: APIResponse<PasswordResetToken>) => {
         router.push('/login');
       })
       .catch((err: AxiosError<IAPIError>) => {

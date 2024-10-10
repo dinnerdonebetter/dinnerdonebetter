@@ -4,38 +4,38 @@ import { MealPlanOption } from './MealPlanOption';
 
 export interface IMealPlanEvent {
   archivedAt: string;
-  endsAt: string;
-  lastUpdatedAt: string;
-  notes: string;
-  startsAt: string;
   belongsToMealPlan: string;
   createdAt: string;
+  endsAt: string;
   id: string;
+  lastUpdatedAt: string;
   mealName: string;
+  notes: string;
   options: MealPlanOption[];
+  startsAt: string;
 }
 
 export class MealPlanEvent implements IMealPlanEvent {
   archivedAt: string;
-  endsAt: string;
-  lastUpdatedAt: string;
-  notes: string;
-  startsAt: string;
   belongsToMealPlan: string;
   createdAt: string;
+  endsAt: string;
   id: string;
+  lastUpdatedAt: string;
   mealName: string;
+  notes: string;
   options: MealPlanOption[];
+  startsAt: string;
   constructor(input: Partial<MealPlanEvent> = {}) {
     this.archivedAt = input.archivedAt || '';
-    this.endsAt = input.endsAt || '';
-    this.lastUpdatedAt = input.lastUpdatedAt || '';
-    this.notes = input.notes || '';
-    this.startsAt = input.startsAt || '';
     this.belongsToMealPlan = input.belongsToMealPlan || '';
     this.createdAt = input.createdAt || '';
+    this.endsAt = input.endsAt || '';
     this.id = input.id || '';
+    this.lastUpdatedAt = input.lastUpdatedAt || '';
     this.mealName = input.mealName || '';
+    this.notes = input.notes || '';
     this.options = input.options || [];
+    this.startsAt = input.startsAt || '';
   }
 }

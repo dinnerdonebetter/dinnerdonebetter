@@ -12,9 +12,9 @@ import (
 
 const (
 	specFilepath                  = "../openapi_spec.yaml"
-	typescriptAPIClientOutputPath = "../frontend/packages/generated-client"
+	typescriptAPIClientOutputPath = "../frontend/packages/api-client"
 	typescriptModelsOutputPath    = "../frontend/packages/models"
-	typescriptMockAPIOutputPath   = "../frontend/packages/generated-mock-playwright-api"
+	typescriptMockAPIOutputPath   = "../frontend/packages/mock-playwright-api"
 )
 
 func loadSpec(filepath string) (*openapi31.Spec, error) {

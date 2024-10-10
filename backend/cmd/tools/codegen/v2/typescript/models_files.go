@@ -104,10 +104,6 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 						Name: k,
 					}
 
-					if name == "WebhookCreationRequestInput" && k == "events" {
-						println("yo")
-					}
-
 					if typeMap, ok3 := v.(map[string]any); ok3 {
 						if typ, ok5 := typeMap["type"]; ok5 {
 							if fieldStr, ok6 := typ.(string); ok6 {
@@ -258,6 +254,17 @@ func (d *TypeDefinition) Render() (string, error) {
 
 		d.Imports[k] = imports
 	}
+
+	slices.SortFunc(d.Fields, func(a, b Field) int {
+		switch {
+		case a.Name < b.Name:
+			return -1
+		case a.Name == b.Name:
+			return 0
+		default:
+			return 1
+		}
+	})
 
 	tmpl := `{{- range $key, $values := .Imports}} import { {{ join $values ", " }} } from '{{ $key }}';
 {{ end }}

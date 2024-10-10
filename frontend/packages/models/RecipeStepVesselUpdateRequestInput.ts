@@ -3,6 +3,7 @@
 import { OptionalNumberRange } from './number_range';
 
 export interface IRecipeStepVesselUpdateRequestInput {
+  belongsToRecipeStep: string;
   name: string;
   notes: string;
   quantity: OptionalNumberRange;
@@ -10,10 +11,10 @@ export interface IRecipeStepVesselUpdateRequestInput {
   unavailableAfterStep: boolean;
   vesselID: string;
   vesselPreposition: string;
-  belongsToRecipeStep: string;
 }
 
 export class RecipeStepVesselUpdateRequestInput implements IRecipeStepVesselUpdateRequestInput {
+  belongsToRecipeStep: string;
   name: string;
   notes: string;
   quantity: OptionalNumberRange;
@@ -21,8 +22,8 @@ export class RecipeStepVesselUpdateRequestInput implements IRecipeStepVesselUpda
   unavailableAfterStep: boolean;
   vesselID: string;
   vesselPreposition: string;
-  belongsToRecipeStep: string;
   constructor(input: Partial<RecipeStepVesselUpdateRequestInput> = {}) {
+    this.belongsToRecipeStep = input.belongsToRecipeStep || '';
     this.name = input.name || '';
     this.notes = input.notes || '';
     this.quantity = input.quantity || {};
@@ -30,6 +31,5 @@ export class RecipeStepVesselUpdateRequestInput implements IRecipeStepVesselUpda
     this.unavailableAfterStep = input.unavailableAfterStep || false;
     this.vesselID = input.vesselID || '';
     this.vesselPreposition = input.vesselPreposition || '';
-    this.belongsToRecipeStep = input.belongsToRecipeStep || '';
   }
 }
