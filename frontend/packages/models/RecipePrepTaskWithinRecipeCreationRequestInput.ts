@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 import { RecipePrepTaskStepWithinRecipeCreationRequestInput } from './RecipePrepTaskStepWithinRecipeCreationRequestInput';
-import { NumberRangeWithOptionalMax, NumberRange } from './number_range';
+import { NumberRange, NumberRangeWithOptionalMax } from './number_range';
 
 export interface IRecipePrepTaskWithinRecipeCreationRequestInput {
   belongsToRecipe: string;

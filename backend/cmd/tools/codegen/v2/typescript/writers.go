@@ -187,8 +187,6 @@ func WriteModelFiles(spec *openapi31.Spec, outputPath string) error {
 
 	slices.Sort(createdFiles)
 
-	fmt.Printf("Wrote %d files, had %d Operations\n", len(createdFiles), getOpCountForSpec(spec))
-
 	indexFile := fmt.Sprintf("%s\n\n", GeneratedDisclaimer)
 	for _, createdFile := range createdFiles {
 		indexFile += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", outputPath)), ".ts"))

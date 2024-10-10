@@ -266,7 +266,7 @@ func (d *TypeDefinition) Render() (string, error) {
 		}
 	})
 
-	tmpl := `{{- range $key, $values := .Imports}} import { {{ join $values ", " }} } from '{{ $key }}';
+	tmpl := `{{- range $key, $values := .Imports}} import { {{ join (sortStrings $values) ", " }} } from '{{ $key }}';
 {{ end }}
 
 export interface I{{ .Name }} {
@@ -292,6 +292,10 @@ export class {{ .Name }} implements I{{ .Name }} {
 			}, x)
 		},
 		"join": strings.Join,
+		"sortStrings": func(s []string) []string {
+			slices.Sort(s)
+			return s
+		},
 	}).Parse(tmpl))
 
 	var b bytes.Buffer
