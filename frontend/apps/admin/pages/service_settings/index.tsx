@@ -81,13 +81,8 @@ function ServiceSettingsPage(props: ServiceSettingsPageProps) {
     } else {
       apiClient
         .searchForServiceSettings(search)
-        .then((res: ServiceSetting[]) => {
-          setServiceSettings({
-            ...QueryFilter.Default(),
-            data: res || [],
-            filteredCount: res.length,
-            totalCount: res.length,
-          });
+        .then((res: QueryFilteredResult<ServiceSetting>) => {
+          setServiceSettings(res);
         })
         .catch((err: AxiosError) => {
           console.error(err);

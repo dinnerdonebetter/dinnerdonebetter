@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-import { ValidIngredientGroup, ValidIngredientGroupUpdateRequestInput } from '@dinnerdonebetter/models';
+import { APIResponse, ValidIngredientGroup, ValidIngredientGroupUpdateRequestInput } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
@@ -33,9 +33,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchValidIngredientGroupsTimer = timing.addEvent('fetch valid ingredient groups');
   const pageLoadValidIngredientGroupPromise = apiClient
     .getValidIngredientGroup(validIngredientGroupID.toString())
-    .then((result: ValidIngredientGroup) => {
+    .then((result: APIResponse<ValidIngredientGroup>) => {
       span.addEvent('valid ingredient group retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchValidIngredientGroupsTimer.end();
@@ -97,12 +97,10 @@ function ValidIngredientGroupPage(props: ValidIngredientGroupPageProps) {
 
     await apiClient
       .updateValidIngredientGroup(validIngredientGroup.id, submission)
-      .then((result: ValidIngredientGroup) => {
-        if (result) {
-          updateForm.setValues(result);
-          setValidIngredientGroup(result);
-          setOriginalValidIngredientGroup(result);
-        }
+      .then((result: APIResponse<ValidIngredientGroup>) => {
+        updateForm.setValues(result.data);
+        setValidIngredientGroup(result.data);
+        setOriginalValidIngredientGroup(result.data);
       })
       .catch((err) => {
         console.error(err);
@@ -131,7 +129,7 @@ function ValidIngredientGroupPage(props: ValidIngredientGroupPageProps) {
               fullWidth
               onClick={() => {
                 if (confirm('Are you sure you want to delete this valid ingredient group?')) {
-                  apiClient.deleteValidIngredientGroup(validIngredientGroup.id).then(() => {
+                  apiClient.archiveValidIngredientGroup(validIngredientGroup.id).then(() => {
                     router.push('/valid_ingredient_groups');
                   });
                 }

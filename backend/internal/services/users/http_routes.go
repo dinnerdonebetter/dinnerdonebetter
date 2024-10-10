@@ -876,8 +876,11 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	// we're all good, log the user out
 	http.SetCookie(res, &http.Cookie{MaxAge: -1})
 
-	responseValue := &types.APIResponse[any]{
+	responseValue := &types.APIResponse[*types.PasswordResetResponse]{
 		Details: responseDetails,
+		Data: &types.PasswordResetResponse{
+			Successful: true,
+		},
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)

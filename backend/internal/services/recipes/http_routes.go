@@ -778,10 +778,13 @@ func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
 
 	graphDefinition := s.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, x)
 
-	res.Header().Set("Content-Type", "text/mermaid")
+	responseValue := &types.APIResponse[string]{
+		Details: responseDetails,
+		Data:    graphDefinition,
+	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, graphDefinition)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // CloneHandler returns a POST handler that returns a cloned recipe.

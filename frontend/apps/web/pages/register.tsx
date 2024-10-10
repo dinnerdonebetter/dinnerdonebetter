@@ -106,7 +106,7 @@ export default function Register(props: RegistrationPageProps): JSX.Element {
     }
 
     await buildBrowserSideClient()
-      .register(registrationInput)
+      .createUser(registrationInput)
       .then(() => {
         router.push('/login');
       })

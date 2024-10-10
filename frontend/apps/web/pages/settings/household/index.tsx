@@ -29,6 +29,7 @@ import { IconAlertCircle, IconInfoCircle } from '@tabler/icons';
 import { z } from 'zod';
 
 import {
+  APIResponse,
   Household,
   HouseholdInvitation,
   HouseholdInvitationCreationRequestInput,
@@ -73,10 +74,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchUserTimer = timing.addEvent('fetch user');
   const userPromise = apiClient
-    .self()
-    .then((result: User) => {
+    .getSelf()
+    .then((result: APIResponse<User>) => {
       span.addEvent('user retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchUserTimer.end();
@@ -84,10 +85,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchHouseholdTimer = timing.addEvent('fetch household');
   const householdPromise = apiClient
-    .getCurrentHouseholdInfo()
-    .then((result: Household) => {
+    .getActiveHousehold()
+    .then((result: APIResponse<Household>) => {
       span.addEvent('household retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchHouseholdTimer.end();
@@ -95,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchInvitationsTimer = timing.addEvent('fetch received invitations');
   const invitationsPromise = apiClient
-    .getSentInvites()
+    .getSentHouseholdInvitations()
     .then((result: QueryFilteredResult<HouseholdInvitation>) => {
       span.addEvent('invitations retrieved');
       return result;
@@ -293,7 +294,7 @@ export default function HouseholdSettingsPage(props: HouseholdSettingsPageProps)
     const apiClient = buildLocalClient();
 
     await apiClient
-      .inviteUserToHousehold(household.id, householdInvitationInput)
+      .createHouseholdInvitation(household.id, householdInvitationInput)
       .then(() => {
         inviteForm.reset();
       })

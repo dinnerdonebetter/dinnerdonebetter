@@ -3,7 +3,7 @@ import { TextInput, Button, Group, Container, Divider } from '@mantine/core';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-import { OAuth2Client } from '@dinnerdonebetter/models';
+import { APIResponse, OAuth2Client } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
@@ -30,9 +30,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchOAuth2ClientTimer = timing.addEvent('fetch OAuth2 client');
   const pageLoadOAuth2ClientPromise = apiClient
     .getOAuth2Client(oauth2ClientID.toString())
-    .then((result: OAuth2Client) => {
+    .then((result: APIResponse<OAuth2Client>) => {
       span.addEvent('oauth2 client retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchOAuth2ClientTimer.end();
@@ -73,7 +73,7 @@ function OAuth2ClientPage(props: OAuth2ClientPageProps) {
             fullWidth
             onClick={() => {
               if (confirm('Are you sure you want to delete this OAuth2 client?')) {
-                apiClient.deleteOAuth2Client(oauth2Client.id).then(() => {
+                apiClient.archiveOAuth2Client(oauth2Client.id).then(() => {
                   router.push('/oauth_clients');
                 });
               }

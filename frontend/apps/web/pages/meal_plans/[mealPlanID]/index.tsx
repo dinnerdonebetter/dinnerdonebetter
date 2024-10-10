@@ -26,6 +26,7 @@ import { Reducer, useReducer } from 'react';
 import { IconCheck, IconCircleX, IconThumbUp, IconTrash } from '@tabler/icons';
 
 import {
+  APIResponse,
   Household,
   HouseholdUserMembershipWithUser,
   MealComponent,
@@ -37,6 +38,7 @@ import {
   MealPlanOptionVote,
   MealPlanTask,
   MealPlanTaskStatusChangeRequestInput,
+  QueryFilteredResult,
   Recipe,
   RecipePrepTaskStep,
   RecipeStep,
@@ -89,9 +91,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchMealPlanTimer = timing.addEvent('fetch meal plan');
   const mealPlanPromise = apiClient
     .getMealPlan(mealPlanID)
-    .then((result: MealPlan) => {
+    .then((result: APIResponse<MealPlan>) => {
       span.addEvent(`meal plan retrieved`);
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchMealPlanTimer.end();
@@ -99,10 +101,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchHouseholdTimer = timing.addEvent('fetch household');
   const householdPromise = apiClient
-    .getCurrentHouseholdInfo()
-    .then((result: Household) => {
+    .getActiveHousehold()
+    .then((result: APIResponse<Household>) => {
       span.addEvent(`household retrieved`);
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchHouseholdTimer.end();
@@ -111,9 +113,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchMealPlanTasksTimer = timing.addEvent('fetch meal plan tasks');
   const tasksPromise = apiClient
     .getMealPlanTasks(mealPlanID)
-    .then((result: MealPlanTask[]) => {
+    .then((result: QueryFilteredResult<MealPlanTask>) => {
       span.addEvent('meal plan grocery list items retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchMealPlanTasksTimer.end();
@@ -121,10 +123,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchMealPlanGroceryListItemsTimer = timing.addEvent('fetch meal plan grocery list items');
   const groceryListPromise = apiClient
-    .getMealPlanGroceryListItems(mealPlanID)
-    .then((result: MealPlanGroceryListItem[]) => {
+    .getMealPlanGroceryListItemsForMealPlan(mealPlanID)
+    .then((result: QueryFilteredResult<MealPlanGroceryListItem>) => {
       span.addEvent('meal plan grocery list items retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchMealPlanGroceryListItemsTimer.end();
@@ -534,10 +536,10 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                                                                 status: 'finished',
                                                               }),
                                                             )
-                                                            .then((res: MealPlanTask) => {
+                                                            .then((res: APIResponse<MealPlanTask>) => {
                                                               dispatchPageEvent({
                                                                 type: 'UPDATE_MEAL_PLAN_TASK',
-                                                                newTask: res,
+                                                                newTask: res.data,
                                                               });
                                                             });
                                                         }}
@@ -559,10 +561,10 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                                                                 status: 'canceled',
                                                               }),
                                                             )
-                                                            .then((res: MealPlanTask) => {
+                                                            .then((res: APIResponse<MealPlanTask>) => {
                                                               dispatchPageEvent({
                                                                 type: 'UPDATE_MEAL_PLAN_TASK',
-                                                                newTask: res,
+                                                                newTask: res.data,
                                                               });
                                                             });
                                                         }}
@@ -720,10 +722,10 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                                             groceryListItem.id,
                                             new MealPlanGroceryListItemUpdateRequestInput({ status: 'acquired' }),
                                           )
-                                          .then((res: MealPlanGroceryListItem) => {
+                                          .then((res: APIResponse<MealPlanGroceryListItem>) => {
                                             dispatchPageEvent({
                                               type: 'UPDATE_MEAL_PLAN_GROCERY_LIST_ITEM',
-                                              newItem: res,
+                                              newItem: res.data,
                                             });
                                           });
                                       }}
@@ -744,10 +746,10 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                                             groceryListItem.id,
                                             new MealPlanGroceryListItemUpdateRequestInput({ status: 'already owned' }),
                                           )
-                                          .then((res: MealPlanGroceryListItem) => {
+                                          .then((res: APIResponse<MealPlanGroceryListItem>) => {
                                             dispatchPageEvent({
                                               type: 'UPDATE_MEAL_PLAN_GROCERY_LIST_ITEM',
-                                              newItem: res,
+                                              newItem: res.data,
                                             });
                                           });
                                       }}
@@ -763,7 +765,7 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                                     <ActionIcon
                                       onClick={() => {
                                         if (confirm('Are you sure you want to delete this item?')) {
-                                          apiClient.deleteMealPlanGroceryListItem(mealPlan.id, groceryListItem.id);
+                                          apiClient.archiveMealPlanGroceryListItem(mealPlan.id, groceryListItem.id);
                                         }
                                       }}
                                     >

@@ -33,6 +33,7 @@ import {
   ValidPreparationInstrument,
   ValidPreparationInstrumentCreationRequestInput,
   QueryFilteredResult,
+  APIResponse,
 } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
@@ -62,7 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchValidInstrumentTimer = timing.addEvent('fetch valid instrument');
   const pageLoadValidInstrumentPromise = apiClient
     .getValidInstrument(validInstrumentID.toString())
-    .then((result: ValidInstrument) => {
+    .then((result: APIResponse<ValidInstrument>) => {
       span.addEvent('valid instrument retrieved');
       return result;
     })
@@ -72,7 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchPreparationInstrumentsTimer = timing.addEvent('fetch valid preparation instruments');
   const pageLoadPreparationInstrumentsPromise = apiClient
-    .validPreparationInstrumentsForInstrumentID(validInstrumentID.toString())
+    .getValidPreparationInstrumentsByInstrument(validInstrumentID.toString())
     .then((res: QueryFilteredResult<ValidPreparationInstrument>) => {
       return res;
     })
@@ -131,8 +132,8 @@ function ValidInstrumentPage(props: ValidInstrumentPageProps) {
     const apiClient = buildLocalClient();
     apiClient
       .searchForValidPreparations(preparationQuery)
-      .then((res: ValidPreparation[]) => {
-        const newSuggestions = (res || []).filter((mu: ValidPreparation) => {
+      .then((res: QueryFilteredResult<ValidPreparation>) => {
+        const newSuggestions = (res.data || []).filter((mu: ValidPreparation) => {
           return !(preparationsForInstrument.data || []).some((vimu: ValidPreparationInstrument) => {
             return vimu.instrument.id === mu.id;
           });
@@ -183,12 +184,10 @@ function ValidInstrumentPage(props: ValidInstrumentPageProps) {
 
     await apiClient
       .updateValidInstrument(validInstrument.id, submission)
-      .then((result: ValidInstrument) => {
-        if (result) {
-          updateForm.setValues(result);
-          setValidInstrument(result);
-          setOriginalValidInstrument(result);
-        }
+      .then((result: APIResponse<ValidInstrument>) => {
+        updateForm.setValues(result.data);
+        setValidInstrument(result.data);
+        setOriginalValidInstrument(result.data);
       })
       .catch((err) => {
         console.error(err);
@@ -226,7 +225,7 @@ function ValidInstrumentPage(props: ValidInstrumentPageProps) {
               fullWidth
               onClick={() => {
                 if (confirm('Are you sure you want to delete this valid instrument?')) {
-                  apiClient.deleteValidInstrument(validInstrument.id).then(() => {
+                  apiClient.archiveValidInstrument(validInstrument.id).then(() => {
                     router.push('/valid_instruments');
                   });
                 }
@@ -287,7 +286,7 @@ function ValidInstrumentPage(props: ValidInstrumentPageProps) {
                               aria-label="remove valid preparation measurement unit"
                               onClick={async () => {
                                 await apiClient
-                                  .deleteValidPreparationInstrument(preparationInstrument.id)
+                                  .archiveValidPreparationInstrument(preparationInstrument.id)
                                   .then(() => {
                                     setPreparationsForInstrument({
                                       ...preparationsForInstrument,
@@ -296,7 +295,7 @@ function ValidInstrumentPage(props: ValidInstrumentPageProps) {
                                       ),
                                     });
                                   })
-                                  .catch((error) => {
+                                  .catch((error: AxiosError) => {
                                     console.error(error);
                                   });
                               }}
@@ -377,24 +376,26 @@ function ValidInstrumentPage(props: ValidInstrumentPageProps) {
                 onClick={async () => {
                   await apiClient
                     .createValidPreparationInstrument(newPreparationForInstrumentInput)
-                    .then((res: ValidPreparationInstrument) => {
+                    .then((res: APIResponse<ValidPreparationInstrument>) => {
                       // the returned value doesn't have enough information to put it in the list, so we have to fetch it
-                      apiClient.getValidPreparationInstrument(res.id).then((res: ValidPreparationInstrument) => {
-                        setPreparationsForInstrument({
-                          ...preparationsForInstrument,
-                          data: [...(preparationsForInstrument.data || []), res],
+                      apiClient
+                        .getValidPreparationInstrument(res.data.id)
+                        .then((res: APIResponse<ValidPreparationInstrument>) => {
+                          setPreparationsForInstrument({
+                            ...preparationsForInstrument,
+                            data: [...(preparationsForInstrument.data || []), res.data],
+                          });
+
+                          setNewPreparationForInstrumentInput(
+                            new ValidPreparationInstrumentCreationRequestInput({
+                              validInstrumentID: validInstrument.id,
+                              validPreparationID: '',
+                              notes: '',
+                            }),
+                          );
+
+                          setPreparationQuery('');
                         });
-
-                        setNewPreparationForInstrumentInput(
-                          new ValidPreparationInstrumentCreationRequestInput({
-                            validInstrumentID: validInstrument.id,
-                            validPreparationID: '',
-                            notes: '',
-                          }),
-                        );
-
-                        setPreparationQuery('');
-                      });
                     })
                     .catch((error) => {
                       console.error(error);

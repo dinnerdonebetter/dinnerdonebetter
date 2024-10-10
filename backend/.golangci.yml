@@ -407,6 +407,11 @@ issues:
         - gosec
       text: "G304:"
 
+    - path: cmd/tools/codegen
+      linters:
+        - gocritic
+      text: "rangeValCopy: each iteration copies"
+
   # Independently of option `exclude` we use default exclude patterns, it can be disabled by this option. To list all
   # excluded by default patterns execute `golangci-lint run --help`.
   # Default value for this option is true.

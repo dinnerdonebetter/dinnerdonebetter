@@ -33,6 +33,7 @@ import {
   ValidIngredientStateIngredientCreationRequestInput,
   QueryFilteredResult,
   ValidIngredientStateUpdateRequestInput,
+  APIResponse,
 } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
@@ -62,7 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchValidIngredientStateTimer = timing.addEvent('fetch valid ingredient state');
   const pageLoadValidIngredientStatePromise = apiClient
     .getValidIngredientState(validIngredientStateID.toString())
-    .then((result: ValidIngredientState) => {
+    .then((result: APIResponse<ValidIngredientState>) => {
       span.addEvent('valid ingredient state retrieved');
       return result;
     })
@@ -72,7 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchValidIngredientStatesTimer = timing.addEvent('fetch valid ingredient states for ingredient');
   const pageLoadValidIngredientStatesPromise = apiClient
-    .validIngredientStateIngredientsForIngredientStateID(validIngredientStateID.toString())
+    .getValidIngredientStateIngredientsByIngredientState(validIngredientStateID.toString())
     .then((res: QueryFilteredResult<ValidIngredientStateIngredient>) => {
       span.addEvent('valid ingredient states retrieved');
       return res;
@@ -192,11 +193,11 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
 
     await apiClient
       .updateValidIngredientState(validIngredientState.id, submission)
-      .then((result: ValidIngredientState) => {
+      .then((result: APIResponse<ValidIngredientState>) => {
         if (result) {
-          updateForm.setValues(result);
-          setValidIngredientState(result);
-          setOriginalValidIngredientState(result);
+          updateForm.setValues(result.data);
+          setValidIngredientState(result.data);
+          setOriginalValidIngredientState(result.data);
         }
       })
       .catch((err) => {
@@ -241,7 +242,7 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
               fullWidth
               onClick={() => {
                 if (confirm('Are you sure you want to delete this valid ingredient state?')) {
-                  apiClient.deleteValidIngredientState(validIngredientState.id).then(() => {
+                  apiClient.archiveValidIngredientState(validIngredientState.id).then(() => {
                     router.push('/valid_ingredient_states');
                   });
                 }
@@ -303,7 +304,7 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
                                 aria-label="remove valid ingredient measurement unit"
                                 onClick={async () => {
                                   await apiClient
-                                    .deleteValidIngredientStateIngredient(ingredientStateIngredient.id)
+                                    .archiveValidIngredientStateIngredient(ingredientStateIngredient.id)
                                     .then(() => {
                                       setIngredientsForIngredientState({
                                         ...ingredientsForIngredientState,
@@ -392,16 +393,16 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
                 onClick={async () => {
                   await apiClient
                     .createValidIngredientStateIngredient(newIngredientForIngredientStateInput)
-                    .then((res: ValidIngredientStateIngredient) => {
+                    .then((res: APIResponse<ValidIngredientStateIngredient>) => {
                       // the returned value doesn't have enough information to put it in the list, so we have to fetch it
                       apiClient
-                        .getValidIngredientStateIngredient(res.id)
-                        .then((res: ValidIngredientStateIngredient) => {
+                        .getValidIngredientStateIngredient(res.data.id)
+                        .then((res: APIResponse<ValidIngredientStateIngredient>) => {
                           const returnedValue = res;
 
                           setIngredientsForIngredientState({
                             ...ingredientsForIngredientState,
-                            data: [...(ingredientsForIngredientState.data || []), returnedValue],
+                            data: [...(ingredientsForIngredientState.data || []), returnedValue.data],
                           });
 
                           setNewIngredientForIngredientStateInput(

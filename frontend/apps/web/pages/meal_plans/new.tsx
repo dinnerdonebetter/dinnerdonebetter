@@ -23,6 +23,7 @@ import { DatePicker, TimeInput } from '@mantine/dates';
 import { intlFormat, nextMonday, addHours, subMinutes, formatISO, addDays, parseISO } from 'date-fns';
 
 import {
+  APIResponse,
   Meal,
   MealPlan,
   MealPlanCreationRequestInput,
@@ -505,8 +506,8 @@ export default function NewMealPlanPage(): JSX.Element {
   const submitMealPlan = () => {
     apiClient
       .createMealPlan(ConvertMealPlanToMealPlanCreationRequestInput(pageState.mealPlan))
-      .then((response: MealPlan) => {
-        router.push(`/meal_plans/${response.id}/ballot`);
+      .then((response: APIResponse<MealPlan>) => {
+        router.push(`/meal_plans/${response.data.id}/ballot`);
       })
       .catch((error: AxiosError) => {
         console.error(error);

@@ -8,6 +8,7 @@ import { IconArrowDown, IconArrowUp } from '@tabler/icons';
 import router from 'next/router';
 
 import {
+  APIResponse,
   Household,
   HouseholdUserMembershipWithUser,
   MealPlan,
@@ -60,9 +61,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchMealPlanTimer = timing.addEvent('fetch meal plan');
   const mealPlanPromise = apiClient
     .getMealPlan(mealPlanID)
-    .then((result: MealPlan) => {
+    .then((result: APIResponse<MealPlan>) => {
       span.addEvent(`meal plan retrieved`);
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchMealPlanTimer.end();
@@ -70,10 +71,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchHouseholdTimer = timing.addEvent('fetch household');
   const householdPromise = apiClient
-    .getCurrentHouseholdInfo()
-    .then((result: Household) => {
+    .getActiveHousehold()
+    .then((result: APIResponse<Household>) => {
       span.addEvent(`household retrieved`);
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchHouseholdTimer.end();
@@ -266,12 +267,12 @@ function MealPlanBallotPage({ mealPlan, userID, household }: MealPlanBallotPageP
     });
 
     apiClient
-      .voteForMealPlan(mealPlan.id, pageState.mealPlan.events[eventIndex].id, submission)
-      .then((votesResults: MealPlanOptionVote[]) => {
+      .createMealPlanOptionVote(mealPlan.id, pageState.mealPlan.events[eventIndex].id, submission)
+      .then((votesResults: APIResponse<MealPlanOptionVote[]>) => {
         dispatchPageEvent({
           type: 'ADD_VOTES_TO_MEAL_PLAN',
           eventIndex: eventIndex,
-          votes: votesResults,
+          votes: votesResults.data,
         });
       })
       .catch((error: Error) => {

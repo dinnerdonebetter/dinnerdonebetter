@@ -60,7 +60,7 @@ function AcceptInvitationPage(props: AcceptInvitationPageProps) {
     const proceed = confirm('Are you sure you want to accept this invite?');
     if (proceed) {
       await apiClient
-        .acceptInvitation(
+        .acceptHouseholdInvitation(
           invitationID,
           new HouseholdInvitationUpdateRequestInput({
             token: invitationToken,
@@ -79,7 +79,7 @@ function AcceptInvitationPage(props: AcceptInvitationPageProps) {
     const proceed = confirm('Are you sure you want to reject this invite?');
     if (proceed) {
       await apiClient
-        .rejectInvitation(
+        .rejectHouseholdInvitation(
           invitationID,
           new HouseholdInvitationUpdateRequestInput({
             token: invitationToken,

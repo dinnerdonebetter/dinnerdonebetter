@@ -1,12 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"strings"
+
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
 
 	"github.com/fatih/structtag"
 )
@@ -52,21 +55,22 @@ var nativeTypesMap = map[string]struct{}{
 }
 
 var skipTypes = map[string]bool{
+	"QueryFilter":                          true,
 	"QueryFilteredResult":                  true,
 	"SessionContextData":                   true,
 	"RequesterInfo":                        true,
 	"DataChangeMessage":                    true,
 	"stringDurationValidator":              true,
 	"WebhookExecutionRequest":              true,
-	"QueryFilter":                          true,
 	"MealPlanTaskDatabaseCreationEstimate": true,
 	"FinalizedMealPlanDatabaseResult":      true,
 	"MissingVote":                          true,
 	"MealUpdateRequestInput":               true,
-	"OAuth2ClientToken":                    true,
 	"MealComponentUpdateRequestInput":      true,
+	"OAuth2ClientToken":                    true,
 	"RecipeMediaCreationRequestInput":      true,
 	"RecipeMediaUpdateRequestInput":        true,
+	"ChangeActiveHouseholdInput":           true,
 	// one day...
 	"NamedID":                     true,
 	"OptionalRange":               true,
@@ -76,17 +80,19 @@ var skipTypes = map[string]bool{
 }
 
 type openapiProperty struct {
-	Items    *openapiProperty `json:"items,omitempty"    yaml:"items,omitempty"`
-	Type     string           `json:"type,omitempty"     yaml:"type,omitempty"`
-	Ref      string           `json:"$ref,omitempty"     yaml:"$ref,omitempty"`
-	Format   string           `json:"format,omitempty"   yaml:"format,omitempty"`
-	Examples []string         `json:"examples,omitempty" yaml:"examples,omitempty"`
+	Items    *openapiProperty    `json:"items,omitempty"    yaml:"items,omitempty"`
+	Type     string              `json:"type,omitempty"     yaml:"type,omitempty"`
+	Ref      string              `json:"$ref,omitempty"     yaml:"$ref,omitempty"`
+	OneOf    []map[string]string `json:"oneOf,omitempty"    yaml:"oneOf,omitempty"`
+	Format   string              `json:"format,omitempty"   yaml:"format,omitempty"`
+	Examples []string            `json:"examples,omitempty" yaml:"examples,omitempty"`
 }
 
 type openapiSchema struct {
-	Properties map[string]*openapiProperty `json:"properties" yaml:"properties"`
+	Properties map[string]*openapiProperty `json:"properties,omitempty" yaml:"properties,omitempty"`
 	name       string
-	Type       string `json:"type" yaml:"type"`
+	Type       string   `json:"type"           yaml:"type"`
+	Enum       []string `json:"enum,omitempty" yaml:"enum,omitempty"`
 }
 
 func getJSONTagForField(field *ast.Field) string {
@@ -129,6 +135,14 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 				},
 			},
 		},
+	}
+
+	for _, enum := range codegen.Enums {
+		declaredStructs = append(declaredStructs, &openapiSchema{
+			Enum: enum.Values,
+			name: enum.Name,
+			Type: "string",
+		})
 	}
 
 	for _, file := range astPkg {
@@ -177,6 +191,10 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 						continue
 					}
 
+					if fieldName == "data" && typeName == "APIResponse" {
+						continue
+					}
+
 					if field.Tag != nil {
 						if name := getJSONTagForField(field); name != "" {
 							if name == "-" {
@@ -214,6 +232,30 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 							property.Items.Type = ""
 							property.Items = &openapiProperty{Ref: fmt.Sprintf("#/components/schemas/%s", fieldType)}
 						}
+					}
+
+					if x, ok2 := codegen.EnumTypeMap[fmt.Sprintf("%s.%s", typeName, fieldName)]; ok2 {
+						property.Type = ""
+						property.Ref = fmt.Sprintf("#/components/schemas/%s", x)
+					}
+
+					if _, isPointer := field.Type.(*ast.StarExpr); isPointer {
+						marshaled, marshalErr := json.Marshal(property)
+						if marshalErr != nil {
+							panic(marshalErr)
+						}
+
+						newPropMap := map[string]string{}
+						if err = json.Unmarshal(marshaled, &newPropMap); err != nil {
+							panic(err)
+						}
+
+						property = &openapiProperty{OneOf: []map[string]string{
+							{
+								"type": "null",
+							},
+							newPropMap,
+						}}
 					}
 
 					schema.Properties[fieldName] = property

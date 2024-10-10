@@ -37,6 +37,7 @@ import {
   ValidIngredientPreparationCreationRequestInput,
   ValidPreparationInstrumentCreationRequestInput,
   ValidInstrument,
+  APIResponse,
 } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
@@ -67,7 +68,7 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchValidPreparationTimer = timing.addEvent('fetch valid preparation');
   const pageLoadValidPreparationPromise = apiClient
     .getValidPreparation(validPreparationID.toString())
-    .then((result: ValidPreparation) => {
+    .then((result: APIResponse<ValidPreparation>) => {
       span.addEvent('valid preparation retrieved');
       return result;
     })
@@ -77,7 +78,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchValidPreparationInstrumentsTimer = timing.addEvent('fetch valid preparation instruments');
   const pageLoadValidPreparationInstrumentsPromise = apiClient
-    .validPreparationInstrumentsForPreparationID(validPreparationID.toString())
+    .getValidPreparationInstrumentsByPreparation(validPreparationID.toString())
     .then((result: QueryFilteredResult<ValidPreparationInstrument>) => {
       span.addEvent('valid preparation retrieved');
       return result;
@@ -88,7 +89,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchValidIngredientPreparationsTimer = timing.addEvent('fetch valid ingredient preparations');
   const pageLoadValidIngredientPreparationsPromise = apiClient
-    .validIngredientPreparationsForPreparationID(validPreparationID.toString())
+    .getValidIngredientPreparationsByPreparation(validPreparationID.toString())
     .then((result: QueryFilteredResult<ValidIngredientPreparation>) => {
       span.addEvent('valid preparation retrieved');
       return result;
@@ -187,8 +188,8 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
     const apiClient = buildLocalClient();
     apiClient
       .searchForValidInstruments(instrumentQuery)
-      .then((res: ValidInstrument[]) => {
-        const newSuggestions = res.filter((mu: ValidInstrument) => {
+      .then((res: QueryFilteredResult<ValidInstrument>) => {
+        const newSuggestions = res.data.filter((mu: ValidInstrument) => {
           return !(instrumentsForPreparation.data || []).some((vimu: ValidPreparationInstrument) => {
             return vimu.preparation.id === mu.id;
           });
@@ -254,11 +255,11 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
 
     await apiClient
       .updateValidPreparation(validPreparation.id, submission)
-      .then((result: ValidPreparation) => {
+      .then((result: APIResponse<ValidPreparation>) => {
         if (result) {
-          updateForm.setValues(result);
-          setValidPreparation(result);
-          setOriginalValidPreparation(result);
+          updateForm.setValues(result.data);
+          setValidPreparation(result.data);
+          setOriginalValidPreparation(result.data);
         }
       })
       .catch((err) => {
@@ -324,7 +325,7 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
               fullWidth
               onClick={() => {
                 if (confirm('Are you sure you want to delete this valid preparation?')) {
-                  apiClient.deleteValidPreparation(validPreparation.id).then(() => {
+                  apiClient.archiveValidPreparation(validPreparation.id).then(() => {
                     router.push('/valid_preparations');
                   });
                 }
@@ -386,7 +387,7 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
                                 aria-label="remove valid instrument measurement unit"
                                 onClick={async () => {
                                   await apiClient
-                                    .deleteValidPreparationInstrument(validInstrumentsForPreparation.id)
+                                    .archiveValidPreparationInstrument(validInstrumentsForPreparation.id)
                                     .then(() => {
                                       setInstrumentsForPreparation({
                                         ...instrumentsForPreparation,
@@ -475,24 +476,26 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
                 onClick={async () => {
                   await apiClient
                     .createValidPreparationInstrument(newInstrumentForPreparationInput)
-                    .then((res: ValidPreparationInstrument) => {
+                    .then((res: APIResponse<ValidPreparationInstrument>) => {
                       // the returned value doesn't have enough information to put it in the list, so we have to fetch it
-                      apiClient.getValidPreparationInstrument(res.id).then((res: ValidPreparationInstrument) => {
-                        setInstrumentsForPreparation({
-                          ...instrumentsForPreparation,
-                          data: [...(instrumentsForPreparation.data || []), res],
+                      apiClient
+                        .getValidPreparationInstrument(res.data.id)
+                        .then((res: APIResponse<ValidPreparationInstrument>) => {
+                          setInstrumentsForPreparation({
+                            ...instrumentsForPreparation,
+                            data: [...(instrumentsForPreparation.data || []), res.data],
+                          });
+
+                          setNewInstrumentForPreparationInput(
+                            new ValidPreparationInstrumentCreationRequestInput({
+                              validPreparationID: validPreparation.id,
+                              validInstrumentID: '',
+                              notes: '',
+                            }),
+                          );
+
+                          setInstrumentQuery('');
                         });
-
-                        setNewInstrumentForPreparationInput(
-                          new ValidPreparationInstrumentCreationRequestInput({
-                            validPreparationID: validPreparation.id,
-                            validInstrumentID: '',
-                            notes: '',
-                          }),
-                        );
-
-                        setInstrumentQuery('');
-                      });
                     })
                     .catch((error) => {
                       console.error(error);
@@ -556,7 +559,7 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
                                 aria-label="remove valid ingredient measurement unit"
                                 onClick={async () => {
                                   await apiClient
-                                    .deleteValidIngredientPreparation(validIngredientsForPreparation.id)
+                                    .archiveValidIngredientPreparation(validIngredientsForPreparation.id)
                                     .then(() => {
                                       setIngredientsForPreparation({
                                         ...ingredientsForPreparation,
@@ -645,24 +648,26 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
                 onClick={async () => {
                   await apiClient
                     .createValidIngredientPreparation(newIngredientForPreparationInput)
-                    .then((res: ValidIngredientPreparation) => {
+                    .then((res: APIResponse<ValidIngredientPreparation>) => {
                       // the returned value doesn't have enough information to put it in the list, so we have to fetch it
-                      apiClient.getValidIngredientPreparation(res.id).then((res: ValidIngredientPreparation) => {
-                        setIngredientsForPreparation({
-                          ...ingredientsForPreparation,
-                          data: [...(ingredientsForPreparation.data || []), res],
+                      apiClient
+                        .getValidIngredientPreparation(res.data.id)
+                        .then((res: APIResponse<ValidIngredientPreparation>) => {
+                          setIngredientsForPreparation({
+                            ...ingredientsForPreparation,
+                            data: [...(ingredientsForPreparation.data || []), res.data],
+                          });
+
+                          setNewIngredientForPreparationInput(
+                            new ValidIngredientPreparationCreationRequestInput({
+                              validPreparationID: validPreparation.id,
+                              validIngredientID: '',
+                              notes: '',
+                            }),
+                          );
+
+                          setIngredientQuery('');
                         });
-
-                        setNewIngredientForPreparationInput(
-                          new ValidIngredientPreparationCreationRequestInput({
-                            validPreparationID: validPreparation.id,
-                            validIngredientID: '',
-                            notes: '',
-                          }),
-                        );
-
-                        setIngredientQuery('');
-                      });
                     })
                     .catch((error) => {
                       console.error(error);

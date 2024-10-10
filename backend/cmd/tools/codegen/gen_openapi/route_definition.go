@@ -12,21 +12,22 @@ import (
 )
 
 type RouteDefinition struct {
-	RequestBody      string
-	InputType        string
-	Method           string
-	ID               string
-	Path             string
-	ResponseType     string
-	Summary          string
-	Description      string
-	PathArguments    []string
-	Tags             []string
-	OAuth2Scopes     []string
-	MainResponseCode int
-	Authless         bool
-	ListRoute        bool
-	SearchRoute      bool
+	RequestBody        string
+	InputType          string
+	Method             string
+	ID                 string
+	Path               string
+	ResponseType       string
+	Summary            string
+	Description        string
+	PathArguments      []string
+	Tags               []string
+	OAuth2Scopes       []string
+	MainResponseCode   int
+	Authless           bool
+	ReturnsList        bool
+	QueryFilteredRoute bool
+	SearchRoute        bool
 }
 
 var routesWithoutAuth = map[string]struct{}{
@@ -91,7 +92,7 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 	}
 
 	if strings.HasSuffix(d.Path, "search") || d.SearchRoute {
-		d.ListRoute = true
+		d.QueryFilteredRoute = true
 		op.Parameters = append(op.Parameters, openapi.ParameterOrReference{
 			Parameter: &openapi.Parameter{
 				Name:        "q",
@@ -105,7 +106,7 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 		})
 	}
 
-	if d.ListRoute {
+	if d.QueryFilteredRoute {
 		op.Parameters = append(op.Parameters, buildQueryFilterPathParams()...)
 	}
 
@@ -128,14 +129,14 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 			RequestBody: &openapi.RequestBody{
 				Description: nil,
 				Content: map[string]openapi.MediaType{
-					"application/json": {
+					jsonContentType: {
 						Schema: map[string]any{
-							"$ref": fmt.Sprintf("#/components/schemas/%s", d.InputType),
+							refKey: fmt.Sprintf("#/components/schemas/%s", d.InputType),
 						},
 					},
 					"application/xml": {
 						Schema: map[string]any{
-							"$ref": fmt.Sprintf("#/components/schemas/%s", d.InputType),
+							refKey: fmt.Sprintf("#/components/schemas/%s", d.InputType),
 						},
 					},
 				},
@@ -146,32 +147,59 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 	}
 
 	if d.ResponseType != "" {
+		_, responseTypeIsNative := nativeTypesMap[d.ResponseType]
 		baseResponseSchema := map[string]any{
-			"$ref": "#/components/schemas/APIResponse",
+			refKey: "#/components/schemas/APIResponse",
 		}
 
 		var secondResponseSchema map[string]any
-		if d.ListRoute {
-			secondResponseSchema = map[string]any{
-				"type": "object",
-				"properties": map[string]any{
-					"data": map[string]any{
-						"type": "array",
-						"items": map[string]any{
-							"$ref": fmt.Sprintf("#/components/schemas/%s", d.ResponseType),
+
+		if !responseTypeIsNative {
+			if d.QueryFilteredRoute || d.ReturnsList {
+				secondResponseSchema = map[string]any{
+					"type": "object",
+					propertiesKey: map[string]any{
+						"data": map[string]any{
+							"type": "array",
+							"items": map[string]any{
+								refKey: fmt.Sprintf("#/components/schemas/%s", d.ResponseType),
+							},
 						},
 					},
-				},
+				}
+			} else {
+				secondResponseSchema = map[string]any{
+					"type": "object",
+					propertiesKey: map[string]any{
+						"data": map[string]any{
+							"type": "object",
+							refKey: fmt.Sprintf("#/components/schemas/%s", d.ResponseType),
+						},
+					},
+				}
 			}
 		} else {
-			secondResponseSchema = map[string]any{
-				"type": "object",
-				"properties": map[string]any{
-					"data": map[string]any{
-						"type": "object",
-						"$ref": fmt.Sprintf("#/components/schemas/%s", d.ResponseType),
+			if d.QueryFilteredRoute {
+				secondResponseSchema = map[string]any{
+					"type": "object",
+					propertiesKey: map[string]any{
+						"data": map[string]any{
+							"type": "array",
+							"items": map[string]any{
+								"type": d.ResponseType,
+							},
+						},
 					},
-				},
+				}
+			} else {
+				secondResponseSchema = map[string]any{
+					"type": "object",
+					propertiesKey: map[string]any{
+						"data": map[string]any{
+							"type": d.ResponseType,
+						},
+					},
+				}
 			}
 		}
 
@@ -190,7 +218,7 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 				fmt.Sprintf("%d", statusCode): {
 					Response: &openapi.Response{
 						Content: map[string]openapi.MediaType{
-							"application/json": {
+							jsonContentType: {
 								Schema: map[string]any{
 									"allOf": []map[string]any{
 										baseResponseSchema,
@@ -212,14 +240,14 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 				"400": {
 					Response: &openapi.Response{
 						Content: map[string]openapi.MediaType{
-							"application/json": {
+							jsonContentType: {
 								Schema: map[string]any{
-									"$ref": "#/components/schemas/APIResponseWithError",
+									refKey: "#/components/schemas/APIResponseWithError",
 								},
 							},
 							"application/xml": {
 								Schema: map[string]any{
-									"$ref": "#/components/schemas/APIResponseWithError",
+									refKey: "#/components/schemas/APIResponseWithError",
 								},
 							},
 						},
@@ -228,14 +256,14 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 				"401": {
 					Response: &openapi.Response{
 						Content: map[string]openapi.MediaType{
-							"application/json": {
+							jsonContentType: {
 								Schema: map[string]any{
-									"$ref": "#/components/schemas/APIResponseWithError",
+									refKey: "#/components/schemas/APIResponseWithError",
 								},
 							},
 							"application/xml": {
 								Schema: map[string]any{
-									"$ref": "#/components/schemas/APIResponseWithError",
+									refKey: "#/components/schemas/APIResponseWithError",
 								},
 							},
 						},
@@ -244,14 +272,14 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 				"500": {
 					Response: &openapi.Response{
 						Content: map[string]openapi.MediaType{
-							"application/json": {
+							jsonContentType: {
 								Schema: map[string]any{
-									"$ref": "#/components/schemas/APIResponseWithError",
+									refKey: "#/components/schemas/APIResponseWithError",
 								},
 							},
 							"application/xml": {
 								Schema: map[string]any{
-									"$ref": "#/components/schemas/APIResponseWithError",
+									refKey: "#/components/schemas/APIResponseWithError",
 								},
 							},
 						},
@@ -259,6 +287,48 @@ func (d *RouteDefinition) ToOperation() *openapi.Operation {
 				},
 			},
 		}
+	}
+
+	if d.Path == metaReadyPath || d.Path == metaLivePath {
+		var desc string
+		switch d.Path {
+		case metaReadyPath:
+			desc = "The service is ready to handle requests"
+		case metaLivePath:
+			desc = "The service is live."
+		}
+
+		op.Responses = &openapi.Responses{
+			MapOfResponseOrReferenceValues: map[string]openapi.ResponseOrReference{
+				fmt.Sprintf("%d", http.StatusOK): {
+					Response: &openapi.Response{
+						Description: desc,
+					},
+				},
+			},
+		}
+	}
+
+	if d.Path == "/api/v1/recipes/{recipeID}/dag" {
+		op.Responses = &openapi.Responses{
+			MapOfResponseOrReferenceValues: map[string]openapi.ResponseOrReference{
+				fmt.Sprintf("%d", http.StatusOK): {
+					Response: &openapi.Response{
+						Content: map[string]openapi.MediaType{
+							"image/png": {
+								Schema: map[string]any{
+									"format": "binary",
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+	}
+
+	if d.Path == metaReadyPath || d.Path == metaLivePath {
+		d.Tags = []string{"meta"}
 	}
 
 	op.Tags = append(op.Tags, d.Tags...)

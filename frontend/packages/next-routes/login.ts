@@ -103,7 +103,7 @@ export function buildLoginRoute(config: {
       }
 
       const apiClient = buildCookielessServerSideClient().withSpan(span);
-      const loginPromise = config.admin ? apiClient.adminLoginForJWT(input) : apiClient.logInForJWT(input);
+      const loginPromise = config.admin ? apiClient.adminLoginForJWT(input) : apiClient.loginForJWT(input);
 
       await loginPromise
         .then(async (result: AxiosResponse<APIResponse<JWTResponse>>) => {

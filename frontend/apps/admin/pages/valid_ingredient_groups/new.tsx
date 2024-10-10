@@ -3,7 +3,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { TextInput, Button, Group, Container } from '@mantine/core';
 import { z } from 'zod';
 
-import { ValidIngredientGroup, ValidIngredientGroupCreationRequestInput } from '@dinnerdonebetter/models';
+import { APIResponse, ValidIngredientGroup, ValidIngredientGroupCreationRequestInput } from '@dinnerdonebetter/models';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
@@ -43,9 +43,9 @@ export default function ValidIngredientGroupCreator(): JSX.Element {
 
     await apiClient
       .createValidIngredientGroup(submission)
-      .then((result: ValidIngredientGroup) => {
+      .then((result: APIResponse<ValidIngredientGroup>) => {
         if (result) {
-          router.push(`/valid_ingredient_groups/${result.id}`);
+          router.push(`/valid_ingredient_groups/${result.data.id}`);
         }
       })
       .catch((err) => {

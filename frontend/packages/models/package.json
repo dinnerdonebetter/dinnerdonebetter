@@ -1,16 +1,20 @@
 {
   "name": "@dinnerdonebetter/models",
-  "version": "0.0.0",
+  "version": "0.0.141",
   "description": "",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "lint": "eslint *.ts*",
     "format": "prettier --write .",
-    "format-check": "prettier --check ."
+    "format-check": "prettier --check .",
+    "build": "tsc"
   },
   "dependencies": {
-    "date-fns": "2.29.3"
-  },
-  "devDependencies": {
+    "axios": "1.7.7",
     "tsconfig": "*"
   }
 }

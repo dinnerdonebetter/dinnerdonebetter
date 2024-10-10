@@ -51,7 +51,8 @@ func (c *Client) RunMealPlanGroceryListInitializationWorker(ctx context.Context)
 
 	logger := c.logger.Clone()
 
-	res, err := c.authedGeneratedClient.RunMealPlanGroceryListInitializerWorker(ctx)
+	body := generated.RunMealPlanGroceryListInitializerWorkerJSONRequestBody{}
+	res, err := c.authedGeneratedClient.RunMealPlanGroceryListInitializerWorker(ctx, body)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "running meal plan grocery list initializer worker")
 	}
@@ -76,7 +77,8 @@ func (c *Client) RunMealPlanTaskCreationWorker(ctx context.Context) error {
 
 	logger := c.logger.Clone()
 
-	res, err := c.authedGeneratedClient.RunMealPlanTaskCreatorWorker(ctx)
+	body := generated.RunMealPlanTaskCreatorWorkerJSONRequestBody{}
+	res, err := c.authedGeneratedClient.RunMealPlanTaskCreatorWorker(ctx, body)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "running meal plan task creation worker")
 	}

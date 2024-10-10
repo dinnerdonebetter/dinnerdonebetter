@@ -17,6 +17,11 @@ paths:
     get:
       description: checks for service readiness
       operationId: CheckForReadiness
+      responses:
+        "200":
+          description: The service is ready to handle requests
+      tags:
+      - meta
   /api/v1/admin/users/status:
     post:
       description: Operation for creating UserStatusResponse
@@ -3763,8 +3768,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/MealPlanOptionVote'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/MealPlanOptionVote'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -3772,8 +3778,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/MealPlanOptionVote'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/MealPlanOptionVote'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -5826,14 +5833,35 @@ paths:
       responses:
         "200":
           content:
+            image/png:
+              schema:
+                format: binary
+          description: ""
+      security:
+      - oauth2:
+        - household_member
+      tags:
+      - recipes
+  /api/v1/recipes/{recipeID}/mermaid:
+    get:
+      description: Operation for fetching string
+      operationId: GetMermaidDiagramForRecipe
+      parameters:
+      - in: path
+        name: recipeID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
             application/json:
               schema:
                 allOf:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/APIError'
-                      type: object
+                      type: string
                   type: object
             application/xml:
               schema:
@@ -5841,8 +5869,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/APIError'
-                      type: object
+                      type: string
                   type: object
           description: ""
         "400":
@@ -5875,33 +5902,6 @@ paths:
       security:
       - oauth2:
         - household_member
-      tags:
-      - recipes
-  /api/v1/recipes/{recipeID}/images:
-    post:
-      description: Operation for creating
-      operationId: UploadMediaForRecipe
-      parameters:
-      - in: path
-        name: recipeID
-        required: true
-        schema:
-          type: string
-      security:
-      - oauth2:
-        - household_member
-      tags:
-      - recipes
-  /api/v1/recipes/{recipeID}/mermaid:
-    get:
-      description: Operation for fetching
-      operationId: GetMermaidDiagramForRecipe
-      parameters:
-      - in: path
-        name: recipeID
-        required: true
-        schema:
-          type: string
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/prep_steps:
@@ -7646,27 +7646,6 @@ paths:
       - recipes
       - recipe steps
       - recipe step completion conditions
-  /api/v1/recipes/{recipeID}/steps/{recipeStepID}/images:
-    post:
-      description: Operation for creating
-      operationId: UploadMediaForRecipeStep
-      parameters:
-      - in: path
-        name: recipeID
-        required: true
-        schema:
-          type: string
-      - in: path
-        name: recipeStepID
-        required: true
-        schema:
-          type: string
-      security:
-      - oauth2:
-        - household_member
-      tags:
-      - recipes
-      - recipe steps
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/ingredients:
     get:
       description: Operation for fetching RecipeStepIngredient
@@ -11635,15 +11614,6 @@ paths:
     post:
       description: Operation for creating User
       operationId: VerifyUserEmailAddress
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmailAddressVerificationRequestInput'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/EmailAddressVerificationRequestInput'
-        required: true
       responses:
         "201":
           content:
@@ -11700,7 +11670,7 @@ paths:
       - users
   /api/v1/users/password/new:
     put:
-      description: Operation for updating
+      description: Operation for updating PasswordResetResponse
       operationId: UpdatePassword
       requestBody:
         content:
@@ -11711,6 +11681,55 @@ paths:
             schema:
               $ref: '#/components/schemas/PasswordUpdateInput'
         required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/PasswordResetResponse'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/PasswordResetResponse'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
       security:
       - oauth2:
         - household_member
@@ -16509,8 +16528,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnitConversion'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnitConversion'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -16518,8 +16538,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnitConversion'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnitConversion'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -16573,8 +16594,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnitConversion'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnitConversion'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -16582,8 +16604,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/ValidMeasurementUnitConversion'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/ValidMeasurementUnitConversion'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -20070,7 +20093,7 @@ paths:
       - webhook trigger events
   /api/v1/workers/finalize_meal_plans:
     post:
-      description: Operation for creating FinalizeMealPlansRequest
+      description: Operation for creating FinalizeMealPlansResponse
       operationId: RunFinalizeMealPlanWorker
       requestBody:
         content:
@@ -20090,7 +20113,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/FinalizeMealPlansRequest'
+                      $ref: '#/components/schemas/FinalizeMealPlansResponse'
                       type: object
                   type: object
             application/xml:
@@ -20099,7 +20122,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/FinalizeMealPlansRequest'
+                      $ref: '#/components/schemas/FinalizeMealPlansResponse'
                       type: object
                   type: object
           description: ""
@@ -20132,25 +20155,141 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - service_admin
       tags:
       - workers
   /api/v1/workers/meal_plan_grocery_list_init:
     post:
-      description: Operation for creating
+      description: Operation for creating InitializeMealPlanGroceryListResponse
       operationId: RunMealPlanGroceryListInitializerWorker
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitializeMealPlanGroceryListRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/InitializeMealPlanGroceryListRequest'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/InitializeMealPlanGroceryListResponse'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/InitializeMealPlanGroceryListResponse'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
       security:
       - oauth2:
-        - household_admin
+        - service_admin
       tags:
       - workers
   /api/v1/workers/meal_plan_tasks:
     post:
-      description: Operation for creating
+      description: Operation for creating CreateMealPlanTasksResponse
       operationId: RunMealPlanTaskCreatorWorker
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMealPlanTasksRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/CreateMealPlanTasksRequest'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/CreateMealPlanTasksResponse'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/CreateMealPlanTasksResponse'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
       security:
       - oauth2:
-        - household_admin
+        - service_admin
       tags:
       - workers
   /auth/status:
@@ -20211,18 +20350,6 @@ paths:
         - household_member
       tags:
       - auth
-  /oauth2/authorize:
-    get:
-      description: Operation for fetching
-      operationId: GET_oauth2_authorize
-      tags:
-      - oauth2
-  /oauth2/token:
-    post:
-      description: Operation for creating
-      operationId: POST_oauth2_token
-      tags:
-      - oauth2
   /users:
     post:
       description: Creates a new user
@@ -20753,9 +20880,13 @@ components:
         details:
           $ref: '#/components/schemas/ResponseDetails'
         error:
-          $ref: '#/components/schemas/APIError'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/APIError'
         pagination:
-          $ref: '#/components/schemas/Pagination'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/Pagination'
       type: object
     APIResponseWithError:
       properties:
@@ -20767,7 +20898,9 @@ components:
     AuditLogEntry:
       properties:
         belongsToHousehold:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         belongsToUser:
           type: string
         changes:
@@ -20789,17 +20922,22 @@ components:
         base64EncodedData:
           type: string
       type: object
-    ChangeActiveHouseholdInput:
-      properties:
-        householdID:
-          type: string
-      type: object
     ChangeLog:
       properties:
         newValue:
           type: string
         oldValue:
           type: string
+      type: object
+    CreateMealPlanTasksRequest:
+      properties:
+        householdID:
+          type: string
+      type: object
+    CreateMealPlanTasksResponse:
+      properties:
+        success:
+          type: boolean
       type: object
     EmailAddressVerificationRequestInput:
       properties:
@@ -20820,8 +20958,10 @@ components:
     Float32RangeWithOptionalMax:
       properties:
         max:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         min:
           format: double
           type: number
@@ -20829,11 +20969,15 @@ components:
     Float32RangeWithOptionalMaxUpdateRequestInput:
       properties:
         max:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         min:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
       type: object
     Household:
       properties:
@@ -20842,8 +20986,10 @@ components:
         addressLine2:
           type: string
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToUser:
           type: string
         billingStatus:
@@ -20860,14 +21006,20 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         latitude:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         longitude:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         members:
           items:
             $ref: '#/components/schemas/HouseholdUserMembershipWithUser'
@@ -20879,7 +21031,9 @@ components:
         state:
           type: string
         subscriptionPlanID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         zipCode:
           type: string
       type: object
@@ -20896,11 +21050,15 @@ components:
         country:
           type: string
         latitude:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         longitude:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         name:
           type: string
         state:
@@ -20911,8 +21069,10 @@ components:
     HouseholdInstrumentOwnership:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToHousehold:
           type: string
         createdAt:
@@ -20923,8 +21083,10 @@ components:
         instrument:
           $ref: '#/components/schemas/ValidInstrument'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         quantity:
@@ -20946,18 +21108,26 @@ components:
     HouseholdInstrumentOwnershipUpdateRequestInput:
       properties:
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         quantity:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         validInstrumentID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     HouseholdInvitation:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -20971,8 +21141,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         note:
           type: string
         status:
@@ -20984,15 +21156,19 @@ components:
         toName:
           type: string
         toUser:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         token:
           type: string
       type: object
     HouseholdInvitationCreationRequestInput:
       properties:
         expiresAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         note:
           type: string
         toEmail:
@@ -21019,33 +21195,55 @@ components:
     HouseholdUpdateRequestInput:
       properties:
         addressLine1:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         addressLine2:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         city:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         contactPhone:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         country:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         latitude:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         longitude:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         state:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         zipCode:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     HouseholdUserMembership:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToHousehold:
           type: string
         belongsToUser:
@@ -21060,18 +21258,24 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
       type: object
     HouseholdUserMembershipWithUser:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToHousehold:
           type: string
         belongsToUser:
-          $ref: '#/components/schemas/User'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/User'
         createdAt:
           format: date-time
           type: string
@@ -21082,8 +21286,20 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
+      type: object
+    InitializeMealPlanGroceryListRequest:
+      properties:
+        householdID:
           type: string
+      type: object
+    InitializeMealPlanGroceryListResponse:
+      properties:
+        success:
+          type: boolean
       type: object
     JWTResponse:
       properties:
@@ -21097,8 +21313,10 @@ components:
     Meal:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         components:
           items:
             $ref: '#/components/schemas/MealComponent'
@@ -21117,15 +21335,17 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         name:
           type: string
       type: object
     MealComponent:
       properties:
         componentType:
-          type: string
+          $ref: '#/components/schemas/MealComponentType'
         recipe:
           $ref: '#/components/schemas/Recipe'
         recipeScale:
@@ -21135,13 +21355,25 @@ components:
     MealComponentCreationRequestInput:
       properties:
         componentType:
-          type: string
+          $ref: '#/components/schemas/MealComponentType'
         recipeID:
           type: string
         recipeScale:
           format: double
           type: number
       type: object
+    MealComponentType:
+      enum:
+      - main
+      - side
+      - appetizer
+      - beverage
+      - dessert
+      - soup
+      - salad
+      - amuse-bouche
+      - unspecified
+      type: string
     MealCreationRequestInput:
       properties:
         components:
@@ -21160,8 +21392,10 @@ components:
     MealPlan:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToHousehold:
           type: string
         createdAt:
@@ -21170,7 +21404,7 @@ components:
         createdBy:
           type: string
         electionMethod:
-          type: string
+          $ref: '#/components/schemas/ValidMealPlanElectionMethod'
         events:
           items:
             $ref: '#/components/schemas/MealPlanEvent'
@@ -21180,12 +21414,14 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         status:
-          type: string
+          $ref: '#/components/schemas/ValidMealPlanStatus'
         tasksCreated:
           type: boolean
         votingDeadline:
@@ -21195,7 +21431,7 @@ components:
     MealPlanCreationRequestInput:
       properties:
         electionMethod:
-          type: string
+          $ref: '#/components/schemas/ValidMealPlanElectionMethod'
         events:
           items:
             $ref: '#/components/schemas/MealPlanEventCreationRequestInput'
@@ -21209,8 +21445,10 @@ components:
     MealPlanEvent:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToMealPlan:
           type: string
         createdAt:
@@ -21222,8 +21460,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         mealName:
           type: string
         notes:
@@ -21256,21 +21496,31 @@ components:
     MealPlanEventUpdateRequestInput:
       properties:
         endsAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         mealName:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         startsAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
       type: object
     MealPlanGroceryListItem:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToMealPlan:
           type: string
         createdAt:
@@ -21281,24 +21531,34 @@ components:
         ingredient:
           $ref: '#/components/schemas/ValidIngredient'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         purchasePrice:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         purchasedMeasurementUnit:
-          $ref: '#/components/schemas/ValidMeasurementUnit'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidMeasurementUnit'
         purchasedUPC:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         quantityNeeded:
           $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityPurchased:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         status:
-          type: string
+          $ref: '#/components/schemas/ValidMealPlanGroceryListItemStatus'
         statusExplanation:
           type: string
       type: object
@@ -21307,19 +21567,27 @@ components:
         belongsToMealPlan:
           type: string
         purchasePrice:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         purchasedMeasurementUnitID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         purchasedUPC:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         quantityNeeded:
           $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityPurchased:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         status:
-          type: string
+          $ref: '#/components/schemas/ValidMealPlanGroceryListItemStatus'
         statusExplanation:
           type: string
         validIngredientID:
@@ -21330,37 +21598,61 @@ components:
     MealPlanGroceryListItemUpdateRequestInput:
       properties:
         belongsToMealPlan:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         purchasePrice:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         purchasedMeasurementUnitID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         purchasedUPC:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         quantityNeeded:
           $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         quantityPurchased:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         status:
-          type: string
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidMealPlanGroceryListItemStatus'
         statusExplanation:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validIngredientID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validMeasurementUnitID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     MealPlanOption:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         assignedCook:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         assignedDishwasher:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         belongsToMealPlanEvent:
           type: string
         chosen:
@@ -21371,8 +21663,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         meal:
           $ref: '#/components/schemas/Meal'
         mealScale:
@@ -21390,9 +21684,13 @@ components:
     MealPlanOptionCreationRequestInput:
       properties:
         assignedCook:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         assignedDishwasher:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         mealID:
           type: string
         mealScale:
@@ -21404,24 +21702,36 @@ components:
     MealPlanOptionUpdateRequestInput:
       properties:
         assignedCook:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         assignedDishwasher:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         mealID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         mealScale:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     MealPlanOptionVote:
       properties:
         abstain:
           type: boolean
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToMealPlanOption:
           type: string
         byUser:
@@ -21432,8 +21742,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         rank:
@@ -21462,22 +21774,32 @@ components:
     MealPlanOptionVoteUpdateRequestInput:
       properties:
         abstain:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         belongsToMealPlanOption:
           type: string
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         rank:
-          format: int32
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int32
+            type: integer
       type: object
     MealPlanTask:
       properties:
         assignedToUser:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         completedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -21486,21 +21808,25 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         mealPlanOption:
           $ref: '#/components/schemas/MealPlanOption'
         recipePrepTask:
           $ref: '#/components/schemas/RecipePrepTask'
         status:
-          type: string
+          $ref: '#/components/schemas/MealPlanTaskStatus'
         statusExplanation:
           type: string
       type: object
     MealPlanTaskCreationRequestInput:
       properties:
         assignedToUser:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         creationExplanation:
           type: string
         mealPlanOptionID:
@@ -21508,26 +21834,42 @@ components:
         recipePrepTaskID:
           type: string
         status:
-          type: string
+          $ref: '#/components/schemas/MealPlanTaskStatus'
         statusExplanation:
           type: string
       type: object
+    MealPlanTaskStatus:
+      enum:
+      - unfinished
+      - postponed
+      - ignored
+      - canceled
+      - finished
+      type: string
     MealPlanTaskStatusChangeRequestInput:
       properties:
         assignedToUser:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         status:
-          type: string
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/MealPlanTaskStatus'
         statusExplanation:
           type: string
       type: object
     MealPlanUpdateRequestInput:
       properties:
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         votingDeadline:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
       type: object
     ModifyUserPermissionsInput:
       properties:
@@ -21539,8 +21881,10 @@ components:
     OAuth2Client:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         clientID:
           type: string
         clientSecret:
@@ -21578,20 +21922,28 @@ components:
     OptionalFloat32Range:
       properties:
         max:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         min:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
       type: object
     OptionalUint32Range:
       properties:
         max:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         min:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
       type: object
     Pagination:
       properties:
@@ -21608,11 +21960,18 @@ components:
           format: int64
           type: integer
       type: object
+    PasswordResetResponse:
+      properties:
+        successful:
+          type: boolean
+      type: object
     PasswordResetToken:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToUser:
           type: string
         createdAt:
@@ -21624,8 +21983,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         token:
           type: string
       type: object
@@ -21657,8 +22018,10 @@ components:
     Recipe:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -21673,10 +22036,14 @@ components:
         id:
           type: string
         inspiredByRecipeID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         media:
           items:
             $ref: '#/components/schemas/RecipeMedia'
@@ -21719,7 +22086,9 @@ components:
         estimatedPortions:
           $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         inspiredByRecipeID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
           type: string
         pluralPortionName:
@@ -21746,12 +22115,18 @@ components:
     RecipeMedia:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToRecipe:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         belongsToRecipeStep:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         createdAt:
           format: date-time
           type: string
@@ -21765,16 +22140,20 @@ components:
         internalPath:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         mimeType:
           type: string
       type: object
     RecipePrepTask:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToRecipe:
           type: string
         createdAt:
@@ -21787,8 +22166,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         name:
           type: string
         notes:
@@ -21852,11 +22233,17 @@ components:
     RecipePrepTaskStepUpdateRequestInput:
       properties:
         belongsToRecipeStep:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         belongsToRecipeStepTask:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         satisfiesRecipeStep:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
       type: object
     RecipePrepTaskStepWithinRecipeCreationRequestInput:
       properties:
@@ -21869,17 +22256,29 @@ components:
     RecipePrepTaskUpdateRequestInput:
       properties:
         belongsToRecipe:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         description:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         explicitStorageInstructions:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         optional:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         recipeSteps:
           items:
             $ref: '#/components/schemas/RecipePrepTaskStepUpdateRequestInput'
@@ -21887,7 +22286,9 @@ components:
         storageTemperatureInCelsius:
           $ref: '#/components/schemas/OptionalFloat32Range'
         storageType:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         timeBufferBeforeRecipeInSeconds:
           $ref: '#/components/schemas/Uint32RangeWithOptionalMaxUpdateRequestInput'
       type: object
@@ -21919,8 +22320,10 @@ components:
     RecipeRating:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         byUser:
           type: string
         cleanup:
@@ -21938,8 +22341,10 @@ components:
           format: double
           type: number
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         overall:
@@ -21978,32 +22383,50 @@ components:
     RecipeRatingUpdateRequestInput:
       properties:
         byUser:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         cleanup:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         difficulty:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         instructions:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         overall:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         recipeID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         taste:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
       type: object
     RecipeStep:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToRecipe:
           type: string
         completionConditions:
@@ -22033,8 +22456,10 @@ components:
             $ref: '#/components/schemas/RecipeStepInstrument'
           type: array
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         media:
           items:
             $ref: '#/components/schemas/RecipeMedia'
@@ -22061,8 +22486,10 @@ components:
     RecipeStepCompletionCondition:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToRecipeStep:
           type: string
         createdAt:
@@ -22077,8 +22504,10 @@ components:
             $ref: '#/components/schemas/RecipeStepCompletionConditionIngredient'
           type: array
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         optional:
@@ -22118,8 +22547,10 @@ components:
     RecipeStepCompletionConditionIngredient:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToRecipeStepCompletionCondition:
           type: string
         createdAt:
@@ -22128,8 +22559,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         recipeStepIngredient:
           type: string
       type: object
@@ -22141,13 +22574,21 @@ components:
     RecipeStepCompletionConditionUpdateRequestInput:
       properties:
         belongsToRecipeStep:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         ingredientState:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         optional:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
       type: object
     RecipeStepCreationRequestInput:
       properties:
@@ -22194,8 +22635,10 @@ components:
     RecipeStepIngredient:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToRecipeStep:
           type: string
         createdAt:
@@ -22204,12 +22647,16 @@ components:
         id:
           type: string
         ingredient:
-          $ref: '#/components/schemas/ValidIngredient'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidIngredient'
         ingredientNotes:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         name:
@@ -22220,26 +22667,36 @@ components:
         optional:
           type: boolean
         productOfRecipeID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         productPercentageToUse:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         quantity:
           $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityNotes:
           type: string
         recipeStepProductID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         toTaste:
           type: boolean
         vesselIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
       type: object
     RecipeStepIngredientCreationRequestInput:
       properties:
         ingredientID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         ingredientNotes:
           type: string
         measurementUnitID:
@@ -22252,16 +22709,24 @@ components:
         optional:
           type: boolean
         productOfRecipeID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         productOfRecipeStepIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         productOfRecipeStepProductIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         productPercentageToUse:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         quantity:
           $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         quantityNotes:
@@ -22269,48 +22734,78 @@ components:
         toTaste:
           type: boolean
         vesselIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
       type: object
     RecipeStepIngredientUpdateRequestInput:
       properties:
         belongsToRecipeStep:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         ingredientID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         ingredientNotes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         measurementUnitID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         optionIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         optional:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         productOfRecipeID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         productPercentageToUse:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         quantity:
           $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         quantityNotes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         recipeStepProductID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         toTaste:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         vesselIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
       type: object
     RecipeStepInstrument:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToRecipeStep:
           type: string
         createdAt:
@@ -22319,10 +22814,14 @@ components:
         id:
           type: string
         instrument:
-          $ref: '#/components/schemas/ValidInstrument'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidInstrument'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         name:
           type: string
         notes:
@@ -22338,12 +22837,16 @@ components:
         quantity:
           $ref: '#/components/schemas/Uint32RangeWithOptionalMax'
         recipeStepProductID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     RecipeStepInstrumentCreationRequestInput:
       properties:
         instrumentID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
           type: string
         notes:
@@ -22357,51 +22860,77 @@ components:
           format: int32
           type: integer
         productOfRecipeStepIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         productOfRecipeStepProductIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         quantity:
           $ref: '#/components/schemas/Uint32RangeWithOptionalMax'
         recipeStepProductID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     RecipeStepInstrumentUpdateRequestInput:
       properties:
         belongsToRecipeStep:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         instrumentID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         optionIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         optional:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         preferenceRank:
-          format: int32
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int32
+            type: integer
         quantity:
           $ref: '#/components/schemas/Uint32RangeWithOptionalMaxUpdateRequestInput'
         recipeStepProductID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     RecipeStepProduct:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToRecipeStep:
           type: string
         compostable:
           type: boolean
         containedInVesselIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         createdAt:
           format: date-time
           type: string
@@ -22415,10 +22944,14 @@ components:
         isWaste:
           type: boolean
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         measurementUnit:
-          $ref: '#/components/schemas/ValidMeasurementUnit'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidMeasurementUnit'
         name:
           type: string
         quantity:
@@ -22432,15 +22965,17 @@ components:
         storageTemperatureInCelsius:
           $ref: '#/components/schemas/OptionalFloat32Range'
         type:
-          type: string
+          $ref: '#/components/schemas/ValidRecipeStepProductType'
       type: object
     RecipeStepProductCreationRequestInput:
       properties:
         compostable:
           type: boolean
         containedInVesselIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         index:
           format: int64
           type: integer
@@ -22449,7 +22984,9 @@ components:
         isWaste:
           type: boolean
         measurementUnitID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
           type: string
         quantity:
@@ -22463,70 +23000,108 @@ components:
         storageTemperatureInCelsius:
           $ref: '#/components/schemas/OptionalFloat32Range'
         type:
-          type: string
+          $ref: '#/components/schemas/ValidRecipeStepProductType'
       type: object
     RecipeStepProductUpdateRequestInput:
       properties:
         belongsToRecipeStep:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         compostable:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containedInVesselIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         index:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         isLiquid:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         isWaste:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         measurementUnitID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         quantity:
           $ref: '#/components/schemas/OptionalFloat32Range'
         quantityNotes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         storageDurationInSeconds:
           $ref: '#/components/schemas/OptionalUint32Range'
         storageInstructions:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         storageTemperatureInCelsius:
           $ref: '#/components/schemas/OptionalFloat32Range'
         type:
-          type: string
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidRecipeStepProductType'
       type: object
     RecipeStepUpdateRequestInput:
       properties:
         belongsToRecipe:
           type: string
         conditionExpression:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         estimatedTimeInSeconds:
           $ref: '#/components/schemas/OptionalUint32Range'
         explicitInstructions:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         index:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         optional:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         preparation:
-          $ref: '#/components/schemas/ValidPreparation'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidPreparation'
         startTimerAutomatically:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         temperatureInCelsius:
           $ref: '#/components/schemas/OptionalFloat32Range'
       type: object
     RecipeStepVessel:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToRecipeStep:
           type: string
         createdAt:
@@ -22535,8 +23110,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         name:
           type: string
         notes:
@@ -22544,11 +23121,15 @@ components:
         quantity:
           $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
         recipeStepProductID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         unavailableAfterStep:
           type: boolean
         vessel:
-          $ref: '#/components/schemas/ValidVessel'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidVessel'
         vesselPreposition:
           type: string
       type: object
@@ -22559,65 +23140,107 @@ components:
         notes:
           type: string
         productOfRecipeStepIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         productOfRecipeStepProductIndex:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         quantity:
           $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
         recipeStepProductID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         unavailableAfterStep:
           type: boolean
         vesselID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         vesselPreposition:
           type: string
       type: object
     RecipeStepVesselUpdateRequestInput:
       properties:
         belongsToRecipeStep:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         quantity:
           $ref: '#/components/schemas/Uint16RangeWithOptionalMaxUpdateRequestInput'
         recipeStepProductID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         unavailableAfterStep:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         vesselID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         vesselPreposition:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     RecipeUpdateRequestInput:
       properties:
         description:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         eligibleForMeals:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         estimatedPortions:
           $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         inspiredByRecipeID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         pluralPortionName:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         portionName:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         sealOfApproval:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         slug:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         source:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         yieldsComponentType:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ResponseDetails:
       properties:
@@ -22631,13 +23254,17 @@ components:
         adminsOnly:
           type: boolean
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
         defaultValue:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         description:
           type: string
         enumeration:
@@ -22647,8 +23274,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         name:
           type: string
         type:
@@ -22657,8 +23286,10 @@ components:
     ServiceSettingConfiguration:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToHousehold:
           type: string
         belongsToUser:
@@ -22669,8 +23300,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         serviceSetting:
@@ -22694,22 +23327,34 @@ components:
     ServiceSettingConfigurationUpdateRequestInput:
       properties:
         belongsToHousehold:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         belongsToUser:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         serviceSettingID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         value:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ServiceSettingCreationRequestInput:
       properties:
         adminsOnly:
           type: boolean
         defaultValue:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         description:
           type: string
         enumeration:
@@ -22746,8 +23391,10 @@ components:
     Uint16RangeWithOptionalMax:
       properties:
         max:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         min:
           format: int64
           type: integer
@@ -22755,17 +23402,23 @@ components:
     Uint16RangeWithOptionalMaxUpdateRequestInput:
       properties:
         max:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         min:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
       type: object
     Uint32RangeWithOptionalMax:
       properties:
         max:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         min:
           format: int64
           type: integer
@@ -22773,11 +23426,15 @@ components:
     Uint32RangeWithOptionalMaxUpdateRequestInput:
       properties:
         max:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
         min:
-          format: int64
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int64
+            type: integer
       type: object
     User:
       properties:
@@ -22786,13 +23443,19 @@ components:
         accountStatusExplanation:
           type: string
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         avatar:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         birthday:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -22800,33 +23463,45 @@ components:
           format: email
           type: string
         emailAddressVerifiedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         firstName:
           type: string
         id:
           type: string
         lastAcceptedPrivacyPolicy:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         lastAcceptedTOS:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         lastName:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         passwordLastChangedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         requiresPasswordChange:
           type: boolean
         serviceRoles:
           type: string
         twoFactorSecretVerifiedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         username:
           type: string
       type: object
@@ -22844,10 +23519,14 @@ components:
         accountStatus:
           type: string
         avatar:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         birthday:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -22899,8 +23578,10 @@ components:
         allergy:
           type: boolean
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToUser:
           type: string
         createdAt:
@@ -22911,8 +23592,10 @@ components:
         ingredient:
           $ref: '#/components/schemas/ValidIngredient'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         rating:
@@ -22936,14 +23619,22 @@ components:
     UserIngredientPreferenceUpdateRequestInput:
       properties:
         allergy:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         ingredientID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         rating:
-          format: int32
-          type: integer
+          oneOf:
+          - type: "null"
+          - format: int32
+            type: integer
       type: object
     UserLoginInput:
       properties:
@@ -22967,8 +23658,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         status:
           type: string
       type: object
@@ -22984,7 +23677,9 @@ components:
     UserNotificationUpdateRequestInput:
       properties:
         status:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     UserPermissionsRequestInput:
       properties:
@@ -23005,8 +23700,10 @@ components:
         acceptedTOS:
           type: boolean
         birthday:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         emailAddress:
           format: email
           type: string
@@ -23062,8 +23759,10 @@ components:
         animalFlesh:
           type: boolean
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         containsAlcohol:
           type: boolean
         containsDairy:
@@ -23114,8 +23813,10 @@ components:
         isStarch:
           type: boolean
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         name:
           type: string
         pluralName:
@@ -23203,8 +23904,10 @@ components:
     ValidIngredientGroup:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -23213,8 +23916,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         members:
           items:
             $ref: '#/components/schemas/ValidIngredientGroupMember'
@@ -23240,8 +23945,10 @@ components:
     ValidIngredientGroupMember:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToGroup:
           type: string
         createdAt:
@@ -23260,19 +23967,27 @@ components:
     ValidIngredientGroupUpdateRequestInput:
       properties:
         description:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         slug:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ValidIngredientMeasurementUnit:
       properties:
         allowableQuantity:
           $ref: '#/components/schemas/Float32RangeWithOptionalMax'
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -23281,8 +23996,10 @@ components:
         ingredient:
           $ref: '#/components/schemas/ValidIngredient'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         measurementUnit:
           $ref: '#/components/schemas/ValidMeasurementUnit'
         notes:
@@ -23304,17 +24021,25 @@ components:
         allowableQuantity:
           $ref: '#/components/schemas/Float32RangeWithOptionalMaxUpdateRequestInput'
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validIngredientID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validMeasurementUnitID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ValidIngredientPreparation:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -23323,8 +24048,10 @@ components:
         ingredient:
           $ref: '#/components/schemas/ValidIngredient'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         preparation:
@@ -23342,19 +24069,27 @@ components:
     ValidIngredientPreparationUpdateRequestInput:
       properties:
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validIngredientID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validPreparationID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ValidIngredientState:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         attributeType:
-          type: string
+          $ref: '#/components/schemas/ValidIngredientStateAttributeType'
         createdAt:
           format: date-time
           type: string
@@ -23365,8 +24100,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         name:
           type: string
         pastTense:
@@ -23374,10 +24111,22 @@ components:
         slug:
           type: string
       type: object
+    ValidIngredientStateAttributeType:
+      enum:
+      - texture
+      - consistency
+      - temperature
+      - color
+      - appearance
+      - odor
+      - taste
+      - sound
+      - other
+      type: string
     ValidIngredientStateCreationRequestInput:
       properties:
         attributeType:
-          type: string
+          $ref: '#/components/schemas/ValidIngredientStateAttributeType'
         description:
           type: string
         iconPath:
@@ -23392,8 +24141,10 @@ components:
     ValidIngredientStateIngredient:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -23404,8 +24155,10 @@ components:
         ingredientState:
           $ref: '#/components/schemas/ValidIngredientState'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
       type: object
@@ -23421,99 +24174,181 @@ components:
     ValidIngredientStateIngredientUpdateRequestInput:
       properties:
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validIngredientID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validIngredientStateID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ValidIngredientStateUpdateRequestInput:
       properties:
         attributeType:
-          type: string
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidIngredientStateAttributeType'
         description:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         iconPath:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         pastTense:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         slug:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ValidIngredientUpdateRequestInput:
       properties:
         animalDerived:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         animalFlesh:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsAlcohol:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsDairy:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsEgg:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsFish:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsGluten:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsPeanut:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsSesame:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsShellfish:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsSoy:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsTreeNut:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         containsWheat:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         description:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         iconPath:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         isAcid:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         isFat:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         isFruit:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         isGrain:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         isHeat:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         isLiquid:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         isProtein:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         isSalt:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         isStarch:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         pluralName:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         restrictToPreparations:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         shoppingSuggestions:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         slug:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         storageInstructions:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         storageTemperatureInCelsius:
           $ref: '#/components/schemas/OptionalFloat32Range'
         warning:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ValidInstrument:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -23528,8 +24363,10 @@ components:
         includeInGeneratedInstructions:
           type: boolean
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         name:
           type: string
         pluralName:
@@ -23561,27 +24398,63 @@ components:
     ValidInstrumentUpdateRequestInput:
       properties:
         description:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         displayInSummaryLists:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         iconPath:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         includeInGeneratedInstructions:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         pluralName:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         slug:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         usableForStorage:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
       type: object
+    ValidMealPlanElectionMethod:
+      enum:
+      - schulze
+      - instant-runoff
+      type: string
+    ValidMealPlanGroceryListItemStatus:
+      enum:
+      - unknown
+      - already owned
+      - needs
+      - unavailable
+      - acquired
+      type: string
+    ValidMealPlanStatus:
+      enum:
+      - awaiting_votes
+      - finalized
+      type: string
     ValidMeasurementUnit:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -23594,8 +24467,10 @@ components:
         imperial:
           type: boolean
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         metric:
           type: boolean
         name:
@@ -23612,8 +24487,10 @@ components:
     ValidMeasurementUnitConversion:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -23622,15 +24499,19 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         modifier:
           format: double
           type: number
         notes:
           type: string
         onlyForIngredient:
-          $ref: '#/components/schemas/ValidIngredient'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidIngredient'
         to:
           $ref: '#/components/schemas/ValidMeasurementUnit'
       type: object
@@ -23644,23 +24525,35 @@ components:
         notes:
           type: string
         onlyForIngredient:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         to:
           type: string
       type: object
     ValidMeasurementUnitConversionUpdateRequestInput:
       properties:
         from:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         modifier:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         onlyForIngredient:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         to:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ValidMeasurementUnitCreationRequestInput:
       properties:
@@ -23686,29 +24579,49 @@ components:
     ValidMeasurementUnitUpdateRequestInput:
       properties:
         description:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         iconPath:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         imperial:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         metric:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         pluralName:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         slug:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         universal:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         volumetric:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
       type: object
     ValidPreparation:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         conditionExpressionRequired:
           type: boolean
         consumesVessel:
@@ -23727,8 +24640,10 @@ components:
         instrumentCount:
           $ref: '#/components/schemas/Uint16RangeWithOptionalMax'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         name:
           type: string
         onlyForVessels:
@@ -23784,8 +24699,10 @@ components:
     ValidPreparationInstrument:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -23794,8 +24711,10 @@ components:
         instrument:
           $ref: '#/components/schemas/ValidInstrument'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         preparation:
@@ -23813,50 +24732,82 @@ components:
     ValidPreparationInstrumentUpdateRequestInput:
       properties:
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validInstrumentID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validPreparationID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
     ValidPreparationUpdateRequestInput:
       properties:
         conditionExpressionRequired:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         consumesVessel:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         description:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         iconPath:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         ingredientCount:
           $ref: '#/components/schemas/Uint16RangeWithOptionalMaxUpdateRequestInput'
         instrumentCount:
           $ref: '#/components/schemas/Uint16RangeWithOptionalMaxUpdateRequestInput'
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         onlyForVessels:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         pastTense:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         restrictToIngredients:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         slug:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         temperatureRequired:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         timeEstimateRequired:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         vesselCount:
           $ref: '#/components/schemas/Uint16RangeWithOptionalMaxUpdateRequestInput'
         yieldsNothing:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
       type: object
     ValidPreparationVessel:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -23865,8 +24816,10 @@ components:
         instrument:
           $ref: '#/components/schemas/ValidVessel'
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         notes:
           type: string
         preparation:
@@ -23884,22 +24837,38 @@ components:
     ValidPreparationVesselUpdateRequestInput:
       properties:
         notes:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validPreparationID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         validVesselID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
       type: object
+    ValidRecipeStepProductType:
+      enum:
+      - ingredient
+      - instrument
+      - vessel
+      type: string
     ValidVessel:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         capacity:
           format: double
           type: number
         capacityUnit:
-          $ref: '#/components/schemas/ValidMeasurementUnit'
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidMeasurementUnit'
         createdAt:
           format: date-time
           type: string
@@ -23917,8 +24886,10 @@ components:
         includeInGeneratedInstructions:
           type: boolean
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         lengthInMillimeters:
           format: double
           type: number
@@ -23927,7 +24898,7 @@ components:
         pluralName:
           type: string
         shape:
-          type: string
+          $ref: '#/components/schemas/ValidVesselShapeType'
         slug:
           type: string
         usableForStorage:
@@ -23942,7 +24913,9 @@ components:
           format: double
           type: number
         capacityUnitID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         description:
           type: string
         displayInSummaryLists:
@@ -23962,7 +24935,7 @@ components:
         pluralName:
           type: string
         shape:
-          type: string
+          $ref: '#/components/schemas/ValidVesselShapeType'
         slug:
           type: string
         usableForStorage:
@@ -23971,46 +24944,87 @@ components:
           format: double
           type: number
       type: object
+    ValidVesselShapeType:
+      enum:
+      - hemisphere
+      - rectangle
+      - cone
+      - pyramid
+      - cylinder
+      - sphere
+      - cube
+      - other
+      type: string
     ValidVesselUpdateRequestInput:
       properties:
         capacity:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         capacityUnitID:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         description:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         displayInSummaryLists:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         heightInMillimeters:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         iconPath:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         includeInGeneratedInstructions:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         lengthInMillimeters:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
         name:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         pluralName:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         shape:
-          type: string
+          oneOf:
+          - type: "null"
+          - $ref: '#/components/schemas/ValidVesselShapeType'
         slug:
-          type: string
+          oneOf:
+          - type: "null"
+          - type: string
         usableForStorage:
-          type: boolean
+          oneOf:
+          - type: "null"
+          - type: boolean
         widthInMillimeters:
-          format: double
-          type: number
+          oneOf:
+          - type: "null"
+          - format: double
+            type: number
       type: object
     Webhook:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToHousehold:
           type: string
         contentType:
@@ -24025,8 +25039,10 @@ components:
         id:
           type: string
         lastUpdatedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         method:
           type: string
         name:
@@ -24054,8 +25070,10 @@ components:
     WebhookTriggerEvent:
       properties:
         archivedAt:
-          format: date-time
-          type: string
+          oneOf:
+          - type: "null"
+          - format: date-time
+            type: string
         belongsToWebhook:
           type: string
         createdAt:
@@ -24100,6 +25118,7 @@ tags:
 - name: meal plan tasks
 - name: meal plans
 - name: meals
+- name: meta
 - name: oauth2
 - name: password
 - name: permissions

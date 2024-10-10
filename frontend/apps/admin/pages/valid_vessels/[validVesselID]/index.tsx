@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-import { ValidVessel, ValidVesselUpdateRequestInput } from '@dinnerdonebetter/models';
+import { APIResponse, ValidVessel, ValidVesselUpdateRequestInput } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
@@ -33,9 +33,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchValidVesselTimer = timing.addEvent('fetch valid vessel');
   const pageLoadValidVesselPromise = apiClient
     .getValidVessel(validVesselID.toString())
-    .then((result: ValidVessel) => {
+    .then((result: APIResponse<ValidVessel>) => {
       span.addEvent('valid vessel retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchValidVesselTimer.end();
@@ -106,12 +106,10 @@ function ValidVesselPage(props: ValidVesselPageProps) {
 
     await apiClient
       .updateValidVessel(validVessel.id, submission)
-      .then((result: ValidVessel) => {
-        if (result) {
-          updateForm.setValues(result);
-          setValidVessel(result);
-          setOriginalValidVessel(result);
-        }
+      .then((result: APIResponse<ValidVessel>) => {
+        updateForm.setValues(result.data);
+        setValidVessel(result.data);
+        setOriginalValidVessel(result.data);
       })
       .catch((err) => {
         console.error(err);
@@ -149,7 +147,7 @@ function ValidVesselPage(props: ValidVesselPageProps) {
               fullWidth
               onClick={() => {
                 if (confirm('Are you sure you want to delete this valid vessel?')) {
-                  apiClient.deleteValidVessel(validVessel.id).then(() => {
+                  apiClient.archiveValidVessel(validVessel.id).then(() => {
                     router.push('/valid_vessels');
                   });
                 }

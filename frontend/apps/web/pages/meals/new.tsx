@@ -23,12 +23,13 @@ import { AxiosError } from 'axios';
 import { ReactNode, Reducer, useReducer, useEffect } from 'react';
 
 import {
-  ALL_MEAL_COMPONENT_TYPES,
+  ALL_MEAL_COMPONENT_TYPE,
   Meal,
   MealComponent,
   MealComponentType,
   Recipe,
   QueryFilteredResult,
+  APIResponse,
 } from '@dinnerdonebetter/models';
 import { ConvertMealToMealCreationRequestInput } from '@dinnerdonebetter/utils';
 
@@ -194,8 +195,8 @@ export default function NewMealPage(): JSX.Element {
     const apiClient = buildLocalClient();
     apiClient
       .createMeal(ConvertMealToMealCreationRequestInput(pageState.meal))
-      .then((res: Meal) => {
-        router.push(`/meals/${res.id}`);
+      .then((res: APIResponse<Meal>) => {
+        router.push(`/meals/${res.data.id}`);
       })
       .catch((err: AxiosError) => {
         console.error(`Failed to create meal: ${err}`);
@@ -220,7 +221,7 @@ export default function NewMealPage(): JSX.Element {
                   componentType: value,
                 })
               }
-              data={ALL_MEAL_COMPONENT_TYPES.filter((x) => x != 'unspecified').map((x) => ({ label: x, value: x }))}
+              data={ALL_MEAL_COMPONENT_TYPE.filter((x) => x != 'unspecified').map((x) => ({ label: x, value: x }))}
             />
           </div>
 

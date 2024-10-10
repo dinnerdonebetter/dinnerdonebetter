@@ -23,6 +23,81 @@ const (
 	Oauth2Scopes = "oauth2.Scopes"
 )
 
+// Defines values for MealComponentType.
+const (
+	AmuseBouche MealComponentType = "amuse-bouche"
+	Appetizer   MealComponentType = "appetizer"
+	Beverage    MealComponentType = "beverage"
+	Dessert     MealComponentType = "dessert"
+	Main        MealComponentType = "main"
+	Salad       MealComponentType = "salad"
+	Side        MealComponentType = "side"
+	Soup        MealComponentType = "soup"
+	Unspecified MealComponentType = "unspecified"
+)
+
+// Defines values for MealPlanTaskStatus.
+const (
+	Canceled   MealPlanTaskStatus = "canceled"
+	Finished   MealPlanTaskStatus = "finished"
+	Ignored    MealPlanTaskStatus = "ignored"
+	Postponed  MealPlanTaskStatus = "postponed"
+	Unfinished MealPlanTaskStatus = "unfinished"
+)
+
+// Defines values for ValidIngredientStateAttributeType.
+const (
+	ValidIngredientStateAttributeTypeAppearance  ValidIngredientStateAttributeType = "appearance"
+	ValidIngredientStateAttributeTypeColor       ValidIngredientStateAttributeType = "color"
+	ValidIngredientStateAttributeTypeConsistency ValidIngredientStateAttributeType = "consistency"
+	ValidIngredientStateAttributeTypeOdor        ValidIngredientStateAttributeType = "odor"
+	ValidIngredientStateAttributeTypeOther       ValidIngredientStateAttributeType = "other"
+	ValidIngredientStateAttributeTypeSound       ValidIngredientStateAttributeType = "sound"
+	ValidIngredientStateAttributeTypeTaste       ValidIngredientStateAttributeType = "taste"
+	ValidIngredientStateAttributeTypeTemperature ValidIngredientStateAttributeType = "temperature"
+	ValidIngredientStateAttributeTypeTexture     ValidIngredientStateAttributeType = "texture"
+)
+
+// Defines values for ValidMealPlanElectionMethod.
+const (
+	InstantRunoff ValidMealPlanElectionMethod = "instant-runoff"
+	Schulze       ValidMealPlanElectionMethod = "schulze"
+)
+
+// Defines values for ValidMealPlanGroceryListItemStatus.
+const (
+	Acquired     ValidMealPlanGroceryListItemStatus = "acquired"
+	AlreadyOwned ValidMealPlanGroceryListItemStatus = "already owned"
+	Needs        ValidMealPlanGroceryListItemStatus = "needs"
+	Unavailable  ValidMealPlanGroceryListItemStatus = "unavailable"
+	Unknown      ValidMealPlanGroceryListItemStatus = "unknown"
+)
+
+// Defines values for ValidMealPlanStatus.
+const (
+	AwaitingVotes ValidMealPlanStatus = "awaiting_votes"
+	Finalized     ValidMealPlanStatus = "finalized"
+)
+
+// Defines values for ValidRecipeStepProductType.
+const (
+	Ingredient ValidRecipeStepProductType = "ingredient"
+	Instrument ValidRecipeStepProductType = "instrument"
+	Vessel     ValidRecipeStepProductType = "vessel"
+)
+
+// Defines values for ValidVesselShapeType.
+const (
+	ValidVesselShapeTypeCone       ValidVesselShapeType = "cone"
+	ValidVesselShapeTypeCube       ValidVesselShapeType = "cube"
+	ValidVesselShapeTypeCylinder   ValidVesselShapeType = "cylinder"
+	ValidVesselShapeTypeHemisphere ValidVesselShapeType = "hemisphere"
+	ValidVesselShapeTypeOther      ValidVesselShapeType = "other"
+	ValidVesselShapeTypePyramid    ValidVesselShapeType = "pyramid"
+	ValidVesselShapeTypeRectangle  ValidVesselShapeType = "rectangle"
+	ValidVesselShapeTypeSphere     ValidVesselShapeType = "sphere"
+)
+
 // Defines values for GetReceivedHouseholdInvitationsParamsIncludeArchived.
 const (
 	GetReceivedHouseholdInvitationsParamsIncludeArchivedFalse GetReceivedHouseholdInvitationsParamsIncludeArchived = "false"
@@ -833,6 +908,16 @@ type ChangeLog struct {
 	OldValue *string `json:"oldValue,omitempty"`
 }
 
+// CreateMealPlanTasksRequest defines model for CreateMealPlanTasksRequest.
+type CreateMealPlanTasksRequest struct {
+	HouseholdID *string `json:"householdID,omitempty"`
+}
+
+// CreateMealPlanTasksResponse defines model for CreateMealPlanTasksResponse.
+type CreateMealPlanTasksResponse struct {
+	Success *bool `json:"success,omitempty"`
+}
+
 // EmailAddressVerificationRequestInput defines model for EmailAddressVerificationRequestInput.
 type EmailAddressVerificationRequestInput struct {
 	EmailVerificationToken *string `json:"emailVerificationToken,omitempty"`
@@ -1001,6 +1086,16 @@ type HouseholdUserMembershipWithUser struct {
 	LastUpdatedAt      *time.Time `json:"lastUpdatedAt,omitempty"`
 }
 
+// InitializeMealPlanGroceryListRequest defines model for InitializeMealPlanGroceryListRequest.
+type InitializeMealPlanGroceryListRequest struct {
+	HouseholdID *string `json:"householdID,omitempty"`
+}
+
+// InitializeMealPlanGroceryListResponse defines model for InitializeMealPlanGroceryListResponse.
+type InitializeMealPlanGroceryListResponse struct {
+	Success *bool `json:"success,omitempty"`
+}
+
 // JWTResponse defines model for JWTResponse.
 type JWTResponse struct {
 	HouseholdID *string `json:"householdID,omitempty"`
@@ -1024,17 +1119,20 @@ type Meal struct {
 
 // MealComponent defines model for MealComponent.
 type MealComponent struct {
-	ComponentType *string  `json:"componentType,omitempty"`
-	Recipe        *Recipe  `json:"recipe,omitempty"`
-	RecipeScale   *float64 `json:"recipeScale,omitempty"`
+	ComponentType *MealComponentType `json:"componentType,omitempty"`
+	Recipe        *Recipe            `json:"recipe,omitempty"`
+	RecipeScale   *float64           `json:"recipeScale,omitempty"`
 }
 
 // MealComponentCreationRequestInput defines model for MealComponentCreationRequestInput.
 type MealComponentCreationRequestInput struct {
-	ComponentType *string  `json:"componentType,omitempty"`
-	RecipeID      *string  `json:"recipeID,omitempty"`
-	RecipeScale   *float64 `json:"recipeScale,omitempty"`
+	ComponentType *MealComponentType `json:"componentType,omitempty"`
+	RecipeID      *string            `json:"recipeID,omitempty"`
+	RecipeScale   *float64           `json:"recipeScale,omitempty"`
 }
+
+// MealComponentType defines model for MealComponentType.
+type MealComponentType string
 
 // MealCreationRequestInput defines model for MealCreationRequestInput.
 type MealCreationRequestInput struct {
@@ -1047,24 +1145,24 @@ type MealCreationRequestInput struct {
 
 // MealPlan defines model for MealPlan.
 type MealPlan struct {
-	ArchivedAt             *time.Time       `json:"archivedAt,omitempty"`
-	BelongsToHousehold     *string          `json:"belongsToHousehold,omitempty"`
-	CreatedAt              *time.Time       `json:"createdAt,omitempty"`
-	CreatedBy              *string          `json:"createdBy,omitempty"`
-	ElectionMethod         *string          `json:"electionMethod,omitempty"`
-	Events                 *[]MealPlanEvent `json:"events,omitempty"`
-	GroceryListInitialized *bool            `json:"groceryListInitialized,omitempty"`
-	Id                     *string          `json:"id,omitempty"`
-	LastUpdatedAt          *time.Time       `json:"lastUpdatedAt,omitempty"`
-	Notes                  *string          `json:"notes,omitempty"`
-	Status                 *string          `json:"status,omitempty"`
-	TasksCreated           *bool            `json:"tasksCreated,omitempty"`
-	VotingDeadline         *time.Time       `json:"votingDeadline,omitempty"`
+	ArchivedAt             *time.Time                   `json:"archivedAt,omitempty"`
+	BelongsToHousehold     *string                      `json:"belongsToHousehold,omitempty"`
+	CreatedAt              *time.Time                   `json:"createdAt,omitempty"`
+	CreatedBy              *string                      `json:"createdBy,omitempty"`
+	ElectionMethod         *ValidMealPlanElectionMethod `json:"electionMethod,omitempty"`
+	Events                 *[]MealPlanEvent             `json:"events,omitempty"`
+	GroceryListInitialized *bool                        `json:"groceryListInitialized,omitempty"`
+	Id                     *string                      `json:"id,omitempty"`
+	LastUpdatedAt          *time.Time                   `json:"lastUpdatedAt,omitempty"`
+	Notes                  *string                      `json:"notes,omitempty"`
+	Status                 *ValidMealPlanStatus         `json:"status,omitempty"`
+	TasksCreated           *bool                        `json:"tasksCreated,omitempty"`
+	VotingDeadline         *time.Time                   `json:"votingDeadline,omitempty"`
 }
 
 // MealPlanCreationRequestInput defines model for MealPlanCreationRequestInput.
 type MealPlanCreationRequestInput struct {
-	ElectionMethod *string                              `json:"electionMethod,omitempty"`
+	ElectionMethod *ValidMealPlanElectionMethod         `json:"electionMethod,omitempty"`
 	Events         *[]MealPlanEventCreationRequestInput `json:"events,omitempty"`
 	Notes          *string                              `json:"notes,omitempty"`
 	VotingDeadline *time.Time                           `json:"votingDeadline,omitempty"`
@@ -1103,34 +1201,34 @@ type MealPlanEventUpdateRequestInput struct {
 
 // MealPlanGroceryListItem defines model for MealPlanGroceryListItem.
 type MealPlanGroceryListItem struct {
-	ArchivedAt               *time.Time                   `json:"archivedAt,omitempty"`
-	BelongsToMealPlan        *string                      `json:"belongsToMealPlan,omitempty"`
-	CreatedAt                *time.Time                   `json:"createdAt,omitempty"`
-	Id                       *string                      `json:"id,omitempty"`
-	Ingredient               *ValidIngredient             `json:"ingredient,omitempty"`
-	LastUpdatedAt            *time.Time                   `json:"lastUpdatedAt,omitempty"`
-	MeasurementUnit          *ValidMeasurementUnit        `json:"measurementUnit,omitempty"`
-	PurchasePrice            *float64                     `json:"purchasePrice,omitempty"`
-	PurchasedMeasurementUnit *ValidMeasurementUnit        `json:"purchasedMeasurementUnit,omitempty"`
-	PurchasedUPC             *string                      `json:"purchasedUPC,omitempty"`
-	QuantityNeeded           *Float32RangeWithOptionalMax `json:"quantityNeeded,omitempty"`
-	QuantityPurchased        *float64                     `json:"quantityPurchased,omitempty"`
-	Status                   *string                      `json:"status,omitempty"`
-	StatusExplanation        *string                      `json:"statusExplanation,omitempty"`
+	ArchivedAt               *time.Time                          `json:"archivedAt,omitempty"`
+	BelongsToMealPlan        *string                             `json:"belongsToMealPlan,omitempty"`
+	CreatedAt                *time.Time                          `json:"createdAt,omitempty"`
+	Id                       *string                             `json:"id,omitempty"`
+	Ingredient               *ValidIngredient                    `json:"ingredient,omitempty"`
+	LastUpdatedAt            *time.Time                          `json:"lastUpdatedAt,omitempty"`
+	MeasurementUnit          *ValidMeasurementUnit               `json:"measurementUnit,omitempty"`
+	PurchasePrice            *float64                            `json:"purchasePrice,omitempty"`
+	PurchasedMeasurementUnit *ValidMeasurementUnit               `json:"purchasedMeasurementUnit,omitempty"`
+	PurchasedUPC             *string                             `json:"purchasedUPC,omitempty"`
+	QuantityNeeded           *Float32RangeWithOptionalMax        `json:"quantityNeeded,omitempty"`
+	QuantityPurchased        *float64                            `json:"quantityPurchased,omitempty"`
+	Status                   *ValidMealPlanGroceryListItemStatus `json:"status,omitempty"`
+	StatusExplanation        *string                             `json:"statusExplanation,omitempty"`
 }
 
 // MealPlanGroceryListItemCreationRequestInput defines model for MealPlanGroceryListItemCreationRequestInput.
 type MealPlanGroceryListItemCreationRequestInput struct {
-	BelongsToMealPlan          *string                      `json:"belongsToMealPlan,omitempty"`
-	PurchasePrice              *float64                     `json:"purchasePrice,omitempty"`
-	PurchasedMeasurementUnitID *string                      `json:"purchasedMeasurementUnitID,omitempty"`
-	PurchasedUPC               *string                      `json:"purchasedUPC,omitempty"`
-	QuantityNeeded             *Float32RangeWithOptionalMax `json:"quantityNeeded,omitempty"`
-	QuantityPurchased          *float64                     `json:"quantityPurchased,omitempty"`
-	Status                     *string                      `json:"status,omitempty"`
-	StatusExplanation          *string                      `json:"statusExplanation,omitempty"`
-	ValidIngredientID          *string                      `json:"validIngredientID,omitempty"`
-	ValidMeasurementUnitID     *string                      `json:"validMeasurementUnitID,omitempty"`
+	BelongsToMealPlan          *string                             `json:"belongsToMealPlan,omitempty"`
+	PurchasePrice              *float64                            `json:"purchasePrice,omitempty"`
+	PurchasedMeasurementUnitID *string                             `json:"purchasedMeasurementUnitID,omitempty"`
+	PurchasedUPC               *string                             `json:"purchasedUPC,omitempty"`
+	QuantityNeeded             *Float32RangeWithOptionalMax        `json:"quantityNeeded,omitempty"`
+	QuantityPurchased          *float64                            `json:"quantityPurchased,omitempty"`
+	Status                     *ValidMealPlanGroceryListItemStatus `json:"status,omitempty"`
+	StatusExplanation          *string                             `json:"statusExplanation,omitempty"`
+	ValidIngredientID          *string                             `json:"validIngredientID,omitempty"`
+	ValidMeasurementUnitID     *string                             `json:"validMeasurementUnitID,omitempty"`
 }
 
 // MealPlanGroceryListItemUpdateRequestInput defines model for MealPlanGroceryListItemUpdateRequestInput.
@@ -1141,7 +1239,7 @@ type MealPlanGroceryListItemUpdateRequestInput struct {
 	PurchasedUPC               *string                                        `json:"purchasedUPC,omitempty"`
 	QuantityNeeded             *Float32RangeWithOptionalMaxUpdateRequestInput `json:"quantityNeeded,omitempty"`
 	QuantityPurchased          *float64                                       `json:"quantityPurchased,omitempty"`
-	Status                     *string                                        `json:"status,omitempty"`
+	Status                     *ValidMealPlanGroceryListItemStatus            `json:"status,omitempty"`
 	StatusExplanation          *string                                        `json:"statusExplanation,omitempty"`
 	ValidIngredientID          *string                                        `json:"validIngredientID,omitempty"`
 	ValidMeasurementUnitID     *string                                        `json:"validMeasurementUnitID,omitempty"`
@@ -1218,33 +1316,36 @@ type MealPlanOptionVoteUpdateRequestInput struct {
 
 // MealPlanTask defines model for MealPlanTask.
 type MealPlanTask struct {
-	AssignedToUser      *string         `json:"assignedToUser,omitempty"`
-	CompletedAt         *time.Time      `json:"completedAt,omitempty"`
-	CreatedAt           *time.Time      `json:"createdAt,omitempty"`
-	CreationExplanation *string         `json:"creationExplanation,omitempty"`
-	Id                  *string         `json:"id,omitempty"`
-	LastUpdatedAt       *time.Time      `json:"lastUpdatedAt,omitempty"`
-	MealPlanOption      *MealPlanOption `json:"mealPlanOption,omitempty"`
-	RecipePrepTask      *RecipePrepTask `json:"recipePrepTask,omitempty"`
-	Status              *string         `json:"status,omitempty"`
-	StatusExplanation   *string         `json:"statusExplanation,omitempty"`
+	AssignedToUser      *string             `json:"assignedToUser,omitempty"`
+	CompletedAt         *time.Time          `json:"completedAt,omitempty"`
+	CreatedAt           *time.Time          `json:"createdAt,omitempty"`
+	CreationExplanation *string             `json:"creationExplanation,omitempty"`
+	Id                  *string             `json:"id,omitempty"`
+	LastUpdatedAt       *time.Time          `json:"lastUpdatedAt,omitempty"`
+	MealPlanOption      *MealPlanOption     `json:"mealPlanOption,omitempty"`
+	RecipePrepTask      *RecipePrepTask     `json:"recipePrepTask,omitempty"`
+	Status              *MealPlanTaskStatus `json:"status,omitempty"`
+	StatusExplanation   *string             `json:"statusExplanation,omitempty"`
 }
 
 // MealPlanTaskCreationRequestInput defines model for MealPlanTaskCreationRequestInput.
 type MealPlanTaskCreationRequestInput struct {
-	AssignedToUser      *string `json:"assignedToUser,omitempty"`
-	CreationExplanation *string `json:"creationExplanation,omitempty"`
-	MealPlanOptionID    *string `json:"mealPlanOptionID,omitempty"`
-	RecipePrepTaskID    *string `json:"recipePrepTaskID,omitempty"`
-	Status              *string `json:"status,omitempty"`
-	StatusExplanation   *string `json:"statusExplanation,omitempty"`
+	AssignedToUser      *string             `json:"assignedToUser,omitempty"`
+	CreationExplanation *string             `json:"creationExplanation,omitempty"`
+	MealPlanOptionID    *string             `json:"mealPlanOptionID,omitempty"`
+	RecipePrepTaskID    *string             `json:"recipePrepTaskID,omitempty"`
+	Status              *MealPlanTaskStatus `json:"status,omitempty"`
+	StatusExplanation   *string             `json:"statusExplanation,omitempty"`
 }
+
+// MealPlanTaskStatus defines model for MealPlanTaskStatus.
+type MealPlanTaskStatus string
 
 // MealPlanTaskStatusChangeRequestInput defines model for MealPlanTaskStatusChangeRequestInput.
 type MealPlanTaskStatusChangeRequestInput struct {
-	AssignedToUser    *string `json:"assignedToUser,omitempty"`
-	Status            *string `json:"status,omitempty"`
-	StatusExplanation *string `json:"statusExplanation,omitempty"`
+	AssignedToUser    *string             `json:"assignedToUser,omitempty"`
+	Status            *MealPlanTaskStatus `json:"status,omitempty"`
+	StatusExplanation *string             `json:"statusExplanation,omitempty"`
 }
 
 // MealPlanUpdateRequestInput defines model for MealPlanUpdateRequestInput.
@@ -1303,6 +1404,11 @@ type Pagination struct {
 	Limit         *int32 `json:"limit,omitempty"`
 	Page          *int64 `json:"page,omitempty"`
 	TotalCount    *int64 `json:"totalCount,omitempty"`
+}
+
+// PasswordResetResponse defines model for PasswordResetResponse.
+type PasswordResetResponse struct {
+	Successful *bool `json:"successful,omitempty"`
 }
 
 // PasswordResetToken defines model for PasswordResetToken.
@@ -1717,59 +1823,59 @@ type RecipeStepInstrumentUpdateRequestInput struct {
 
 // RecipeStepProduct defines model for RecipeStepProduct.
 type RecipeStepProduct struct {
-	ArchivedAt                  *time.Time            `json:"archivedAt,omitempty"`
-	BelongsToRecipeStep         *string               `json:"belongsToRecipeStep,omitempty"`
-	Compostable                 *bool                 `json:"compostable,omitempty"`
-	ContainedInVesselIndex      *int64                `json:"containedInVesselIndex,omitempty"`
-	CreatedAt                   *time.Time            `json:"createdAt,omitempty"`
-	Id                          *string               `json:"id,omitempty"`
-	Index                       *int64                `json:"index,omitempty"`
-	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
-	IsWaste                     *bool                 `json:"isWaste,omitempty"`
-	LastUpdatedAt               *time.Time            `json:"lastUpdatedAt,omitempty"`
-	MeasurementUnit             *ValidMeasurementUnit `json:"measurementUnit,omitempty"`
-	Name                        *string               `json:"name,omitempty"`
-	Quantity                    *OptionalFloat32Range `json:"quantity,omitempty"`
-	QuantityNotes               *string               `json:"quantityNotes,omitempty"`
-	StorageDurationInSeconds    *OptionalUint32Range  `json:"storageDurationInSeconds,omitempty"`
-	StorageInstructions         *string               `json:"storageInstructions,omitempty"`
-	StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius,omitempty"`
-	Type                        *string               `json:"type,omitempty"`
+	ArchivedAt                  *time.Time                  `json:"archivedAt,omitempty"`
+	BelongsToRecipeStep         *string                     `json:"belongsToRecipeStep,omitempty"`
+	Compostable                 *bool                       `json:"compostable,omitempty"`
+	ContainedInVesselIndex      *int64                      `json:"containedInVesselIndex,omitempty"`
+	CreatedAt                   *time.Time                  `json:"createdAt,omitempty"`
+	Id                          *string                     `json:"id,omitempty"`
+	Index                       *int64                      `json:"index,omitempty"`
+	IsLiquid                    *bool                       `json:"isLiquid,omitempty"`
+	IsWaste                     *bool                       `json:"isWaste,omitempty"`
+	LastUpdatedAt               *time.Time                  `json:"lastUpdatedAt,omitempty"`
+	MeasurementUnit             *ValidMeasurementUnit       `json:"measurementUnit,omitempty"`
+	Name                        *string                     `json:"name,omitempty"`
+	Quantity                    *OptionalFloat32Range       `json:"quantity,omitempty"`
+	QuantityNotes               *string                     `json:"quantityNotes,omitempty"`
+	StorageDurationInSeconds    *OptionalUint32Range        `json:"storageDurationInSeconds,omitempty"`
+	StorageInstructions         *string                     `json:"storageInstructions,omitempty"`
+	StorageTemperatureInCelsius *OptionalFloat32Range       `json:"storageTemperatureInCelsius,omitempty"`
+	Type                        *ValidRecipeStepProductType `json:"type,omitempty"`
 }
 
 // RecipeStepProductCreationRequestInput defines model for RecipeStepProductCreationRequestInput.
 type RecipeStepProductCreationRequestInput struct {
-	Compostable                 *bool                 `json:"compostable,omitempty"`
-	ContainedInVesselIndex      *int64                `json:"containedInVesselIndex,omitempty"`
-	Index                       *int64                `json:"index,omitempty"`
-	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
-	IsWaste                     *bool                 `json:"isWaste,omitempty"`
-	MeasurementUnitID           *string               `json:"measurementUnitID,omitempty"`
-	Name                        *string               `json:"name,omitempty"`
-	Quantity                    *OptionalFloat32Range `json:"quantity,omitempty"`
-	QuantityNotes               *string               `json:"quantityNotes,omitempty"`
-	StorageDurationInSeconds    *OptionalUint32Range  `json:"storageDurationInSeconds,omitempty"`
-	StorageInstructions         *string               `json:"storageInstructions,omitempty"`
-	StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius,omitempty"`
-	Type                        *string               `json:"type,omitempty"`
+	Compostable                 *bool                       `json:"compostable,omitempty"`
+	ContainedInVesselIndex      *int64                      `json:"containedInVesselIndex,omitempty"`
+	Index                       *int64                      `json:"index,omitempty"`
+	IsLiquid                    *bool                       `json:"isLiquid,omitempty"`
+	IsWaste                     *bool                       `json:"isWaste,omitempty"`
+	MeasurementUnitID           *string                     `json:"measurementUnitID,omitempty"`
+	Name                        *string                     `json:"name,omitempty"`
+	Quantity                    *OptionalFloat32Range       `json:"quantity,omitempty"`
+	QuantityNotes               *string                     `json:"quantityNotes,omitempty"`
+	StorageDurationInSeconds    *OptionalUint32Range        `json:"storageDurationInSeconds,omitempty"`
+	StorageInstructions         *string                     `json:"storageInstructions,omitempty"`
+	StorageTemperatureInCelsius *OptionalFloat32Range       `json:"storageTemperatureInCelsius,omitempty"`
+	Type                        *ValidRecipeStepProductType `json:"type,omitempty"`
 }
 
 // RecipeStepProductUpdateRequestInput defines model for RecipeStepProductUpdateRequestInput.
 type RecipeStepProductUpdateRequestInput struct {
-	BelongsToRecipeStep         *string               `json:"belongsToRecipeStep,omitempty"`
-	Compostable                 *bool                 `json:"compostable,omitempty"`
-	ContainedInVesselIndex      *int64                `json:"containedInVesselIndex,omitempty"`
-	Index                       *int64                `json:"index,omitempty"`
-	IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
-	IsWaste                     *bool                 `json:"isWaste,omitempty"`
-	MeasurementUnitID           *string               `json:"measurementUnitID,omitempty"`
-	Name                        *string               `json:"name,omitempty"`
-	Quantity                    *OptionalFloat32Range `json:"quantity,omitempty"`
-	QuantityNotes               *string               `json:"quantityNotes,omitempty"`
-	StorageDurationInSeconds    *OptionalUint32Range  `json:"storageDurationInSeconds,omitempty"`
-	StorageInstructions         *string               `json:"storageInstructions,omitempty"`
-	StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius,omitempty"`
-	Type                        *string               `json:"type,omitempty"`
+	BelongsToRecipeStep         *string                     `json:"belongsToRecipeStep,omitempty"`
+	Compostable                 *bool                       `json:"compostable,omitempty"`
+	ContainedInVesselIndex      *int64                      `json:"containedInVesselIndex,omitempty"`
+	Index                       *int64                      `json:"index,omitempty"`
+	IsLiquid                    *bool                       `json:"isLiquid,omitempty"`
+	IsWaste                     *bool                       `json:"isWaste,omitempty"`
+	MeasurementUnitID           *string                     `json:"measurementUnitID,omitempty"`
+	Name                        *string                     `json:"name,omitempty"`
+	Quantity                    *OptionalFloat32Range       `json:"quantity,omitempty"`
+	QuantityNotes               *string                     `json:"quantityNotes,omitempty"`
+	StorageDurationInSeconds    *OptionalUint32Range        `json:"storageDurationInSeconds,omitempty"`
+	StorageInstructions         *string                     `json:"storageInstructions,omitempty"`
+	StorageTemperatureInCelsius *OptionalFloat32Range       `json:"storageTemperatureInCelsius,omitempty"`
+	Type                        *ValidRecipeStepProductType `json:"type,omitempty"`
 }
 
 // RecipeStepUpdateRequestInput defines model for RecipeStepUpdateRequestInput.
@@ -2284,26 +2390,29 @@ type ValidIngredientPreparationUpdateRequestInput struct {
 
 // ValidIngredientState defines model for ValidIngredientState.
 type ValidIngredientState struct {
-	ArchivedAt    *time.Time `json:"archivedAt,omitempty"`
-	AttributeType *string    `json:"attributeType,omitempty"`
-	CreatedAt     *time.Time `json:"createdAt,omitempty"`
-	Description   *string    `json:"description,omitempty"`
-	IconPath      *string    `json:"iconPath,omitempty"`
-	Id            *string    `json:"id,omitempty"`
-	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty"`
-	Name          *string    `json:"name,omitempty"`
-	PastTense     *string    `json:"pastTense,omitempty"`
-	Slug          *string    `json:"slug,omitempty"`
+	ArchivedAt    *time.Time                         `json:"archivedAt,omitempty"`
+	AttributeType *ValidIngredientStateAttributeType `json:"attributeType,omitempty"`
+	CreatedAt     *time.Time                         `json:"createdAt,omitempty"`
+	Description   *string                            `json:"description,omitempty"`
+	IconPath      *string                            `json:"iconPath,omitempty"`
+	Id            *string                            `json:"id,omitempty"`
+	LastUpdatedAt *time.Time                         `json:"lastUpdatedAt,omitempty"`
+	Name          *string                            `json:"name,omitempty"`
+	PastTense     *string                            `json:"pastTense,omitempty"`
+	Slug          *string                            `json:"slug,omitempty"`
 }
+
+// ValidIngredientStateAttributeType defines model for ValidIngredientStateAttributeType.
+type ValidIngredientStateAttributeType string
 
 // ValidIngredientStateCreationRequestInput defines model for ValidIngredientStateCreationRequestInput.
 type ValidIngredientStateCreationRequestInput struct {
-	AttributeType *string `json:"attributeType,omitempty"`
-	Description   *string `json:"description,omitempty"`
-	IconPath      *string `json:"iconPath,omitempty"`
-	Name          *string `json:"name,omitempty"`
-	PastTense     *string `json:"pastTense,omitempty"`
-	Slug          *string `json:"slug,omitempty"`
+	AttributeType *ValidIngredientStateAttributeType `json:"attributeType,omitempty"`
+	Description   *string                            `json:"description,omitempty"`
+	IconPath      *string                            `json:"iconPath,omitempty"`
+	Name          *string                            `json:"name,omitempty"`
+	PastTense     *string                            `json:"pastTense,omitempty"`
+	Slug          *string                            `json:"slug,omitempty"`
 }
 
 // ValidIngredientStateIngredient defines model for ValidIngredientStateIngredient.
@@ -2333,12 +2442,12 @@ type ValidIngredientStateIngredientUpdateRequestInput struct {
 
 // ValidIngredientStateUpdateRequestInput defines model for ValidIngredientStateUpdateRequestInput.
 type ValidIngredientStateUpdateRequestInput struct {
-	AttributeType *string `json:"attributeType,omitempty"`
-	Description   *string `json:"description,omitempty"`
-	IconPath      *string `json:"iconPath,omitempty"`
-	Name          *string `json:"name,omitempty"`
-	PastTense     *string `json:"pastTense,omitempty"`
-	Slug          *string `json:"slug,omitempty"`
+	AttributeType *ValidIngredientStateAttributeType `json:"attributeType,omitempty"`
+	Description   *string                            `json:"description,omitempty"`
+	IconPath      *string                            `json:"iconPath,omitempty"`
+	Name          *string                            `json:"name,omitempty"`
+	PastTense     *string                            `json:"pastTense,omitempty"`
+	Slug          *string                            `json:"slug,omitempty"`
 }
 
 // ValidIngredientUpdateRequestInput defines model for ValidIngredientUpdateRequestInput.
@@ -2416,6 +2525,15 @@ type ValidInstrumentUpdateRequestInput struct {
 	Slug                           *string `json:"slug,omitempty"`
 	UsableForStorage               *bool   `json:"usableForStorage,omitempty"`
 }
+
+// ValidMealPlanElectionMethod defines model for ValidMealPlanElectionMethod.
+type ValidMealPlanElectionMethod string
+
+// ValidMealPlanGroceryListItemStatus defines model for ValidMealPlanGroceryListItemStatus.
+type ValidMealPlanGroceryListItemStatus string
+
+// ValidMealPlanStatus defines model for ValidMealPlanStatus.
+type ValidMealPlanStatus string
 
 // ValidMeasurementUnit defines model for ValidMeasurementUnit.
 type ValidMeasurementUnit struct {
@@ -2602,6 +2720,9 @@ type ValidPreparationVesselUpdateRequestInput struct {
 	ValidVesselID      *string `json:"validVesselID,omitempty"`
 }
 
+// ValidRecipeStepProductType defines model for ValidRecipeStepProductType.
+type ValidRecipeStepProductType string
+
 // ValidVessel defines model for ValidVessel.
 type ValidVessel struct {
 	ArchivedAt                     *time.Time            `json:"archivedAt,omitempty"`
@@ -2618,7 +2739,7 @@ type ValidVessel struct {
 	LengthInMillimeters            *float64              `json:"lengthInMillimeters,omitempty"`
 	Name                           *string               `json:"name,omitempty"`
 	PluralName                     *string               `json:"pluralName,omitempty"`
-	Shape                          *string               `json:"shape,omitempty"`
+	Shape                          *ValidVesselShapeType `json:"shape,omitempty"`
 	Slug                           *string               `json:"slug,omitempty"`
 	UsableForStorage               *bool                 `json:"usableForStorage,omitempty"`
 	WidthInMillimeters             *float64              `json:"widthInMillimeters,omitempty"`
@@ -2626,38 +2747,41 @@ type ValidVessel struct {
 
 // ValidVesselCreationRequestInput defines model for ValidVesselCreationRequestInput.
 type ValidVesselCreationRequestInput struct {
-	Capacity                       *float64 `json:"capacity,omitempty"`
-	CapacityUnitID                 *string  `json:"capacityUnitID,omitempty"`
-	Description                    *string  `json:"description,omitempty"`
-	DisplayInSummaryLists          *bool    `json:"displayInSummaryLists,omitempty"`
-	HeightInMillimeters            *float64 `json:"heightInMillimeters,omitempty"`
-	IconPath                       *string  `json:"iconPath,omitempty"`
-	IncludeInGeneratedInstructions *bool    `json:"includeInGeneratedInstructions,omitempty"`
-	LengthInMillimeters            *float64 `json:"lengthInMillimeters,omitempty"`
-	Name                           *string  `json:"name,omitempty"`
-	PluralName                     *string  `json:"pluralName,omitempty"`
-	Shape                          *string  `json:"shape,omitempty"`
-	Slug                           *string  `json:"slug,omitempty"`
-	UsableForStorage               *bool    `json:"usableForStorage,omitempty"`
-	WidthInMillimeters             *float64 `json:"widthInMillimeters,omitempty"`
+	Capacity                       *float64              `json:"capacity,omitempty"`
+	CapacityUnitID                 *string               `json:"capacityUnitID,omitempty"`
+	Description                    *string               `json:"description,omitempty"`
+	DisplayInSummaryLists          *bool                 `json:"displayInSummaryLists,omitempty"`
+	HeightInMillimeters            *float64              `json:"heightInMillimeters,omitempty"`
+	IconPath                       *string               `json:"iconPath,omitempty"`
+	IncludeInGeneratedInstructions *bool                 `json:"includeInGeneratedInstructions,omitempty"`
+	LengthInMillimeters            *float64              `json:"lengthInMillimeters,omitempty"`
+	Name                           *string               `json:"name,omitempty"`
+	PluralName                     *string               `json:"pluralName,omitempty"`
+	Shape                          *ValidVesselShapeType `json:"shape,omitempty"`
+	Slug                           *string               `json:"slug,omitempty"`
+	UsableForStorage               *bool                 `json:"usableForStorage,omitempty"`
+	WidthInMillimeters             *float64              `json:"widthInMillimeters,omitempty"`
 }
+
+// ValidVesselShapeType defines model for ValidVesselShapeType.
+type ValidVesselShapeType string
 
 // ValidVesselUpdateRequestInput defines model for ValidVesselUpdateRequestInput.
 type ValidVesselUpdateRequestInput struct {
-	Capacity                       *float64 `json:"capacity,omitempty"`
-	CapacityUnitID                 *string  `json:"capacityUnitID,omitempty"`
-	Description                    *string  `json:"description,omitempty"`
-	DisplayInSummaryLists          *bool    `json:"displayInSummaryLists,omitempty"`
-	HeightInMillimeters            *float64 `json:"heightInMillimeters,omitempty"`
-	IconPath                       *string  `json:"iconPath,omitempty"`
-	IncludeInGeneratedInstructions *bool    `json:"includeInGeneratedInstructions,omitempty"`
-	LengthInMillimeters            *float64 `json:"lengthInMillimeters,omitempty"`
-	Name                           *string  `json:"name,omitempty"`
-	PluralName                     *string  `json:"pluralName,omitempty"`
-	Shape                          *string  `json:"shape,omitempty"`
-	Slug                           *string  `json:"slug,omitempty"`
-	UsableForStorage               *bool    `json:"usableForStorage,omitempty"`
-	WidthInMillimeters             *float64 `json:"widthInMillimeters,omitempty"`
+	Capacity                       *float64              `json:"capacity,omitempty"`
+	CapacityUnitID                 *string               `json:"capacityUnitID,omitempty"`
+	Description                    *string               `json:"description,omitempty"`
+	DisplayInSummaryLists          *bool                 `json:"displayInSummaryLists,omitempty"`
+	HeightInMillimeters            *float64              `json:"heightInMillimeters,omitempty"`
+	IconPath                       *string               `json:"iconPath,omitempty"`
+	IncludeInGeneratedInstructions *bool                 `json:"includeInGeneratedInstructions,omitempty"`
+	LengthInMillimeters            *float64              `json:"lengthInMillimeters,omitempty"`
+	Name                           *string               `json:"name,omitempty"`
+	PluralName                     *string               `json:"pluralName,omitempty"`
+	Shape                          *ValidVesselShapeType `json:"shape,omitempty"`
+	Slug                           *string               `json:"slug,omitempty"`
+	UsableForStorage               *bool                 `json:"usableForStorage,omitempty"`
+	WidthInMillimeters             *float64              `json:"widthInMillimeters,omitempty"`
 }
 
 // Webhook defines model for Webhook.
@@ -4127,6 +4251,12 @@ type CreateWebhookTriggerEventJSONRequestBody = WebhookTriggerEventCreationReque
 // RunFinalizeMealPlanWorkerJSONRequestBody defines body for RunFinalizeMealPlanWorker for application/json ContentType.
 type RunFinalizeMealPlanWorkerJSONRequestBody = FinalizeMealPlansRequest
 
+// RunMealPlanGroceryListInitializerWorkerJSONRequestBody defines body for RunMealPlanGroceryListInitializerWorker for application/json ContentType.
+type RunMealPlanGroceryListInitializerWorkerJSONRequestBody = InitializeMealPlanGroceryListRequest
+
+// RunMealPlanTaskCreatorWorkerJSONRequestBody defines body for RunMealPlanTaskCreatorWorker for application/json ContentType.
+type RunMealPlanTaskCreatorWorkerJSONRequestBody = CreateMealPlanTasksRequest
+
 // CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
 type CreateUserJSONRequestBody = UserRegistrationInput
 
@@ -4224,9 +4354,6 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// CheckForLiveness request
-	CheckForLiveness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// CheckForReadiness request
 	CheckForReadiness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -4511,9 +4638,6 @@ type ClientInterface interface {
 	// GetRecipeDAG request
 	GetRecipeDAG(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// UploadMediaForRecipe request
-	UploadMediaForRecipe(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetMermaidDiagramForRecipe request
 	GetMermaidDiagramForRecipe(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -4595,9 +4719,6 @@ type ClientInterface interface {
 	UpdateRecipeStepCompletionConditionWithBody(ctx context.Context, recipeID string, recipeStepID string, recipeStepCompletionConditionID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateRecipeStepCompletionCondition(ctx context.Context, recipeID string, recipeStepID string, recipeStepCompletionConditionID string, body UpdateRecipeStepCompletionConditionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UploadMediaForRecipeStep request
-	UploadMediaForRecipeStep(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetRecipeStepIngredients request
 	GetRecipeStepIngredients(ctx context.Context, recipeID string, recipeStepID string, params *GetRecipeStepIngredientsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5147,20 +5268,18 @@ type ClientInterface interface {
 
 	RunFinalizeMealPlanWorker(ctx context.Context, body RunFinalizeMealPlanWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// RunMealPlanGroceryListInitializerWorker request
-	RunMealPlanGroceryListInitializerWorker(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// RunMealPlanGroceryListInitializerWorkerWithBody request with any body
+	RunMealPlanGroceryListInitializerWorkerWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// RunMealPlanTaskCreatorWorker request
-	RunMealPlanTaskCreatorWorker(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	RunMealPlanGroceryListInitializerWorker(ctx context.Context, body RunMealPlanGroceryListInitializerWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RunMealPlanTaskCreatorWorkerWithBody request with any body
+	RunMealPlanTaskCreatorWorkerWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RunMealPlanTaskCreatorWorker(ctx context.Context, body RunMealPlanTaskCreatorWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetAuthStatus request
 	GetAuthStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GETOauth2Authorize request
-	GETOauth2Authorize(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// POSTOauth2Token request
-	POSTOauth2Token(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateUserWithBody request with any body
 	CreateUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5201,18 +5320,6 @@ type ClientInterface interface {
 	RequestUsernameReminderWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	RequestUsernameReminder(ctx context.Context, body RequestUsernameReminderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-}
-
-func (c *Client) CheckForLiveness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCheckForLivenessRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
 }
 
 func (c *Client) CheckForReadiness(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -6463,18 +6570,6 @@ func (c *Client) GetRecipeDAG(ctx context.Context, recipeID string, reqEditors .
 	return c.Client.Do(req)
 }
 
-func (c *Client) UploadMediaForRecipe(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUploadMediaForRecipeRequest(c.Server, recipeID)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) GetMermaidDiagramForRecipe(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetMermaidDiagramForRecipeRequest(c.Server, recipeID)
 	if err != nil {
@@ -6825,18 +6920,6 @@ func (c *Client) UpdateRecipeStepCompletionConditionWithBody(ctx context.Context
 
 func (c *Client) UpdateRecipeStepCompletionCondition(ctx context.Context, recipeID string, recipeStepID string, recipeStepCompletionConditionID string, body UpdateRecipeStepCompletionConditionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateRecipeStepCompletionConditionRequest(c.Server, recipeID, recipeStepID, recipeStepCompletionConditionID, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UploadMediaForRecipeStep(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUploadMediaForRecipeStepRequest(c.Server, recipeID, recipeStepID)
 	if err != nil {
 		return nil, err
 	}
@@ -9247,8 +9330,8 @@ func (c *Client) RunFinalizeMealPlanWorker(ctx context.Context, body RunFinalize
 	return c.Client.Do(req)
 }
 
-func (c *Client) RunMealPlanGroceryListInitializerWorker(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRunMealPlanGroceryListInitializerWorkerRequest(c.Server)
+func (c *Client) RunMealPlanGroceryListInitializerWorkerWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRunMealPlanGroceryListInitializerWorkerRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -9259,8 +9342,32 @@ func (c *Client) RunMealPlanGroceryListInitializerWorker(ctx context.Context, re
 	return c.Client.Do(req)
 }
 
-func (c *Client) RunMealPlanTaskCreatorWorker(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRunMealPlanTaskCreatorWorkerRequest(c.Server)
+func (c *Client) RunMealPlanGroceryListInitializerWorker(ctx context.Context, body RunMealPlanGroceryListInitializerWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRunMealPlanGroceryListInitializerWorkerRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RunMealPlanTaskCreatorWorkerWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRunMealPlanTaskCreatorWorkerRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RunMealPlanTaskCreatorWorker(ctx context.Context, body RunMealPlanTaskCreatorWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRunMealPlanTaskCreatorWorkerRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -9273,30 +9380,6 @@ func (c *Client) RunMealPlanTaskCreatorWorker(ctx context.Context, reqEditors ..
 
 func (c *Client) GetAuthStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetAuthStatusRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GETOauth2Authorize(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGETOauth2AuthorizeRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) POSTOauth2Token(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPOSTOauth2TokenRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -9497,33 +9580,6 @@ func (c *Client) RequestUsernameReminder(ctx context.Context, body RequestUserna
 		return nil, err
 	}
 	return c.Client.Do(req)
-}
-
-// NewCheckForLivenessRequest generates requests for CheckForLiveness
-func NewCheckForLivenessRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/_meta_/live")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
 }
 
 // NewCheckForReadinessRequest generates requests for CheckForReadiness
@@ -14098,40 +14154,6 @@ func NewGetRecipeDAGRequest(server string, recipeID string) (*http.Request, erro
 	return req, nil
 }
 
-// NewUploadMediaForRecipeRequest generates requests for UploadMediaForRecipe
-func NewUploadMediaForRecipeRequest(server string, recipeID string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "recipeID", runtime.ParamLocationPath, recipeID)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/v1/recipes/%s/images", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewGetMermaidDiagramForRecipeRequest generates requests for GetMermaidDiagramForRecipe
 func NewGetMermaidDiagramForRecipeRequest(server string, recipeID string) (*http.Request, error) {
 	var err error
@@ -15507,47 +15529,6 @@ func NewUpdateRecipeStepCompletionConditionRequestWithBody(server string, recipe
 	}
 
 	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewUploadMediaForRecipeStepRequest generates requests for UploadMediaForRecipeStep
-func NewUploadMediaForRecipeStepRequest(server string, recipeID string, recipeStepID string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "recipeID", runtime.ParamLocationPath, recipeID)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "recipeStepID", runtime.ParamLocationPath, recipeStepID)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/v1/recipes/%s/steps/%s/images", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
 
 	return req, nil
 }
@@ -25793,8 +25774,19 @@ func NewRunFinalizeMealPlanWorkerRequestWithBody(server string, contentType stri
 	return req, nil
 }
 
-// NewRunMealPlanGroceryListInitializerWorkerRequest generates requests for RunMealPlanGroceryListInitializerWorker
-func NewRunMealPlanGroceryListInitializerWorkerRequest(server string) (*http.Request, error) {
+// NewRunMealPlanGroceryListInitializerWorkerRequest calls the generic RunMealPlanGroceryListInitializerWorker builder with application/json body
+func NewRunMealPlanGroceryListInitializerWorkerRequest(server string, body RunMealPlanGroceryListInitializerWorkerJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRunMealPlanGroceryListInitializerWorkerRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewRunMealPlanGroceryListInitializerWorkerRequestWithBody generates requests for RunMealPlanGroceryListInitializerWorker with any type of body
+func NewRunMealPlanGroceryListInitializerWorkerRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -25812,16 +25804,29 @@ func NewRunMealPlanGroceryListInitializerWorkerRequest(server string) (*http.Req
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
 
+	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
-// NewRunMealPlanTaskCreatorWorkerRequest generates requests for RunMealPlanTaskCreatorWorker
-func NewRunMealPlanTaskCreatorWorkerRequest(server string) (*http.Request, error) {
+// NewRunMealPlanTaskCreatorWorkerRequest calls the generic RunMealPlanTaskCreatorWorker builder with application/json body
+func NewRunMealPlanTaskCreatorWorkerRequest(server string, body RunMealPlanTaskCreatorWorkerJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRunMealPlanTaskCreatorWorkerRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewRunMealPlanTaskCreatorWorkerRequestWithBody generates requests for RunMealPlanTaskCreatorWorker with any type of body
+func NewRunMealPlanTaskCreatorWorkerRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -25839,10 +25844,12 @@ func NewRunMealPlanTaskCreatorWorkerRequest(server string) (*http.Request, error
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -25867,60 +25874,6 @@ func NewGetAuthStatusRequest(server string) (*http.Request, error) {
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGETOauth2AuthorizeRequest generates requests for GETOauth2Authorize
-func NewGETOauth2AuthorizeRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/oauth2/authorize")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewPOSTOauth2TokenRequest generates requests for POSTOauth2Token
-func NewPOSTOauth2TokenRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/oauth2/token")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -26291,9 +26244,6 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// CheckForLivenessWithResponse request
-	CheckForLivenessWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CheckForLivenessResponse, error)
-
 	// CheckForReadinessWithResponse request
 	CheckForReadinessWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CheckForReadinessResponse, error)
 
@@ -26578,9 +26528,6 @@ type ClientWithResponsesInterface interface {
 	// GetRecipeDAGWithResponse request
 	GetRecipeDAGWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*GetRecipeDAGResponse, error)
 
-	// UploadMediaForRecipeWithResponse request
-	UploadMediaForRecipeWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*UploadMediaForRecipeResponse, error)
-
 	// GetMermaidDiagramForRecipeWithResponse request
 	GetMermaidDiagramForRecipeWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*GetMermaidDiagramForRecipeResponse, error)
 
@@ -26662,9 +26609,6 @@ type ClientWithResponsesInterface interface {
 	UpdateRecipeStepCompletionConditionWithBodyWithResponse(ctx context.Context, recipeID string, recipeStepID string, recipeStepCompletionConditionID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRecipeStepCompletionConditionResponse, error)
 
 	UpdateRecipeStepCompletionConditionWithResponse(ctx context.Context, recipeID string, recipeStepID string, recipeStepCompletionConditionID string, body UpdateRecipeStepCompletionConditionJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRecipeStepCompletionConditionResponse, error)
-
-	// UploadMediaForRecipeStepWithResponse request
-	UploadMediaForRecipeStepWithResponse(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*UploadMediaForRecipeStepResponse, error)
 
 	// GetRecipeStepIngredientsWithResponse request
 	GetRecipeStepIngredientsWithResponse(ctx context.Context, recipeID string, recipeStepID string, params *GetRecipeStepIngredientsParams, reqEditors ...RequestEditorFn) (*GetRecipeStepIngredientsResponse, error)
@@ -27214,20 +27158,18 @@ type ClientWithResponsesInterface interface {
 
 	RunFinalizeMealPlanWorkerWithResponse(ctx context.Context, body RunFinalizeMealPlanWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*RunFinalizeMealPlanWorkerResponse, error)
 
-	// RunMealPlanGroceryListInitializerWorkerWithResponse request
-	RunMealPlanGroceryListInitializerWorkerWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*RunMealPlanGroceryListInitializerWorkerResponse, error)
+	// RunMealPlanGroceryListInitializerWorkerWithBodyWithResponse request with any body
+	RunMealPlanGroceryListInitializerWorkerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RunMealPlanGroceryListInitializerWorkerResponse, error)
 
-	// RunMealPlanTaskCreatorWorkerWithResponse request
-	RunMealPlanTaskCreatorWorkerWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*RunMealPlanTaskCreatorWorkerResponse, error)
+	RunMealPlanGroceryListInitializerWorkerWithResponse(ctx context.Context, body RunMealPlanGroceryListInitializerWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*RunMealPlanGroceryListInitializerWorkerResponse, error)
+
+	// RunMealPlanTaskCreatorWorkerWithBodyWithResponse request with any body
+	RunMealPlanTaskCreatorWorkerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RunMealPlanTaskCreatorWorkerResponse, error)
+
+	RunMealPlanTaskCreatorWorkerWithResponse(ctx context.Context, body RunMealPlanTaskCreatorWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*RunMealPlanTaskCreatorWorkerResponse, error)
 
 	// GetAuthStatusWithResponse request
 	GetAuthStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAuthStatusResponse, error)
-
-	// GETOauth2AuthorizeWithResponse request
-	GETOauth2AuthorizeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GETOauth2AuthorizeResponse, error)
-
-	// POSTOauth2TokenWithResponse request
-	POSTOauth2TokenWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*POSTOauth2TokenResponse, error)
 
 	// CreateUserWithBodyWithResponse request with any body
 	CreateUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
@@ -27268,27 +27210,6 @@ type ClientWithResponsesInterface interface {
 	RequestUsernameReminderWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RequestUsernameReminderResponse, error)
 
 	RequestUsernameReminderWithResponse(ctx context.Context, body RequestUsernameReminderJSONRequestBody, reqEditors ...RequestEditorFn) (*RequestUsernameReminderResponse, error)
-}
-
-type CheckForLivenessResponse struct {
-	HTTPResponse *http.Response
-	Body         []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r CheckForLivenessResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r CheckForLivenessResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
 }
 
 type CheckForReadinessResponse struct {
@@ -30200,25 +30121,7 @@ func (r CloneRecipeResponse) StatusCode() int {
 
 type GetRecipeDAGResponse struct {
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		Data       *APIError        `json:"data,omitempty"`
-		Details    *ResponseDetails `json:"details,omitempty"`
-		Error      *APIError        `json:"error,omitempty"`
-		Pagination *Pagination      `json:"pagination,omitempty"`
-	}
-	XML200 *struct {
-		Data       *APIError        `json:"data,omitempty"`
-		Details    *ResponseDetails `json:"details,omitempty"`
-		Error      *APIError        `json:"error,omitempty"`
-		Pagination *Pagination      `json:"pagination,omitempty"`
-	}
-	JSON400 *APIResponseWithError
-	XML400  *APIResponseWithError
-	JSON401 *APIResponseWithError
-	XML401  *APIResponseWithError
-	JSON500 *APIResponseWithError
-	XML500  *APIResponseWithError
-	Body    []byte
+	Body         []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -30237,30 +30140,27 @@ func (r GetRecipeDAGResponse) StatusCode() int {
 	return 0
 }
 
-type UploadMediaForRecipeResponse struct {
-	HTTPResponse *http.Response
-	Body         []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r UploadMediaForRecipeResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r UploadMediaForRecipeResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type GetMermaidDiagramForRecipeResponse struct {
 	HTTPResponse *http.Response
-	Body         []byte
+	JSON200      *struct {
+		Data       *string          `json:"data,omitempty"`
+		Details    *ResponseDetails `json:"details,omitempty"`
+		Error      *APIError        `json:"error,omitempty"`
+		Pagination *Pagination      `json:"pagination,omitempty"`
+	}
+	XML200 *struct {
+		Data       *string          `json:"data,omitempty"`
+		Details    *ResponseDetails `json:"details,omitempty"`
+		Error      *APIError        `json:"error,omitempty"`
+		Pagination *Pagination      `json:"pagination,omitempty"`
+	}
+	JSON400 *APIResponseWithError
+	XML400  *APIResponseWithError
+	JSON401 *APIResponseWithError
+	XML401  *APIResponseWithError
+	JSON500 *APIResponseWithError
+	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -31092,27 +30992,6 @@ func (r UpdateRecipeStepCompletionConditionResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateRecipeStepCompletionConditionResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type UploadMediaForRecipeStepResponse struct {
-	HTTPResponse *http.Response
-	Body         []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r UploadMediaForRecipeStepResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r UploadMediaForRecipeStepResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -32837,7 +32716,25 @@ func (r VerifyUserEmailAddressResponse) StatusCode() int {
 
 type UpdatePasswordResponse struct {
 	HTTPResponse *http.Response
-	Body         []byte
+	JSON200      *struct {
+		Data       *PasswordResetResponse `json:"data,omitempty"`
+		Details    *ResponseDetails       `json:"details,omitempty"`
+		Error      *APIError              `json:"error,omitempty"`
+		Pagination *Pagination            `json:"pagination,omitempty"`
+	}
+	XML200 *struct {
+		Data       *PasswordResetResponse `json:"data,omitempty"`
+		Details    *ResponseDetails       `json:"details,omitempty"`
+		Error      *APIError              `json:"error,omitempty"`
+		Pagination *Pagination            `json:"pagination,omitempty"`
+	}
+	JSON400 *APIResponseWithError
+	XML400  *APIResponseWithError
+	JSON401 *APIResponseWithError
+	XML401  *APIResponseWithError
+	JSON500 *APIResponseWithError
+	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36837,16 +36734,16 @@ func (r ArchiveWebhookTriggerEventResponse) StatusCode() int {
 type RunFinalizeMealPlanWorkerResponse struct {
 	HTTPResponse *http.Response
 	JSON201      *struct {
-		Data       *FinalizeMealPlansRequest `json:"data,omitempty"`
-		Details    *ResponseDetails          `json:"details,omitempty"`
-		Error      *APIError                 `json:"error,omitempty"`
-		Pagination *Pagination               `json:"pagination,omitempty"`
+		Data       *FinalizeMealPlansResponse `json:"data,omitempty"`
+		Details    *ResponseDetails           `json:"details,omitempty"`
+		Error      *APIError                  `json:"error,omitempty"`
+		Pagination *Pagination                `json:"pagination,omitempty"`
 	}
 	XML201 *struct {
-		Data       *FinalizeMealPlansRequest `json:"data,omitempty"`
-		Details    *ResponseDetails          `json:"details,omitempty"`
-		Error      *APIError                 `json:"error,omitempty"`
-		Pagination *Pagination               `json:"pagination,omitempty"`
+		Data       *FinalizeMealPlansResponse `json:"data,omitempty"`
+		Details    *ResponseDetails           `json:"details,omitempty"`
+		Error      *APIError                  `json:"error,omitempty"`
+		Pagination *Pagination                `json:"pagination,omitempty"`
 	}
 	JSON400 *APIResponseWithError
 	XML400  *APIResponseWithError
@@ -36875,7 +36772,25 @@ func (r RunFinalizeMealPlanWorkerResponse) StatusCode() int {
 
 type RunMealPlanGroceryListInitializerWorkerResponse struct {
 	HTTPResponse *http.Response
-	Body         []byte
+	JSON201      *struct {
+		Data       *InitializeMealPlanGroceryListResponse `json:"data,omitempty"`
+		Details    *ResponseDetails                       `json:"details,omitempty"`
+		Error      *APIError                              `json:"error,omitempty"`
+		Pagination *Pagination                            `json:"pagination,omitempty"`
+	}
+	XML201 *struct {
+		Data       *InitializeMealPlanGroceryListResponse `json:"data,omitempty"`
+		Details    *ResponseDetails                       `json:"details,omitempty"`
+		Error      *APIError                              `json:"error,omitempty"`
+		Pagination *Pagination                            `json:"pagination,omitempty"`
+	}
+	JSON400 *APIResponseWithError
+	XML400  *APIResponseWithError
+	JSON401 *APIResponseWithError
+	XML401  *APIResponseWithError
+	JSON500 *APIResponseWithError
+	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36896,7 +36811,25 @@ func (r RunMealPlanGroceryListInitializerWorkerResponse) StatusCode() int {
 
 type RunMealPlanTaskCreatorWorkerResponse struct {
 	HTTPResponse *http.Response
-	Body         []byte
+	JSON201      *struct {
+		Data       *CreateMealPlanTasksResponse `json:"data,omitempty"`
+		Details    *ResponseDetails             `json:"details,omitempty"`
+		Error      *APIError                    `json:"error,omitempty"`
+		Pagination *Pagination                  `json:"pagination,omitempty"`
+	}
+	XML201 *struct {
+		Data       *CreateMealPlanTasksResponse `json:"data,omitempty"`
+		Details    *ResponseDetails             `json:"details,omitempty"`
+		Error      *APIError                    `json:"error,omitempty"`
+		Pagination *Pagination                  `json:"pagination,omitempty"`
+	}
+	JSON400 *APIResponseWithError
+	XML400  *APIResponseWithError
+	JSON401 *APIResponseWithError
+	XML401  *APIResponseWithError
+	JSON500 *APIResponseWithError
+	XML500  *APIResponseWithError
+	Body    []byte
 }
 
 // Status returns HTTPResponse.Status
@@ -36948,48 +36881,6 @@ func (r GetAuthStatusResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetAuthStatusResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GETOauth2AuthorizeResponse struct {
-	HTTPResponse *http.Response
-	Body         []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r GETOauth2AuthorizeResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GETOauth2AuthorizeResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type POSTOauth2TokenResponse struct {
-	HTTPResponse *http.Response
-	Body         []byte
-}
-
-// Status returns HTTPResponse.Status
-func (r POSTOauth2TokenResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r POSTOauth2TokenResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -37306,15 +37197,6 @@ func (r RequestUsernameReminderResponse) StatusCode() int {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
-}
-
-// CheckForLivenessWithResponse request returning *CheckForLivenessResponse
-func (c *ClientWithResponses) CheckForLivenessWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CheckForLivenessResponse, error) {
-	rsp, err := c.CheckForLiveness(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCheckForLivenessResponse(rsp)
 }
 
 // CheckForReadinessWithResponse request returning *CheckForReadinessResponse
@@ -38225,15 +38107,6 @@ func (c *ClientWithResponses) GetRecipeDAGWithResponse(ctx context.Context, reci
 	return ParseGetRecipeDAGResponse(rsp)
 }
 
-// UploadMediaForRecipeWithResponse request returning *UploadMediaForRecipeResponse
-func (c *ClientWithResponses) UploadMediaForRecipeWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*UploadMediaForRecipeResponse, error) {
-	rsp, err := c.UploadMediaForRecipe(ctx, recipeID, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUploadMediaForRecipeResponse(rsp)
-}
-
 // GetMermaidDiagramForRecipeWithResponse request returning *GetMermaidDiagramForRecipeResponse
 func (c *ClientWithResponses) GetMermaidDiagramForRecipeWithResponse(ctx context.Context, recipeID string, reqEditors ...RequestEditorFn) (*GetMermaidDiagramForRecipeResponse, error) {
 	rsp, err := c.GetMermaidDiagramForRecipe(ctx, recipeID, reqEditors...)
@@ -38494,15 +38367,6 @@ func (c *ClientWithResponses) UpdateRecipeStepCompletionConditionWithResponse(ct
 		return nil, err
 	}
 	return ParseUpdateRecipeStepCompletionConditionResponse(rsp)
-}
-
-// UploadMediaForRecipeStepWithResponse request returning *UploadMediaForRecipeStepResponse
-func (c *ClientWithResponses) UploadMediaForRecipeStepWithResponse(ctx context.Context, recipeID string, recipeStepID string, reqEditors ...RequestEditorFn) (*UploadMediaForRecipeStepResponse, error) {
-	rsp, err := c.UploadMediaForRecipeStep(ctx, recipeID, recipeStepID, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUploadMediaForRecipeStepResponse(rsp)
 }
 
 // GetRecipeStepIngredientsWithResponse request returning *GetRecipeStepIngredientsResponse
@@ -40253,18 +40117,34 @@ func (c *ClientWithResponses) RunFinalizeMealPlanWorkerWithResponse(ctx context.
 	return ParseRunFinalizeMealPlanWorkerResponse(rsp)
 }
 
-// RunMealPlanGroceryListInitializerWorkerWithResponse request returning *RunMealPlanGroceryListInitializerWorkerResponse
-func (c *ClientWithResponses) RunMealPlanGroceryListInitializerWorkerWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*RunMealPlanGroceryListInitializerWorkerResponse, error) {
-	rsp, err := c.RunMealPlanGroceryListInitializerWorker(ctx, reqEditors...)
+// RunMealPlanGroceryListInitializerWorkerWithBodyWithResponse request with arbitrary body returning *RunMealPlanGroceryListInitializerWorkerResponse
+func (c *ClientWithResponses) RunMealPlanGroceryListInitializerWorkerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RunMealPlanGroceryListInitializerWorkerResponse, error) {
+	rsp, err := c.RunMealPlanGroceryListInitializerWorkerWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseRunMealPlanGroceryListInitializerWorkerResponse(rsp)
 }
 
-// RunMealPlanTaskCreatorWorkerWithResponse request returning *RunMealPlanTaskCreatorWorkerResponse
-func (c *ClientWithResponses) RunMealPlanTaskCreatorWorkerWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*RunMealPlanTaskCreatorWorkerResponse, error) {
-	rsp, err := c.RunMealPlanTaskCreatorWorker(ctx, reqEditors...)
+func (c *ClientWithResponses) RunMealPlanGroceryListInitializerWorkerWithResponse(ctx context.Context, body RunMealPlanGroceryListInitializerWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*RunMealPlanGroceryListInitializerWorkerResponse, error) {
+	rsp, err := c.RunMealPlanGroceryListInitializerWorker(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRunMealPlanGroceryListInitializerWorkerResponse(rsp)
+}
+
+// RunMealPlanTaskCreatorWorkerWithBodyWithResponse request with arbitrary body returning *RunMealPlanTaskCreatorWorkerResponse
+func (c *ClientWithResponses) RunMealPlanTaskCreatorWorkerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RunMealPlanTaskCreatorWorkerResponse, error) {
+	rsp, err := c.RunMealPlanTaskCreatorWorkerWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRunMealPlanTaskCreatorWorkerResponse(rsp)
+}
+
+func (c *ClientWithResponses) RunMealPlanTaskCreatorWorkerWithResponse(ctx context.Context, body RunMealPlanTaskCreatorWorkerJSONRequestBody, reqEditors ...RequestEditorFn) (*RunMealPlanTaskCreatorWorkerResponse, error) {
+	rsp, err := c.RunMealPlanTaskCreatorWorker(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -40278,24 +40158,6 @@ func (c *ClientWithResponses) GetAuthStatusWithResponse(ctx context.Context, req
 		return nil, err
 	}
 	return ParseGetAuthStatusResponse(rsp)
-}
-
-// GETOauth2AuthorizeWithResponse request returning *GETOauth2AuthorizeResponse
-func (c *ClientWithResponses) GETOauth2AuthorizeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GETOauth2AuthorizeResponse, error) {
-	rsp, err := c.GETOauth2Authorize(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGETOauth2AuthorizeResponse(rsp)
-}
-
-// POSTOauth2TokenWithResponse request returning *POSTOauth2TokenResponse
-func (c *ClientWithResponses) POSTOauth2TokenWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*POSTOauth2TokenResponse, error) {
-	rsp, err := c.POSTOauth2Token(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePOSTOauth2TokenResponse(rsp)
 }
 
 // CreateUserWithBodyWithResponse request with arbitrary body returning *CreateUserResponse
@@ -40432,22 +40294,6 @@ func (c *ClientWithResponses) RequestUsernameReminderWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseRequestUsernameReminderResponse(rsp)
-}
-
-// ParseCheckForLivenessResponse parses an HTTP response from a CheckForLivenessWithResponse call
-func ParseCheckForLivenessResponse(rsp *http.Response) (*CheckForLivenessResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &CheckForLivenessResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
 }
 
 // ParseCheckForReadinessResponse parses an HTTP response from a CheckForReadinessWithResponse call
@@ -46769,10 +46615,26 @@ func ParseGetRecipeDAGResponse(rsp *http.Response) (*GetRecipeDAGResponse, error
 		HTTPResponse: rsp,
 	}
 
+	return response, nil
+}
+
+// ParseGetMermaidDiagramForRecipeResponse parses an HTTP response from a GetMermaidDiagramForRecipeWithResponse call
+func ParseGetMermaidDiagramForRecipeResponse(rsp *http.Response) (*GetMermaidDiagramForRecipeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMermaidDiagramForRecipeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data       *APIError        `json:"data,omitempty"`
+			Data       *string          `json:"data,omitempty"`
 			Details    *ResponseDetails `json:"details,omitempty"`
 			Error      *APIError        `json:"error,omitempty"`
 			Pagination *Pagination      `json:"pagination,omitempty"`
@@ -46805,7 +46667,7 @@ func ParseGetRecipeDAGResponse(rsp *http.Response) (*GetRecipeDAGResponse, error
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 200:
 		var dest struct {
-			Data       *APIError        `json:"data,omitempty"`
+			Data       *string          `json:"data,omitempty"`
 			Details    *ResponseDetails `json:"details,omitempty"`
 			Error      *APIError        `json:"error,omitempty"`
 			Pagination *Pagination      `json:"pagination,omitempty"`
@@ -46836,38 +46698,6 @@ func ParseGetRecipeDAGResponse(rsp *http.Response) (*GetRecipeDAGResponse, error
 		}
 		response.XML500 = &dest
 
-	}
-
-	return response, nil
-}
-
-// ParseUploadMediaForRecipeResponse parses an HTTP response from a UploadMediaForRecipeWithResponse call
-func ParseUploadMediaForRecipeResponse(rsp *http.Response) (*UploadMediaForRecipeResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &UploadMediaForRecipeResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseGetMermaidDiagramForRecipeResponse parses an HTTP response from a GetMermaidDiagramForRecipeWithResponse call
-func ParseGetMermaidDiagramForRecipeResponse(rsp *http.Response) (*GetMermaidDiagramForRecipeResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetMermaidDiagramForRecipeResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
 	}
 
 	return response, nil
@@ -48653,22 +48483,6 @@ func ParseUpdateRecipeStepCompletionConditionResponse(rsp *http.Response) (*Upda
 		}
 		response.XML500 = &dest
 
-	}
-
-	return response, nil
-}
-
-// ParseUploadMediaForRecipeStepResponse parses an HTTP response from a UploadMediaForRecipeStepWithResponse call
-func ParseUploadMediaForRecipeStepResponse(rsp *http.Response) (*UploadMediaForRecipeStepResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &UploadMediaForRecipeStepResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
 	}
 
 	return response, nil
@@ -52425,6 +52239,75 @@ func ParseUpdatePasswordResponse(rsp *http.Response) (*UpdatePasswordResponse, e
 	response := &UpdatePasswordResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data       *PasswordResetResponse `json:"data,omitempty"`
+			Details    *ResponseDetails       `json:"details,omitempty"`
+			Error      *APIError              `json:"error,omitempty"`
+			Pagination *Pagination            `json:"pagination,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 200:
+		var dest struct {
+			Data       *PasswordResetResponse `json:"data,omitempty"`
+			Details    *ResponseDetails       `json:"details,omitempty"`
+			Error      *APIError              `json:"error,omitempty"`
+			Pagination *Pagination            `json:"pagination,omitempty"`
+		}
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML500 = &dest
+
 	}
 
 	return response, nil
@@ -61116,10 +60999,10 @@ func ParseRunFinalizeMealPlanWorkerResponse(rsp *http.Response) (*RunFinalizeMea
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
 		var dest struct {
-			Data       *FinalizeMealPlansRequest `json:"data,omitempty"`
-			Details    *ResponseDetails          `json:"details,omitempty"`
-			Error      *APIError                 `json:"error,omitempty"`
-			Pagination *Pagination               `json:"pagination,omitempty"`
+			Data       *FinalizeMealPlansResponse `json:"data,omitempty"`
+			Details    *ResponseDetails           `json:"details,omitempty"`
+			Error      *APIError                  `json:"error,omitempty"`
+			Pagination *Pagination                `json:"pagination,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -61149,10 +61032,10 @@ func ParseRunFinalizeMealPlanWorkerResponse(rsp *http.Response) (*RunFinalizeMea
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 201:
 		var dest struct {
-			Data       *FinalizeMealPlansRequest `json:"data,omitempty"`
-			Details    *ResponseDetails          `json:"details,omitempty"`
-			Error      *APIError                 `json:"error,omitempty"`
-			Pagination *Pagination               `json:"pagination,omitempty"`
+			Data       *FinalizeMealPlansResponse `json:"data,omitempty"`
+			Details    *ResponseDetails           `json:"details,omitempty"`
+			Error      *APIError                  `json:"error,omitempty"`
+			Pagination *Pagination                `json:"pagination,omitempty"`
 		}
 		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -61198,6 +61081,75 @@ func ParseRunMealPlanGroceryListInitializerWorkerResponse(rsp *http.Response) (*
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest struct {
+			Data       *InitializeMealPlanGroceryListResponse `json:"data,omitempty"`
+			Details    *ResponseDetails                       `json:"details,omitempty"`
+			Error      *APIError                              `json:"error,omitempty"`
+			Pagination *Pagination                            `json:"pagination,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 201:
+		var dest struct {
+			Data       *InitializeMealPlanGroceryListResponse `json:"data,omitempty"`
+			Details    *ResponseDetails                       `json:"details,omitempty"`
+			Error      *APIError                              `json:"error,omitempty"`
+			Pagination *Pagination                            `json:"pagination,omitempty"`
+		}
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML500 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -61212,6 +61164,75 @@ func ParseRunMealPlanTaskCreatorWorkerResponse(rsp *http.Response) (*RunMealPlan
 	response := &RunMealPlanTaskCreatorWorkerResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest struct {
+			Data       *CreateMealPlanTasksResponse `json:"data,omitempty"`
+			Details    *ResponseDetails             `json:"details,omitempty"`
+			Error      *APIError                    `json:"error,omitempty"`
+			Pagination *Pagination                  `json:"pagination,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 201:
+		var dest struct {
+			Data       *CreateMealPlanTasksResponse `json:"data,omitempty"`
+			Details    *ResponseDetails             `json:"details,omitempty"`
+			Error      *APIError                    `json:"error,omitempty"`
+			Pagination *Pagination                  `json:"pagination,omitempty"`
+		}
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 400:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 401:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "xml") && rsp.StatusCode == 500:
+		var dest APIResponseWithError
+		if err := xml.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.XML500 = &dest
+
 	}
 
 	return response, nil
@@ -61297,38 +61318,6 @@ func ParseGetAuthStatusResponse(rsp *http.Response) (*GetAuthStatusResponse, err
 		}
 		response.XML500 = &dest
 
-	}
-
-	return response, nil
-}
-
-// ParseGETOauth2AuthorizeResponse parses an HTTP response from a GETOauth2AuthorizeWithResponse call
-func ParseGETOauth2AuthorizeResponse(rsp *http.Response) (*GETOauth2AuthorizeResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GETOauth2AuthorizeResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParsePOSTOauth2TokenResponse parses an HTTP response from a POSTOauth2TokenWithResponse call
-func ParsePOSTOauth2TokenResponse(rsp *http.Response) (*POSTOauth2TokenResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &POSTOauth2TokenResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
 	}
 
 	return response, nil

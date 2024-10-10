@@ -222,6 +222,11 @@ type (
 		Token string `json:"emailVerificationToken"`
 	}
 
+	// PasswordResetResponse is returned when a user updates their password.
+	PasswordResetResponse struct {
+		Successful bool `json:"successful,omitempty"`
+	}
+
 	// AdminUserDataManager contains administrative User functions that we don't necessarily want to expose
 	// to, say, the collection of handlers.
 	AdminUserDataManager interface {

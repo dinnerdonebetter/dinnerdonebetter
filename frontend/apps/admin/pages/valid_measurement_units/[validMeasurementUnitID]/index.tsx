@@ -36,6 +36,7 @@ import {
   ValidMeasurementUnitConversion,
   ValidMeasurementUnitConversionCreationRequestInput,
   QueryFilteredResult,
+  APIResponse,
 } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
@@ -67,9 +68,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchValidMeasurementUnitTimer = timing.addEvent('fetch ');
   const pageLoadValidMeasurementUnitPromise = apiClient
     .getValidMeasurementUnit(validMeasurementUnitID.toString())
-    .then((result: ValidMeasurementUnit) => {
+    .then((result: APIResponse<ValidMeasurementUnit>) => {
       span.addEvent('valid measurement unit retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchValidMeasurementUnitTimer.end();
@@ -77,7 +78,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchIngredientsForMeasurementUnitTimer = timing.addEvent('fetch valid ingredient measurement units');
   const pageLoadIngredientsForMeasurementUnitPromise = apiClient
-    .validIngredientMeasurementUnitsForMeasurementUnitID(validMeasurementUnitID.toString())
+    .getValidIngredientMeasurementUnitsByMeasurementUnit(validMeasurementUnitID.toString())
     .then((res: QueryFilteredResult<ValidIngredientMeasurementUnit>) => {
       span.addEvent('valid ingredient measurement units retrieved');
       return res;
@@ -89,9 +90,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchMeasurementUnitConversionsFromUnitTimer = timing.addEvent('fetch measurement unit conversions from unit');
   const pageLoadMeasurementUnitConversionsFromUnitPromise = apiClient
     .getValidMeasurementUnitConversionsFromUnit(validMeasurementUnitID.toString())
-    .then((res: ValidMeasurementUnitConversion[]) => {
+    .then((res: APIResponse<ValidMeasurementUnitConversion[]>) => {
       span.addEvent('valid ingredient measurement units retrieved');
-      return res;
+      return res.data;
     })
     .finally(() => {
       fetchMeasurementUnitConversionsFromUnitTimer.end();
@@ -99,10 +100,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchMeasurementUnitConversionsToUnitTimer = timing.addEvent('fetch measurement unit conversions to unit');
   const pageLoadMeasurementUnitConversionsToUnitPromise = apiClient
-    .getValidMeasurementUnitConversionsToUnit(validMeasurementUnitID.toString())
-    .then((res: ValidMeasurementUnitConversion[]) => {
+    .validMeasurementUnitConversionsToUnit(validMeasurementUnitID.toString())
+    .then((res: APIResponse<ValidMeasurementUnitConversion[]>) => {
       span.addEvent('valid ingredient measurement units retrieved');
-      return res;
+      return res.data;
     })
     .finally(() => {
       fetchMeasurementUnitConversionsToUnitTimer.end();
@@ -218,8 +219,8 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
     const apiClient = buildLocalClient();
     apiClient
       .searchForValidMeasurementUnits(conversionFromUnitQuery)
-      .then((res: ValidMeasurementUnit[]) => {
-        const newSuggestions = (res || []).filter((mu: ValidMeasurementUnit) => {
+      .then((res: QueryFilteredResult<ValidMeasurementUnit>) => {
+        const newSuggestions = (res.data || []).filter((mu: ValidMeasurementUnit) => {
           return mu.id != validMeasurementUnit.id;
         });
 
@@ -258,8 +259,8 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
     const apiClient = buildLocalClient();
     apiClient
       .searchForValidMeasurementUnits(conversionToUnitQuery)
-      .then((res: ValidMeasurementUnit[]) => {
-        const newSuggestions = (res || []).filter((mu: ValidMeasurementUnit) => {
+      .then((res: QueryFilteredResult<ValidMeasurementUnit>) => {
+        const newSuggestions = (res.data || []).filter((mu: ValidMeasurementUnit) => {
           return mu.id != validMeasurementUnit.id;
         });
 
@@ -364,11 +365,11 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
 
     await apiClient
       .updateValidMeasurementUnit(validMeasurementUnit.id, submission)
-      .then((result: ValidMeasurementUnit) => {
+      .then((result: APIResponse<ValidMeasurementUnit>) => {
         if (result) {
-          updateForm.setValues(result);
-          setValidMeasurementUnit(result);
-          setOriginalValidMeasurementUnit(result);
+          updateForm.setValues(result.data);
+          setValidMeasurementUnit(result.data);
+          setOriginalValidMeasurementUnit(result.data);
         }
       })
       .catch((err) => {
@@ -414,7 +415,7 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
               fullWidth
               onClick={() => {
                 if (confirm('Are you sure you want to delete this valid measurement unit?')) {
-                  apiClient.deleteValidMeasurementUnit(validMeasurementUnit.id).then(() => {
+                  apiClient.archiveValidMeasurementUnit(validMeasurementUnit.id).then(() => {
                     router.push('/valid_measurement_units');
                   });
                 }
@@ -486,7 +487,7 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                                     aria-label="remove valid ingredient measurement unit"
                                     onClick={async () => {
                                       await apiClient
-                                        .deleteValidIngredientMeasurementUnit(validIngredientMeasurementUnit.id)
+                                        .archiveValidIngredientMeasurementUnit(validIngredientMeasurementUnit.id)
                                         .then(() => {
                                           setIngredientsForMeasurementUnit({
                                             ...ingredientsForMeasurementUnit,
@@ -608,14 +609,14 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                     onClick={async () => {
                       await apiClient
                         .createValidIngredientMeasurementUnit(newIngredientForMeasurementUnitInput)
-                        .then((res: ValidIngredientMeasurementUnit) => {
+                        .then((res: APIResponse<ValidIngredientMeasurementUnit>) => {
                           // the returned value doesn't have enough information to put it in the list, so we have to fetch it
                           apiClient
-                            .getValidIngredientMeasurementUnit(res.id)
-                            .then((res: ValidIngredientMeasurementUnit) => {
+                            .getValidIngredientMeasurementUnit(res.data.id)
+                            .then((res: APIResponse<ValidIngredientMeasurementUnit>) => {
                               setIngredientsForMeasurementUnit({
                                 ...ingredientsForMeasurementUnit,
-                                data: [...(ingredientsForMeasurementUnit.data || []), res],
+                                data: [...(ingredientsForMeasurementUnit.data || []), res.data],
                               });
 
                               setNewIngredientForMeasurementUnitInput(
@@ -712,7 +713,7 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                                 aria-label="remove valid ingredient measurement unit"
                                 onClick={async () => {
                                   await apiClient
-                                    .deleteValidMeasurementUnitConversion(validMeasurementUnitConversion.id)
+                                    .archiveValidMeasurementUnitConversion(validMeasurementUnitConversion.id)
                                     .then(() => {
                                       setMeasurementUnitsToConvertFrom([
                                         ...measurementUnitsToConvertFrom.filter(
@@ -845,12 +846,12 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                 onClick={async () => {
                   await apiClient
                     .createValidMeasurementUnitConversion(newMeasurementUnitConversionFromMeasurementUnit)
-                    .then((res: ValidMeasurementUnitConversion) => {
+                    .then((res: APIResponse<ValidMeasurementUnitConversion>) => {
                       // the returned value doesn't have enough information to put it in the list, so we have to fetch it
                       apiClient
-                        .getValidMeasurementUnitConversion(res.id)
-                        .then((res: ValidMeasurementUnitConversion) => {
-                          setMeasurementUnitsToConvertFrom([...(measurementUnitsToConvertFrom || []), res]);
+                        .getValidMeasurementUnitConversion(res.data.id)
+                        .then((res: APIResponse<ValidMeasurementUnitConversion>) => {
+                          setMeasurementUnitsToConvertFrom([...(measurementUnitsToConvertFrom || []), res.data]);
 
                           setNewMeasurementUnitConversionFromMeasurementUnit(
                             new ValidMeasurementUnitConversionCreationRequestInput({
@@ -944,7 +945,7 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                                 aria-label="remove valid ingredient measurement unit"
                                 onClick={async () => {
                                   await apiClient
-                                    .deleteValidMeasurementUnitConversion(validMeasurementUnitConversion.id)
+                                    .archiveValidMeasurementUnitConversion(validMeasurementUnitConversion.id)
                                     .then(() => {
                                       setMeasurementUnitsToConvertTo([
                                         ...measurementUnitsToConvertTo.filter(
@@ -1077,12 +1078,12 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                 onClick={async () => {
                   await apiClient
                     .createValidMeasurementUnitConversion(newMeasurementUnitConversionToMeasurementUnit)
-                    .then((res: ValidMeasurementUnitConversion) => {
+                    .then((res: APIResponse<ValidMeasurementUnitConversion>) => {
                       // the returned value doesn't have enough information to put it in the list, so we have to fetch it
                       apiClient
-                        .getValidMeasurementUnitConversion(res.id)
-                        .then((res: ValidMeasurementUnitConversion) => {
-                          setMeasurementUnitsToConvertTo([...(measurementUnitsToConvertTo || []), res]);
+                        .getValidMeasurementUnitConversion(res.data.id)
+                        .then((res: APIResponse<ValidMeasurementUnitConversion>) => {
+                          setMeasurementUnitsToConvertTo([...(measurementUnitsToConvertTo || []), res.data]);
 
                           setNewMeasurementUnitConversionToMeasurementUnit(
                             new ValidMeasurementUnitConversionCreationRequestInput({

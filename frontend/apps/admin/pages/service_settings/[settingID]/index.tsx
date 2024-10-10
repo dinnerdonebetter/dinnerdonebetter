@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
 
-import { ServiceSetting } from '@dinnerdonebetter/models';
+import { APIResponse, ServiceSetting } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
@@ -32,9 +32,9 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchServiceSettingTimer = timing.addEvent('fetch service setting');
   const pageLoadServiceSettingPromise = apiClient
     .getServiceSetting(settingID.toString())
-    .then((result: ServiceSetting) => {
+    .then((result: APIResponse<ServiceSetting>) => {
       span.addEvent('service setting retrieved');
-      return result;
+      return result.data;
     })
     .finally(() => {
       fetchServiceSettingTimer.end();
@@ -94,7 +94,7 @@ function ServiceSettingPage(props: ServiceSettingPageProps) {
               fullWidth
               onClick={() => {
                 if (confirm('Are you sure you want to delete this service setting?')) {
-                  apiClient.deleteServiceSetting(serviceSetting.id).then(() => {
+                  apiClient.archiveServiceSetting(serviceSetting.id).then(() => {
                     router.push('/service_settings');
                   });
                 }

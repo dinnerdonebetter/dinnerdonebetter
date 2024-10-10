@@ -3,7 +3,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { TextInput, Button, Group, Container, Switch } from '@mantine/core';
 import { z } from 'zod';
 
-import { ValidInstrument, ValidInstrumentCreationRequestInput } from '@dinnerdonebetter/models';
+import { APIResponse, ValidInstrument, ValidInstrumentCreationRequestInput } from '@dinnerdonebetter/models';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../src/layouts';
@@ -52,9 +52,9 @@ export default function ValidInstrumentCreator(): JSX.Element {
 
     await apiClient
       .createValidInstrument(submission)
-      .then((result: ValidInstrument) => {
+      .then((result: APIResponse<ValidInstrument>) => {
         if (result) {
-          router.push(`/valid_instruments/${result.id}`);
+          router.push(`/valid_instruments/${result.data.id}`);
         }
       })
       .catch((err) => {

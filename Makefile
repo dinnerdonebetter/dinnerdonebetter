@@ -25,7 +25,7 @@ openapi-clients:
 
 .PHONY: openapi-lint
 openapi-lint:
-	npx @stoplight/spectral lint openapi_spec.yaml
+	npx @stoplight/spectral-cli@v6.13.1 lint openapi_spec.yamls
 
 .PHONY: regit
 regit:

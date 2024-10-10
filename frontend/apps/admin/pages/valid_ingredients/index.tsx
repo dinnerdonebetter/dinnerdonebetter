@@ -91,12 +91,7 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
       apiClient
         .searchForValidIngredients(search, qf)
         .then((res: QueryFilteredResult<ValidIngredient>) => {
-          setValidIngredients({
-            ...QueryFilter.Default(),
-            data: res.data || [],
-            filteredCount: (res.data || []).length,
-            totalCount: (res.data || []).length,
-          });
+          setValidIngredients(res);
         })
         .catch((err: AxiosError) => {
           console.error('searching for valid ingredients: ', err);

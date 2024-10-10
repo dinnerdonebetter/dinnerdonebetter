@@ -82,13 +82,8 @@ function ValidInstrumentsPage(props: ValidInstrumentsPageProps) {
     } else {
       apiClient
         .searchForValidInstruments(search)
-        .then((res: ValidInstrument[]) => {
-          setValidInstruments({
-            ...QueryFilter.Default(),
-            data: res || [],
-            filteredCount: (res || []).length,
-            totalCount: (res || []).length,
-          });
+        .then((res: QueryFilteredResult<ValidInstrument>) => {
+          setValidInstruments(res);
         })
         .catch((err: AxiosError) => {
           console.error(err);

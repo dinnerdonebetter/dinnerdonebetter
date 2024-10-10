@@ -1,3 +1,5 @@
+// GENERATED CODE, DO NOT EDIT MANUALLY
+
 import axios, {
   AxiosInstance,
   AxiosError,
@@ -10,261 +12,157 @@ import { Span } from '@opentelemetry/api';
 
 import { buildServerSideLogger, LoggerType } from '@dinnerdonebetter/logger';
 import {
-  MealPlanTask,
-  MealPlanTaskStatusChangeRequestInput,
+  APIResponse,
+  AuditLogEntry,
+  AvatarUpdateInput,
+  CreateMealPlanTasksRequest,
+  CreateMealPlanTasksResponse,
+  EmailAddressVerificationRequestInput,
+  FinalizeMealPlansRequest,
+  FinalizeMealPlansResponse,
   Household,
+  HouseholdCreationRequestInput,
+  HouseholdInstrumentOwnership,
+  HouseholdInstrumentOwnershipCreationRequestInput,
+  HouseholdInstrumentOwnershipUpdateRequestInput,
+  HouseholdInvitation,
   HouseholdInvitationCreationRequestInput,
   HouseholdInvitationUpdateRequestInput,
+  HouseholdOwnershipTransferInput,
   HouseholdUpdateRequestInput,
+  HouseholdUserMembership,
+  InitializeMealPlanGroceryListRequest,
+  InitializeMealPlanGroceryListResponse,
+  JWTResponse,
   Meal,
   MealCreationRequestInput,
   MealPlan,
   MealPlanCreationRequestInput,
+  MealPlanEvent,
+  MealPlanEventCreationRequestInput,
+  MealPlanEventUpdateRequestInput,
+  MealPlanGroceryListItem,
+  MealPlanGroceryListItemCreationRequestInput,
+  MealPlanGroceryListItemUpdateRequestInput,
+  MealPlanOption,
+  MealPlanOptionCreationRequestInput,
+  MealPlanOptionUpdateRequestInput,
   MealPlanOptionVote,
   MealPlanOptionVoteCreationRequestInput,
+  MealPlanOptionVoteUpdateRequestInput,
+  MealPlanTask,
+  MealPlanTaskCreationRequestInput,
+  MealPlanTaskStatusChangeRequestInput,
   MealPlanUpdateRequestInput,
-  MealUpdateRequestInput,
+  ModifyUserPermissionsInput,
+  OAuth2Client,
+  OAuth2ClientCreationRequestInput,
+  OAuth2ClientCreationResponse,
+  PasswordResetResponse,
+  PasswordResetToken,
   PasswordResetTokenCreationRequestInput,
   PasswordResetTokenRedemptionRequestInput,
+  PasswordUpdateInput,
   QueryFilter,
+  QueryFilteredResult,
   Recipe,
   RecipeCreationRequestInput,
+  RecipePrepTask,
+  RecipePrepTaskCreationRequestInput,
+  RecipePrepTaskStep,
+  RecipePrepTaskUpdateRequestInput,
+  RecipeRating,
+  RecipeRatingCreationRequestInput,
+  RecipeRatingUpdateRequestInput,
+  RecipeStep,
+  RecipeStepCompletionCondition,
+  RecipeStepCompletionConditionForExistingRecipeCreationRequestInput,
+  RecipeStepCompletionConditionUpdateRequestInput,
+  RecipeStepCreationRequestInput,
+  RecipeStepIngredient,
+  RecipeStepIngredientCreationRequestInput,
+  RecipeStepIngredientUpdateRequestInput,
+  RecipeStepInstrument,
+  RecipeStepInstrumentCreationRequestInput,
+  RecipeStepInstrumentUpdateRequestInput,
+  RecipeStepProduct,
+  RecipeStepProductCreationRequestInput,
+  RecipeStepProductUpdateRequestInput,
+  RecipeStepUpdateRequestInput,
+  RecipeStepVessel,
+  RecipeStepVesselCreationRequestInput,
+  RecipeStepVesselUpdateRequestInput,
   RecipeUpdateRequestInput,
+  ServiceSetting,
+  ServiceSettingConfiguration,
+  ServiceSettingConfigurationCreationRequestInput,
+  ServiceSettingConfigurationUpdateRequestInput,
+  ServiceSettingCreationRequestInput,
+  TOTPSecretRefreshInput,
+  TOTPSecretRefreshResponse,
+  TOTPSecretVerificationInput,
   User,
-  UserCreationResponse,
   UserAccountStatusUpdateInput,
+  UserCreationResponse,
+  UserDetailsUpdateRequestInput,
+  UserEmailAddressUpdateInput,
+  UserIngredientPreference,
+  UserIngredientPreferenceCreationRequestInput,
+  UserIngredientPreferenceUpdateRequestInput,
   UserLoginInput,
-  UsernameReminderRequestInput,
+  UserNotification,
+  UserNotificationCreationRequestInput,
+  UserNotificationUpdateRequestInput,
   UserPermissionsRequestInput,
   UserPermissionsResponse,
   UserRegistrationInput,
   UserStatusResponse,
+  UsernameReminderRequestInput,
+  UsernameUpdateInput,
   ValidIngredient,
   ValidIngredientCreationRequestInput,
+  ValidIngredientGroup,
+  ValidIngredientGroupCreationRequestInput,
+  ValidIngredientGroupUpdateRequestInput,
   ValidIngredientMeasurementUnit,
   ValidIngredientMeasurementUnitCreationRequestInput,
+  ValidIngredientMeasurementUnitUpdateRequestInput,
   ValidIngredientPreparation,
   ValidIngredientPreparationCreationRequestInput,
+  ValidIngredientPreparationUpdateRequestInput,
+  ValidIngredientState,
+  ValidIngredientStateCreationRequestInput,
+  ValidIngredientStateIngredient,
+  ValidIngredientStateIngredientCreationRequestInput,
+  ValidIngredientStateIngredientUpdateRequestInput,
+  ValidIngredientStateUpdateRequestInput,
   ValidIngredientUpdateRequestInput,
   ValidInstrument,
   ValidInstrumentCreationRequestInput,
   ValidInstrumentUpdateRequestInput,
   ValidMeasurementUnit,
+  ValidMeasurementUnitConversion,
+  ValidMeasurementUnitConversionCreationRequestInput,
+  ValidMeasurementUnitConversionUpdateRequestInput,
   ValidMeasurementUnitCreationRequestInput,
   ValidMeasurementUnitUpdateRequestInput,
   ValidPreparation,
   ValidPreparationCreationRequestInput,
   ValidPreparationInstrument,
   ValidPreparationInstrumentCreationRequestInput,
+  ValidPreparationInstrumentUpdateRequestInput,
   ValidPreparationUpdateRequestInput,
-  HouseholdInvitation,
-  MealPlanGroceryListItem,
-  MealPlanGroceryListItemCreationRequestInput,
-  MealPlanGroceryListItemUpdateRequestInput,
-  ValidIngredientState,
-  ValidIngredientStateCreationRequestInput,
-  ValidIngredientStateUpdateRequestInput,
-  ValidMeasurementUnitConversion,
-  ValidMeasurementUnitConversionCreationRequestInput,
-  ValidMeasurementUnitConversionUpdateRequestInput,
-  ValidIngredientStateIngredient,
-  ValidIngredientStateIngredientCreationRequestInput,
-  QueryFilteredResult,
-  ServiceSetting,
-  ServiceSettingCreationRequestInput,
-  ServiceSettingConfigurationCreationRequestInput,
-  ServiceSettingConfiguration,
-  ServiceSettingConfigurationUpdateRequestInput,
-  EmailAddressVerificationRequestInput,
-  PasswordUpdateInput,
-  AvatarUpdateInput,
-  TOTPSecretRefreshInput,
-  ValidIngredientGroup,
-  ValidIngredientGroupCreationRequestInput,
-  ValidIngredientGroupUpdateRequestInput,
-  OAuth2Client,
-  OAuth2ClientCreationRequestInput,
+  ValidPreparationVessel,
+  ValidPreparationVesselCreationRequestInput,
+  ValidPreparationVesselUpdateRequestInput,
   ValidVessel,
   ValidVesselCreationRequestInput,
   ValidVesselUpdateRequestInput,
-  ValidPreparationVessel,
-  ValidPreparationVesselCreationRequestInput,
-  JWTResponse,
-  APIResponse,
+  Webhook,
+  WebhookCreationRequestInput,
+  WebhookTriggerEvent,
+  WebhookTriggerEventCreationRequestInput,
 } from '@dinnerdonebetter/models';
-
-import { createMeal, getMeal, getMeals, updateMeal, deleteMeal, searchForMeals } from './meals';
-import {
-  createValidPreparation,
-  getValidPreparation,
-  getValidPreparations,
-  updateValidPreparation,
-  deleteValidPreparation,
-  searchForValidPreparations,
-} from './valid_preparations';
-import {
-  createServiceSetting,
-  getServiceSetting,
-  getServiceSettings,
-  deleteServiceSetting,
-  searchForServiceSettings,
-} from './service_settings';
-import {
-  createServiceSettingConfiguration,
-  getServiceSettingConfigurationsForUser,
-  getServiceSettingConfigurationsForHousehold,
-  updateServiceSettingConfiguration,
-  deleteServiceSettingConfiguration,
-} from './service_setting_configurations';
-
-import {
-  validPreparationInstrumentsForPreparationID,
-  validPreparationInstrumentsForInstrumentID,
-  createValidPreparationInstrument,
-  deleteValidPreparationInstrument,
-  getValidPreparationInstrument,
-} from './valid_preparation_instruments';
-import {
-  validPreparationVesselsForPreparationID,
-  validPreparationVesselsForVesselID,
-  createValidPreparationVessel,
-  deleteValidPreparationVessel,
-  getValidPreparationVessel,
-} from './valid_preparation_vessels';
-import {
-  createValidMeasurementUnit,
-  getValidMeasurementUnit,
-  getValidMeasurementUnits,
-  updateValidMeasurementUnit,
-  deleteValidMeasurementUnit,
-  searchForValidMeasurementUnits,
-  searchForValidMeasurementUnitsByIngredientID,
-} from './valid_measurement_units';
-import {
-  createValidInstrument,
-  getValidInstrument,
-  getValidInstruments,
-  updateValidInstrument,
-  deleteValidInstrument,
-  searchForValidInstruments,
-} from './valid_instruments';
-import {
-  createValidIngredient,
-  getValidIngredient,
-  getValidIngredients,
-  updateValidIngredient,
-  deleteValidIngredient,
-  searchForValidIngredients,
-  getValidIngredientsForPreparation,
-} from './valid_ingredients';
-import {
-  createValidIngredientGroup,
-  getValidIngredientGroup,
-  getValidIngredientGroups,
-  updateValidIngredientGroup,
-  deleteValidIngredientGroup,
-  searchForValidIngredientGroups,
-} from './valid_ingredient_groups';
-import {
-  login,
-  adminLogin,
-  loginForJWT,
-  adminLoginForJWT,
-  logOut,
-  register,
-  checkPermissions,
-  requestPasswordResetToken,
-  redeemPasswordResetToken,
-  changePassword,
-  requestUsernameReminderEmail,
-} from './auth';
-import { getInvitation, acceptInvitation, cancelInvitation, rejectInvitation } from './household_invitations';
-import {
-  inviteUserToHousehold,
-  removeMemberFromHousehold,
-  getReceivedInvites,
-  getSentInvites,
-  getCurrentHouseholdInfo,
-  getHousehold,
-  getHouseholds,
-  updateHousehold,
-} from './households';
-import { clientName } from './constants';
-import {
-  createMealPlan,
-  getMealPlan,
-  getMealPlans,
-  updateMealPlan,
-  deleteMealPlan,
-  voteForMealPlan,
-} from './meal_plans';
-import { createRecipe, getRecipe, getRecipes, updateRecipe, deleteRecipe, searchForRecipes } from './recipes';
-import {
-  getUser,
-  getUsers,
-  updateUserAccountStatus,
-  searchForUsers,
-  verifyEmailAddress,
-  fetchSelf,
-  requestEmailVerificationEmail,
-  uploadNewAvatar,
-  newTwoFactorSecret,
-} from './users';
-import {
-  validIngredientMeasurementUnitsForMeasurementUnitID,
-  createValidIngredientMeasurementUnit,
-  deleteValidIngredientMeasurementUnit,
-  validIngredientMeasurementUnitsForIngredientID,
-  getValidIngredientMeasurementUnit,
-} from './valid_ingredient_measurement_units';
-import {
-  validIngredientPreparationsForPreparationID,
-  validIngredientPreparationsForIngredientID,
-  createValidIngredientPreparation,
-  deleteValidIngredientPreparation,
-  getValidIngredientPreparation,
-} from './valid_ingredient_preparations';
-import { getMealPlanTask, getMealPlanTasks, updateMealPlanTaskStatus } from './meal_plan_tasks';
-import {
-  createMealPlanGroceryListItem,
-  getMealPlanGroceryListItem,
-  getMealPlanGroceryListItems,
-  updateMealPlanGroceryListItem,
-  deleteMealPlanGroceryListItem,
-} from './meal_plan_grocery_list_items';
-import {
-  createValidIngredientState,
-  getValidIngredientState,
-  getValidIngredientStates,
-  updateValidIngredientState,
-  deleteValidIngredientState,
-  searchForValidIngredientStates,
-} from './valid_ingredient_states';
-import {
-  createValidMeasurementUnitConversion,
-  getValidMeasurementUnitConversion,
-  getValidMeasurementUnitConversions,
-  updateValidMeasurementUnitConversion,
-  deleteValidMeasurementUnitConversion,
-  getValidMeasurementUnitConversionsFromUnit,
-  getValidMeasurementUnitConversionsToUnit,
-} from './valid_measurement_unit_conversions';
-import {
-  validIngredientStateIngredientsForIngredientStateID,
-  validIngredientStateIngredientsForIngredientID,
-  createValidIngredientStateIngredient,
-  deleteValidIngredientStateIngredient,
-  getValidIngredientStateIngredient,
-} from './valid_ingredient_state_ingredients';
-import { createOAuth2Client, getOAuth2Client, getOAuth2Clients, deleteOAuth2Client } from './oauth2_clients';
-import {
-  createValidVessel,
-  getValidVessel,
-  getValidVessels,
-  updateValidVessel,
-  deleteValidVessel,
-  searchForValidVessels,
-} from './valid_vessels';
 
 function _curlFromAxiosConfig(config: InternalAxiosRequestConfig): string {
   const method = (config?.method || 'UNKNOWN').toUpperCase();
@@ -307,7 +205,7 @@ export class DinnerDoneBetterAPIClient {
   responseInterceptorID: number;
   logger: LoggerType = buildServerSideLogger('api_client');
 
-  constructor(baseURL: string = '', oauth2Token?: string) {
+  constructor(clientName: string = 'DDB-Service-Client', baseURL: string = '', oauth2Token?: string) {
     this.baseURL = baseURL;
 
     const headers: Record<string, string> = {
@@ -406,758 +304,4772 @@ export class DinnerDoneBetterAPIClient {
       },
     );
   }
+  async acceptHouseholdInvitation(
+    householdInvitationID: string,
+    input: HouseholdInvitationUpdateRequestInput,
+  ): Promise<APIResponse<HouseholdInvitation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<HouseholdInvitation>>(
+        `/api/v1/household_invitations/${householdInvitationID}/accept`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
 
-  // auth
-
-  async logIn(input: UserLoginInput): Promise<AxiosResponse<APIResponse<UserStatusResponse>>> {
-    return login(this.client, input);
-  }
-
-  async logInForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
-    return loginForJWT(this.client, input);
-  }
-
-  async adminLogin(input: UserLoginInput): Promise<AxiosResponse<APIResponse<UserStatusResponse>>> {
-    return adminLogin(this.client, input);
+      resolve(response.data);
+    });
   }
 
   async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
-    return adminLoginForJWT(this.client, input);
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<JWTResponse>>(`/users/login/jwt/admin`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response);
+    });
   }
 
-  async logOut(): Promise<AxiosResponse<UserStatusResponse>> {
-    return logOut(this.client);
+  async adminUpdateUserStatus(input: UserAccountStatusUpdateInput): Promise<APIResponse<UserStatusResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<UserStatusResponse>>(`/api/v1/admin/users/status`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async register(input: UserRegistrationInput): Promise<UserCreationResponse> {
-    return register(this.client, input);
+  async archiveHousehold(householdID: string): Promise<APIResponse<Household>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<Household>>(`/api/v1/households/${householdID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async checkPermissions(body: UserPermissionsRequestInput): Promise<UserPermissionsResponse> {
-    return checkPermissions(this.client, body);
+  async archiveHouseholdInstrumentOwnership(
+    householdInstrumentOwnershipID: string,
+  ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<HouseholdInstrumentOwnership>>(
+        `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async requestPasswordResetToken(input: PasswordResetTokenCreationRequestInput): Promise<AxiosResponse> {
-    return requestPasswordResetToken(this.client, input);
+  async archiveMeal(mealID: string): Promise<APIResponse<Meal>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<Meal>>(`/api/v1/meals/${mealID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async redeemPasswordResetToken(input: PasswordResetTokenRedemptionRequestInput): Promise<AxiosResponse> {
-    return redeemPasswordResetToken(this.client, input);
+  async archiveMealPlan(mealPlanID: string): Promise<APIResponse<MealPlan>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async requestUsernameReminderEmail(input: UsernameReminderRequestInput): Promise<AxiosResponse> {
-    return requestUsernameReminderEmail(this.client, input);
+  async archiveMealPlanEvent(mealPlanID: string, mealPlanEventID: string): Promise<APIResponse<MealPlanEvent>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<MealPlanEvent>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async changePassword(input: PasswordUpdateInput): Promise<AxiosResponse> {
-    return changePassword(this.client, input);
+  async archiveMealPlanGroceryListItem(
+    mealPlanID: string,
+    mealPlanGroceryListItemID: string,
+  ): Promise<APIResponse<MealPlanGroceryListItem>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<MealPlanGroceryListItem>>(
+        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  // household invitations
-
-  async getInvitation(invitationID: string): Promise<HouseholdInvitation> {
-    return getInvitation(this.client, invitationID);
-  }
-
-  async acceptInvitation(
-    invitationID: string,
-    input: HouseholdInvitationUpdateRequestInput,
-  ): Promise<HouseholdInvitation> {
-    return acceptInvitation(this.client, invitationID, input);
-  }
-
-  async cancelInvitation(
-    invitationID: string,
-    input: HouseholdInvitationUpdateRequestInput,
-  ): Promise<HouseholdInvitation> {
-    return cancelInvitation(this.client, invitationID, input);
-  }
-
-  async rejectInvitation(
-    invitationID: string,
-    input: HouseholdInvitationUpdateRequestInput,
-  ): Promise<HouseholdInvitation> {
-    return rejectInvitation(this.client, invitationID, input);
-  }
-
-  // households
-
-  async getCurrentHouseholdInfo(): Promise<Household> {
-    return getCurrentHouseholdInfo(this.client);
-  }
-
-  async getHousehold(id: string): Promise<Household> {
-    return getHousehold(this.client, id);
-  }
-
-  async getHouseholds(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Household>> {
-    return getHouseholds(this.client, filter);
-  }
-
-  async updateHousehold(householdID: string, household: HouseholdUpdateRequestInput): Promise<Household> {
-    return updateHousehold(this.client, householdID, household);
-  }
-
-  async inviteUserToHousehold(
-    householdID: string,
-    input: HouseholdInvitationCreationRequestInput,
-  ): Promise<HouseholdInvitation> {
-    return inviteUserToHousehold(this.client, householdID, input);
-  }
-
-  async removeMemberFromHousehold(householdID: string, memberID: string): Promise<Household> {
-    return removeMemberFromHousehold(this.client, householdID, memberID);
-  }
-
-  async getReceivedInvites(): Promise<QueryFilteredResult<HouseholdInvitation>> {
-    return getReceivedInvites(this.client);
-  }
-
-  async getSentInvites(): Promise<QueryFilteredResult<HouseholdInvitation>> {
-    return getSentInvites(this.client);
-  }
-
-  // meal plans
-
-  async createMealPlan(input: MealPlanCreationRequestInput): Promise<MealPlan> {
-    return createMealPlan(this.client, input);
-  }
-
-  async getMealPlan(mealPlanID: string): Promise<MealPlan> {
-    return getMealPlan(this.client, mealPlanID);
-  }
-
-  async getMealPlans(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<MealPlan>> {
-    return getMealPlans(this.client, filter);
-  }
-
-  async updateMealPlan(mealPlanID: string, input: MealPlanUpdateRequestInput): Promise<MealPlan> {
-    return updateMealPlan(this.client, mealPlanID, input);
-  }
-
-  async deleteMealPlan(mealPlanID: string): Promise<MealPlan> {
-    return deleteMealPlan(this.client, mealPlanID);
-  }
-
-  async voteForMealPlan(
+  async archiveMealPlanOption(
     mealPlanID: string,
     mealPlanEventID: string,
-    votes: MealPlanOptionVoteCreationRequestInput,
-  ): Promise<MealPlanOptionVote[]> {
-    return voteForMealPlan(this.client, mealPlanID, mealPlanEventID, votes);
-  }
-
-  // meals
-
-  async createMeal(input: MealCreationRequestInput): Promise<Meal> {
-    return createMeal(this.client, input);
-  }
-
-  async getMeal(mealID: string): Promise<Meal> {
-    return getMeal(this.client, mealID);
-  }
-
-  async getMeals(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Meal>> {
-    return getMeals(this.client, filter);
-  }
-
-  async updateMeal(mealID: string, input: MealUpdateRequestInput): Promise<Meal> {
-    return updateMeal(this.client, mealID, input);
-  }
-
-  async deleteMeal(mealID: string): Promise<Meal> {
-    return deleteMeal(this.client, mealID);
-  }
-
-  async searchForMeals(query: string): Promise<QueryFilteredResult<Meal>> {
-    return searchForMeals(this.client, query);
-  }
-
-  // recipes
-
-  async createRecipe(input: RecipeCreationRequestInput): Promise<Recipe> {
-    return createRecipe(this.client, input);
-  }
-
-  async getRecipe(recipeID: string): Promise<Recipe> {
-    return getRecipe(this.client, recipeID);
-  }
-
-  async getRecipes(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Recipe>> {
-    return getRecipes(this.client, filter);
-  }
-
-  async updateRecipe(recipeID: string, input: RecipeUpdateRequestInput): Promise<Recipe> {
-    return updateRecipe(this.client, recipeID, input);
-  }
-
-  async deleteRecipe(recipeID: string): Promise<Recipe> {
-    return deleteRecipe(this.client, recipeID);
-  }
-
-  async searchForRecipes(query: string): Promise<QueryFilteredResult<Recipe>> {
-    return searchForRecipes(this.client, query);
-  }
-
-  // users
-  async self(): Promise<User> {
-    return fetchSelf(this.client);
-  }
-
-  async requestEmailVerificationEmail(): Promise<User> {
-    return requestEmailVerificationEmail(this.client);
-  }
-
-  async getUser(userID: string): Promise<User> {
-    return getUser(this.client, userID);
-  }
-
-  async getUsers(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<User>> {
-    return getUsers(this.client, filter);
-  }
-
-  async updateUserAccountStatus(input: UserAccountStatusUpdateInput): Promise<User> {
-    return updateUserAccountStatus(this.client, input);
-  }
-
-  async newTwoFactorSecret(input: TOTPSecretRefreshInput): Promise<User> {
-    return newTwoFactorSecret(this.client, input);
-  }
-
-  async searchForUsers(query: string): Promise<User[]> {
-    return searchForUsers(this.client, query);
-  }
-
-  async verifyEmailAddress(input: EmailAddressVerificationRequestInput): Promise<User> {
-    return verifyEmailAddress(this.client, input);
-  }
-
-  async uploadNewAvatar(input: AvatarUpdateInput): Promise<User> {
-    return uploadNewAvatar(this.client, input);
-  }
-
-  // valid ingredient measurement units
-
-  async getValidIngredientMeasurementUnit(
-    validIngredientMeasurementUnitID: string,
-  ): Promise<ValidIngredientMeasurementUnit> {
-    return getValidIngredientMeasurementUnit(this.client, validIngredientMeasurementUnitID);
-  }
-
-  async validIngredientMeasurementUnitsForIngredientID(
-    validIngredientID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
-    return validIngredientMeasurementUnitsForIngredientID(this.client, validIngredientID, filter);
-  }
-
-  async validIngredientMeasurementUnitsForMeasurementUnitID(
-    validMeasurementUnitID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
-    return validIngredientMeasurementUnitsForMeasurementUnitID(this.client, validMeasurementUnitID, filter);
-  }
-
-  async createValidIngredientMeasurementUnit(
-    input: ValidIngredientMeasurementUnitCreationRequestInput,
-  ): Promise<ValidIngredientMeasurementUnit> {
-    return createValidIngredientMeasurementUnit(this.client, input);
-  }
-
-  async deleteValidIngredientMeasurementUnit(
-    validIngredientMeasurementUnitID: string,
-  ): Promise<ValidIngredientMeasurementUnit> {
-    return deleteValidIngredientMeasurementUnit(this.client, validIngredientMeasurementUnitID);
-  }
-
-  // valid ingredient preparations
-
-  async getValidIngredientPreparation(validIngredientPreparationID: string): Promise<ValidIngredientPreparation> {
-    return getValidIngredientPreparation(this.client, validIngredientPreparationID);
-  }
-
-  async validIngredientPreparationsForPreparationID(
-    validPreparationID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
-    return validIngredientPreparationsForPreparationID(this.client, validPreparationID, filter);
-  }
-
-  async validIngredientPreparationsForIngredientID(
-    validIngredientID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
-    return validIngredientPreparationsForIngredientID(this.client, validIngredientID, filter);
-  }
-
-  async createValidIngredientPreparation(
-    input: ValidIngredientPreparationCreationRequestInput,
-  ): Promise<ValidIngredientPreparation> {
-    return createValidIngredientPreparation(this.client, input);
-  }
-
-  async deleteValidIngredientPreparation(validIngredientPreparationID: string): Promise<ValidIngredientPreparation> {
-    return deleteValidIngredientPreparation(this.client, validIngredientPreparationID);
-  }
-
-  // valid ingredient state ingredients
-
-  async getValidIngredientStateIngredient(validIngredientStateID: string): Promise<ValidIngredientStateIngredient> {
-    return getValidIngredientStateIngredient(this.client, validIngredientStateID);
-  }
-
-  async validIngredientStateIngredientsForIngredientStateID(
-    validIngredientStateID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
-    return validIngredientStateIngredientsForIngredientStateID(this.client, validIngredientStateID, filter);
-  }
-
-  async validIngredientStateIngredientsForIngredientID(
-    validIngredientID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
-    return validIngredientStateIngredientsForIngredientID(this.client, validIngredientID, filter);
-  }
-
-  async createValidIngredientStateIngredient(
-    input: ValidIngredientStateIngredientCreationRequestInput,
-  ): Promise<ValidIngredientStateIngredient> {
-    return createValidIngredientStateIngredient(this.client, input);
-  }
-
-  async deleteValidIngredientStateIngredient(
-    validIngredientStateIngredientID: string,
-  ): Promise<ValidIngredientStateIngredient> {
-    return deleteValidIngredientStateIngredient(this.client, validIngredientStateIngredientID);
-  }
-
-  // valid ingredients
-  async createValidIngredient(input: ValidIngredientCreationRequestInput): Promise<ValidIngredient> {
-    return createValidIngredient(this.client, input);
-  }
-
-  async getValidIngredient(validIngredientID: string): Promise<ValidIngredient> {
-    return getValidIngredient(this.client, validIngredientID);
-  }
-
-  async getValidIngredients(
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredient>> {
-    return getValidIngredients(this.client, filter);
-  }
-
-  async updateValidIngredient(
-    validIngredientID: string,
-    input: ValidIngredientUpdateRequestInput,
-  ): Promise<ValidIngredient> {
-    return updateValidIngredient(this.client, validIngredientID, input);
-  }
-
-  async deleteValidIngredient(validIngredientID: string): Promise<ValidIngredient> {
-    return deleteValidIngredient(this.client, validIngredientID);
-  }
-
-  async searchForValidIngredients(
-    query: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredient>> {
-    return searchForValidIngredients(this.client, query, filter);
-  }
-
-  async getValidIngredientsForPreparation(
-    validPreparationID: string,
-    query: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredient>> {
-    return getValidIngredientsForPreparation(this.client, validPreparationID, query, filter);
-  }
-
-  // valid ingredient groups
-  async createValidIngredientGroup(input: ValidIngredientGroupCreationRequestInput): Promise<ValidIngredientGroup> {
-    return createValidIngredientGroup(this.client, input);
-  }
-
-  async getValidIngredientGroup(validIngredientGroupID: string): Promise<ValidIngredientGroup> {
-    return getValidIngredientGroup(this.client, validIngredientGroupID);
-  }
-
-  async getValidIngredientGroups(
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredientGroup>> {
-    return getValidIngredientGroups(this.client, filter);
-  }
-
-  async updateValidIngredientGroup(
-    validIngredientGroupID: string,
-    input: ValidIngredientGroupUpdateRequestInput,
-  ): Promise<ValidIngredientGroup> {
-    return updateValidIngredientGroup(this.client, validIngredientGroupID, input);
-  }
-
-  async deleteValidIngredientGroup(validIngredientGroupID: string): Promise<ValidIngredientGroup> {
-    return deleteValidIngredientGroup(this.client, validIngredientGroupID);
-  }
-
-  async searchForValidIngredientGroups(query: string): Promise<ValidIngredientGroup[]> {
-    return searchForValidIngredientGroups(this.client, query);
-  }
-
-  // valid instruments
-  async createValidInstrument(input: ValidInstrumentCreationRequestInput): Promise<ValidInstrument> {
-    return createValidInstrument(this.client, input);
-  }
-
-  async getValidInstrument(validInstrumentID: string): Promise<ValidInstrument> {
-    return getValidInstrument(this.client, validInstrumentID);
-  }
-
-  async getValidInstruments(
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidInstrument>> {
-    return getValidInstruments(this.client, filter);
-  }
-
-  async updateValidInstrument(
-    validInstrumentID: string,
-    input: ValidInstrumentUpdateRequestInput,
-  ): Promise<ValidInstrument> {
-    return updateValidInstrument(this.client, validInstrumentID, input);
-  }
-
-  async deleteValidInstrument(validInstrumentID: string): Promise<ValidInstrument> {
-    return deleteValidInstrument(this.client, validInstrumentID);
-  }
-
-  async searchForValidInstruments(query: string): Promise<ValidInstrument[]> {
-    return searchForValidInstruments(this.client, query);
-  }
-
-  // valid vessels
-  async createValidVessel(input: ValidVesselCreationRequestInput): Promise<ValidVessel> {
-    return createValidVessel(this.client, input);
-  }
-
-  async getValidVessel(validVesselID: string): Promise<ValidVessel> {
-    return getValidVessel(this.client, validVesselID);
-  }
-
-  async getValidVessels(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<ValidVessel>> {
-    return getValidVessels(this.client, filter);
-  }
-
-  async updateValidVessel(validVesselID: string, input: ValidVesselUpdateRequestInput): Promise<ValidVessel> {
-    return updateValidVessel(this.client, validVesselID, input);
-  }
-
-  async deleteValidVessel(validVesselID: string): Promise<ValidVessel> {
-    return deleteValidVessel(this.client, validVesselID);
-  }
-
-  async searchForValidVessels(query: string): Promise<ValidVessel[]> {
-    return searchForValidVessels(this.client, query);
-  }
-
-  // valid measurement units
-  async createValidMeasurementUnit(input: ValidMeasurementUnitCreationRequestInput): Promise<ValidMeasurementUnit> {
-    return createValidMeasurementUnit(this.client, input);
-  }
-
-  async getValidMeasurementUnit(validMeasurementUnitID: string): Promise<ValidMeasurementUnit> {
-    return getValidMeasurementUnit(this.client, validMeasurementUnitID);
-  }
-
-  async getValidMeasurementUnits(
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
-    return getValidMeasurementUnits(this.client, filter);
-  }
-
-  async updateValidMeasurementUnit(
-    validMeasurementUnitID: string,
-    input: ValidMeasurementUnitUpdateRequestInput,
-  ): Promise<ValidMeasurementUnit> {
-    return updateValidMeasurementUnit(this.client, validMeasurementUnitID, input);
-  }
-
-  async deleteValidMeasurementUnit(validMeasurementUnitID: string): Promise<ValidMeasurementUnit> {
-    return deleteValidMeasurementUnit(this.client, validMeasurementUnitID);
-  }
-
-  async searchForValidMeasurementUnits(query: string): Promise<ValidMeasurementUnit[]> {
-    return searchForValidMeasurementUnits(this.client, query);
-  }
-
-  async searchForValidMeasurementUnitsByIngredientID(
-    validIngredientID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
-    return searchForValidMeasurementUnitsByIngredientID(this.client, validIngredientID, filter);
-  }
-
-  // valid measurement unit conversions
-  async createValidMeasurementUnitConversion(
-    input: ValidMeasurementUnitConversionCreationRequestInput,
-  ): Promise<ValidMeasurementUnitConversion> {
-    return createValidMeasurementUnitConversion(this.client, input);
-  }
-
-  async getValidMeasurementUnitConversion(validMeasurementUnitID: string): Promise<ValidMeasurementUnitConversion> {
-    return getValidMeasurementUnitConversion(this.client, validMeasurementUnitID);
-  }
-
-  async getValidMeasurementUnitConversions(
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidMeasurementUnitConversion>> {
-    return getValidMeasurementUnitConversions(this.client, filter);
-  }
-
-  async getValidMeasurementUnitConversionsFromUnit(
-    validMeasurementUnitID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<ValidMeasurementUnitConversion[]> {
-    return getValidMeasurementUnitConversionsFromUnit(this.client, validMeasurementUnitID, filter);
-  }
-
-  async getValidMeasurementUnitConversionsToUnit(
-    validMeasurementUnitID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<ValidMeasurementUnitConversion[]> {
-    return getValidMeasurementUnitConversionsToUnit(this.client, validMeasurementUnitID, filter);
-  }
-
-  async updateValidMeasurementUnitConversion(
-    validMeasurementUnitID: string,
-    input: ValidMeasurementUnitConversionUpdateRequestInput,
-  ): Promise<ValidMeasurementUnitConversion> {
-    return updateValidMeasurementUnitConversion(this.client, validMeasurementUnitID, input);
-  }
-
-  async deleteValidMeasurementUnitConversion(validMeasurementUnitID: string): Promise<ValidMeasurementUnitConversion> {
-    return deleteValidMeasurementUnitConversion(this.client, validMeasurementUnitID);
-  }
-
-  // valid preparation instruments
-  async getValidPreparationInstrument(validPreparationInstrumentID: string): Promise<ValidPreparationInstrument> {
-    return getValidPreparationInstrument(this.client, validPreparationInstrumentID);
-  }
-
-  async validPreparationInstrumentsForPreparationID(
-    validPreparationID: string,
-  ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
-    return validPreparationInstrumentsForPreparationID(this.client, validPreparationID);
-  }
-
-  async validPreparationInstrumentsForInstrumentID(
-    validInstrumentID: string,
-  ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
-    return validPreparationInstrumentsForInstrumentID(this.client, validInstrumentID);
-  }
-
-  async createValidPreparationInstrument(
-    input: ValidPreparationInstrumentCreationRequestInput,
-  ): Promise<ValidPreparationInstrument> {
-    return createValidPreparationInstrument(this.client, input);
-  }
-
-  async deleteValidPreparationInstrument(validPreparationInstrumentID: string): Promise<ValidPreparationInstrument> {
-    return deleteValidPreparationInstrument(this.client, validPreparationInstrumentID);
-  }
-
-  // valid preparation vessels
-  async getValidPreparationVessel(validPreparationVesselID: string): Promise<ValidPreparationVessel> {
-    return getValidPreparationVessel(this.client, validPreparationVesselID);
-  }
-
-  async validPreparationVesselsForPreparationID(
-    validPreparationID: string,
-  ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
-    return validPreparationVesselsForPreparationID(this.client, validPreparationID);
-  }
-
-  async validPreparationVesselsForVesselID(
-    validInstrumentID: string,
-  ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
-    return validPreparationVesselsForVesselID(this.client, validInstrumentID);
-  }
-
-  async createValidPreparationVessel(
-    input: ValidPreparationVesselCreationRequestInput,
-  ): Promise<ValidPreparationVessel> {
-    return createValidPreparationVessel(this.client, input);
-  }
-
-  async deleteValidPreparationVessel(validPreparationVesselID: string): Promise<ValidPreparationVessel> {
-    return deleteValidPreparationVessel(this.client, validPreparationVesselID);
-  }
-
-  // valid preparations
-  async createValidPreparation(input: ValidPreparationCreationRequestInput): Promise<ValidPreparation> {
-    return createValidPreparation(this.client, input);
-  }
-
-  async getValidPreparation(validPreparationID: string): Promise<ValidPreparation> {
-    return getValidPreparation(this.client, validPreparationID);
-  }
-
-  async getValidPreparations(
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidPreparation>> {
-    return getValidPreparations(this.client, filter);
-  }
-
-  async updateValidPreparation(
-    validPreparationID: string,
-    input: ValidPreparationUpdateRequestInput,
-  ): Promise<ValidPreparation> {
-    return updateValidPreparation(this.client, validPreparationID, input);
-  }
-
-  async deleteValidPreparation(validPreparationID: string): Promise<ValidPreparation> {
-    return deleteValidPreparation(this.client, validPreparationID);
-  }
-
-  async searchForValidPreparations(query: string): Promise<ValidPreparation[]> {
-    return searchForValidPreparations(this.client, query);
-  }
-
-  // service setting
-  async createServiceSetting(input: ServiceSettingCreationRequestInput): Promise<ServiceSetting> {
-    return createServiceSetting(this.client, input);
-  }
-
-  async getServiceSetting(serviceSettingID: string): Promise<ServiceSetting> {
-    return getServiceSetting(this.client, serviceSettingID);
-  }
-
-  async getServiceSettings(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<ServiceSetting>> {
-    return getServiceSettings(this.client, filter);
-  }
-
-  async deleteServiceSetting(serviceSettingID: string): Promise<ServiceSetting> {
-    return deleteServiceSetting(this.client, serviceSettingID);
-  }
-
-  async searchForServiceSettings(query: string): Promise<ServiceSetting[]> {
-    return searchForServiceSettings(this.client, query);
-  }
-
-  async createServiceSettingConfiguration(
-    input: ServiceSettingConfigurationCreationRequestInput,
-  ): Promise<ServiceSettingConfiguration> {
-    return createServiceSettingConfiguration(this.client, input);
-  }
-
-  async getServiceSettingConfigurationsForUser(): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
-    return getServiceSettingConfigurationsForUser(this.client);
-  }
-
-  async getServiceSettingConfigurationsForHousehold(): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
-    return getServiceSettingConfigurationsForHousehold(this.client);
-  }
-
-  async updateServiceSettingConfiguration(
-    serviceSettingConfigurationID: string,
-    input: ServiceSettingConfigurationUpdateRequestInput,
-  ): Promise<ServiceSettingConfiguration> {
-    return updateServiceSettingConfiguration(this.client, serviceSettingConfigurationID, input);
-  }
-
-  async deleteServiceSettingConfiguration(serviceSettingConfigurationID: string): Promise<ServiceSettingConfiguration> {
-    return deleteServiceSettingConfiguration(this.client, serviceSettingConfigurationID);
-  }
-
-  // valid ingredient states
-  async createValidIngredientState(input: ValidIngredientStateCreationRequestInput): Promise<ValidIngredientState> {
-    return createValidIngredientState(this.client, input);
-  }
-
-  async getValidIngredientState(validPreparationID: string): Promise<ValidIngredientState> {
-    return getValidIngredientState(this.client, validPreparationID);
-  }
-
-  async getValidIngredientStates(
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredientState>> {
-    return getValidIngredientStates(this.client, filter);
-  }
-
-  async updateValidIngredientState(
-    validPreparationID: string,
-    input: ValidIngredientStateUpdateRequestInput,
-  ): Promise<ValidIngredientState> {
-    return updateValidIngredientState(this.client, validPreparationID, input);
-  }
-
-  async deleteValidIngredientState(validPreparationID: string): Promise<ValidIngredientState> {
-    return deleteValidIngredientState(this.client, validPreparationID);
-  }
-
-  async searchForValidIngredientStates(query: string): Promise<ValidIngredientState[]> {
-    return searchForValidIngredientStates(this.client, query);
-  }
-
-  // meal plan tasks
-
-  async getMealPlanTask(mealPlanID: string, mealPlanTaskID: string): Promise<MealPlanTask> {
-    return getMealPlanTask(this.client, mealPlanID, mealPlanTaskID);
-  }
-
-  async getMealPlanTasks(mealPlanID: string): Promise<MealPlanTask[]> {
-    return getMealPlanTasks(this.client, mealPlanID);
-  }
-
-  async updateMealPlanTaskStatus(
+    mealPlanOptionID: string,
+  ): Promise<APIResponse<MealPlanOption>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<MealPlanOption>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveMealPlanOptionVote(
     mealPlanID: string,
-    mealPlanTaskID: string,
-    input: MealPlanTaskStatusChangeRequestInput,
-  ): Promise<MealPlanTask> {
-    return updateMealPlanTaskStatus(this.client, mealPlanID, mealPlanTaskID, input);
+    mealPlanEventID: string,
+    mealPlanOptionID: string,
+    mealPlanOptionVoteID: string,
+  ): Promise<APIResponse<MealPlanOptionVote>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<MealPlanOptionVote>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveOAuth2Client(oauth2ClientID: string): Promise<APIResponse<OAuth2Client>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<OAuth2Client>>(
+        `/api/v1/oauth2_clients/${oauth2ClientID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveRecipe(recipeID: string): Promise<APIResponse<Recipe>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveRecipePrepTask(recipeID: string, recipePrepTaskID: string): Promise<APIResponse<RecipePrepTask>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<RecipePrepTask>>(
+        `/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveRecipeRating(recipeID: string, recipeRatingID: string): Promise<APIResponse<RecipeRating>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<RecipeRating>>(
+        `/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveRecipeStep(recipeID: string, recipeStepID: string): Promise<APIResponse<RecipeStep>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<RecipeStep>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveRecipeStepCompletionCondition(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepCompletionConditionID: string,
+  ): Promise<APIResponse<RecipeStepCompletionCondition>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<RecipeStepCompletionCondition>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveRecipeStepIngredient(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepIngredientID: string,
+  ): Promise<APIResponse<RecipeStepIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<RecipeStepIngredient>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveRecipeStepInstrument(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepInstrumentID: string,
+  ): Promise<APIResponse<RecipeStepInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<RecipeStepInstrument>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveRecipeStepProduct(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepProductID: string,
+  ): Promise<APIResponse<RecipeStepProduct>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<RecipeStepProduct>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveRecipeStepVessel(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepVesselID: string,
+  ): Promise<APIResponse<RecipeStepVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<RecipeStepVessel>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveServiceSetting(serviceSettingID: string): Promise<APIResponse<ServiceSetting>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ServiceSetting>>(
+        `/api/v1/settings/${serviceSettingID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveServiceSettingConfiguration(
+    serviceSettingConfigurationID: string,
+  ): Promise<APIResponse<ServiceSettingConfiguration>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ServiceSettingConfiguration>>(
+        `/api/v1/settings/configurations/${serviceSettingConfigurationID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveUser(userID: string): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<User>>(`/api/v1/users/${userID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveUserIngredientPreference(
+    userIngredientPreferenceID: string,
+  ): Promise<APIResponse<UserIngredientPreference>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<UserIngredientPreference>>(
+        `/api/v1/user_ingredient_preferences/${userIngredientPreferenceID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveUserMembership(householdID: string, userID: string): Promise<APIResponse<HouseholdUserMembership>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<HouseholdUserMembership>>(
+        `/api/v1/households/${householdID}/members/${userID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidIngredient(validIngredientID: string): Promise<APIResponse<ValidIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidIngredient>>(
+        `/api/v1/valid_ingredients/${validIngredientID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidIngredientGroup(validIngredientGroupID: string): Promise<APIResponse<ValidIngredientGroup>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidIngredientGroup>>(
+        `/api/v1/valid_ingredient_groups/${validIngredientGroupID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidIngredientMeasurementUnit(
+    validIngredientMeasurementUnitID: string,
+  ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidIngredientMeasurementUnit>>(
+        `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidIngredientPreparation(
+    validIngredientPreparationID: string,
+  ): Promise<APIResponse<ValidIngredientPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidIngredientPreparation>>(
+        `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidIngredientState(validIngredientStateID: string): Promise<APIResponse<ValidIngredientState>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidIngredientState>>(
+        `/api/v1/valid_ingredient_states/${validIngredientStateID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidIngredientStateIngredient(
+    validIngredientStateIngredientID: string,
+  ): Promise<APIResponse<ValidIngredientStateIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidIngredientStateIngredient>>(
+        `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidInstrument(validInstrumentID: string): Promise<APIResponse<ValidInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidInstrument>>(
+        `/api/v1/valid_instruments/${validInstrumentID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidMeasurementUnit(validMeasurementUnitID: string): Promise<APIResponse<ValidMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidMeasurementUnit>>(
+        `/api/v1/valid_measurement_units/${validMeasurementUnitID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidMeasurementUnitConversion(
+    validMeasurementUnitConversionID: string,
+  ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidMeasurementUnitConversion>>(
+        `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidPreparation(validPreparationID: string): Promise<APIResponse<ValidPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidPreparation>>(
+        `/api/v1/valid_preparations/${validPreparationID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidPreparationInstrument(
+    validPreparationVesselID: string,
+  ): Promise<APIResponse<ValidPreparationInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidPreparationInstrument>>(
+        `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidPreparationVessel(validPreparationVesselID: string): Promise<APIResponse<ValidPreparationVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidPreparationVessel>>(
+        `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveValidVessel(validVesselID: string): Promise<APIResponse<ValidVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveWebhook(webhookID: string): Promise<APIResponse<Webhook>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async archiveWebhookTriggerEvent(
+    webhookID: string,
+    webhookTriggerEventID: string,
+  ): Promise<APIResponse<WebhookTriggerEvent>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.delete<APIResponse<WebhookTriggerEvent>>(
+        `/api/v1/webhooks/${webhookID}/trigger_events/${webhookTriggerEventID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async cancelHouseholdInvitation(
+    householdInvitationID: string,
+    input: HouseholdInvitationUpdateRequestInput,
+  ): Promise<APIResponse<HouseholdInvitation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<HouseholdInvitation>>(
+        `/api/v1/household_invitations/${householdInvitationID}/cancel`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async checkPermissions(input: UserPermissionsRequestInput): Promise<APIResponse<UserPermissionsResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<UserPermissionsResponse>>(
+        `/api/v1/users/permissions/check`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async cloneRecipe(recipeID: string): Promise<APIResponse<Recipe>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}/clone`);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createHousehold(input: HouseholdCreationRequestInput): Promise<APIResponse<Household>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<Household>>(`/api/v1/households`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createHouseholdInstrumentOwnership(
+    input: HouseholdInstrumentOwnershipCreationRequestInput,
+  ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<HouseholdInstrumentOwnership>>(
+        `/api/v1/households/instruments`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createHouseholdInvitation(
+    householdID: string,
+    input: HouseholdInvitationCreationRequestInput,
+  ): Promise<APIResponse<HouseholdInvitation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<HouseholdInvitation>>(
+        `/api/v1/households/${householdID}/invitations`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createMeal(input: MealCreationRequestInput): Promise<APIResponse<Meal>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<Meal>>(`/api/v1/meals`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createMealPlan(input: MealPlanCreationRequestInput): Promise<APIResponse<MealPlan>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<MealPlan>>(`/api/v1/meal_plans`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createMealPlanEvent(
+    mealPlanID: string,
+    input: MealPlanEventCreationRequestInput,
+  ): Promise<APIResponse<MealPlanEvent>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<MealPlanEvent>>(
+        `/api/v1/meal_plans/${mealPlanID}/events`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
   async createMealPlanGroceryListItem(
     mealPlanID: string,
     input: MealPlanGroceryListItemCreationRequestInput,
-  ): Promise<MealPlanGroceryListItem> {
-    return createMealPlanGroceryListItem(this.client, mealPlanID, input);
+  ): Promise<APIResponse<MealPlanGroceryListItem>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<MealPlanGroceryListItem>>(
+        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async getMealPlanGroceryListItem(mealPlanID: string): Promise<MealPlanGroceryListItem> {
-    return getMealPlanGroceryListItem(this.client, mealPlanID);
+  async createMealPlanOption(
+    mealPlanID: string,
+    mealPlanEventID: string,
+    input: MealPlanOptionCreationRequestInput,
+  ): Promise<APIResponse<MealPlanOption>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<MealPlanOption>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async getMealPlanGroceryListItems(mealPlanID: string): Promise<MealPlanGroceryListItem[]> {
-    return getMealPlanGroceryListItems(this.client, mealPlanID);
+  async createMealPlanOptionVote(
+    mealPlanID: string,
+    mealPlanEventID: string,
+    input: MealPlanOptionVoteCreationRequestInput,
+  ): Promise<APIResponse<Array<MealPlanOptionVote>>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<Array<MealPlanOptionVote>>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/vote`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createMealPlanTask(
+    mealPlanID: string,
+    input: MealPlanTaskCreationRequestInput,
+  ): Promise<APIResponse<MealPlanTask>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<MealPlanTask>>(
+        `/api/v1/meal_plans/${mealPlanID}/tasks`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createOAuth2Client(
+    input: OAuth2ClientCreationRequestInput,
+  ): Promise<APIResponse<OAuth2ClientCreationResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<OAuth2ClientCreationResponse>>(
+        `/api/v1/oauth2_clients`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createRecipe(input: RecipeCreationRequestInput): Promise<APIResponse<Recipe>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<Recipe>>(`/api/v1/recipes`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createRecipePrepTask(
+    recipeID: string,
+    input: RecipePrepTaskCreationRequestInput,
+  ): Promise<APIResponse<RecipePrepTask>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<RecipePrepTask>>(
+        `/api/v1/recipes/${recipeID}/prep_tasks`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createRecipeRating(
+    recipeID: string,
+    input: RecipeRatingCreationRequestInput,
+  ): Promise<APIResponse<RecipeRating>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createRecipeStep(recipeID: string, input: RecipeStepCreationRequestInput): Promise<APIResponse<RecipeStep>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createRecipeStepCompletionCondition(
+    recipeID: string,
+    recipeStepID: string,
+    input: RecipeStepCompletionConditionForExistingRecipeCreationRequestInput,
+  ): Promise<APIResponse<RecipeStepCompletionCondition>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<RecipeStepCompletionCondition>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createRecipeStepIngredient(
+    recipeID: string,
+    recipeStepID: string,
+    input: RecipeStepIngredientCreationRequestInput,
+  ): Promise<APIResponse<RecipeStepIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<RecipeStepIngredient>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createRecipeStepInstrument(
+    recipeID: string,
+    recipeStepID: string,
+    input: RecipeStepInstrumentCreationRequestInput,
+  ): Promise<APIResponse<RecipeStepInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<RecipeStepInstrument>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createRecipeStepProduct(
+    recipeID: string,
+    recipeStepID: string,
+    input: RecipeStepProductCreationRequestInput,
+  ): Promise<APIResponse<RecipeStepProduct>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<RecipeStepProduct>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createRecipeStepVessel(
+    recipeID: string,
+    recipeStepID: string,
+    input: RecipeStepVesselCreationRequestInput,
+  ): Promise<APIResponse<RecipeStepVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<RecipeStepVessel>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createServiceSetting(input: ServiceSettingCreationRequestInput): Promise<APIResponse<ServiceSetting>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ServiceSetting>>(`/api/v1/settings`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createServiceSettingConfiguration(
+    input: ServiceSettingConfigurationCreationRequestInput,
+  ): Promise<APIResponse<ServiceSettingConfiguration>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ServiceSettingConfiguration>>(
+        `/api/v1/settings/configurations`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createUser(input: UserRegistrationInput): Promise<APIResponse<UserCreationResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<UserCreationResponse>>(`/users`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createUserIngredientPreference(
+    input: UserIngredientPreferenceCreationRequestInput,
+  ): Promise<APIResponse<UserIngredientPreference>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<UserIngredientPreference>>(
+        `/api/v1/user_ingredient_preferences`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createUserNotification(input: UserNotificationCreationRequestInput): Promise<APIResponse<UserNotification>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<UserNotification>>(`/api/v1/user_notifications`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidIngredient(input: ValidIngredientCreationRequestInput): Promise<APIResponse<ValidIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidIngredientGroup(
+    input: ValidIngredientGroupCreationRequestInput,
+  ): Promise<APIResponse<ValidIngredientGroup>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidIngredientGroup>>(
+        `/api/v1/valid_ingredient_groups`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidIngredientMeasurementUnit(
+    input: ValidIngredientMeasurementUnitCreationRequestInput,
+  ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidIngredientMeasurementUnit>>(
+        `/api/v1/valid_ingredient_measurement_units`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidIngredientPreparation(
+    input: ValidIngredientPreparationCreationRequestInput,
+  ): Promise<APIResponse<ValidIngredientPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidIngredientPreparation>>(
+        `/api/v1/valid_ingredient_preparations`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidIngredientState(
+    input: ValidIngredientStateCreationRequestInput,
+  ): Promise<APIResponse<ValidIngredientState>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidIngredientState>>(
+        `/api/v1/valid_ingredient_states`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidIngredientStateIngredient(
+    input: ValidIngredientStateIngredientCreationRequestInput,
+  ): Promise<APIResponse<ValidIngredientStateIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidIngredientStateIngredient>>(
+        `/api/v1/valid_ingredient_state_ingredients`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidInstrument(input: ValidInstrumentCreationRequestInput): Promise<APIResponse<ValidInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidMeasurementUnit(
+    input: ValidMeasurementUnitCreationRequestInput,
+  ): Promise<APIResponse<ValidMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidMeasurementUnit>>(
+        `/api/v1/valid_measurement_units`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidMeasurementUnitConversion(
+    input: ValidMeasurementUnitConversionCreationRequestInput,
+  ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidMeasurementUnitConversion>>(
+        `/api/v1/valid_measurement_conversions`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidPreparation(input: ValidPreparationCreationRequestInput): Promise<APIResponse<ValidPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidPreparationInstrument(
+    input: ValidPreparationInstrumentCreationRequestInput,
+  ): Promise<APIResponse<ValidPreparationInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidPreparationInstrument>>(
+        `/api/v1/valid_preparation_instruments`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidPreparationVessel(
+    input: ValidPreparationVesselCreationRequestInput,
+  ): Promise<APIResponse<ValidPreparationVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidPreparationVessel>>(
+        `/api/v1/valid_preparation_vessels`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createValidVessel(input: ValidVesselCreationRequestInput): Promise<APIResponse<ValidVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<ValidVessel>>(`/api/v1/valid_vessels`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createWebhook(input: WebhookCreationRequestInput): Promise<APIResponse<Webhook>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<Webhook>>(`/api/v1/webhooks`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async createWebhookTriggerEvent(
+    webhookID: string,
+    input: WebhookTriggerEventCreationRequestInput,
+  ): Promise<APIResponse<WebhookTriggerEvent>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<WebhookTriggerEvent>>(
+        `/api/v1/webhooks/${webhookID}/trigger_events`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async finalizeMealPlan(mealPlanID: string): Promise<APIResponse<FinalizeMealPlansResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<FinalizeMealPlansResponse>>(
+        `/api/v1/meal_plans/${mealPlanID}/finalize`,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getActiveHousehold(): Promise<APIResponse<Household>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Household>>(`/api/v1/households/current`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getAuditLogEntriesForHousehold(): Promise<APIResponse<AuditLogEntry>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<AuditLogEntry>>(`/api/v1/audit_log_entries/for_household`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getAuditLogEntriesForUser(): Promise<APIResponse<AuditLogEntry>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<AuditLogEntry>>(`/api/v1/audit_log_entries/for_user`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getAuditLogEntryByID(auditLogEntryID: string): Promise<APIResponse<AuditLogEntry>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<AuditLogEntry>>(
+        `/api/v1/audit_log_entries/${auditLogEntryID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getAuthStatus(): Promise<APIResponse<UserStatusResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<UserStatusResponse>>(`/auth/status`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getHousehold(householdID: string): Promise<APIResponse<Household>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Household>>(`/api/v1/households/${householdID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getHouseholdInstrumentOwnership(
+    householdInstrumentOwnershipID: string,
+  ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<HouseholdInstrumentOwnership>>(
+        `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getHouseholdInstrumentOwnerships(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<HouseholdInstrumentOwnership>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<HouseholdInstrumentOwnership>>>(
+        `/api/v1/households/instruments`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<HouseholdInstrumentOwnership>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getHouseholdInvitation(householdInvitationID: string): Promise<APIResponse<HouseholdInvitation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<HouseholdInvitation>>(
+        `/api/v1/household_invitations/${householdInvitationID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getHouseholdInvitationByID(
+    householdID: string,
+    householdInvitationID: string,
+  ): Promise<APIResponse<HouseholdInvitation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<HouseholdInvitation>>(
+        `/api/v1/households/${householdID}/invitations/${householdInvitationID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getHouseholds(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Household>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<Household>>>(`/api/v1/households`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<Household>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getMeal(mealID: string): Promise<APIResponse<Meal>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Meal>>(`/api/v1/meals/${mealID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getMealPlan(mealPlanID: string): Promise<APIResponse<MealPlan>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getMealPlanEvent(mealPlanID: string, mealPlanEventID: string): Promise<APIResponse<MealPlanEvent>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<MealPlanEvent>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getMealPlanEvents(
+    mealPlanID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<MealPlanEvent>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<MealPlanEvent>>>(
+        `/api/v1/meal_plans/${mealPlanID}/events`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<MealPlanEvent>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getMealPlanGroceryListItem(
+    mealPlanID: string,
+    mealPlanGroceryListItemID: string,
+  ): Promise<APIResponse<MealPlanGroceryListItem>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<MealPlanGroceryListItem>>(
+        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getMealPlanGroceryListItemsForMealPlan(
+    mealPlanID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<MealPlanGroceryListItem>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<MealPlanGroceryListItem>>>(
+        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<MealPlanGroceryListItem>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getMealPlanOption(
+    mealPlanID: string,
+    mealPlanEventID: string,
+    mealPlanOptionID: string,
+  ): Promise<APIResponse<MealPlanOption>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<MealPlanOption>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getMealPlanOptionVote(
+    mealPlanID: string,
+    mealPlanEventID: string,
+    mealPlanOptionID: string,
+    mealPlanOptionVoteID: string,
+  ): Promise<APIResponse<MealPlanOptionVote>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<MealPlanOptionVote>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getMealPlanOptionVotes(
+    mealPlanID: string,
+    mealPlanEventID: string,
+    mealPlanOptionID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<MealPlanOptionVote>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<MealPlanOptionVote>>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<MealPlanOptionVote>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getMealPlanOptions(
+    mealPlanID: string,
+    mealPlanEventID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<MealPlanOption>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<MealPlanOption>>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<MealPlanOption>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getMealPlanTask(mealPlanID: string, mealPlanTaskID: string): Promise<APIResponse<MealPlanTask>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<MealPlanTask>>(
+        `/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getMealPlanTasks(
+    mealPlanID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<MealPlanTask>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<MealPlanTask>>>(
+        `/api/v1/meal_plans/${mealPlanID}/tasks`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<MealPlanTask>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getMealPlans(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<MealPlan>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<MealPlan>>>(`/api/v1/meal_plans`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<MealPlan>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getMeals(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Meal>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<Meal>>>(`/api/v1/meals`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<Meal>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getMermaidDiagramForRecipe(recipeID: string): Promise<APIResponse<string>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<string>>(`/api/v1/recipes/${recipeID}/mermaid`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getOAuth2Client(oauth2ClientID: string): Promise<APIResponse<OAuth2Client>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getOAuth2Clients(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<OAuth2Client>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<OAuth2Client>>>(`/api/v1/oauth2_clients`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<OAuth2Client>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRandomValidIngredient(): Promise<APIResponse<ValidIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/random`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRandomValidInstrument(): Promise<APIResponse<ValidInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/random`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRandomValidPreparation(): Promise<APIResponse<ValidPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/random`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRandomValidVessel(): Promise<APIResponse<ValidVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/random`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getReceivedHouseholdInvitations(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<HouseholdInvitation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<HouseholdInvitation>>>(
+        `/api/v1/household_invitations/received`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<HouseholdInvitation>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRecipe(recipeID: string): Promise<APIResponse<Recipe>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipeMealPlanTasks(recipeID: string): Promise<APIResponse<RecipePrepTaskStep>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<RecipePrepTaskStep>>(
+        `/api/v1/recipes/${recipeID}/prep_steps`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipePrepTask(recipeID: string, recipePrepTaskID: string): Promise<APIResponse<RecipePrepTask>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<RecipePrepTask>>(
+        `/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipePrepTasks(
+    recipeID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<RecipePrepTask>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<RecipePrepTask>>>(
+        `/api/v1/recipes/${recipeID}/prep_tasks`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<RecipePrepTask>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRecipeRating(recipeID: string, recipeRatingID: string): Promise<APIResponse<RecipeRating>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<RecipeRating>>(
+        `/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipeRatings(
+    recipeID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<RecipeRating>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<RecipeRating>>>(`/api/v1/recipes/${recipeID}/ratings`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<RecipeRating>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRecipeStep(recipeID: string, recipeStepID: string): Promise<APIResponse<RecipeStep>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<RecipeStep>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipeStepCompletionCondition(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepCompletionConditionID: string,
+  ): Promise<APIResponse<RecipeStepCompletionCondition>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<RecipeStepCompletionCondition>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipeStepCompletionConditions(
+    recipeID: string,
+    recipeStepID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<RecipeStepCompletionCondition>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<RecipeStepCompletionCondition>>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<RecipeStepCompletionCondition>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRecipeStepIngredient(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepIngredientID: string,
+  ): Promise<APIResponse<RecipeStepIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<RecipeStepIngredient>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipeStepIngredients(
+    recipeID: string,
+    recipeStepID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<RecipeStepIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<RecipeStepIngredient>>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<RecipeStepIngredient>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRecipeStepInstrument(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepInstrumentID: string,
+  ): Promise<APIResponse<RecipeStepInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<RecipeStepInstrument>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipeStepInstruments(
+    recipeID: string,
+    recipeStepID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<RecipeStepInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<RecipeStepInstrument>>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<RecipeStepInstrument>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRecipeStepProduct(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepProductID: string,
+  ): Promise<APIResponse<RecipeStepProduct>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<RecipeStepProduct>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipeStepProducts(
+    recipeID: string,
+    recipeStepID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<RecipeStepProduct>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<RecipeStepProduct>>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<RecipeStepProduct>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRecipeStepVessel(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepVesselID: string,
+  ): Promise<APIResponse<RecipeStepVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<RecipeStepVessel>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getRecipeStepVessels(
+    recipeID: string,
+    recipeStepID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<RecipeStepVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<RecipeStepVessel>>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<RecipeStepVessel>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRecipeSteps(
+    recipeID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<RecipeStep>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<RecipeStep>>>(`/api/v1/recipes/${recipeID}/steps`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<RecipeStep>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getRecipes(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Recipe>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<Recipe>>>(`/api/v1/recipes`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<Recipe>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getSelf(): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<User>>(`/api/v1/users/self`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getSentHouseholdInvitations(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<HouseholdInvitation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<HouseholdInvitation>>>(
+        `/api/v1/household_invitations/sent`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<HouseholdInvitation>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getServiceSetting(serviceSettingID: string): Promise<APIResponse<ServiceSetting>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getServiceSettingConfigurationByName(
+    serviceSettingConfigurationName: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ServiceSettingConfiguration>>>(
+        `/api/v1/settings/configurations/user/${serviceSettingConfigurationName}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ServiceSettingConfiguration>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getServiceSettingConfigurationsForHousehold(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ServiceSettingConfiguration>>>(
+        `/api/v1/settings/configurations/household`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ServiceSettingConfiguration>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getServiceSettingConfigurationsForUser(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ServiceSettingConfiguration>>>(
+        `/api/v1/settings/configurations/user`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ServiceSettingConfiguration>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getServiceSettings(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<ServiceSetting>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ServiceSetting>>>(`/api/v1/settings`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ServiceSetting>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getUser(userID: string): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<User>>(`/api/v1/users/${userID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getUserIngredientPreferences(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<UserIngredientPreference>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<UserIngredientPreference>>>(
+        `/api/v1/user_ingredient_preferences`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<UserIngredientPreference>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getUserNotification(userNotificationID: string): Promise<APIResponse<UserNotification>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<UserNotification>>(
+        `/api/v1/user_notifications/${userNotificationID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getUserNotifications(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<UserNotification>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<UserNotification>>>(`/api/v1/user_notifications`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<UserNotification>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getUsers(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<User>>>(`/api/v1/users`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<User>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredient(validIngredientID: string): Promise<APIResponse<ValidIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidIngredient>>(
+        `/api/v1/valid_ingredients/${validIngredientID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidIngredientGroup(validIngredientGroupID: string): Promise<APIResponse<ValidIngredientGroup>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidIngredientGroup>>(
+        `/api/v1/valid_ingredient_groups/${validIngredientGroupID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidIngredientGroups(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientGroup>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientGroup>>>(
+        `/api/v1/valid_ingredient_groups`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientGroup>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientMeasurementUnit(
+    validIngredientMeasurementUnitID: string,
+  ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidIngredientMeasurementUnit>>(
+        `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidIngredientMeasurementUnits(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
+        `/api/v1/valid_ingredient_measurement_units`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientMeasurementUnit>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientMeasurementUnitsByIngredient(
+    validIngredientID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
+        `/api/v1/valid_ingredient_measurement_units/by_ingredient/${validIngredientID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientMeasurementUnit>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientMeasurementUnitsByMeasurementUnit(
+    validMeasurementUnitID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
+        `/api/v1/valid_ingredient_measurement_units/by_measurement_unit/${validMeasurementUnitID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientMeasurementUnit>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientPreparation(
+    validIngredientPreparationID: string,
+  ): Promise<APIResponse<ValidIngredientPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidIngredientPreparation>>(
+        `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidIngredientPreparations(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientPreparation>>>(
+        `/api/v1/valid_ingredient_preparations`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientPreparation>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientPreparationsByIngredient(
+    validIngredientID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientPreparation>>>(
+        `/api/v1/valid_ingredient_preparations/by_ingredient/${validIngredientID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientPreparation>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientPreparationsByPreparation(
+    validPreparationID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientPreparation>>>(
+        `/api/v1/valid_ingredient_preparations/by_preparation/${validPreparationID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientPreparation>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientState(validIngredientStateID: string): Promise<APIResponse<ValidIngredientState>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidIngredientState>>(
+        `/api/v1/valid_ingredient_states/${validIngredientStateID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidIngredientStateIngredient(
+    validIngredientStateIngredientID: string,
+  ): Promise<APIResponse<ValidIngredientStateIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidIngredientStateIngredient>>(
+        `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidIngredientStateIngredients(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientStateIngredient>>>(
+        `/api/v1/valid_ingredient_state_ingredients`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientStateIngredient>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientStateIngredientsByIngredient(
+    validIngredientID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientStateIngredient>>>(
+        `/api/v1/valid_ingredient_state_ingredients/by_ingredient/${validIngredientID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientStateIngredient>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientStateIngredientsByIngredientState(
+    validIngredientStateID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientStateIngredient>>>(
+        `/api/v1/valid_ingredient_state_ingredients/by_ingredient_state/${validIngredientStateID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientStateIngredient>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientStates(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientState>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientState>>>(
+        `/api/v1/valid_ingredient_states`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientState>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredients(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredient>>>(`/api/v1/valid_ingredients`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredient>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidIngredientsByPreparation(
+    q: string,
+    validPreparationID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredient>>>(
+        `/api/v1/valid_ingredients/by_preparation/${validPreparationID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredient>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidInstrument(validInstrumentID: string): Promise<APIResponse<ValidInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidInstrument>>(
+        `/api/v1/valid_instruments/${validInstrumentID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidInstruments(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidInstrument>>>(`/api/v1/valid_instruments`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidInstrument>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidMeasurementUnit(validMeasurementUnitID: string): Promise<APIResponse<ValidMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidMeasurementUnit>>(
+        `/api/v1/valid_measurement_units/${validMeasurementUnitID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidMeasurementUnitConversion(
+    validMeasurementUnitConversionID: string,
+  ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidMeasurementUnitConversion>>(
+        `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidMeasurementUnitConversionsFromUnit(
+    validMeasurementUnitID: string,
+  ): Promise<APIResponse<Array<ValidMeasurementUnitConversion>>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnitConversion>>>(
+        `/api/v1/valid_measurement_conversions/from_unit/${validMeasurementUnitID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidMeasurementUnits(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnit>>>(
+        `/api/v1/valid_measurement_units`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidMeasurementUnit>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidPreparation(validPreparationID: string): Promise<APIResponse<ValidPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidPreparation>>(
+        `/api/v1/valid_preparations/${validPreparationID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidPreparationInstrument(
+    validPreparationVesselID: string,
+  ): Promise<APIResponse<ValidPreparationInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidPreparationInstrument>>(
+        `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidPreparationInstruments(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidPreparationInstrument>>>(
+        `/api/v1/valid_preparation_instruments`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidPreparationInstrument>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidPreparationInstrumentsByInstrument(
+    validInstrumentID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidPreparationInstrument>>>(
+        `/api/v1/valid_preparation_instruments/by_instrument/${validInstrumentID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidPreparationInstrument>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidPreparationInstrumentsByPreparation(
+    validPreparationID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidPreparationInstrument>>>(
+        `/api/v1/valid_preparation_instruments/by_preparation/${validPreparationID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidPreparationInstrument>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidPreparationVessel(validPreparationVesselID: string): Promise<APIResponse<ValidPreparationVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidPreparationVessel>>(
+        `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidPreparationVessels(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidPreparationVessel>>>(
+        `/api/v1/valid_preparation_vessels`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidPreparationVessel>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidPreparationVesselsByPreparation(
+    validPreparationID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidPreparationVessel>>>(
+        `/api/v1/valid_preparation_vessels/by_preparation/${validPreparationID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidPreparationVessel>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidPreparationVesselsByVessel(
+    ValidVesselID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidPreparationVessel>>>(
+        `/api/v1/valid_preparation_vessels/by_vessel/${ValidVesselID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidPreparationVessel>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidPreparations(
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidPreparation>>>(`/api/v1/valid_preparations`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidPreparation>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getValidVessel(validVesselID: string): Promise<APIResponse<ValidVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getValidVessels(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<ValidVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidVessel>>>(`/api/v1/valid_vessels`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidVessel>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getWebhook(webhookID: string): Promise<APIResponse<Webhook>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`, {});
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async getWebhooks(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Webhook>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<Webhook>>>(`/api/v1/webhooks`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<Webhook>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async loginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<JWTResponse>>(`/users/login/jwt`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response);
+    });
+  }
+
+  async pOST_households_householdID_invite(
+    householdID: string,
+    input: HouseholdInvitationCreationRequestInput,
+  ): Promise<APIResponse<HouseholdInvitation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<HouseholdInvitation>>(
+        `/api/v1/households/${householdID}/invite`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async redeemPasswordResetToken(input: PasswordResetTokenRedemptionRequestInput): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<User>>(`/users/password/reset/redeem`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async refreshTOTPSecret(input: TOTPSecretRefreshInput): Promise<APIResponse<TOTPSecretRefreshResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<TOTPSecretRefreshResponse>>(
+        `/api/v1/users/totp_secret/new`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async rejectHouseholdInvitation(
+    householdInvitationID: string,
+    input: HouseholdInvitationUpdateRequestInput,
+  ): Promise<APIResponse<HouseholdInvitation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<HouseholdInvitation>>(
+        `/api/v1/household_invitations/${householdInvitationID}/reject`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async requestPasswordResetToken(
+    input: PasswordResetTokenCreationRequestInput,
+  ): Promise<APIResponse<PasswordResetToken>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<PasswordResetToken>>(`/users/password/reset`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async requestUsernameReminder(input: UsernameReminderRequestInput): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<User>>(`/users/username/reminder`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async runFinalizeMealPlanWorker(input: FinalizeMealPlansRequest): Promise<APIResponse<FinalizeMealPlansResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<FinalizeMealPlansResponse>>(
+        `/api/v1/workers/finalize_meal_plans`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async runMealPlanGroceryListInitializerWorker(
+    input: InitializeMealPlanGroceryListRequest,
+  ): Promise<APIResponse<InitializeMealPlanGroceryListResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<InitializeMealPlanGroceryListResponse>>(
+        `/api/v1/workers/meal_plan_grocery_list_init`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async runMealPlanTaskCreatorWorker(
+    input: CreateMealPlanTasksRequest,
+  ): Promise<APIResponse<CreateMealPlanTasksResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<CreateMealPlanTasksResponse>>(
+        `/api/v1/workers/meal_plan_tasks`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async searchForMeals(q: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Meal>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<Meal>>>(`/api/v1/meals/search`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<Meal>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForRecipes(q: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Recipe>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<Recipe>>>(`/api/v1/recipes/search`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<Recipe>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForServiceSettings(
+    q: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ServiceSetting>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ServiceSetting>>>(`/api/v1/settings/search`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ServiceSetting>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForUsers(q: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<User>>>(`/api/v1/users/search`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<User>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForValidIngredientGroups(
+    q: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientGroup>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientGroup>>>(
+        `/api/v1/valid_ingredient_groups/search`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientGroup>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForValidIngredientStates(
+    q: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredientState>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredientState>>>(
+        `/api/v1/valid_ingredient_states/search`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredientState>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForValidIngredients(
+    q: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredient>>>(`/api/v1/valid_ingredients/search`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredient>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForValidInstruments(
+    q: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidInstrument>>>(`/api/v1/valid_instruments/search`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidInstrument>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForValidMeasurementUnits(
+    q: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnit>>>(
+        `/api/v1/valid_measurement_units/search`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidMeasurementUnit>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForValidPreparations(
+    q: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidPreparation>>>(
+        `/api/v1/valid_preparations/search`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidPreparation>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchForValidVessels(
+    q: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidVessel>>>(`/api/v1/valid_vessels/search`, {
+        params: filter.asRecord(),
+      });
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidVessel>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchValidMeasurementUnitsByIngredient(
+    q: string,
+    validIngredientID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnit>>>(
+        `/api/v1/valid_measurement_units/by_ingredient/${validIngredientID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidMeasurementUnit>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async setDefaultHousehold(householdID: string): Promise<APIResponse<Household>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<Household>>(`/api/v1/households/${householdID}/default`);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async transferHouseholdOwnership(
+    householdID: string,
+    input: HouseholdOwnershipTransferInput,
+  ): Promise<APIResponse<Household>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<Household>>(
+        `/api/v1/households/${householdID}/transfer`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateHousehold(householdID: string, input: HouseholdUpdateRequestInput): Promise<APIResponse<Household>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<Household>>(`/api/v1/households/${householdID}`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateHouseholdInstrumentOwnership(
+    householdInstrumentOwnershipID: string,
+    input: HouseholdInstrumentOwnershipUpdateRequestInput,
+  ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<HouseholdInstrumentOwnership>>(
+        `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateHouseholdMemberPermissions(
+    householdID: string,
+    userID: string,
+    input: ModifyUserPermissionsInput,
+  ): Promise<APIResponse<UserPermissionsResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.patch<APIResponse<UserPermissionsResponse>>(
+        `/api/v1/households/${householdID}/members/${userID}/permissions`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateMealPlan(mealPlanID: string, input: MealPlanUpdateRequestInput): Promise<APIResponse<MealPlan>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateMealPlanEvent(
+    mealPlanID: string,
+    mealPlanEventID: string,
+    input: MealPlanEventUpdateRequestInput,
+  ): Promise<APIResponse<MealPlanEvent>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<MealPlanEvent>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
   async updateMealPlanGroceryListItem(
     mealPlanID: string,
     mealPlanGroceryListItemID: string,
     input: MealPlanGroceryListItemUpdateRequestInput,
-  ): Promise<MealPlanGroceryListItem> {
-    return updateMealPlanGroceryListItem(this.client, mealPlanID, mealPlanGroceryListItemID, input);
+  ): Promise<APIResponse<MealPlanGroceryListItem>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<MealPlanGroceryListItem>>(
+        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async deleteMealPlanGroceryListItem(
+  async updateMealPlanOption(
     mealPlanID: string,
-    mealPlanGroceryListItemID: string,
-  ): Promise<MealPlanGroceryListItem> {
-    return deleteMealPlanGroceryListItem(this.client, mealPlanID, mealPlanGroceryListItemID);
+    mealPlanEventID: string,
+    mealPlanOptionID: string,
+    input: MealPlanOptionUpdateRequestInput,
+  ): Promise<APIResponse<MealPlanOption>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<MealPlanOption>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async createOAuth2Client(input: OAuth2ClientCreationRequestInput): Promise<OAuth2Client> {
-    return createOAuth2Client(this.client, input);
+  async updateMealPlanOptionVote(
+    mealPlanID: string,
+    mealPlanEventID: string,
+    mealPlanOptionID: string,
+    mealPlanOptionVoteID: string,
+    input: MealPlanOptionVoteUpdateRequestInput,
+  ): Promise<APIResponse<MealPlanOptionVote>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<MealPlanOptionVote>>(
+        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async getOAuth2Client(oauth2ClientID: string): Promise<OAuth2Client> {
-    return getOAuth2Client(this.client, oauth2ClientID);
+  async updateMealPlanTaskStatus(
+    mealPlanID: string,
+    mealPlanTaskID: string,
+    input: MealPlanTaskStatusChangeRequestInput,
+  ): Promise<APIResponse<MealPlanTask>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.patch<APIResponse<MealPlanTask>>(
+        `/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 
-  async getOAuth2Clients(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<OAuth2Client>> {
-    return getOAuth2Clients(this.client, filter);
+  async updatePassword(input: PasswordUpdateInput): Promise<AxiosResponse<APIResponse<PasswordResetResponse>>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<PasswordResetResponse>>(`/api/v1/users/password/new`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response);
+    });
   }
 
-  async deleteOAuth2Client(oauth2ClientID: string): Promise<OAuth2Client> {
-    return deleteOAuth2Client(this.client, oauth2ClientID);
+  async updateRecipe(recipeID: string, input: RecipeUpdateRequestInput): Promise<APIResponse<Recipe>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateRecipePrepTask(
+    recipeID: string,
+    recipePrepTaskID: string,
+    input: RecipePrepTaskUpdateRequestInput,
+  ): Promise<APIResponse<RecipePrepTask>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<RecipePrepTask>>(
+        `/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateRecipeRating(
+    recipeID: string,
+    recipeRatingID: string,
+    input: RecipeRatingUpdateRequestInput,
+  ): Promise<APIResponse<RecipeRating>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<RecipeRating>>(
+        `/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateRecipeStep(
+    recipeID: string,
+    recipeStepID: string,
+    input: RecipeStepUpdateRequestInput,
+  ): Promise<APIResponse<RecipeStep>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<RecipeStep>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateRecipeStepCompletionCondition(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepCompletionConditionID: string,
+    input: RecipeStepCompletionConditionUpdateRequestInput,
+  ): Promise<APIResponse<RecipeStepCompletionCondition>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<RecipeStepCompletionCondition>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateRecipeStepIngredient(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepIngredientID: string,
+    input: RecipeStepIngredientUpdateRequestInput,
+  ): Promise<APIResponse<RecipeStepIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<RecipeStepIngredient>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateRecipeStepInstrument(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepInstrumentID: string,
+    input: RecipeStepInstrumentUpdateRequestInput,
+  ): Promise<APIResponse<RecipeStepInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<RecipeStepInstrument>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateRecipeStepProduct(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepProductID: string,
+    input: RecipeStepProductUpdateRequestInput,
+  ): Promise<APIResponse<RecipeStepProduct>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<RecipeStepProduct>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateRecipeStepVessel(
+    recipeID: string,
+    recipeStepID: string,
+    recipeStepVesselID: string,
+    input: RecipeStepVesselUpdateRequestInput,
+  ): Promise<APIResponse<RecipeStepVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<RecipeStepVessel>>(
+        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateServiceSettingConfiguration(
+    serviceSettingConfigurationID: string,
+    input: ServiceSettingConfigurationUpdateRequestInput,
+  ): Promise<APIResponse<ServiceSettingConfiguration>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ServiceSettingConfiguration>>(
+        `/api/v1/settings/configurations/${serviceSettingConfigurationID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateUserDetails(input: UserDetailsUpdateRequestInput): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<User>>(`/api/v1/users/details`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateUserEmailAddress(input: UserEmailAddressUpdateInput): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<User>>(`/api/v1/users/email_address`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateUserIngredientPreference(
+    userIngredientPreferenceID: string,
+    input: UserIngredientPreferenceUpdateRequestInput,
+  ): Promise<APIResponse<UserIngredientPreference>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<UserIngredientPreference>>(
+        `/api/v1/user_ingredient_preferences/${userIngredientPreferenceID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateUserNotification(
+    userNotificationID: string,
+    input: UserNotificationUpdateRequestInput,
+  ): Promise<APIResponse<UserNotification>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.patch<APIResponse<UserNotification>>(
+        `/api/v1/user_notifications/${userNotificationID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateUserUsername(input: UsernameUpdateInput): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<User>>(`/api/v1/users/username`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidIngredient(
+    validIngredientID: string,
+    input: ValidIngredientUpdateRequestInput,
+  ): Promise<APIResponse<ValidIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidIngredient>>(
+        `/api/v1/valid_ingredients/${validIngredientID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidIngredientGroup(
+    validIngredientGroupID: string,
+    input: ValidIngredientGroupUpdateRequestInput,
+  ): Promise<APIResponse<ValidIngredientGroup>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidIngredientGroup>>(
+        `/api/v1/valid_ingredient_groups/${validIngredientGroupID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidIngredientMeasurementUnit(
+    validIngredientMeasurementUnitID: string,
+    input: ValidIngredientMeasurementUnitUpdateRequestInput,
+  ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidIngredientMeasurementUnit>>(
+        `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidIngredientPreparation(
+    validIngredientPreparationID: string,
+    input: ValidIngredientPreparationUpdateRequestInput,
+  ): Promise<APIResponse<ValidIngredientPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidIngredientPreparation>>(
+        `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidIngredientState(
+    validIngredientStateID: string,
+    input: ValidIngredientStateUpdateRequestInput,
+  ): Promise<APIResponse<ValidIngredientState>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidIngredientState>>(
+        `/api/v1/valid_ingredient_states/${validIngredientStateID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidIngredientStateIngredient(
+    validIngredientStateIngredientID: string,
+    input: ValidIngredientStateIngredientUpdateRequestInput,
+  ): Promise<APIResponse<ValidIngredientStateIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidIngredientStateIngredient>>(
+        `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidInstrument(
+    validInstrumentID: string,
+    input: ValidInstrumentUpdateRequestInput,
+  ): Promise<APIResponse<ValidInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidInstrument>>(
+        `/api/v1/valid_instruments/${validInstrumentID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidMeasurementUnit(
+    validMeasurementUnitID: string,
+    input: ValidMeasurementUnitUpdateRequestInput,
+  ): Promise<APIResponse<ValidMeasurementUnit>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidMeasurementUnit>>(
+        `/api/v1/valid_measurement_units/${validMeasurementUnitID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidMeasurementUnitConversion(
+    validMeasurementUnitConversionID: string,
+    input: ValidMeasurementUnitConversionUpdateRequestInput,
+  ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidMeasurementUnitConversion>>(
+        `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidPreparation(
+    validPreparationID: string,
+    input: ValidPreparationUpdateRequestInput,
+  ): Promise<APIResponse<ValidPreparation>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidPreparation>>(
+        `/api/v1/valid_preparations/${validPreparationID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidPreparationInstrument(
+    validPreparationVesselID: string,
+    input: ValidPreparationInstrumentUpdateRequestInput,
+  ): Promise<APIResponse<ValidPreparationInstrument>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidPreparationInstrument>>(
+        `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidPreparationVessel(
+    validPreparationVesselID: string,
+    input: ValidPreparationVesselUpdateRequestInput,
+  ): Promise<APIResponse<ValidPreparationVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidPreparationVessel>>(
+        `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
+        input,
+      );
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async updateValidVessel(
+    validVesselID: string,
+    input: ValidVesselUpdateRequestInput,
+  ): Promise<APIResponse<ValidVessel>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.put<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async uploadUserAvatar(input: AvatarUpdateInput): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<User>>(`/api/v1/users/avatar/upload`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async validMeasurementUnitConversionsToUnit(
+    validMeasurementUnitID: string,
+  ): Promise<APIResponse<Array<ValidMeasurementUnitConversion>>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnitConversion>>>(
+        `/api/v1/valid_measurement_conversions/to_unit/${validMeasurementUnitID}`,
+        {},
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async verifyEmailAddress(input: EmailAddressVerificationRequestInput): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<User>>(`/users/email_address/verify`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async verifyTOTPSecret(input: TOTPSecretVerificationInput): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<User>>(`/users/totp_secret/verify`, input);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
+  }
+
+  async verifyUserEmailAddress(): Promise<APIResponse<User>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.post<APIResponse<User>>(`/api/v1/users/email_address_verification`);
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      resolve(response.data);
+    });
   }
 }
