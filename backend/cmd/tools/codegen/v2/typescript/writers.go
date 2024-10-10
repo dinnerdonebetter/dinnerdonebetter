@@ -197,9 +197,9 @@ func WriteModelFiles(spec *openapi31.Spec, outputPath string) error {
 		return fmt.Errorf("failed to write enums file: %w", err)
 	}
 
-	for name, content := range StaticModelsFiles {
-		indexFile += fmt.Sprintf("export * from './%s';\n", name)
-		if err = os.WriteFile(fmt.Sprintf("%s/%s.ts", outputPath, name), []byte(content), 0o600); err != nil {
+	for _, staticFile := range StaticModelsFiles {
+		indexFile += fmt.Sprintf("export * from './%s';\n", staticFile.Name)
+		if err = os.WriteFile(fmt.Sprintf("%s/%s.ts", outputPath, staticFile.Name), []byte(staticFile.Content), 0o600); err != nil {
 			return fmt.Errorf("failed to write index file: %w", err)
 		}
 	}

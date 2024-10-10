@@ -4,8 +4,15 @@ const (
 	GeneratedDisclaimer = `// GENERATED CODE, DO NOT EDIT MANUALLY`
 )
 
-var StaticModelsFiles = map[string]string{
-	"APIResponse": GeneratedDisclaimer + `
+type StaticFile struct {
+	Name,
+	Content string
+}
+
+var StaticModelsFiles = []StaticFile{
+	{
+		Name: "APIResponse",
+		Content: GeneratedDisclaimer + `
 
 import { IAPIError } from './APIError';
 import { ResponseDetails } from './ResponseDetails'
@@ -34,8 +41,10 @@ export class APIResponse<T> {
   }
 }
 `,
-
-	"number_range": GeneratedDisclaimer + `
+	},
+	{
+		Name: "number_range",
+		Content: GeneratedDisclaimer + `
 
 export interface NumberRange {
   min: number;
@@ -51,7 +60,10 @@ export interface OptionalNumberRange {
   min?: number;
   max?: number;
 }`,
-	"query_filter": GeneratedDisclaimer + `
+	},
+	{
+		Name: "query_filter",
+		Content: GeneratedDisclaimer + `
 
 import { Span } from '@opentelemetry/api';
 
@@ -196,4 +208,5 @@ export class QueryFilter {
     });
   }
 }`,
+	},
 }
