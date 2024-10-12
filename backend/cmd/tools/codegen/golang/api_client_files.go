@@ -935,20 +935,102 @@ func TestClient_{{ .Name }}(T *testing.T) {
 			)
 		}
 
-	case http.MethodPost:
-		tmpl = dummyTemplate
-		imports = append(imports,
-			"testing",
-			"github.com/stretchr/testify/assert",
-		)
-	case http.MethodPut:
-		tmpl = dummyTemplate
-		imports = append(imports,
-			"testing",
-			"github.com/stretchr/testify/assert",
-		)
-	case http.MethodPatch:
-		tmpl = dummyTemplate
+	case http.MethodPost, http.MethodPut, http.MethodPatch:
+		tmpl = `
+
+func TestClient_{{ .Name }}(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "{{ .PathTemplate }}"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ end }}
+
+		data := fakes.BuildFake{{ uppercaseFirstLetter .ResponseType.TypeName }}()
+		{{- if eq (uppercaseFirstLetter .ResponseType.TypeName) "User" }}
+		// the hashed passwords is never transmitted over the wire.
+		data.HashedPassword = ""
+		// the two factor secret is transmitted over the wire only on creation.
+		data.TwoFactorSecret = ""
+		// the two factor secret validation is never transmitted over the wire.
+		data.TwoFactorSecretVerifiedAt = nil
+		{{ else if eq (uppercaseFirstLetter .ResponseType.TypeName) "Household" }} 
+		data.WebhookEncryptionKey = ""
+		{{ else if or (eq (uppercaseFirstLetter .ResponseType.TypeName) "HouseholdInvitation") }} 
+		data.DestinationHousehold.WebhookEncryptionKey = ""
+		data.FromUser.TwoFactorSecret = ""
+		{{- end }}
+		expected := &types.APIResponse[{{ if notNative .ResponseType.TypeName }}*types.{{ end }}{{ .ResponseType.TypeName }}]{
+			Data: data,
+		}
+
+		exampleInput := fakes.BuildFake{{ .InputType.Type }}()
+
+		spec := newRequestSpec(true, http.Method{{ title .Method }}, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
+		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
+		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }}, {{ end }} exampleInput)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, data, actual)
+	})
+
+	{{ range $i, $p := .Params }}
+	T.Run("with invalid {{ replace $p.Name "ID" "" }} ID",  func(t *testing.T) {
+		t.Parallel()
+
+		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fakes.BuildFakeID(){{ end }}
+		{{ end }}
+
+		exampleInput := fakes.BuildFake{{ .InputType.Type }}()
+
+		ctx := context.Background()
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.{{ $.Name }}(ctx, {{ range $j, $p2 := $.Params}}{{ if eq $j $i}}""{{ else }} {{ .Name }} {{ end }}, {{ end }} exampleInput)
+
+		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
+		assert.Error(t, err)
+	})
+{{ end }}
+
+	T.Run("with error building request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ end }}
+
+		exampleInput := fakes.BuildFake{{ .InputType.Type }}()
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }},{{ end }} exampleInput)
+
+		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with error executing request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ end }}
+
+		exampleInput := fakes.BuildFake{{ .InputType.Type }}()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }},{{ end }} exampleInput)
+
+		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
+		assert.Error(t, err)
+	})
+}
+`
 		imports = append(imports,
 			"testing",
 			"github.com/stretchr/testify/assert",

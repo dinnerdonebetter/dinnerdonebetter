@@ -197,14 +197,23 @@ func (s *recipeStepVesselsTestSuite) TestClient_CreateRecipeStepVessel() {
 	s.Run("standard", func() {
 		t := s.T()
 
+		ctx := context.Background()
+		recipeID := fakes.BuildFakeID()
+		recipeStepID := fakes.BuildFakeID()
+
+		data := fakes.BuildFakeRecipeStepVessel()
+		exampleRecipeStepVesselResponse := &types.APIResponse[*types.RecipeStepVessel]{
+			Data: data,
+		}
+
 		exampleInput := fakes.BuildFakeRecipeStepVesselCreationRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVesselResponse)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, recipeID, recipeStepID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipeStepVesselResponse)
 
-		actual, err := c.CreateRecipeStepVessel(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
+		actual, err := c.CreateRecipeStepVessel(ctx, recipeID, recipeStepID, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleRecipeStepVessel, actual)
+		assert.Equal(t, exampleRecipeStepVesselResponse.Data, actual)
 	})
 
 	s.Run("with invalid recipe ID", func() {
