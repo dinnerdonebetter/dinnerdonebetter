@@ -2,22 +2,18 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) CreateUser(
 	ctx context.Context,
-input *types.UserRegistrationInput,
+	input *types.UserRegistrationInput,
 ) (*types.UserCreationResponse, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -28,20 +24,17 @@ input *types.UserRegistrationInput,
 		return nil, ErrNilInputProvided
 	}
 
-
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/users" ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/users"))
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a UserCreationResponse")
 	}
 
-	var apiResponse *types.APIResponse[ *types.UserCreationResponse]
+	var apiResponse *types.APIResponse[*types.UserCreationResponse]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading UserCreationResponse creation response")
 	}
@@ -49,7 +42,6 @@ input *types.UserRegistrationInput,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

@@ -2,19 +2,15 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetMealPlans(
 	ctx context.Context,
@@ -31,15 +27,15 @@ func (c *Client) GetMealPlans(
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
- 
+	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, filter.ToValues(), fmt.Sprintf("/api/v1/meal_plans" ))
+	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/meal_plans"))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of MealPlan")
 	}
-	
-	var apiResponse *types.APIResponse[ []*types.MealPlan]
+
+	var apiResponse *types.APIResponse[[]*types.MealPlan]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of MealPlan")
 	}

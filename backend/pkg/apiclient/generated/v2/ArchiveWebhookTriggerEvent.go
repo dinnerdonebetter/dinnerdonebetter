@@ -2,25 +2,21 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) ArchiveWebhookTriggerEvent(
 	ctx context.Context,
-webhookID string,
-webhookTriggerEventID string,
+	webhookID string,
+	webhookTriggerEventID string,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -28,33 +24,31 @@ webhookTriggerEventID string,
 	logger := c.logger.Clone()
 
 	if webhookID == "" {
-		return  ErrInvalidIDProvided
-	} 
+		return ErrInvalidIDProvided
+	}
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 
 	if webhookTriggerEventID == "" {
-		return  ErrInvalidIDProvided
-	} 
+		return ErrInvalidIDProvided
+	}
 	logger = logger.WithValue(keys.WebhookTriggerEventIDKey, webhookTriggerEventID)
 	tracing.AttachToSpan(span, keys.WebhookTriggerEventIDKey, webhookTriggerEventID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/webhooks/%s/trigger_events/%s" , webhookID , webhookTriggerEventID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/webhooks/%s/trigger_events/%s", webhookID, webhookTriggerEventID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, http.NoBody)
 	if err != nil {
-		return  observability.PrepareAndLogError(err, logger, span, "building request to create a WebhookTriggerEvent")
+		return observability.PrepareAndLogError(err, logger, span, "building request to create a WebhookTriggerEvent")
 	}
 
-	var apiResponse *types.APIResponse[ *types.WebhookTriggerEvent]
+	var apiResponse *types.APIResponse[*types.WebhookTriggerEvent]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return  observability.PrepareAndLogError(err, logger, span, "loading WebhookTriggerEvent creation response")
+		return observability.PrepareAndLogError(err, logger, span, "loading WebhookTriggerEvent creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
-		return  err
+		return err
 	}
 
-	return  nil
+	return nil
 }

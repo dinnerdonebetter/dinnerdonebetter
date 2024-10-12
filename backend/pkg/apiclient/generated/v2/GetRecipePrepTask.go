@@ -2,26 +2,22 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetRecipePrepTask(
 	ctx context.Context,
-recipeID string,
-recipePrepTaskID string,
-) ( *types.RecipePrepTask, error) {
+	recipeID string,
+	recipePrepTaskID string,
+) (*types.RecipePrepTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -29,25 +25,23 @@ recipePrepTaskID string,
 
 	if recipeID == "" {
 		return nil, buildInvalidIDError("recipe")
-	} 
+	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipePrepTaskID == "" {
 		return nil, buildInvalidIDError("recipePrepTask")
-	} 
+	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/recipes/%s/prep_tasks/%s" , recipeID , recipePrepTaskID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/recipes/%s/prep_tasks/%s", recipeID, recipePrepTaskID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a RecipePrepTask")
 	}
 
-	var apiResponse *types.APIResponse[  *types.RecipePrepTask]
+	var apiResponse *types.APIResponse[*types.RecipePrepTask]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading RecipePrepTask response")
 	}
@@ -55,7 +49,6 @@ recipePrepTaskID string,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

@@ -316,11 +316,11 @@ func (u *User) IsBanned() bool {
 }
 
 // ValidateWithContext ensures our provided UserRegistrationInput meets expectations.
-func (i *UserRegistrationInput) ValidateWithContext(ctx context.Context, minUsernameLength, minPasswordLength uint8) error {
+func (i *UserRegistrationInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.EmailAddress, validation.Required, is.EmailFormat),
-		validation.Field(&i.Username, validation.Required, validation.Length(int(minUsernameLength), math.MaxInt8)),
-		validation.Field(&i.Password, validation.Required, validation.Length(int(minPasswordLength), math.MaxInt8)),
+		validation.Field(&i.Username, validation.Required, validation.Length(8, math.MaxInt8)),
+		validation.Field(&i.Password, validation.Required, validation.Length(8, math.MaxInt8)),
 	)
 }
 
@@ -335,10 +335,10 @@ func (i *TOTPSecretVerificationInput) ValidateWithContext(ctx context.Context) e
 }
 
 // ValidateWithContext ensures our provided UserLoginInput meets expectations.
-func (i *UserLoginInput) ValidateWithContext(ctx context.Context, minUsernameLength, minPasswordLength uint8) error {
+func (i *UserLoginInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
-		validation.Field(&i.Username, validation.Required, validation.Length(int(minUsernameLength), math.MaxInt8)),
-		validation.Field(&i.Password, validation.Required, validation.Length(int(minPasswordLength), math.MaxInt8)),
+		validation.Field(&i.Username, validation.Required, validation.Length(8, math.MaxInt8)),
+		validation.Field(&i.Password, validation.Required, validation.Length(8, math.MaxInt8)),
 	)
 }
 
@@ -403,5 +403,14 @@ func (i *UserDetailsUpdateRequestInput) ValidateWithContext(ctx context.Context)
 		validation.Field(&i.FirstName, validation.Required),
 		validation.Field(&i.CurrentPassword, validation.Required),
 		validation.Field(&i.TOTPToken, validation.When(i.TOTPToken != "", totpTokenLengthRule)),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*AvatarUpdateInput)(nil)
+
+// ValidateWithContext ensures our provided AvatarUpdateInput meets expectations.
+func (i *AvatarUpdateInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, i,
+		validation.Field(&i.Base64EncodedData, validation.Required),
 	)
 }

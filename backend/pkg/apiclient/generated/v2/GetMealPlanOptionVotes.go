@@ -2,20 +2,16 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetMealPlanOptionVotes(
 	ctx context.Context,
@@ -37,31 +33,31 @@ func (c *Client) GetMealPlanOptionVotes(
 
 	if mealPlanID == "" {
 		return nil, buildInvalidIDError("mealPlan")
-	} 
+	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, buildInvalidIDError("mealPlanEvent")
-	} 
+	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, buildInvalidIDError("mealPlanOption")
-	} 
+	}
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
- 
+	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, filter.ToValues(), fmt.Sprintf("/api/v1/meal_plans/%s/events/%s/options/%s/votes" , mealPlanID , mealPlanEventID , mealPlanOptionID ))
+	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/meal_plans/%s/events/%s/options/%s/votes", mealPlanID, mealPlanEventID, mealPlanOptionID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of MealPlanOptionVote")
 	}
-	
-	var apiResponse *types.APIResponse[ []*types.MealPlanOptionVote]
+
+	var apiResponse *types.APIResponse[[]*types.MealPlanOptionVote]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of MealPlanOptionVote")
 	}

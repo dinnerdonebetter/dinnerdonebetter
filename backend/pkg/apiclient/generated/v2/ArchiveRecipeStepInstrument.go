@@ -2,26 +2,22 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) ArchiveRecipeStepInstrument(
 	ctx context.Context,
-recipeID string,
-recipeStepID string,
-recipeStepInstrumentID string,
+	recipeID string,
+	recipeStepID string,
+	recipeStepInstrumentID string,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -29,39 +25,37 @@ recipeStepInstrumentID string,
 	logger := c.logger.Clone()
 
 	if recipeID == "" {
-		return  ErrInvalidIDProvided
-	} 
+		return ErrInvalidIDProvided
+	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
-		return  ErrInvalidIDProvided
-	} 
+		return ErrInvalidIDProvided
+	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepInstrumentID == "" {
-		return  ErrInvalidIDProvided
-	} 
+		return ErrInvalidIDProvided
+	}
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/recipes/%s/steps/%s/instruments/%s" , recipeID , recipeStepID , recipeStepInstrumentID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/recipes/%s/steps/%s/instruments/%s", recipeID, recipeStepID, recipeStepInstrumentID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, http.NoBody)
 	if err != nil {
-		return  observability.PrepareAndLogError(err, logger, span, "building request to create a RecipeStepInstrument")
+		return observability.PrepareAndLogError(err, logger, span, "building request to create a RecipeStepInstrument")
 	}
 
-	var apiResponse *types.APIResponse[ *types.RecipeStepInstrument]
+	var apiResponse *types.APIResponse[*types.RecipeStepInstrument]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return  observability.PrepareAndLogError(err, logger, span, "loading RecipeStepInstrument creation response")
+		return observability.PrepareAndLogError(err, logger, span, "loading RecipeStepInstrument creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
-		return  err
+		return err
 	}
 
-	return  nil
+	return nil
 }

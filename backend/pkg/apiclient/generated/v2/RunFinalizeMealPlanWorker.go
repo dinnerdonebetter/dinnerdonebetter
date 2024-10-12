@@ -2,22 +2,18 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) RunFinalizeMealPlanWorker(
 	ctx context.Context,
-input *types.FinalizeMealPlansRequest,
+	input *types.FinalizeMealPlansRequest,
 ) (*types.FinalizeMealPlansResponse, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -28,20 +24,17 @@ input *types.FinalizeMealPlansRequest,
 		return nil, ErrNilInputProvided
 	}
 
-
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/workers/finalize_meal_plans" ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/workers/finalize_meal_plans"))
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a FinalizeMealPlansResponse")
 	}
 
-	var apiResponse *types.APIResponse[ *types.FinalizeMealPlansResponse]
+	var apiResponse *types.APIResponse[*types.FinalizeMealPlansResponse]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading FinalizeMealPlansResponse creation response")
 	}
@@ -49,7 +42,6 @@ input *types.FinalizeMealPlansRequest,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

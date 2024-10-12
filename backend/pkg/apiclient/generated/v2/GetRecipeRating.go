@@ -2,26 +2,22 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetRecipeRating(
 	ctx context.Context,
-recipeID string,
-recipeRatingID string,
-) ( *types.RecipeRating, error) {
+	recipeID string,
+	recipeRatingID string,
+) (*types.RecipeRating, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -29,25 +25,23 @@ recipeRatingID string,
 
 	if recipeID == "" {
 		return nil, buildInvalidIDError("recipe")
-	} 
+	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
 		return nil, buildInvalidIDError("recipeRating")
-	} 
+	}
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/recipes/%s/ratings/%s" , recipeID , recipeRatingID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/recipes/%s/ratings/%s", recipeID, recipeRatingID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a RecipeRating")
 	}
 
-	var apiResponse *types.APIResponse[  *types.RecipeRating]
+	var apiResponse *types.APIResponse[*types.RecipeRating]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading RecipeRating response")
 	}
@@ -55,7 +49,6 @@ recipeRatingID string,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

@@ -2,20 +2,16 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetValidIngredientsByPreparation(
 	ctx context.Context,
@@ -36,25 +32,26 @@ func (c *Client) GetValidIngredientsByPreparation(
 
 	if q == "" {
 		return nil, buildInvalidIDError("q")
-	} 
+	}
 	logger = logger.WithValue(keys.SearchQueryKey, q)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, q)
 
 	if validPreparationID == "" {
 		return nil, buildInvalidIDError("validPreparation")
-	} 
+	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
- 
+	values := filter.ToValues()
+	values.Set(types.QueryKeySearch, q)
 
-	u := c.BuildURL(ctx, filter.ToValues(), fmt.Sprintf("/api/v1/valid_ingredients/by_preparation/%s" , q , validPreparationID ))
+	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/valid_ingredients/by_preparation/%s", validPreparationID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of ValidIngredient")
 	}
-	
-	var apiResponse *types.APIResponse[ []*types.ValidIngredient]
+
+	var apiResponse *types.APIResponse[[]*types.ValidIngredient]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of ValidIngredient")
 	}

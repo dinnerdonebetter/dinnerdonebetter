@@ -2,6 +2,7 @@ package golang
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"regexp"
 	"slices"
@@ -359,7 +360,12 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 
 {{ end }} 
 
-	u := c.BuildURL(ctx, filter.ToValues(), fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
+	values := filter.ToValues()
+	{{ if paramsContain .Params "q" -}}
+	values.Set(types.QueryKeySearch, q)
+	{{- end }}
+
+	u := c.BuildURL(ctx, values, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}))
 	req, err := http.NewRequestWithContext(ctx, http.Method{{ title .Method }}, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of {{ .ResponseType.TypeName }}")
@@ -404,7 +410,7 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 	logger := c.logger.Clone()
 
 {{ range .Params }}	if {{ .Name }} == "" {
-		return nil, buildInvalidIDError("{{ replace .Name "ID" "" }}")
+		return {{ if notNative $.ResponseType.TypeName }}nil{{ else }} {{ nativeDefault $.ResponseType.TypeName }}{{ end }}, buildInvalidIDError("{{ replace .Name "ID" "" }}")
 	} 
 	logger = logger.WithValue(keys.{{ observabilityKey .Name }}Key, {{ .Name }})
 	tracing.AttachToSpan(span, keys.{{ observabilityKey .Name }}Key, {{ .Name }})
@@ -414,16 +420,16 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
 	req, err := http.NewRequestWithContext(ctx, http.Method{{ title .Method }}, u, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a {{ .ResponseType.TypeName }}")
+		return {{ if notNative .ResponseType.TypeName }}nil{{ else }} {{ nativeDefault .ResponseType.TypeName }}{{ end }}, observability.PrepareAndLogError(err, logger, span, "building request to fetch a {{ .ResponseType.TypeName }}")
 	}
 
 	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}{{ if notNative .ResponseType.TypeName }} *types.{{ end }}{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading {{ .ResponseType.TypeName }} response")
+		return {{ if notNative .ResponseType.TypeName }}nil{{ else }} {{ nativeDefault .ResponseType.TypeName }}{{ end }}, observability.PrepareAndLogError(err, logger, span, "loading {{ .ResponseType.TypeName }} response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
-		return nil, err
+		return {{ if notNative .ResponseType.TypeName }}nil{{ else }} {{ nativeDefault .ResponseType.TypeName }}{{ end }}, err
 	}
 
 
@@ -453,11 +459,11 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 
 	logger := c.logger.Clone()
 
+{{ if ne .InputType.Type "" }}
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
-{{ if ne .InputType.Type "" }}
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
@@ -471,7 +477,7 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 {{ end }} 
 
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
-	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, input)
+	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, {{ if ne .InputType.Type "" }}input{{ else }}http.NoBody{{ end }})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
 	}
@@ -671,6 +677,23 @@ input *types.{{ .InputType.Type }},
 			}
 
 			return out
+		},
+		"nativeDefault": func(s string) string {
+			switch s {
+			case "string":
+				return `""`
+			default:
+				panic(fmt.Sprintf("aaaaaaaaaaaaaaaa bad type: %s", s))
+			}
+		},
+		"paramsContain": func(x []functionParam, y string) bool {
+			for _, z := range x {
+				if z.Name == types.QueryKeySearch {
+					return true
+				}
+			}
+
+			return false
 		},
 	}).Parse(tmpl))
 

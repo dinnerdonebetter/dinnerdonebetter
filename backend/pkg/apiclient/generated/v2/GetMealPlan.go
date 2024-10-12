@@ -2,25 +2,21 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetMealPlan(
 	ctx context.Context,
-mealPlanID string,
-) ( *types.MealPlan, error) {
+	mealPlanID string,
+) (*types.MealPlan, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -28,19 +24,17 @@ mealPlanID string,
 
 	if mealPlanID == "" {
 		return nil, buildInvalidIDError("mealPlan")
-	} 
+	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/meal_plans/%s" , mealPlanID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/meal_plans/%s", mealPlanID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a MealPlan")
 	}
 
-	var apiResponse *types.APIResponse[  *types.MealPlan]
+	var apiResponse *types.APIResponse[*types.MealPlan]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading MealPlan response")
 	}
@@ -48,7 +42,6 @@ mealPlanID string,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

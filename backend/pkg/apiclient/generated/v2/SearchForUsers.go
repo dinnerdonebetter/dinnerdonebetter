@@ -2,20 +2,16 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetSearchForUsers(
 	ctx context.Context,
@@ -35,19 +31,20 @@ func (c *Client) GetSearchForUsers(
 
 	if q == "" {
 		return nil, buildInvalidIDError("q")
-	} 
+	}
 	logger = logger.WithValue(keys.SearchQueryKey, q)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, q)
 
- 
+	values := filter.ToValues()
+	values.Set(types.QueryKeySearch, q)
 
-	u := c.BuildURL(ctx, filter.ToValues(), fmt.Sprintf("/api/v1/users/search" , q ))
+	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/users/search"))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of User")
 	}
-	
-	var apiResponse *types.APIResponse[ []*types.User]
+
+	var apiResponse *types.APIResponse[[]*types.User]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of User")
 	}

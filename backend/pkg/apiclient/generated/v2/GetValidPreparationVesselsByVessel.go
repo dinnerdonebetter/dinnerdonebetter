@@ -2,20 +2,16 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetValidPreparationVesselsByVessel(
 	ctx context.Context,
@@ -35,19 +31,19 @@ func (c *Client) GetValidPreparationVesselsByVessel(
 
 	if ValidVesselID == "" {
 		return nil, buildInvalidIDError("ValidVessel")
-	} 
+	}
 	logger = logger.WithValue(keys.ValidVesselIDKey, ValidVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, ValidVesselID)
 
- 
+	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, filter.ToValues(), fmt.Sprintf("/api/v1/valid_preparation_vessels/by_vessel/%s" , ValidVesselID ))
+	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/valid_preparation_vessels/by_vessel/%s", ValidVesselID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of ValidPreparationVessel")
 	}
-	
-	var apiResponse *types.APIResponse[ []*types.ValidPreparationVessel]
+
+	var apiResponse *types.APIResponse[[]*types.ValidPreparationVessel]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of ValidPreparationVessel")
 	}

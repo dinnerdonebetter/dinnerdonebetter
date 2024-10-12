@@ -49,7 +49,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		loginData.Password = strings.TrimSpace(loginData.Password)
 		loginData.Username = strings.TrimSpace(loginData.Username)
 
-		if err := loginData.ValidateWithContext(ctx, s.config.MinimumUsernameLength, s.config.MinimumPasswordLength); err != nil {
+		if err := loginData.ValidateWithContext(ctx); err != nil {
 			observability.AcknowledgeError(err, logger, span, "validating input")
 			errRes := types.NewAPIErrorResponse("invalid login body", types.ErrValidatingRequestInput, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)

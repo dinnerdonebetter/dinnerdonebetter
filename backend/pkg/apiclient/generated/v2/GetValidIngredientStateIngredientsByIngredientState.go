@@ -2,20 +2,16 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetValidIngredientStateIngredientsByIngredientState(
 	ctx context.Context,
@@ -35,19 +31,19 @@ func (c *Client) GetValidIngredientStateIngredientsByIngredientState(
 
 	if validIngredientStateID == "" {
 		return nil, buildInvalidIDError("validIngredientState")
-	} 
+	}
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
- 
+	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, filter.ToValues(), fmt.Sprintf("/api/v1/valid_ingredient_state_ingredients/by_ingredient_state/%s" , validIngredientStateID ))
+	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/valid_ingredient_state_ingredients/by_ingredient_state/%s", validIngredientStateID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of ValidIngredientStateIngredient")
 	}
-	
-	var apiResponse *types.APIResponse[ []*types.ValidIngredientStateIngredient]
+
+	var apiResponse *types.APIResponse[[]*types.ValidIngredientStateIngredient]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of ValidIngredientStateIngredient")
 	}

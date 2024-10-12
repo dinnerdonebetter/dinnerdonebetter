@@ -2,22 +2,18 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) CreateServiceSetting(
 	ctx context.Context,
-input *types.ServiceSettingCreationRequestInput,
+	input *types.ServiceSettingCreationRequestInput,
 ) (*types.ServiceSetting, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -28,20 +24,17 @@ input *types.ServiceSettingCreationRequestInput,
 		return nil, ErrNilInputProvided
 	}
 
-
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/settings" ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/settings"))
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a ServiceSetting")
 	}
 
-	var apiResponse *types.APIResponse[ *types.ServiceSetting]
+	var apiResponse *types.APIResponse[*types.ServiceSetting]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading ServiceSetting creation response")
 	}
@@ -49,7 +42,6 @@ input *types.ServiceSettingCreationRequestInput,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

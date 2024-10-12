@@ -2,25 +2,21 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetValidIngredientState(
 	ctx context.Context,
-validIngredientStateID string,
-) ( *types.ValidIngredientState, error) {
+	validIngredientStateID string,
+) (*types.ValidIngredientState, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -28,19 +24,17 @@ validIngredientStateID string,
 
 	if validIngredientStateID == "" {
 		return nil, buildInvalidIDError("validIngredientState")
-	} 
+	}
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_ingredient_states/%s" , validIngredientStateID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_ingredient_states/%s", validIngredientStateID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a ValidIngredientState")
 	}
 
-	var apiResponse *types.APIResponse[  *types.ValidIngredientState]
+	var apiResponse *types.APIResponse[*types.ValidIngredientState]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading ValidIngredientState response")
 	}
@@ -48,7 +42,6 @@ validIngredientStateID string,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

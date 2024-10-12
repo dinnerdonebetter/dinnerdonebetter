@@ -205,7 +205,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		keys.HouseholdInvitationTokenKey: registrationInput.InvitationToken,
 	})
 
-	if err := registrationInput.ValidateWithContext(ctx, s.authSettings.MinimumUsernameLength, s.authSettings.MinimumPasswordLength); err != nil {
+	if err := registrationInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)

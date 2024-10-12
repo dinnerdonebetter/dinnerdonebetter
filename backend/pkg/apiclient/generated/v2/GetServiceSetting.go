@@ -2,25 +2,21 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetServiceSetting(
 	ctx context.Context,
-serviceSettingID string,
-) ( *types.ServiceSetting, error) {
+	serviceSettingID string,
+) (*types.ServiceSetting, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -28,19 +24,17 @@ serviceSettingID string,
 
 	if serviceSettingID == "" {
 		return nil, buildInvalidIDError("serviceSetting")
-	} 
+	}
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/settings/%s" , serviceSettingID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/settings/%s", serviceSettingID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a ServiceSetting")
 	}
 
-	var apiResponse *types.APIResponse[  *types.ServiceSetting]
+	var apiResponse *types.APIResponse[*types.ServiceSetting]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading ServiceSetting response")
 	}
@@ -48,7 +42,6 @@ serviceSettingID string,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

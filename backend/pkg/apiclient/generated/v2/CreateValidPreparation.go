@@ -2,22 +2,18 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) CreateValidPreparation(
 	ctx context.Context,
-input *types.ValidPreparationCreationRequestInput,
+	input *types.ValidPreparationCreationRequestInput,
 ) (*types.ValidPreparation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -28,20 +24,17 @@ input *types.ValidPreparationCreationRequestInput,
 		return nil, ErrNilInputProvided
 	}
 
-
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_preparations" ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_preparations"))
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a ValidPreparation")
 	}
 
-	var apiResponse *types.APIResponse[ *types.ValidPreparation]
+	var apiResponse *types.APIResponse[*types.ValidPreparation]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading ValidPreparation creation response")
 	}
@@ -49,7 +42,6 @@ input *types.ValidPreparationCreationRequestInput,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

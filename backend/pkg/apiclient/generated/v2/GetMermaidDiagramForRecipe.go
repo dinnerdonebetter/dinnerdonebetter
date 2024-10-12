@@ -2,24 +2,20 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetMermaidDiagramForRecipe(
 	ctx context.Context,
-recipeID string,
+	recipeID string,
 ) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -27,28 +23,25 @@ recipeID string,
 	logger := c.logger.Clone()
 
 	if recipeID == "" {
-		return nil, buildInvalidIDError("recipe")
-	} 
+		return "", buildInvalidIDError("recipe")
+	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/recipes/%s/mermaid" , recipeID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/recipes/%s/mermaid", recipeID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a string")
+		return "", observability.PrepareAndLogError(err, logger, span, "building request to fetch a string")
 	}
 
-	var apiResponse *types.APIResponse[ string]
+	var apiResponse *types.APIResponse[string]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading string response")
+		return "", observability.PrepareAndLogError(err, logger, span, "loading string response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
-		return nil, err
+		return "", err
 	}
-
 
 	return apiResponse.Data, nil
 }

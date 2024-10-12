@@ -2,25 +2,21 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) GetAuditLogEntryByID(
 	ctx context.Context,
-auditLogEntryID string,
-) ( *types.AuditLogEntry, error) {
+	auditLogEntryID string,
+) (*types.AuditLogEntry, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -28,19 +24,17 @@ auditLogEntryID string,
 
 	if auditLogEntryID == "" {
 		return nil, buildInvalidIDError("auditLogEntry")
-	} 
+	}
 	logger = logger.WithValue(keys.AuditLogEntryIDKey, auditLogEntryID)
 	tracing.AttachToSpan(span, keys.AuditLogEntryIDKey, auditLogEntryID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/audit_log_entries/%s" , auditLogEntryID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/audit_log_entries/%s", auditLogEntryID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a AuditLogEntry")
 	}
 
-	var apiResponse *types.APIResponse[  *types.AuditLogEntry]
+	var apiResponse *types.APIResponse[*types.AuditLogEntry]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading AuditLogEntry response")
 	}
@@ -48,7 +42,6 @@ auditLogEntryID string,
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }

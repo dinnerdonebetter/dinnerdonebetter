@@ -2,24 +2,20 @@
 
 package apiclient
 
-
-
-
 import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
-
 
 func (c *Client) ArchiveValidPreparationInstrument(
 	ctx context.Context,
-validPreparationVesselID string,
+	validPreparationVesselID string,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -27,27 +23,25 @@ validPreparationVesselID string,
 	logger := c.logger.Clone()
 
 	if validPreparationVesselID == "" {
-		return  ErrInvalidIDProvided
-	} 
+		return ErrInvalidIDProvided
+	}
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
- 
-
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_preparation_instruments/%s" , validPreparationVesselID ))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_preparation_instruments/%s", validPreparationVesselID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, http.NoBody)
 	if err != nil {
-		return  observability.PrepareAndLogError(err, logger, span, "building request to create a ValidPreparationInstrument")
+		return observability.PrepareAndLogError(err, logger, span, "building request to create a ValidPreparationInstrument")
 	}
 
-	var apiResponse *types.APIResponse[ *types.ValidPreparationInstrument]
+	var apiResponse *types.APIResponse[*types.ValidPreparationInstrument]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return  observability.PrepareAndLogError(err, logger, span, "loading ValidPreparationInstrument creation response")
+		return observability.PrepareAndLogError(err, logger, span, "loading ValidPreparationInstrument creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
-		return  err
+		return err
 	}
 
-	return  nil
+	return nil
 }
