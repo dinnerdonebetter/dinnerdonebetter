@@ -37,7 +37,7 @@ func (s *validPreparationVesselsBaseSuite) SetupTest() {
 	s.exampleValidPreparationVesselResponse = &types.APIResponse[*types.ValidPreparationVessel]{
 		Data: s.exampleValidPreparationVessel,
 	}
-	exampleList := fakes.BuildFakeValidPreparationVesselList()
+	exampleList := fakes.BuildFakeValidPreparationVesselsList()
 	s.exampleValidPreparationVesselList = exampleList.Data
 	s.exampleValidPreparationVesselListResponse = &types.APIResponse[[]*types.ValidPreparationVessel]{
 		Data:       exampleList.Data,

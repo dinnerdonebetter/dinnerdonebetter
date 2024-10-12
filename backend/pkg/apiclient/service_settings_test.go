@@ -37,7 +37,7 @@ func (s *serviceSettingsBaseSuite) SetupTest() {
 		Data: s.exampleServiceSetting,
 	}
 
-	exampleList := fakes.BuildFakeServiceSettingList()
+	exampleList := fakes.BuildFakeServiceSettingsList()
 	s.exampleServiceSettingList = exampleList.Data
 	s.exampleServiceSettingListResponse = &types.APIResponse[[]*types.ServiceSetting]{
 		Data:       s.exampleServiceSettingList,

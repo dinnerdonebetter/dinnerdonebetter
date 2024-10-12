@@ -21,8 +21,8 @@ func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 	}
 }
 
-// BuildFakeMealPlanOptionVoteList builds a faked MealPlanOptionVoteList.
-func BuildFakeMealPlanOptionVoteList() *types.QueryFilteredResult[types.MealPlanOptionVote] {
+// BuildFakeMealPlanOptionVotesList builds a faked MealPlanOptionVoteList.
+func BuildFakeMealPlanOptionVotesList() *types.QueryFilteredResult[types.MealPlanOptionVote] {
 	var examples []*types.MealPlanOptionVote
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanOptionVote())

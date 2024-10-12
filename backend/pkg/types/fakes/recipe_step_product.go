@@ -35,8 +35,8 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 	return p
 }
 
-// BuildFakeRecipeStepProductList builds a faked RecipeStepProductList.
-func BuildFakeRecipeStepProductList() *types.QueryFilteredResult[types.RecipeStepProduct] {
+// BuildFakeRecipeStepProductsList builds a faked RecipeStepProductList.
+func BuildFakeRecipeStepProductsList() *types.QueryFilteredResult[types.RecipeStepProduct] {
 	var examples []*types.RecipeStepProduct
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepProduct())

@@ -312,7 +312,7 @@ func TestValidVesselsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidVesselList := fakes.BuildFakeValidVesselList()
+		exampleValidVesselList := fakes.BuildFakeValidVesselsList()
 
 		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
 		validVesselDataManager.On(
@@ -402,7 +402,7 @@ func TestValidVesselsService_SearchHandler(T *testing.T) {
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidVesselList := fakes.BuildFakeValidVesselList()
+	exampleValidVesselList := fakes.BuildFakeValidVesselsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

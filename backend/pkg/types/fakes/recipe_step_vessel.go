@@ -23,8 +23,8 @@ func BuildFakeRecipeStepVessel() *types.RecipeStepVessel {
 	}
 }
 
-// BuildFakeRecipeStepVesselList builds a faked RecipeStepVesselList.
-func BuildFakeRecipeStepVesselList() *types.QueryFilteredResult[types.RecipeStepVessel] {
+// BuildFakeRecipeStepVesselsList builds a faked RecipeStepVesselList.
+func BuildFakeRecipeStepVesselsList() *types.QueryFilteredResult[types.RecipeStepVessel] {
 	var examples []*types.RecipeStepVessel
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepVessel())

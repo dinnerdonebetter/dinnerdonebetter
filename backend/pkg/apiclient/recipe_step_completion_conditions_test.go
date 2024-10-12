@@ -43,7 +43,7 @@ func (s *recipeStepCompletionConditionsBaseSuite) SetupTest() {
 		Data: s.exampleRecipeStepCompletionCondition,
 	}
 
-	exampleList := fakes.BuildFakeRecipeStepCompletionConditionList()
+	exampleList := fakes.BuildFakeRecipeStepCompletionConditionsList()
 	s.exampleRecipeStepCompletionConditionList = exampleList.Data
 	s.exampleRecipeStepCompletionConditionListResponse = &types.APIResponse[[]*types.RecipeStepCompletionCondition]{
 		Data:       s.exampleRecipeStepCompletionConditionList,

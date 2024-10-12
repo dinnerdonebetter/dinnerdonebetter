@@ -532,7 +532,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		exampleHouseholdInvitations := fakes.BuildFakeHouseholdInvitationList()
+		exampleHouseholdInvitations := fakes.BuildFakeHouseholdInvitationsList()
 
 		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
@@ -604,7 +604,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		exampleHouseholdInvitations := fakes.BuildFakeHouseholdInvitationList()
+		exampleHouseholdInvitations := fakes.BuildFakeHouseholdInvitationsList()
 
 		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(

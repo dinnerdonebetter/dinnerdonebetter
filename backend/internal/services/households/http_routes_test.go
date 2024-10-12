@@ -31,7 +31,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleHouseholdList := fakes.BuildFakeHouseholdList()
+		exampleHouseholdList := fakes.BuildFakeHouseholdsList()
 
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(

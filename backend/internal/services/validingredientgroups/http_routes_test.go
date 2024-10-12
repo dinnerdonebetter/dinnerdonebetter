@@ -310,7 +310,7 @@ func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidIngredientGroupList := fakes.BuildFakeValidIngredientGroupList()
+		exampleValidIngredientGroupList := fakes.BuildFakeValidIngredientGroupsList()
 
 		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
@@ -392,7 +392,7 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidIngredientGroupList := fakes.BuildFakeValidIngredientGroupList()
+	exampleValidIngredientGroupList := fakes.BuildFakeValidIngredientGroupsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

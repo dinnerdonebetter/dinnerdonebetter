@@ -17,8 +17,8 @@ func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurement
 	}
 }
 
-// BuildFakeValidIngredientMeasurementUnitList builds a faked ValidIngredientMeasurementUnitList.
-func BuildFakeValidIngredientMeasurementUnitList() *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit] {
+// BuildFakeValidIngredientMeasurementUnitsList builds a faked ValidIngredientMeasurementUnitList.
+func BuildFakeValidIngredientMeasurementUnitsList() *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit] {
 	var examples []*types.ValidIngredientMeasurementUnit
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidIngredientMeasurementUnit())

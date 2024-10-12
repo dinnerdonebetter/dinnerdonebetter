@@ -38,7 +38,7 @@ func (s *validPreparationInstrumentsBaseSuite) SetupTest() {
 		Data: s.exampleValidPreparationInstrument,
 	}
 
-	exampleList := fakes.BuildFakeValidPreparationInstrumentList()
+	exampleList := fakes.BuildFakeValidPreparationInstrumentsList()
 
 	s.exampleValidPreparationInstrumentList = exampleList.Data
 	s.exampleValidPreparationInstrumentListResponse = &types.APIResponse[[]*types.ValidPreparationInstrument]{

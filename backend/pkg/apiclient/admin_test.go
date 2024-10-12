@@ -31,7 +31,7 @@ var _ suite.SetupTestSuite = (*adminTestSuite)(nil)
 func (s *adminTestSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleHousehold = fakes.BuildFakeHousehold()
-	s.exampleHouseholdList = fakes.BuildFakeHouseholdList()
+	s.exampleHouseholdList = fakes.BuildFakeHouseholdsList()
 }
 
 func (s *adminTestSuite) TestClient_UpdateAccountStatus() {

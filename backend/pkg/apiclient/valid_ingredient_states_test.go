@@ -33,7 +33,7 @@ var _ suite.SetupTestSuite = (*validIngredientStatesBaseSuite)(nil)
 
 func (s *validIngredientStatesBaseSuite) SetupTest() {
 	s.ctx = context.Background()
-	exampleList := fakes.BuildFakeValidIngredientStateList()
+	exampleList := fakes.BuildFakeValidIngredientStatesList()
 	s.exampleValidIngredientState = fakes.BuildFakeValidIngredientState()
 	s.exampleValidIngredientStateList = exampleList.Data
 	s.exampleValidIngredientStateResponse = &types.APIResponse[*types.ValidIngredientState]{

@@ -38,8 +38,8 @@ func BuildFakeRecipeStepCompletionConditionIngredient() *types.RecipeStepComplet
 	}
 }
 
-// BuildFakeRecipeStepCompletionConditionList builds a faked RecipeStepCompletionConditionList.
-func BuildFakeRecipeStepCompletionConditionList() *types.QueryFilteredResult[types.RecipeStepCompletionCondition] {
+// BuildFakeRecipeStepCompletionConditionsList builds a faked RecipeStepCompletionConditionList.
+func BuildFakeRecipeStepCompletionConditionsList() *types.QueryFilteredResult[types.RecipeStepCompletionCondition] {
 	var examples []*types.RecipeStepCompletionCondition
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepCompletionCondition())

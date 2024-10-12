@@ -312,7 +312,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
+		exampleValidPreparationList := fakes.BuildFakeValidPreparationsList()
 
 		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
@@ -402,7 +402,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
+	exampleValidPreparationList := fakes.BuildFakeValidPreparationsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

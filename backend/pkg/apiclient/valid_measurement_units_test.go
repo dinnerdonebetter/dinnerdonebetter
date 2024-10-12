@@ -38,7 +38,7 @@ func (s *validMeasurementUnitsBaseSuite) SetupTest() {
 		Data: s.exampleValidMeasurementUnit,
 	}
 
-	exampleList := fakes.BuildFakeValidMeasurementUnitList()
+	exampleList := fakes.BuildFakeValidMeasurementUnitsList()
 	s.exampleValidMeasurementUnitList = exampleList.Data
 	s.exampleValidMeasurementUnitListResponse = &types.APIResponse[[]*types.ValidMeasurementUnit]{
 		Data:       s.exampleValidMeasurementUnitList,

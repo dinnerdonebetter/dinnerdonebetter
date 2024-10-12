@@ -33,8 +33,8 @@ func BuildFakeUser() *types.User {
 	}
 }
 
-// BuildFakeUserList builds a faked UserList.
-func BuildFakeUserList() *types.QueryFilteredResult[types.User] {
+// BuildFakeUsersList builds a faked UserList.
+func BuildFakeUsersList() *types.QueryFilteredResult[types.User] {
 	var examples []*types.User
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeUser())

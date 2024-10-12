@@ -34,7 +34,7 @@ var _ suite.SetupTestSuite = (*userNotificationsBaseSuite)(nil)
 func (s *userNotificationsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleUserNotification = fakes.BuildFakeUserNotification()
-	exampleUserNotificationList := fakes.BuildFakeUserNotificationList()
+	exampleUserNotificationList := fakes.BuildFakeUserNotificationsList()
 	s.exampleUserNotificationList = exampleUserNotificationList.Data
 	s.exampleUserNotificationResponse = &types.APIResponse[*types.UserNotification]{
 		Data: s.exampleUserNotification,

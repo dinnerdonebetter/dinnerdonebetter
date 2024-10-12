@@ -30,8 +30,8 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 	}
 }
 
-// BuildFakeValidPreparationList builds a faked ValidPreparationList.
-func BuildFakeValidPreparationList() *types.QueryFilteredResult[types.ValidPreparation] {
+// BuildFakeValidPreparationsList builds a faked ValidPreparationList.
+func BuildFakeValidPreparationsList() *types.QueryFilteredResult[types.ValidPreparation] {
 	var examples []*types.ValidPreparation
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidPreparation())

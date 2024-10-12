@@ -18,7 +18,7 @@ func BuildFakeMealPlanEvent() *types.MealPlanEvent {
 	inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
 
 	options := []*types.MealPlanOption{}
-	for _, opt := range BuildFakeMealPlanOptionList().Data {
+	for _, opt := range BuildFakeMealPlanOptionsList().Data {
 		opt.BelongsToMealPlanEvent = mealPlanEventID
 		options = append(options, opt)
 	}
@@ -42,8 +42,8 @@ func BuildFakeMealPlanEvent() *types.MealPlanEvent {
 	}
 }
 
-// BuildFakeMealPlanEventList builds a faked MealPlanEventList.
-func BuildFakeMealPlanEventList() *types.QueryFilteredResult[types.MealPlanEvent] {
+// BuildFakeMealPlanEventsList builds a faked MealPlanEventList.
+func BuildFakeMealPlanEventsList() *types.QueryFilteredResult[types.MealPlanEvent] {
 	var examples []*types.MealPlanEvent
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanEvent())

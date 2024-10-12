@@ -308,7 +308,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidIngredientPreparationList := fakes.BuildFakeValidIngredientPreparationList()
+		exampleValidIngredientPreparationList := fakes.BuildFakeValidIngredientPreparationsList()
 
 		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
@@ -832,7 +832,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 
 		helper := buildTestHelper(t)
 
-		exampleResponse := fakes.BuildFakeValidIngredientPreparationList()
+		exampleResponse := fakes.BuildFakeValidIngredientPreparationsList()
 
 		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
@@ -907,7 +907,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		exampleResponse := fakes.BuildFakeValidIngredientPreparationList()
+		exampleResponse := fakes.BuildFakeValidIngredientPreparationsList()
 
 		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(

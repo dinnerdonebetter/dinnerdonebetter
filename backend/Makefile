@@ -71,12 +71,6 @@ ifeq (, $(shell which scc))
 	$(shell go install github.com/boyter/scc@latest)
 endif
 
-.PHONY: ensure_oapi_codegen_installed
-ensure_oapi_codegen_installed:
-ifeq (, $(shell which scc))
-	$(shell go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0)
-endif
-
 .PHONY: clean_vendor
 clean_vendor:
 	rm -rf vendor go.sum
@@ -196,7 +190,7 @@ queries:
 	go run $(THIS)/cmd/tools/gen_queries
 
 codegen:
-	go run $(THIS)/cmd/tools/codegen/v2
+	go run $(THIS)/cmd/tools/codegen
 #	$(MAKE) format
 #	(cd ../frontend && $(MAKE) format)
 

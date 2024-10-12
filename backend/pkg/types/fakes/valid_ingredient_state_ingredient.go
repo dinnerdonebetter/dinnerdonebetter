@@ -16,8 +16,8 @@ func BuildFakeValidIngredientStateIngredient() *types.ValidIngredientStateIngred
 	}
 }
 
-// BuildFakeValidIngredientStateIngredientList builds a faked ValidIngredientStateIngredientList.
-func BuildFakeValidIngredientStateIngredientList() *types.QueryFilteredResult[types.ValidIngredientStateIngredient] {
+// BuildFakeValidIngredientStateIngredientsList builds a faked ValidIngredientStateIngredientList.
+func BuildFakeValidIngredientStateIngredientsList() *types.QueryFilteredResult[types.ValidIngredientStateIngredient] {
 	var examples []*types.ValidIngredientStateIngredient
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidIngredientStateIngredient())

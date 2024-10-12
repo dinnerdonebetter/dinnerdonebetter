@@ -38,7 +38,7 @@ func (s *householdsTestSuite) SetupTest() {
 	s.exampleHousehold = fakes.BuildFakeHousehold()
 	s.exampleHousehold.WebhookEncryptionKey = ""
 	s.exampleHousehold.BelongsToUser = s.exampleUser.ID
-	exampleHouseholdList := fakes.BuildFakeHouseholdList()
+	exampleHouseholdList := fakes.BuildFakeHouseholdsList()
 	for i := range exampleHouseholdList.Data {
 		exampleHouseholdList.Data[i].WebhookEncryptionKey = ""
 	}

@@ -314,7 +314,7 @@ func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleRecipeStepCompletionConditionList := fakes.BuildFakeRecipeStepCompletionConditionList()
+		exampleRecipeStepCompletionConditionList := fakes.BuildFakeRecipeStepCompletionConditionsList()
 
 		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(

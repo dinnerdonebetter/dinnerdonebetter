@@ -39,10 +39,10 @@ func (s *recipeStepVesselsBaseSuite) SetupTest() {
 	s.exampleRecipeStepID = fakes.BuildFakeID()
 	s.exampleRecipeStepVessel = fakes.BuildFakeRecipeStepVessel()
 	s.exampleRecipeStepVessel.BelongsToRecipeStep = s.exampleRecipeStepID
-	exampleRecipeStepVesselsList := fakes.BuildFakeRecipeStepVesselList()
+	exampleRecipeStepVesselsList := fakes.BuildFakeRecipeStepVesselsList()
 	s.exampleRecipeStepVesselsList = exampleRecipeStepVesselsList.Data
 	s.exampleRecipeStepVesselResponse = &types.APIResponse[*types.RecipeStepVessel]{
-		Data: s.exampleRecipeStepVessel,
+		Data: fakes.BuildFakeRecipeStepVessel(),
 	}
 	s.exampleRecipeStepVesselsListResponse = &types.APIResponse[[]*types.RecipeStepVessel]{
 		Data:       s.exampleRecipeStepVesselsList,
@@ -61,13 +61,23 @@ func (s *recipeStepVesselsTestSuite) TestClient_GetRecipeStepVessel() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepVessel.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVesselResponse)
-		actual, err := c.GetRecipeStepVessel(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepVessel.ID)
+		ctx := context.Background()
+		recipeID := fakes.BuildFakeID()
+		recipeStepID := fakes.BuildFakeID()
+		recipeStepVesselID := fakes.BuildFakeID()
+
+		data := fakes.BuildFakeRecipeStepVessel()
+		exampleRecipeStepVesselResponse := &types.APIResponse[*types.RecipeStepVessel]{
+			Data: data,
+		}
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, recipeID, recipeStepID, recipeStepVesselID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipeStepVesselResponse)
+		actual, err := c.GetRecipeStepVessel(ctx, recipeID, recipeStepID, recipeStepVesselID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleRecipeStepVessel, actual)
+		assert.Equal(t, data, actual)
 	})
 
 	s.Run("with invalid recipe ID", func() {

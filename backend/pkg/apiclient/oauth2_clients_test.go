@@ -35,7 +35,7 @@ func (s *oauth2ClientsTestSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleOAuth2Client = fakes.BuildFakeOAuth2Client()
 	s.exampleOAuth2Client.ClientSecret = ""
-	exampleOAuth2ClientList := fakes.BuildFakeOAuth2ClientList()
+	exampleOAuth2ClientList := fakes.BuildFakeOAuth2ClientsList()
 	for i := 0; i < len(exampleOAuth2ClientList.Data); i++ {
 		exampleOAuth2ClientList.Data[i].ClientSecret = ""
 	}

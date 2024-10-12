@@ -43,7 +43,7 @@ func (s *mealPlanTasksBaseSuite) SetupTest() {
 		Data: s.exampleMealPlanTask,
 	}
 	s.exampleMealPlanTaskStatusUpdate = fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
-	exampleMealPlanTaskList := fakes.BuildFakeMealPlanTaskList()
+	exampleMealPlanTaskList := fakes.BuildFakeMealPlanTasksList()
 	s.exampleMealPlanTaskList = exampleMealPlanTaskList.Data
 	s.exampleMealPlanTaskListResponse = &types.APIResponse[[]*types.MealPlanTask]{
 		Data:       exampleMealPlanTaskList.Data,

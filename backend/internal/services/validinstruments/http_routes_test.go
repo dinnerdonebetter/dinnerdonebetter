@@ -308,7 +308,7 @@ func TestValidInstrumentsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
+		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentsList()
 
 		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
@@ -399,7 +399,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
+	exampleValidInstrumentList := fakes.BuildFakeValidInstrumentsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

@@ -300,7 +300,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnitList()
+		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnitsList()
 
 		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
@@ -812,7 +812,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *tes
 
 		helper := buildTestHelper(t)
 
-		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnitList()
+		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnitsList()
 
 		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
@@ -887,7 +887,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByMeasurementUnitHandler(T
 
 		helper := buildTestHelper(t)
 
-		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnitList()
+		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnitsList()
 
 		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(

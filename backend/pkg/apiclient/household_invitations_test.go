@@ -42,7 +42,7 @@ func (s *householdInvitationsTestSuite) SetupTest() {
 	s.exampleHouseholdInvitationResponse = &types.APIResponse[*types.HouseholdInvitation]{
 		Data: s.exampleHouseholdInvitation,
 	}
-	exampleList := fakes.BuildFakeHouseholdInvitationList()
+	exampleList := fakes.BuildFakeHouseholdInvitationsList()
 	s.exampleHouseholdInvitationList = exampleList.Data
 	s.exampleHouseholdInvitationListResponse = &types.APIResponse[[]*types.HouseholdInvitation]{
 		Data:       s.exampleHouseholdInvitationList,

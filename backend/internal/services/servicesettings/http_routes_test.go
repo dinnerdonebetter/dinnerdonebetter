@@ -117,7 +117,7 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleServiceSettingList := fakes.BuildFakeServiceSettingList()
+		exampleServiceSettingList := fakes.BuildFakeServiceSettingsList()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
@@ -207,7 +207,7 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleServiceSettingList := fakes.BuildFakeServiceSettingList()
+	exampleServiceSettingList := fakes.BuildFakeServiceSettingsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

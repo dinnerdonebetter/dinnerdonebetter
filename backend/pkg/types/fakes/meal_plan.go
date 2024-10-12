@@ -36,8 +36,8 @@ func BuildFakeMealPlan() *types.MealPlan {
 	}
 }
 
-// BuildFakeMealPlanList builds a faked MealPlanList.
-func BuildFakeMealPlanList() *types.QueryFilteredResult[types.MealPlan] {
+// BuildFakeMealPlansList builds a faked MealPlanList.
+func BuildFakeMealPlansList() *types.QueryFilteredResult[types.MealPlan] {
 	var examples []*types.MealPlan
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlan())

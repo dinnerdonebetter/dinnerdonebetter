@@ -39,7 +39,7 @@ func (s *webhooksTestSuite) SetupTest() {
 	s.exampleWebhookResponse = &types.APIResponse[*types.Webhook]{
 		Data: s.exampleWebhook,
 	}
-	s.exampleWebhookList = fakes.BuildFakeWebhookList()
+	s.exampleWebhookList = fakes.BuildFakeWebhooksList()
 	s.exampleWebhookTriggerEvent = fakes.BuildFakeWebhookTriggerEvent()
 	s.exampleWebhookTriggerEventResponse = &types.APIResponse[*types.WebhookTriggerEvent]{
 		Data: s.exampleWebhookTriggerEvent,

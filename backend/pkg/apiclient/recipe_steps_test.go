@@ -41,7 +41,7 @@ func (s *recipeStepsBaseSuite) SetupTest() {
 		Data: s.exampleRecipeStep,
 	}
 
-	exampleList := fakes.BuildFakeRecipeStepList()
+	exampleList := fakes.BuildFakeRecipeStepsList()
 	s.exampleRecipeStepList = exampleList.Data
 	s.exampleRecipeStepListResponse = &types.APIResponse[[]*types.RecipeStep]{
 		Data:       s.exampleRecipeStepList,

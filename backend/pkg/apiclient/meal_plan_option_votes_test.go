@@ -41,7 +41,7 @@ func (s *mealPlanOptionVotesBaseSuite) SetupTest() {
 	s.exampleMealPlanOptionID = fakes.BuildFakeID()
 	s.exampleMealPlanOptionVote = fakes.BuildFakeMealPlanOptionVote()
 	s.exampleMealPlanOptionVote.BelongsToMealPlanOption = s.exampleMealPlanOptionID
-	exampleMealPlanOptionVoteList := fakes.BuildFakeMealPlanOptionVoteList()
+	exampleMealPlanOptionVoteList := fakes.BuildFakeMealPlanOptionVotesList()
 	s.exampleMealPlanOptionVoteList = exampleMealPlanOptionVoteList.Data
 	s.exampleMealPlanOptionVoteResponse = &types.APIResponse[*types.MealPlanOptionVote]{
 		Data: s.exampleMealPlanOptionVote,

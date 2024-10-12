@@ -36,8 +36,8 @@ func BuildFakeValidIngredientGroupMember() *types.ValidIngredientGroupMember {
 	}
 }
 
-// BuildFakeValidIngredientGroupList builds a faked ValidIngredientGroupList.
-func BuildFakeValidIngredientGroupList() *types.QueryFilteredResult[types.ValidIngredientGroup] {
+// BuildFakeValidIngredientGroupsList builds a faked ValidIngredientGroupList.
+func BuildFakeValidIngredientGroupsList() *types.QueryFilteredResult[types.ValidIngredientGroup] {
 	var examples []*types.ValidIngredientGroup
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidIngredientGroup())

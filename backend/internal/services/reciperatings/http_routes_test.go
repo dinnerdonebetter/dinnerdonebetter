@@ -311,7 +311,7 @@ func TestRecipeRatingsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleRecipeRatingList := fakes.BuildFakeRecipeRatingList()
+		exampleRecipeRatingList := fakes.BuildFakeRecipeRatingsList()
 
 		recipeRatingDataManager := &mocktypes.RecipeRatingDataManagerMock{}
 		recipeRatingDataManager.On(

@@ -308,7 +308,7 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStateList()
+		exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStatesList()
 
 		validIngredientStateDataManager := &mocktypes.ValidIngredientStateDataManagerMock{}
 		validIngredientStateDataManager.On(
@@ -398,7 +398,7 @@ func TestValidIngredientStatesService_SearchHandler(T *testing.T) {
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStateList()
+	exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStatesList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

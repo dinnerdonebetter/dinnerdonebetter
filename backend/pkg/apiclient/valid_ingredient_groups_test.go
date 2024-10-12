@@ -38,7 +38,7 @@ func (s *validIngredientGroupsBaseSuite) SetupTest() {
 		Data: s.exampleValidIngredientGroup,
 	}
 
-	exampleList := fakes.BuildFakeValidIngredientGroupList()
+	exampleList := fakes.BuildFakeValidIngredientGroupsList()
 	s.exampleValidIngredientGroupList = exampleList.Data
 	s.exampleValidIngredientGroupListResponse = &types.APIResponse[[]*types.ValidIngredientGroup]{
 		Data:       s.exampleValidIngredientGroupList,

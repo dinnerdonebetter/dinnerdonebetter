@@ -40,7 +40,7 @@ func (s *mealPlanEventsBaseSuite) SetupTest() {
 	s.exampleMealPlanEventResponse = &types.APIResponse[*types.MealPlanEvent]{
 		Data: s.exampleMealPlanEvent,
 	}
-	exampleMealPlanEventList := fakes.BuildFakeMealPlanEventList()
+	exampleMealPlanEventList := fakes.BuildFakeMealPlanEventsList()
 	s.exampleMealPlanEventList = exampleMealPlanEventList.Data
 	s.exampleMealPlanEventListResponse = &types.APIResponse[[]*types.MealPlanEvent]{
 		Data:       s.exampleMealPlanEventList,

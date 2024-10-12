@@ -18,7 +18,7 @@ func BuildFakeRecipe() *types.Recipe {
 		steps = append(steps, step)
 	}
 
-	prepTasks := BuildFakeRecipePrepTaskList().Data
+	prepTasks := BuildFakeRecipePrepTasksList().Data
 	for i := range prepTasks {
 		prepTasks[i].BelongsToRecipe = recipeID
 	}
@@ -53,8 +53,8 @@ func BuildFakeRecipe() *types.Recipe {
 	}
 }
 
-// BuildFakeRecipeList builds a faked RecipeList.
-func BuildFakeRecipeList() *types.QueryFilteredResult[types.Recipe] {
+// BuildFakeRecipesList builds a faked RecipeList.
+func BuildFakeRecipesList() *types.QueryFilteredResult[types.Recipe] {
 	var examples []*types.Recipe
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipe())

@@ -21,8 +21,8 @@ func BuildFakeRecipeRating() *types.RecipeRating {
 	}
 }
 
-// BuildFakeRecipeRatingList builds a faked RecipeRatingList.
-func BuildFakeRecipeRatingList() *types.QueryFilteredResult[types.RecipeRating] {
+// BuildFakeRecipeRatingsList builds a faked RecipeRatingList.
+func BuildFakeRecipeRatingsList() *types.QueryFilteredResult[types.RecipeRating] {
 	var examples []*types.RecipeRating
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeRating())

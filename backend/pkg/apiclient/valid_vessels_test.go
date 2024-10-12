@@ -135,7 +135,7 @@ func (s *validVesselsTestSuite) TestClient_GetValidVessels() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidVesselList := fakes.BuildFakeValidVesselList()
+		exampleValidVesselList := fakes.BuildFakeValidVesselsList()
 		exampleValidVesselListAPIResponse := &types.APIResponse[[]*types.ValidVessel]{
 			Data:       exampleValidVesselList.Data,
 			Pagination: &exampleValidVesselList.Pagination,
@@ -184,7 +184,7 @@ func (s *validVesselsTestSuite) TestClient_SearchValidVessels() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleValidVesselList := fakes.BuildFakeValidVesselList()
+		exampleValidVesselList := fakes.BuildFakeValidVesselsList()
 		exampleValidVesselListAPIResponse := &types.APIResponse[[]*types.ValidVessel]{
 			Data: exampleValidVesselList.Data,
 		}

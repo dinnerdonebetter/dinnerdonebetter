@@ -47,7 +47,7 @@ func (s *usersBaseSuite) SetupTest() {
 	// the two factor secret validation is never transmitted over the wire.
 	s.exampleUser.TwoFactorSecretVerifiedAt = nil
 
-	s.exampleUserList = fakes.BuildFakeUserList()
+	s.exampleUserList = fakes.BuildFakeUsersList()
 	for i := 0; i < len(s.exampleUserList.Data); i++ {
 		// the hashed passwords is never transmitted over the wire.
 		s.exampleUserList.Data[i].HashedPassword = ""

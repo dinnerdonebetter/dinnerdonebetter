@@ -39,7 +39,7 @@ func (s *validIngredientPreparationsBaseSuite) SetupTest() {
 		Data: s.exampleValidIngredientPreparation,
 	}
 
-	exampleList := fakes.BuildFakeValidIngredientPreparationList()
+	exampleList := fakes.BuildFakeValidIngredientPreparationsList()
 	s.exampleValidIngredientPreparationList = exampleList.Data
 	s.exampleValidIngredientPreparationListResponse = &types.APIResponse[[]*types.ValidIngredientPreparation]{
 		Data:       s.exampleValidIngredientPreparationList,

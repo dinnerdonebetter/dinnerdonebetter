@@ -43,8 +43,8 @@ func BuildFakeHousehold() *types.Household {
 	}
 }
 
-// BuildFakeHouseholdList builds a faked HouseholdList.
-func BuildFakeHouseholdList() *types.QueryFilteredResult[types.Household] {
+// BuildFakeHouseholdsList builds a faked HouseholdList.
+func BuildFakeHouseholdsList() *types.QueryFilteredResult[types.Household] {
 	var examples []*types.Household
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeHousehold())

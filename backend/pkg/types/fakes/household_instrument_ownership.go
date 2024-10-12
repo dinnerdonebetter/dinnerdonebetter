@@ -17,8 +17,8 @@ func BuildFakeHouseholdInstrumentOwnership() *types.HouseholdInstrumentOwnership
 	}
 }
 
-// BuildFakeHouseholdInstrumentOwnershipList builds a faked HouseholdInstrumentOwnershipList.
-func BuildFakeHouseholdInstrumentOwnershipList() *types.QueryFilteredResult[types.HouseholdInstrumentOwnership] {
+// BuildFakeHouseholdInstrumentOwnershipsList builds a faked HouseholdInstrumentOwnershipList.
+func BuildFakeHouseholdInstrumentOwnershipsList() *types.QueryFilteredResult[types.HouseholdInstrumentOwnership] {
 	var examples []*types.HouseholdInstrumentOwnership
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeHouseholdInstrumentOwnership())

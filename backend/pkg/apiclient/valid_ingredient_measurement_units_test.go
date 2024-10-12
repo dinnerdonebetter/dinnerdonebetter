@@ -38,7 +38,7 @@ func (s *validIngredientMeasurementUnitsBaseSuite) SetupTest() {
 		Data: s.exampleValidIngredientMeasurementUnit,
 	}
 
-	exampleList := fakes.BuildFakeValidIngredientMeasurementUnitList()
+	exampleList := fakes.BuildFakeValidIngredientMeasurementUnitsList()
 	s.exampleValidIngredientMeasurementUnitList = exampleList.Data
 	s.exampleValidIngredientMeasurementUnitListResponse = &types.APIResponse[[]*types.ValidIngredientMeasurementUnit]{
 		Data:       s.exampleValidIngredientMeasurementUnitList,

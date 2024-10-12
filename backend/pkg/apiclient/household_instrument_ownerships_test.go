@@ -37,7 +37,7 @@ func (s *householdInstrumentOwnershipsBaseSuite) SetupTest() {
 	s.exampleHouseholdInstrumentOwnershipResponse = &types.APIResponse[*types.HouseholdInstrumentOwnership]{
 		Data: s.exampleHouseholdInstrumentOwnership,
 	}
-	exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipList()
+	exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipsList()
 	s.exampleHouseholdInstrumentOwnershipList = exampleHouseholdInstrumentOwnershipList.Data
 	s.exampleHouseholdInstrumentOwnershipListResponse = &types.APIResponse[[]*types.HouseholdInstrumentOwnership]{
 		Data:       s.exampleHouseholdInstrumentOwnershipList,

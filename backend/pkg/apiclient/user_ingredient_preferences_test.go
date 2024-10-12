@@ -38,7 +38,7 @@ func (s *userIngredientPreferencesBaseSuite) SetupTest() {
 		Data: s.exampleUserIngredientPreference,
 	}
 
-	exampleList := fakes.BuildFakeUserIngredientPreferenceList()
+	exampleList := fakes.BuildFakeUserIngredientPreferencesList()
 	s.exampleUserIngredientPreferenceList = exampleList.Data
 	s.exampleUserIngredientPreferenceListResponse = &types.APIResponse[[]*types.UserIngredientPreference]{
 		Data:       s.exampleUserIngredientPreferenceList,

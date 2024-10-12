@@ -38,7 +38,7 @@ func (s *validInstrumentsBaseSuite) SetupTest() {
 		Data: s.exampleValidInstrument,
 	}
 
-	exampleList := fakes.BuildFakeValidInstrumentList()
+	exampleList := fakes.BuildFakeValidInstrumentsList()
 	s.exampleValidInstrumentList = exampleList.Data
 	s.exampleValidInstrumentListResponse = types.APIResponse[[]*types.ValidInstrument]{
 		Data:       s.exampleValidInstrumentList,

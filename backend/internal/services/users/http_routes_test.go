@@ -216,7 +216,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		exampleUserList := fakes.BuildFakeUserList()
+		exampleUserList := fakes.BuildFakeUsersList()
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
@@ -281,7 +281,7 @@ func TestService_ListHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		exampleUserList := fakes.BuildFakeUserList()
+		exampleUserList := fakes.BuildFakeUsersList()
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
