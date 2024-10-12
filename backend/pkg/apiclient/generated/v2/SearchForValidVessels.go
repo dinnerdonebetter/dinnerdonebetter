@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) GetSearchForValidVessels(
+func (c *Client) SearchForValidVessels(
 	ctx context.Context,
 	q string,
 	filter *types.QueryFilter,

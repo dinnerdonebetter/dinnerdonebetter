@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) GetSearchForValidIngredients(
+func (c *Client) SearchForValidIngredients(
 	ctx context.Context,
 	q string,
 	filter *types.QueryFilter,

@@ -144,7 +144,7 @@ func (c *Client) buildRawURL(ctx context.Context, queryParams url.Values, parts 
 	tu := *c.url
 	logger := c.logger.WithValue(keys.URLQueryKey, queryParams.Encode())
 
-	u, err := url.Parse(path.Join(append([]string{"api", "v1"}, parts...)...))
+	u, err := url.Parse(path.Join(parts...))
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "building URL")
 		return nil
@@ -155,26 +155,6 @@ func (c *Client) buildRawURL(ctx context.Context, queryParams url.Values, parts 
 	}
 
 	return tu.ResolveReference(u)
-}
-
-// buildVersionlessURL builds a URL without the `/api/v1/` prefix. It should otherwise be identical to buildRawURL.
-func (c *Client) buildVersionlessURL(ctx context.Context, qp url.Values, parts ...string) string {
-	_, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	tu := *c.url
-
-	u, err := url.Parse(path.Join(parts...))
-	if err != nil {
-		tracing.AttachErrorToSpan(span, "building url", err)
-		return ""
-	}
-
-	if qp != nil {
-		u.RawQuery = qp.Encode()
-	}
-
-	return tu.ResolveReference(u).String()
 }
 
 // IsUp returns whether the service's health endpoint is returning 200s.

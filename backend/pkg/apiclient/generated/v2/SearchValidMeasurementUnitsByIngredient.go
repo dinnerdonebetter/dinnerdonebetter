@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) GetSearchValidMeasurementUnitsByIngredient(
+func (c *Client) SearchValidMeasurementUnitsByIngredient(
 	ctx context.Context,
 	q string,
 	validIngredientID string,

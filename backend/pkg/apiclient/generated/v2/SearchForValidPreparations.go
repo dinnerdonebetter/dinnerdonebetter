@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) GetSearchForValidPreparations(
+func (c *Client) SearchForValidPreparations(
 	ctx context.Context,
 	q string,
 	filter *types.QueryFilter,

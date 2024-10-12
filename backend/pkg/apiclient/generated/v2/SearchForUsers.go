@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) GetSearchForUsers(
+func (c *Client) SearchForUsers(
 	ctx context.Context,
 	q string,
 	filter *types.QueryFilter,

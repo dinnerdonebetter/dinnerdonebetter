@@ -21,6 +21,7 @@ func fetchStaticFile(name string) string {
 
 var baseFiles = map[string]string{
 	"client":                fetchStaticFile("client"),
+	"client_test":           fetchStaticFile("client_test"),
 	"client_options":        fetchStaticFile("client_options"),
 	"client_options_test":   fetchStaticFile("client_options_test"),
 	"doc":                   fetchStaticFile("doc"),

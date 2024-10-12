@@ -26,6 +26,10 @@ func BuildFakeID() string {
 	return identifiers.New()
 }
 
+func BuildFakeString() string {
+	return fake.Word()
+}
+
 // BuildFakeTime builds a fake time.
 func BuildFakeTime() time.Time {
 	return fake.Date().Add(0).Truncate(time.Second).UTC()

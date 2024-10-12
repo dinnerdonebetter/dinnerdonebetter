@@ -335,7 +335,7 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 		if f.QueryFiltered {
 			// GET routes that return lists
 
-			tmpl = `func (c *Client) {{ if not (contains (lowercase .Name) (lowercase .Method))}}{{ title .Method }}{{ end }}{{ .Name }}(
+			tmpl = `func (c *Client) {{ .Name }}(
 	ctx context.Context,
 	{{ range .Params }}{{ .Name }} {{ .Type }},
 	{{ end -}}
@@ -399,7 +399,7 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 
 		} else {
 			// GET routes that don't return lists
-			tmpl = `func (c *Client) {{ if not (contains (lowercase .Name) (lowercase .Method))}}{{ title .Method }}{{ end }}{{ .Name }}(
+			tmpl = `func (c *Client) {{ .Name }}(
 	ctx context.Context,
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}}
@@ -682,6 +682,223 @@ input *types.{{ .InputType.Type }},
 			switch s {
 			case "string":
 				return `""`
+			default:
+				panic(fmt.Sprintf("aaaaaaaaaaaaaaaa bad type: %s", s))
+			}
+		},
+		"paramsContain": func(x []functionParam, y string) bool {
+			for _, z := range x {
+				if z.Name == types.QueryKeySearch {
+					return true
+				}
+			}
+
+			return false
+		},
+	}).Parse(tmpl))
+
+	var b bytes.Buffer
+	if err := t.Execute(&b, f); err != nil {
+		return "", nil, err
+	}
+
+	return b.String(), imports, nil
+}
+
+func (f *APIClientFunction) RenderTest() (string, []string, error) {
+	var tmpl string
+	imports := []string{}
+
+	const dummyTemplate = `
+
+func TestClient_{{ .Name }}(T *testing.T) {
+	T.Parallel()
+
+	T.Run("TODO", func(t *testing.T) {
+		t.Parallel()
+
+		assert.NotEmpty(t, t.Name())
+	})
+}
+`
+
+	switch f.Method {
+	case http.MethodGet:
+		if f.QueryFiltered {
+			// GET routes that return lists
+			tmpl = dummyTemplate
+			imports = append(imports,
+				"testing",
+				"github.com/stretchr/testify/assert",
+			)
+
+		} else {
+			// GET routes that don't return lists
+			tmpl = `
+
+func TestClient_{{ .Name }}(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "{{ .PathTemplate }}"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ end }}
+
+		data := fakes.BuildFake{{ uppercaseFirstLetter .ResponseType.TypeName }}()
+		{{- if eq (uppercaseFirstLetter .ResponseType.TypeName) "User" }}
+		// the hashed passwords is never transmitted over the wire.
+		data.HashedPassword = ""
+		// the two factor secret is transmitted over the wire only on creation.
+		data.TwoFactorSecret = ""
+		// the two factor secret validation is never transmitted over the wire.
+		data.TwoFactorSecretVerifiedAt = nil
+		{{ else if eq (uppercaseFirstLetter .ResponseType.TypeName) "Household" }} 
+		data.WebhookEncryptionKey = ""
+		{{ else if or (eq (uppercaseFirstLetter .ResponseType.TypeName) "HouseholdInvitation") }} 
+		data.DestinationHousehold.WebhookEncryptionKey = ""
+		data.FromUser.TwoFactorSecret = ""
+		{{- end }}
+		expected := &types.APIResponse[{{ if notNative .ResponseType.TypeName }}*types.{{ end }}{{ .ResponseType.TypeName }}]{
+			Data: data,
+		}
+
+		spec := newRequestSpec(true, http.Method{{ title .Method }}, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
+		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
+		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }}, {{ end }})
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, expected.Data, actual)
+	})
+
+	{{ range $i, $p := .Params }}
+	T.Run("with invalid {{ replace $p.Name "ID" "" }} ID",  func(t *testing.T) {
+		t.Parallel()
+
+		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fakes.BuildFakeID(){{ end }}
+		{{ end }}
+
+		ctx := context.Background()
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.{{ $.Name }}(ctx, {{ range $j, $p2 := $.Params}}{{ if eq $j $i}}""{{ else }} {{ .Name }} {{ end }}, {{ end }})
+
+		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
+		assert.Error(t, err)
+	})
+{{ end }}
+
+	T.Run("with error building request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ end }}
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }},{{ end }})
+
+		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with error executing request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ end }}
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }},{{ end }})
+
+		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
+		assert.Error(t, err)
+	})
+}
+`
+			imports = append(imports,
+				"testing",
+				"context",
+				"net/http",
+				"github.com/stretchr/testify/assert",
+				"github.com/stretchr/testify/require",
+				"github.com/dinnerdonebetter/backend/pkg/types",
+				"github.com/dinnerdonebetter/backend/pkg/types/fakes",
+			)
+		}
+
+	case http.MethodPost:
+		tmpl = dummyTemplate
+		imports = append(imports,
+			"testing",
+			"github.com/stretchr/testify/assert",
+		)
+	case http.MethodPut:
+		tmpl = dummyTemplate
+		imports = append(imports,
+			"testing",
+			"github.com/stretchr/testify/assert",
+		)
+	case http.MethodPatch:
+		tmpl = dummyTemplate
+		imports = append(imports,
+			"testing",
+			"github.com/stretchr/testify/assert",
+		)
+	case http.MethodDelete:
+		tmpl = dummyTemplate
+		imports = append(imports,
+			"testing",
+			"github.com/stretchr/testify/assert",
+		)
+	}
+
+	if tmpl == "" {
+		return "", nil, nil
+	}
+
+	t := template.Must(template.New("function").Funcs(map[string]any{
+		"lowercase": strings.ToLower,
+		"contains":  strings.Contains,
+		"title": func(s string) string {
+			return uppercaseFirstLetter(strings.ToLower(s))
+		},
+		"replace":              strings.ReplaceAll,
+		"uppercaseFirstLetter": uppercaseFirstLetter,
+		"notNative": func(s string) bool {
+			switch s {
+			case "string", "bool", "int", "uint64":
+				return false
+			default:
+				return true
+			}
+		},
+		"observabilityKey": func(s string) string {
+			out := strings.ReplaceAll(uppercaseFirstLetter(s), "Oauth", "OAuth")
+
+			if out == "Q" {
+				out = "SearchQuery"
+			}
+
+			return out
+		},
+		"nativeDefault": func(s string) string {
+			switch s {
+			case "string":
+				return `""`
+			default:
+				panic(fmt.Sprintf("aaaaaaaaaaaaaaaa bad type: %s", s))
+			}
+		},
+		"negativeAssertFunc": func(s string) string {
+			switch s {
+			case "string":
+				return `Empty`
 			default:
 				panic(fmt.Sprintf("aaaaaaaaaaaaaaaa bad type: %s", s))
 			}

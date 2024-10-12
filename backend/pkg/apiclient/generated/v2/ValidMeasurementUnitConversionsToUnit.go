@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) GetValidMeasurementUnitConversionsToUnit(
+func (c *Client) ValidMeasurementUnitConversionsToUnit(
 	ctx context.Context,
 	validMeasurementUnitID string,
 ) (*types.ValidMeasurementUnitConversion, error) {

@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) GetSearchForServiceSettings(
+func (c *Client) SearchForServiceSettings(
 	ctx context.Context,
 	q string,
 	filter *types.QueryFilter,
