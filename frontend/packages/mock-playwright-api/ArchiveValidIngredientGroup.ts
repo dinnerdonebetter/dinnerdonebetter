@@ -2,23 +2,26 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidIngredientGroup } from '@dinnerdonebetter/models';
+import { ValidIngredientGroup } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockArchiveValidIngredientGroupResponseConfig extends ResponseConfig<ValidIngredientGroup> {
-  validIngredientGroupID: string;
+		   validIngredientGroupID: string;
+		
 
-  constructor(validIngredientGroupID: string, status: number = 202, body?: ValidIngredientGroup) {
-    super();
+		  constructor( validIngredientGroupID: string, status: number = 202, body?: ValidIngredientGroup) {
+		    super();
 
-    this.validIngredientGroupID = validIngredientGroupID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.validIngredientGroupID = validIngredientGroupID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockArchiveValidIngredientGroup = (resCfg: MockArchiveValidIngredientGroupResponseConfig) => {
@@ -30,6 +33,8 @@ export const mockArchiveValidIngredientGroup = (resCfg: MockArchiveValidIngredie
 
         assertMethod('DELETE', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

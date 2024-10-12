@@ -1230,80 +1230,6 @@ paths:
         - household_member
       tags:
       - households
-  /api/v1/households/{householdID}/invitations:
-    post:
-      description: Operation for creating HouseholdInvitation
-      operationId: CreateHouseholdInvitation
-      parameters:
-      - in: path
-        name: householdID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HouseholdInvitationCreationRequestInput'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/HouseholdInvitationCreationRequestInput'
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
-                      type: object
-                  type: object
-            application/xml:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
-                      type: object
-                  type: object
-          description: ""
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-      security:
-      - oauth2:
-        - household_admin
-      tags:
-      - households
-      - invitations
   /api/v1/households/{householdID}/invitations/{householdInvitationID}:
     get:
       description: Operation for fetching HouseholdInvitation
@@ -1377,7 +1303,7 @@ paths:
   /api/v1/households/{householdID}/invite:
     post:
       description: Operation for creating HouseholdInvitation
-      operationId: POST_households_householdID_invite
+      operationId: CreateHouseholdInvitation
       parameters:
       - in: path
         name: householdID

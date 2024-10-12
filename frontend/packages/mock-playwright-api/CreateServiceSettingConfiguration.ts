@@ -2,19 +2,24 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ServiceSettingConfiguration } from '@dinnerdonebetter/models';
+import { ServiceSettingConfiguration } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockCreateServiceSettingConfigurationResponseConfig extends ResponseConfig<ServiceSettingConfiguration> {
-  constructor(status: number = 201, body?: ServiceSettingConfiguration) {
-    super();
 
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+
+export class MockCreateServiceSettingConfigurationResponseConfig extends ResponseConfig<ServiceSettingConfiguration> {
+		  
+
+		  constructor(status: number = 201, body?: ServiceSettingConfiguration) {
+		    super();
+
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockCreateServiceSettingConfiguration = (resCfg: MockCreateServiceSettingConfigurationResponseConfig) => {
@@ -26,6 +31,8 @@ export const mockCreateServiceSettingConfiguration = (resCfg: MockCreateServiceS
 
         assertMethod('POST', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

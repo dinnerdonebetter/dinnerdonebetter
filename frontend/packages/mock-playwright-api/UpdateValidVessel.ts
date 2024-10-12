@@ -2,23 +2,26 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidVessel } from '@dinnerdonebetter/models';
+import { ValidVessel } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockUpdateValidVesselResponseConfig extends ResponseConfig<ValidVessel> {
-  validVesselID: string;
+		   validVesselID: string;
+		
 
-  constructor(validVesselID: string, status: number = 200, body?: ValidVessel) {
-    super();
+		  constructor( validVesselID: string, status: number = 200, body?: ValidVessel) {
+		    super();
 
-    this.validVesselID = validVesselID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.validVesselID = validVesselID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockUpdateValidVessel = (resCfg: MockUpdateValidVesselResponseConfig) => {
@@ -30,6 +33,8 @@ export const mockUpdateValidVessel = (resCfg: MockUpdateValidVesselResponseConfi
 
         assertMethod('PUT', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

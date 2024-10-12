@@ -2,33 +2,30 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { RecipeStepCompletionCondition } from '@dinnerdonebetter/models';
+import { RecipeStepCompletionCondition } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockGetRecipeStepCompletionConditionResponseConfig extends ResponseConfig<RecipeStepCompletionCondition> {
-  recipeID: string;
-  recipeStepID: string;
-  recipeStepCompletionConditionID: string;
+		   recipeID: string;
+		 recipeStepID: string;
+		 recipeStepCompletionConditionID: string;
+		
 
-  constructor(
-    recipeID: string,
-    recipeStepID: string,
-    recipeStepCompletionConditionID: string,
-    status: number = 200,
-    body?: RecipeStepCompletionCondition,
-  ) {
-    super();
+		  constructor( recipeID: string,  recipeStepID: string,  recipeStepCompletionConditionID: string, status: number = 200, body?: RecipeStepCompletionCondition) {
+		    super();
 
-    this.recipeID = recipeID;
-    this.recipeStepID = recipeStepID;
-    this.recipeStepCompletionConditionID = recipeStepCompletionConditionID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.recipeID = recipeID;
+		 this.recipeStepID = recipeStepID;
+		 this.recipeStepCompletionConditionID = recipeStepCompletionConditionID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockGetRecipeStepCompletionCondition = (resCfg: MockGetRecipeStepCompletionConditionResponseConfig) => {
@@ -40,6 +37,8 @@ export const mockGetRecipeStepCompletionCondition = (resCfg: MockGetRecipeStepCo
 
         assertMethod('GET', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

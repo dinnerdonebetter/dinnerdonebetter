@@ -146,7 +146,6 @@ func (s *oauth2ClientsTestSuite) TestClient_CreateOAuth2Client() {
 		c, _ := buildTestClientWithJSONResponse(t, spec, &types.APIResponse[*types.OAuth2ClientCreationResponse]{
 			Data: exampleResponse,
 		})
-		c.authMethod = cookieAuthMethod
 
 		actual, err := c.CreateOAuth2Client(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -167,7 +166,6 @@ func (s *oauth2ClientsTestSuite) TestClient_CreateOAuth2Client() {
 
 		exampleInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(s.exampleOAuth2Client)
 		c := buildTestClientWithInvalidURL(t)
-		c.authMethod = cookieAuthMethod
 
 		actual, err := c.CreateOAuth2Client(s.ctx, exampleInput)
 		assert.Nil(t, actual)
@@ -180,7 +178,6 @@ func (s *oauth2ClientsTestSuite) TestClient_CreateOAuth2Client() {
 		exampleInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(s.exampleOAuth2Client)
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		c.authMethod = cookieAuthMethod
 
 		actual, err := c.CreateOAuth2Client(s.ctx, exampleInput)
 		assert.Error(t, err)

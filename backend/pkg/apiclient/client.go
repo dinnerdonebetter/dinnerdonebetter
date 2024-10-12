@@ -31,9 +31,6 @@ const (
 type authMethod struct{}
 
 var (
-	cookieAuthMethod = new(authMethod)
-	oauth2AuthMethod = new(authMethod)
-
 	errInvalidResponseCode = errors.New("invalid response code")
 )
 
@@ -45,7 +42,6 @@ type Client struct {
 	authedClient            *http.Client
 	unauthenticatedClient   *http.Client
 	url                     *url.URL
-	authMethod              *authMethod
 	cookie                  *http.Cookie
 	authedGeneratedClient   *generated.Client
 	unauthedGeneratedClient *generated.Client

@@ -104,9 +104,9 @@ jobs:
       - run: yarn install
         working-directory: frontend
 
-      - name: Ensure typescript models can be generated
+      - name: Ensure code can be generated
         working-directory: backend
-        run: make typescript
+        run: make codegen format
 
       - name: format files
         working-directory: frontend

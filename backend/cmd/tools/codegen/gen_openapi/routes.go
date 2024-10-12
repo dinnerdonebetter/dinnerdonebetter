@@ -161,13 +161,8 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	// these are duplicate routes lol
-	"POST /api/v1/households/{householdID}/invitations/": {
-		ID:           "CreateHouseholdInvitation",
-		ResponseType: &types.HouseholdInvitation{},
-		InputType:    &types.HouseholdInvitationCreationRequestInput{},
-		OAuth2Scopes: []string{householdAdmin},
-	},
 	"POST /api/v1/households/{householdID}/invite": {
+		ID:           "CreateHouseholdInvitation",
 		ResponseType: &types.HouseholdInvitation{},
 		InputType:    &types.HouseholdInvitationCreationRequestInput{},
 		OAuth2Scopes: []string{householdAdmin},
@@ -821,7 +816,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"POST /api/v1/users/email_address_verification": {
-		ID:           "VerifyUserEmailAddress",
+		ID:           "RequestEmailVerificationEmail",
 		ResponseType: &types.User{},
 		OAuth2Scopes: []string{householdMember},
 	},

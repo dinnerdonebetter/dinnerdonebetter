@@ -2,25 +2,28 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { RecipeRating } from '@dinnerdonebetter/models';
+import { RecipeRating } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockUpdateRecipeRatingResponseConfig extends ResponseConfig<RecipeRating> {
-  recipeID: string;
-  recipeRatingID: string;
+		   recipeID: string;
+		 recipeRatingID: string;
+		
 
-  constructor(recipeID: string, recipeRatingID: string, status: number = 200, body?: RecipeRating) {
-    super();
+		  constructor( recipeID: string,  recipeRatingID: string, status: number = 200, body?: RecipeRating) {
+		    super();
 
-    this.recipeID = recipeID;
-    this.recipeRatingID = recipeRatingID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.recipeID = recipeID;
+		 this.recipeRatingID = recipeRatingID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockUpdateRecipeRating = (resCfg: MockUpdateRecipeRatingResponseConfig) => {
@@ -32,6 +35,8 @@ export const mockUpdateRecipeRating = (resCfg: MockUpdateRecipeRatingResponseCon
 
         assertMethod('PUT', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

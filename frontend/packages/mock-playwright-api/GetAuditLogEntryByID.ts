@@ -2,23 +2,26 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { AuditLogEntry } from '@dinnerdonebetter/models';
+import { AuditLogEntry } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockGetAuditLogEntryByIDResponseConfig extends ResponseConfig<AuditLogEntry> {
-  auditLogEntryID: string;
+		   auditLogEntryID: string;
+		
 
-  constructor(auditLogEntryID: string, status: number = 200, body?: AuditLogEntry) {
-    super();
+		  constructor( auditLogEntryID: string, status: number = 200, body?: AuditLogEntry) {
+		    super();
 
-    this.auditLogEntryID = auditLogEntryID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.auditLogEntryID = auditLogEntryID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockGetAuditLogEntryByID = (resCfg: MockGetAuditLogEntryByIDResponseConfig) => {
@@ -30,6 +33,8 @@ export const mockGetAuditLogEntryByID = (resCfg: MockGetAuditLogEntryByIDRespons
 
         assertMethod('GET', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

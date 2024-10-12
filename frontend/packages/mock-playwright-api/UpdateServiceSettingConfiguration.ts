@@ -2,23 +2,26 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ServiceSettingConfiguration } from '@dinnerdonebetter/models';
+import { ServiceSettingConfiguration } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockUpdateServiceSettingConfigurationResponseConfig extends ResponseConfig<ServiceSettingConfiguration> {
-  serviceSettingConfigurationID: string;
+		   serviceSettingConfigurationID: string;
+		
 
-  constructor(serviceSettingConfigurationID: string, status: number = 200, body?: ServiceSettingConfiguration) {
-    super();
+		  constructor( serviceSettingConfigurationID: string, status: number = 200, body?: ServiceSettingConfiguration) {
+		    super();
 
-    this.serviceSettingConfigurationID = serviceSettingConfigurationID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.serviceSettingConfigurationID = serviceSettingConfigurationID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockUpdateServiceSettingConfiguration = (resCfg: MockUpdateServiceSettingConfigurationResponseConfig) => {
@@ -30,6 +33,8 @@ export const mockUpdateServiceSettingConfiguration = (resCfg: MockUpdateServiceS
 
         assertMethod('PUT', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

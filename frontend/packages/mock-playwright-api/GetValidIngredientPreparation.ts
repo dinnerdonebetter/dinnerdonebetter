@@ -2,23 +2,26 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidIngredientPreparation } from '@dinnerdonebetter/models';
+import { ValidIngredientPreparation } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockGetValidIngredientPreparationResponseConfig extends ResponseConfig<ValidIngredientPreparation> {
-  validIngredientPreparationID: string;
+		   validIngredientPreparationID: string;
+		
 
-  constructor(validIngredientPreparationID: string, status: number = 200, body?: ValidIngredientPreparation) {
-    super();
+		  constructor( validIngredientPreparationID: string, status: number = 200, body?: ValidIngredientPreparation) {
+		    super();
 
-    this.validIngredientPreparationID = validIngredientPreparationID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.validIngredientPreparationID = validIngredientPreparationID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockGetValidIngredientPreparation = (resCfg: MockGetValidIngredientPreparationResponseConfig) => {
@@ -30,6 +33,8 @@ export const mockGetValidIngredientPreparation = (resCfg: MockGetValidIngredient
 
         assertMethod('GET', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

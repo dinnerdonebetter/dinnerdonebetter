@@ -2,19 +2,24 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidIngredient } from '@dinnerdonebetter/models';
+import { ValidIngredient } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockGetRandomValidIngredientResponseConfig extends ResponseConfig<ValidIngredient> {
-  constructor(status: number = 200, body?: ValidIngredient) {
-    super();
 
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+
+export class MockGetRandomValidIngredientResponseConfig extends ResponseConfig<ValidIngredient> {
+		  
+
+		  constructor(status: number = 200, body?: ValidIngredient) {
+		    super();
+
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockGetRandomValidIngredient = (resCfg: MockGetRandomValidIngredientResponseConfig) => {
@@ -26,6 +31,8 @@ export const mockGetRandomValidIngredient = (resCfg: MockGetRandomValidIngredien
 
         assertMethod('GET', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

@@ -2,19 +2,24 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { AuditLogEntry } from '@dinnerdonebetter/models';
+import { AuditLogEntry } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockGetAuditLogEntriesForUserResponseConfig extends ResponseConfig<AuditLogEntry> {
-  constructor(status: number = 200, body?: AuditLogEntry) {
-    super();
 
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+
+export class MockGetAuditLogEntriesForUserResponseConfig extends ResponseConfig<AuditLogEntry> {
+		  
+
+		  constructor(status: number = 200, body?: AuditLogEntry) {
+		    super();
+
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockGetAuditLogEntriesForUser = (resCfg: MockGetAuditLogEntriesForUserResponseConfig) => {
@@ -26,6 +31,8 @@ export const mockGetAuditLogEntriesForUser = (resCfg: MockGetAuditLogEntriesForU
 
         assertMethod('GET', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

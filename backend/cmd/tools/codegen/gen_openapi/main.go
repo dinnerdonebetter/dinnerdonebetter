@@ -54,6 +54,7 @@ var skipRoutes = map[string]bool{
 	"/api/v1/recipes/{recipeID}/steps/{recipeStepID}":        true,
 	"/api/v1/recipes/{recipeID}/images":                      true,
 	"/api/v1/recipes/{recipeID}/steps/{recipeStepID}/images": true,
+	"/api/v1/households/{householdID}/invitations/":          true,
 	"": true,
 }
 

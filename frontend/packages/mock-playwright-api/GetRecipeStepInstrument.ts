@@ -2,33 +2,30 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { RecipeStepInstrument } from '@dinnerdonebetter/models';
+import { RecipeStepInstrument } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockGetRecipeStepInstrumentResponseConfig extends ResponseConfig<RecipeStepInstrument> {
-  recipeID: string;
-  recipeStepID: string;
-  recipeStepInstrumentID: string;
+		   recipeID: string;
+		 recipeStepID: string;
+		 recipeStepInstrumentID: string;
+		
 
-  constructor(
-    recipeID: string,
-    recipeStepID: string,
-    recipeStepInstrumentID: string,
-    status: number = 200,
-    body?: RecipeStepInstrument,
-  ) {
-    super();
+		  constructor( recipeID: string,  recipeStepID: string,  recipeStepInstrumentID: string, status: number = 200, body?: RecipeStepInstrument) {
+		    super();
 
-    this.recipeID = recipeID;
-    this.recipeStepID = recipeStepID;
-    this.recipeStepInstrumentID = recipeStepInstrumentID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.recipeID = recipeID;
+		 this.recipeStepID = recipeStepID;
+		 this.recipeStepInstrumentID = recipeStepInstrumentID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockGetRecipeStepInstrument = (resCfg: MockGetRecipeStepInstrumentResponseConfig) => {
@@ -40,6 +37,8 @@ export const mockGetRecipeStepInstrument = (resCfg: MockGetRecipeStepInstrumentR
 
         assertMethod('GET', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

@@ -2,19 +2,24 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { User } from '@dinnerdonebetter/models';
+import { User } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockVerifyUserEmailAddressResponseConfig extends ResponseConfig<User> {
-  constructor(status: number = 201, body?: User) {
-    super();
 
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+
+export class MockVerifyUserEmailAddressResponseConfig extends ResponseConfig<User> {
+		  
+
+		  constructor(status: number = 201, body?: User) {
+		    super();
+
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockVerifyUserEmailAddress = (resCfg: MockVerifyUserEmailAddressResponseConfig) => {
@@ -26,6 +31,8 @@ export const mockVerifyUserEmailAddress = (resCfg: MockVerifyUserEmailAddressRes
 
         assertMethod('POST', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

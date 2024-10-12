@@ -2,23 +2,26 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { UserNotification } from '@dinnerdonebetter/models';
+import { UserNotification } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockUpdateUserNotificationResponseConfig extends ResponseConfig<UserNotification> {
-  userNotificationID: string;
+		   userNotificationID: string;
+		
 
-  constructor(userNotificationID: string, status: number = 200, body?: UserNotification) {
-    super();
+		  constructor( userNotificationID: string, status: number = 200, body?: UserNotification) {
+		    super();
 
-    this.userNotificationID = userNotificationID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.userNotificationID = userNotificationID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockUpdateUserNotification = (resCfg: MockUpdateUserNotificationResponseConfig) => {
@@ -30,6 +33,8 @@ export const mockUpdateUserNotification = (resCfg: MockUpdateUserNotificationRes
 
         assertMethod('PATCH', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

@@ -2,27 +2,29 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { RecipeStepInstrument, QueryFilteredResult } from '@dinnerdonebetter/models';
+import { RecipeStepInstrument,
+	QueryFilteredResult } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockGetRecipeStepInstrumentsResponseConfig extends ResponseConfig<
-  QueryFilteredResult<RecipeStepInstrument>
-> {
-  recipeID: string;
-  recipeStepID: string;
 
-  constructor(recipeID: string, recipeStepID: string, status: number = 200, body: RecipeStepInstrument[] = []) {
-    super();
 
-    this.recipeID = recipeID;
-    this.recipeStepID = recipeStepID;
+export class MockGetRecipeStepInstrumentsResponseConfig extends ResponseConfig<QueryFilteredResult<RecipeStepInstrument>> {
+		   recipeID: string;
+		 recipeStepID: string;
+		
 
-    this.status = status;
-    if (this.body) {
-      this.body.data = body;
-    }
-  }
+		  constructor( recipeID: string,  recipeStepID: string, status: number = 200, body: RecipeStepInstrument[] = []) {
+		    super();
+
+		 this.recipeID = recipeID;
+		 this.recipeStepID = recipeStepID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body.data = body;
+			}
+		  }
 }
 
 export const mockGetRecipeStepInstrumentss = (resCfg: MockGetRecipeStepInstrumentsResponseConfig) => {
@@ -35,8 +37,10 @@ export const mockGetRecipeStepInstrumentss = (resCfg: MockGetRecipeStepInstrumen
         assertMethod('GET', route);
         assertClient(route);
 
+		
         if (resCfg.body && resCfg.filter) resCfg.body.limit = resCfg.filter.limit;
         if (resCfg.body && resCfg.filter) resCfg.body.page = resCfg.filter.page;
+		
 
         route.fulfill(resCfg.fulfill());
       },

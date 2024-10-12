@@ -2,19 +2,24 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { UserPermissionsResponse } from '@dinnerdonebetter/models';
+import { UserPermissionsResponse } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockCheckPermissionsResponseConfig extends ResponseConfig<UserPermissionsResponse> {
-  constructor(status: number = 201, body?: UserPermissionsResponse) {
-    super();
 
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+
+export class MockCheckPermissionsResponseConfig extends ResponseConfig<UserPermissionsResponse> {
+		  
+
+		  constructor(status: number = 201, body?: UserPermissionsResponse) {
+		    super();
+
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockCheckPermissions = (resCfg: MockCheckPermissionsResponseConfig) => {
@@ -26,6 +31,8 @@ export const mockCheckPermissions = (resCfg: MockCheckPermissionsResponseConfig)
 
         assertMethod('POST', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

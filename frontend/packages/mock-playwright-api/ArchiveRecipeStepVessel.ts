@@ -2,33 +2,30 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { RecipeStepVessel } from '@dinnerdonebetter/models';
+import { RecipeStepVessel } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockArchiveRecipeStepVesselResponseConfig extends ResponseConfig<RecipeStepVessel> {
-  recipeID: string;
-  recipeStepID: string;
-  recipeStepVesselID: string;
+		   recipeID: string;
+		 recipeStepID: string;
+		 recipeStepVesselID: string;
+		
 
-  constructor(
-    recipeID: string,
-    recipeStepID: string,
-    recipeStepVesselID: string,
-    status: number = 202,
-    body?: RecipeStepVessel,
-  ) {
-    super();
+		  constructor( recipeID: string,  recipeStepID: string,  recipeStepVesselID: string, status: number = 202, body?: RecipeStepVessel) {
+		    super();
 
-    this.recipeID = recipeID;
-    this.recipeStepID = recipeStepID;
-    this.recipeStepVesselID = recipeStepVesselID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.recipeID = recipeID;
+		 this.recipeStepID = recipeStepID;
+		 this.recipeStepVesselID = recipeStepVesselID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockArchiveRecipeStepVessel = (resCfg: MockArchiveRecipeStepVesselResponseConfig) => {
@@ -40,6 +37,8 @@ export const mockArchiveRecipeStepVessel = (resCfg: MockArchiveRecipeStepVesselR
 
         assertMethod('DELETE', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

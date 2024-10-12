@@ -189,7 +189,6 @@ export * from './GetValidVessels';
 export * from './GetWebhook';
 export * from './GetWebhooks';
 export * from './LoginForJWT';
-export * from './POST_households_householdID_invite';
 export * from './RedeemPasswordResetToken';
 export * from './RefreshTOTPSecret';
 export * from './RejectHouseholdInvitation';

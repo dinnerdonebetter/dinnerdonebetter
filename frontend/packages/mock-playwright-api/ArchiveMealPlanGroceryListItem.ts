@@ -2,30 +2,28 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { MealPlanGroceryListItem } from '@dinnerdonebetter/models';
+import { MealPlanGroceryListItem } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockArchiveMealPlanGroceryListItemResponseConfig extends ResponseConfig<MealPlanGroceryListItem> {
-  mealPlanID: string;
-  mealPlanGroceryListItemID: string;
+		   mealPlanID: string;
+		 mealPlanGroceryListItemID: string;
+		
 
-  constructor(
-    mealPlanID: string,
-    mealPlanGroceryListItemID: string,
-    status: number = 202,
-    body?: MealPlanGroceryListItem,
-  ) {
-    super();
+		  constructor( mealPlanID: string,  mealPlanGroceryListItemID: string, status: number = 202, body?: MealPlanGroceryListItem) {
+		    super();
 
-    this.mealPlanID = mealPlanID;
-    this.mealPlanGroceryListItemID = mealPlanGroceryListItemID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.mealPlanID = mealPlanID;
+		 this.mealPlanGroceryListItemID = mealPlanGroceryListItemID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockArchiveMealPlanGroceryListItem = (resCfg: MockArchiveMealPlanGroceryListItemResponseConfig) => {
@@ -37,6 +35,8 @@ export const mockArchiveMealPlanGroceryListItem = (resCfg: MockArchiveMealPlanGr
 
         assertMethod('DELETE', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

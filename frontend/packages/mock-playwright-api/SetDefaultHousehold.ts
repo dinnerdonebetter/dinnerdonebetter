@@ -2,23 +2,26 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { Household } from '@dinnerdonebetter/models';
+import { Household } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockSetDefaultHouseholdResponseConfig extends ResponseConfig<Household> {
-  householdID: string;
+		   householdID: string;
+		
 
-  constructor(householdID: string, status: number = 201, body?: Household) {
-    super();
+		  constructor( householdID: string, status: number = 201, body?: Household) {
+		    super();
 
-    this.householdID = householdID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.householdID = householdID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockSetDefaultHousehold = (resCfg: MockSetDefaultHouseholdResponseConfig) => {
@@ -30,6 +33,8 @@ export const mockSetDefaultHousehold = (resCfg: MockSetDefaultHouseholdResponseC
 
         assertMethod('POST', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

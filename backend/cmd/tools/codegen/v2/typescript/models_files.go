@@ -13,11 +13,6 @@ import (
 )
 
 const (
-	componentSchemaPrefix = "#/components/schemas/"
-
-	enumsFileName       = "./enums"
-	numberRangeFileName = "./number_range"
-
 	typeNameNumberRange                = "NumberRange"
 	typeNameNumberRangeWithOptionalMax = "NumberRangeWithOptionalMax"
 	typeNameOptionalNumberRange        = "OptionalNumberRange"

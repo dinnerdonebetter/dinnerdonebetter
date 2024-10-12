@@ -11,9 +11,15 @@ import (
 )
 
 const (
+	componentSchemaPrefix = "#/components/schemas/"
+
+	enumsFileName       = "./enums"
+	numberRangeFileName = "./number_range"
+
 	jsonContentType = "application/json"
 	refKey          = "$ref"
 	propertiesKey   = "properties"
+	modelsPackage   = "@dinnerdonebetter/models"
 )
 
 func removeDuplicates(strList []string) []string {
@@ -43,7 +49,7 @@ func purgeTypescriptFiles(dirPath string) error {
 }
 
 func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
-	typescriptClientFiles, err := GenerateClientFiles(spec)
+	clientFiles, err := GenerateClientFiles(spec)
 	if err != nil {
 		return fmt.Errorf("failed to generate typescript files: %w", err)
 	}
@@ -58,27 +64,27 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 
 	createdFunctions := []string{}
 	imports := map[string][]string{
-		"@dinnerdonebetter/models": {
+		modelsPackage: {
 			"QueryFilter",
 			"QueryFilteredResult",
 		},
 	}
-	for _, function := range typescriptClientFiles {
+	for _, function := range clientFiles {
 		fileContents, renderErr := function.Render()
 		if renderErr != nil {
 			return fmt.Errorf("failed to render: %w", renderErr)
 		}
 
 		if function.InputType.Type != "" {
-			imports["@dinnerdonebetter/models"] = append(imports["@dinnerdonebetter/models"], function.InputType.Type)
+			imports[modelsPackage] = append(imports[modelsPackage], function.InputType.Type)
 		}
 
 		if function.ResponseType.TypeName != "" && function.ResponseType.TypeName != "string" {
-			imports["@dinnerdonebetter/models"] = append(imports["@dinnerdonebetter/models"], function.ResponseType.TypeName)
+			imports[modelsPackage] = append(imports[modelsPackage], function.ResponseType.TypeName)
 		}
 
 		if function.ResponseType.GenericContainer != "" {
-			imports["@dinnerdonebetter/models"] = append(imports["@dinnerdonebetter/models"], function.ResponseType.GenericContainer)
+			imports[modelsPackage] = append(imports[modelsPackage], function.ResponseType.GenericContainer)
 		}
 
 		createdFunctions = append(createdFunctions, fileContents)
@@ -87,7 +93,7 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 	createdFunctions = removeDuplicates(createdFunctions)
 	slices.Sort(createdFunctions)
 
-	modelsImports := imports["@dinnerdonebetter/models"]
+	modelsImports := imports[modelsPackage]
 	modelsImports = removeDuplicates(modelsImports)
 	slices.Sort(modelsImports)
 
@@ -128,7 +134,7 @@ func WriteModelFiles(spec *openapi31.Spec, outputPath string) error {
 
 	// next do models
 
-	typescriptModelFiles, err := GenerateModelFiles(spec)
+	modelFiles, err := GenerateModelFiles(spec)
 	if err != nil {
 		return fmt.Errorf("failed to generate typescript models files: %w", err)
 	}
@@ -142,7 +148,7 @@ func WriteModelFiles(spec *openapi31.Spec, outputPath string) error {
 	}
 
 	createdFiles := []string{}
-	for filename, function := range typescriptModelFiles {
+	for filename, function := range modelFiles {
 		actualFilepath := fmt.Sprintf("%s/%s.ts", outputPath, filename)
 
 		rawFileContents, renderErr := function.Render()

@@ -2,25 +2,28 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { RecipeStepProduct } from '@dinnerdonebetter/models';
+import { RecipeStepProduct } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockCreateRecipeStepProductResponseConfig extends ResponseConfig<RecipeStepProduct> {
-  recipeID: string;
-  recipeStepID: string;
+		   recipeID: string;
+		 recipeStepID: string;
+		
 
-  constructor(recipeID: string, recipeStepID: string, status: number = 201, body?: RecipeStepProduct) {
-    super();
+		  constructor( recipeID: string,  recipeStepID: string, status: number = 201, body?: RecipeStepProduct) {
+		    super();
 
-    this.recipeID = recipeID;
-    this.recipeStepID = recipeStepID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.recipeID = recipeID;
+		 this.recipeStepID = recipeStepID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockCreateRecipeStepProduct = (resCfg: MockCreateRecipeStepProductResponseConfig) => {
@@ -32,6 +35,8 @@ export const mockCreateRecipeStepProduct = (resCfg: MockCreateRecipeStepProductR
 
         assertMethod('POST', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

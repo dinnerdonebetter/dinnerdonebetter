@@ -2,28 +2,29 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ServiceSettingConfiguration } from '@dinnerdonebetter/models';
+import { ServiceSettingConfiguration } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+
+
 export class MockArchiveServiceSettingConfigurationResponseConfig extends ResponseConfig<ServiceSettingConfiguration> {
-  serviceSettingConfigurationID: string;
+		   serviceSettingConfigurationID: string;
+		
 
-  constructor(serviceSettingConfigurationID: string, status: number = 202, body?: ServiceSettingConfiguration) {
-    super();
+		  constructor( serviceSettingConfigurationID: string, status: number = 202, body?: ServiceSettingConfiguration) {
+		    super();
 
-    this.serviceSettingConfigurationID = serviceSettingConfigurationID;
-
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+		 this.serviceSettingConfigurationID = serviceSettingConfigurationID;
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
-export const mockArchiveServiceSettingConfiguration = (
-  resCfg: MockArchiveServiceSettingConfigurationResponseConfig,
-) => {
+export const mockArchiveServiceSettingConfiguration = (resCfg: MockArchiveServiceSettingConfigurationResponseConfig) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/settings/configurations/${resCfg.serviceSettingConfigurationID}`,
@@ -32,6 +33,8 @@ export const mockArchiveServiceSettingConfiguration = (
 
         assertMethod('DELETE', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

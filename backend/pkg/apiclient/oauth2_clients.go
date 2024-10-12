@@ -77,10 +77,6 @@ func (c *Client) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Clie
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if c.authMethod != cookieAuthMethod {
-		return nil, ErrCookieRequired
-	}
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}

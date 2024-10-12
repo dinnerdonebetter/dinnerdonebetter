@@ -2,19 +2,24 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { OAuth2ClientCreationResponse } from '@dinnerdonebetter/models';
+import { OAuth2ClientCreationResponse } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockCreateOAuth2ClientResponseConfig extends ResponseConfig<OAuth2ClientCreationResponse> {
-  constructor(status: number = 201, body?: OAuth2ClientCreationResponse) {
-    super();
 
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+
+export class MockCreateOAuth2ClientResponseConfig extends ResponseConfig<OAuth2ClientCreationResponse> {
+		  
+
+		  constructor(status: number = 201, body?: OAuth2ClientCreationResponse) {
+		    super();
+
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockCreateOAuth2Client = (resCfg: MockCreateOAuth2ClientResponseConfig) => {
@@ -26,6 +31,8 @@ export const mockCreateOAuth2Client = (resCfg: MockCreateOAuth2ClientResponseCon
 
         assertMethod('POST', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

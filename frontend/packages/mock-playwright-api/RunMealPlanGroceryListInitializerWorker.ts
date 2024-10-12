@@ -2,24 +2,27 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { InitializeMealPlanGroceryListResponse } from '@dinnerdonebetter/models';
+import { InitializeMealPlanGroceryListResponse } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockRunMealPlanGroceryListInitializerWorkerResponseConfig extends ResponseConfig<InitializeMealPlanGroceryListResponse> {
-  constructor(status: number = 201, body?: InitializeMealPlanGroceryListResponse) {
-    super();
 
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+
+export class MockRunMealPlanGroceryListInitializerWorkerResponseConfig extends ResponseConfig<InitializeMealPlanGroceryListResponse> {
+		  
+
+		  constructor(status: number = 201, body?: InitializeMealPlanGroceryListResponse) {
+		    super();
+
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
-export const mockRunMealPlanGroceryListInitializerWorker = (
-  resCfg: MockRunMealPlanGroceryListInitializerWorkerResponseConfig,
-) => {
+export const mockRunMealPlanGroceryListInitializerWorker = (resCfg: MockRunMealPlanGroceryListInitializerWorkerResponseConfig) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/workers/meal_plan_grocery_list_init`,
@@ -28,6 +31,8 @@ export const mockRunMealPlanGroceryListInitializerWorker = (
 
         assertMethod('POST', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },

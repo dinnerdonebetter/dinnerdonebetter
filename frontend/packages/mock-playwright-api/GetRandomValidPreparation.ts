@@ -2,19 +2,24 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidPreparation } from '@dinnerdonebetter/models';
+import { ValidPreparation } from '@dinnerdonebetter/models'
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockGetRandomValidPreparationResponseConfig extends ResponseConfig<ValidPreparation> {
-  constructor(status: number = 200, body?: ValidPreparation) {
-    super();
 
-    this.status = status;
-    if (this.body) {
-      this.body = body;
-    }
-  }
+
+export class MockGetRandomValidPreparationResponseConfig extends ResponseConfig<ValidPreparation> {
+		  
+
+		  constructor(status: number = 200, body?: ValidPreparation) {
+		    super();
+
+		
+		    this.status = status;
+			if (this.body) {
+			  this.body = body;
+			}
+		  }
 }
 
 export const mockGetRandomValidPreparation = (resCfg: MockGetRandomValidPreparationResponseConfig) => {
@@ -26,6 +31,8 @@ export const mockGetRandomValidPreparation = (resCfg: MockGetRandomValidPreparat
 
         assertMethod('GET', route);
         assertClient(route);
+
+		
 
         route.fulfill(resCfg.fulfill());
       },
