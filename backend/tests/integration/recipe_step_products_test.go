@@ -77,9 +77,10 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 
 			newRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 			newRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
-			createdRecipeStepProduct.Update(converters.ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(newRecipeStepProduct))
+			updateInput := converters.ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(newRecipeStepProduct)
+			createdRecipeStepProduct.Update(updateInput)
 
-			require.NoError(t, testClients.adminClient.UpdateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepProduct))
+			require.NoError(t, testClients.adminClient.UpdateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID, updateInput))
 
 			actual, err := testClients.userClient.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID)
 			requireNotNilAndNoProblems(t, actual, err)

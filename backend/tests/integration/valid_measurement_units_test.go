@@ -6,7 +6,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -56,8 +57,9 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 			createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, testClients.adminClient)
 
 			newValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			createdValidMeasurementUnit.Update(converters.ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(newValidMeasurementUnit))
-			assert.NoError(t, testClients.adminClient.UpdateValidMeasurementUnit(ctx, createdValidMeasurementUnit))
+			updateInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(newValidMeasurementUnit)
+			createdValidMeasurementUnit.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID, updateInput))
 
 			actual, err := testClients.adminClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -131,17 +133,18 @@ func (s *TestSuite) TestValidMeasurementUnits_Searching() {
 				expected = append(expected, createdValidMeasurementUnit)
 			}
 
-			exampleLimit := uint8(20)
+			filter := types.DefaultQueryFilter()
+			filter.Limit = pointer.To(uint8(20))
 
 			// assert valid measurement unit list equality
-			actual, err := testClients.adminClient.SearchValidMeasurementUnits(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchForValidMeasurementUnits(ctx, searchQuery, filter)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual),
+				len(actual.Data),
 			)
 
 			for _, createdValidMeasurementUnit := range expected {

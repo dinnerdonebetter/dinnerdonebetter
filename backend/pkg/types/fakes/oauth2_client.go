@@ -41,8 +41,9 @@ func BuildFakeOAuth2ClientToken() *types.OAuth2ClientToken {
 	}
 }
 
-// BuildFakeOAuth2ClientCreationResponseFromOAuth2Client builds a faked OAuth2ClientCreationResponse.
-func BuildFakeOAuth2ClientCreationResponseFromOAuth2Client(client *types.OAuth2Client) *types.OAuth2ClientCreationResponse {
+// BuildFakeOAuth2ClientCreationResponse builds a faked OAuth2ClientCreationResponse.
+func BuildFakeOAuth2ClientCreationResponse() *types.OAuth2ClientCreationResponse {
+	client := BuildFakeOAuth2Client()
 	return &types.OAuth2ClientCreationResponse{
 		ID:           client.ID,
 		ClientID:     client.ClientID,
@@ -68,8 +69,8 @@ func BuildFakeOAuth2ClientsList() *types.QueryFilteredResult[types.OAuth2Client]
 	}
 }
 
-// BuildFakeOAuth2ClientCreationInput builds a faked OAuth2ClientCreationRequestInput.
-func BuildFakeOAuth2ClientCreationInput() *types.OAuth2ClientCreationRequestInput {
+// BuildFakeOAuth2ClientCreationRequestInput builds a faked OAuth2ClientCreationRequestInput.
+func BuildFakeOAuth2ClientCreationRequestInput() *types.OAuth2ClientCreationRequestInput {
 	client := BuildFakeOAuth2Client()
 
 	return &types.OAuth2ClientCreationRequestInput{

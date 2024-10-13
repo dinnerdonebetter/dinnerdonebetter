@@ -14,12 +14,12 @@ func (s *TestSuite) TestAuditLogEntries_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			actual, err := testClients.userClient.GetAuditLogEntriesForUser(ctx)
+			actual, err := testClients.userClient.GetAuditLogEntriesForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			assert.Equal(t, 4, len(actual.Data))
 
-			actual, err = testClients.userClient.GetAuditLogEntriesForHousehold(ctx)
+			actual, err = testClients.userClient.GetAuditLogEntriesForHousehold(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			assert.Equal(t, 2, len(actual.Data))
@@ -35,7 +35,7 @@ func (s *TestSuite) TestWebhooks_Retrieving_Returns404ForNonexistentAuditLogEntr
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			actual, err := testClients.userClient.GetAuditLogEntry(ctx, nonexistentID)
+			actual, err := testClients.userClient.GetAuditLogEntryByID(ctx, nonexistentID)
 			assert.Nil(t, actual)
 			assert.Error(t, err)
 		}

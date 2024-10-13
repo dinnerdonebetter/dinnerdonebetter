@@ -12,10 +12,10 @@ import (
 	"testing"
 )
 
-func TestClient_RequestUsernameReminder(T *testing.T) {
+func TestClient_RequestEmailVerificationEmail(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/users/username/reminder"
+	const expectedPathFormat = "/api/v1/users/email_address_verification"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -34,11 +34,9 @@ func TestClient_RequestUsernameReminder(T *testing.T) {
 			Data: data,
 		}
 
-		exampleInput := fakes.BuildFakeUsernameReminderRequestInput()
-
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.RequestUsernameReminder(ctx, exampleInput)
+		actual, err := c.RequestEmailVerificationEmail(ctx)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -50,10 +48,8 @@ func TestClient_RequestUsernameReminder(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleInput := fakes.BuildFakeUsernameReminderRequestInput()
-
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.RequestUsernameReminder(ctx, exampleInput)
+		actual, err := c.RequestEmailVerificationEmail(ctx)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -64,11 +60,9 @@ func TestClient_RequestUsernameReminder(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleInput := fakes.BuildFakeUsernameReminderRequestInput()
-
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.RequestUsernameReminder(ctx, exampleInput)
+		actual, err := c.RequestEmailVerificationEmail(ctx)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

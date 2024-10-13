@@ -18,7 +18,7 @@ func (c *Client) CreateMealPlanOptionVote(
 	mealPlanID string,
 	mealPlanEventID string,
 	input *types.MealPlanOptionVoteCreationRequestInput,
-) (*types.MealPlanOptionVote, error) {
+) ([]*types.MealPlanOptionVote, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -50,7 +50,7 @@ func (c *Client) CreateMealPlanOptionVote(
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a MealPlanOptionVote")
 	}
 
-	var apiResponse *types.APIResponse[*types.MealPlanOptionVote]
+	var apiResponse *types.APIResponse[[]*types.MealPlanOptionVote]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading MealPlanOptionVote creation response")
 	}

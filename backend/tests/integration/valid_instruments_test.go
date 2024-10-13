@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -56,8 +56,9 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.adminClient)
 
 			newValidInstrument := fakes.BuildFakeValidInstrument()
-			createdValidInstrument.Update(converters.ConvertValidInstrumentToValidInstrumentUpdateRequestInput(newValidInstrument))
-			assert.NoError(t, testClients.adminClient.UpdateValidInstrument(ctx, createdValidInstrument))
+			updateInput := converters.ConvertValidInstrumentToValidInstrumentUpdateRequestInput(newValidInstrument)
+			createdValidInstrument.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateValidInstrument(ctx, createdValidInstrument.ID, updateInput))
 
 			actual, err := testClients.adminClient.GetValidInstrument(ctx, createdValidInstrument.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -153,17 +154,15 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 				expected = append(expected, createdValidInstrument)
 			}
 
-			exampleLimit := uint8(20)
-
 			// assert valid instrument list equality
-			actual, err := testClients.adminClient.SearchValidInstruments(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchForValidInstruments(ctx, searchQuery, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual),
+				len(actual.Data),
 			)
 
 			for _, createdValidInstrument := range expected {

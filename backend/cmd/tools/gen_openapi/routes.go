@@ -41,12 +41,14 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"GET /api/v1/audit_log_entries/for_household": {
 		ID:           "GetAuditLogEntriesForHousehold",
-		ResponseType: &types.AuditLogEntry{},
+		ResponseType: []*types.AuditLogEntry{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdAdmin},
 	},
 	"GET /api/v1/audit_log_entries/for_user": {
 		ID:           "GetAuditLogEntriesForUser",
-		ResponseType: &types.AuditLogEntry{},
+		ResponseType: []*types.AuditLogEntry{},
+		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/audit_log_entries/{auditLogEntryID}": {
@@ -747,7 +749,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"POST /api/v1/user_ingredient_preferences/": {
 		ID:           "CreateUserIngredientPreference",
-		ResponseType: &types.UserIngredientPreference{},
+		ResponseType: []*types.UserIngredientPreference{},
 		InputType:    &types.UserIngredientPreferenceCreationRequestInput{},
 		OAuth2Scopes: []string{householdMember},
 	},
@@ -962,6 +964,7 @@ var routeInfoMap = map[string]routeDetails{
 		ID:           "GetValidIngredientPreparationsByPreparation",
 		ResponseType: &types.ValidIngredientPreparation{},
 		ListRoute:    true,
+		SearchRoute:  true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_preparations/{validIngredientPreparationID}/": {
@@ -1147,11 +1150,13 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"GET /api/v1/valid_measurement_conversions/from_unit/{validMeasurementUnitID}": {
 		ID:           "GetValidMeasurementUnitConversionsFromUnit",
+		ListRoute:    true,
 		ResponseType: []types.ValidMeasurementUnitConversion{},
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_measurement_conversions/to_unit/{validMeasurementUnitID}": {
-		ID:           "ValidMeasurementUnitConversionsToUnit",
+		ID:           "GetValidMeasurementUnitConversionsToUnit",
+		ListRoute:    true,
 		ResponseType: []types.ValidMeasurementUnitConversion{},
 		OAuth2Scopes: []string{householdMember},
 	},

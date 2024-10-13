@@ -79,8 +79,9 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			newRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 			newRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			newRecipeStepInstrument.Instrument = newValidInstrument
-			createdRecipeStepInstrument.Update(converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(newRecipeStepInstrument))
-			assert.NoError(t, testClients.adminClient.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepInstrument))
+			updateInput := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(newRecipeStepInstrument)
+			createdRecipeStepInstrument.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID, updateInput))
 
 			actual, err := testClients.userClient.GetRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID)
 			requireNotNilAndNoProblems(t, actual, err)

@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) VerifyUserEmailAddress(
+func (c *Client) RequestEmailVerificationEmail(
 	ctx context.Context,
 
 ) (*types.User, error) {

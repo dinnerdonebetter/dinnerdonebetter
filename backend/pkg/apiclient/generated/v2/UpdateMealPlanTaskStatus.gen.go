@@ -17,6 +17,7 @@ func (c *Client) UpdateMealPlanTaskStatus(
 	ctx context.Context,
 	mealPlanID string,
 	mealPlanTaskID string,
+	input *types.MealPlanTaskStatusChangeRequestInput,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -36,7 +37,7 @@ func (c *Client) UpdateMealPlanTaskStatus(
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/meal_plans/%s/tasks/%s", mealPlanID, mealPlanTaskID))
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, u, http.NoBody)
+	req, err := c.buildDataRequest(ctx, http.MethodPatch, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a MealPlanTask")
 	}

@@ -17,6 +17,7 @@ func (c *Client) UpdateHouseholdMemberPermissions(
 	ctx context.Context,
 	householdID string,
 	userID string,
+	input *types.ModifyUserPermissionsInput,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -36,7 +37,7 @@ func (c *Client) UpdateHouseholdMemberPermissions(
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/households/%s/members/%s/permissions", householdID, userID))
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, u, http.NoBody)
+	req, err := c.buildDataRequest(ctx, http.MethodPatch, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a UserPermissionsResponse")
 	}

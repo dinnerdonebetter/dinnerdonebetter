@@ -3,16 +3,78 @@
 package apiclient
 
 import (
+	"context"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
 func TestClient_UpdateValidMeasurementUnitConversion(T *testing.T) {
 	T.Parallel()
 
-	T.Run("TODO", func(t *testing.T) {
+	const expectedPathFormat = "/api/v1/valid_measurement_conversions/%s"
+
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotEmpty(t, t.Name())
+		ctx := context.Background()
+		validMeasurementUnitConversionID := fakes.BuildFakeID()
+
+		data := fakes.BuildFakeValidMeasurementUnitConversion()
+		expected := &types.APIResponse[*types.ValidMeasurementUnitConversion]{
+			Data: data,
+		}
+
+		exampleInput := fakes.BuildFakeValidMeasurementUnitConversionUpdateRequestInput()
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, validMeasurementUnitConversionID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
+		err := c.UpdateValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID, exampleInput)
+
+		assert.NoError(t, err)
+
+	})
+
+	T.Run("with invalid validMeasurementUnitConversion ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleInput := fakes.BuildFakeValidMeasurementUnitConversionUpdateRequestInput()
+
+		ctx := context.Background()
+		c, _ := buildSimpleTestClient(t)
+		err := c.UpdateValidMeasurementUnitConversion(ctx, "", exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with error building request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		validMeasurementUnitConversionID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeValidMeasurementUnitConversionUpdateRequestInput()
+
+		c := buildTestClientWithInvalidURL(t)
+		err := c.UpdateValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID, exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with error executing request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		validMeasurementUnitConversionID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeValidMeasurementUnitConversionUpdateRequestInput()
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, validMeasurementUnitConversionID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		err := c.UpdateValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID, exampleInput)
+
+		assert.Error(t, err)
 	})
 }

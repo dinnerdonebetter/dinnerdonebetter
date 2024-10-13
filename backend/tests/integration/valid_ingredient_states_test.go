@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -55,8 +55,9 @@ func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
 			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.adminClient)
 
 			newValidIngredientState := fakes.BuildFakeValidIngredientState()
-			createdValidIngredientState.Update(converters.ConvertValidIngredientStateToValidIngredientStateUpdateRequestInput(newValidIngredientState))
-			assert.NoError(t, testClients.adminClient.UpdateValidIngredientState(ctx, createdValidIngredientState))
+			updateInput := converters.ConvertValidIngredientStateToValidIngredientStateUpdateRequestInput(newValidIngredientState)
+			createdValidIngredientState.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateValidIngredientState(ctx, createdValidIngredientState.ID, updateInput))
 
 			actual, err := testClients.adminClient.GetValidIngredientState(ctx, createdValidIngredientState.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -130,17 +131,15 @@ func (s *TestSuite) TestValidIngredientStates_Searching() {
 				expected = append(expected, createdValidIngredientState)
 			}
 
-			exampleLimit := uint8(20)
-
 			// assert valid ingredient state list equality
-			actual, err := testClients.adminClient.SearchValidIngredientStates(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchForValidIngredientStates(ctx, searchQuery, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual),
+				len(actual.Data),
 			)
 
 			for _, createdValidIngredientState := range expected {

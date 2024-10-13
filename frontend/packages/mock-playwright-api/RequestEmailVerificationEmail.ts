@@ -8,7 +8,7 @@ import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
 
 
-export class MockVerifyUserEmailAddressResponseConfig extends ResponseConfig<User> {
+export class MockRequestEmailVerificationEmailResponseConfig extends ResponseConfig<User> {
 		  
 
 		  constructor(status: number = 201, body?: User) {
@@ -22,7 +22,7 @@ export class MockVerifyUserEmailAddressResponseConfig extends ResponseConfig<Use
 		  }
 }
 
-export const mockVerifyUserEmailAddress = (resCfg: MockVerifyUserEmailAddressResponseConfig) => {
+export const mockRequestEmailVerificationEmail = (resCfg: MockRequestEmailVerificationEmailResponseConfig) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/users/email_address_verification`,

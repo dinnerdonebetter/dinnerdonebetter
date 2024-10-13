@@ -77,6 +77,11 @@ func BuildFakeWebhookTriggerEventList() *types.QueryFilteredResult[types.Webhook
 	}
 }
 
+func BuildFakeWebhookTriggerEventCreationRequestInput() *types.WebhookTriggerEventCreationRequestInput {
+	triggerEvent := BuildFakeWebhookTriggerEvent()
+	return converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(triggerEvent)
+}
+
 // BuildFakeWebhookCreationRequestInput builds a faked WebhookCreationRequestInput from a webhook.
 func BuildFakeWebhookCreationRequestInput() *types.WebhookCreationRequestInput {
 	webhook := BuildFakeWebhook()

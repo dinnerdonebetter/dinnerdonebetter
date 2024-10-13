@@ -82,13 +82,13 @@ func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
 			// assert meal plan task equality
 			checkMealPlanGroceryListItemEquality(t, exampleMealPlanGroceryListItem, actual)
 
-			actualList, err := testClients.adminClient.GetMealPlanGroceryListItemsForMealPlan(ctx, createdMealPlan.ID)
+			actualList, err := testClients.adminClient.GetMealPlanGroceryListItemsForMealPlan(ctx, createdMealPlan.ID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			assert.NoError(t, testClients.userClient.ArchiveMealPlan(ctx, createdMealPlan.ID))
 
 			assert.Len(t, actualList, 1)
-			checkMealPlanGroceryListItemEquality(t, actualList[0], actual)
+			checkMealPlanGroceryListItemEquality(t, actualList.Data[0], actual)
 		}
 	})
 }

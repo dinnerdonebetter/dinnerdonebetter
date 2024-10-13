@@ -8,31 +8,46 @@ import (
 
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 func (c *Client) GetAuditLogEntriesForHousehold(
 	ctx context.Context,
-) (*types.AuditLogEntry, error) {
+	filter *types.QueryFilter,
+) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/audit_log_entries/for_household"))
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	values := filter.ToValues()
+
+	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/audit_log_entries/for_household"))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a AuditLogEntry")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of AuditLogEntry")
 	}
 
-	var apiResponse *types.APIResponse[*types.AuditLogEntry]
+	var apiResponse *types.APIResponse[[]*types.AuditLogEntry]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading AuditLogEntry response")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of AuditLogEntry")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
 
-	return apiResponse.Data, nil
+	result := &types.QueryFilteredResult[types.AuditLogEntry]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return result, nil
 }

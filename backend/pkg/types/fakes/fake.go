@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -28,6 +29,10 @@ func BuildFakeID() string {
 
 func BuildFakeString() string {
 	return fake.Word()
+}
+
+func buildFakeTOTPToken() string {
+	return fmt.Sprintf("%d%d", fake.Number(0, 9), fake.Zip())
 }
 
 // BuildFakeTime builds a fake time.

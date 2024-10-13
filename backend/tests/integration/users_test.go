@@ -128,7 +128,9 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 
 			user, _ := createUserAndClientForTest(ctx, t, nil)
 
-			permissions, err := testClients.userClient.CheckUserPermissions(ctx, authorization.ReadWebhooksPermission.ID())
+			input := &types.UserPermissionsRequestInput{Permissions: []string{authorization.ReadWebhooksPermission.ID()}}
+
+			permissions, err := testClients.userClient.CheckPermissions(ctx, input)
 			requireNotNilAndNoProblems(t, permissions, err)
 
 			for _, status := range permissions.Permissions {
@@ -150,7 +152,7 @@ func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
 			defer span.End()
 
 			// Search For userClient.
-			actual, err := testClients.userClient.SearchForUsersByUsername(ctx, s.user.Username)
+			actual, err := testClients.userClient.SearchForUsers(ctx, s.user.Username, nil)
 			assert.Nil(t, actual)
 			assert.Error(t, err)
 		}
@@ -181,12 +183,12 @@ func (s *TestSuite) TestUsers_Searching() {
 			}
 
 			// execute search
-			actual, err := testClients.adminClient.SearchForUsersByUsername(ctx, exampleUsername)
+			actual, err := testClients.adminClient.SearchForUsers(ctx, exampleUsername, nil)
 			assert.NoError(t, err)
 			assert.NotEmpty(t, actual)
 
 			// ensure results look how we expect them to look
-			for _, result := range actual {
+			for _, result := range actual.Data {
 				assert.True(t, strings.HasPrefix(result.Username, exampleUsername))
 			}
 
@@ -247,7 +249,8 @@ func (s *TestSuite) TestUsers_AvatarManagement() {
 
 			encoded := base64.RawStdEncoding.EncodeToString(avatar)
 
-			require.NoError(t, testClients.userClient.UploadNewAvatar(ctx, &types.AvatarUpdateInput{Base64EncodedData: encoded}))
+			_, err := testClients.userClient.UploadUserAvatar(ctx, &types.AvatarUpdateInput{Base64EncodedData: encoded})
+			require.NoError(t, err)
 
 			// Assert userClient equality.
 			user, err := testClients.adminClient.GetUser(ctx, s.user.ID)

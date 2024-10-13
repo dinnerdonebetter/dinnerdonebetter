@@ -43,6 +43,13 @@ func BuildFakeHouseholdInvitationsList() *types.QueryFilteredResult[types.Househ
 	}
 }
 
+func BuildFakeHouseholdInvitationUpdateRequestInput() *types.HouseholdInvitationUpdateRequestInput {
+	return &types.HouseholdInvitationUpdateRequestInput{
+		Token: BuildFakeID(),
+		Note:  fake.Sentence(3),
+	}
+}
+
 // BuildFakeHouseholdInvitationCreationRequestInput builds a faked HouseholdInvitationCreationRequestInput from a webhook.
 func BuildFakeHouseholdInvitationCreationRequestInput() *types.HouseholdInvitationCreationRequestInput {
 	invitation := BuildFakeHouseholdInvitation()

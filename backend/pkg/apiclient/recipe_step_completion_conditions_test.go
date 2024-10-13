@@ -188,7 +188,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_CreateRecipeStepCom
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
+		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepCompletionConditionResponse)
@@ -201,7 +201,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_CreateRecipeStepCom
 	s.Run("with invalid recipe ID", func() {
 		t := s.T()
 
-		exampleInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
+		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 
 		c, _ := buildSimpleTestClient(t)
 

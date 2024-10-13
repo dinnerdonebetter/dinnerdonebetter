@@ -3,16 +3,78 @@
 package apiclient
 
 import (
+	"context"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
 func TestClient_UpdateValidVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("TODO", func(t *testing.T) {
+	const expectedPathFormat = "/api/v1/valid_vessels/%s"
+
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotEmpty(t, t.Name())
+		ctx := context.Background()
+		validVesselID := fakes.BuildFakeID()
+
+		data := fakes.BuildFakeValidVessel()
+		expected := &types.APIResponse[*types.ValidVessel]{
+			Data: data,
+		}
+
+		exampleInput := fakes.BuildFakeValidVesselUpdateRequestInput()
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, validVesselID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
+		err := c.UpdateValidVessel(ctx, validVesselID, exampleInput)
+
+		assert.NoError(t, err)
+
+	})
+
+	T.Run("with invalid validVessel ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleInput := fakes.BuildFakeValidVesselUpdateRequestInput()
+
+		ctx := context.Background()
+		c, _ := buildSimpleTestClient(t)
+		err := c.UpdateValidVessel(ctx, "", exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with error building request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		validVesselID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeValidVesselUpdateRequestInput()
+
+		c := buildTestClientWithInvalidURL(t)
+		err := c.UpdateValidVessel(ctx, validVesselID, exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with error executing request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		validVesselID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeValidVesselUpdateRequestInput()
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, validVesselID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		err := c.UpdateValidVessel(ctx, validVesselID, exampleInput)
+
+		assert.Error(t, err)
 	})
 }

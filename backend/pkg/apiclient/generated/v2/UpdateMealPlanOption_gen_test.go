@@ -3,16 +3,118 @@
 package apiclient
 
 import (
+	"context"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
 func TestClient_UpdateMealPlanOption(T *testing.T) {
 	T.Parallel()
 
-	T.Run("TODO", func(t *testing.T) {
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s"
+
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotEmpty(t, t.Name())
+		ctx := context.Background()
+		mealPlanID := fakes.BuildFakeID()
+		mealPlanEventID := fakes.BuildFakeID()
+		mealPlanOptionID := fakes.BuildFakeID()
+
+		data := fakes.BuildFakeMealPlanOption()
+		expected := &types.APIResponse[*types.MealPlanOption]{
+			Data: data,
+		}
+
+		exampleInput := fakes.BuildFakeMealPlanOptionUpdateRequestInput()
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, mealPlanID, mealPlanEventID, mealPlanOptionID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
+		err := c.UpdateMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, exampleInput)
+
+		assert.NoError(t, err)
+
+	})
+
+	T.Run("with invalid mealPlan ID", func(t *testing.T) {
+		t.Parallel()
+
+		mealPlanEventID := fakes.BuildFakeID()
+		mealPlanOptionID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeMealPlanOptionUpdateRequestInput()
+
+		ctx := context.Background()
+		c, _ := buildSimpleTestClient(t)
+		err := c.UpdateMealPlanOption(ctx, "", mealPlanEventID, mealPlanOptionID, exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid mealPlanEvent ID", func(t *testing.T) {
+		t.Parallel()
+
+		mealPlanID := fakes.BuildFakeID()
+
+		mealPlanOptionID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeMealPlanOptionUpdateRequestInput()
+
+		ctx := context.Background()
+		c, _ := buildSimpleTestClient(t)
+		err := c.UpdateMealPlanOption(ctx, mealPlanID, "", mealPlanOptionID, exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid mealPlanOption ID", func(t *testing.T) {
+		t.Parallel()
+
+		mealPlanID := fakes.BuildFakeID()
+		mealPlanEventID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeMealPlanOptionUpdateRequestInput()
+
+		ctx := context.Background()
+		c, _ := buildSimpleTestClient(t)
+		err := c.UpdateMealPlanOption(ctx, mealPlanID, mealPlanEventID, "", exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with error building request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		mealPlanID := fakes.BuildFakeID()
+		mealPlanEventID := fakes.BuildFakeID()
+		mealPlanOptionID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeMealPlanOptionUpdateRequestInput()
+
+		c := buildTestClientWithInvalidURL(t)
+		err := c.UpdateMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with error executing request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		mealPlanID := fakes.BuildFakeID()
+		mealPlanEventID := fakes.BuildFakeID()
+		mealPlanOptionID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeMealPlanOptionUpdateRequestInput()
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, mealPlanID, mealPlanEventID, mealPlanOptionID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		err := c.UpdateMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, exampleInput)
+
+		assert.Error(t, err)
 	})
 }

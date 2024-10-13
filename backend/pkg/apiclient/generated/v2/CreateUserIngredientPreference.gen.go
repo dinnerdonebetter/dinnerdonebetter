@@ -14,7 +14,7 @@ import (
 func (c *Client) CreateUserIngredientPreference(
 	ctx context.Context,
 	input *types.UserIngredientPreferenceCreationRequestInput,
-) (*types.UserIngredientPreference, error) {
+) ([]*types.UserIngredientPreference, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -34,7 +34,7 @@ func (c *Client) CreateUserIngredientPreference(
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a UserIngredientPreference")
 	}
 
-	var apiResponse *types.APIResponse[*types.UserIngredientPreference]
+	var apiResponse *types.APIResponse[[]*types.UserIngredientPreference]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading UserIngredientPreference creation response")
 	}

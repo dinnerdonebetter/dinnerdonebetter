@@ -22,18 +22,20 @@ func TestClient_GetAuditLogEntriesForHousehold(T *testing.T) {
 
 		ctx := context.Background()
 
-		data := fakes.BuildFakeAuditLogEntry()
-		expected := &types.APIResponse[*types.AuditLogEntry]{
-			Data: data,
+		list := fakes.BuildFakeAuditLogEntriesList()
+
+		expected := &types.APIResponse[[]*types.AuditLogEntry]{
+			Pagination: &list.Pagination,
+			Data:       list.Data,
 		}
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.GetAuditLogEntriesForHousehold(ctx)
+		actual, err := c.GetAuditLogEntriesForHousehold(ctx, nil)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, data, actual)
+		assert.Equal(t, list, actual)
 	})
 
 	T.Run("with error building request", func(t *testing.T) {
@@ -42,7 +44,7 @@ func TestClient_GetAuditLogEntriesForHousehold(T *testing.T) {
 		ctx := context.Background()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetAuditLogEntriesForHousehold(ctx)
+		actual, err := c.GetAuditLogEntriesForHousehold(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -53,9 +55,9 @@ func TestClient_GetAuditLogEntriesForHousehold(T *testing.T) {
 
 		ctx := context.Background()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetAuditLogEntriesForHousehold(ctx)
+		actual, err := c.GetAuditLogEntriesForHousehold(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

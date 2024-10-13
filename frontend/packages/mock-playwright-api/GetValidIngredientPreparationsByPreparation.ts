@@ -10,12 +10,14 @@ import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
 
 export class MockGetValidIngredientPreparationsByPreparationResponseConfig extends ResponseConfig<QueryFilteredResult<ValidIngredientPreparation>> {
-		   validPreparationID: string;
+		   q: string;
+		 validPreparationID: string;
 		
 
-		  constructor( validPreparationID: string, status: number = 200, body: ValidIngredientPreparation[] = []) {
+		  constructor( q: string,  validPreparationID: string, status: number = 200, body: ValidIngredientPreparation[] = []) {
 		    super();
 
+		 this.q = q;
 		 this.validPreparationID = validPreparationID;
 		
 		    this.status = status;

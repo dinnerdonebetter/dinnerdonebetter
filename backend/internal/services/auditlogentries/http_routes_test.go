@@ -115,7 +115,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntryList()
+		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntriesList()
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
@@ -143,7 +143,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntryList()
+		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntriesList()
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
@@ -245,7 +245,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 
 		helper := buildTestHelper(t)
 
-		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntryList()
+		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntriesList()
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
@@ -273,7 +273,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 
 		helper := buildTestHelper(t)
 
-		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntryList()
+		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntriesList()
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(

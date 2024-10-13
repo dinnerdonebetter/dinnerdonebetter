@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
@@ -18,8 +19,8 @@ func BuildFakeValidMeasurementUnitConversion() *types.ValidMeasurementUnitConver
 	}
 }
 
-// BuildFakeValidMeasurementUnitConversionList builds a faked ValidMeasurementUnitConversionList.
-func BuildFakeValidMeasurementUnitConversionList() *types.QueryFilteredResult[types.ValidMeasurementUnitConversion] {
+// BuildFakeValidMeasurementUnitConversionsList builds a faked ValidMeasurementUnitConversionList.
+func BuildFakeValidMeasurementUnitConversionsList() *types.QueryFilteredResult[types.ValidMeasurementUnitConversion] {
 	var examples []*types.ValidMeasurementUnitConversion
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidMeasurementUnitConversion())
@@ -33,6 +34,16 @@ func BuildFakeValidMeasurementUnitConversionList() *types.QueryFilteredResult[ty
 			TotalCount:    exampleQuantity,
 		},
 		Data: examples,
+	}
+}
+
+func BuildFakeValidMeasurementUnitConversionUpdateRequestInput() *types.ValidMeasurementUnitConversionUpdateRequestInput {
+	return &types.ValidMeasurementUnitConversionUpdateRequestInput{
+		From:              pointer.To(BuildFakeID()),
+		To:                pointer.To(BuildFakeID()),
+		OnlyForIngredient: pointer.To(BuildFakeID()),
+		Modifier:          pointer.To(float32(buildFakeNumber())),
+		Notes:             pointer.To(BuildFakeID()),
 	}
 }
 

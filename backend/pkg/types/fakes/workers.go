@@ -19,3 +19,31 @@ func BuildFakeFinalizeMealPlansResponse() *types.FinalizeMealPlansResponse {
 		Count: int(buildFakeNumber()),
 	}
 }
+
+// BuildFakeCreateMealPlanTasksRequest builds a faked Webhook.
+func BuildFakeCreateMealPlanTasksRequest() *types.CreateMealPlanTasksRequest {
+	return &types.CreateMealPlanTasksRequest{
+		HouseholdID: BuildFakeID(),
+	}
+}
+
+// BuildFakeCreateMealPlanTasksResponse builds a faked Webhook.
+func BuildFakeCreateMealPlanTasksResponse() *types.CreateMealPlanTasksResponse {
+	return &types.CreateMealPlanTasksResponse{
+		Success: true,
+	}
+}
+
+// BuildFakeInitializeMealPlanGroceryListRequest builds a faked FinalizeMealPlansResponse.
+func BuildFakeInitializeMealPlanGroceryListRequest() *types.InitializeMealPlanGroceryListRequest {
+	return &types.InitializeMealPlanGroceryListRequest{
+		HouseholdID: BuildFakeID(),
+	}
+}
+
+// BuildFakeInitializeMealPlanGroceryListResponse builds a faked FinalizeMealPlansResponse.
+func BuildFakeInitializeMealPlanGroceryListResponse() *types.InitializeMealPlanGroceryListResponse {
+	return &types.InitializeMealPlanGroceryListResponse{
+		Success: true,
+	}
+}

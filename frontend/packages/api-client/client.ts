@@ -1334,10 +1334,10 @@ async createUser(
 async createUserIngredientPreference(
   
   input: UserIngredientPreferenceCreationRequestInput,
-): Promise<  APIResponse <   UserIngredientPreference >    >  {
+): Promise<  APIResponse < Array<  UserIngredientPreference > >   >  {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.post<APIResponse < UserIngredientPreference  >  >(`/api/v1/user_ingredient_preferences`, input);
+    const response = await self.client.post<APIResponse < Array<UserIngredientPreference>  >  >(`/api/v1/user_ingredient_preferences`, input);
 	    if (response.data.error) {
 	      reject(new Error(response.data.error.message));
 	    }
@@ -1616,30 +1616,50 @@ async getActiveHousehold(
 }
 
 async getAuditLogEntriesForHousehold(
-  ): Promise<  APIResponse <  AuditLogEntry >    >   {
+  filter: QueryFilter = QueryFilter.Default(),
+): Promise< QueryFilteredResult< AuditLogEntry > > {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.get< APIResponse < AuditLogEntry  >  >(`/api/v1/audit_log_entries/for_household`, {});
+    const response = await self.client.get< APIResponse < Array<AuditLogEntry>  >  >(`/api/v1/audit_log_entries/for_household`, {
+      params: filter.asRecord(),
+    });
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));
     }
 
-    resolve(response.data);
+    const result = new QueryFilteredResult<AuditLogEntry>({
+      data: response.data.data,
+      totalCount: response.data.pagination?.totalCount,
+      page: response.data.pagination?.page,
+      limit: response.data.pagination?.limit,
+    });
+
+    resolve(result);
   });
 }
 
 async getAuditLogEntriesForUser(
-  ): Promise<  APIResponse <  AuditLogEntry >    >   {
+  filter: QueryFilter = QueryFilter.Default(),
+): Promise< QueryFilteredResult< AuditLogEntry > > {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.get< APIResponse < AuditLogEntry  >  >(`/api/v1/audit_log_entries/for_user`, {});
+    const response = await self.client.get< APIResponse < Array<AuditLogEntry>  >  >(`/api/v1/audit_log_entries/for_user`, {
+      params: filter.asRecord(),
+    });
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));
     }
 
-    resolve(response.data);
+    const result = new QueryFilteredResult<AuditLogEntry>({
+      data: response.data.data,
+      totalCount: response.data.pagination?.totalCount,
+      page: response.data.pagination?.page,
+      limit: response.data.pagination?.limit,
+    });
+
+    resolve(result);
   });
 }
 
@@ -3056,7 +3076,8 @@ filter: QueryFilter = QueryFilter.Default(),
 }
 
 async getValidIngredientPreparationsByPreparation(
-  validPreparationID: string,
+  q: string,
+validPreparationID: string,
 filter: QueryFilter = QueryFilter.Default(),
 ): Promise< QueryFilteredResult< ValidIngredientPreparation > > {
   let self = this;
@@ -3329,16 +3350,51 @@ async getValidMeasurementUnitConversion(
 
 async getValidMeasurementUnitConversionsFromUnit(
   validMeasurementUnitID: string,
-	): Promise<  APIResponse < Array< ValidMeasurementUnitConversion >  >  >   {
+filter: QueryFilter = QueryFilter.Default(),
+): Promise< QueryFilteredResult< ValidMeasurementUnitConversion > > {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.get< APIResponse < Array<ValidMeasurementUnitConversion>  >  >(`/api/v1/valid_measurement_conversions/from_unit/${validMeasurementUnitID}`, {});
+    const response = await self.client.get< APIResponse < Array<ValidMeasurementUnitConversion>  >  >(`/api/v1/valid_measurement_conversions/from_unit/${validMeasurementUnitID}`, {
+      params: filter.asRecord(),
+    });
 
     if (response.data.error) {
       reject(new Error(response.data.error.message));
     }
 
-    resolve(response.data);
+    const result = new QueryFilteredResult<ValidMeasurementUnitConversion>({
+      data: response.data.data,
+      totalCount: response.data.pagination?.totalCount,
+      page: response.data.pagination?.page,
+      limit: response.data.pagination?.limit,
+    });
+
+    resolve(result);
+  });
+}
+
+async getValidMeasurementUnitConversionsToUnit(
+  validMeasurementUnitID: string,
+filter: QueryFilter = QueryFilter.Default(),
+): Promise< QueryFilteredResult< ValidMeasurementUnitConversion > > {
+  let self = this;
+  return new Promise(async function (resolve, reject) {
+    const response = await self.client.get< APIResponse < Array<ValidMeasurementUnitConversion>  >  >(`/api/v1/valid_measurement_conversions/to_unit/${validMeasurementUnitID}`, {
+      params: filter.asRecord(),
+    });
+
+    if (response.data.error) {
+      reject(new Error(response.data.error.message));
+    }
+
+    const result = new QueryFilteredResult<ValidMeasurementUnitConversion>({
+      data: response.data.data,
+      totalCount: response.data.pagination?.totalCount,
+      page: response.data.pagination?.page,
+      limit: response.data.pagination?.limit,
+    });
+
+    resolve(result);
   });
 }
 
@@ -3713,6 +3769,21 @@ async rejectHouseholdInvitation(
   let self = this;
   return new Promise(async function (resolve, reject) {
     const response = await self.client.put<APIResponse < HouseholdInvitation  >  >(`/api/v1/household_invitations/${householdInvitationID}/reject`, input);
+	    if (response.data.error) {
+	      reject(new Error(response.data.error.message));
+	    }
+
+	    resolve(response.data);
+	  });
+}
+
+async requestEmailVerificationEmail(
+  
+  
+): Promise<  APIResponse <   User >    >  {
+  let self = this;
+  return new Promise(async function (resolve, reject) {
+    const response = await self.client.post<APIResponse < User  >  >(`/api/v1/users/email_address_verification`);
 	    if (response.data.error) {
 	      reject(new Error(response.data.error.message));
 	    }
@@ -4712,21 +4783,6 @@ async uploadUserAvatar(
 	  });
 }
 
-async validMeasurementUnitConversionsToUnit(
-  validMeasurementUnitID: string,
-	): Promise<  APIResponse < Array< ValidMeasurementUnitConversion >  >  >   {
-  let self = this;
-  return new Promise(async function (resolve, reject) {
-    const response = await self.client.get< APIResponse < Array<ValidMeasurementUnitConversion>  >  >(`/api/v1/valid_measurement_conversions/to_unit/${validMeasurementUnitID}`, {});
-
-    if (response.data.error) {
-      reject(new Error(response.data.error.message));
-    }
-
-    resolve(response.data);
-  });
-}
-
 async verifyEmailAddress(
   
   input: EmailAddressVerificationRequestInput,
@@ -4749,21 +4805,6 @@ async verifyTOTPSecret(
   let self = this;
   return new Promise(async function (resolve, reject) {
     const response = await self.client.post<APIResponse < User  >  >(`/users/totp_secret/verify`, input);
-	    if (response.data.error) {
-	      reject(new Error(response.data.error.message));
-	    }
-
-	    resolve(response.data);
-	  });
-}
-
-async verifyUserEmailAddress(
-  
-  
-): Promise<  APIResponse <   User >    >  {
-  let self = this;
-  return new Promise(async function (resolve, reject) {
-    const response = await self.client.post<APIResponse < User  >  >(`/api/v1/users/email_address_verification`);
 	    if (response.data.error) {
 	      reject(new Error(response.data.error.message));
 	    }

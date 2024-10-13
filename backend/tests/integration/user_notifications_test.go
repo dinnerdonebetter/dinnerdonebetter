@@ -5,7 +5,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -59,8 +60,9 @@ func (s *TestSuite) TestUserNotifications_CompleteLifecycle() {
 			createdUserNotification := createUserNotificationForTest(t, ctx, user, userClient, testClients.adminClient)
 
 			createdUserNotification.Status = types.UserNotificationStatusTypeRead
-			createdUserNotification.Update(converters.ConvertUserNotificationToUserNotificationUpdateRequestInput(createdUserNotification))
-			require.NoError(t, userClient.UpdateUserNotification(ctx, createdUserNotification))
+			updateInput := converters.ConvertUserNotificationToUserNotificationUpdateRequestInput(createdUserNotification)
+			createdUserNotification.Update(updateInput)
+			require.NoError(t, userClient.UpdateUserNotification(ctx, createdUserNotification.ID, updateInput))
 
 			actual, err := userClient.GetUserNotification(ctx, createdUserNotification.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -69,8 +71,8 @@ func (s *TestSuite) TestUserNotifications_CompleteLifecycle() {
 			checkUserNotificationEquality(t, createdUserNotification, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			createdUserNotification.Status = types.UserNotificationStatusTypeRead
-			assert.NoError(t, userClient.UpdateUserNotification(ctx, createdUserNotification))
+			updateInput.Status = pointer.To(types.UserNotificationStatusTypeRead)
+			assert.NoError(t, userClient.UpdateUserNotification(ctx, createdUserNotification.ID, updateInput))
 		}
 	})
 }
@@ -111,7 +113,8 @@ func (s *TestSuite) TestUserNotifications_Listing() {
 
 			for _, createdUserNotification := range expected {
 				createdUserNotification.Status = types.UserNotificationStatusTypeRead
-				assert.NoError(t, userClient.UpdateUserNotification(ctx, createdUserNotification))
+				updateInput := converters.ConvertUserNotificationToUserNotificationUpdateRequestInput(createdUserNotification)
+				assert.NoError(t, userClient.UpdateUserNotification(ctx, createdUserNotification.ID, updateInput))
 			}
 		}
 	})

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -66,7 +66,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			_, householdAdminUserClient := createUserAndClientForTest(ctx, t, nil)
 
 			// create household members
-			currentStatus, statusErr := householdAdminUserClient.UserStatus(s.ctx)
+			currentStatus, statusErr := householdAdminUserClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -76,22 +76,26 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			for i := 0; i < 2; i++ {
 				u, c := createUserAndClientForTest(ctx, t, nil)
 
-				invitation, err := householdAdminUserClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := householdAdminUserClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 					Note:    t.Name(),
 					ToEmail: u.EmailAddress,
 				})
 				require.NoError(t, err)
 
-				sentInvitations, err := householdAdminUserClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+				sentInvitations, err := householdAdminUserClient.GetSentHouseholdInvitations(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
 				assert.NotEmpty(t, sentInvitations.Data)
 
-				invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+				invitations, err := c.GetReceivedHouseholdInvitations(ctx, nil)
 				requireNotNilAndNoProblems(t, invitations, err)
 				assert.NotEmpty(t, invitations.Data)
 
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
-				require.NoError(t, c.MarkAsDefault(ctx, relevantHouseholdID))
+				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+					Token: invitation.Token,
+					Note:  t.Name(),
+				}))
+				_, err = c.SetDefaultHousehold(ctx, relevantHouseholdID)
+				require.NoError(t, err)
 
 				tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 				require.NoError(t, err)
@@ -221,7 +225,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			createdMealPlan.VotingDeadline = time.Now().Add(-time.Minute)
 			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
 
-			runRes, err := testClients.adminClient.RunFinalizeMealPlansWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
+			runRes, err := testClients.adminClient.RunFinalizeMealPlanWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
 			require.NoError(t, err)
 			require.NotNil(t, runRes)
 
@@ -255,7 +259,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			_, householdAdminUserClient := createUserAndClientForTest(ctx, t, nil)
 
 			// create household members
-			currentStatus, statusErr := householdAdminUserClient.UserStatus(s.ctx)
+			currentStatus, statusErr := householdAdminUserClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -265,22 +269,26 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			for i := 0; i < 2; i++ {
 				u, c := createUserAndClientForTest(ctx, t, nil)
 
-				invitation, err := householdAdminUserClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := householdAdminUserClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 					Note:    t.Name(),
 					ToEmail: u.EmailAddress,
 				})
 				require.NoError(t, err)
 
-				sentInvitations, err := householdAdminUserClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+				sentInvitations, err := householdAdminUserClient.GetSentHouseholdInvitations(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
 				assert.NotEmpty(t, sentInvitations.Data)
 
-				invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+				invitations, err := c.GetReceivedHouseholdInvitations(ctx, nil)
 				requireNotNilAndNoProblems(t, invitations, err)
 				assert.NotEmpty(t, invitations.Data)
 
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
-				require.NoError(t, c.MarkAsDefault(ctx, relevantHouseholdID))
+				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+					Token: invitation.Token,
+					Note:  t.Name(),
+				}))
+				_, err = c.SetDefaultHousehold(ctx, relevantHouseholdID)
+				require.NoError(t, err)
 
 				tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 				require.NoError(t, err)
@@ -389,7 +397,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			createdMealPlan.VotingDeadline = time.Now().Add(-10 * time.Hour)
 			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
 
-			runRes, err := testClients.adminClient.RunFinalizeMealPlansWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
+			runRes, err := testClients.adminClient.RunFinalizeMealPlanWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
 			require.NoError(t, err)
 			require.NotNil(t, runRes)
 

@@ -44,7 +44,7 @@ func (s *auditLogEntriesTestSuite) SetupTest() {
 	s.exampleAuditLogEntry = fakes.BuildFakeAuditLogEntry()
 	s.exampleAuditLogEntry.BelongsToUser = s.exampleUser.ID
 	s.exampleAuditLogEntry.BelongsToHousehold = &s.exampleHousehold.ID
-	s.exampleAuditLogEntryList = fakes.BuildFakeAuditLogEntryList()
+	s.exampleAuditLogEntryList = fakes.BuildFakeAuditLogEntriesList()
 	s.exampleAuditLogEntryResponse = &types.APIResponse[*types.AuditLogEntry]{
 		Data: s.exampleAuditLogEntry,
 	}

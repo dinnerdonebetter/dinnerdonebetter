@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -81,8 +81,9 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			createdValidIngredient := createValidIngredientForTest(t, ctx, testClients.adminClient)
 
 			newValidIngredient := fakes.BuildFakeValidIngredient()
-			createdValidIngredient.Update(converters.ConvertValidIngredientToValidIngredientUpdateRequestInput(newValidIngredient))
-			assert.NoError(t, testClients.adminClient.UpdateValidIngredient(ctx, createdValidIngredient))
+			updateInput := converters.ConvertValidIngredientToValidIngredientUpdateRequestInput(newValidIngredient)
+			createdValidIngredient.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateValidIngredient(ctx, createdValidIngredient.ID, updateInput))
 
 			actual, err := testClients.adminClient.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -178,10 +179,8 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 				expected = append(expected, createdValidIngredient)
 			}
 
-			exampleLimit := uint8(20)
-
 			// assert valid ingredient list equality
-			actual, err := testClients.adminClient.SearchValidIngredients(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchForValidIngredients(ctx, searchQuery, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,

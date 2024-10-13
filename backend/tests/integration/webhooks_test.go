@@ -53,7 +53,7 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			webhookTriggerEvent.TriggerEvent = string(types.WebhookArchivedCustomerEventType)
 			eventInput := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(webhookTriggerEvent)
 
-			event, err := testClients.userClient.AddWebhookTriggerEvent(ctx, createdWebhook.ID, eventInput)
+			event, err := testClients.userClient.CreateWebhookTriggerEvent(ctx, createdWebhook.ID, eventInput)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// Archive trigger event

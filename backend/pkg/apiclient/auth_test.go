@@ -341,7 +341,7 @@ func (s *authTestSuite) TestClient_VerifyTOTPSecret() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(s.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(s.exampleUser)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
 		err := c.VerifyTOTPSecret(s.ctx, s.exampleUser.ID, exampleInput.TOTPToken)
@@ -351,7 +351,7 @@ func (s *authTestSuite) TestClient_VerifyTOTPSecret() {
 	s.Run("with invalid user ID", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(s.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(s.exampleUser)
 		c, _ := buildSimpleTestClient(t)
 
 		err := c.VerifyTOTPSecret(s.ctx, "", exampleInput.TOTPToken)
@@ -370,7 +370,7 @@ func (s *authTestSuite) TestClient_VerifyTOTPSecret() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(s.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(s.exampleUser)
 
 		c := buildTestClientWithInvalidURL(t)
 
@@ -382,7 +382,7 @@ func (s *authTestSuite) TestClient_VerifyTOTPSecret() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(s.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(s.exampleUser)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusBadRequest)
 
 		err := c.VerifyTOTPSecret(s.ctx, s.exampleUser.ID, exampleInput.TOTPToken)
@@ -394,7 +394,7 @@ func (s *authTestSuite) TestClient_VerifyTOTPSecret() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(s.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(s.exampleUser)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusInternalServerError)
 
 		err := c.VerifyTOTPSecret(s.ctx, s.exampleUser.ID, exampleInput.TOTPToken)
@@ -406,7 +406,7 @@ func (s *authTestSuite) TestClient_VerifyTOTPSecret() {
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 		c.unauthenticatedClient.Timeout = time.Millisecond
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(s.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(s.exampleUser)
 
 		err := c.VerifyTOTPSecret(s.ctx, s.exampleUser.ID, exampleInput.TOTPToken)
 		assert.Error(t, err)

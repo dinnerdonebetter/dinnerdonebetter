@@ -453,7 +453,7 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}}
 	{{ if ne .InputType.Type "" }}input *types.{{ .InputType.Type }},{{ end }}
-) (*types.{{ .ResponseType.TypeName }}, error) {
+) ({{ if .ReturnsList }}[]{{ end }}*types.{{ .ResponseType.TypeName }}, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -482,7 +482,7 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
 	}
 
-	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
+	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}{{ if .ReturnsList }}[]{{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading {{ .ResponseType.TypeName }} creation response")
 	}
@@ -490,7 +490,6 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
-
 
 	return apiResponse.Data, nil
 }`
@@ -525,7 +524,6 @@ input *types.{{ .InputType.Type }},
 
 {{ end }} 
 
-
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
 	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, input)
 	if err != nil {
@@ -540,7 +538,6 @@ input *types.{{ .InputType.Type }},
 	if err = apiResponse.Error.AsError(); err != nil {
 		return  err
 	}
-
 
 	return nil
 }`
@@ -559,6 +556,7 @@ input *types.{{ .InputType.Type }},
 	ctx context.Context,
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}}
+input *types.{{ .InputType.Type }},
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -571,10 +569,10 @@ input *types.{{ .InputType.Type }},
 	logger = logger.WithValue(keys.{{ observabilityKey .Name }}Key, {{ .Name }})
 	tracing.AttachToSpan(span, keys.{{ observabilityKey .Name }}Key, {{ .Name }})
 
-{{ end }} 
+{{ end }}
 
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
-	req, err := http.NewRequestWithContext(ctx, http.Method{{ title .Method }}, u, http.NoBody)
+	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, input)
 	if err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
 	}
@@ -741,7 +739,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
 		{{ end }}
 
-		list := fakes.BuildFake{{ uppercaseFirstLetter .ResponseType.TypeName }}sList()
+		list := fakes.BuildFake{{ pluralize (uppercaseFirstLetter .ResponseType.TypeName) }}sList()
 		{{- if eq (uppercaseFirstLetter .ResponseType.TypeName) "User" }}
 		for i := range list.Data {
 			// the hashed passwords is never transmitted over the wire.
@@ -968,15 +966,15 @@ func TestClient_{{ .Name }}(T *testing.T) {
 			Data: data,
 		}
 
-		exampleInput := fakes.BuildFake{{ .InputType.Type }}()
+		{{ if ne .InputType.Type "" }}exampleInput := fakes.BuildFake{{ .InputType.Type }}({{ if eq .Name "VerifyTOTPSecret" }}data{{ end }}){{ end }}
 
-		spec := newRequestSpec(true, http.Method{{ title .Method }}, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
+		spec := newRequestSpec(false, http.Method{{ title .Method }}, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }}, {{ end }} exampleInput)
+		{{ if (and (ne .Method "PUT") (ne .Method "PATCH")) }}actual,{{ end }} err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }}, {{ end }} {{ if ne .InputType.Type "" }} exampleInput {{ end }})
 
-		require.NotNil(t, actual)
+		{{ if (and (ne .Method "PUT") (ne .Method "PATCH")) }}require.NotNil(t, actual){{ end }}
 		assert.NoError(t, err)
-		assert.Equal(t, data, actual)
+		{{ if (and (ne .Method "PUT") (ne .Method "PATCH")) }}assert.Equal(t, data, actual){{ end }}
 	})
 
 	{{ range $i, $p := .Params }}
@@ -986,13 +984,14 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fakes.BuildFakeID(){{ end }}
 		{{ end }}
 
-		exampleInput := fakes.BuildFake{{ .InputType.Type }}()
+		{{ if eq $.Name "VerifyTOTPSecret" }}data := fakes.BuildFakeUser(){{ end }}
+		{{ if ne $.InputType.Type "" }}exampleInput := fakes.BuildFake{{ $.InputType.Type }}({{ if eq .Name "VerifyTOTPSecret" }}data{{ end }}){{ end }}
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.{{ $.Name }}(ctx, {{ range $j, $p2 := $.Params}}{{ if eq $j $i}}""{{ else }} {{ .Name }} {{ end }}, {{ end }} exampleInput)
+		{{ if (and (ne $.Method "PUT") (ne $.Method "PATCH")) }}actual,{{ end }} err := c.{{ $.Name }}(ctx, {{ range $j, $p2 := $.Params}}{{ if eq $j $i}}""{{ else }} {{ .Name }} {{ end }}, {{ end }} {{ if ne $.InputType.Type "" }} exampleInput {{ end }})
 
-		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
+		{{ if (and (ne $.Method "PUT") (ne $.Method "PATCH")) }}require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual){{ end }}
 		assert.Error(t, err)
 	})
 {{ end }}
@@ -1004,12 +1003,13 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
 		{{ end }}
 
-		exampleInput := fakes.BuildFake{{ .InputType.Type }}()
+		{{ if eq .Name "VerifyTOTPSecret" }}data := fakes.BuildFakeUser(){{ end }}
+		{{ if ne .InputType.Type "" }}exampleInput := fakes.BuildFake{{ .InputType.Type }}({{ if eq .Name "VerifyTOTPSecret" }}data{{ end }}){{ end }}
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }},{{ end }} exampleInput)
+		{{ if (and (ne .Method "PUT") (ne .Method "PATCH")) }}actual,{{ end }} err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }},{{ end }} {{ if ne .InputType.Type "" }} exampleInput {{ end }})
 
-		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
+		{{ if (and (ne .Method "PUT") (ne .Method "PATCH")) }}require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual){{ end }}
 		assert.Error(t, err)
 	})
 
@@ -1020,21 +1020,31 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
 		{{ end }}
 
-		exampleInput := fakes.BuildFake{{ .InputType.Type }}()
+		{{ if eq .Name "VerifyTOTPSecret" }}data := fakes.BuildFakeUser(){{ end }}
+		{{ if ne .InputType.Type "" }}exampleInput := fakes.BuildFake{{ .InputType.Type }}({{ if eq .Name "VerifyTOTPSecret" }}data{{ end }}){{ end }}
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
+		spec := newRequestSpec(false, http.Method{{ title .Method }}, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }},{{ end }} exampleInput)
+		{{ if (and (ne .Method "PUT") (ne .Method "PATCH")) }}actual,{{ end }} err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }},{{ end }}{{ if ne .InputType.Type "" }} exampleInput {{ end }})
 
-		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
+		{{ if (and (ne .Method "PUT") (ne .Method "PATCH")) }}require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual){{ end }}
 		assert.Error(t, err)
 	})
 }
 `
 		imports = append(imports,
 			"testing",
+			"context",
+			"net/http",
 			"github.com/stretchr/testify/assert",
+			"github.com/dinnerdonebetter/backend/pkg/types",
+			"github.com/dinnerdonebetter/backend/pkg/types/fakes",
 		)
+
+		if f.Method != http.MethodPut && f.Method != http.MethodPatch {
+			imports = append(imports, "github.com/stretchr/testify/require")
+		}
+
 	case http.MethodDelete:
 		tmpl = dummyTemplate
 		imports = append(imports,
@@ -1055,6 +1065,14 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		},
 		"replace":              strings.ReplaceAll,
 		"uppercaseFirstLetter": uppercaseFirstLetter,
+		"pluralize": func(s string) string {
+			switch s {
+			case "AuditLogEntry":
+				return "AuditLogEntrie"
+			default:
+				return s
+			}
+		},
 		"notNative": func(s string) bool {
 			switch s {
 			case "string", "bool", "int", "uint64":

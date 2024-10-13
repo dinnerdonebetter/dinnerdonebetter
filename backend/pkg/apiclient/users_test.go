@@ -528,7 +528,7 @@ func (s *usersTestSuite) TestClient_UpdateUserDetails() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		exampleInput := fakes.BuildFakeUserDetailsUpdateRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
@@ -549,7 +549,7 @@ func (s *usersTestSuite) TestClient_UpdateUserDetails() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		exampleInput := fakes.BuildFakeUserDetailsUpdateRequestInput()
 		c := buildTestClientWithInvalidURL(t)
 
 		err := c.UpdateUserDetails(s.ctx, exampleInput)

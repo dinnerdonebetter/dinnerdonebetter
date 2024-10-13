@@ -78,8 +78,9 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			newRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			newRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			newRecipeStepVessel.Vessel = createdValidVessel
-			createdRecipeStepVessel.Update(converters.ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(newRecipeStepVessel))
-			assert.NoError(t, testClients.adminClient.UpdateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepVessel))
+			updateInput := converters.ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(newRecipeStepVessel)
+			createdRecipeStepVessel.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID, updateInput))
 
 			actual, err := testClients.userClient.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
 			requireNotNilAndNoProblems(t, actual, err)

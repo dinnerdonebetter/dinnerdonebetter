@@ -179,7 +179,7 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		require.NotNil(t, cookie)
 		assert.NoError(t, err)
 
-		actual, err := testClient.UserStatus(ctx)
+		actual, err := testClient.GetAuthStatus(ctx)
 		assert.NoError(t, err)
 
 		assert.Equal(t, true, actual.UserIsAuthenticated, "expected UserIsAuthenticated to equal %v, but got %v", true, actual.UserIsAuthenticated)
@@ -214,7 +214,7 @@ func (s *TestSuite) TestPasswordChanging() {
 		}
 
 		// update passwords.
-		assert.NoError(t, testClient.ChangePassword(ctx, &types.PasswordUpdateInput{
+		assert.NoError(t, testClient.UpdatePassword(ctx, &types.PasswordUpdateInput{
 			CurrentPassword: testUser.HashedPassword,
 			TOTPToken:       generateTOTPTokenForUser(t, testUser),
 			NewPassword:     backwardsPass,
@@ -241,14 +241,18 @@ func (s *TestSuite) TestTOTPSecretChanging() {
 
 		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
 
-		r, err := testClient.CycleTwoFactorSecret(ctx, &types.TOTPSecretRefreshInput{
+		r, err := testClient.RefreshTOTPSecret(ctx, &types.TOTPSecretRefreshInput{
 			CurrentPassword: testUser.HashedPassword,
 			TOTPToken:       generateTOTPTokenForUser(t, testUser),
 		})
 		require.NoError(t, err)
 
 		testUser.TwoFactorSecret = r.TwoFactorSecret
-		require.NoError(t, testClient.VerifyTOTPSecret(ctx, testUser.ID, generateTOTPTokenForUser(t, testUser)))
+		_, err = testClient.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
+			TOTPToken: generateTOTPTokenForUser(t, testUser),
+			UserID:    testUser.ID,
+		})
+		require.NoError(t, err)
 
 		// create login request.
 		newToken, err := totp.GenerateCode(r.TwoFactorSecret, time.Now().UTC())
@@ -275,14 +279,21 @@ func (s *TestSuite) TestTOTPTokenValidation() {
 
 		// create userClient.
 		userInput := fakes.BuildFakeUserCreationInput()
-		user, err := testClient.CreateUser(ctx, userInput)
-		assert.NotNil(t, user)
+		userCreationResponse, err := testClient.CreateUser(ctx, userInput)
+		assert.NotNil(t, userCreationResponse)
+		require.NoError(t, err)
+
+		user, err := testClient.GetUser(ctx, userCreationResponse.CreatedUserID)
 		require.NoError(t, err)
 
 		token, err := totp.GenerateCode(user.TwoFactorSecret, time.Now().UTC())
 		requireNotNilAndNoProblems(t, token, err)
 
-		assert.NoError(t, testClient.VerifyTOTPSecret(ctx, user.CreatedUserID, token))
+		_, err = testClient.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
+			TOTPToken: generateTOTPTokenForUser(t, user),
+			UserID:    user.ID,
+		})
+		assert.NoError(t, err)
 	})
 
 	s.Run("should not be possible to validate an invalid TOTP", func() {
@@ -295,11 +306,18 @@ func (s *TestSuite) TestTOTPTokenValidation() {
 
 		// create userClient.
 		userInput := fakes.BuildFakeUserCreationInput()
-		user, err := testClient.CreateUser(ctx, userInput)
-		assert.NotNil(t, user)
+		userCreationResponse, err := testClient.CreateUser(ctx, userInput)
+		assert.NotNil(t, userCreationResponse)
 		require.NoError(t, err)
 
-		assert.Error(t, testClient.VerifyTOTPSecret(ctx, user.CreatedUserID, "NOTREAL"))
+		user, err := testClient.GetUser(ctx, userCreationResponse.CreatedUserID)
+		require.NoError(t, err)
+
+		_, err = testClient.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
+			TOTPToken: "NOTREAL",
+			UserID:    user.ID,
+		})
+		assert.Error(t, err)
 	})
 }
 
@@ -312,7 +330,8 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 
 		u, testClient := createUserAndClientForTest(ctx, t, nil)
 
-		require.NoError(t, testClient.RequestPasswordResetToken(ctx, u.EmailAddress))
+		_, err := testClient.RequestPasswordResetToken(ctx, &types.PasswordResetTokenCreationRequestInput{EmailAddress: u.EmailAddress})
+		require.NoError(t, err)
 
 		dbAddr := os.Getenv("TARGET_DATABASE")
 		if dbAddr == "" {
@@ -333,10 +352,11 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 
 		fakeInput := fakes.BuildFakeUserCreationInput()
 
-		require.NoError(t, testClient.RedeemPasswordResetToken(ctx, &types.PasswordResetTokenRedemptionRequestInput{
+		_, err = testClient.RedeemPasswordResetToken(ctx, &types.PasswordResetTokenRedemptionRequestInput{
 			Token:       resetToken.Token,
 			NewPassword: fakeInput.Password,
-		}))
+		})
+		require.NoError(t, err)
 
 		cookie, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
 			Username:  u.Username,
@@ -345,9 +365,10 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 		})
 		requireNotNilAndNoProblems(t, cookie, err)
 
-		require.Error(t, testClient.RedeemPasswordResetToken(ctx, &types.PasswordResetTokenRedemptionRequestInput{
+		_, err = testClient.RedeemPasswordResetToken(ctx, &types.PasswordResetTokenRedemptionRequestInput{
 			Token:       resetToken.Token,
 			NewPassword: fakeInput.Password,
-		}))
+		})
+		require.Error(t, err)
 	})
 }

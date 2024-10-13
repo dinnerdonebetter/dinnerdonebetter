@@ -16,6 +16,7 @@ import (
 func (c *Client) UpdateUserNotification(
 	ctx context.Context,
 	userNotificationID string,
+	input *types.UserNotificationUpdateRequestInput,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -29,7 +30,7 @@ func (c *Client) UpdateUserNotification(
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotificationID)
 
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/user_notifications/%s", userNotificationID))
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, u, http.NoBody)
+	req, err := c.buildDataRequest(ctx, http.MethodPatch, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a UserNotification")
 	}

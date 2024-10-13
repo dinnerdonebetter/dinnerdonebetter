@@ -3,16 +3,78 @@
 package apiclient
 
 import (
+	"context"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
 func TestClient_UpdateHouseholdInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
-	T.Run("TODO", func(t *testing.T) {
+	const expectedPathFormat = "/api/v1/households/instruments/%s"
+
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotEmpty(t, t.Name())
+		ctx := context.Background()
+		householdInstrumentOwnershipID := fakes.BuildFakeID()
+
+		data := fakes.BuildFakeHouseholdInstrumentOwnership()
+		expected := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
+			Data: data,
+		}
+
+		exampleInput := fakes.BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput()
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, householdInstrumentOwnershipID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
+		err := c.UpdateHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, exampleInput)
+
+		assert.NoError(t, err)
+
+	})
+
+	T.Run("with invalid householdInstrumentOwnership ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleInput := fakes.BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput()
+
+		ctx := context.Background()
+		c, _ := buildSimpleTestClient(t)
+		err := c.UpdateHouseholdInstrumentOwnership(ctx, "", exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with error building request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		householdInstrumentOwnershipID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput()
+
+		c := buildTestClientWithInvalidURL(t)
+		err := c.UpdateHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, exampleInput)
+
+		assert.Error(t, err)
+	})
+
+	T.Run("with error executing request", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		householdInstrumentOwnershipID := fakes.BuildFakeID()
+
+		exampleInput := fakes.BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput()
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, householdInstrumentOwnershipID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		err := c.UpdateHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, exampleInput)
+
+		assert.Error(t, err)
 	})
 }

@@ -41,8 +41,9 @@ func (s *TestSuite) TestHouseholdInstrumentOwnerships_CompleteLifecycle() {
 
 			newHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
 			newHouseholdInstrumentOwnership.Instrument = *createdValidInstrument
-			createdHouseholdInstrumentOwnership.Update(converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequestInput(newHouseholdInstrumentOwnership))
-			assert.NoError(t, testClients.adminClient.UpdateHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership))
+			updateInput := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequestInput(newHouseholdInstrumentOwnership)
+			createdHouseholdInstrumentOwnership.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID, updateInput))
 
 			actual, err := testClients.adminClient.GetHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID)
 			requireNotNilAndNoProblems(t, actual, err)

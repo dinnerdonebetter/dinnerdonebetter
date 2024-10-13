@@ -210,7 +210,7 @@ sqlc_struct_check:
 
 .PHONY: openapi
 openapi:
-	go run $(THIS)/cmd/tools/codegen/gen_openapi
+	go run $(THIS)/cmd/tools/gen_openapi
 
 .PHONY: openapi-client
 openapi-client: ensure_oapi_codegen_installed

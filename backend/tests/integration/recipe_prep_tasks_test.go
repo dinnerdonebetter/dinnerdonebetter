@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -52,7 +52,7 @@ func createRecipePrepTaskForTest(ctx context.Context, t *testing.T, adminClient,
 
 	exampleInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
-	createdRecipePrepTask, err := client.CreateRecipePrepTask(ctx, exampleInput)
+	createdRecipePrepTask, err := client.CreateRecipePrepTask(ctx, createdRecipe.ID, exampleInput)
 	requireNotNilAndNoProblems(t, createdRecipePrepTask, err)
 
 	actual, err := client.GetRecipePrepTask(ctx, createdRecipe.ID, createdRecipePrepTask.ID)
@@ -77,8 +77,10 @@ func (s *TestSuite) TestRecipePrepTasks_CompleteLifecycle() {
 			newRecipePrepTask.ID = actual.ID
 			newRecipePrepTask.BelongsToRecipe = createdRecipe.ID
 			newRecipePrepTask.TaskSteps = actual.TaskSteps
-			actual.Update(converters.ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(newRecipePrepTask))
-			require.NoError(t, testClients.adminClient.UpdateRecipePrepTask(ctx, actual))
+
+			updateInput := converters.ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(newRecipePrepTask)
+			actual.Update(updateInput)
+			require.NoError(t, testClients.adminClient.UpdateRecipePrepTask(ctx, createdRecipe.ID, actual.ID, updateInput))
 
 			actual, err := testClients.userClient.GetRecipePrepTask(ctx, createdRecipe.ID, actual.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -125,12 +127,12 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 
 				exampleInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
-				createdRecipePrepTask, err := testClients.adminClient.CreateRecipePrepTask(ctx, exampleInput)
+				createdRecipePrepTask, err := testClients.adminClient.CreateRecipePrepTask(ctx, createdRecipe.ID, exampleInput)
 				requireNotNilAndNoProblems(t, createdRecipePrepTask, err)
 
 				exampleRecipePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
-				createdRecipePrepTask, createdRecipePrepTaskErr := testClients.adminClient.CreateRecipePrepTask(ctx, exampleRecipePrepTaskInput)
+				createdRecipePrepTask, createdRecipePrepTaskErr := testClients.adminClient.CreateRecipePrepTask(ctx, createdRecipe.ID, exampleRecipePrepTaskInput)
 				require.NoError(t, createdRecipePrepTaskErr)
 
 				for j := range createdRecipePrepTask.TaskSteps {
@@ -152,10 +154,10 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual),
+				len(actual.Data),
 			)
 
 			for _, createdRecipePrepTask := range expected {

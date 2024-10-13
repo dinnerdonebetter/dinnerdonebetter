@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -58,8 +58,9 @@ func (s *TestSuite) TestValidPreparationVessels_CompleteLifecycle() {
 			newValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
 			newValidPreparationVessel.Vessel = createdValidPreparationVessel.Vessel
 			newValidPreparationVessel.Preparation = createdValidPreparationVessel.Preparation
-			createdValidPreparationVessel.Update(converters.ConvertValidPreparationVesselToValidPreparationVesselUpdateRequestInput(newValidPreparationVessel))
-			assert.NoError(t, testClients.adminClient.UpdateValidPreparationVessel(ctx, createdValidPreparationVessel))
+			updateInput := converters.ConvertValidPreparationVesselToValidPreparationVesselUpdateRequestInput(newValidPreparationVessel)
+			createdValidPreparationVessel.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateValidPreparationVessel(ctx, createdValidPreparationVessel.ID, updateInput))
 
 			actual, err := testClients.userClient.GetValidPreparationVessel(ctx, createdValidPreparationVessel.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -119,13 +120,13 @@ func (s *TestSuite) TestValidPreparationVessels_Listing_ByValue() {
 
 			createdValidPreparation, createdValidVessel, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.adminClient)
 
-			validPreparationVesselsForVessel, err := testClients.userClient.GetValidPreparationVesselsForVessel(ctx, createdValidVessel.ID, nil)
+			validPreparationVesselsForVessel, err := testClients.userClient.GetValidPreparationVesselsByVessel(ctx, createdValidVessel.ID, nil)
 			requireNotNilAndNoProblems(t, validPreparationVesselsForVessel, err)
 
 			require.Len(t, validPreparationVesselsForVessel.Data, 1)
 			assert.Equal(t, validPreparationVesselsForVessel.Data[0].ID, createdValidPreparationVessel.ID)
 
-			validPreparationVesselsForPreparation, err := testClients.userClient.GetValidPreparationVesselsForPreparation(ctx, createdValidPreparation.ID, nil)
+			validPreparationVesselsForPreparation, err := testClients.userClient.GetValidPreparationVesselsByPreparation(ctx, createdValidPreparation.ID, nil)
 			requireNotNilAndNoProblems(t, validPreparationVesselsForPreparation, err)
 
 			require.Len(t, validPreparationVesselsForPreparation.Data, 1)
