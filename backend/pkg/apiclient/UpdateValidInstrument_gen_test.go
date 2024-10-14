@@ -4,11 +4,13 @@ package apiclient
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestClient_UpdateValidInstrument(T *testing.T) {

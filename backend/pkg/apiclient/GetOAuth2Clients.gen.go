@@ -6,7 +6,6 @@ import (
 	"context"
 	"net/http"
 
-	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -29,7 +28,7 @@ func (c *Client) GetOAuth2Clients(
 
 	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/oauth2_clients"))
+	u := c.BuildURL(ctx, values, "/api/v1/oauth2_clients")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of OAuth2Client")

@@ -4,9 +4,9 @@ package apiclient
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
-	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"

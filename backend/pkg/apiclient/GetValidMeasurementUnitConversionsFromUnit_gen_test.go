@@ -4,12 +4,14 @@ package apiclient
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
+
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClient_GetValidMeasurementUnitConversionsFromUnit(T *testing.T) {
@@ -39,7 +41,7 @@ func TestClient_GetValidMeasurementUnitConversionsFromUnit(T *testing.T) {
 		assert.Equal(t, list, actual)
 	})
 
-	T.Run("with invalid validMeasurementUnit ID", func(t *testing.T) {
+	T.Run("with empty validMeasurementUnit ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()

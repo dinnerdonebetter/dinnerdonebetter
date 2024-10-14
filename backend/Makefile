@@ -110,7 +110,7 @@ format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_in
 
 .PHONY: format_imports
 format_imports: ensure_gci_installed
-	gci write --skip-generated --section standard --section "prefix($(THIS))" --section "prefix($(dir $(THIS)))" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
+	gci write --section standard --section "prefix($(THIS))" --section "prefix($(dir $(THIS)))" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
 
 .PHONY: terraformat
 terraformat:
@@ -191,8 +191,8 @@ queries:
 
 codegen:
 	go run $(THIS)/cmd/tools/codegen
-#	$(MAKE) format
-#	(cd ../frontend && $(MAKE) format)
+	@$(MAKE) format_golang
+	@(cd ../frontend && $(MAKE) format)
 
 .PHONY: querier
 querier: queries queries_lint  ## TODO: This target is broken

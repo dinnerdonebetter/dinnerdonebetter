@@ -4,12 +4,14 @@ package apiclient
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
+
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClient_GetMealPlanOptionVotes(T *testing.T) {
@@ -41,7 +43,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 		assert.Equal(t, list, actual)
 	})
 
-	T.Run("with invalid mealPlan ID", func(t *testing.T) {
+	T.Run("with empty mealPlan ID", func(t *testing.T) {
 		t.Parallel()
 
 		mealPlanEventID := fakes.BuildFakeID()
@@ -55,7 +57,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("with invalid mealPlanEvent ID", func(t *testing.T) {
+	T.Run("with empty mealPlanEvent ID", func(t *testing.T) {
 		t.Parallel()
 
 		mealPlanID := fakes.BuildFakeID()
@@ -70,7 +72,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("with invalid mealPlanOption ID", func(t *testing.T) {
+	T.Run("with empty mealPlanOption ID", func(t *testing.T) {
 		t.Parallel()
 
 		mealPlanID := fakes.BuildFakeID()

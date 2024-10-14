@@ -36,7 +36,7 @@ func purgeGoFiles(dirPath string) error {
 }
 
 func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
-	clientFiles, err := GenerateClientFiles(spec)
+	clientFunctions, err := GenerateClientFunctions(spec)
 	if err != nil {
 		return fmt.Errorf("failed to generate golang files: %w", err)
 	}
@@ -49,7 +49,7 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 		return fmt.Errorf("failed to purge golang files: %w", err)
 	}
 
-	for filename, function := range clientFiles {
+	for filename, function := range clientFunctions {
 		fileContents, fileImports, renderErr := function.Render()
 		if renderErr != nil {
 			return fmt.Errorf("failed to render: %w", renderErr)
@@ -68,7 +68,6 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 import (
 	"context"
 	"net/http"
-
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	%s
 )
@@ -87,7 +86,7 @@ import (
 		}
 	}
 
-	for filename, function := range clientFiles {
+	for filename, function := range clientFunctions {
 		fileContents, fileImports, renderErr := function.RenderTest()
 		if renderErr != nil {
 			return fmt.Errorf("failed to render: %w", renderErr)

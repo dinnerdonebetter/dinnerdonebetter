@@ -6,7 +6,6 @@ import (
 	"context"
 	"net/http"
 
-	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -28,7 +27,7 @@ func (c *Client) RequestUsernameReminder(
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/users/username/reminder"))
+	u := c.BuildURL(ctx, nil, "/users/username/reminder")
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a User")

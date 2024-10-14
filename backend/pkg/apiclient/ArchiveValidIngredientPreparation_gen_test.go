@@ -3,8 +3,9 @@
 package apiclient
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestClient_ArchiveValidIngredientPreparation(T *testing.T) {

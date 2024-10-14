@@ -6,7 +6,6 @@ import (
 	"context"
 	"net/http"
 
-	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -20,7 +19,7 @@ func (c *Client) RequestEmailVerificationEmail(
 
 	logger := c.logger.Clone()
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/users/email_address_verification"))
+	u := c.BuildURL(ctx, nil, "/api/v1/users/email_address_verification")
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a User")

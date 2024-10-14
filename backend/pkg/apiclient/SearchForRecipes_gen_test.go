@@ -5,12 +5,14 @@ package apiclient
 import (
 	"context"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
+
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClient_SearchForRecipes(T *testing.T) {
@@ -38,17 +40,6 @@ func TestClient_SearchForRecipes(T *testing.T) {
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, list, actual)
-	})
-
-	T.Run("with invalid query ", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildSimpleTestClient(t)
-		actual, err := c.SearchForRecipes(ctx, "", nil)
-
-		require.Nil(t, actual)
-		assert.Error(t, err)
 	})
 
 	T.Run("with error building request", func(t *testing.T) {

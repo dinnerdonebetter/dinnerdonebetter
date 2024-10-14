@@ -6,7 +6,6 @@ import (
 	"context"
 	"net/http"
 
-	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -29,7 +28,7 @@ func (c *Client) GetAuditLogEntriesForHousehold(
 
 	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/audit_log_entries/for_household"))
+	u := c.BuildURL(ctx, values, "/api/v1/audit_log_entries/for_household")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of AuditLogEntry")

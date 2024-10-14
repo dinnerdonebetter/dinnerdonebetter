@@ -4,12 +4,14 @@ package apiclient
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
+
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClient_GetRecipeStepProducts(T *testing.T) {
@@ -40,7 +42,7 @@ func TestClient_GetRecipeStepProducts(T *testing.T) {
 		assert.Equal(t, list, actual)
 	})
 
-	T.Run("with invalid recipe ID", func(t *testing.T) {
+	T.Run("with empty recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		recipeStepID := fakes.BuildFakeID()
@@ -53,7 +55,7 @@ func TestClient_GetRecipeStepProducts(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("with invalid recipeStep ID", func(t *testing.T) {
+	T.Run("with empty recipeStep ID", func(t *testing.T) {
 		t.Parallel()
 
 		recipeID := fakes.BuildFakeID()

@@ -4,9 +4,9 @@ package apiclient
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
-	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -29,12 +29,6 @@ func (c *Client) SearchValidMeasurementUnitsByIngredient(
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
-
-	if q == "" {
-		return nil, buildInvalidIDError("q")
-	}
-	logger = logger.WithValue(keys.SearchQueryKey, q)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, q)
 
 	if validIngredientID == "" {
 		return nil, buildInvalidIDError("validIngredient")

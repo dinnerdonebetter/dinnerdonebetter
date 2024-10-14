@@ -28,7 +28,7 @@ var skipOps = map[string]bool{
 	"GetRecipeDAG":      true,
 }
 
-func GenerateClientFiles(spec *openapi31.Spec) (map[string]*APIClientFunction, error) {
+func GenerateClientFunctions(spec *openapi31.Spec) (map[string]*APIClientFunction, error) {
 	output := map[string]*APIClientFunction{}
 
 	for path, op := range spec.Paths.MapOfPathItemValues {
@@ -337,6 +337,8 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	var tmpl string
 	imports = []string{}
 
+	shouldFormatPath := len(f.Params) > 0 && !(len(f.Params) == 1 && f.Params[0].Name == "q")
+
 	switch f.Method {
 	case http.MethodGet:
 		if f.QueryFiltered {
@@ -359,12 +361,13 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-{{ range .Params }}	if {{ .Name }} == "" {
+{{ range .Params }}	{{ if ne .Name "q" }}if {{ .Name }} == "" {
 		return nil, buildInvalidIDError("{{ replace .Name "ID" "" }}")
 	} 
 	logger = logger.WithValue(keys.{{ observabilityKey .Name }}Key, {{ .Name }})
 	tracing.AttachToSpan(span, keys.{{ observabilityKey .Name }}Key, {{ .Name }})
 
+{{ end }} 
 {{ end }} 
 
 	values := filter.ToValues()
@@ -372,7 +375,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	values.Set(types.QueryKeySearch, q)
 	{{- end }}
 
-	u := c.BuildURL(ctx, values, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}))
+	u := c.BuildURL(ctx, values, {{ if shouldFormatPath }}fmt.Sprintf({{ end }}"{{ .PathTemplate }}"{{if shouldFormatPath }} {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}){{ end }})
 	req, err := http.NewRequestWithContext(ctx, http.Method{{ title .Method }}, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of {{ .ResponseType.TypeName }}")
@@ -395,12 +398,13 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	return result, nil
 }`
 			imports = append(imports,
-				"fmt",
 				"github.com/dinnerdonebetter/backend/internal/observability",
 				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
 			)
-			if len(f.Params) > 0 {
+
+			if shouldFormatPath {
 				imports = append(imports,
+					"fmt",
 					"github.com/dinnerdonebetter/backend/internal/observability/keys")
 			}
 		} else {
@@ -415,15 +419,15 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 
 	logger := c.logger.Clone()
 
-{{ range .Params }}	if {{ .Name }} == "" {
+{{ range .Params }}{{ if ne .Name "q" }}	if {{ .Name }} == "" {
 		return {{ if notNative $.ResponseType.TypeName }}nil{{ else }} {{ nativeDefault $.ResponseType.TypeName }}{{ end }}, buildInvalidIDError("{{ replace .Name "ID" "" }}")
 	} 
 	logger = logger.WithValue(keys.{{ observabilityKey .Name }}Key, {{ .Name }})
 	tracing.AttachToSpan(span, keys.{{ observabilityKey .Name }}Key, {{ .Name }})
-
+{{ end }}
 {{ end }} 
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
+	u := c.BuildURL(ctx, nil, {{ if shouldFormatPath }}fmt.Sprintf({{ end }}"{{ .PathTemplate }}"{{if shouldFormatPath }} {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}){{ end }})
 	req, err := http.NewRequestWithContext(ctx, http.Method{{ title .Method }}, u, http.NoBody)
 	if err != nil {
 		return {{ if notNative .ResponseType.TypeName }}nil{{ else }} {{ nativeDefault .ResponseType.TypeName }}{{ end }}, observability.PrepareAndLogError(err, logger, span, "building request to fetch a {{ .ResponseType.TypeName }}")
@@ -442,9 +446,11 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	return apiResponse.Data, nil
 }`
 			imports = append(imports,
-				"fmt",
 				"github.com/dinnerdonebetter/backend/internal/observability",
 			)
+			if shouldFormatPath {
+				imports = append(imports, "fmt")
+			}
 			if len(f.Params) > 0 {
 				imports = append(imports,
 					"github.com/dinnerdonebetter/backend/internal/observability/tracing",
@@ -472,15 +478,16 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 {{ end }}
-{{ range .Params }}	if {{ .Name }} == "" {
+{{ range .Params }}	{{ if ne .Name "q" }}if {{ .Name }} == "" {
 		return nil, buildInvalidIDError("{{ replace .Name "ID" "" }}")
-	} 
+	}
 	logger = logger.WithValue(keys.{{ observabilityKey .Name }}Key, {{ .Name }})
 	tracing.AttachToSpan(span, keys.{{ observabilityKey .Name }}Key, {{ .Name }})
+{{ end }}
 
 {{ end }} 
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
+	u := c.BuildURL(ctx, nil, {{ if shouldFormatPath }}fmt.Sprintf({{ end }}"{{ .PathTemplate }}"{{if shouldFormatPath }} {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}){{ end }})
 	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, {{ if ne .InputType.Type "" }}input{{ else }}http.NoBody{{ end }})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
@@ -499,9 +506,11 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 }`
 
 		imports = append(imports,
-			"fmt",
 			"github.com/dinnerdonebetter/backend/internal/observability",
 		)
+		if shouldFormatPath {
+			imports = append(imports, "fmt")
+		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
 				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
@@ -528,7 +537,7 @@ input *types.{{ .InputType.Type }},
 
 {{ end }} 
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
+	u := c.BuildURL(ctx, nil, {{ if shouldFormatPath }}fmt.Sprintf({{ end }}"{{ .PathTemplate }}"{{if shouldFormatPath }} {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}){{ end }})
 	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, input)
 	if err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
@@ -546,9 +555,11 @@ input *types.{{ .InputType.Type }},
 	return nil
 }`
 		imports = append(imports,
-			"fmt",
 			"github.com/dinnerdonebetter/backend/internal/observability",
 		)
+		if shouldFormatPath {
+			imports = append(imports, "fmt")
+		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
 				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
@@ -575,7 +586,7 @@ input *types.{{ .InputType.Type }},
 
 {{ end }}
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
+	u := c.BuildURL(ctx, nil, {{ if shouldFormatPath }}fmt.Sprintf({{ end }}"{{ .PathTemplate }}"{{if shouldFormatPath }} {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}){{ end }})
 	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, input)
 	if err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
@@ -593,9 +604,11 @@ input *types.{{ .InputType.Type }},
 	return nil
 }`
 		imports = append(imports,
-			"fmt",
 			"github.com/dinnerdonebetter/backend/internal/observability",
 		)
+		if shouldFormatPath {
+			imports = append(imports, "fmt")
+		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
 				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
@@ -622,7 +635,7 @@ input *types.{{ .InputType.Type }},
 
 {{ end }} 
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("{{ .PathTemplate }}" {{ range .Params }}, {{ .Name }} {{ end }}))
+	u := c.BuildURL(ctx, nil, {{ if shouldFormatPath }}fmt.Sprintf({{ end }}"{{ .PathTemplate }}"{{if shouldFormatPath }} {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}){{ end }})
 	req, err := http.NewRequestWithContext(ctx, http.Method{{ title .Method }}, u, http.NoBody)
 	if err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
@@ -640,9 +653,11 @@ input *types.{{ .InputType.Type }},
 	return  nil
 }`
 		imports = append(imports,
-			"fmt",
 			"github.com/dinnerdonebetter/backend/internal/observability",
 		)
+		if shouldFormatPath {
+			imports = append(imports, "fmt")
+		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
 				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
@@ -669,6 +684,9 @@ input *types.{{ .InputType.Type }},
 			default:
 				return true
 			}
+		},
+		"shouldFormatPath": func() bool {
+			return shouldFormatPath
 		},
 		"observabilityKey": func(s string) string {
 			out := strings.ReplaceAll(uppercaseFirstLetter(s), "Oauth", "OAuth")
@@ -777,8 +795,8 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		assert.Equal(t, list, actual)
 	})
 
-	{{ range $i, $p := .Params }}
-	T.Run("with invalid {{ replace (replace $p.Name "ID" "") "q" "query" }} {{ if ne $p.Name "q" }}ID{{ end }}",  func(t *testing.T) {
+	{{ range $i, $p := .Params }} {{ if ne $p.Name "q" }}
+	T.Run("with empty {{ replace $p.Name "ID" ""  }} ID",  func(t *testing.T) {
 		t.Parallel()
 
 		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fakes.BuildFakeID(){{ end }}
@@ -790,7 +808,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 
 		require.{{ if notNative $.ResponseType.TypeName }}Nil{{ else }} {{ negativeAssertFunc $.ResponseType.TypeName }} {{ end }}(t, actual)
 		assert.Error(t, err)
-	})
+	}){{ end }}
 {{ end }}
 
 	T.Run("with error building request", func(t *testing.T) {
