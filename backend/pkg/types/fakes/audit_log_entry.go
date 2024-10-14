@@ -18,8 +18,8 @@ func BuildFakeAuditLogEntry() *types.AuditLogEntry {
 	}
 }
 
-// BuildFakeAuditLogEntryList builds a faked AuditLogEntryList.
-func BuildFakeAuditLogEntryList() *types.QueryFilteredResult[types.AuditLogEntry] {
+// BuildFakeAuditLogEntriesList builds a faked AuditLogEntryList.
+func BuildFakeAuditLogEntriesList() *types.QueryFilteredResult[types.AuditLogEntry] {
 	var examples []*types.AuditLogEntry
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeAuditLogEntry())

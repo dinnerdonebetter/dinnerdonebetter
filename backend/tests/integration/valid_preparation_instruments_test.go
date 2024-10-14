@@ -69,8 +69,9 @@ func (s *TestSuite) TestValidPreparationInstruments_CompleteLifecycle() {
 			newValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 			newValidPreparationInstrument.Instrument = *createdValidInstrument
 			newValidPreparationInstrument.Preparation = *createdValidPreparation
-			createdValidPreparationInstrument.Update(converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentUpdateRequestInput(newValidPreparationInstrument))
-			assert.NoError(t, testClients.adminClient.UpdateValidPreparationInstrument(ctx, createdValidPreparationInstrument))
+			updateInput := converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentUpdateRequestInput(newValidPreparationInstrument)
+			createdValidPreparationInstrument.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateValidPreparationInstrument(ctx, createdValidPreparationInstrument.ID, updateInput))
 
 			actual, err := testClients.userClient.GetValidPreparationInstrument(ctx, createdValidPreparationInstrument.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -189,13 +190,13 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing_ByValue() {
 
 			checkValidPreparationInstrumentEquality(t, exampleValidPreparationInstrument, createdValidPreparationInstrument)
 
-			validPreparationInstrumentsForInstrument, err := testClients.userClient.GetValidPreparationInstrumentsForInstrument(ctx, createdValidInstrument.ID, nil)
+			validPreparationInstrumentsForInstrument, err := testClients.userClient.GetValidPreparationInstrumentsByInstrument(ctx, createdValidInstrument.ID, nil)
 			requireNotNilAndNoProblems(t, validPreparationInstrumentsForInstrument, err)
 
 			require.Len(t, validPreparationInstrumentsForInstrument.Data, 1)
 			assert.Equal(t, validPreparationInstrumentsForInstrument.Data[0].ID, createdValidPreparationInstrument.ID)
 
-			validPreparationInstrumentsForPreparation, err := testClients.userClient.GetValidPreparationInstrumentsForPreparation(ctx, createdValidPreparation.ID, nil)
+			validPreparationInstrumentsForPreparation, err := testClients.userClient.GetValidPreparationInstrumentsByPreparation(ctx, createdValidPreparation.ID, nil)
 			requireNotNilAndNoProblems(t, validPreparationInstrumentsForPreparation, err)
 
 			require.Len(t, validPreparationInstrumentsForPreparation.Data, 1)

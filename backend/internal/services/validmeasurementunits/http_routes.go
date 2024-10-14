@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -282,8 +283,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
-		Details: responseDetails,
-		Data:    validMeasurementUnits,
+		Details:    responseDetails,
+		Data:       validMeasurementUnits,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode our response and peace.

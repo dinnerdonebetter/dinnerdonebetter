@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -73,8 +74,9 @@ func (s *TestSuite) TestValidVessels_CompleteLifecycle() {
 
 			newValidVessel := fakes.BuildFakeValidVessel()
 			newValidVessel.CapacityUnit = createdValidVessel.CapacityUnit
-			createdValidVessel.Update(converters.ConvertValidVesselToValidVesselUpdateRequestInput(newValidVessel))
-			assert.NoError(t, testClients.adminClient.UpdateValidVessel(ctx, createdValidVessel))
+			updateInput := converters.ConvertValidVesselToValidVesselUpdateRequestInput(newValidVessel)
+			createdValidVessel.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateValidVessel(ctx, createdValidVessel.ID, updateInput))
 
 			actual, err := testClients.adminClient.GetValidVessel(ctx, createdValidVessel.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -156,17 +158,18 @@ func (s *TestSuite) TestValidVessels_Searching() {
 				expected = append(expected, createdValidVessel)
 			}
 
-			exampleLimit := uint8(20)
+			filter := types.DefaultQueryFilter()
+			filter.Limit = pointer.To(uint8(20))
 
 			// assert valid vessel list equality
-			actual, err := testClients.adminClient.SearchValidVessels(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchForValidVessels(ctx, searchQuery, filter)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual),
+				len(actual.Data),
 			)
 
 			for _, createdValidVessel := range expected {

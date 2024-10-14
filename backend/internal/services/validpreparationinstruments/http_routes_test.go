@@ -308,7 +308,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
+		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentsList()
 
 		validPreparationInstrumentDataManager := &mocktypes.ValidPreparationInstrumentDataManagerMock{}
 		validPreparationInstrumentDataManager.On(
@@ -834,7 +834,7 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
+		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentsList()
 
 		validPreparationInstrumentDataManager := &mocktypes.ValidPreparationInstrumentDataManagerMock{}
 		validPreparationInstrumentDataManager.On(
@@ -908,7 +908,7 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
+		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentsList()
 
 		validPreparationInstrumentDataManager := &mocktypes.ValidPreparationInstrumentDataManagerMock{}
 		validPreparationInstrumentDataManager.On(

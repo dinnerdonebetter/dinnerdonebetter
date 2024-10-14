@@ -22,7 +22,7 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 	}
 }
 
-func BuildFakeMealPlanGroceryListItemList() *types.QueryFilteredResult[types.MealPlanGroceryListItem] {
+func BuildFakeMealPlanGroceryListItemsList() *types.QueryFilteredResult[types.MealPlanGroceryListItem] {
 	var examples []*types.MealPlanGroceryListItem
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanGroceryListItem())

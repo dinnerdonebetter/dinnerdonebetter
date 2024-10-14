@@ -447,7 +447,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleOAuth2ClientList := fakes.BuildFakeOAuth2ClientList()
+		exampleOAuth2ClientList := fakes.BuildFakeOAuth2ClientsList()
 
 		mockDB := database.NewMockDatabase()
 		mockDB.OAuth2ClientDataManagerMock.On(

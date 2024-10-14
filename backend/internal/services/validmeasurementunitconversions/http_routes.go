@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -326,6 +327,8 @@ func (s *service) FromMeasurementUnitHandler(res http.ResponseWriter, req *http.
 
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -366,8 +369,9 @@ func (s *service) FromMeasurementUnitHandler(res http.ResponseWriter, req *http.
 	}
 
 	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnitConversion]{
-		Details: responseDetails,
-		Data:    x,
+		Details:    responseDetails,
+		Data:       x,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode our response and peace.
@@ -380,6 +384,8 @@ func (s *service) ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Re
 
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -420,8 +426,9 @@ func (s *service) ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Re
 	}
 
 	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnitConversion]{
-		Details: responseDetails,
-		Data:    x,
+		Details:    responseDetails,
+		Data:       x,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode our response and peace.

@@ -143,10 +143,7 @@ func (s *TestSuite) TestHouseholds_Updating_Returns404ForNonexistentHousehold() 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHousehold.ID = nonexistentID
-
-			assert.Error(t, testClients.userClient.UpdateHousehold(ctx, exampleHousehold))
+			assert.Error(t, testClients.userClient.UpdateHousehold(ctx, nonexistentID, &types.HouseholdUpdateRequestInput{}))
 		}
 	})
 }
@@ -166,8 +163,9 @@ func (s *TestSuite) TestHouseholds_Updating() {
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
 			// Change household.
-			createdHousehold.Update(converters.ConvertHouseholdToHouseholdUpdateRequestInput(exampleHousehold))
-			assert.NoError(t, testClients.userClient.UpdateHousehold(ctx, createdHousehold))
+			updateInput := converters.ConvertHouseholdToHouseholdUpdateRequestInput(exampleHousehold)
+			createdHousehold.Update(updateInput)
+			assert.NoError(t, testClients.userClient.UpdateHousehold(ctx, createdHousehold.ID, updateInput))
 
 			// Fetch household.
 			actual, err := testClients.userClient.GetHousehold(ctx, createdHousehold.ID)
@@ -211,7 +209,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			currentStatus, statusErr := testClients.userClient.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -229,25 +227,28 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 
 			u, c := createUserAndClientForTest(ctx, t, nil)
 
-			invitation, err := testClients.userClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+			invitation, err := testClients.userClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToName:  t.Name(),
 				ToEmail: u.EmailAddress,
 			})
 			require.NoError(t, err)
 
-			sentInvitations, err := testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err := testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+			invitations, err := c.GetReceivedHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.NotEmpty(t, invitations.Data)
 
-			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
+			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+				Token: invitation.Token,
+				Note:  t.Name(),
+			})
 			require.NoError(t, err)
 
-			sentInvitations, err = testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err = testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
 
@@ -261,7 +262,8 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			}
 
 			require.True(t, found)
-			require.NoError(t, c.MarkAsDefault(ctx, relevantHouseholdID))
+			_, err = c.SetDefaultHousehold(ctx, relevantHouseholdID)
+			require.NoError(t, err)
 
 			tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 			require.NoError(t, err)
@@ -282,7 +284,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			currentStatus, statusErr := testClients.userClient.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -302,10 +304,10 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
 			}
-			invitation, err := testClients.userClient.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
+			invitation, err := testClients.userClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
-			sentInvitations, err := testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err := testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
@@ -315,11 +317,14 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
 			})
 
-			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+			invitations, err := c.GetReceivedHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.NotEmpty(t, invitations.Data)
 
-			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
+			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+				Token: invitation.Token,
+				Note:  t.Name(),
+			})
 			require.NoError(t, err)
 
 			households, err := c.GetHouseholds(ctx, nil)
@@ -332,7 +337,8 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			}
 
 			require.True(t, found)
-			require.NoError(t, c.MarkAsDefault(ctx, relevantHouseholdID))
+			_, err = c.SetDefaultHousehold(ctx, relevantHouseholdID)
+			require.NoError(t, err)
 
 			tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 			require.NoError(t, err)
@@ -342,7 +348,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			_, err = c.GetWebhook(ctx, createdWebhook.ID)
 			require.NoError(t, err)
 
-			sentInvitations, err = testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err = testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
 		}
@@ -357,7 +363,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			currentStatus, statusErr := testClients.userClient.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -377,10 +383,10 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
 			}
-			invitation, err := testClients.userClient.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
+			invitation, err := testClients.userClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
-			sentInvitations, err := testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err := testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
@@ -390,14 +396,17 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
 			})
 
-			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+			invitations, err := c.GetReceivedHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.NotEmpty(t, invitations.Data)
 
-			err = testClients.userClient.CancelHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
+			err = testClients.userClient.CancelHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+				Token: invitation.Token,
+				Note:  t.Name(),
+			})
 			require.NoError(t, err)
 
-			sentInvitations, err = testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err = testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
 		}
@@ -412,7 +421,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			currentStatus, statusErr := testClients.userClient.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -432,13 +441,13 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
 			}
-			createdInvitation, err := testClients.userClient.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
+			createdInvitation, err := testClients.userClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
 			createdInvitation, err = testClients.userClient.GetHouseholdInvitation(ctx, createdInvitation.ID)
 			requireNotNilAndNoProblems(t, createdInvitation, err)
 
-			sentInvitations, err := testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err := testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
@@ -476,7 +485,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			currentStatus, statusErr := testClients.userClient.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -496,12 +505,15 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
 			}
-			invitation, err := testClients.userClient.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
+			invitation, err := testClients.userClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
-			require.NoError(t, testClients.userClient.CancelHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
+			require.NoError(t, testClients.userClient.CancelHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+				Token: invitation.Token,
+				Note:  t.Name(),
+			}))
 
-			sentInvitations, err := testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err := testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
 
@@ -511,7 +523,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
 			})
 
-			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+			invitations, err := c.GetReceivedHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.Empty(t, invitations.Data)
 		}
@@ -526,7 +538,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			currentStatus, statusErr := testClients.userClient.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -544,24 +556,27 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 
 			u, c := createUserAndClientForTest(ctx, t, nil)
 
-			invitation, err := testClients.userClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+			invitation, err := testClients.userClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToEmail: u.EmailAddress,
 			})
 			require.NoError(t, err)
 
-			sentInvitations, err := testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err := testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+			invitations, err := c.GetReceivedHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.NotEmpty(t, invitations.Data)
 
-			err = c.RejectHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
+			err = c.RejectHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+				Token: invitation.Token,
+				Note:  t.Name(),
+			})
 			require.NoError(t, err)
 
-			sentInvitations, err = testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err = testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
 		}
@@ -578,7 +593,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			const userCount = 1
 
-			currentStatus, statusErr := testClients.userClient.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 
 			// fetch household data
@@ -589,7 +604,8 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			require.NoError(t, householdCreationErr)
 			require.NotNil(t, household)
 
-			require.NoError(t, testClients.userClient.MarkAsDefault(ctx, household.ID))
+			_, err := testClients.userClient.SetDefaultHousehold(ctx, household.ID)
+			require.NoError(t, err)
 
 			tokenResponse, err := testClients.userClient.LoginForJWT(ctx, &types.UserLoginInput{Username: testClients.user.Username, Password: testClients.user.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, testClients.user)})
 			require.NoError(t, err)
@@ -618,7 +634,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 				users = append(users, u)
 				clients = append(clients, c)
 
-				currentStatus, statusErr = c.UserStatus(s.ctx)
+				currentStatus, statusErr = c.GetAuthStatus(s.ctx)
 				requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			}
 
@@ -631,28 +647,32 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// add them to the household
 			for i := 0; i < userCount; i++ {
-				invitation, invitationErr := testClients.userClient.InviteUserToHousehold(ctx, household.ID, &types.HouseholdInvitationCreationRequestInput{
+				invitation, invitationErr := testClients.userClient.CreateHouseholdInvitation(ctx, household.ID, &types.HouseholdInvitationCreationRequestInput{
 					ToEmail: users[i].EmailAddress,
 					Note:    t.Name(),
 				})
 				require.NoError(t, invitationErr)
 				require.NotEmpty(t, invitation.ID)
 
-				invitations, fetchInvitationsErr := clients[i].GetPendingHouseholdInvitationsForUser(ctx, nil)
+				invitations, fetchInvitationsErr := clients[i].GetReceivedHouseholdInvitations(ctx, nil)
 				requireNotNilAndNoProblems(t, invitations, fetchInvitationsErr)
 				assert.NotEmpty(t, invitations.Data)
 
-				err = clients[i].AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
+				err = clients[i].AcceptHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+					Token: invitation.Token,
+					Note:  t.Name(),
+				})
 				require.NoError(t, err)
 
-				require.NoError(t, clients[i].MarkAsDefault(ctx, household.ID))
+				_, err = clients[i].SetDefaultHousehold(ctx, household.ID)
+				require.NoError(t, err)
 
 				tokenResponse, err = clients[i].LoginForJWT(ctx, &types.UserLoginInput{Username: users[i].Username, Password: users[i].HashedPassword, TOTPToken: generateTOTPTokenForUser(t, users[i])})
 				require.NoError(t, err)
 
 				require.NoError(t, clients[i].SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
 
-				currentStatus, statusErr = clients[i].UserStatus(s.ctx)
+				currentStatus, statusErr = clients[i].GetAuthStatus(s.ctx)
 				requireNotNilAndNoProblems(t, currentStatus, statusErr)
 				require.Equal(t, currentStatus.ActiveHousehold, household.ID)
 			}
@@ -663,7 +683,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 					Reason:  t.Name(),
 					NewRole: authorization.HouseholdAdminRole.String(),
 				}
-				require.NoError(t, testClients.userClient.ModifyMemberPermissions(ctx, household.ID, users[i].ID, input))
+				require.NoError(t, testClients.userClient.UpdateHouseholdMemberPermissions(ctx, household.ID, users[i].ID, input))
 			}
 
 			// check that each userClient can see the webhook
@@ -674,7 +694,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// remove users from household
 			for i := 0; i < userCount; i++ {
-				require.NoError(t, testClients.userClient.RemoveUserFromHousehold(ctx, household.ID, users[i].ID))
+				require.NoError(t, testClients.userClient.ArchiveUserMembership(ctx, household.ID, users[i].ID))
 			}
 
 			// check that each userClient cannot see the webhook
@@ -713,7 +733,8 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			require.NoError(t, householdCreationErr)
 			require.NotNil(t, household)
 
-			require.NoError(t, testClients.userClient.MarkAsDefault(ctx, household.ID))
+			_, err := testClients.userClient.SetDefaultHousehold(ctx, household.ID)
+			require.NoError(t, err)
 
 			tokenResponse, err := testClients.userClient.LoginForJWT(ctx, &types.UserLoginInput{Username: testClients.user.Username, Password: testClients.user.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, testClients.user)})
 			require.NoError(t, err)
@@ -741,13 +762,15 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			require.Error(t, err)
 
 			// add them to the household
-			require.NoError(t, testClients.userClient.TransferHouseholdOwnership(ctx, household.ID, &types.HouseholdOwnershipTransferInput{
+			_, err = testClients.userClient.TransferHouseholdOwnership(ctx, household.ID, &types.HouseholdOwnershipTransferInput{
 				Reason:       t.Name(),
 				CurrentOwner: household.BelongsToUser,
 				NewOwner:     futureOwner.ID,
-			}))
+			})
+			require.NoError(t, err)
 
-			require.NoError(t, futureOwnerClient.MarkAsDefault(ctx, household.ID))
+			_, err = futureOwnerClient.SetDefaultHousehold(ctx, household.ID)
+			require.NoError(t, err)
 
 			tokenResponse, err = futureOwnerClient.LoginForJWT(ctx, &types.UserLoginInput{Username: futureOwner.Username, Password: futureOwner.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, futureOwner)})
 			require.NoError(t, err)
@@ -781,7 +804,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			currentStatus, statusErr := testClients.userClient.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -789,13 +812,13 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
 			}
-			createdInvitation, err := testClients.userClient.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
+			createdInvitation, err := testClients.userClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
 			createdInvitation, err = testClients.userClient.GetHouseholdInvitation(ctx, createdInvitation.ID)
 			requireNotNilAndNoProblems(t, createdInvitation, err)
 
-			sentInvitations, err := testClients.userClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			sentInvitations, err := testClients.userClient.GetSentHouseholdInvitations(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
@@ -831,7 +854,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			require.NotEmpty(t, otherHouseholdID)
 			require.True(t, found)
 
-			require.NoError(t, testClients.userClient.RemoveUserFromHousehold(ctx, relevantHouseholdID, u.ID))
+			require.NoError(t, testClients.userClient.ArchiveUserMembership(ctx, relevantHouseholdID, u.ID))
 
 			u.HashedPassword = regInput.Password
 
@@ -840,7 +863,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 
 			require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
 
-			household, err := c.GetCurrentHousehold(ctx)
+			household, err := c.GetActiveHousehold(ctx)
 			requireNotNilAndNoProblems(t, household, err)
 			assert.NotEqual(t, relevantHouseholdID, household.ID)
 

@@ -308,7 +308,7 @@ func TestValidPreparationVesselsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidPreparationVesselList := fakes.BuildFakeValidPreparationVesselList()
+		exampleValidPreparationVesselList := fakes.BuildFakeValidPreparationVesselsList()
 
 		validPreparationVesselDataManager := &mocktypes.ValidPreparationVesselDataManagerMock{}
 		validPreparationVesselDataManager.On(
@@ -834,7 +834,7 @@ func TestValidPreparationVesselsService_SearchByPreparationHandler(T *testing.T)
 
 		helper := buildTestHelper(t)
 
-		exampleValidPreparationVesselList := fakes.BuildFakeValidPreparationVesselList()
+		exampleValidPreparationVesselList := fakes.BuildFakeValidPreparationVesselsList()
 
 		validPreparationVesselDataManager := &mocktypes.ValidPreparationVesselDataManagerMock{}
 		validPreparationVesselDataManager.On(
@@ -909,7 +909,7 @@ func TestValidPreparationVesselsService_SearchByVesselHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidPreparationVesselList := fakes.BuildFakeValidPreparationVesselList()
+		exampleValidPreparationVesselList := fakes.BuildFakeValidPreparationVesselsList()
 
 		validPreparationVesselDataManager := &mocktypes.ValidPreparationVesselDataManagerMock{}
 		validPreparationVesselDataManager.On(

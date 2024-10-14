@@ -221,7 +221,7 @@ func TestUserIngredientPreferencesService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleUserIngredientPreferenceList := fakes.BuildFakeUserIngredientPreferenceList()
+		exampleUserIngredientPreferenceList := fakes.BuildFakeUserIngredientPreferencesList()
 
 		userIngredientPreferenceDataManager := &mocktypes.UserIngredientPreferenceDataManagerMock{}
 		userIngredientPreferenceDataManager.On(

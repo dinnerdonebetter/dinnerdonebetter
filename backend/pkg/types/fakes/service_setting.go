@@ -22,8 +22,8 @@ func BuildFakeServiceSetting() *types.ServiceSetting {
 	}
 }
 
-// BuildFakeServiceSettingList builds a faked ServiceSettingList.
-func BuildFakeServiceSettingList() *types.QueryFilteredResult[types.ServiceSetting] {
+// BuildFakeServiceSettingsList builds a faked ServiceSettingList.
+func BuildFakeServiceSettingsList() *types.QueryFilteredResult[types.ServiceSetting] {
 	var examples []*types.ServiceSetting
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeServiceSetting())

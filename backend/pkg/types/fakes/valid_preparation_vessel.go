@@ -16,8 +16,8 @@ func BuildFakeValidPreparationVessel() *types.ValidPreparationVessel {
 	}
 }
 
-// BuildFakeValidPreparationVesselList builds a faked ValidPreparationVesselList.
-func BuildFakeValidPreparationVesselList() *types.QueryFilteredResult[types.ValidPreparationVessel] {
+// BuildFakeValidPreparationVesselsList builds a faked ValidPreparationVesselList.
+func BuildFakeValidPreparationVesselsList() *types.QueryFilteredResult[types.ValidPreparationVessel] {
 	var examples []*types.ValidPreparationVessel
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidPreparationVessel())

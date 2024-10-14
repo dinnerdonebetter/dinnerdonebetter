@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -54,8 +55,9 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			requireNotNilAndNoProblems(t, createdRecipeStepCompletionCondition, err)
 
 			createdRecipeStepCompletionCondition.Notes = t.Name() + " updated"
+			updateInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionUpdateRequestInput(createdRecipeStepCompletionCondition)
 
-			require.NoError(t, testClients.userClient.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStepCompletionCondition))
+			require.NoError(t, testClients.userClient.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID, updateInput))
 
 			actual, err := testClients.userClient.GetRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID)
 			requireNotNilAndNoProblems(t, actual, err)

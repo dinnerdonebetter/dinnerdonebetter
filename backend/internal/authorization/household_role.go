@@ -22,13 +22,13 @@ const (
 	// HouseholdAdminRole is a role for someone who can manipulate the specifics of a household.
 	HouseholdAdminRole HouseholdRole = iota
 
-	householdAdminRoleName  = "household_admin"
-	householdMemberRoleName = "household_member"
+	HouseholdAdminRoleName  = "household_admin"
+	HouseholdMemberRoleName = "household_member"
 )
 
 var (
-	householdAdmin  = gorbac.NewStdRole(householdAdminRoleName)
-	householdMember = gorbac.NewStdRole(householdMemberRoleName)
+	householdAdmin  = gorbac.NewStdRole(HouseholdAdminRoleName)
+	householdMember = gorbac.NewStdRole(HouseholdMemberRoleName)
 )
 
 type householdRoleCollection struct {
@@ -49,9 +49,9 @@ func NewHouseholdRolePermissionChecker(roles ...string) HouseholdRolePermissions
 func (r HouseholdRole) String() string {
 	switch r {
 	case HouseholdMemberRole:
-		return householdMemberRoleName
+		return HouseholdMemberRoleName
 	case HouseholdAdminRole:
-		return householdAdminRoleName
+		return HouseholdAdminRoleName
 	default:
 		return ""
 	}

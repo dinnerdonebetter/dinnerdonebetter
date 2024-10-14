@@ -75,7 +75,7 @@ jobs:
 
       - name: Ensure dependency injection code can be generated
         working-directory: backend
-        run: make rewire
+        run: make rewire format_golang
 
       - name: Check for changes
         run: git diff --exit-code
@@ -104,9 +104,9 @@ jobs:
       - run: yarn install
         working-directory: frontend
 
-      - name: Ensure typescript models can be generated
+      - name: Ensure code can be generated
         working-directory: backend
-        run: make typescript
+        run: make codegen format_golang
 
       - name: format files
         working-directory: frontend

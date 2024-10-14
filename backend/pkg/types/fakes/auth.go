@@ -66,3 +66,11 @@ func BuildFakeJWTResponse() *types.JWTResponse {
 		Token:       fake.UUID(),
 	}
 }
+
+func BuildFakeUserLoginInput() *types.UserLoginInput {
+	return &types.UserLoginInput{
+		Username:  BuildFakeUser().Username,
+		Password:  buildFakePassword(),
+		TOTPToken: buildFakeTOTPToken(),
+	}
+}

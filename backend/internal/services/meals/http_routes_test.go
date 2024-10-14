@@ -321,7 +321,7 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleMealList := fakes.BuildFakeMealList()
+		exampleMealList := fakes.BuildFakeMealsList()
 
 		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
@@ -410,7 +410,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 	T.Parallel()
 
 	const exampleQuery = "example"
-	exampleMealList := fakes.BuildFakeMealList()
+	exampleMealList := fakes.BuildFakeMealsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

@@ -311,7 +311,7 @@ func TestMealPlanEventsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleMealPlanEventList := fakes.BuildFakeMealPlanEventList()
+		exampleMealPlanEventList := fakes.BuildFakeMealPlanEventsList()
 
 		mealPlanEventDataManager := &mocktypes.MealPlanEventDataManagerMock{}
 		mealPlanEventDataManager.On(

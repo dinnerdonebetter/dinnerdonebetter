@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -69,8 +70,9 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			createdValidPreparation := createValidPreparationForTest(t, ctx, exampleValidPreparation, testClients.adminClient)
 
 			newValidPreparation := fakes.BuildFakeValidPreparation()
-			createdValidPreparation.Update(converters.ConvertValidPreparationToValidPreparationUpdateRequestInput(newValidPreparation))
-			assert.NoError(t, testClients.adminClient.UpdateValidPreparation(ctx, createdValidPreparation))
+			updateInput := converters.ConvertValidPreparationToValidPreparationUpdateRequestInput(newValidPreparation)
+			createdValidPreparation.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateValidPreparation(ctx, createdValidPreparation.ID, updateInput))
 
 			actual, err := testClients.adminClient.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -166,17 +168,18 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 				expected = append(expected, createdValidPreparation)
 			}
 
-			exampleLimit := uint8(20)
+			filter := types.DefaultQueryFilter()
+			filter.Limit = pointer.To(uint8(20))
 
 			// assert valid preparation list equality
-			actual, err := testClients.adminClient.SearchValidPreparations(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.adminClient.SearchForValidPreparations(ctx, searchQuery, filter)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual),
+				len(actual.Data),
 			)
 
 			for _, createdValidPreparation := range expected {

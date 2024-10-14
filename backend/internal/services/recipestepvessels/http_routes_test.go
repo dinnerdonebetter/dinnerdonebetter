@@ -314,7 +314,7 @@ func TestRecipeStepVesselsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleRecipeStepVesselList := fakes.BuildFakeRecipeStepVesselList()
+		exampleRecipeStepVesselList := fakes.BuildFakeRecipeStepVesselsList()
 
 		recipeStepVesselDataManager := &mocktypes.RecipeStepVesselDataManagerMock{}
 		recipeStepVesselDataManager.On(

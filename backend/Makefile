@@ -71,12 +71,6 @@ ifeq (, $(shell which scc))
 	$(shell go install github.com/boyter/scc@latest)
 endif
 
-.PHONY: ensure_oapi_codegen_installed
-ensure_oapi_codegen_installed:
-ifeq (, $(shell which scc))
-	$(shell go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0)
-endif
-
 .PHONY: clean_vendor
 clean_vendor:
 	rm -rf vendor go.sum
@@ -116,7 +110,7 @@ format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_in
 
 .PHONY: format_imports
 format_imports: ensure_gci_installed
-	gci write --skip-generated --section standard --section "prefix($(THIS))" --section "prefix($(dir $(THIS)))" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
+	gci write --section standard --section "prefix($(THIS))" --section "prefix($(dir $(THIS)))" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
 
 .PHONY: terraformat
 terraformat:
@@ -195,9 +189,10 @@ configs:
 queries:
 	go run $(THIS)/cmd/tools/gen_queries
 
-typescript:
-	go run $(THIS)/cmd/tools/codegen/v2
-	(cd ../frontend && $(MAKE) format)
+codegen:
+	go run $(THIS)/cmd/tools/codegen
+	@$(MAKE) format_golang
+	@(cd ../frontend && $(MAKE) format)
 
 .PHONY: querier
 querier: queries queries_lint  ## TODO: This target is broken
@@ -215,7 +210,7 @@ sqlc_struct_check:
 
 .PHONY: openapi
 openapi:
-	go run $(THIS)/cmd/tools/codegen/gen_openapi
+	go run $(THIS)/cmd/tools/gen_openapi
 
 .PHONY: openapi-client
 openapi-client: ensure_oapi_codegen_installed

@@ -150,6 +150,15 @@ func (x *ChangeActiveHouseholdInput) ValidateWithContext(ctx context.Context) er
 	)
 }
 
+var _ validation.ValidatableWithContext = (*UserPermissionsRequestInput)(nil)
+
+// ValidateWithContext validates a UserPermissionsRequestInput.
+func (x *UserPermissionsRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, x,
+		validation.Field(&x.Permissions, validation.Required),
+	)
+}
+
 // HouseholdRolePermissionsChecker returns the relevant HouseholdRolePermissionsChecker.
 func (x *SessionContextData) HouseholdRolePermissionsChecker() authorization.HouseholdRolePermissionsChecker {
 	return x.HouseholdPermissions[x.ActiveHouseholdID]

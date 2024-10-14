@@ -322,7 +322,7 @@ func TestRecipesService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleRecipeList := fakes.BuildFakeRecipeList()
+		exampleRecipeList := fakes.BuildFakeRecipesList()
 
 		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
@@ -411,7 +411,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 	T.Parallel()
 
 	const exampleQuery = "example"
-	exampleRecipeList := fakes.BuildFakeRecipeList()
+	exampleRecipeList := fakes.BuildFakeRecipesList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

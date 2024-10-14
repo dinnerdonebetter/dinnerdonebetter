@@ -2,22 +2,24 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { AuditLogEntry } from '@dinnerdonebetter/models';
+import { AuditLogEntry, QueryFilteredResult } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockGetAuditLogEntriesForHouseholdResponseConfig extends ResponseConfig<AuditLogEntry> {
-  constructor(status: number = 200, body?: AuditLogEntry) {
+export class MockGetAuditLogEntriesForHouseholdResponseConfig extends ResponseConfig<
+  QueryFilteredResult<AuditLogEntry>
+> {
+  constructor(status: number = 200, body: AuditLogEntry[] = []) {
     super();
 
     this.status = status;
     if (this.body) {
-      this.body = body;
+      this.body.data = body;
     }
   }
 }
 
-export const mockGetAuditLogEntriesForHousehold = (resCfg: MockGetAuditLogEntriesForHouseholdResponseConfig) => {
+export const mockGetAuditLogEntriesForHouseholds = (resCfg: MockGetAuditLogEntriesForHouseholdResponseConfig) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/audit_log_entries/for_household`,
@@ -26,6 +28,9 @@ export const mockGetAuditLogEntriesForHousehold = (resCfg: MockGetAuditLogEntrie
 
         assertMethod('GET', route);
         assertClient(route);
+
+        if (resCfg.body && resCfg.filter) resCfg.body.limit = resCfg.filter.limit;
+        if (resCfg.body && resCfg.filter) resCfg.body.page = resCfg.filter.page;
 
         route.fulfill(resCfg.fulfill());
       },

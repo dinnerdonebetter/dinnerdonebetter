@@ -69,9 +69,9 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			newRecipeStepIngredient.Ingredient = createdValidIngredient
 			newRecipeStepIngredient.MeasurementUnit = createdRecipeStepIngredient.MeasurementUnit
 
-			createdRecipeStepIngredient.Update(converters.ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(newRecipeStepIngredient))
-
-			require.NoError(t, testClients.adminClient.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
+			updateInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(newRecipeStepIngredient)
+			createdRecipeStepIngredient.Update(updateInput)
+			require.NoError(t, testClients.adminClient.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredient.ID, updateInput))
 
 			actual, err := testClients.userClient.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
 			requireNotNilAndNoProblems(t, actual, err)

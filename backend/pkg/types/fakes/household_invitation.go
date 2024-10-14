@@ -25,8 +25,8 @@ func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 	}
 }
 
-// BuildFakeHouseholdInvitationList builds a faked HouseholdInvitationList.
-func BuildFakeHouseholdInvitationList() *types.QueryFilteredResult[types.HouseholdInvitation] {
+// BuildFakeHouseholdInvitationsList builds a faked HouseholdInvitationList.
+func BuildFakeHouseholdInvitationsList() *types.QueryFilteredResult[types.HouseholdInvitation] {
 	var examples []*types.HouseholdInvitation
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeHouseholdInvitation())
@@ -40,6 +40,13 @@ func BuildFakeHouseholdInvitationList() *types.QueryFilteredResult[types.Househo
 			TotalCount:    exampleQuantity,
 		},
 		Data: examples,
+	}
+}
+
+func BuildFakeHouseholdInvitationUpdateRequestInput() *types.HouseholdInvitationUpdateRequestInput {
+	return &types.HouseholdInvitationUpdateRequestInput{
+		Token: BuildFakeID(),
+		Note:  fake.Sentence(3),
 	}
 }
 

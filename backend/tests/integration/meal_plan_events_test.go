@@ -42,8 +42,9 @@ func (s *TestSuite) TestMealPlanEvents_CompleteLifecycle() {
 			newMealPlanEvent := fakes.BuildFakeMealPlanEvent()
 			newMealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
 
-			createdMealPlanEvent.Update(converters.ConvertMealPlanEventToMealPlanEventUpdateRequestInput(newMealPlanEvent))
-			assert.NoError(t, testClients.userClient.UpdateMealPlanEvent(ctx, createdMealPlanEvent))
+			updateInput := converters.ConvertMealPlanEventToMealPlanEventUpdateRequestInput(newMealPlanEvent)
+			createdMealPlanEvent.Update(updateInput)
+			assert.NoError(t, testClients.userClient.UpdateMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, updateInput))
 
 			actual, err := testClients.userClient.GetMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID)
 			requireNotNilAndNoProblems(t, actual, err)

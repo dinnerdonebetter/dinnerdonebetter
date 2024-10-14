@@ -312,7 +312,7 @@ func TestValidMeasurementUnitsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
+		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitsList()
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
@@ -402,7 +402,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
+	exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -556,7 +556,7 @@ func TestValidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) 
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
+	exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

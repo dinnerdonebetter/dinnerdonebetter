@@ -22,9 +22,12 @@ func ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput(
 // ConvertMealPlanTaskToMealPlanTaskCreationRequestInput builds a MealPlanTaskCreationRequestInput.
 func ConvertMealPlanTaskToMealPlanTaskCreationRequestInput(x *types.MealPlanTask) *types.MealPlanTaskCreationRequestInput {
 	return &types.MealPlanTaskCreationRequestInput{
+		AssignedToUser:      x.AssignedToUser,
 		Status:              x.Status,
-		StatusExplanation:   x.StatusExplanation,
 		CreationExplanation: x.CreationExplanation,
+		StatusExplanation:   x.StatusExplanation,
+		MealPlanOptionID:    x.MealPlanOption.ID,
+		RecipePrepTaskID:    x.RecipePrepTask.ID,
 	}
 }
 

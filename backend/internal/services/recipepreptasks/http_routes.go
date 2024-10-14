@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -235,8 +236,9 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.RecipePrepTask]{
-		Details: responseDetails,
-		Data:    recipePrepTasks,
+		Details:    responseDetails,
+		Data:       recipePrepTasks,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode our response and peace.

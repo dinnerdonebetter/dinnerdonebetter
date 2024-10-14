@@ -311,7 +311,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipList()
+		exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipsList()
 
 		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(

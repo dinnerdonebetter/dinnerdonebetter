@@ -16,8 +16,8 @@ func BuildFakeUserNotification() *types.UserNotification {
 	}
 }
 
-// BuildFakeUserNotificationList builds a faked UserNotificationList.
-func BuildFakeUserNotificationList() *types.QueryFilteredResult[types.UserNotification] {
+// BuildFakeUserNotificationsList builds a faked UserNotificationList.
+func BuildFakeUserNotificationsList() *types.QueryFilteredResult[types.UserNotification] {
 	var notifications []*types.UserNotification
 	for i := 0; i < exampleQuantity; i++ {
 		notifications = append(notifications, BuildFakeUserNotification())

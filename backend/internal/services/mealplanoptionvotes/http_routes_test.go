@@ -718,7 +718,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleMealPlanOptionVoteList := fakes.BuildFakeMealPlanOptionVoteList()
+		exampleMealPlanOptionVoteList := fakes.BuildFakeMealPlanOptionVotesList()
 
 		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManagerMock.On(

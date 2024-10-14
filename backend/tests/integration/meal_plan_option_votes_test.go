@@ -54,8 +54,9 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 				checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
 
 				newMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-				createdMealPlanOptionVote.Update(converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteUpdateRequestInput(newMealPlanOptionVote))
-				assert.NoError(t, testClients.userClient.UpdateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOptionVote))
+				updateInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteUpdateRequestInput(newMealPlanOptionVote)
+				createdMealPlanOptionVote.Update(updateInput)
+				assert.NoError(t, testClients.userClient.UpdateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID, updateInput))
 
 				actual, err := testClients.userClient.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
 				requireNotNilAndNoProblems(t, actual, err)

@@ -33,8 +33,8 @@ func BuildFakeUser() *types.User {
 	}
 }
 
-// BuildFakeUserList builds a faked UserList.
-func BuildFakeUserList() *types.QueryFilteredResult[types.User] {
+// BuildFakeUsersList builds a faked UserList.
+func BuildFakeUsersList() *types.QueryFilteredResult[types.User] {
 	var examples []*types.User
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeUser())
@@ -65,6 +65,19 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 	}
 }
 
+// BuildFakeUserRegistrationInput builds a faked UserRegistrationInput.
+func BuildFakeUserRegistrationInput() *types.UserRegistrationInput {
+	user := BuildFakeUser()
+	return &types.UserRegistrationInput{
+		Username:     user.Username,
+		FirstName:    user.FirstName,
+		LastName:     user.LastName,
+		EmailAddress: user.EmailAddress,
+		Password:     buildFakePassword(),
+		Birthday:     user.Birthday,
+	}
+}
+
 // BuildFakeUserRegistrationInputFromUser builds a faked UserRegistrationInput.
 func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistrationInput {
 	return &types.UserRegistrationInput{
@@ -91,12 +104,22 @@ func BuildFakeUserRegistrationInputWithInviteFromUser(user *types.User) *types.U
 	}
 }
 
-// BuildFakeUserAccountStatusUpdateInputFromUser builds a faked UserAccountStatusUpdateInput.
-func BuildFakeUserAccountStatusUpdateInputFromUser(user *types.User) *types.UserAccountStatusUpdateInput {
-	return &types.UserAccountStatusUpdateInput{
-		TargetUserID: BuildFakeID(),
-		NewStatus:    user.AccountStatus,
-		Reason:       fake.Sentence(10),
+// BuildFakeUserCreationResponse builds a faked UserAccountStatusUpdateInput.
+func BuildFakeUserCreationResponse() *types.UserCreationResponse {
+	user := BuildFakeUser()
+	return &types.UserCreationResponse{
+		CreatedAt:       user.CreatedAt,
+		Birthday:        user.Birthday,
+		AvatarSrc:       user.AvatarSrc,
+		Username:        user.Username,
+		EmailAddress:    user.EmailAddress,
+		TwoFactorQRCode: fake.UUID(),
+		CreatedUserID:   user.ID,
+		AccountStatus:   user.AccountStatus,
+		TwoFactorSecret: user.TwoFactorSecret,
+		FirstName:       user.FirstName,
+		LastName:        user.LastName,
+		IsAdmin:         false,
 	}
 }
 
@@ -133,6 +156,13 @@ func BuildFakeTOTPSecretRefreshInput() *types.TOTPSecretRefreshInput {
 	}
 }
 
+func BuildFakeTOTPSecretRefreshResponse() *types.TOTPSecretRefreshResponse {
+	return &types.TOTPSecretRefreshResponse{
+		TwoFactorQRCode: fake.UUID(),
+		TwoFactorSecret: fake.UUID(),
+	}
+}
+
 // BuildFakeUserPermissionsRequestInput builds a faked UserPermissionsRequestInput.
 func BuildFakeUserPermissionsRequestInput() *types.UserPermissionsRequestInput {
 	return &types.UserPermissionsRequestInput{
@@ -144,8 +174,8 @@ func BuildFakeUserPermissionsRequestInput() *types.UserPermissionsRequestInput {
 	}
 }
 
-// BuildFakeTOTPSecretVerificationInputForUser builds a faked TOTPSecretVerificationInput for a given user.
-func BuildFakeTOTPSecretVerificationInputForUser(user *types.User) *types.TOTPSecretVerificationInput {
+// BuildFakeTOTPSecretVerificationInput builds a faked TOTPSecretVerificationInput for a given user.
+func BuildFakeTOTPSecretVerificationInput(user *types.User) *types.TOTPSecretVerificationInput {
 	token, err := totp.GenerateCode(user.TwoFactorSecret, time.Now().UTC())
 	if err != nil {
 		log.Panicf("error generating TOTP token for fakes user: %v", err)
@@ -213,7 +243,7 @@ func BuildFakeUserEmailAddressUpdateInput() *types.UserEmailAddressUpdateInput {
 	}
 }
 
-func BuildFakeUserDetailsUpdateInput() *types.UserDetailsUpdateRequestInput {
+func BuildFakeUserDetailsUpdateRequestInput() *types.UserDetailsUpdateRequestInput {
 	return &types.UserDetailsUpdateRequestInput{
 		FirstName:       buildUniqueString(),
 		LastName:        buildUniqueString(),
@@ -228,5 +258,17 @@ func BuildFakeUserDetailsDatabaseUpdateInput() *types.UserDetailsDatabaseUpdateI
 		FirstName: buildUniqueString(),
 		LastName:  buildUniqueString(),
 		Birthday:  BuildFakeTime(),
+	}
+}
+
+func BuildFakePasswordResetResponse() *types.PasswordResetResponse {
+	return &types.PasswordResetResponse{Successful: true}
+}
+
+func BuildFakeUserPermissionsResponse() *types.UserPermissionsResponse {
+	return &types.UserPermissionsResponse{
+		Permissions: map[string]bool{
+			authorization.CreateWebhooksPermission.ID(): true,
+		},
 	}
 }

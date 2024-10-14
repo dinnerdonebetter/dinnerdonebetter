@@ -83,7 +83,7 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 
 	result, err := q.generatedQuerier.GetUserWithUnverifiedTwoFactor(ctx, q.db, userID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "getting user with verified two factor")
+		return nil, observability.PrepareError(err, span, "getting user with unverified two factor")
 	}
 
 	u := &types.User{

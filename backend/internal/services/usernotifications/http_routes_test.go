@@ -311,7 +311,7 @@ func TestUserNotificationsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleUserNotificationList := fakes.BuildFakeUserNotificationList()
+		exampleUserNotificationList := fakes.BuildFakeUserNotificationsList()
 
 		userNotificationDataManager := &mocktypes.UserNotificationDataManagerMock{}
 		userNotificationDataManager.On(

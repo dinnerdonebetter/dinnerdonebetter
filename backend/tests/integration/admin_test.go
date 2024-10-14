@@ -23,7 +23,8 @@ func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserAccountStatus() {
 			input.TargetUserID = nonexistentID
 
 			// Ban userClient.
-			assert.Error(t, testClients.adminClient.UpdateUserAccountStatus(ctx, input))
+			_, err := testClients.adminClient.AdminUpdateUserStatus(ctx, input)
+			assert.Error(t, err)
 		}
 	})
 }
@@ -48,7 +49,8 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 				Reason:       "testing",
 			}
 
-			assert.NoError(t, testClients.adminClient.UpdateUserAccountStatus(ctx, input))
+			_, err = testClients.adminClient.AdminUpdateUserStatus(ctx, input)
+			assert.Error(t, err)
 
 			// Assert userClient can no longer access service
 			_, err = userClient.GetWebhooks(ctx, nil)
@@ -80,7 +82,7 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 			createdWebhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 
-			household, err := testClients.userClient.GetCurrentHousehold(ctx)
+			household, err := testClients.userClient.GetActiveHousehold(ctx)
 			requireNotNilAndNoProblems(t, household, err)
 
 			user, err := testClients.userClient.GetSelf(ctx)

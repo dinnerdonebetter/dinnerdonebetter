@@ -158,6 +158,62 @@ paths:
     get:
       description: Operation for fetching AuditLogEntry
       operationId: GetAuditLogEntriesForHousehold
+      parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -167,8 +223,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/AuditLogEntry'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/AuditLogEntry'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -176,8 +233,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/AuditLogEntry'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/AuditLogEntry'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -216,6 +274,62 @@ paths:
     get:
       description: Operation for fetching AuditLogEntry
       operationId: GetAuditLogEntriesForUser
+      parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       responses:
         "200":
           content:
@@ -225,8 +339,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/AuditLogEntry'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/AuditLogEntry'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -234,8 +349,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/AuditLogEntry'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/AuditLogEntry'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -1230,80 +1346,6 @@ paths:
         - household_member
       tags:
       - households
-  /api/v1/households/{householdID}/invitations:
-    post:
-      description: Operation for creating HouseholdInvitation
-      operationId: CreateHouseholdInvitation
-      parameters:
-      - in: path
-        name: householdID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HouseholdInvitationCreationRequestInput'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/HouseholdInvitationCreationRequestInput'
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
-                      type: object
-                  type: object
-            application/xml:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/APIResponse'
-                - properties:
-                    data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
-                      type: object
-                  type: object
-          description: ""
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/APIResponseWithError'
-          description: ""
-      security:
-      - oauth2:
-        - household_admin
-      tags:
-      - households
-      - invitations
   /api/v1/households/{householdID}/invitations/{householdInvitationID}:
     get:
       description: Operation for fetching HouseholdInvitation
@@ -1377,7 +1419,7 @@ paths:
   /api/v1/households/{householdID}/invite:
     post:
       description: Operation for creating HouseholdInvitation
-      operationId: POST_households_householdID_invite
+      operationId: CreateHouseholdInvitation
       parameters:
       - in: path
         name: householdID
@@ -10667,8 +10709,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/UserIngredientPreference'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/UserIngredientPreference'
+                      type: array
                   type: object
             application/xml:
               schema:
@@ -10676,8 +10719,9 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/UserIngredientPreference'
-                      type: object
+                      items:
+                        $ref: '#/components/schemas/UserIngredientPreference'
+                      type: array
                   type: object
           description: ""
         "400":
@@ -11613,7 +11657,7 @@ paths:
   /api/v1/users/email_address_verification:
     post:
       description: Operation for creating User
-      operationId: VerifyUserEmailAddress
+      operationId: RequestEmailVerificationEmail
       responses:
         "201":
           content:
@@ -15378,7 +15422,7 @@ paths:
   /api/v1/valid_ingredients/by_preparation/{validPreparationID}:
     get:
       description: Operation for fetching ValidIngredient
-      operationId: GetValidIngredientsByPreparation
+      operationId: SearchValidIngredientsByPreparation
       parameters:
       - description: the search query parameter
         in: query
@@ -16514,6 +16558,61 @@ paths:
       description: Operation for fetching ValidMeasurementUnitConversion
       operationId: GetValidMeasurementUnitConversionsFromUnit
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validMeasurementUnitID
         required: true
@@ -16578,8 +16677,63 @@ paths:
   /api/v1/valid_measurement_conversions/to_unit/{validMeasurementUnitID}:
     get:
       description: Operation for fetching ValidMeasurementUnitConversion
-      operationId: ValidMeasurementUnitConversionsToUnit
+      operationId: GetValidMeasurementUnitConversionsToUnit
       parameters:
+      - description: How many results should appear in output, max is 250.
+        in: query
+        name: limit
+        required: true
+        schema:
+          type: integer
+      - description: What page of results should appear in output.
+        in: query
+        name: page
+        required: true
+        schema:
+          type: integer
+      - description: The latest CreatedAt date that should appear in output.
+        in: query
+        name: createdBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest CreatedAt date that should appear in output.
+        in: query
+        name: createdAfter
+        required: true
+        schema:
+          type: string
+      - description: The latest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedBefore
+        required: true
+        schema:
+          type: string
+      - description: The earliest UpdatedAt date that should appear in output.
+        in: query
+        name: updatedAfter
+        required: true
+        schema:
+          type: string
+      - description: Whether or not to include archived results in output, limited
+          to service admins.
+        in: query
+        name: includeArchived
+        required: true
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      - description: The direction in which results should be sorted.
+        in: query
+        name: sortBy
+        required: true
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
       - in: path
         name: validMeasurementUnitID
         required: true

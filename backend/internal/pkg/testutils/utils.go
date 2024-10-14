@@ -49,7 +49,10 @@ func CreateServiceUser(ctx context.Context, address string, in *types.UserRegist
 		return nil, fmt.Errorf("generating totp code: %w", tokenErr)
 	}
 
-	if validationErr := c.VerifyTOTPSecret(ctx, ucr.CreatedUserID, token); validationErr != nil {
+	if _, validationErr := c.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
+		TOTPToken: token,
+		UserID:    ucr.CreatedUserID,
+	}); validationErr != nil {
 		return nil, fmt.Errorf("verifying totp code: %w", validationErr)
 	}
 

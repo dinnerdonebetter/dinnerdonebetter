@@ -216,7 +216,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		exampleUserList := fakes.BuildFakeUserList()
+		exampleUserList := fakes.BuildFakeUsersList()
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
@@ -281,7 +281,7 @@ func TestService_ListHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		exampleUserList := fakes.BuildFakeUserList()
+		exampleUserList := fakes.BuildFakeUsersList()
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
@@ -1313,7 +1313,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(helper.exampleUser)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1419,7 +1419,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(helper.exampleUser)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1454,7 +1454,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(helper.exampleUser)
 		exampleInput.TOTPToken = "000000"
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
@@ -1495,7 +1495,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 
 		og := helper.exampleUser.TwoFactorSecretVerifiedAt
 		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(helper.exampleUser)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		helper.exampleUser.TwoFactorSecretVerifiedAt = og
@@ -1529,7 +1529,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(helper.exampleUser)
 		exampleInput.TOTPToken = "INVALID"
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
@@ -1565,7 +1565,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(helper.exampleUser)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1605,7 +1605,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInput(helper.exampleUser)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -2448,7 +2448,7 @@ func TestService_UpdateUserDetailsHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		exampleInput := fakes.BuildFakeUserDetailsUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error

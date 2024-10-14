@@ -60,8 +60,10 @@ func (s *TestSuite) TestValidIngredientStateIngredients_CompleteLifecycle() {
 			newValidIngredientStateIngredient := fakes.BuildFakeValidIngredientStateIngredient()
 			newValidIngredientStateIngredient.Ingredient = *createdValidIngredient
 			newValidIngredientStateIngredient.IngredientState = *createdValidIngredientState
-			createdValidIngredientStateIngredient.Update(converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientUpdateRequestInput(newValidIngredientStateIngredient))
-			require.NoError(t, testClients.adminClient.UpdateValidIngredientStateIngredient(ctx, createdValidIngredientStateIngredient))
+
+			updateInput := converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientUpdateRequestInput(newValidIngredientStateIngredient)
+			createdValidIngredientStateIngredient.Update(updateInput)
+			require.NoError(t, testClients.adminClient.UpdateValidIngredientStateIngredient(ctx, createdValidIngredientStateIngredient.ID, updateInput))
 
 			actual, err := testClients.userClient.GetValidIngredientStateIngredient(ctx, createdValidIngredientStateIngredient.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -166,13 +168,13 @@ func (s *TestSuite) TestValidIngredientStateIngredients_Listing_ByValues() {
 
 			checkValidIngredientStateIngredientEquality(t, exampleValidIngredientStateIngredient, createdValidIngredientStateIngredient)
 
-			validIngredientMeasurementUnitsForValidIngredient, err := testClients.userClient.GetValidIngredientStateIngredientsForIngredient(ctx, createdValidIngredient.ID, nil)
+			validIngredientMeasurementUnitsForValidIngredient, err := testClients.userClient.GetValidIngredientStateIngredientsByIngredient(ctx, createdValidIngredient.ID, nil)
 			requireNotNilAndNoProblems(t, validIngredientMeasurementUnitsForValidIngredient, err)
 
 			require.Len(t, validIngredientMeasurementUnitsForValidIngredient.Data, 1)
 			assert.Equal(t, validIngredientMeasurementUnitsForValidIngredient.Data[0].ID, createdValidIngredientStateIngredient.ID)
 
-			validIngredientMeasurementUnitsForValidMeasurementUnit, err := testClients.userClient.GetValidIngredientStateIngredientsForIngredientState(ctx, createdValidIngredientState.ID, nil)
+			validIngredientMeasurementUnitsForValidMeasurementUnit, err := testClients.userClient.GetValidIngredientStateIngredientsByIngredientState(ctx, createdValidIngredientState.ID, nil)
 			requireNotNilAndNoProblems(t, validIngredientMeasurementUnitsForValidMeasurementUnit, err)
 
 			require.Len(t, validIngredientMeasurementUnitsForValidMeasurementUnit.Data, 1)

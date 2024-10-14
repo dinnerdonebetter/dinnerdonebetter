@@ -45,8 +45,9 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			newMealPlanOption.BelongsToMealPlanEvent = createdMealPlanEvent.ID
 			newMealPlanOption.AssignedCook = nil
 
-			createdMealPlanOption.Update(converters.ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(newMealPlanOption))
-			require.NoError(t, testClients.userClient.UpdateMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption))
+			updateInput := converters.ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(newMealPlanOption)
+			createdMealPlanOption.Update(updateInput)
+			require.NoError(t, testClients.userClient.UpdateMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID, updateInput))
 
 			actual, err := testClients.userClient.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID)
 			requireNotNilAndNoProblems(t, actual, err)

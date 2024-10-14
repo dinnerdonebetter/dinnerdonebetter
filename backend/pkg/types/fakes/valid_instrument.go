@@ -23,8 +23,8 @@ func BuildFakeValidInstrument() *types.ValidInstrument {
 	}
 }
 
-// BuildFakeValidInstrumentList builds a faked ValidInstrumentList.
-func BuildFakeValidInstrumentList() *types.QueryFilteredResult[types.ValidInstrument] {
+// BuildFakeValidInstrumentsList builds a faked ValidInstrumentList.
+func BuildFakeValidInstrumentsList() *types.QueryFilteredResult[types.ValidInstrument] {
 	var examples []*types.ValidInstrument
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidInstrument())

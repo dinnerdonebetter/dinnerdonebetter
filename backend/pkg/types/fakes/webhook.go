@@ -30,8 +30,8 @@ func BuildFakeWebhook() *types.Webhook {
 	}
 }
 
-// BuildFakeWebhookList builds a faked WebhookList.
-func BuildFakeWebhookList() *types.QueryFilteredResult[types.Webhook] {
+// BuildFakeWebhooksList builds a faked WebhookList.
+func BuildFakeWebhooksList() *types.QueryFilteredResult[types.Webhook] {
 	var examples []*types.Webhook
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeWebhook())
@@ -75,6 +75,11 @@ func BuildFakeWebhookTriggerEventList() *types.QueryFilteredResult[types.Webhook
 		},
 		Data: examples,
 	}
+}
+
+func BuildFakeWebhookTriggerEventCreationRequestInput() *types.WebhookTriggerEventCreationRequestInput {
+	triggerEvent := BuildFakeWebhookTriggerEvent()
+	return converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(triggerEvent)
 }
 
 // BuildFakeWebhookCreationRequestInput builds a faked WebhookCreationRequestInput from a webhook.

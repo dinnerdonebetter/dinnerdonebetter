@@ -14,6 +14,7 @@ func BuildFakeMealPlanTask() *types.MealPlanTask {
 		Status:              "unfinished",
 		StatusExplanation:   buildUniqueString(),
 		CreationExplanation: buildUniqueString(),
+		MealPlanOption:      *BuildFakeMealPlanOption(),
 		CompletedAt:         nil,
 		RecipePrepTask:      *BuildFakeRecipePrepTask(),
 	}
@@ -26,8 +27,8 @@ func BuildFakeMealPlanTaskCreationRequestInput() *types.MealPlanTaskCreationRequ
 	return converters.ConvertMealPlanTaskToMealPlanTaskCreationRequestInput(x)
 }
 
-// BuildFakeMealPlanTaskList builds a faked MealPlanTaskList.
-func BuildFakeMealPlanTaskList() *types.QueryFilteredResult[types.MealPlanTask] {
+// BuildFakeMealPlanTasksList builds a faked MealPlanTaskList.
+func BuildFakeMealPlanTasksList() *types.QueryFilteredResult[types.MealPlanTask] {
 	var examples []*types.MealPlanTask
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanTask())

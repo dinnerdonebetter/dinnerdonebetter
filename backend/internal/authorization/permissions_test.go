@@ -12,7 +12,7 @@ func TestPermissions(T *testing.T) {
 	T.Run("household admin", func(t *testing.T) {
 		t.Parallel()
 
-		permissionChecker := NewHouseholdRolePermissionChecker(householdAdminRoleName)
+		permissionChecker := NewHouseholdRolePermissionChecker(HouseholdAdminRoleName)
 
 		assert.False(t, permissionChecker.HasPermission(UpdateUserStatusPermission))
 		assert.False(t, permissionChecker.HasPermission(ReadUserPermission))
@@ -139,7 +139,7 @@ func TestPermissions(T *testing.T) {
 	T.Run("household member", func(t *testing.T) {
 		t.Parallel()
 
-		permissionChecker := NewHouseholdRolePermissionChecker(householdMemberRoleName)
+		permissionChecker := NewHouseholdRolePermissionChecker(HouseholdMemberRoleName)
 
 		assert.False(t, permissionChecker.HasPermission(UpdateUserStatusPermission))
 		assert.False(t, permissionChecker.HasPermission(ReadUserPermission))

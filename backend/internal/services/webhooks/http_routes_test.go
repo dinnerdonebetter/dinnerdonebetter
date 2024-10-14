@@ -210,7 +210,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		exampleWebhookList := fakes.BuildFakeWebhookList()
+		exampleWebhookList := fakes.BuildFakeWebhooksList()
 
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(

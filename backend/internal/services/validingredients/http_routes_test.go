@@ -308,7 +308,7 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
+		exampleValidIngredientList := fakes.BuildFakeValidIngredientsList()
 
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
 		validIngredientDataManager.On(
@@ -399,7 +399,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
+	exampleValidIngredientList := fakes.BuildFakeValidIngredientsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -586,7 +586,7 @@ func TestValidIngredientsService_SearchByPreparationAndIngredientNameHandler(T *
 
 		helper := buildTestHelper(t)
 
-		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
+		exampleValidIngredientList := fakes.BuildFakeValidIngredientsList()
 
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
 		validIngredientDataManager.On(
@@ -668,7 +668,7 @@ func TestValidIngredientsService_ForValidIngredientStateHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
+		exampleValidIngredientList := fakes.BuildFakeValidIngredientsList()
 
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
 		validIngredientDataManager.On(

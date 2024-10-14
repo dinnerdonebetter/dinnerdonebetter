@@ -24,7 +24,7 @@ export class MockCreateHouseholdInvitationResponseConfig extends ResponseConfig<
 export const mockCreateHouseholdInvitation = (resCfg: MockCreateHouseholdInvitationResponseConfig) => {
   return (page: Page) =>
     page.route(
-      `**/api/v1/households/${resCfg.householdID}/invitations`,
+      `**/api/v1/households/${resCfg.householdID}/invite`,
       (route: Route) => {
         const req = route.request();
 

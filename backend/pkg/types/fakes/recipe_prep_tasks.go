@@ -37,7 +37,7 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 	}
 }
 
-func BuildFakeRecipePrepTaskList() *types.QueryFilteredResult[types.RecipePrepTask] {
+func BuildFakeRecipePrepTasksList() *types.QueryFilteredResult[types.RecipePrepTask] {
 	recipePrepTasks := &types.QueryFilteredResult[types.RecipePrepTask]{}
 	for i := 0; i < exampleQuantity; i++ {
 		recipePrepTasks.Data = append(recipePrepTasks.Data, BuildFakeRecipePrepTask())

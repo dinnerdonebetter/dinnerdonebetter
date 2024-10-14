@@ -40,7 +40,7 @@ func buildTestHelper(t *testing.T) *serviceSettingConfigurationsServiceHTTPRoute
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleServiceSettingConfiguration = fakes.BuildFakeServiceSettingConfiguration()
-	helper.exampleServiceSettingConfigurationList = fakes.BuildFakeServiceSettingConfigurationList()
+	helper.exampleServiceSettingConfigurationList = fakes.BuildFakeServiceSettingConfigurationsList()
 	helper.exampleCreationInput = converters.ConvertServiceSettingConfigurationToServiceSettingConfigurationCreationRequestInput(helper.exampleServiceSettingConfiguration)
 	helper.exampleUpdateInput = converters.ConvertServiceSettingConfigurationToServiceSettingConfigurationUpdateRequestInput(helper.exampleServiceSettingConfiguration)
 

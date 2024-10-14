@@ -55,8 +55,9 @@ func (s *TestSuite) TestUserIngredientPreferences_CompleteLifecycle() {
 			createdValidIngredient2 := createValidIngredientForTest(t, ctx, testClients.adminClient)
 			newUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 			newUserIngredientPreference.Ingredient = *createdValidIngredient2
-			createdUserIngredientPreference.Update(converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput(newUserIngredientPreference))
-			assert.NoError(t, testClients.adminClient.UpdateUserIngredientPreference(ctx, createdUserIngredientPreference))
+			updateInput := converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput(newUserIngredientPreference)
+			createdUserIngredientPreference.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateUserIngredientPreference(ctx, createdUserIngredientPreference.ID, updateInput))
 
 			newResults, err := testClients.adminClient.GetUserIngredientPreferences(ctx, types.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, newResults, err)

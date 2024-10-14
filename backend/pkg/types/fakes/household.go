@@ -43,8 +43,8 @@ func BuildFakeHousehold() *types.Household {
 	}
 }
 
-// BuildFakeHouseholdList builds a faked HouseholdList.
-func BuildFakeHouseholdList() *types.QueryFilteredResult[types.Household] {
+// BuildFakeHouseholdsList builds a faked HouseholdList.
+func BuildFakeHouseholdsList() *types.QueryFilteredResult[types.Household] {
 	var examples []*types.Household
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeHousehold())
@@ -61,26 +61,22 @@ func BuildFakeHouseholdList() *types.QueryFilteredResult[types.Household] {
 	}
 }
 
-// BuildFakeHouseholdUpdateInput builds a faked HouseholdUpdateRequestInput from a household.
-func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateRequestInput {
-	household := BuildFakeHousehold()
-	return &types.HouseholdUpdateRequestInput{
-		Name:          &household.Name,
-		ContactPhone:  &household.ContactPhone,
-		AddressLine1:  &household.AddressLine1,
-		AddressLine2:  &household.AddressLine2,
-		City:          &household.City,
-		State:         &household.State,
-		ZipCode:       &household.ZipCode,
-		Country:       &household.Country,
-		Latitude:      household.Latitude,
-		Longitude:     household.Longitude,
-		BelongsToUser: household.BelongsToUser,
+func BuildFakeHouseholdOwnershipTransferInput() *types.HouseholdOwnershipTransferInput {
+	return &types.HouseholdOwnershipTransferInput{
+		Reason:       fake.Sentence(5),
+		CurrentOwner: BuildFakeID(),
+		NewOwner:     BuildFakeID(),
 	}
 }
 
-// BuildFakeHouseholdCreationInput builds a faked HouseholdCreationRequestInput.
-func BuildFakeHouseholdCreationInput() *types.HouseholdCreationRequestInput {
+// BuildFakeHouseholdUpdateRequestInput builds a faked HouseholdUpdateRequestInput from a household.
+func BuildFakeHouseholdUpdateRequestInput() *types.HouseholdUpdateRequestInput {
+	household := BuildFakeHousehold()
+	return converters.ConvertHouseholdToHouseholdUpdateRequestInput(household)
+}
+
+// BuildFakeHouseholdCreationRequestInput builds a faked HouseholdCreationRequestInput.
+func BuildFakeHouseholdCreationRequestInput() *types.HouseholdCreationRequestInput {
 	household := BuildFakeHousehold()
 	return converters.ConvertHouseholdToHouseholdCreationRequestInput(household)
 }

@@ -314,7 +314,7 @@ func TestRecipeStepProductsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleRecipeStepProductList := fakes.BuildFakeRecipeStepProductList()
+		exampleRecipeStepProductList := fakes.BuildFakeRecipeStepProductsList()
 
 		recipeStepProductDataManager := &mocktypes.RecipeStepProductDataManagerMock{}
 		recipeStepProductDataManager.On(

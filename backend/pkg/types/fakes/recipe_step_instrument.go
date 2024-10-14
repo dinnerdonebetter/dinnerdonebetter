@@ -24,8 +24,8 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 	}
 }
 
-// BuildFakeRecipeStepInstrumentList builds a faked RecipeStepInstrumentList.
-func BuildFakeRecipeStepInstrumentList() *types.QueryFilteredResult[types.RecipeStepInstrument] {
+// BuildFakeRecipeStepInstrumentsList builds a faked RecipeStepInstrumentList.
+func BuildFakeRecipeStepInstrumentsList() *types.QueryFilteredResult[types.RecipeStepInstrument] {
 	var examples []*types.RecipeStepInstrument
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepInstrument())

@@ -61,7 +61,7 @@ func TestUserRegistrationInput_ValidateWithContext(T *testing.T) {
 			EmailAddress: "things@stuff.com",
 		}
 
-		assert.NoError(t, x.ValidateWithContext(ctx, 1, 1))
+		assert.NoError(t, x.ValidateWithContext(ctx))
 	})
 
 	T.Run("invalid", func(t *testing.T) {
@@ -74,7 +74,7 @@ func TestUserRegistrationInput_ValidateWithContext(T *testing.T) {
 			Password:     "",
 		}
 
-		err := x.ValidateWithContext(ctx, 1, 1)
+		err := x.ValidateWithContext(ctx)
 		assert.Error(t, err)
 	})
 }
@@ -108,7 +108,7 @@ func TestUserLoginInput_ValidateWithContext(T *testing.T) {
 			TOTPToken: "123456",
 		}
 
-		assert.NoError(t, x.ValidateWithContext(ctx, 1, 1))
+		assert.NoError(t, x.ValidateWithContext(ctx))
 	})
 }
 

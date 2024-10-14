@@ -1,6 +1,11 @@
 package types
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+)
 
 type (
 	FinalizeMealPlansRequest struct {
@@ -34,3 +39,24 @@ type (
 		MealPlanTaskCreationHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
+
+var _ validation.ValidatableWithContext = (*FinalizeMealPlansRequest)(nil)
+
+// ValidateWithContext validates a FinalizeMealPlansRequest.
+func (x *FinalizeMealPlansRequest) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, x) // just here for conformity's sake.
+}
+
+var _ validation.ValidatableWithContext = (*InitializeMealPlanGroceryListRequest)(nil)
+
+// ValidateWithContext validates a InitializeMealPlanGroceryListRequest.
+func (x *InitializeMealPlanGroceryListRequest) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, x) // just here for conformity's sake.
+}
+
+var _ validation.ValidatableWithContext = (*CreateMealPlanTasksRequest)(nil)
+
+// ValidateWithContext validates a CreateMealPlanTasksRequest.
+func (x *CreateMealPlanTasksRequest) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, x) // just here for conformity's sake.
+}

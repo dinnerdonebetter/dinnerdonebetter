@@ -311,7 +311,7 @@ func TestRecipePrepTasksService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleRecipePrepTaskList := fakes.BuildFakeRecipePrepTaskList().Data
+		exampleRecipePrepTaskList := fakes.BuildFakeRecipePrepTasksList().Data
 
 		recipePrepTaskDataManager := &mocktypes.RecipePrepTaskDataManagerMock{}
 		recipePrepTaskDataManager.On(
