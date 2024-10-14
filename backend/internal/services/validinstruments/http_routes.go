@@ -3,6 +3,7 @@ package validinstruments
 import (
 	"database/sql"
 	"errors"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"net/http"
 	"strings"
 
@@ -280,8 +281,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.ValidInstrument]{
-		Details: responseDetails,
-		Data:    validInstruments,
+		Details:    responseDetails,
+		Data:       validInstruments,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode our response and peace.

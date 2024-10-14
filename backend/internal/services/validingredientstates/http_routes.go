@@ -3,6 +3,7 @@ package validingredientstates
 import (
 	"database/sql"
 	"errors"
+	pointer "github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"net/http"
 	"strings"
 
@@ -272,8 +273,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	responseValue := &types.APIResponse[[]*types.ValidIngredientState]{
-		Details: responseDetails,
-		Data:    validIngredientStates,
+		Details:    responseDetails,
+		Data:       validIngredientStates,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode our response and peace.

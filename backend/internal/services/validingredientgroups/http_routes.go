@@ -3,6 +3,7 @@ package validingredientgroups
 import (
 	"database/sql"
 	"errors"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -255,8 +256,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	responseValue := &types.APIResponse[[]*types.ValidIngredientGroup]{
-		Details: responseDetails,
-		Data:    validIngredientGroups,
+		Details:    responseDetails,
+		Data:       validIngredientGroups,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode our response and peace.

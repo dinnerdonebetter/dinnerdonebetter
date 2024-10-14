@@ -3,6 +3,7 @@ package validmeasurementunits
 import (
 	"database/sql"
 	"errors"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"net/http"
 	"strings"
 
@@ -282,8 +283,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
-		Details: responseDetails,
-		Data:    validMeasurementUnits,
+		Details:    responseDetails,
+		Data:       validMeasurementUnits,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode our response and peace.
