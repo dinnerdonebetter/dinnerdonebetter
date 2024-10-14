@@ -24,8 +24,8 @@ func TestClient_CreateMealPlanOptionVote(T *testing.T) {
 		mealPlanID := fakes.BuildFakeID()
 		mealPlanEventID := fakes.BuildFakeID()
 
-		data := fakes.BuildFakeMealPlanOptionVote()
-		expected := &types.APIResponse[*types.MealPlanOptionVote]{
+		data := []*types.MealPlanOptionVote{fakes.BuildFakeMealPlanOptionVote()}
+		expected := &types.APIResponse[[]*types.MealPlanOptionVote]{
 			Data: data,
 		}
 

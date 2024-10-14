@@ -950,7 +950,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
 		{{ end }}
 
-		data := fakes.BuildFake{{ uppercaseFirstLetter .ResponseType.TypeName }}()
+		data := {{ if .ReturnsList }}[]*types.{{ .ResponseType.TypeName }} { {{ end }}fakes.BuildFake{{ uppercaseFirstLetter .ResponseType.TypeName }}(){{ if .ReturnsList }}}{{ end }}
 		{{- if eq (uppercaseFirstLetter .ResponseType.TypeName) "User" }}
 		// the hashed passwords is never transmitted over the wire.
 		data.HashedPassword = ""
@@ -964,7 +964,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		data.DestinationHousehold.WebhookEncryptionKey = ""
 		data.FromUser.TwoFactorSecret = ""
 		{{- end }}
-		expected := &types.APIResponse[{{ if notNative .ResponseType.TypeName }}*types.{{ end }}{{ .ResponseType.TypeName }}]{
+		expected := &types.APIResponse[{{ if notNative .ResponseType.TypeName }}{{ if .ReturnsList }}[]{{ end }}*types.{{ end }}{{ .ResponseType.TypeName }}]{
 			Data: data,
 		}
 

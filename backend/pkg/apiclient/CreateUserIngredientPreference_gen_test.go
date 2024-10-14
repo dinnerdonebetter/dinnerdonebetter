@@ -22,8 +22,8 @@ func TestClient_CreateUserIngredientPreference(T *testing.T) {
 
 		ctx := context.Background()
 
-		data := fakes.BuildFakeUserIngredientPreference()
-		expected := &types.APIResponse[*types.UserIngredientPreference]{
+		data := []*types.UserIngredientPreference{fakes.BuildFakeUserIngredientPreference()}
+		expected := &types.APIResponse[[]*types.UserIngredientPreference]{
 			Data: data,
 		}
 
