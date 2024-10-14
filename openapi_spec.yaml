@@ -15422,7 +15422,7 @@ paths:
   /api/v1/valid_ingredients/by_preparation/{validPreparationID}:
     get:
       description: Operation for fetching ValidIngredient
-      operationId: GetValidIngredientsByPreparation
+      operationId: SearchValidIngredientsByPreparation
       parameters:
       - description: the search query parameter
         in: query

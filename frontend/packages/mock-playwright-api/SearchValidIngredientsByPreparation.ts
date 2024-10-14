@@ -6,7 +6,7 @@ import { ValidIngredient, QueryFilteredResult } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockGetValidIngredientsByPreparationResponseConfig extends ResponseConfig<
+export class MockSearchValidIngredientsByPreparationResponseConfig extends ResponseConfig<
   QueryFilteredResult<ValidIngredient>
 > {
   q: string;
@@ -25,7 +25,9 @@ export class MockGetValidIngredientsByPreparationResponseConfig extends Response
   }
 }
 
-export const mockGetValidIngredientsByPreparations = (resCfg: MockGetValidIngredientsByPreparationResponseConfig) => {
+export const mockSearchValidIngredientsByPreparations = (
+  resCfg: MockSearchValidIngredientsByPreparationResponseConfig,
+) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/valid_ingredients/by_preparation/${resCfg.validPreparationID}`,

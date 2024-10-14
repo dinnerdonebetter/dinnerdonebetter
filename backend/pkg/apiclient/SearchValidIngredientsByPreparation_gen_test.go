@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-func TestClient_GetValidIngredientsByPreparation(T *testing.T) {
+func TestClient_SearchValidIngredientsByPreparation(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/valid_ingredients/by_preparation/%s"
@@ -34,7 +34,7 @@ func TestClient_GetValidIngredientsByPreparation(T *testing.T) {
 
 		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=50&page=1&q=%s&sortBy=asc", q), expectedPathFormat, validPreparationID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.GetValidIngredientsByPreparation(ctx, q, validPreparationID, nil)
+		actual, err := c.SearchValidIngredientsByPreparation(ctx, q, validPreparationID, nil)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -48,7 +48,7 @@ func TestClient_GetValidIngredientsByPreparation(T *testing.T) {
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetValidIngredientsByPreparation(ctx, "", validPreparationID, nil)
+		actual, err := c.SearchValidIngredientsByPreparation(ctx, "", validPreparationID, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -61,7 +61,7 @@ func TestClient_GetValidIngredientsByPreparation(T *testing.T) {
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetValidIngredientsByPreparation(ctx, q, "", nil)
+		actual, err := c.SearchValidIngredientsByPreparation(ctx, q, "", nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -75,7 +75,7 @@ func TestClient_GetValidIngredientsByPreparation(T *testing.T) {
 		validPreparationID := fakes.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetValidIngredientsByPreparation(ctx, q, validPreparationID, nil)
+		actual, err := c.SearchValidIngredientsByPreparation(ctx, q, validPreparationID, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -90,7 +90,7 @@ func TestClient_GetValidIngredientsByPreparation(T *testing.T) {
 
 		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=50&page=1&q=%s&sortBy=asc", q), expectedPathFormat, validPreparationID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetValidIngredientsByPreparation(ctx, q, validPreparationID, nil)
+		actual, err := c.SearchValidIngredientsByPreparation(ctx, q, validPreparationID, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

@@ -3426,35 +3426,6 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getValidIngredientsByPreparation(
-    q: string,
-    validPreparationID: string,
-    filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<ValidIngredient>> {
-    let self = this;
-    return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredient>>>(
-        `/api/v1/valid_ingredients/by_preparation/${validPreparationID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredient>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
-    });
-  }
-
   async getValidInstrument(validInstrumentID: string): Promise<APIResponse<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
@@ -4334,6 +4305,35 @@ export class DinnerDoneBetterAPIClient {
       }
 
       const result = new QueryFilteredResult<ValidVessel>({
+        data: response.data.data,
+        totalCount: response.data.pagination?.totalCount,
+        page: response.data.pagination?.page,
+        limit: response.data.pagination?.limit,
+      });
+
+      resolve(result);
+    });
+  }
+
+  async searchValidIngredientsByPreparation(
+    q: string,
+    validPreparationID: string,
+    filter: QueryFilter = QueryFilter.Default(),
+  ): Promise<QueryFilteredResult<ValidIngredient>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      const response = await self.client.get<APIResponse<Array<ValidIngredient>>>(
+        `/api/v1/valid_ingredients/by_preparation/${validPreparationID}`,
+        {
+          params: filter.asRecord(),
+        },
+      );
+
+      if (response.data.error) {
+        reject(new Error(response.data.error.message));
+      }
+
+      const result = new QueryFilteredResult<ValidIngredient>({
         data: response.data.data,
         totalCount: response.data.pagination?.totalCount,
         page: response.data.pagination?.page,
