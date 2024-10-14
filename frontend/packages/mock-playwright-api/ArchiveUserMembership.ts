@@ -2,28 +2,25 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { HouseholdUserMembership } from '@dinnerdonebetter/models'
+import { HouseholdUserMembership } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockArchiveUserMembershipResponseConfig extends ResponseConfig<HouseholdUserMembership> {
-		   householdID: string;
-		 userID: string;
-		
+  householdID: string;
+  userID: string;
 
-		  constructor( householdID: string,  userID: string, status: number = 202, body?: HouseholdUserMembership) {
-		    super();
+  constructor(householdID: string, userID: string, status: number = 202, body?: HouseholdUserMembership) {
+    super();
 
-		 this.householdID = householdID;
-		 this.userID = userID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.householdID = householdID;
+    this.userID = userID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockArchiveUserMembership = (resCfg: MockArchiveUserMembershipResponseConfig) => {
@@ -35,8 +32,6 @@ export const mockArchiveUserMembership = (resCfg: MockArchiveUserMembershipRespo
 
         assertMethod('DELETE', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

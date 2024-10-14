@@ -2,25 +2,21 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidIngredientState,
-	QueryFilteredResult } from '@dinnerdonebetter/models'
+import { ValidIngredientState, QueryFilteredResult } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+export class MockGetValidIngredientStatesResponseConfig extends ResponseConfig<
+  QueryFilteredResult<ValidIngredientState>
+> {
+  constructor(status: number = 200, body: ValidIngredientState[] = []) {
+    super();
 
-
-export class MockGetValidIngredientStatesResponseConfig extends ResponseConfig<QueryFilteredResult<ValidIngredientState>> {
-		  
-
-		  constructor(status: number = 200, body: ValidIngredientState[] = []) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body.data = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body.data = body;
+    }
+  }
 }
 
 export const mockGetValidIngredientStatess = (resCfg: MockGetValidIngredientStatesResponseConfig) => {
@@ -33,10 +29,8 @@ export const mockGetValidIngredientStatess = (resCfg: MockGetValidIngredientStat
         assertMethod('GET', route);
         assertClient(route);
 
-		
         if (resCfg.body && resCfg.filter) resCfg.body.limit = resCfg.filter.limit;
         if (resCfg.body && resCfg.filter) resCfg.body.page = resCfg.filter.page;
-		
 
         route.fulfill(resCfg.fulfill());
       },

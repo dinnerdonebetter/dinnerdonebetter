@@ -99,6 +99,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 		userRouter.Post("/token", s.authService.TokenHandler)
 	})
 
+	// these are routes we don't expect or require users to be authenticated for
 	router.Route("/users", func(userRouter routing.Router) {
 		userRouter.Post(root, s.usersService.CreateHandler)
 		userRouter.Post("/login/jwt", s.authService.BuildLoginHandler(false))

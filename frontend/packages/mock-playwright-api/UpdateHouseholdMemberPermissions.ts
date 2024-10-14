@@ -2,28 +2,25 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { UserPermissionsResponse } from '@dinnerdonebetter/models'
+import { UserPermissionsResponse } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockUpdateHouseholdMemberPermissionsResponseConfig extends ResponseConfig<UserPermissionsResponse> {
-		   householdID: string;
-		 userID: string;
-		
+  householdID: string;
+  userID: string;
 
-		  constructor( householdID: string,  userID: string, status: number = 200, body?: UserPermissionsResponse) {
-		    super();
+  constructor(householdID: string, userID: string, status: number = 200, body?: UserPermissionsResponse) {
+    super();
 
-		 this.householdID = householdID;
-		 this.userID = userID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.householdID = householdID;
+    this.userID = userID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockUpdateHouseholdMemberPermissions = (resCfg: MockUpdateHouseholdMemberPermissionsResponseConfig) => {
@@ -35,8 +32,6 @@ export const mockUpdateHouseholdMemberPermissions = (resCfg: MockUpdateHousehold
 
         assertMethod('PATCH', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

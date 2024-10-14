@@ -2,27 +2,23 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidIngredient,
-	QueryFilteredResult } from '@dinnerdonebetter/models'
+import { ValidIngredient, QueryFilteredResult } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockSearchForValidIngredientsResponseConfig extends ResponseConfig<QueryFilteredResult<ValidIngredient>> {
-		   q: string;
-		
+  q: string;
 
-		  constructor( q: string, status: number = 200, body: ValidIngredient[] = []) {
-		    super();
+  constructor(q: string, status: number = 200, body: ValidIngredient[] = []) {
+    super();
 
-		 this.q = q;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body.data = body;
-			}
-		  }
+    this.q = q;
+
+    this.status = status;
+    if (this.body) {
+      this.body.data = body;
+    }
+  }
 }
 
 export const mockSearchForValidIngredientss = (resCfg: MockSearchForValidIngredientsResponseConfig) => {
@@ -35,10 +31,8 @@ export const mockSearchForValidIngredientss = (resCfg: MockSearchForValidIngredi
         assertMethod('GET', route);
         assertClient(route);
 
-		
         if (resCfg.body && resCfg.filter) resCfg.body.limit = resCfg.filter.limit;
         if (resCfg.body && resCfg.filter) resCfg.body.page = resCfg.filter.page;
-		
 
         route.fulfill(resCfg.fulfill());
       },

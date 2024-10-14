@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { PasswordResetResponse } from '@dinnerdonebetter/models'
+import { PasswordResetResponse } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockUpdatePasswordResponseConfig extends ResponseConfig<PasswordResetResponse> {
-		  
+  constructor(status: number = 200, body?: PasswordResetResponse) {
+    super();
 
-		  constructor(status: number = 200, body?: PasswordResetResponse) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockUpdatePassword = (resCfg: MockUpdatePasswordResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockUpdatePassword = (resCfg: MockUpdatePasswordResponseConfig) => 
 
         assertMethod('PUT', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

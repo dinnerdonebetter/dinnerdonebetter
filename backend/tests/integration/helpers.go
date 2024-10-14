@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -16,7 +17,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
-	"github.com/brianvoe/gofakeit/v5"
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/require"
 )
@@ -41,11 +41,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	t.Helper()
 
 	if input == nil {
-		input = &types.UserRegistrationInput{
-			EmailAddress: gofakeit.Email(),
-			Username:     fakes.BuildFakeUser().Username,
-			Password:     gofakeit.Password(true, true, true, true, false, 64),
-		}
+		input = fakes.BuildFakeUserRegistrationInput()
 	}
 
 	user, err := testutils.CreateServiceUser(ctx, urlToUse, input)
@@ -116,10 +112,18 @@ func buildSimpleClient(t *testing.T) *apiclient.Client {
 	return c
 }
 
+func generateTOTPTokenForUserWithoutTest(u *types.User) (string, error) {
+	if u.TwoFactorSecret == "" {
+		return "", errors.New("empty two factor secret")
+	}
+
+	return totp.GenerateCode(u.TwoFactorSecret, time.Now().UTC())
+}
+
 func generateTOTPTokenForUser(t *testing.T, u *types.User) string {
 	t.Helper()
 
-	code, err := totp.GenerateCode(u.TwoFactorSecret, time.Now().UTC())
+	code, err := generateTOTPTokenForUserWithoutTest(u)
 	require.NotEmpty(t, code)
 	require.NoError(t, err)
 

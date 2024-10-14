@@ -60,7 +60,7 @@ func BuildClientFile(modelsImports []string) string {
 import { Span } from '@opentelemetry/api';
 
 import { buildServerSideLogger, LoggerType } from '@dinnerdonebetter/logger';
-` + "import {\n\t" + strings.Join(modelsImports, ",\n\t") + "\n" + `} from modelsPackage;` + `
+` + "import {\n\t" + strings.Join(modelsImports, ",\n\t") + "\n" + `} from "` + modelsPackage + `";` + `
 
 function _curlFromAxiosConfig(config: InternalAxiosRequestConfig): string {
   const method = (config?.method || 'UNKNOWN').toUpperCase();

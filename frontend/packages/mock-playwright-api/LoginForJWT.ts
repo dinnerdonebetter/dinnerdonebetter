@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { JWTResponse } from '@dinnerdonebetter/models'
+import { JWTResponse } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockLoginForJWTResponseConfig extends ResponseConfig<JWTResponse> {
-		  
+  constructor(status: number = 201, body?: JWTResponse) {
+    super();
 
-		  constructor(status: number = 201, body?: JWTResponse) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockLoginForJWT = (resCfg: MockLoginForJWTResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockLoginForJWT = (resCfg: MockLoginForJWTResponseConfig) => {
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

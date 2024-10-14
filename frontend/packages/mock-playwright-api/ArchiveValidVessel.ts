@@ -2,26 +2,23 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidVessel } from '@dinnerdonebetter/models'
+import { ValidVessel } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockArchiveValidVesselResponseConfig extends ResponseConfig<ValidVessel> {
-		   validVesselID: string;
-		
+  validVesselID: string;
 
-		  constructor( validVesselID: string, status: number = 202, body?: ValidVessel) {
-		    super();
+  constructor(validVesselID: string, status: number = 202, body?: ValidVessel) {
+    super();
 
-		 this.validVesselID = validVesselID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.validVesselID = validVesselID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockArchiveValidVessel = (resCfg: MockArchiveValidVesselResponseConfig) => {
@@ -33,8 +30,6 @@ export const mockArchiveValidVessel = (resCfg: MockArchiveValidVesselResponseCon
 
         assertMethod('DELETE', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

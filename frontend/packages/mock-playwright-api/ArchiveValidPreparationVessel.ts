@@ -2,26 +2,23 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidPreparationVessel } from '@dinnerdonebetter/models'
+import { ValidPreparationVessel } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockArchiveValidPreparationVesselResponseConfig extends ResponseConfig<ValidPreparationVessel> {
-		   validPreparationVesselID: string;
-		
+  validPreparationVesselID: string;
 
-		  constructor( validPreparationVesselID: string, status: number = 202, body?: ValidPreparationVessel) {
-		    super();
+  constructor(validPreparationVesselID: string, status: number = 202, body?: ValidPreparationVessel) {
+    super();
 
-		 this.validPreparationVesselID = validPreparationVesselID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.validPreparationVesselID = validPreparationVesselID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockArchiveValidPreparationVessel = (resCfg: MockArchiveValidPreparationVesselResponseConfig) => {
@@ -33,8 +30,6 @@ export const mockArchiveValidPreparationVessel = (resCfg: MockArchiveValidPrepar
 
         assertMethod('DELETE', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

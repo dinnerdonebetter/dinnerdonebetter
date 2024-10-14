@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { UserCreationResponse } from '@dinnerdonebetter/models'
+import { UserCreationResponse } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockCreateUserResponseConfig extends ResponseConfig<UserCreationResponse> {
-		  
+  constructor(status: number = 201, body?: UserCreationResponse) {
+    super();
 
-		  constructor(status: number = 201, body?: UserCreationResponse) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockCreateUser = (resCfg: MockCreateUserResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockCreateUser = (resCfg: MockCreateUserResponseConfig) => {
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

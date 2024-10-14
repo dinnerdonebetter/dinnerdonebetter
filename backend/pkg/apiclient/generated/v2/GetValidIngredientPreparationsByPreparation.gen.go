@@ -15,7 +15,6 @@ import (
 
 func (c *Client) GetValidIngredientPreparationsByPreparation(
 	ctx context.Context,
-	q string,
 	validPreparationID string,
 	filter *types.QueryFilter,
 ) (*types.QueryFilteredResult[types.ValidIngredientPreparation], error) {
@@ -30,12 +29,6 @@ func (c *Client) GetValidIngredientPreparationsByPreparation(
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if q == "" {
-		return nil, buildInvalidIDError("q")
-	}
-	logger = logger.WithValue(keys.SearchQueryKey, q)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, q)
-
 	if validPreparationID == "" {
 		return nil, buildInvalidIDError("validPreparation")
 	}
@@ -43,7 +36,6 @@ func (c *Client) GetValidIngredientPreparationsByPreparation(
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	values := filter.ToValues()
-	values.Set(types.QueryKeySearch, q)
 
 	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/valid_ingredient_preparations/by_preparation/%s", validPreparationID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)

@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { User } from '@dinnerdonebetter/models'
+import { User } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockVerifyTOTPSecretResponseConfig extends ResponseConfig<User> {
-		  
+  constructor(status: number = 201, body?: User) {
+    super();
 
-		  constructor(status: number = 201, body?: User) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockVerifyTOTPSecret = (resCfg: MockVerifyTOTPSecretResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockVerifyTOTPSecret = (resCfg: MockVerifyTOTPSecretResponseConfig)
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

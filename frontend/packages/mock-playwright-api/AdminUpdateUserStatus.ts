@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { UserStatusResponse } from '@dinnerdonebetter/models'
+import { UserStatusResponse } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockAdminUpdateUserStatusResponseConfig extends ResponseConfig<UserStatusResponse> {
-		  
+  constructor(status: number = 201, body?: UserStatusResponse) {
+    super();
 
-		  constructor(status: number = 201, body?: UserStatusResponse) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockAdminUpdateUserStatus = (resCfg: MockAdminUpdateUserStatusResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockAdminUpdateUserStatus = (resCfg: MockAdminUpdateUserStatusRespo
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

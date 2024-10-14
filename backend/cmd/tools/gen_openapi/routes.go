@@ -964,7 +964,6 @@ var routeInfoMap = map[string]routeDetails{
 		ID:           "GetValidIngredientPreparationsByPreparation",
 		ResponseType: &types.ValidIngredientPreparation{},
 		ListRoute:    true,
-		SearchRoute:  true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/valid_ingredient_preparations/{validIngredientPreparationID}/": {

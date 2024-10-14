@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidInstrument } from '@dinnerdonebetter/models'
+import { ValidInstrument } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockGetRandomValidInstrumentResponseConfig extends ResponseConfig<ValidInstrument> {
-		  
+  constructor(status: number = 200, body?: ValidInstrument) {
+    super();
 
-		  constructor(status: number = 200, body?: ValidInstrument) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockGetRandomValidInstrument = (resCfg: MockGetRandomValidInstrumentResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockGetRandomValidInstrument = (resCfg: MockGetRandomValidInstrumen
 
         assertMethod('GET', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

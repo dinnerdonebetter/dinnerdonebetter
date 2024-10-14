@@ -31,7 +31,7 @@ func buildLoggingMiddleware(logger logging.Logger, tracer tracing.Tracer, silenc
 			if !silenceRouteLogging {
 				logger.WithRequest(req).WithSpan(span).WithValues(map[string]any{
 					"status":  ww.Status(),
-					"elapsed": time.Since(start).Milliseconds(),
+					"elapsed": time.Since(start).String(),
 					"written": ww.BytesWritten(),
 				}).Info("response served")
 			}

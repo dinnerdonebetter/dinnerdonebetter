@@ -19,6 +19,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -92,9 +93,11 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 	defer span.End()
 
 	query := req.URL.Query().Get(types.QueryKeySearch)
+	tracing.AttachRequestToSpan(span, req)
 
 	logger := s.logger.WithRequest(req).WithSpan(span)
-	tracing.AttachRequestToSpan(span, req)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
@@ -116,8 +119,9 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	responseValue := &types.APIResponse[[]*types.User]{
-		Details: responseDetails,
-		Data:    users,
+		Details:    responseDetails,
+		Data:       users,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode response.
@@ -577,6 +581,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	logger.Info("decoding request")
+
 	// decode the request.
 	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	input := new(types.TOTPSecretVerificationInput)
@@ -588,14 +594,19 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	}
 	decodeTimer.Stop()
 
+	logger.Info("decoded request, validating input")
+
 	if err := input.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		logger = logger.WithValue(keys.ValidationErrorKey, err)
+		observability.AcknowledgeError(err, logger, span, "provided input was invalid")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	logger = logger.WithValue(keys.UserIDKey, input.UserID)
+
+	logger.Info("validated input, getting user")
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	user, err := s.userDataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
@@ -609,6 +620,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 	tracing.AttachToSpan(span, keys.UsernameKey, user.Username)
+	logger = logger.WithValue(keys.UsernameKey, user.Username)
 
 	if user.TwoFactorSecretVerifiedAt != nil {
 		// I suppose if this happens too many times, we might want to keep track of that
@@ -620,7 +632,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 
 	totpValid := totp.Validate(input.TOTPToken, user.TwoFactorSecret)
 	if !totpValid {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		logger = logger.WithValue(keys.ValidationErrorKey, err)
+		observability.AcknowledgeError(err, logger, span, "TOTP code was invalid")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return

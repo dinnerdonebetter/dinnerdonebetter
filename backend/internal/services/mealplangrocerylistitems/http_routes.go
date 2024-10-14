@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -172,16 +173,15 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
+	tracing.AttachRequestToSpan(span, req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
 	}
-
-	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -215,8 +215,9 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	responseValue := &types.APIResponse[[]*types.MealPlanGroceryListItem]{
-		Details: responseDetails,
-		Data:    mealPlanGroceryListItems,
+		Details:    responseDetails,
+		Data:       mealPlanGroceryListItems,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
 	// encode our response and peace.

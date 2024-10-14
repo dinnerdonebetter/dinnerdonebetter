@@ -2,28 +2,25 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { MealPlanOptionVote } from '@dinnerdonebetter/models'
+import { MealPlanOptionVote } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockCreateMealPlanOptionVoteResponseConfig extends ResponseConfig<MealPlanOptionVote> {
-		   mealPlanID: string;
-		 mealPlanEventID: string;
-		
+  mealPlanID: string;
+  mealPlanEventID: string;
 
-		  constructor( mealPlanID: string,  mealPlanEventID: string, status: number = 201, body?: MealPlanOptionVote) {
-		    super();
+  constructor(mealPlanID: string, mealPlanEventID: string, status: number = 201, body?: MealPlanOptionVote) {
+    super();
 
-		 this.mealPlanID = mealPlanID;
-		 this.mealPlanEventID = mealPlanEventID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.mealPlanID = mealPlanID;
+    this.mealPlanEventID = mealPlanEventID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockCreateMealPlanOptionVote = (resCfg: MockCreateMealPlanOptionVoteResponseConfig) => {
@@ -35,8 +32,6 @@ export const mockCreateMealPlanOptionVote = (resCfg: MockCreateMealPlanOptionVot
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

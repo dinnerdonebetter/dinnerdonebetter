@@ -13796,12 +13796,6 @@ paths:
       description: Operation for fetching ValidIngredientPreparation
       operationId: GetValidIngredientPreparationsByPreparation
       parameters:
-      - description: the search query parameter
-        in: query
-        name: q
-        required: true
-        schema:
-          type: string
       - description: How many results should appear in output, max is 250.
         in: query
         name: limit

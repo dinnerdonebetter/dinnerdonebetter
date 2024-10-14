@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { TOTPSecretRefreshResponse } from '@dinnerdonebetter/models'
+import { TOTPSecretRefreshResponse } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockRefreshTOTPSecretResponseConfig extends ResponseConfig<TOTPSecretRefreshResponse> {
-		  
+  constructor(status: number = 201, body?: TOTPSecretRefreshResponse) {
+    super();
 
-		  constructor(status: number = 201, body?: TOTPSecretRefreshResponse) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockRefreshTOTPSecret = (resCfg: MockRefreshTOTPSecretResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockRefreshTOTPSecret = (resCfg: MockRefreshTOTPSecretResponseConfi
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/pquerna/otp/totp"
@@ -49,7 +49,10 @@ func CreateServiceUser(ctx context.Context, address string, in *types.UserRegist
 		return nil, fmt.Errorf("generating totp code: %w", tokenErr)
 	}
 
-	if validationErr := c.VerifyTOTPSecret(ctx, ucr.CreatedUserID, token); validationErr != nil {
+	if _, validationErr := c.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
+		TOTPToken: token,
+		UserID:    ucr.CreatedUserID,
+	}); validationErr != nil {
 		return nil, fmt.Errorf("verifying totp code: %w", validationErr)
 	}
 

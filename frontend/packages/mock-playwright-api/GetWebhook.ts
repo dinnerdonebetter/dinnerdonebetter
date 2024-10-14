@@ -2,26 +2,23 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { Webhook } from '@dinnerdonebetter/models'
+import { Webhook } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockGetWebhookResponseConfig extends ResponseConfig<Webhook> {
-		   webhookID: string;
-		
+  webhookID: string;
 
-		  constructor( webhookID: string, status: number = 200, body?: Webhook) {
-		    super();
+  constructor(webhookID: string, status: number = 200, body?: Webhook) {
+    super();
 
-		 this.webhookID = webhookID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.webhookID = webhookID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockGetWebhook = (resCfg: MockGetWebhookResponseConfig) => {
@@ -33,8 +30,6 @@ export const mockGetWebhook = (resCfg: MockGetWebhookResponseConfig) => {
 
         assertMethod('GET', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

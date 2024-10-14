@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { UserNotification } from '@dinnerdonebetter/models'
+import { UserNotification } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockCreateUserNotificationResponseConfig extends ResponseConfig<UserNotification> {
-		  
+  constructor(status: number = 201, body?: UserNotification) {
+    super();
 
-		  constructor(status: number = 201, body?: UserNotification) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockCreateUserNotification = (resCfg: MockCreateUserNotificationResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockCreateUserNotification = (resCfg: MockCreateUserNotificationRes
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

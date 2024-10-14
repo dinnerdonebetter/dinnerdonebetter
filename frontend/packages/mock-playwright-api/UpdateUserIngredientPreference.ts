@@ -2,26 +2,23 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { UserIngredientPreference } from '@dinnerdonebetter/models'
+import { UserIngredientPreference } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockUpdateUserIngredientPreferenceResponseConfig extends ResponseConfig<UserIngredientPreference> {
-		   userIngredientPreferenceID: string;
-		
+  userIngredientPreferenceID: string;
 
-		  constructor( userIngredientPreferenceID: string, status: number = 200, body?: UserIngredientPreference) {
-		    super();
+  constructor(userIngredientPreferenceID: string, status: number = 200, body?: UserIngredientPreference) {
+    super();
 
-		 this.userIngredientPreferenceID = userIngredientPreferenceID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.userIngredientPreferenceID = userIngredientPreferenceID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockUpdateUserIngredientPreference = (resCfg: MockUpdateUserIngredientPreferenceResponseConfig) => {
@@ -33,8 +30,6 @@ export const mockUpdateUserIngredientPreference = (resCfg: MockUpdateUserIngredi
 
         assertMethod('PUT', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

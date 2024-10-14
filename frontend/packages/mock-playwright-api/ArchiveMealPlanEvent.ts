@@ -2,28 +2,25 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { MealPlanEvent } from '@dinnerdonebetter/models'
+import { MealPlanEvent } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockArchiveMealPlanEventResponseConfig extends ResponseConfig<MealPlanEvent> {
-		   mealPlanID: string;
-		 mealPlanEventID: string;
-		
+  mealPlanID: string;
+  mealPlanEventID: string;
 
-		  constructor( mealPlanID: string,  mealPlanEventID: string, status: number = 202, body?: MealPlanEvent) {
-		    super();
+  constructor(mealPlanID: string, mealPlanEventID: string, status: number = 202, body?: MealPlanEvent) {
+    super();
 
-		 this.mealPlanID = mealPlanID;
-		 this.mealPlanEventID = mealPlanEventID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.mealPlanID = mealPlanID;
+    this.mealPlanEventID = mealPlanEventID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockArchiveMealPlanEvent = (resCfg: MockArchiveMealPlanEventResponseConfig) => {
@@ -35,8 +32,6 @@ export const mockArchiveMealPlanEvent = (resCfg: MockArchiveMealPlanEventRespons
 
         assertMethod('DELETE', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

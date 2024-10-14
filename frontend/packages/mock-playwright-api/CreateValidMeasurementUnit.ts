@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidMeasurementUnit } from '@dinnerdonebetter/models'
+import { ValidMeasurementUnit } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockCreateValidMeasurementUnitResponseConfig extends ResponseConfig<ValidMeasurementUnit> {
-		  
+  constructor(status: number = 201, body?: ValidMeasurementUnit) {
+    super();
 
-		  constructor(status: number = 201, body?: ValidMeasurementUnit) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockCreateValidMeasurementUnit = (resCfg: MockCreateValidMeasurementUnitResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockCreateValidMeasurementUnit = (resCfg: MockCreateValidMeasuremen
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

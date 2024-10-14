@@ -2,32 +2,30 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidIngredientPreparation,
-	QueryFilteredResult } from '@dinnerdonebetter/models'
+import { ValidIngredientPreparation, QueryFilteredResult } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+export class MockGetValidIngredientPreparationsByPreparationResponseConfig extends ResponseConfig<
+  QueryFilteredResult<ValidIngredientPreparation>
+> {
+  validPreparationID: string;
 
+  constructor(validPreparationID: string, status: number = 200, body: ValidIngredientPreparation[] = []) {
+    super();
 
-export class MockGetValidIngredientPreparationsByPreparationResponseConfig extends ResponseConfig<QueryFilteredResult<ValidIngredientPreparation>> {
-		   q: string;
-		 validPreparationID: string;
-		
+    this.validPreparationID = validPreparationID;
 
-		  constructor( q: string,  validPreparationID: string, status: number = 200, body: ValidIngredientPreparation[] = []) {
-		    super();
-
-		 this.q = q;
-		 this.validPreparationID = validPreparationID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body.data = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body.data = body;
+    }
+  }
 }
 
-export const mockGetValidIngredientPreparationsByPreparations = (resCfg: MockGetValidIngredientPreparationsByPreparationResponseConfig) => {
+export const mockGetValidIngredientPreparationsByPreparations = (
+  resCfg: MockGetValidIngredientPreparationsByPreparationResponseConfig,
+) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/valid_ingredient_preparations/by_preparation/${resCfg.validPreparationID}`,
@@ -37,10 +35,8 @@ export const mockGetValidIngredientPreparationsByPreparations = (resCfg: MockGet
         assertMethod('GET', route);
         assertClient(route);
 
-		
         if (resCfg.body && resCfg.filter) resCfg.body.limit = resCfg.filter.limit;
         if (resCfg.body && resCfg.filter) resCfg.body.page = resCfg.filter.page;
-		
 
         route.fulfill(resCfg.fulfill());
       },

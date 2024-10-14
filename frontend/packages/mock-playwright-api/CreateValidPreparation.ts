@@ -2,24 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidPreparation } from '@dinnerdonebetter/models'
+import { ValidPreparation } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockCreateValidPreparationResponseConfig extends ResponseConfig<ValidPreparation> {
-		  
+  constructor(status: number = 201, body?: ValidPreparation) {
+    super();
 
-		  constructor(status: number = 201, body?: ValidPreparation) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockCreateValidPreparation = (resCfg: MockCreateValidPreparationResponseConfig) => {
@@ -31,8 +26,6 @@ export const mockCreateValidPreparation = (resCfg: MockCreateValidPreparationRes
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

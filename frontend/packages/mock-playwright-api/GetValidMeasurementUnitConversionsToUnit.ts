@@ -2,30 +2,30 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { ValidMeasurementUnitConversion,
-	QueryFilteredResult } from '@dinnerdonebetter/models'
+import { ValidMeasurementUnitConversion, QueryFilteredResult } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
+export class MockGetValidMeasurementUnitConversionsToUnitResponseConfig extends ResponseConfig<
+  QueryFilteredResult<ValidMeasurementUnitConversion>
+> {
+  validMeasurementUnitID: string;
 
+  constructor(validMeasurementUnitID: string, status: number = 200, body: ValidMeasurementUnitConversion[] = []) {
+    super();
 
-export class MockGetValidMeasurementUnitConversionsToUnitResponseConfig extends ResponseConfig<QueryFilteredResult<ValidMeasurementUnitConversion>> {
-		   validMeasurementUnitID: string;
-		
+    this.validMeasurementUnitID = validMeasurementUnitID;
 
-		  constructor( validMeasurementUnitID: string, status: number = 200, body: ValidMeasurementUnitConversion[] = []) {
-		    super();
-
-		 this.validMeasurementUnitID = validMeasurementUnitID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body.data = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body.data = body;
+    }
+  }
 }
 
-export const mockGetValidMeasurementUnitConversionsToUnits = (resCfg: MockGetValidMeasurementUnitConversionsToUnitResponseConfig) => {
+export const mockGetValidMeasurementUnitConversionsToUnits = (
+  resCfg: MockGetValidMeasurementUnitConversionsToUnitResponseConfig,
+) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/valid_measurement_conversions/to_unit/${resCfg.validMeasurementUnitID}`,
@@ -35,10 +35,8 @@ export const mockGetValidMeasurementUnitConversionsToUnits = (resCfg: MockGetVal
         assertMethod('GET', route);
         assertClient(route);
 
-		
         if (resCfg.body && resCfg.filter) resCfg.body.limit = resCfg.filter.limit;
         if (resCfg.body && resCfg.filter) resCfg.body.page = resCfg.filter.page;
-		
 
         route.fulfill(resCfg.fulfill());
       },

@@ -20,6 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -42,6 +43,8 @@ var (
 		Username:        "exampleUser",
 		HashedPassword:  "integration-tests-are-cool",
 	}
+
+	premadeAdminClient *apiclient.Client
 )
 
 func init() {
@@ -125,6 +128,39 @@ func init() {
 	}
 
 	if _, err = db.Exec(`UPDATE users SET service_role = $1 WHERE id = $2`, authorization.ServiceAdminRole.String(), premadeAdminUser.ID); err != nil {
+		panic(err)
+	}
+
+	simpleClient, err := apiclient.NewClient(
+		parsedURLToUse,
+		tracing.NewNoopTracerProvider(),
+		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingURL(urlToUse),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	code, err := generateTOTPTokenForUserWithoutTest(premadeAdminUser)
+	if err != nil {
+		panic(err)
+	}
+
+	jwtRes, err := simpleClient.AdminLoginForJWT(ctx, &types.UserLoginInput{
+		Username:  premadeAdminUser.Username,
+		Password:  premadeAdminUser.HashedPassword,
+		TOTPToken: code,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	premadeAdminClient, err = apiclient.NewClient(
+		parsedURLToUse,
+		tracing.NewNoopTracerProvider(),
+		apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"service_admin"}, jwtRes.Token),
+	)
+	if err != nil {
 		panic(err)
 	}
 

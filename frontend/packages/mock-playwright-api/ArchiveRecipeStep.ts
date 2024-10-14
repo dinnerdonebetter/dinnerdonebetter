@@ -2,28 +2,25 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { RecipeStep } from '@dinnerdonebetter/models'
+import { RecipeStep } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockArchiveRecipeStepResponseConfig extends ResponseConfig<RecipeStep> {
-		   recipeID: string;
-		 recipeStepID: string;
-		
+  recipeID: string;
+  recipeStepID: string;
 
-		  constructor( recipeID: string,  recipeStepID: string, status: number = 202, body?: RecipeStep) {
-		    super();
+  constructor(recipeID: string, recipeStepID: string, status: number = 202, body?: RecipeStep) {
+    super();
 
-		 this.recipeID = recipeID;
-		 this.recipeStepID = recipeStepID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.recipeID = recipeID;
+    this.recipeStepID = recipeStepID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockArchiveRecipeStep = (resCfg: MockArchiveRecipeStepResponseConfig) => {
@@ -35,8 +32,6 @@ export const mockArchiveRecipeStep = (resCfg: MockArchiveRecipeStepResponseConfi
 
         assertMethod('DELETE', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

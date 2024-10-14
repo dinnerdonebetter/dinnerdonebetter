@@ -277,17 +277,12 @@ func (s *TestSuite) TestTOTPTokenValidation() {
 
 		testClient := buildSimpleClient(t)
 
-		// create userClient.
-		userInput := fakes.BuildFakeUserCreationInput()
-		userCreationResponse, err := testClient.CreateUser(ctx, userInput)
-		assert.NotNil(t, userCreationResponse)
-		require.NoError(t, err)
+		userCR, err := testClient.CreateUser(ctx, fakes.BuildFakeUserRegistrationInput())
+		requireNotNilAndNoProblems(t, userCR, err)
 
-		user, err := testClient.GetUser(ctx, userCreationResponse.CreatedUserID)
-		require.NoError(t, err)
-
-		token, err := totp.GenerateCode(user.TwoFactorSecret, time.Now().UTC())
-		requireNotNilAndNoProblems(t, token, err)
+		user, err := premadeAdminClient.GetUser(ctx, userCR.CreatedUserID)
+		requireNotNilAndNoProblems(t, user, err)
+		user.TwoFactorSecret = userCR.TwoFactorSecret
 
 		_, err = testClient.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
 			TOTPToken: generateTOTPTokenForUser(t, user),
@@ -304,14 +299,11 @@ func (s *TestSuite) TestTOTPTokenValidation() {
 
 		testClient := buildSimpleClient(t)
 
-		// create userClient.
-		userInput := fakes.BuildFakeUserCreationInput()
-		userCreationResponse, err := testClient.CreateUser(ctx, userInput)
-		assert.NotNil(t, userCreationResponse)
-		require.NoError(t, err)
+		userCR, err := testClient.CreateUser(ctx, fakes.BuildFakeUserRegistrationInput())
+		requireNotNilAndNoProblems(t, userCR, err)
 
-		user, err := testClient.GetUser(ctx, userCreationResponse.CreatedUserID)
-		require.NoError(t, err)
+		user, err := premadeAdminClient.GetUser(ctx, userCR.CreatedUserID)
+		requireNotNilAndNoProblems(t, user, err)
 
 		_, err = testClient.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
 			TOTPToken: "NOTREAL",

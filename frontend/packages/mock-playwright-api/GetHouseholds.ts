@@ -2,25 +2,19 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { Household,
-	QueryFilteredResult } from '@dinnerdonebetter/models'
+import { Household, QueryFilteredResult } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockGetHouseholdsResponseConfig extends ResponseConfig<QueryFilteredResult<Household>> {
-		  
+  constructor(status: number = 200, body: Household[] = []) {
+    super();
 
-		  constructor(status: number = 200, body: Household[] = []) {
-		    super();
-
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body.data = body;
-			}
-		  }
+    this.status = status;
+    if (this.body) {
+      this.body.data = body;
+    }
+  }
 }
 
 export const mockGetHouseholdss = (resCfg: MockGetHouseholdsResponseConfig) => {
@@ -33,10 +27,8 @@ export const mockGetHouseholdss = (resCfg: MockGetHouseholdsResponseConfig) => {
         assertMethod('GET', route);
         assertClient(route);
 
-		
         if (resCfg.body && resCfg.filter) resCfg.body.limit = resCfg.filter.limit;
         if (resCfg.body && resCfg.filter) resCfg.body.page = resCfg.filter.page;
-		
 
         route.fulfill(resCfg.fulfill());
       },

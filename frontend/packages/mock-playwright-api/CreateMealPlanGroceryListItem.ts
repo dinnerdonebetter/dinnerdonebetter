@@ -2,26 +2,23 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { MealPlanGroceryListItem } from '@dinnerdonebetter/models'
+import { MealPlanGroceryListItem } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockCreateMealPlanGroceryListItemResponseConfig extends ResponseConfig<MealPlanGroceryListItem> {
-		   mealPlanID: string;
-		
+  mealPlanID: string;
 
-		  constructor( mealPlanID: string, status: number = 201, body?: MealPlanGroceryListItem) {
-		    super();
+  constructor(mealPlanID: string, status: number = 201, body?: MealPlanGroceryListItem) {
+    super();
 
-		 this.mealPlanID = mealPlanID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.mealPlanID = mealPlanID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockCreateMealPlanGroceryListItem = (resCfg: MockCreateMealPlanGroceryListItemResponseConfig) => {
@@ -33,8 +30,6 @@ export const mockCreateMealPlanGroceryListItem = (resCfg: MockCreateMealPlanGroc
 
         assertMethod('POST', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },

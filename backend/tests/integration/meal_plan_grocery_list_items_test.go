@@ -87,7 +87,7 @@ func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
 
 			assert.NoError(t, testClients.userClient.ArchiveMealPlan(ctx, createdMealPlan.ID))
 
-			assert.Len(t, actualList, 1)
+			assert.Len(t, actualList.Data, 1)
 			checkMealPlanGroceryListItemEquality(t, actualList.Data[0], actual)
 		}
 	})

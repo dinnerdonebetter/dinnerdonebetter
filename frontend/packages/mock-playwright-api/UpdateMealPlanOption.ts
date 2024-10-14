@@ -2,30 +2,33 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { MealPlanOption } from '@dinnerdonebetter/models'
+import { MealPlanOption } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-
-
 export class MockUpdateMealPlanOptionResponseConfig extends ResponseConfig<MealPlanOption> {
-		   mealPlanID: string;
-		 mealPlanEventID: string;
-		 mealPlanOptionID: string;
-		
+  mealPlanID: string;
+  mealPlanEventID: string;
+  mealPlanOptionID: string;
 
-		  constructor( mealPlanID: string,  mealPlanEventID: string,  mealPlanOptionID: string, status: number = 200, body?: MealPlanOption) {
-		    super();
+  constructor(
+    mealPlanID: string,
+    mealPlanEventID: string,
+    mealPlanOptionID: string,
+    status: number = 200,
+    body?: MealPlanOption,
+  ) {
+    super();
 
-		 this.mealPlanID = mealPlanID;
-		 this.mealPlanEventID = mealPlanEventID;
-		 this.mealPlanOptionID = mealPlanOptionID;
-		
-		    this.status = status;
-			if (this.body) {
-			  this.body = body;
-			}
-		  }
+    this.mealPlanID = mealPlanID;
+    this.mealPlanEventID = mealPlanEventID;
+    this.mealPlanOptionID = mealPlanOptionID;
+
+    this.status = status;
+    if (this.body) {
+      this.body = body;
+    }
+  }
 }
 
 export const mockUpdateMealPlanOption = (resCfg: MockUpdateMealPlanOptionResponseConfig) => {
@@ -37,8 +40,6 @@ export const mockUpdateMealPlanOption = (resCfg: MockUpdateMealPlanOptionRespons
 
         assertMethod('PUT', route);
         assertClient(route);
-
-		
 
         route.fulfill(resCfg.fulfill());
       },
