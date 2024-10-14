@@ -75,7 +75,7 @@ jobs:
 
       - name: Ensure dependency injection code can be generated
         working-directory: backend
-        run: make rewire format
+        run: make rewire format_golang
 
       - name: Check for changes
         run: git diff --exit-code
