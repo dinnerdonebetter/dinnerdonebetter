@@ -106,7 +106,7 @@ jobs:
 
       - name: Ensure code can be generated
         working-directory: backend
-        run: make codegen format
+        run: make codegen format_golang
 
       - name: format files
         working-directory: frontend
