@@ -2,11 +2,12 @@ package integration
 
 import (
 	"context"
+	"net/http"
+	"testing"
+
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"net/http"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
