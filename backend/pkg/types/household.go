@@ -74,19 +74,19 @@ type (
 	HouseholdDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                   string
-		Name                 string
-		AddressLine1         string
-		AddressLine2         string
-		City                 string
-		State                string
-		ZipCode              string
-		Country              string
-		Latitude             *float64
-		Longitude            *float64
-		ContactPhone         string
-		BelongsToUser        string
-		WebhookEncryptionKey string
+		ID                   string   `json:"-"`
+		Name                 string   `json:"-"`
+		AddressLine1         string   `json:"-"`
+		AddressLine2         string   `json:"-"`
+		City                 string   `json:"-"`
+		State                string   `json:"-"`
+		ZipCode              string   `json:"-"`
+		Country              string   `json:"-"`
+		Latitude             *float64 `json:"-"`
+		Longitude            *float64 `json:"-"`
+		ContactPhone         string   `json:"-"`
+		BelongsToUser        string   `json:"-"`
+		WebhookEncryptionKey string   `json:"-"`
 	}
 
 	// HouseholdUpdateRequestInput represents what a User could set as input for updating households.

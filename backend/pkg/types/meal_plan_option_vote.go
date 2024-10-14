@@ -79,8 +79,8 @@ type (
 	MealPlanOptionVotesDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ByUser string
-		Votes  []*MealPlanOptionVoteCreationInput
+		ByUser string                             `json:"-"`
+		Votes  []*MealPlanOptionVoteCreationInput `json:"-"`
 	}
 
 	// MealPlanOptionVoteUpdateRequestInput represents what a user could set as input for updating meal plan option votes.

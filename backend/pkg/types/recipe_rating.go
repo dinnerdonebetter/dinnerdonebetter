@@ -62,15 +62,15 @@ type (
 	RecipeRatingDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID           string
-		RecipeID     string
-		Notes        string
-		ByUser       string
-		Taste        float32
-		Difficulty   float32
-		Cleanup      float32
-		Instructions float32
-		Overall      float32
+		ID           string  `json:"-"`
+		RecipeID     string  `json:"-"`
+		Notes        string  `json:"-"`
+		ByUser       string  `json:"-"`
+		Taste        float32 `json:"-"`
+		Difficulty   float32 `json:"-"`
+		Cleanup      float32 `json:"-"`
+		Instructions float32 `json:"-"`
+		Overall      float32 `json:"-"`
 	}
 
 	// RecipeRatingUpdateRequestInput represents what a user could set as input for updating recipe ratings.

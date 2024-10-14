@@ -61,13 +61,13 @@ type (
 	MealPlanOptionDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                     string
-		MealID                 string
-		Notes                  string
-		AssignedCook           *string
-		AssignedDishwasher     *string
-		BelongsToMealPlanEvent string
-		MealScale              float32
+		ID                     string  `json:"-"`
+		MealID                 string  `json:"-"`
+		Notes                  string  `json:"-"`
+		AssignedCook           *string `json:"-"`
+		AssignedDishwasher     *string `json:"-"`
+		BelongsToMealPlanEvent string  `json:"-"`
+		MealScale              float32 `json:"-"`
 	}
 
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.

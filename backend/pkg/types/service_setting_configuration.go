@@ -54,12 +54,12 @@ type (
 	ServiceSettingConfigurationDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                 string
-		Value              string
-		Notes              string
-		ServiceSettingID   string
-		BelongsToUser      string
-		BelongsToHousehold string
+		ID                 string `json:"-"`
+		Value              string `json:"-"`
+		Notes              string `json:"-"`
+		ServiceSettingID   string `json:"-"`
+		BelongsToUser      string `json:"-"`
+		BelongsToHousehold string `json:"-"`
 	}
 
 	// ServiceSettingConfigurationUpdateRequestInput represents what a user could set as input for updating service settings configurations.

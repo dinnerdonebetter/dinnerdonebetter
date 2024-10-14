@@ -64,12 +64,12 @@ type (
 	MealPlanTaskDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		AssignedToUser      *string
-		CreationExplanation string
-		StatusExplanation   string
-		MealPlanOptionID    string
-		RecipePrepTaskID    string
-		ID                  string
+		AssignedToUser      *string `json:"-"`
+		CreationExplanation string  `json:"-"`
+		StatusExplanation   string  `json:"-"`
+		MealPlanOptionID    string  `json:"-"`
+		RecipePrepTaskID    string  `json:"-"`
+		ID                  string  `json:"-"`
 	}
 
 	// MealPlanTaskStatusChangeRequestInput represents what a user could set as input for updating meal plan tasks.

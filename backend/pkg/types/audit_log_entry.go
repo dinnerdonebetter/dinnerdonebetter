@@ -39,13 +39,13 @@ type (
 	AuditLogEntryDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		Changes            map[string]ChangeLog   `json:"changes"`
-		BelongsToHousehold *string                `json:"belongsToHousehold"`
-		ID                 string                 `json:"id"`
-		ResourceType       string                 `json:"resourceType"`
-		RelevantID         string                 `json:"relevantID"`
-		EventType          AuditLogEntryEventType `json:"eventType"`
-		BelongsToUser      string                 `json:"belongsToUser"`
+		Changes            map[string]ChangeLog   `json:"-"`
+		BelongsToHousehold *string                `json:"-"`
+		ID                 string                 `json:"-"`
+		ResourceType       string                 `json:"-"`
+		RelevantID         string                 `json:"-"`
+		EventType          AuditLogEntryEventType `json:"-"`
+		BelongsToUser      string                 `json:"-"`
 	}
 
 	// AuditLogEntryDataManager describes a structure capable of storing audit log entries.

@@ -52,11 +52,11 @@ type (
 	ValidIngredientMeasurementUnitDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                     string
-		Notes                  string
-		ValidMeasurementUnitID string
-		ValidIngredientID      string
-		AllowableQuantity      Float32RangeWithOptionalMax
+		ID                     string                      `json:"-"`
+		Notes                  string                      `json:"-"`
+		ValidMeasurementUnitID string                      `json:"-"`
+		ValidIngredientID      string                      `json:"-"`
+		AllowableQuantity      Float32RangeWithOptionalMax `json:"-"`
 	}
 
 	// ValidIngredientMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid ingredient measurement units.

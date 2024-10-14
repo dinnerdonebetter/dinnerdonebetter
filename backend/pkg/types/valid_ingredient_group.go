@@ -72,19 +72,19 @@ type (
 	ValidIngredientGroupDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID          string
-		Name        string
-		Slug        string
-		Description string
-		Members     []*ValidIngredientGroupMemberDatabaseCreationInput
+		ID          string                                             `json:"-"`
+		Name        string                                             `json:"-"`
+		Slug        string                                             `json:"-"`
+		Description string                                             `json:"-"`
+		Members     []*ValidIngredientGroupMemberDatabaseCreationInput `json:"-"`
 	}
 
 	// ValidIngredientGroupMemberDatabaseCreationInput represents what a user could set as input for creating valid ingredient groups.
 	ValidIngredientGroupMemberDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                string
-		ValidIngredientID string
+		ID                string `json:"-"`
+		ValidIngredientID string `json:"-"`
 	}
 
 	// ValidIngredientGroupUpdateRequestInput represents what a user could set as input for updating valid ingredient groups.

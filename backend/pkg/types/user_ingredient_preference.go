@@ -58,12 +58,12 @@ type (
 	UserIngredientPreferenceDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ValidIngredientGroupID string
-		ValidIngredientID      string
-		Notes                  string
-		BelongsToUser          string
-		Rating                 int8
-		Allergy                bool
+		ValidIngredientGroupID string `json:"-"`
+		ValidIngredientID      string `json:"-"`
+		Notes                  string `json:"-"`
+		BelongsToUser          string `json:"-"`
+		Rating                 int8   `json:"-"`
+		Allergy                bool   `json:"-"`
 	}
 
 	// UserIngredientPreferenceUpdateRequestInput represents what a user could set as input for updating user ingredient preferences.

@@ -76,23 +76,24 @@ type (
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
-		_                   struct{} `json:"-"`
-		InspiredByRecipeID  *string
-		CreatedByUser       string
-		ID                  string
-		Name                string
-		Slug                string
-		Source              string
-		PluralPortionName   string
-		PortionName         string
-		Description         string
-		YieldsComponentType string
-		EstimatedPortions   Float32RangeWithOptionalMax
-		PrepTasks           []*RecipePrepTaskDatabaseCreationInput
-		Steps               []*RecipeStepDatabaseCreationInput
-		AlsoCreateMeal      bool
-		SealOfApproval      bool
-		EligibleForMeals    bool
+		_ struct{} `json:"-"`
+
+		InspiredByRecipeID  *string                                `json:"-"`
+		CreatedByUser       string                                 `json:"-"`
+		ID                  string                                 `json:"-"`
+		Name                string                                 `json:"-"`
+		Slug                string                                 `json:"-"`
+		Source              string                                 `json:"-"`
+		PluralPortionName   string                                 `json:"-"`
+		PortionName         string                                 `json:"-"`
+		Description         string                                 `json:"-"`
+		YieldsComponentType string                                 `json:"-"`
+		EstimatedPortions   Float32RangeWithOptionalMax            `json:"-"`
+		PrepTasks           []*RecipePrepTaskDatabaseCreationInput `json:"-"`
+		Steps               []*RecipeStepDatabaseCreationInput     `json:"-"`
+		AlsoCreateMeal      bool                                   `json:"-"`
+		SealOfApproval      bool                                   `json:"-"`
+		EligibleForMeals    bool                                   `json:"-"`
 	}
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.

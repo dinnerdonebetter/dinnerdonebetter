@@ -94,20 +94,20 @@ type (
 	UserDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		Birthday               *time.Time
-		ID                     string
-		AvatarSrc              *string
-		HashedPassword         string
-		TwoFactorSecret        string
-		InvitationToken        string
-		DestinationHouseholdID string
-		Username               string
-		EmailAddress           string
-		HouseholdName          string
-		FirstName              string
-		LastName               string
-		AcceptedTOS            bool
-		AcceptedPrivacyPolicy  bool
+		Birthday               *time.Time `json:"-"`
+		ID                     string     `json:"-"`
+		AvatarSrc              *string    `json:"-"`
+		HashedPassword         string     `json:"-"`
+		TwoFactorSecret        string     `json:"-"`
+		InvitationToken        string     `json:"-"`
+		DestinationHouseholdID string     `json:"-"`
+		Username               string     `json:"-"`
+		EmailAddress           string     `json:"-"`
+		HouseholdName          string     `json:"-"`
+		FirstName              string     `json:"-"`
+		LastName               string     `json:"-"`
+		AcceptedTOS            bool       `json:"-"`
+		AcceptedPrivacyPolicy  bool       `json:"-"`
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.

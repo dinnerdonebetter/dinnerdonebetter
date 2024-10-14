@@ -81,22 +81,22 @@ type (
 	RecipeStepDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedTimeInSeconds  OptionalUint32Range
-		TemperatureInCelsius    OptionalFloat32Range
-		BelongsToRecipe         string
-		PreparationID           string
-		ID                      string
-		Notes                   string
-		ExplicitInstructions    string
-		ConditionExpression     string
-		Ingredients             []*RecipeStepIngredientDatabaseCreationInput
-		Instruments             []*RecipeStepInstrumentDatabaseCreationInput
-		Vessels                 []*RecipeStepVesselDatabaseCreationInput
-		Products                []*RecipeStepProductDatabaseCreationInput
-		CompletionConditions    []*RecipeStepCompletionConditionDatabaseCreationInput
-		Index                   uint32
-		Optional                bool
-		StartTimerAutomatically bool
+		EstimatedTimeInSeconds  OptionalUint32Range                                   `json:"-"`
+		TemperatureInCelsius    OptionalFloat32Range                                  `json:"-"`
+		BelongsToRecipe         string                                                `json:"-"`
+		PreparationID           string                                                `json:"-"`
+		ID                      string                                                `json:"-"`
+		Notes                   string                                                `json:"-"`
+		ExplicitInstructions    string                                                `json:"-"`
+		ConditionExpression     string                                                `json:"-"`
+		Ingredients             []*RecipeStepIngredientDatabaseCreationInput          `json:"-"`
+		Instruments             []*RecipeStepInstrumentDatabaseCreationInput          `json:"-"`
+		Vessels                 []*RecipeStepVesselDatabaseCreationInput              `json:"-"`
+		Products                []*RecipeStepProductDatabaseCreationInput             `json:"-"`
+		CompletionConditions    []*RecipeStepCompletionConditionDatabaseCreationInput `json:"-"`
+		Index                   uint32                                                `json:"-"`
+		Optional                bool                                                  `json:"-"`
+		StartTimerAutomatically bool                                                  `json:"-"`
 	}
 
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.

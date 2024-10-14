@@ -55,12 +55,12 @@ type (
 	ValidMeasurementUnitConversionDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		OnlyForIngredient *string
-		ID                string
-		From              string
-		To                string
-		Notes             string
-		Modifier          float32
+		OnlyForIngredient *string `json:"-"`
+		ID                string  `json:"-"`
+		From              string  `json:"-"`
+		To                string  `json:"-"`
+		Notes             string  `json:"-"`
+		Modifier          float32 `json:"-"`
 	}
 
 	// ValidMeasurementUnitConversionUpdateRequestInput represents what a user could set as input for updating valid measurement conversions.

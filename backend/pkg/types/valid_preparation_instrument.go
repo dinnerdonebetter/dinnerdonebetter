@@ -51,10 +51,10 @@ type (
 	ValidPreparationInstrumentDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                 string
-		Notes              string
-		ValidPreparationID string
-		ValidInstrumentID  string
+		ID                 string `json:"-"`
+		Notes              string `json:"-"`
+		ValidPreparationID string `json:"-"`
+		ValidInstrumentID  string `json:"-"`
 	}
 
 	// ValidPreparationInstrumentUpdateRequestInput represents what a user could set as input for updating valid preparation instruments.

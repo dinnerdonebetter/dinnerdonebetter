@@ -57,9 +57,9 @@ type (
 	UserNotificationDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID            string
-		Content       string
-		BelongsToUser string
+		ID            string `json:"-"`
+		Content       string `json:"-"`
+		BelongsToUser string `json:"-"`
 	}
 
 	// UserNotificationUpdateRequestInput represents what a user could set as input for updating user notifications.

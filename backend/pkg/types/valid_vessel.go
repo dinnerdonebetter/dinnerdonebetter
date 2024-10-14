@@ -97,21 +97,21 @@ type (
 	ValidVesselDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		CapacityUnitID                 *string
-		ID                             string
-		Name                           string
-		PluralName                     string
-		Description                    string
-		IconPath                       string
-		Shape                          string
-		Slug                           string
-		WidthInMillimeters             float32
-		Capacity                       float32
-		LengthInMillimeters            float32
-		HeightInMillimeters            float32
-		IncludeInGeneratedInstructions bool
-		DisplayInSummaryLists          bool
-		UsableForStorage               bool
+		CapacityUnitID                 *string `json:"-"`
+		ID                             string  `json:"-"`
+		Name                           string  `json:"-"`
+		PluralName                     string  `json:"-"`
+		Description                    string  `json:"-"`
+		IconPath                       string  `json:"-"`
+		Shape                          string  `json:"-"`
+		Slug                           string  `json:"-"`
+		WidthInMillimeters             float32 `json:"-"`
+		Capacity                       float32 `json:"-"`
+		LengthInMillimeters            float32 `json:"-"`
+		HeightInMillimeters            float32 `json:"-"`
+		IncludeInGeneratedInstructions bool    `json:"-"`
+		DisplayInSummaryLists          bool    `json:"-"`
+		UsableForStorage               bool    `json:"-"`
 	}
 
 	// ValidVesselUpdateRequestInput represents what a user could set as input for updating valid vessels.

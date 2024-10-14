@@ -62,17 +62,17 @@ type (
 	RecipeStepVesselDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		VesselID                        *string
-		RecipeStepProductID             *string
-		ProductOfRecipeStepIndex        *uint64
-		ProductOfRecipeStepProductIndex *uint64
-		Quantity                        Uint16RangeWithOptionalMax
-		ID                              string
-		Notes                           string
-		BelongsToRecipeStep             string
-		VesselPreposition               string
-		Name                            string
-		UnavailableAfterStep            bool
+		VesselID                        *string                    `json:"-"`
+		RecipeStepProductID             *string                    `json:"-"`
+		ProductOfRecipeStepIndex        *uint64                    `json:"-"`
+		ProductOfRecipeStepProductIndex *uint64                    `json:"-"`
+		Quantity                        Uint16RangeWithOptionalMax `json:"-"`
+		ID                              string                     `json:"-"`
+		Notes                           string                     `json:"-"`
+		BelongsToRecipeStep             string                     `json:"-"`
+		VesselPreposition               string                     `json:"-"`
+		Name                            string                     `json:"-"`
+		UnavailableAfterStep            bool                       `json:"-"`
 	}
 
 	// RecipeStepVesselUpdateRequestInput represents what a user could set as input for updating recipe step instruments.

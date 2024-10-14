@@ -72,23 +72,23 @@ type (
 	RecipeStepIngredientDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		RecipeStepProductRecipeID       *string
-		IngredientID                    *string
-		RecipeStepProductID             *string
-		ProductOfRecipeStepIndex        *uint64
-		ProductOfRecipeStepProductIndex *uint64
-		VesselIndex                     *uint16
-		ProductPercentageToUse          *float32
-		ID                              string
-		MeasurementUnitID               string
-		BelongsToRecipeStep             string
-		Name                            string
-		IngredientNotes                 string
-		QuantityNotes                   string
-		Quantity                        Float32RangeWithOptionalMax
-		OptionIndex                     uint16
-		Optional                        bool
-		ToTaste                         bool
+		RecipeStepProductRecipeID       *string                     `json:"-"`
+		IngredientID                    *string                     `json:"-"`
+		RecipeStepProductID             *string                     `json:"-"`
+		ProductOfRecipeStepIndex        *uint64                     `json:"-"`
+		ProductOfRecipeStepProductIndex *uint64                     `json:"-"`
+		VesselIndex                     *uint16                     `json:"-"`
+		ProductPercentageToUse          *float32                    `json:"-"`
+		ID                              string                      `json:"-"`
+		MeasurementUnitID               string                      `json:"-"`
+		BelongsToRecipeStep             string                      `json:"-"`
+		Name                            string                      `json:"-"`
+		IngredientNotes                 string                      `json:"-"`
+		QuantityNotes                   string                      `json:"-"`
+		Quantity                        Float32RangeWithOptionalMax `json:"-"`
+		OptionIndex                     uint16                      `json:"-"`
+		Optional                        bool                        `json:"-"`
+		ToTaste                         bool                        `json:"-"`
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
