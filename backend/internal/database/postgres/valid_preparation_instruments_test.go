@@ -31,8 +31,6 @@ func createValidPreparationInstrumentForTest(t *testing.T, ctx context.Context, 
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 	exampleValidPreparationInstrument.CreatedAt = created.CreatedAt
-	exampleValidPreparationInstrument.Preparation = types.ValidPreparation{ID: exampleValidPreparationInstrument.Preparation.ID}
-	exampleValidPreparationInstrument.Instrument = types.ValidInstrument{ID: exampleValidPreparationInstrument.Instrument.ID}
 	assert.Equal(t, exampleValidPreparationInstrument, created)
 
 	validPreparationInstrument, err := dbc.GetValidPreparationInstrument(ctx, created.ID)

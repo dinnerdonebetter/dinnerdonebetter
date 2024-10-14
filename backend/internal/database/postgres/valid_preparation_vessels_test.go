@@ -31,8 +31,6 @@ func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, exam
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 	exampleValidPreparationVessel.CreatedAt = created.CreatedAt
-	exampleValidPreparationVessel.Preparation = types.ValidPreparation{ID: exampleValidPreparationVessel.Preparation.ID}
-	exampleValidPreparationVessel.Vessel = types.ValidVessel{ID: exampleValidPreparationVessel.Vessel.ID}
 	assert.Equal(t, exampleValidPreparationVessel, created)
 
 	validPreparationVessel, err := dbc.GetValidPreparationVessel(ctx, created.ID)

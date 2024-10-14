@@ -31,8 +31,6 @@ func createValidIngredientStateIngredientForTest(t *testing.T, ctx context.Conte
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 	exampleValidIngredientStateIngredient.CreatedAt = created.CreatedAt
-	exampleValidIngredientStateIngredient.IngredientState = types.ValidIngredientState{ID: exampleValidIngredientStateIngredient.IngredientState.ID}
-	exampleValidIngredientStateIngredient.Ingredient = types.ValidIngredient{ID: exampleValidIngredientStateIngredient.Ingredient.ID}
 	assert.Equal(t, exampleValidIngredientStateIngredient, created)
 
 	validIngredientStateIngredient, err := dbc.GetValidIngredientStateIngredient(ctx, created.ID)
@@ -43,7 +41,7 @@ func createValidIngredientStateIngredientForTest(t *testing.T, ctx context.Conte
 	assert.NoError(t, err)
 	assert.Equal(t, validIngredientStateIngredient, exampleValidIngredientStateIngredient)
 
-	return created
+	return validIngredientStateIngredient
 }
 
 func TestQuerier_Integration_ValidIngredientStateIngredients(t *testing.T) {

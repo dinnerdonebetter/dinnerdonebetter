@@ -383,7 +383,32 @@ func (q *Querier) CreateValidMeasurementUnitConversion(ctx context.Context, inpu
 	}
 
 	if input.OnlyForIngredient != nil {
-		x.OnlyForIngredient = &types.ValidIngredient{ID: *input.OnlyForIngredient}
+		ingredient, err := q.GetValidIngredient(ctx, *input.OnlyForIngredient)
+		if err != nil {
+			// basically impossible for this ingredient happen and not error out earlier
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation for valid preparation instrument")
+		}
+		if ingredient != nil {
+			x.OnlyForIngredient = ingredient
+		}
+	}
+
+	to, err := q.GetValidMeasurementUnit(ctx, input.To)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching to valid measurement unit for valid measurement unit conversion")
+	}
+	if to != nil {
+		x.To = *to
+	}
+
+	from, err := q.GetValidMeasurementUnit(ctx, input.From)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching from valid measurement unit for valid measurement unit conversion")
+	}
+	if from != nil {
+		x.From = *from
 	}
 
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, x.ID)

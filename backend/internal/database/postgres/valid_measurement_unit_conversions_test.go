@@ -39,7 +39,7 @@ func createValidMeasurementUnitConversionForTest(t *testing.T, ctx context.Conte
 
 	assert.Equal(t, validMeasurementUnitConversion, exampleValidMeasurementUnitConversion)
 
-	return created
+	return validMeasurementUnitConversion
 }
 
 func TestQuerier_Integration_ValidMeasurementUnitConversions(t *testing.T) {

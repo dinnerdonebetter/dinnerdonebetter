@@ -35,7 +35,7 @@ func createValidPreparationForTest(t *testing.T, ctx context.Context, exampleVal
 	assert.NoError(t, err)
 	assert.Equal(t, validPreparation, exampleValidPreparation)
 
-	return created
+	return validPreparation
 }
 
 func TestQuerier_Integration_ValidPreparations(t *testing.T) {

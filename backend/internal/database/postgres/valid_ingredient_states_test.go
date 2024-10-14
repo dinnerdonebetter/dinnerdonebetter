@@ -34,7 +34,7 @@ func createValidIngredientStateForTest(t *testing.T, ctx context.Context, exampl
 	assert.NoError(t, err)
 	assert.Equal(t, validIngredientState, exampleValidIngredientState)
 
-	return created
+	return validIngredientState
 }
 
 func TestQuerier_Integration_ValidIngredientStates(t *testing.T) {

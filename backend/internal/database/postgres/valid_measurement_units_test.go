@@ -34,7 +34,7 @@ func createValidMeasurementUnitForTest(t *testing.T, ctx context.Context, exampl
 	assert.NoError(t, err)
 	assert.Equal(t, validMeasurementUnit, exampleValidMeasurementUnit)
 
-	return created
+	return validMeasurementUnit
 }
 
 func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
