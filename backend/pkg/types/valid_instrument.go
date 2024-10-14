@@ -79,15 +79,15 @@ type (
 	ValidInstrumentDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                             string
-		Name                           string
-		PluralName                     string
-		Description                    string
-		IconPath                       string
-		Slug                           string
-		DisplayInSummaryLists          bool
-		UsableForStorage               bool
-		IncludeInGeneratedInstructions bool
+		ID                             string `json:"-"`
+		Name                           string `json:"-"`
+		PluralName                     string `json:"-"`
+		Description                    string `json:"-"`
+		IconPath                       string `json:"-"`
+		Slug                           string `json:"-"`
+		DisplayInSummaryLists          bool   `json:"-"`
+		UsableForStorage               bool   `json:"-"`
+		IncludeInGeneratedInstructions bool   `json:"-"`
 	}
 
 	// ValidInstrumentUpdateRequestInput represents what a user could set as input for updating valid instruments.

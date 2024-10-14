@@ -75,22 +75,22 @@ type (
 	ValidPreparationDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		InstrumentCount             Uint16RangeWithOptionalMax
-		IngredientCount             Uint16RangeWithOptionalMax
-		VesselCount                 Uint16RangeWithOptionalMax
-		IconPath                    string
-		PastTense                   string
-		Slug                        string
-		ID                          string
-		Name                        string
-		Description                 string
-		TemperatureRequired         bool
-		TimeEstimateRequired        bool
-		ConditionExpressionRequired bool
-		ConsumesVessel              bool
-		OnlyForVessels              bool
-		RestrictToIngredients       bool
-		YieldsNothing               bool
+		InstrumentCount             Uint16RangeWithOptionalMax `json:"-"`
+		IngredientCount             Uint16RangeWithOptionalMax `json:"-"`
+		VesselCount                 Uint16RangeWithOptionalMax `json:"-"`
+		IconPath                    string                     `json:"-"`
+		PastTense                   string                     `json:"-"`
+		Slug                        string                     `json:"-"`
+		ID                          string                     `json:"-"`
+		Name                        string                     `json:"-"`
+		Description                 string                     `json:"-"`
+		TemperatureRequired         bool                       `json:"-"`
+		TimeEstimateRequired        bool                       `json:"-"`
+		ConditionExpressionRequired bool                       `json:"-"`
+		ConsumesVessel              bool                       `json:"-"`
+		OnlyForVessels              bool                       `json:"-"`
+		RestrictToIngredients       bool                       `json:"-"`
+		YieldsNothing               bool                       `json:"-"`
 	}
 
 	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.

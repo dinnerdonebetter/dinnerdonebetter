@@ -50,10 +50,10 @@ type (
 	ValidPreparationVesselDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                 string
-		Notes              string
-		ValidPreparationID string
-		ValidVesselID      string
+		ID                 string `json:"-"`
+		Notes              string `json:"-"`
+		ValidPreparationID string `json:"-"`
+		ValidVesselID      string `json:"-"`
 	}
 
 	// ValidPreparationVesselUpdateRequestInput represents what a user could set as input for updating valid preparation instruments.

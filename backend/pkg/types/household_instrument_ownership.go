@@ -53,11 +53,11 @@ type (
 	HouseholdInstrumentOwnershipDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                 string
-		Notes              string
-		ValidInstrumentID  string
-		BelongsToHousehold string
-		Quantity           uint16
+		ID                 string `json:"-"`
+		Notes              string `json:"-"`
+		ValidInstrumentID  string `json:"-"`
+		BelongsToHousehold string `json:"-"`
+		Quantity           uint16 `json:"-"`
 	}
 
 	// HouseholdInstrumentOwnershipUpdateRequestInput represents what a user could set as input for updating household instrument ownerships.

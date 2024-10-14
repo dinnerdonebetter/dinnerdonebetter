@@ -83,16 +83,16 @@ type (
 	ValidMeasurementUnitDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		Name        string
-		Description string
-		ID          string
-		IconPath    string
-		PluralName  string
-		Slug        string
-		Volumetric  bool
-		Universal   bool
-		Metric      bool
-		Imperial    bool
+		Name        string `json:"-"`
+		Description string `json:"-"`
+		ID          string `json:"-"`
+		IconPath    string `json:"-"`
+		PluralName  string `json:"-"`
+		Slug        string `json:"-"`
+		Volumetric  bool   `json:"-"`
+		Universal   bool   `json:"-"`
+		Metric      bool   `json:"-"`
+		Imperial    bool   `json:"-"`
 	}
 
 	// ValidMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid measurement units.

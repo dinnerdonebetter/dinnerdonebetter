@@ -63,13 +63,13 @@ type (
 	WebhookDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                 string
-		Name               string
-		ContentType        string
-		URL                string
-		Method             string
-		BelongsToHousehold string
-		Events             []*WebhookTriggerEventDatabaseCreationInput
+		ID                 string                                      `json:"-"`
+		Name               string                                      `json:"-"`
+		ContentType        string                                      `json:"-"`
+		URL                string                                      `json:"-"`
+		Method             string                                      `json:"-"`
+		BelongsToHousehold string                                      `json:"-"`
+		Events             []*WebhookTriggerEventDatabaseCreationInput `json:"-"`
 	}
 
 	// WebhookTriggerEventCreationRequestInput represents what a User could set as input for creating a webhook.
@@ -84,9 +84,9 @@ type (
 	WebhookTriggerEventDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID               string
-		BelongsToWebhook string
-		TriggerEvent     string
+		ID               string `json:"-"`
+		BelongsToWebhook string `json:"-"`
+		TriggerEvent     string `json:"-"`
 	}
 
 	// WebhookExecutionRequest represents a webhook listener, an endpoint to send an HTTP request to upon an event.

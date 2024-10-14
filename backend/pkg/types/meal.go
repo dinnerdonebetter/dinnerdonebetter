@@ -94,22 +94,22 @@ type (
 	MealDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedPortions    Float32RangeWithOptionalMax
-		ID                   string
-		Name                 string
-		Description          string
-		CreatedByUser        string
-		Components           []*MealComponentDatabaseCreationInput
-		EligibleForMealPlans bool
+		EstimatedPortions    Float32RangeWithOptionalMax           `json:"-"`
+		ID                   string                                `json:"-"`
+		Name                 string                                `json:"-"`
+		Description          string                                `json:"-"`
+		CreatedByUser        string                                `json:"-"`
+		Components           []*MealComponentDatabaseCreationInput `json:"-"`
+		EligibleForMealPlans bool                                  `json:"-"`
 	}
 
 	// MealComponentDatabaseCreationInput represents what a user could set as input for creating meal recipes.
 	MealComponentDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		RecipeID      string
-		ComponentType string
-		RecipeScale   float32
+		RecipeID      string  `json:"-"`
+		ComponentType string  `json:"-"`
+		RecipeScale   float32 `json:"-"`
 	}
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.

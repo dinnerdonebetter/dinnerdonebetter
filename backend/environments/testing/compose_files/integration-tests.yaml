@@ -20,6 +20,14 @@ services:
             POSTGRES_USER: 'dbuser'
         ports:
             - '5432:5432'
+    coordination_server:
+        hostname: coordination_server
+        container_name: coordination_server
+        ports:
+            - '9999:9999'
+        build:
+            context: '../../../'
+            dockerfile: 'environments/testing/dockerfiles/test-coordinator-server.Dockerfile'
     api_server:
         hostname: api_server
         container_name: integration_tests_server
@@ -48,9 +56,11 @@ services:
         depends_on:
             - postgres
             - redis
+            - coordination_server
         links:
             - postgres
             - api_server
+            - coordination_server
         build:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/integration-tests.Dockerfile'

@@ -63,19 +63,20 @@ type (
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentDatabaseCreationInput struct {
-		_                               struct{} `json:"-"`
-		InstrumentID                    *string
-		RecipeStepProductID             *string
-		ProductOfRecipeStepIndex        *uint64
-		ProductOfRecipeStepProductIndex *uint64
-		BelongsToRecipeStep             string
-		Name                            string
-		ID                              string
-		Notes                           string
-		Quantity                        Uint32RangeWithOptionalMax
-		OptionIndex                     uint16
-		Optional                        bool
-		PreferenceRank                  uint8
+		_ struct{} `json:"-"`
+
+		InstrumentID                    *string                    `json:"-"`
+		RecipeStepProductID             *string                    `json:"-"`
+		ProductOfRecipeStepIndex        *uint64                    `json:"-"`
+		ProductOfRecipeStepProductIndex *uint64                    `json:"-"`
+		BelongsToRecipeStep             string                     `json:"-"`
+		Name                            string                     `json:"-"`
+		ID                              string                     `json:"-"`
+		Notes                           string                     `json:"-"`
+		Quantity                        Uint32RangeWithOptionalMax `json:"-"`
+		OptionIndex                     uint16                     `json:"-"`
+		Optional                        bool                       `json:"-"`
+		PreferenceRank                  uint8                      `json:"-"`
 	}
 
 	// RecipeStepInstrumentUpdateRequestInput represents what a user could set as input for updating recipe step instruments.

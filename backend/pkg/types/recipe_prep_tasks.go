@@ -91,17 +91,17 @@ type (
 	RecipePrepTaskDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		StorageTemperatureInCelsius     OptionalFloat32Range
-		TimeBufferBeforeRecipeInSeconds Uint32RangeWithOptionalMax
-		ExplicitStorageInstructions     string
-		Notes                           string
-		ID                              string
-		Name                            string
-		Description                     string
-		StorageType                     string
-		BelongsToRecipe                 string
-		TaskSteps                       []*RecipePrepTaskStepDatabaseCreationInput
-		Optional                        bool
+		StorageTemperatureInCelsius     OptionalFloat32Range                       `json:"-"`
+		TimeBufferBeforeRecipeInSeconds Uint32RangeWithOptionalMax                 `json:"-"`
+		ExplicitStorageInstructions     string                                     `json:"-"`
+		Notes                           string                                     `json:"-"`
+		ID                              string                                     `json:"-"`
+		Name                            string                                     `json:"-"`
+		Description                     string                                     `json:"-"`
+		StorageType                     string                                     `json:"-"`
+		BelongsToRecipe                 string                                     `json:"-"`
+		TaskSteps                       []*RecipePrepTaskStepDatabaseCreationInput `json:"-"`
+		Optional                        bool                                       `json:"-"`
 	}
 
 	// RecipePrepTaskUpdateRequestInput represents what a user could set as input for updating recipes.

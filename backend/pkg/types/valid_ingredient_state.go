@@ -76,13 +76,13 @@ type (
 	ValidIngredientStateDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID            string
-		Name          string
-		Slug          string
-		PastTense     string
-		Description   string
-		AttributeType string
-		IconPath      string
+		ID            string `json:"-"`
+		Name          string `json:"-"`
+		Slug          string `json:"-"`
+		PastTense     string `json:"-"`
+		Description   string `json:"-"`
+		AttributeType string `json:"-"`
+		IconPath      string `json:"-"`
 	}
 
 	// ValidIngredientStateUpdateRequestInput represents what a user could set as input for updating valid ingredient states.

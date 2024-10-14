@@ -56,13 +56,13 @@ type (
 	ServiceSettingDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		DefaultValue *string
-		ID           string
-		Name         string
-		Type         string
-		Description  string
-		Enumeration  []string
-		AdminsOnly   bool
+		DefaultValue *string  `json:"-"`
+		ID           string   `json:"-"`
+		Name         string   `json:"-"`
+		Type         string   `json:"-"`
+		Description  string   `json:"-"`
+		Enumeration  []string `json:"-"`
+		AdminsOnly   bool     `json:"-"`
 	}
 
 	// ServiceSettingDataManager describes a structure capable of storing settings permanently.

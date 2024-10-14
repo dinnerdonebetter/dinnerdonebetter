@@ -73,13 +73,13 @@ type (
 	MealPlanDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		VotingDeadline     time.Time
-		BelongsToHousehold string
-		Notes              string
-		ID                 string
-		ElectionMethod     string
-		CreatedByUser      string
-		Events             []*MealPlanEventDatabaseCreationInput
+		VotingDeadline     time.Time                             `json:"-"`
+		BelongsToHousehold string                                `json:"-"`
+		Notes              string                                `json:"-"`
+		ID                 string                                `json:"-"`
+		ElectionMethod     string                                `json:"-"`
+		CreatedByUser      string                                `json:"-"`
+		Events             []*MealPlanEventDatabaseCreationInput `json:"-"`
 	}
 
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.

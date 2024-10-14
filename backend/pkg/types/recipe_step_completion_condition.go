@@ -84,20 +84,20 @@ type (
 	RecipeStepCompletionConditionDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                  string
-		IngredientStateID   string
-		BelongsToRecipeStep string
-		Notes               string
-		Ingredients         []*RecipeStepCompletionConditionIngredientDatabaseCreationInput
-		Optional            bool
+		ID                  string                                                          `json:"-"`
+		IngredientStateID   string                                                          `json:"-"`
+		BelongsToRecipeStep string                                                          `json:"-"`
+		Notes               string                                                          `json:"-"`
+		Ingredients         []*RecipeStepCompletionConditionIngredientDatabaseCreationInput `json:"-"`
+		Optional            bool                                                            `json:"-"`
 	}
 
 	RecipeStepCompletionConditionIngredientDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                                     string
-		BelongsToRecipeStepCompletionCondition string
-		RecipeStepIngredient                   string
+		ID                                     string `json:"-"`
+		BelongsToRecipeStepCompletionCondition string `json:"-"`
+		RecipeStepIngredient                   string `json:"-"`
 	}
 
 	// RecipeStepCompletionConditionUpdateRequestInput represents what a user could set as input for updating recipe step completion conditions.

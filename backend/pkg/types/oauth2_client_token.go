@@ -32,22 +32,22 @@ type (
 	OAuth2ClientTokenDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		RefreshCreatedAt    time.Time
-		AccessCreatedAt     time.Time
-		CodeCreatedAt       time.Time
-		RedirectURI         string
-		Scope               string
-		Code                string
-		CodeChallenge       string
-		CodeChallengeMethod string
-		BelongsToUser       string
-		Access              string
-		ClientID            string
-		Refresh             string
-		ID                  string
-		CodeExpiresIn       time.Duration
-		AccessExpiresIn     time.Duration
-		RefreshExpiresIn    time.Duration
+		RefreshCreatedAt    time.Time     `json:"-"`
+		AccessCreatedAt     time.Time     `json:"-"`
+		CodeCreatedAt       time.Time     `json:"-"`
+		RedirectURI         string        `json:"-"`
+		Scope               string        `json:"-"`
+		Code                string        `json:"-"`
+		CodeChallenge       string        `json:"-"`
+		CodeChallengeMethod string        `json:"-"`
+		BelongsToUser       string        `json:"-"`
+		Access              string        `json:"-"`
+		ClientID            string        `json:"-"`
+		Refresh             string        `json:"-"`
+		ID                  string        `json:"-"`
+		CodeExpiresIn       time.Duration `json:"-"`
+		AccessExpiresIn     time.Duration `json:"-"`
+		RefreshExpiresIn    time.Duration `json:"-"`
 	}
 
 	OAuth2ClientTokenDataManager interface {

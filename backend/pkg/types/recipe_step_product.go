@@ -79,21 +79,21 @@ type (
 	RecipeStepProductDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		StorageTemperatureInCelsius OptionalFloat32Range
-		StorageDurationInSeconds    OptionalUint32Range
-		Quantity                    OptionalFloat32Range
-		MeasurementUnitID           *string
-		ContainedInVesselIndex      *uint16
-		Name                        string
-		BelongsToRecipeStep         string
-		StorageInstructions         string
-		QuantityNotes               string
-		ID                          string
-		Type                        string
-		Index                       uint16
-		Compostable                 bool
-		IsLiquid                    bool
-		IsWaste                     bool
+		StorageTemperatureInCelsius OptionalFloat32Range `json:"-"`
+		StorageDurationInSeconds    OptionalUint32Range  `json:"-"`
+		Quantity                    OptionalFloat32Range `json:"-"`
+		MeasurementUnitID           *string              `json:"-"`
+		ContainedInVesselIndex      *uint16              `json:"-"`
+		Name                        string               `json:"-"`
+		BelongsToRecipeStep         string               `json:"-"`
+		StorageInstructions         string               `json:"-"`
+		QuantityNotes               string               `json:"-"`
+		ID                          string               `json:"-"`
+		Type                        string               `json:"-"`
+		Index                       uint16               `json:"-"`
+		Compostable                 bool                 `json:"-"`
+		IsLiquid                    bool                 `json:"-"`
+		IsWaste                     bool                 `json:"-"`
 	}
 
 	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.

@@ -151,39 +151,39 @@ type (
 	ValidIngredientDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		StorageTemperatureInCelsius OptionalFloat32Range
-		ID                          string
-		Warning                     string
-		IconPath                    string
-		PluralName                  string
-		StorageInstructions         string
-		Name                        string
-		Description                 string
-		Slug                        string
-		ShoppingSuggestions         string
-		ContainsFish                bool
-		ContainsShellfish           bool
-		AnimalFlesh                 bool
-		ContainsEgg                 bool
-		IsLiquid                    bool
-		ContainsSoy                 bool
-		ContainsPeanut              bool
-		AnimalDerived               bool
-		RestrictToPreparations      bool
-		ContainsDairy               bool
-		ContainsSesame              bool
-		ContainsTreeNut             bool
-		ContainsWheat               bool
-		ContainsAlcohol             bool
-		ContainsGluten              bool
-		IsStarch                    bool
-		IsProtein                   bool
-		IsGrain                     bool
-		IsFruit                     bool
-		IsSalt                      bool
-		IsFat                       bool
-		IsAcid                      bool
-		IsHeat                      bool
+		StorageTemperatureInCelsius OptionalFloat32Range `json:"-"`
+		ID                          string               `json:"-"`
+		Warning                     string               `json:"-"`
+		IconPath                    string               `json:"-"`
+		PluralName                  string               `json:"-"`
+		StorageInstructions         string               `json:"-"`
+		Name                        string               `json:"-"`
+		Description                 string               `json:"-"`
+		Slug                        string               `json:"-"`
+		ShoppingSuggestions         string               `json:"-"`
+		ContainsFish                bool                 `json:"-"`
+		ContainsShellfish           bool                 `json:"-"`
+		AnimalFlesh                 bool                 `json:"-"`
+		ContainsEgg                 bool                 `json:"-"`
+		IsLiquid                    bool                 `json:"-"`
+		ContainsSoy                 bool                 `json:"-"`
+		ContainsPeanut              bool                 `json:"-"`
+		AnimalDerived               bool                 `json:"-"`
+		RestrictToPreparations      bool                 `json:"-"`
+		ContainsDairy               bool                 `json:"-"`
+		ContainsSesame              bool                 `json:"-"`
+		ContainsTreeNut             bool                 `json:"-"`
+		ContainsWheat               bool                 `json:"-"`
+		ContainsAlcohol             bool                 `json:"-"`
+		ContainsGluten              bool                 `json:"-"`
+		IsStarch                    bool                 `json:"-"`
+		IsProtein                   bool                 `json:"-"`
+		IsGrain                     bool                 `json:"-"`
+		IsFruit                     bool                 `json:"-"`
+		IsSalt                      bool                 `json:"-"`
+		IsFat                       bool                 `json:"-"`
+		IsAcid                      bool                 `json:"-"`
+		IsHeat                      bool                 `json:"-"`
 	}
 
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.

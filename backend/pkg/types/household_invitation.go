@@ -46,15 +46,15 @@ type (
 	HouseholdInvitationDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                     string
-		FromUser               string
-		ToUser                 *string
-		Note                   string
-		ToEmail                string
-		Token                  string
-		ToName                 string
-		ExpiresAt              time.Time
-		DestinationHouseholdID string
+		ID                     string    `json:"-"`
+		FromUser               string    `json:"-"`
+		ToUser                 *string   `json:"-"`
+		Note                   string    `json:"-"`
+		ToEmail                string    `json:"-"`
+		Token                  string    `json:"-"`
+		ToName                 string    `json:"-"`
+		ExpiresAt              time.Time `json:"-"`
+		DestinationHouseholdID string    `json:"-"`
 	}
 
 	// HouseholdInvitation represents a household invitation.

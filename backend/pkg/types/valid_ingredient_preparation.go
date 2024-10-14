@@ -50,10 +50,10 @@ type (
 	ValidIngredientPreparationDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                 string
-		Notes              string
-		ValidPreparationID string
-		ValidIngredientID  string
+		ID                 string `json:"-"`
+		Notes              string `json:"-"`
+		ValidPreparationID string `json:"-"`
+		ValidIngredientID  string `json:"-"`
 	}
 
 	// ValidIngredientPreparationUpdateRequestInput represents what a user could set as input for updating valid ingredient preparations.

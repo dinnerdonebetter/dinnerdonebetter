@@ -75,17 +75,17 @@ type (
 	MealPlanGroceryListItemDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		PurchasePrice              *float32
-		PurchasedUPC               *string
-		PurchasedMeasurementUnitID *string
-		QuantityPurchased          *float32
-		Status                     string
-		ValidMeasurementUnitID     string
-		ValidIngredientID          string
-		BelongsToMealPlan          string
-		ID                         string
-		StatusExplanation          string
-		QuantityNeeded             Float32RangeWithOptionalMax
+		PurchasePrice              *float32                    `json:"-"`
+		PurchasedUPC               *string                     `json:"-"`
+		PurchasedMeasurementUnitID *string                     `json:"-"`
+		QuantityPurchased          *float32                    `json:"-"`
+		Status                     string                      `json:"-"`
+		ValidMeasurementUnitID     string                      `json:"-"`
+		ValidIngredientID          string                      `json:"-"`
+		BelongsToMealPlan          string                      `json:"-"`
+		ID                         string                      `json:"-"`
+		StatusExplanation          string                      `json:"-"`
+		QuantityNeeded             Float32RangeWithOptionalMax `json:"-"`
 	}
 
 	// MealPlanGroceryListItemUpdateRequestInput represents what a user could set as input for updating meal plan grocery list items.

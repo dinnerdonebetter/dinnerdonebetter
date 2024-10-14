@@ -53,13 +53,13 @@ type (
 	RecipeMediaDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                  string
-		BelongsToRecipe     *string
-		BelongsToRecipeStep *string
-		MimeType            string
-		InternalPath        string
-		ExternalPath        string
-		Index               uint16
+		ID                  string  `json:"-"`
+		BelongsToRecipe     *string `json:"-"`
+		BelongsToRecipeStep *string `json:"-"`
+		MimeType            string  `json:"-"`
+		InternalPath        string  `json:"-"`
+		ExternalPath        string  `json:"-"`
+		Index               uint16  `json:"-"`
 	}
 
 	// RecipeMediaUpdateRequestInput represents what a user could set as input for updating valid preparations.

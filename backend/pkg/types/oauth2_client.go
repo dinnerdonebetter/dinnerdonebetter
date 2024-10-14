@@ -41,11 +41,11 @@ type (
 	OAuth2ClientDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID           string
-		Name         string
-		Description  string
-		ClientID     string
-		ClientSecret string
+		ID           string `json:"-"`
+		Name         string `json:"-"`
+		Description  string `json:"-"`
+		ClientID     string `json:"-"`
+		ClientSecret string `json:"-"`
 	}
 
 	// OAuth2ClientCreationResponse is a struct for informing users of what their OAuth2 client's secret key is.
