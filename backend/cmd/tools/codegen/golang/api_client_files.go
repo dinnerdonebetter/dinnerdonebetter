@@ -15,6 +15,13 @@ import (
 	"github.com/swaggest/openapi-go/openapi31"
 )
 
+const (
+	typeString = "string"
+	typeBool   = "bool"
+	typeInt    = "int"
+	typeUint64 = "uint64"
+)
+
 var skipOps = map[string]bool{
 	"CheckForLiveness":  true,
 	"CheckForReadiness": true,
@@ -326,9 +333,9 @@ type functionResponseType struct {
 	IsArray          bool
 }
 
-func (f *APIClientFunction) Render() (string, []string, error) {
+func (f *APIClientFunction) Render() (file string, imports []string, err error) {
 	var tmpl string
-	imports := []string{}
+	imports = []string{}
 
 	switch f.Method {
 	case http.MethodGet:
@@ -396,7 +403,6 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 				imports = append(imports,
 					"github.com/dinnerdonebetter/backend/internal/observability/keys")
 			}
-
 		} else {
 			// GET routes that don't return lists
 			tmpl = `func (c *Client) {{ .Name }}(
@@ -444,9 +450,7 @@ func (f *APIClientFunction) Render() (string, []string, error) {
 					"github.com/dinnerdonebetter/backend/internal/observability/tracing",
 					"github.com/dinnerdonebetter/backend/internal/observability/keys")
 			}
-
 		}
-
 	case http.MethodPost:
 		tmpl = `func (c *Client) {{ .Name }}(
 	ctx context.Context,
@@ -644,7 +648,6 @@ input *types.{{ .InputType.Type }},
 				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
 				"github.com/dinnerdonebetter/backend/internal/observability/keys")
 		}
-
 	}
 
 	if tmpl == "" {
@@ -661,7 +664,7 @@ input *types.{{ .InputType.Type }},
 		"uppercaseFirstLetter": uppercaseFirstLetter,
 		"notNative": func(s string) bool {
 			switch s {
-			case "string", "bool", "int", "uint64":
+			case typeString, typeBool, typeInt, typeUint64:
 				return false
 			default:
 				return true
@@ -678,7 +681,7 @@ input *types.{{ .InputType.Type }},
 		},
 		"nativeDefault": func(s string) string {
 			switch s {
-			case "string":
+			case typeString:
 				return `""`
 			default:
 				panic(fmt.Sprintf("aaaaaaaaaaaaaaaa bad type: %s", s))
@@ -696,16 +699,16 @@ input *types.{{ .InputType.Type }},
 	}).Parse(tmpl))
 
 	var b bytes.Buffer
-	if err := t.Execute(&b, f); err != nil {
+	if err = t.Execute(&b, f); err != nil {
 		return "", nil, err
 	}
 
 	return b.String(), imports, nil
 }
 
-func (f *APIClientFunction) RenderTest() (string, []string, error) {
+func (f *APIClientFunction) RenderTest() (file string, imports []string, err error) {
 	var tmpl string
-	imports := []string{}
+	imports = []string{}
 
 	isSearchOp := strings.Contains(f.Name, "Search") || f.Name == "GetValidIngredientsByPreparation"
 
@@ -832,7 +835,6 @@ func TestClient_{{ .Name }}(T *testing.T) {
 			if isSearchOp {
 				imports = append(imports, "fmt")
 			}
-
 		} else {
 			// GET routes that don't return lists
 			tmpl = `
@@ -1075,7 +1077,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		},
 		"notNative": func(s string) bool {
 			switch s {
-			case "string", "bool", "int", "uint64":
+			case typeString, typeBool, typeInt, typeUint64:
 				return false
 			default:
 				return true
@@ -1092,7 +1094,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		},
 		"nativeDefault": func(s string) string {
 			switch s {
-			case "string":
+			case typeString:
 				return `""`
 			default:
 				panic(fmt.Sprintf("aaaaaaaaaaaaaaaa bad type: %s", s))
@@ -1100,7 +1102,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		},
 		"negativeAssertFunc": func(s string) string {
 			switch s {
-			case "string":
+			case typeString:
 				return `Empty`
 			default:
 				panic(fmt.Sprintf("aaaaaaaaaaaaaaaa bad type: %s", s))
@@ -1121,7 +1123,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 	}).Parse(tmpl))
 
 	var b bytes.Buffer
-	if err := t.Execute(&b, f); err != nil {
+	if err = t.Execute(&b, f); err != nil {
 		return "", nil, err
 	}
 

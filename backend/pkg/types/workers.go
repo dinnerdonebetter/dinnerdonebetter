@@ -45,7 +45,6 @@ var _ validation.ValidatableWithContext = (*FinalizeMealPlansRequest)(nil)
 // ValidateWithContext validates a FinalizeMealPlansRequest.
 func (x *FinalizeMealPlansRequest) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x) // just here for conformity's sake.
-
 }
 
 var _ validation.ValidatableWithContext = (*InitializeMealPlanGroceryListRequest)(nil)
@@ -53,7 +52,6 @@ var _ validation.ValidatableWithContext = (*InitializeMealPlanGroceryListRequest
 // ValidateWithContext validates a InitializeMealPlanGroceryListRequest.
 func (x *InitializeMealPlanGroceryListRequest) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x) // just here for conformity's sake.
-
 }
 
 var _ validation.ValidatableWithContext = (*CreateMealPlanTasksRequest)(nil)
@@ -61,5 +59,4 @@ var _ validation.ValidatableWithContext = (*CreateMealPlanTasksRequest)(nil)
 // ValidateWithContext validates a CreateMealPlanTasksRequest.
 func (x *CreateMealPlanTasksRequest) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x) // just here for conformity's sake.
-
 }

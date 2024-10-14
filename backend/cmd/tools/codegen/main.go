@@ -13,7 +13,7 @@ import (
 
 const (
 	specFilepath                  = "../openapi_spec.yaml"
-	golangAPIClientOutputPath     = "pkg/apiclient/generated/v2"
+	golangAPIClientOutputPath     = "pkg/apiclient"
 	typescriptAPIClientOutputPath = "../frontend/packages/api-client"
 	typescriptModelsOutputPath    = "../frontend/packages/models"
 	typescriptMockAPIOutputPath   = "../frontend/packages/mock-playwright-api"

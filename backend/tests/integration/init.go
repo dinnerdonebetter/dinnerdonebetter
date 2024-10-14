@@ -20,7 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient/generated/v2"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 

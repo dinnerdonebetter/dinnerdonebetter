@@ -372,6 +372,15 @@ issues:
       linters:
         - paralleltest
 
+    - path: cmd/tools/codegen/golang/statics
+      linters:
+        - unused
+        - bodyclose
+
+    - path: cmd/tools/codegen/golang
+      linters:
+        - gocritic
+
     ## BEGIN SPECIAL SNOWFLAKES
 
     - path: cmd/gen_configs/main.go

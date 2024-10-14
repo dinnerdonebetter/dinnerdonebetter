@@ -32,7 +32,7 @@ func BuildFakeString() string {
 }
 
 func buildFakeTOTPToken() string {
-	return fmt.Sprintf("%d%d", fake.Number(0, 9), fake.Zip())
+	return fmt.Sprintf("%d%s", fake.Number(0, 9), fake.Zip())
 }
 
 // BuildFakeTime builds a fake time.
