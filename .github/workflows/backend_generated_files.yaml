@@ -75,7 +75,7 @@ jobs:
 
       - name: Ensure dependency injection code can be generated
         working-directory: backend
-        run: make rewire
+        run: make rewire format
 
       - name: Check for changes
         run: git diff --exit-code
