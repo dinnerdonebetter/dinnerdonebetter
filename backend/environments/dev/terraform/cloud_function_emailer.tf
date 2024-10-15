@@ -48,7 +48,7 @@ resource "google_service_account" "outbound_emailer_user_service_account" {
 
 // TODO: see how this goes and if it works, apply everywhere
 resource "google_service_account_iam_member" "outbound_emailer_worker_sa" {
-  service_account_id = google_service_account.outbound_emailer_user_service_account.account_id
+  service_account_id = google_service_account.outbound_emailer_user_service_account.id
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
 }
