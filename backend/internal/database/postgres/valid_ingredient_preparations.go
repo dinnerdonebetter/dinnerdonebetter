@@ -524,7 +524,23 @@ func (q *Querier) CreateValidIngredientPreparation(ctx context.Context, input *t
 		CreatedAt:   q.currentTime(),
 	}
 
-	logger.Info("valid ingredient preparation created")
+	preparation, err := q.GetValidPreparation(ctx, input.ValidPreparationID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation for valid ingredient preparation")
+	}
+	if preparation != nil {
+		x.Preparation = *preparation
+	}
+
+	ingredient, err := q.GetValidIngredient(ctx, input.ValidIngredientID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient for valid ingredient preparation")
+	}
+	if ingredient != nil {
+		x.Ingredient = *ingredient
+	}
 
 	return x, nil
 }

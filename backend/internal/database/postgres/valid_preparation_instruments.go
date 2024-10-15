@@ -415,6 +415,24 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 		CreatedAt:   q.currentTime(),
 	}
 
+	preparation, err := q.GetValidPreparation(ctx, input.ValidPreparationID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation for valid preparation instrument")
+	}
+	if preparation != nil {
+		x.Preparation = *preparation
+	}
+
+	instrument, err := q.GetValidInstrument(ctx, input.ValidInstrumentID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid instrument for valid preparation instrument")
+	}
+	if instrument != nil {
+		x.Instrument = *instrument
+	}
+
 	logger.Info("valid preparation instrument created")
 
 	return x, nil

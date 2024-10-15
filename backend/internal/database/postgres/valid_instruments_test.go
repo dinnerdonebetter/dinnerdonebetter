@@ -34,7 +34,7 @@ func createValidInstrumentForTest(t *testing.T, ctx context.Context, exampleVali
 	assert.NoError(t, err)
 	assert.Equal(t, validInstrument, exampleValidInstrument)
 
-	return created
+	return validInstrument
 }
 
 func TestQuerier_Integration_ValidInstruments(t *testing.T) {

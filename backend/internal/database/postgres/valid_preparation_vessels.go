@@ -520,6 +520,24 @@ func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types
 		CreatedAt:   q.currentTime(),
 	}
 
+	preparation, err := q.GetValidPreparation(ctx, input.ValidPreparationID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation for valid preparation vessel")
+	}
+	if preparation != nil {
+		x.Preparation = *preparation
+	}
+
+	vessel, err := q.GetValidVessel(ctx, input.ValidVesselID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid vessel for valid preparation vessel")
+	}
+	if vessel != nil {
+		x.Vessel = *vessel
+	}
+
 	logger.Info("valid preparation vessel created")
 
 	return x, nil

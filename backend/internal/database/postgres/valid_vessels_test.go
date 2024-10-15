@@ -41,7 +41,7 @@ func createValidVesselForTest(t *testing.T, ctx context.Context, exampleValidVes
 	assert.NoError(t, err)
 	assert.Equal(t, validVessel, exampleValidVessel)
 
-	return created
+	return validVessel
 }
 
 func TestQuerier_Integration_ValidVessels(t *testing.T) {

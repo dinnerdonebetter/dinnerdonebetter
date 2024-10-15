@@ -458,6 +458,24 @@ func (q *Querier) CreateValidIngredientStateIngredient(ctx context.Context, inpu
 		CreatedAt:       q.currentTime(),
 	}
 
+	ingredientState, err := q.GetValidIngredientState(ctx, input.ValidIngredientStateID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient state for valid ingredient state ingredient")
+	}
+	if ingredientState != nil {
+		x.IngredientState = *ingredientState
+	}
+
+	vessel, err := q.GetValidIngredient(ctx, input.ValidIngredientID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient for valid ingredient state ingredient")
+	}
+	if vessel != nil {
+		x.Ingredient = *vessel
+	}
+
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, x.ID)
 	logger.Info("valid ingredient state ingredient created")
 

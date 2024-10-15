@@ -31,8 +31,6 @@ func createValidIngredientMeasurementUnitForTest(t *testing.T, ctx context.Conte
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 	exampleValidIngredientMeasurementUnit.CreatedAt = created.CreatedAt
-	exampleValidIngredientMeasurementUnit.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleValidIngredientMeasurementUnit.MeasurementUnit.ID}
-	exampleValidIngredientMeasurementUnit.Ingredient = types.ValidIngredient{ID: exampleValidIngredientMeasurementUnit.Ingredient.ID}
 	assert.Equal(t, exampleValidIngredientMeasurementUnit, created)
 
 	validIngredientMeasurementUnit, err := dbc.GetValidIngredientMeasurementUnit(ctx, created.ID)

@@ -492,6 +492,24 @@ func (q *Querier) CreateValidIngredientMeasurementUnit(ctx context.Context, inpu
 		CreatedAt: q.currentTime(),
 	}
 
+	ingredient, err := q.GetValidIngredient(ctx, input.ValidIngredientID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient for valid ingredient measurement unit")
+	}
+	if ingredient != nil {
+		x.Ingredient = *ingredient
+	}
+
+	measurementUnit, err := q.GetValidMeasurementUnit(ctx, input.ValidMeasurementUnitID)
+	if err != nil {
+		// basically impossible for this to happen and not error out earlier
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid measurement unit for valid ingredient measurement unit")
+	}
+	if measurementUnit != nil {
+		x.MeasurementUnit = *measurementUnit
+	}
+
 	logger.Info("valid ingredient measurement unit created")
 
 	return x, nil

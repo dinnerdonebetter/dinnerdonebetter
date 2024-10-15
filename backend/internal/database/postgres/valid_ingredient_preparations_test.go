@@ -31,11 +31,10 @@ func createValidIngredientPreparationForTest(t *testing.T, ctx context.Context, 
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 	exampleValidIngredientPreparation.CreatedAt = created.CreatedAt
-	exampleValidIngredientPreparation.Preparation = types.ValidPreparation{ID: exampleValidIngredientPreparation.Preparation.ID}
-	exampleValidIngredientPreparation.Ingredient = types.ValidIngredient{ID: exampleValidIngredientPreparation.Ingredient.ID}
 	assert.Equal(t, exampleValidIngredientPreparation, created)
 
 	validIngredientPreparation, err := dbc.GetValidIngredientPreparation(ctx, created.ID)
+	require.NotNil(t, validIngredientPreparation)
 	exampleValidIngredientPreparation.CreatedAt = validIngredientPreparation.CreatedAt
 	exampleValidIngredientPreparation.Preparation = validIngredientPreparation.Preparation
 	exampleValidIngredientPreparation.Ingredient = validIngredientPreparation.Ingredient
