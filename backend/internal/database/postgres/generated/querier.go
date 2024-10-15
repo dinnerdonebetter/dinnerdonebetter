@@ -147,6 +147,7 @@ type Querier interface {
 	CreateValidVessel(ctx context.Context, db DBTX, arg *CreateValidVesselParams) error
 	CreateWebhook(ctx context.Context, db DBTX, arg *CreateWebhookParams) error
 	CreateWebhookTriggerEvent(ctx context.Context, db DBTX, arg *CreateWebhookTriggerEventParams) error
+	DeleteExpiredOAuth2ClientTokens(ctx context.Context, db DBTX) (int64, error)
 	FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMealPlanParams) error
 	FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)

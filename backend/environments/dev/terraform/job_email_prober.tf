@@ -43,7 +43,7 @@ resource "google_cloud_run_v2_job" "email_prober" {
         resources {
           limits = {
             cpu    = "1"
-            memory = "512Mi"
+            memory = "256Mi"
           }
         }
 
@@ -87,7 +87,6 @@ resource "google_cloud_scheduler_job" "run_email_prober" {
   retry_config {
     retry_count = 1
   }
-
 
   http_target {
     http_method = "POST"

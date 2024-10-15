@@ -388,3 +388,25 @@ func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*Ins
 
 	return cfg, nil
 }
+
+// GetDBCleanerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetDBCleanerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{
+		Provider: emailcfg.ProviderSendgrid,
+		Sendgrid: &sendgrid.Config{
+			APIToken: os.Getenv(gcpSendgridTokenEnvVarKey),
+		},
+	}
+
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}

@@ -57,7 +57,7 @@ resource "google_cloud_run_v2_job" "meal_plan_task_creator" {
         resources {
           limits = {
             cpu    = "1"
-            memory = "512Mi"
+            memory = "256Mi"
           }
         }
 

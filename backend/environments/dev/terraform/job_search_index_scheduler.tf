@@ -57,7 +57,7 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
         resources {
           limits = {
             cpu    = "1"
-            memory = "512Mi"
+            memory = "256Mi"
           }
         }
 
@@ -141,7 +141,6 @@ resource "google_cloud_scheduler_job" "run_data_index_scheduler" {
   retry_config {
     retry_count = 1
   }
-
 
   http_target {
     http_method = "POST"

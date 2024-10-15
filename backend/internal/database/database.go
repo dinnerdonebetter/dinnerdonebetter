@@ -105,5 +105,6 @@ type (
 		types.ValidPreparationVesselDataManager
 		types.UserNotificationDataManager
 		types.AuditLogEntryDataManager
+		types.MaintenanceDataManager
 	}
 )
