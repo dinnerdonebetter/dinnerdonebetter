@@ -27,7 +27,7 @@ resource "google_secret_manager_secret" "ddb_oauth2_client_id" {
 }
 
 resource "google_secret_manager_secret_version" "ddb_oauth2_client_id" {
-  secret = google_secret_manager_secret.segment_api_token.id
+  secret = google_secret_manager_secret.ddb_oauth2_client_id.id
 
   secret_data = var.DINNER_DONE_BETTER_OAUTH2_CLIENT_ID
 }
@@ -44,7 +44,7 @@ resource "google_secret_manager_secret" "ddb_oauth2_client_secret" {
 }
 
 resource "google_secret_manager_secret_version" "ddb_oauth2_client_secret" {
-  secret = google_secret_manager_secret.segment_api_token.id
+  secret = google_secret_manager_secret.ddb_oauth2_client_secret.id
 
   secret_data = var.DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET
 }
