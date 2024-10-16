@@ -52,7 +52,6 @@ func doTheThing() error {
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	// manual db timeout until I find out what's wrong
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
 	if err != nil {

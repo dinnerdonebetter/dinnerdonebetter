@@ -78,6 +78,7 @@ func main() {
 		"user_ingredient_preferences.sql":                  buildUserIngredientPreferencesQueries(databaseToUse),
 		"meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(databaseToUse),
 		"audit_logs.sql":                                   buildAuditLogEntryQueries(databaseToUse),
+		"maintenance.sql":                                  buildMaintenanceQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

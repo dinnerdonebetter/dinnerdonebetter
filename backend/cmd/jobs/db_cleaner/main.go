@@ -11,12 +11,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/workers"
 
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
@@ -32,7 +30,7 @@ func doTheThing() error {
 
 	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 
-	cfg, err := config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.GetDBCleanerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
@@ -43,7 +41,7 @@ func doTheThing() error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("meal_plan_finalizer_job")).StartSpan(ctx)
+	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("db_cleaner_job")).StartSpan(ctx)
 	defer span.End()
 
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
@@ -56,34 +54,8 @@ func doTheThing() error {
 	cancel()
 	defer dataManager.Close()
 
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
-	}
-
-	defer publisherProvider.Close()
-
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DATA_CHANGES_TOPIC_NAME"))
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
-	}
-
-	defer dataChangesPublisher.Stop()
-
-	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(
-		logger,
-		dataManager,
-		dataChangesPublisher,
-		tracerProvider,
-	)
-
-	changedCount, err := mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx, nil)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "finalizing meal plans")
-	}
-
-	if changedCount > 0 {
-		logger.WithValue("count", changedCount).Info("finalized meal plans")
+	if err = dataManager.DeleteExpiredOAuth2ClientTokens(ctx); err != nil {
+		logger.Error(err, "deleting expired oauth2 client tokens")
 	}
 
 	return nil

@@ -46,6 +46,12 @@ resource "google_service_account" "outbound_emailer_user_service_account" {
   display_name = "Outbound Emailer Worker"
 }
 
+resource "google_service_account_iam_member" "outbound_emailer_worker_sa" {
+  service_account_id = google_service_account.outbound_emailer_user_service_account.id
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
+}
+
 resource "google_project_iam_member" "outbound_emailer_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.outbound_emailer_role.id

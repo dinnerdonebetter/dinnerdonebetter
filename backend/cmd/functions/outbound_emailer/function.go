@@ -81,7 +81,6 @@ func SendEmail(ctx context.Context, e event.Event) error {
 
 	defer analyticsEventReporter.Close()
 
-	// manual db timeout until I find out what's wrong
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
 	if err != nil {

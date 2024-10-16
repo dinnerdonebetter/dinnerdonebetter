@@ -13,6 +13,9 @@ const (
 	codeColumn                  = "code"
 	accessColumn                = "access"
 	refreshColumn               = "refresh"
+	codeExpiresAtColumn         = "code_expires_at"
+	accessExpiresAtColumn       = "access_expires_at"
+	refreshExpiresAtColumn      = "refresh_expires_at"
 )
 
 /* #nosec G101 */
@@ -26,13 +29,13 @@ var oauth2ClientTokensColumns = []string{
 	"code_challenge",
 	"code_challenge_method",
 	"code_created_at",
-	"code_expires_at",
+	codeExpiresAtColumn,
 	accessColumn,
 	"access_created_at",
-	"access_expires_at",
+	accessExpiresAtColumn,
 	refreshColumn,
 	"refresh_created_at",
-	"refresh_expires_at",
+	refreshExpiresAtColumn,
 }
 
 func buildOAuth2ClientTokensQueries(database string) []*Query {

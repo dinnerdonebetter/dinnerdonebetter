@@ -29,6 +29,12 @@ resource "google_service_account" "meal_plan_grocery_list_initializer_user_servi
   display_name = "Meal Plan Grocery List Initializer"
 }
 
+resource "google_service_account_iam_member" "meal_plan_grocery_list_initializer_sa" {
+  service_account_id = google_service_account.meal_plan_grocery_list_initializer_user_service_account.id
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
+}
+
 resource "google_project_iam_member" "meal_plan_grocery_list_initializer_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.meal_plan_grocery_list_initializer_role.id
@@ -61,7 +67,7 @@ resource "google_cloud_run_v2_job" "meal_plan_grocery_list_initializer" {
         resources {
           limits = {
             cpu    = "1"
-            memory = "512Mi"
+            memory = "512Mi" # cannot be lower than this
           }
         }
 

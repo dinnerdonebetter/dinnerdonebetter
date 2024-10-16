@@ -25,6 +25,12 @@ resource "google_service_account" "search_data_index_scheduler_user_service_acco
   display_name = "Search Data Index Scheduler"
 }
 
+resource "google_service_account_iam_member" "search_data_index_scheduler_user_sa" {
+  service_account_id = google_service_account.search_data_index_scheduler_user_service_account.id
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
+}
+
 resource "google_project_iam_member" "search_data_index_scheduler_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.search_data_index_scheduler_role.id
@@ -57,7 +63,7 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
         resources {
           limits = {
             cpu    = "1"
-            memory = "512Mi"
+            memory = "512Mi" # cannot be lower than this
           }
         }
 
@@ -141,7 +147,6 @@ resource "google_cloud_scheduler_job" "run_data_index_scheduler" {
   retry_config {
     retry_count = 1
   }
-
 
   http_target {
     http_method = "POST"

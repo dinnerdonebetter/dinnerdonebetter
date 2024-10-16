@@ -3,7 +3,7 @@ _PR description goes here_
 
 <!-- delete this section if there aren't any addressed issues --> 
 ## Issues addressed
-- [ ] closes #
+- [x] closes #
 
 <!-- delete this section if there aren't any additional tasks --> 
 ## Additional tasks
