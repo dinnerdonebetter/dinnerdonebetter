@@ -62,7 +62,7 @@ resource "google_cloud_run_v2_job" "meal_plan_grocery_list_initializer" {
       }
 
       containers {
-        image = google_artifact_registry_repository.meal-plan-grocery-list-initializer-container.id
+        image = format("%s-docker.pkg.dev/%s/%s/meal-plan-grocery-list-initializer", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
 
         resources {
           limits = {
