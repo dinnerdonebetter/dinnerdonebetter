@@ -8,117 +8,117 @@ on: [pull_request]
 
 name: backend - deploy
 jobs:
-#  infrastructure:
-#    timeout-minutes: 35
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        go-version: [ '1.22.x' ]
-#    steps:
-#      - name: Install Go
-#        uses: actions/setup-go@v4
-#        with:
-#          go-version: ${{ matrix.go-version }}
-#
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: authenticate with GCP
-#        uses: google-github-actions/auth@v1
-#        with:
-#          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-#
-#      # Setup gcloud CLI
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v1
-#
-#      - name: Authorize Docker push to pkg.dev
-#        run: gcloud auth configure-docker us-central1-docker.pkg.dev
-#
-#      - name: Setup Terraform
-#        uses: hashicorp/setup-terraform@v2
-#        with:
-#          terraform_version: 1.9.5
-#          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
-#
-#      - name: Terraform Init
-#        working-directory: backend/environments/dev/terraform
-#        id: init
-#        run: terraform init
-#
-#      - name: Build data changes cloud function directory
-#        working-directory: backend/
-#        run: ./scripts/build_cloud_function.sh data_changes
-#
-#      - name: Build outbound outbound_emailer cloud function directory
-#        working-directory: backend/
-#        run: ./scripts/build_cloud_function.sh outbound_emailer
-#
-#      - name: Build search indexer cloud function directory
-#        working-directory: backend/
-#        run: ./scripts/build_cloud_function.sh search_indexer
-#
-#      - name: Build webhook executor cloud function directory
-#        working-directory: backend/
-#        run: ./scripts/build_cloud_function.sh webhook_executor
-#
-#      - name: copy API server config file
-#        working-directory: backend/environments/dev
-#        run: |
-#          cp config_files/service-config.json terraform/service-config.json
-#
-#      - name: Terraform Validate
-#        working-directory: backend/environments/dev/terraform
-#        id: validate
-#        run: terraform validate -no-color
-#
-#      - name: Terraform Apply
-#        run: terraform apply -auto-approve
-#        working-directory: backend/environments/dev/terraform
+  infrastructure:
+    timeout-minutes: 35
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [ '1.22.x' ]
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
 
-#  deploy-api-server:
-#    needs: [infrastructure]
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        # these are used simply to ensure consistency, there should never be more than one entry in these arrays.
-#        gcp-region: [ 'us-central1' ]
-#        gcp-project: [ 'dinner-done-better-dev' ]
-#        container-name: [ 'api_server' ]
-#        container-filename: [ 'api_server' ]
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: authenticate with GCP
-#        uses: google-github-actions/auth@v1
-#        with:
-#          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-#
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v1
-#
-#      - name: Authorize Docker push to pkg.dev
-#        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
-#
-#      - name: Build and push API server container
-#        working-directory: backend/
-#        run: |
-#          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }} --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-#          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
-#          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }}
-#          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest
-#
-#      # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
-#      - id: deploy-api-server
-#        uses: google-github-actions/deploy-cloudrun@v1
-#        with:
-#          service: 'api-server'
-#          project_id: '${{ matrix.gcp-project }}'
-#          image: '${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/api_server'
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.5
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: backend/environments/dev/terraform
+        id: init
+        run: terraform init
+
+      - name: Build data changes cloud function directory
+        working-directory: backend/
+        run: ./scripts/build_cloud_function.sh data_changes
+
+      - name: Build outbound outbound_emailer cloud function directory
+        working-directory: backend/
+        run: ./scripts/build_cloud_function.sh outbound_emailer
+
+      - name: Build search indexer cloud function directory
+        working-directory: backend/
+        run: ./scripts/build_cloud_function.sh search_indexer
+
+      - name: Build webhook executor cloud function directory
+        working-directory: backend/
+        run: ./scripts/build_cloud_function.sh webhook_executor
+
+      - name: copy API server config file
+        working-directory: backend/environments/dev
+        run: |
+          cp config_files/service-config.json terraform/service-config.json
+
+      - name: Terraform Validate
+        working-directory: backend/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: backend/environments/dev/terraform
+
+  deploy-api-server:
+    needs: [infrastructure]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # these are used simply to ensure consistency, there should never be more than one entry in these arrays.
+        gcp-region: [ 'us-central1' ]
+        gcp-project: [ 'dinner-done-better-dev' ]
+        container-name: [ 'api_server' ]
+        container-filename: [ 'api_server' ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
+
+      - name: Build and push API server container
+        working-directory: backend/
+        run: |
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }} --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.container-filename }}.Dockerfile .
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:${{  github.sha }}
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/${{ matrix.container-name }}:latest
+
+      # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
+      - id: deploy-api-server
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: 'api-server'
+          project_id: '${{ matrix.gcp-project }}'
+          image: '${{ matrix.gcp-region }}-docker.pkg.dev/${{ matrix.gcp-project }}/containers/api_server'
 
   build-and-push-containers:
-#    needs: [infrastructure]
+    needs: [infrastructure]
     runs-on: ubuntu-latest
     strategy:
       matrix:
