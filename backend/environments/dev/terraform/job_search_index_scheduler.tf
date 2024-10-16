@@ -58,7 +58,7 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
       }
 
       containers {
-        image = google_artifact_registry_repository.search-index-scheduler-container
+        image = google_artifact_registry_repository.search-index-scheduler-container.id
 
         resources {
           limits = {

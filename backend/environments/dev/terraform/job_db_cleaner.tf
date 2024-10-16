@@ -44,7 +44,7 @@ resource "google_cloud_run_v2_job" "db_cleaner" {
       service_account       = google_service_account.db_cleaner_user_service_account.email
 
       containers {
-        image = google_artifact_registry_repository.db-cleaner-container
+        image = google_artifact_registry_repository.db-cleaner-container.id
 
         resources {
           limits = {

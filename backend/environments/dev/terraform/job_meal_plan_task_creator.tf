@@ -58,7 +58,7 @@ resource "google_cloud_run_v2_job" "meal_plan_task_creator" {
       }
 
       containers {
-        image = google_artifact_registry_repository.meal-plan-task-creator-container
+        image = google_artifact_registry_repository.meal-plan-task-creator-container.id
 
         resources {
           limits = {

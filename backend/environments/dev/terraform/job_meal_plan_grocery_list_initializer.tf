@@ -62,7 +62,7 @@ resource "google_cloud_run_v2_job" "meal_plan_grocery_list_initializer" {
       }
 
       containers {
-        image = google_artifact_registry_repository.meal-plan-grocery-list-initializer-container
+        image = google_artifact_registry_repository.meal-plan-grocery-list-initializer-container.id
 
         resources {
           limits = {

@@ -38,7 +38,7 @@ resource "google_cloud_run_v2_job" "email_prober" {
       service_account       = google_service_account.email_prober_user_service_account.email
 
       containers {
-        image = google_artifact_registry_repository.email-prober-container
+        image = google_artifact_registry_repository.email-prober-container.id
 
         resources {
           limits = {

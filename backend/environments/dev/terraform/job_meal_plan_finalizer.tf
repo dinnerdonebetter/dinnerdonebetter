@@ -58,7 +58,7 @@ resource "google_cloud_run_v2_job" "meal_plan_finalizer" {
       }
 
       containers {
-        image = google_artifact_registry_repository.meal-plan-finalizer-container
+        image = google_artifact_registry_repository.meal-plan-finalizer-container.id
 
         resources {
           limits = {
