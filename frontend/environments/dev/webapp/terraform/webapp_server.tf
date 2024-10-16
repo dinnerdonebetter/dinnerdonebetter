@@ -156,7 +156,6 @@ resource "google_cloud_run_service" "webapp_server" {
           }
         }
 
-
         env {
           name = "NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET"
           value_from {
