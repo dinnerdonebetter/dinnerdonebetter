@@ -58,7 +58,7 @@ resource "google_cloud_run_v2_job" "meal_plan_task_creator" {
       }
 
       containers {
-        image = format("%s-docker.pkg.dev/%s/%s/meal-plan-task-creator", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
+        image = google_artifact_registry_repository.meal-plan-task-creator-container
 
         resources {
           limits = {
