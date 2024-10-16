@@ -25,6 +25,12 @@ resource "google_service_account" "meal_plan_task_creator_user_service_account" 
   display_name = "Meal Plan Task Creator"
 }
 
+resource "google_service_account_iam_member" "meal_plan_task_creator_user_sa" {
+  service_account_id = google_service_account.meal_plan_task_creator_user_service_account.id
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
+}
+
 resource "google_project_iam_member" "meal_plan_task_creator_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.meal_plan_task_creator_role.id

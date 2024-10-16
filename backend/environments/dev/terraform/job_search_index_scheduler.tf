@@ -25,6 +25,12 @@ resource "google_service_account" "search_data_index_scheduler_user_service_acco
   display_name = "Search Data Index Scheduler"
 }
 
+resource "google_service_account_iam_member" "search_data_index_scheduler_user_sa" {
+  service_account_id = google_service_account.search_data_index_scheduler_user_service_account.id
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
+}
+
 resource "google_project_iam_member" "search_data_index_scheduler_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.search_data_index_scheduler_role.id
