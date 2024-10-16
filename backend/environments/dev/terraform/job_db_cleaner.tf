@@ -18,6 +18,12 @@ resource "google_service_account" "db_cleaner_user_service_account" {
   display_name = "DB Cleaner"
 }
 
+resource "google_service_account_iam_member" "db_cleaner_sa" {
+  service_account_id = google_service_account.outbound_emailer_user_service_account.id
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
+}
+
 resource "google_project_iam_member" "db_cleaner_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.db_cleaner_role.id
