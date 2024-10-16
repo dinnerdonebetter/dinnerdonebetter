@@ -58,7 +58,7 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
       }
 
       containers {
-        image = format("%s-docker.pkg.dev/%s/%s/search-index-scheduler", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
+        image = format("%s-docker.pkg.dev/%s/%s/search-data-index-scheduler", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
 
         resources {
           limits = {
