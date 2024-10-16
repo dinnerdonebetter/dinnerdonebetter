@@ -90,7 +90,7 @@ export const getServerSideProps: GetServerSideProps = async (
   const fetchMeasurementUnitConversionsFromUnitTimer = timing.addEvent('fetch measurement unit conversions from unit');
   const pageLoadMeasurementUnitConversionsFromUnitPromise = apiClient
     .getValidMeasurementUnitConversionsFromUnit(validMeasurementUnitID.toString())
-    .then((res: APIResponse<ValidMeasurementUnitConversion[]>) => {
+    .then((res: QueryFilteredResult<ValidMeasurementUnitConversion>) => {
       span.addEvent('valid ingredient measurement units retrieved');
       return res.data;
     })
@@ -100,8 +100,8 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchMeasurementUnitConversionsToUnitTimer = timing.addEvent('fetch measurement unit conversions to unit');
   const pageLoadMeasurementUnitConversionsToUnitPromise = apiClient
-    .validMeasurementUnitConversionsToUnit(validMeasurementUnitID.toString())
-    .then((res: APIResponse<ValidMeasurementUnitConversion[]>) => {
+    .getValidMeasurementUnitConversionsToUnit(validMeasurementUnitID.toString())
+    .then((res: QueryFilteredResult<ValidMeasurementUnitConversion>) => {
       span.addEvent('valid ingredient measurement units retrieved');
       return res.data;
     })
