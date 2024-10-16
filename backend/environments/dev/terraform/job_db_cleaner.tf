@@ -43,7 +43,7 @@ resource "google_cloud_run_v2_job" "db_cleaner" {
         resources {
           limits = {
             cpu    = "1"
-            memory = "256Mi"
+            memory = "512Mi" # cannot be lower than this
           }
         }
 
