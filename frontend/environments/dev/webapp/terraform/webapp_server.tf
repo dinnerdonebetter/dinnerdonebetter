@@ -6,7 +6,7 @@ resource "cloudflare_record" "webapp_cname_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = local.web_location
   type    = "CNAME"
-  value   = "ghs.googlehosted.com"
+  content = "ghs.googlehosted.com"
   ttl     = 1
   proxied = true
   comment = "Managed by Terraform"
@@ -29,6 +29,12 @@ resource "google_project_iam_custom_role" "webapp_server_role" {
 resource "google_service_account" "webapp_user_service_account" {
   account_id   = "webapp-server"
   display_name = "Webapp Server"
+}
+
+resource "google_service_account_iam_member" "webapp_sa" {
+  service_account_id = google_service_account.webapp_user_service_account.id
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "webapp_user" {
@@ -80,7 +86,6 @@ resource "google_cloud_run_service_iam_policy" "public_access" {
 
   policy_data = data.google_iam_policy.public_access.policy_data
 }
-
 
 resource "google_cloud_run_service" "webapp_server" {
   name     = "webapp-server"
@@ -139,6 +144,27 @@ resource "google_cloud_run_service" "webapp_server" {
         env {
           name  = "NEXT_API_ENDPOINT"
           value = "https://api.dinnerdonebetter.dev"
+        }
+
+        env {
+          name = "NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.ddb_oauth2_client_id.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+
+        env {
+          name = "NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.ddb_oauth2_client_secret.secret_id
+              key  = "latest"
+            }
+          }
         }
 
         env {
