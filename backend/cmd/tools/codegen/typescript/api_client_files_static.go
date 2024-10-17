@@ -5,7 +5,9 @@ import (
 )
 
 const (
-	APIClientIndexFile = `
+	APIClientIndexFile = `import router from 'next/router';
+
+import { DinnerDoneBetterAPIClient } from './client';
 
 export const buildServerSideClientWithOAuth2Token = (
   token: string,
