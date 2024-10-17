@@ -1,15 +1,18 @@
 package typescript
 
-import "strings"
+import (
+	"strings"
+)
 
 const (
-	APIClientIndexFile = `import router from 'next/router';
+	APIClientIndexFile = `
 
-import { DinnerDoneBetterAPIClient } from './client';
-
-export const buildServerSideClientWithOAuth2Token = (token: string): DinnerDoneBetterAPIClient => {
-  const apiEndpoint = process.env.NEXT_API_ENDPOINT;
-  if (!apiEndpoint) {
+export const buildServerSideClientWithOAuth2Token = (
+  token: string,
+  apiEndpoint?: string,
+): DinnerDoneBetterAPIClient => {
+  const apiEndpointToUse = apiEndpoint || process.env.NEXT_API_ENDPOINT;
+  if (!apiEndpointToUse) {
     throw new Error('no API endpoint set!');
   }
 
@@ -17,20 +20,20 @@ export const buildServerSideClientWithOAuth2Token = (token: string): DinnerDoneB
     throw new Error('no token set!');
   }
 
-  return new DinnerDoneBetterAPIClient(apiEndpoint, token);
+  return new DinnerDoneBetterAPIClient(apiEndpointToUse, token);
 };
 
-export const buildCookielessServerSideClient = (): DinnerDoneBetterAPIClient => {
-  const apiEndpoint = process.env.NEXT_API_ENDPOINT;
-  if (!apiEndpoint) {
+export const buildCookielessServerSideClient = (apiEndpoint?: string): DinnerDoneBetterAPIClient => {
+  const apiEndpointToUse = apiEndpoint || process.env.NEXT_API_ENDPOINT;
+  if (!apiEndpointToUse) {
     throw new Error('no API endpoint set!');
   }
 
-  return new DinnerDoneBetterAPIClient(apiEndpoint);
+  return new DinnerDoneBetterAPIClient(apiEndpointToUse);
 };
 
 export const buildBrowserSideClient = (): DinnerDoneBetterAPIClient => {
-  const ddbClient = buildCookielessServerSideClient();
+  const ddbClient = buildCookielessServerSideClient('');
 
   ddbClient.configureRouterRejectionInterceptor((loc: Location) => {
     const destParam = new URLSearchParams(loc.search).get('dest') ?? encodeURIComponent(` + "`" + `${loc.pathname}${loc.search}` + "`" + `);
