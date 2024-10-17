@@ -218,6 +218,7 @@ export class DinnerDoneBetterAPIClient {
 
     // because this client is used both in the browser and on the server, we can't mandate oauth2 tokens
     if (oauth2Token) {
+      this.oauth2Token = oauth2Token;
       headers['Authorization'] = `Bearer ${oauth2Token}`;
     }
 
