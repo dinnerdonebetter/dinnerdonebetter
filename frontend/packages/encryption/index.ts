@@ -35,7 +35,6 @@ export class EncryptorDecryptor<T> {
       console.log('initialization vectors not provided, generating random bytes');
       this.initializationVectors = crypto.randomBytes(32);
     } else {
-      console.log(`setting up encryption with provided initializationVectors`);
       this.initializationVectors = Buffer.from(initializationVectors!, 'base64');
     }
   }

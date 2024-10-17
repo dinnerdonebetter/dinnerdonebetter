@@ -7,9 +7,10 @@ export default function Web(): JSX.Element {
     <StrictMode>
       <AppLayout title="" userLoggedIn={false}>
         <>{/* TODO: get a home page screen, lol */}</>
-        <p>Client ID:     { process.env.NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID }</p>
-        <p>Client ID:     { process.env.NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID }</p>
-        <p>Client Secret: { process.env.NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET }</p>
+        <p>Client ID: '{process.env.NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID || ''}'</p>
+        <p>Client Secret: '{process.env.NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET || ''}'</p>
+        <p>COOKIE_ENCRYPTION_KEY: '{process.env.NEXT_COOKIE_ENCRYPTION_KEY || ''}'</p>
+        <p>BASE64_COOKIE_ENCRYPT_IV: '{process.env.NEXT_BASE64_COOKIE_ENCRYPT_IV || ''}'</p>
       </AppLayout>
     </StrictMode>
   );

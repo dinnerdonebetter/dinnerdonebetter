@@ -2,7 +2,10 @@ import router from 'next/router';
 
 import { DinnerDoneBetterAPIClient } from './client';
 
-export const buildServerSideClientWithOAuth2Token = (token: string, apiEndpoint?: string): DinnerDoneBetterAPIClient => {
+export const buildServerSideClientWithOAuth2Token = (
+  token: string,
+  apiEndpoint?: string,
+): DinnerDoneBetterAPIClient => {
   apiEndpoint = apiEndpoint || process.env.NEXT_API_ENDPOINT;
   if (!apiEndpoint) {
     throw new Error('no API endpoint set!');
