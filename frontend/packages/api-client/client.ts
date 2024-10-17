@@ -326,7 +326,7 @@ export class DinnerDoneBetterAPIClient {
   async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<JWTResponse>>(`/users/login/jwt/admin`, input);
+      const response = await self.client.post<APIResponse<JWTResponse>>(self.baseURL+`/users/login/jwt/admin`, input);
       if (response.data.error) {
         reject(new Error(response.data.error.message));
       }
