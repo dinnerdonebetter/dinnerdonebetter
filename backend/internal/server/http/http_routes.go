@@ -89,16 +89,6 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 
 			res.WriteHeader(responseCode)
 		})
-
-		metaRouter.Get("/docs", func(res http.ResponseWriter, req *http.Request) {
-			res.Write([]byte(`<script
-  id="api-reference"
-  type="application/yaml">
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
-`))
-		})
 	})
 
 	authenticatedRouter := router.WithMiddleware(s.authService.UserAttributionMiddleware)
