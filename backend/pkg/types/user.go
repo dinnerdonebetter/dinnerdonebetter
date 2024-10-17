@@ -319,7 +319,7 @@ func (u *User) IsBanned() bool {
 func (i *UserRegistrationInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.EmailAddress, validation.Required, is.EmailFormat),
-		validation.Field(&i.Username, validation.Required, validation.Length(8, math.MaxInt8)),
+		validation.Field(&i.Username, validation.Required, validation.Length(4, math.MaxInt8)),
 		validation.Field(&i.Password, validation.Required, validation.Length(8, math.MaxInt8)),
 	)
 }

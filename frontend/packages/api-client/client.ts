@@ -205,7 +205,7 @@ export class DinnerDoneBetterAPIClient {
   responseInterceptorID: number;
   logger: LoggerType = buildServerSideLogger('api_client');
 
-  constructor(baseURL: string = '', oauth2Token?: string, clientName: string = 'DDB-Service-Client') {
+  constructor(clientName: string = 'DDB-Service-Client', baseURL: string = '', oauth2Token?: string) {
     this.baseURL = baseURL;
 
     const headers: Record<string, string> = {
@@ -267,7 +267,7 @@ export class DinnerDoneBetterAPIClient {
       (request: InternalAxiosRequestConfig) => {
         this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
 
-        console.log(_curlFromAxiosConfig(request));
+        // console.log(_curlFromAxiosConfig(request));
 
         if (spanContext.traceId) {
           request.headers.set('traceparent', spanContext.traceId);
@@ -304,6 +304,7 @@ export class DinnerDoneBetterAPIClient {
       },
     );
   }
+
   async acceptHouseholdInvitation(
     householdInvitationID: string,
     input: HouseholdInvitationUpdateRequestInput,
