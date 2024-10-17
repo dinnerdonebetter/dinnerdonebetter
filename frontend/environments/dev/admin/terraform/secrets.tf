@@ -38,3 +38,37 @@ resource "google_secret_manager_secret_version" "cookie_encryption_iv" {
 
   secret_data = random_bytes.cookie_encryption_iv.base64
 }
+
+# Service OAuth2 Client ID
+
+variable "DINNER_DONE_BETTER_OAUTH2_CLIENT_ID" {}
+resource "google_secret_manager_secret" "ddb_oauth2_client_id" {
+  secret_id = "webapp_ddb_oauth2_client_id"
+
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "ddb_oauth2_client_id" {
+  secret = google_secret_manager_secret.ddb_oauth2_client_id.id
+
+  secret_data = var.DINNER_DONE_BETTER_OAUTH2_CLIENT_ID
+}
+
+# Service OAuth2 Client Secret
+
+variable "DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET" {}
+resource "google_secret_manager_secret" "ddb_oauth2_client_secret" {
+  secret_id = "webapp_ddb_oauth2_client_secret"
+
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "ddb_oauth2_client_secret" {
+  secret = google_secret_manager_secret.ddb_oauth2_client_secret.id
+
+  secret_data = var.DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET
+}

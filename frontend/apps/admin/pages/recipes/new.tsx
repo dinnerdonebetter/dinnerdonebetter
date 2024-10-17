@@ -479,7 +479,7 @@ function RecipeCreator() {
         }
 
         await apiClient
-          .getValidIngredientsByPreparation(value, chosenPreparationID)
+          .searchValidIngredientsByPreparation(value, chosenPreparationID)
           .then((res: QueryFilteredResult<ValidIngredient>) => {
             dispatchPageEvent({
               type: 'UPDATE_STEP_INGREDIENT_SUGGESTIONS',

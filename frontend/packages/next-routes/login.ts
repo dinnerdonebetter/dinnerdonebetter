@@ -86,6 +86,10 @@ export function buildLoginRoute(config: {
   admin: boolean;
 }) {
   return async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
+    if (config.oauth2ClientID === '' || config.oauth2ClientSecret === '') {
+      throw new Error('oauth2 client id and secret must be provided');
+    }
+
     if (req.method === 'POST') {
       const span = config.serverSideTracer.startSpan('LoginRoute');
       const input = req.body as UserLoginInput;
@@ -102,7 +106,7 @@ export function buildLoginRoute(config: {
         }
       }
 
-      const apiClient = buildCookielessServerSideClient().withSpan(span);
+      const apiClient = buildCookielessServerSideClient(config.baseURL).withSpan(span);
       const loginPromise = config.admin ? apiClient.adminLoginForJWT(input) : apiClient.loginForJWT(input);
 
       await loginPromise

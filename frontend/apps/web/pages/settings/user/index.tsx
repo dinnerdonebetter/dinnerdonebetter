@@ -219,7 +219,7 @@ export default function UserSettingsPage({
   });
 
   const requestVerificationEmail = () => {
-    apiClient.verifyUserEmailAddress().then(() => {
+    apiClient.requestEmailVerificationEmail().then(() => {
       setVerificationRequested(true);
     });
   };

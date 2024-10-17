@@ -13,8 +13,8 @@ const encodeCookie = cookieEncoderBuilder(
 export default buildLoginRoute({
   baseURL: 'https://api.dinnerdonebetter.dev',
   scope: 'household_member', // TODO: do I need to know if the user is a household admin here?
-  oauth2ClientID: '039f605f4f8c13a20dc6639e4095e66d',
-  oauth2ClientSecret: 'dc707e2234a05fdfc3d2eb2967c272a2',
+  oauth2ClientID: process.env.NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID || '',
+  oauth2ClientSecret: process.env.NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET || '',
   serverSideTracer,
   cookieFunc: encodeCookie,
   cookieName: webappCookieName,
