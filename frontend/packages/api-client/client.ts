@@ -201,12 +201,14 @@ function _curlFromAxiosConfig(config: InternalAxiosRequestConfig): string {
 export class DinnerDoneBetterAPIClient {
   baseURL: string;
   client: AxiosInstance;
+  oauth2Token: string;
   requestInterceptorID: number;
   responseInterceptorID: number;
   logger: LoggerType = buildServerSideLogger('api_client');
 
-  constructor(clientName: string = 'DDB-Service-Client', baseURL: string = '', oauth2Token?: string) {
+  constructor(baseURL: string = '', oauth2Token?: string, clientName: string = 'DDB-Service-Client') {
     this.baseURL = baseURL;
+    this.oauth2Token = '';
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -214,6 +216,7 @@ export class DinnerDoneBetterAPIClient {
       'X-Service-Client': clientName,
     };
 
+    // because this client is used both in the browser and on the server, we can't mandate oauth2 tokens
     if (oauth2Token) {
       headers['Authorization'] = `Bearer ${oauth2Token}`;
     }
@@ -228,8 +231,7 @@ export class DinnerDoneBetterAPIClient {
 
     this.requestInterceptorID = this.client.interceptors.request.use(
       (request: InternalAxiosRequestConfig) => {
-        // this.logger.debug(`Request: ${request.method} ${request.baseURL}${request.url}`);
-        console.log(`${_curlFromAxiosConfig(request)}`);
+        // console.log(`${_curlFromAxiosConfig(request)}`);
 
         return request;
       },
@@ -243,11 +245,6 @@ export class DinnerDoneBetterAPIClient {
 
     this.responseInterceptorID = this.client.interceptors.response.use(
       (response: AxiosResponse) => {
-        this.logger.debug(
-          `Response: ${response.status} ${response.config.method} ${response.config.url}`,
-          // response.data,
-        );
-
         // console.log(`${response.status} ${_curlFromAxiosConfig(response.config)}`);
 
         return response;
@@ -265,12 +262,10 @@ export class DinnerDoneBetterAPIClient {
     this.client.interceptors.request.eject(this.requestInterceptorID);
     this.requestInterceptorID = this.client.interceptors.request.use(
       (request: InternalAxiosRequestConfig) => {
-        this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
-
         // console.log(_curlFromAxiosConfig(request));
 
         if (spanContext.traceId) {
-          request.headers.set('traceparent', spanContext.traceId);
+          request.headers.set('traceparent', spanLogDetails.traceID);
         }
 
         return request;
@@ -311,52 +306,68 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<HouseholdInvitation>>(
-        `/api/v1/household_invitations/${householdInvitationID}/accept`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/accept`, input)
+        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<JWTResponse>>(self.baseURL + `/users/login/jwt/admin`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response);
+      self.client
+        .post<APIResponse<JWTResponse>>(`/users/login/jwt/admin`, input)
+        .then((res: AxiosResponse<APIResponse<JWTResponse>>) => {
+          if (res.data.error && res.data.error.message.toLowerCase() != 'totp required') {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async adminUpdateUserStatus(input: UserAccountStatusUpdateInput): Promise<APIResponse<UserStatusResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<UserStatusResponse>>(`/api/v1/admin/users/status`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<UserStatusResponse>>(`/api/v1/admin/users/status`, input)
+        .then((res: AxiosResponse<APIResponse<UserStatusResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveHousehold(householdID: string): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<Household>>(`/api/v1/households/${householdID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<Household>>(`/api/v1/households/${householdID}`, {})
+        .then((res: AxiosResponse<APIResponse<Household>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -365,58 +376,71 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<HouseholdInstrumentOwnership>>(
-        `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<HouseholdInstrumentOwnership>>(
+          `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveMeal(mealID: string): Promise<APIResponse<Meal>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<Meal>>(`/api/v1/meals/${mealID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<Meal>>(`/api/v1/meals/${mealID}`, {})
+        .then((res: AxiosResponse<APIResponse<Meal>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveMealPlan(mealPlanID: string): Promise<APIResponse<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, {})
+        .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveMealPlanEvent(mealPlanID: string, mealPlanEventID: string): Promise<APIResponse<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<MealPlanEvent>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`, {})
+        .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -426,16 +450,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<MealPlanGroceryListItem>>(
-        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<MealPlanGroceryListItem>>(
+          `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -446,16 +474,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<MealPlanOption>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<MealPlanOption>>(
+          `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -467,93 +499,105 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOptionVote>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<MealPlanOptionVote>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<MealPlanOptionVote>>(
+          `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<MealPlanOptionVote>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveOAuth2Client(oauth2ClientID: string): Promise<APIResponse<OAuth2Client>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<OAuth2Client>>(
-        `/api/v1/oauth2_clients/${oauth2ClientID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`, {})
+        .then((res: AxiosResponse<APIResponse<OAuth2Client>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveRecipe(recipeID: string): Promise<APIResponse<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, {})
+        .then((res: AxiosResponse<APIResponse<Recipe>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveRecipePrepTask(recipeID: string, recipePrepTaskID: string): Promise<APIResponse<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<RecipePrepTask>>(
-        `/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`, {})
+        .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveRecipeRating(recipeID: string, recipeRatingID: string): Promise<APIResponse<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<RecipeRating>>(
-        `/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`, {})
+        .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveRecipeStep(recipeID: string, recipeStepID: string): Promise<APIResponse<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<RecipeStep>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`, {})
+        .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -564,16 +608,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<RecipeStepCompletionCondition>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<RecipeStepCompletionCondition>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -584,16 +632,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<RecipeStepIngredient>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<RecipeStepIngredient>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -604,16 +656,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<RecipeStepInstrument>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<RecipeStepInstrument>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -624,16 +680,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<RecipeStepProduct>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<RecipeStepProduct>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -644,32 +704,37 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<RecipeStepVessel>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<RecipeStepVessel>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveServiceSetting(serviceSettingID: string): Promise<APIResponse<ServiceSetting>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ServiceSetting>>(
-        `/api/v1/settings/${serviceSettingID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`, {})
+        .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -678,29 +743,37 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ServiceSettingConfiguration>>(
-        `/api/v1/settings/configurations/${serviceSettingConfigurationID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ServiceSettingConfiguration>>(
+          `/api/v1/settings/configurations/${serviceSettingConfigurationID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ServiceSettingConfiguration>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveUser(userID: string): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<User>>(`/api/v1/users/${userID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<User>>(`/api/v1/users/${userID}`, {})
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -709,64 +782,71 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<UserIngredientPreference>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<UserIngredientPreference>>(
-        `/api/v1/user_ingredient_preferences/${userIngredientPreferenceID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<UserIngredientPreference>>(
+          `/api/v1/user_ingredient_preferences/${userIngredientPreferenceID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<UserIngredientPreference>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveUserMembership(householdID: string, userID: string): Promise<APIResponse<HouseholdUserMembership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<HouseholdUserMembership>>(
-        `/api/v1/households/${householdID}/members/${userID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<HouseholdUserMembership>>(`/api/v1/households/${householdID}/members/${userID}`, {})
+        .then((res: AxiosResponse<APIResponse<HouseholdUserMembership>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveValidIngredient(validIngredientID: string): Promise<APIResponse<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidIngredient>>(
-        `/api/v1/valid_ingredients/${validIngredientID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveValidIngredientGroup(validIngredientGroupID: string): Promise<APIResponse<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidIngredientGroup>>(
-        `/api/v1/valid_ingredient_groups/${validIngredientGroupID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -775,16 +855,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidIngredientMeasurementUnit>>(
-        `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidIngredientMeasurementUnit>>(
+          `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -793,32 +877,37 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidIngredientPreparation>>(
-        `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidIngredientPreparation>>(
+          `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveValidIngredientState(validIngredientStateID: string): Promise<APIResponse<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidIngredientState>>(
-        `/api/v1/valid_ingredient_states/${validIngredientStateID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -827,48 +916,54 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidIngredientStateIngredient>>(
-        `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidIngredientStateIngredient>>(
+          `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveValidInstrument(validInstrumentID: string): Promise<APIResponse<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidInstrument>>(
-        `/api/v1/valid_instruments/${validInstrumentID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveValidMeasurementUnit(validMeasurementUnitID: string): Promise<APIResponse<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidMeasurementUnit>>(
-        `/api/v1/valid_measurement_units/${validMeasurementUnitID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -877,32 +972,37 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidMeasurementUnitConversion>>(
-        `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidMeasurementUnitConversion>>(
+          `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveValidPreparation(validPreparationID: string): Promise<APIResponse<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidPreparation>>(
-        `/api/v1/valid_preparations/${validPreparationID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -911,58 +1011,74 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidPreparationInstrument>>(
-        `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidPreparationInstrument>>(
+          `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveValidPreparationVessel(validPreparationVesselID: string): Promise<APIResponse<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidPreparationVessel>>(
-        `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidPreparationVessel>>(
+          `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveValidVessel(validVesselID: string): Promise<APIResponse<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async archiveWebhook(webhookID: string): Promise<APIResponse<Webhook>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`, {})
+        .then((res: AxiosResponse<APIResponse<Webhook>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -972,16 +1088,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<WebhookTriggerEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.delete<APIResponse<WebhookTriggerEvent>>(
-        `/api/v1/webhooks/${webhookID}/trigger_events/${webhookTriggerEventID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .delete<APIResponse<WebhookTriggerEvent>>(
+          `/api/v1/webhooks/${webhookID}/trigger_events/${webhookTriggerEventID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<WebhookTriggerEvent>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -991,54 +1111,68 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<HouseholdInvitation>>(
-        `/api/v1/household_invitations/${householdInvitationID}/cancel`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/cancel`, input)
+        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async checkPermissions(input: UserPermissionsRequestInput): Promise<APIResponse<UserPermissionsResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<UserPermissionsResponse>>(
-        `/api/v1/users/permissions/check`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<UserPermissionsResponse>>(`/api/v1/users/permissions/check`, input)
+        .then((res: AxiosResponse<APIResponse<UserPermissionsResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async cloneRecipe(recipeID: string): Promise<APIResponse<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}/clone`);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}/clone`)
+        .then((res: AxiosResponse<APIResponse<Recipe>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createHousehold(input: HouseholdCreationRequestInput): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<Household>>(`/api/v1/households`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<Household>>(`/api/v1/households`, input)
+        .then((res: AxiosResponse<APIResponse<Household>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1047,15 +1181,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<HouseholdInstrumentOwnership>>(
-        `/api/v1/households/instruments`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<HouseholdInstrumentOwnership>>(`/api/v1/households/instruments`, input)
+        .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1065,39 +1201,51 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<HouseholdInvitation>>(
-        `/api/v1/households/${householdID}/invite`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<HouseholdInvitation>>(`/api/v1/households/${householdID}/invite`, input)
+        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createMeal(input: MealCreationRequestInput): Promise<APIResponse<Meal>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<Meal>>(`/api/v1/meals`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<Meal>>(`/api/v1/meals`, input)
+        .then((res: AxiosResponse<APIResponse<Meal>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createMealPlan(input: MealPlanCreationRequestInput): Promise<APIResponse<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<MealPlan>>(`/api/v1/meal_plans`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<MealPlan>>(`/api/v1/meal_plans`, input)
+        .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1107,15 +1255,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<MealPlanEvent>>(
-        `/api/v1/meal_plans/${mealPlanID}/events`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events`, input)
+        .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1125,15 +1275,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<MealPlanGroceryListItem>>(
-        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<MealPlanGroceryListItem>>(`/api/v1/meal_plans/${mealPlanID}/grocery_list_items`, input)
+        .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1144,15 +1296,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<MealPlanOption>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<MealPlanOption>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options`, input)
+        .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1163,15 +1317,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<Array<MealPlanOptionVote>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<Array<MealPlanOptionVote>>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/vote`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<Array<MealPlanOptionVote>>>(
+          `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/vote`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<Array<MealPlanOptionVote>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1181,15 +1340,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<MealPlanTask>>(
-        `/api/v1/meal_plans/${mealPlanID}/tasks`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks`, input)
+        .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1198,27 +1359,34 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<OAuth2ClientCreationResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<OAuth2ClientCreationResponse>>(
-        `/api/v1/oauth2_clients`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<OAuth2ClientCreationResponse>>(`/api/v1/oauth2_clients`, input)
+        .then((res: AxiosResponse<APIResponse<OAuth2ClientCreationResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createRecipe(input: RecipeCreationRequestInput): Promise<APIResponse<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<Recipe>>(`/api/v1/recipes`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<Recipe>>(`/api/v1/recipes`, input)
+        .then((res: AxiosResponse<APIResponse<Recipe>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1228,15 +1396,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<RecipePrepTask>>(
-        `/api/v1/recipes/${recipeID}/prep_tasks`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks`, input)
+        .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1246,24 +1416,34 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings`, input)
+        .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createRecipeStep(recipeID: string, input: RecipeStepCreationRequestInput): Promise<APIResponse<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps`, input)
+        .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1274,15 +1454,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<RecipeStepCompletionCondition>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<RecipeStepCompletionCondition>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1293,15 +1478,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<RecipeStepIngredient>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<RecipeStepIngredient>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`, input)
+        .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1312,15 +1499,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<RecipeStepInstrument>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<RecipeStepInstrument>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments`, input)
+        .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1331,15 +1520,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<RecipeStepProduct>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<RecipeStepProduct>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products`, input)
+        .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1350,27 +1541,34 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<RecipeStepVessel>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<RecipeStepVessel>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels`, input)
+        .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createServiceSetting(input: ServiceSettingCreationRequestInput): Promise<APIResponse<ServiceSetting>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ServiceSetting>>(`/api/v1/settings`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ServiceSetting>>(`/api/v1/settings`, input)
+        .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1379,27 +1577,34 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ServiceSettingConfiguration>>(
-        `/api/v1/settings/configurations`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ServiceSettingConfiguration>>(`/api/v1/settings/configurations`, input)
+        .then((res: AxiosResponse<APIResponse<ServiceSettingConfiguration>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createUser(input: UserRegistrationInput): Promise<APIResponse<UserCreationResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<UserCreationResponse>>(`/users`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<UserCreationResponse>>(`/users`, input)
+        .then((res: AxiosResponse<APIResponse<UserCreationResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1408,39 +1613,51 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<Array<UserIngredientPreference>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<Array<UserIngredientPreference>>>(
-        `/api/v1/user_ingredient_preferences`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<Array<UserIngredientPreference>>>(`/api/v1/user_ingredient_preferences`, input)
+        .then((res: AxiosResponse<APIResponse<Array<UserIngredientPreference>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createUserNotification(input: UserNotificationCreationRequestInput): Promise<APIResponse<UserNotification>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<UserNotification>>(`/api/v1/user_notifications`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<UserNotification>>(`/api/v1/user_notifications`, input)
+        .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createValidIngredient(input: ValidIngredientCreationRequestInput): Promise<APIResponse<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients`, input)
+        .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1449,15 +1666,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidIngredientGroup>>(
-        `/api/v1/valid_ingredient_groups`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups`, input)
+        .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1466,15 +1685,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidIngredientMeasurementUnit>>(
-        `/api/v1/valid_ingredient_measurement_units`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidIngredientMeasurementUnit>>(`/api/v1/valid_ingredient_measurement_units`, input)
+        .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1483,15 +1704,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidIngredientPreparation>>(
-        `/api/v1/valid_ingredient_preparations`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidIngredientPreparation>>(`/api/v1/valid_ingredient_preparations`, input)
+        .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1500,15 +1723,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidIngredientState>>(
-        `/api/v1/valid_ingredient_states`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states`, input)
+        .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1517,27 +1742,34 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidIngredientStateIngredient>>(
-        `/api/v1/valid_ingredient_state_ingredients`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidIngredientStateIngredient>>(`/api/v1/valid_ingredient_state_ingredients`, input)
+        .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createValidInstrument(input: ValidInstrumentCreationRequestInput): Promise<APIResponse<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments`, input)
+        .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1546,15 +1778,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidMeasurementUnit>>(
-        `/api/v1/valid_measurement_units`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units`, input)
+        .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1563,27 +1797,34 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidMeasurementUnitConversion>>(
-        `/api/v1/valid_measurement_conversions`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidMeasurementUnitConversion>>(`/api/v1/valid_measurement_conversions`, input)
+        .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createValidPreparation(input: ValidPreparationCreationRequestInput): Promise<APIResponse<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations`, input)
+        .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1592,15 +1833,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidPreparationInstrument>>(
-        `/api/v1/valid_preparation_instruments`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidPreparationInstrument>>(`/api/v1/valid_preparation_instruments`, input)
+        .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1609,39 +1852,51 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidPreparationVessel>>(
-        `/api/v1/valid_preparation_vessels`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels`, input)
+        .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createValidVessel(input: ValidVesselCreationRequestInput): Promise<APIResponse<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<ValidVessel>>(`/api/v1/valid_vessels`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<ValidVessel>>(`/api/v1/valid_vessels`, input)
+        .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async createWebhook(input: WebhookCreationRequestInput): Promise<APIResponse<Webhook>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<Webhook>>(`/api/v1/webhooks`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<Webhook>>(`/api/v1/webhooks`, input)
+        .then((res: AxiosResponse<APIResponse<Webhook>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1651,42 +1906,51 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<WebhookTriggerEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<WebhookTriggerEvent>>(
-        `/api/v1/webhooks/${webhookID}/trigger_events`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<WebhookTriggerEvent>>(`/api/v1/webhooks/${webhookID}/trigger_events`, input)
+        .then((res: AxiosResponse<APIResponse<WebhookTriggerEvent>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async finalizeMealPlan(mealPlanID: string): Promise<APIResponse<FinalizeMealPlansResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<FinalizeMealPlansResponse>>(
-        `/api/v1/meal_plans/${mealPlanID}/finalize`,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<FinalizeMealPlansResponse>>(`/api/v1/meal_plans/${mealPlanID}/finalize`)
+        .then((res: AxiosResponse<APIResponse<FinalizeMealPlansResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getActiveHousehold(): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Household>>(`/api/v1/households/current`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<Household>>(`/api/v1/households/current`, {})
+        .then((res: AxiosResponse<APIResponse<Household>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1695,25 +1959,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<AuditLogEntry>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<AuditLogEntry>>>(
-        `/api/v1/audit_log_entries/for_household`,
-        {
+      self.client
+        .get<APIResponse<Array<AuditLogEntry>>>(`/api/v1/audit_log_entries/for_household`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<AuditLogEntry>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<AuditLogEntry>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<AuditLogEntry>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1722,64 +1988,78 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<AuditLogEntry>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<AuditLogEntry>>>(`/api/v1/audit_log_entries/for_user`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<AuditLogEntry>>>(`/api/v1/audit_log_entries/for_user`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<AuditLogEntry>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<AuditLogEntry>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<AuditLogEntry>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getAuditLogEntryByID(auditLogEntryID: string): Promise<APIResponse<AuditLogEntry>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<AuditLogEntry>>(
-        `/api/v1/audit_log_entries/${auditLogEntryID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<AuditLogEntry>>(`/api/v1/audit_log_entries/${auditLogEntryID}`, {})
+        .then((res: AxiosResponse<APIResponse<AuditLogEntry>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getAuthStatus(): Promise<APIResponse<UserStatusResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<UserStatusResponse>>(`/auth/status`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<UserStatusResponse>>(`/auth/status`, {})
+        .then((res: AxiosResponse<APIResponse<UserStatusResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getHousehold(householdID: string): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Household>>(`/api/v1/households/${householdID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<Household>>(`/api/v1/households/${householdID}`, {})
+        .then((res: AxiosResponse<APIResponse<Household>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1788,16 +2068,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<HouseholdInstrumentOwnership>>(
-        `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<HouseholdInstrumentOwnership>>(
+          `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1806,41 +2090,44 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<HouseholdInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<HouseholdInstrumentOwnership>>>(
-        `/api/v1/households/instruments`,
-        {
+      self.client
+        .get<APIResponse<Array<HouseholdInstrumentOwnership>>>(`/api/v1/households/instruments`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<HouseholdInstrumentOwnership>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<HouseholdInstrumentOwnership>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<HouseholdInstrumentOwnership>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getHouseholdInvitation(householdInvitationID: string): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<HouseholdInvitation>>(
-        `/api/v1/household_invitations/${householdInvitationID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}`, {})
+        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1850,80 +2137,98 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<HouseholdInvitation>>(
-        `/api/v1/households/${householdID}/invitations/${householdInvitationID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<HouseholdInvitation>>(
+          `/api/v1/households/${householdID}/invitations/${householdInvitationID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getHouseholds(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<Household>>>(`/api/v1/households`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<Household>>>(`/api/v1/households`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<Household>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<Household>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<Household>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getMeal(mealID: string): Promise<APIResponse<Meal>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Meal>>(`/api/v1/meals/${mealID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<Meal>>(`/api/v1/meals/${mealID}`, {})
+        .then((res: AxiosResponse<APIResponse<Meal>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getMealPlan(mealPlanID: string): Promise<APIResponse<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, {})
+        .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getMealPlanEvent(mealPlanID: string, mealPlanEventID: string): Promise<APIResponse<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<MealPlanEvent>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`, {})
+        .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1933,25 +2238,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<MealPlanEvent>>>(
-        `/api/v1/meal_plans/${mealPlanID}/events`,
-        {
+      self.client
+        .get<APIResponse<Array<MealPlanEvent>>>(`/api/v1/meal_plans/${mealPlanID}/events`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<MealPlanEvent>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<MealPlanEvent>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<MealPlanEvent>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1961,16 +2268,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<MealPlanGroceryListItem>>(
-        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<MealPlanGroceryListItem>>(
+          `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -1980,25 +2291,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<MealPlanGroceryListItem>>>(
-        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items`,
-        {
+      self.client
+        .get<APIResponse<Array<MealPlanGroceryListItem>>>(`/api/v1/meal_plans/${mealPlanID}/grocery_list_items`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<MealPlanGroceryListItem>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<MealPlanGroceryListItem>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<MealPlanGroceryListItem>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2009,16 +2322,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<MealPlanOption>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<MealPlanOption>>(
+          `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2030,16 +2347,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOptionVote>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<MealPlanOptionVote>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<MealPlanOptionVote>>(
+          `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<MealPlanOptionVote>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2051,25 +2372,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanOptionVote>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<MealPlanOptionVote>>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<MealPlanOptionVote>>>(
+          `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<MealPlanOptionVote>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<MealPlanOptionVote>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<MealPlanOptionVote>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2080,41 +2406,44 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<MealPlanOption>>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options`,
-        {
+      self.client
+        .get<APIResponse<Array<MealPlanOption>>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<MealPlanOption>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<MealPlanOption>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<MealPlanOption>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getMealPlanTask(mealPlanID: string, mealPlanTaskID: string): Promise<APIResponse<MealPlanTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<MealPlanTask>>(
-        `/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`, {})
+        .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2124,169 +2453,210 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<MealPlanTask>>>(
-        `/api/v1/meal_plans/${mealPlanID}/tasks`,
-        {
+      self.client
+        .get<APIResponse<Array<MealPlanTask>>>(`/api/v1/meal_plans/${mealPlanID}/tasks`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<MealPlanTask>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<MealPlanTask>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<MealPlanTask>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getMealPlans(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<MealPlan>>>(`/api/v1/meal_plans`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<MealPlan>>>(`/api/v1/meal_plans`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<MealPlan>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<MealPlan>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<MealPlan>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getMeals(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Meal>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<Meal>>>(`/api/v1/meals`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<Meal>>>(`/api/v1/meals`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<Meal>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<Meal>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<Meal>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getMermaidDiagramForRecipe(recipeID: string): Promise<APIResponse<string>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<string>>(`/api/v1/recipes/${recipeID}/mermaid`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<string>>(`/api/v1/recipes/${recipeID}/mermaid`, {})
+        .then((res: AxiosResponse<APIResponse<string>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getOAuth2Client(oauth2ClientID: string): Promise<APIResponse<OAuth2Client>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`, {})
+        .then((res: AxiosResponse<APIResponse<OAuth2Client>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getOAuth2Clients(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<OAuth2Client>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<OAuth2Client>>>(`/api/v1/oauth2_clients`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<OAuth2Client>>>(`/api/v1/oauth2_clients`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<OAuth2Client>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<OAuth2Client>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<OAuth2Client>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRandomValidIngredient(): Promise<APIResponse<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/random`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/random`, {})
+        .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRandomValidInstrument(): Promise<APIResponse<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/random`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/random`, {})
+        .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRandomValidPreparation(): Promise<APIResponse<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/random`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/random`, {})
+        .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRandomValidVessel(): Promise<APIResponse<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/random`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/random`, {})
+        .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2295,70 +2665,78 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<HouseholdInvitation>>>(
-        `/api/v1/household_invitations/received`,
-        {
+      self.client
+        .get<APIResponse<Array<HouseholdInvitation>>>(`/api/v1/household_invitations/received`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<HouseholdInvitation>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<HouseholdInvitation>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<HouseholdInvitation>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRecipe(recipeID: string): Promise<APIResponse<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, {})
+        .then((res: AxiosResponse<APIResponse<Recipe>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRecipeMealPlanTasks(recipeID: string): Promise<APIResponse<RecipePrepTaskStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<RecipePrepTaskStep>>(
-        `/api/v1/recipes/${recipeID}/prep_steps`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<RecipePrepTaskStep>>(`/api/v1/recipes/${recipeID}/prep_steps`, {})
+        .then((res: AxiosResponse<APIResponse<RecipePrepTaskStep>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRecipePrepTask(recipeID: string, recipePrepTaskID: string): Promise<APIResponse<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<RecipePrepTask>>(
-        `/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`, {})
+        .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2368,41 +2746,44 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<RecipePrepTask>>>(
-        `/api/v1/recipes/${recipeID}/prep_tasks`,
-        {
+      self.client
+        .get<APIResponse<Array<RecipePrepTask>>>(`/api/v1/recipes/${recipeID}/prep_tasks`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<RecipePrepTask>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<RecipePrepTask>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<RecipePrepTask>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRecipeRating(recipeID: string, recipeRatingID: string): Promise<APIResponse<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<RecipeRating>>(
-        `/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`, {})
+        .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2412,38 +2793,44 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<RecipeRating>>>(`/api/v1/recipes/${recipeID}/ratings`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<RecipeRating>>>(`/api/v1/recipes/${recipeID}/ratings`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<RecipeRating>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<RecipeRating>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<RecipeRating>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRecipeStep(recipeID: string, recipeStepID: string): Promise<APIResponse<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<RecipeStep>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`, {})
+        .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2454,16 +2841,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<RecipeStepCompletionCondition>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<RecipeStepCompletionCondition>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2474,25 +2865,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<RecipeStepCompletionCondition>>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<RecipeStepCompletionCondition>>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<RecipeStepCompletionCondition>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<RecipeStepCompletionCondition>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<RecipeStepCompletionCondition>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2503,16 +2899,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<RecipeStepIngredient>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<RecipeStepIngredient>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2523,25 +2923,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<RecipeStepIngredient>>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<RecipeStepIngredient>>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<RecipeStepIngredient>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<RecipeStepIngredient>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<RecipeStepIngredient>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2552,16 +2957,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<RecipeStepInstrument>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<RecipeStepInstrument>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2572,25 +2981,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<RecipeStepInstrument>>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<RecipeStepInstrument>>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<RecipeStepInstrument>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<RecipeStepInstrument>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<RecipeStepInstrument>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2601,16 +3015,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<RecipeStepProduct>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<RecipeStepProduct>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2621,25 +3039,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<RecipeStepProduct>>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products`,
-        {
+      self.client
+        .get<APIResponse<Array<RecipeStepProduct>>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<RecipeStepProduct>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<RecipeStepProduct>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<RecipeStepProduct>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2650,16 +3070,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<RecipeStepVessel>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<RecipeStepVessel>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2670,25 +3094,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<RecipeStepVessel>>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels`,
-        {
+      self.client
+        .get<APIResponse<Array<RecipeStepVessel>>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<RecipeStepVessel>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<RecipeStepVessel>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<RecipeStepVessel>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2698,57 +3124,71 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<RecipeStep>>>(`/api/v1/recipes/${recipeID}/steps`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<RecipeStep>>>(`/api/v1/recipes/${recipeID}/steps`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<RecipeStep>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<RecipeStep>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<RecipeStep>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getRecipes(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<Recipe>>>(`/api/v1/recipes`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<Recipe>>>(`/api/v1/recipes`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<Recipe>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<Recipe>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<Recipe>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getSelf(): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<User>>(`/api/v1/users/self`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<User>>(`/api/v1/users/self`, {})
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2757,38 +3197,44 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<HouseholdInvitation>>>(
-        `/api/v1/household_invitations/sent`,
-        {
+      self.client
+        .get<APIResponse<Array<HouseholdInvitation>>>(`/api/v1/household_invitations/sent`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<HouseholdInvitation>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<HouseholdInvitation>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<HouseholdInvitation>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getServiceSetting(serviceSettingID: string): Promise<APIResponse<ServiceSetting>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`, {})
+        .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2798,25 +3244,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ServiceSettingConfiguration>>>(
-        `/api/v1/settings/configurations/user/${serviceSettingConfigurationName}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ServiceSettingConfiguration>>>(
+          `/api/v1/settings/configurations/user/${serviceSettingConfigurationName}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ServiceSettingConfiguration>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ServiceSettingConfiguration>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2825,25 +3276,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ServiceSettingConfiguration>>>(
-        `/api/v1/settings/configurations/household`,
-        {
+      self.client
+        .get<APIResponse<Array<ServiceSettingConfiguration>>>(`/api/v1/settings/configurations/household`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ServiceSettingConfiguration>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ServiceSettingConfiguration>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2852,60 +3305,71 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ServiceSettingConfiguration>>>(
-        `/api/v1/settings/configurations/user`,
-        {
+      self.client
+        .get<APIResponse<Array<ServiceSettingConfiguration>>>(`/api/v1/settings/configurations/user`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ServiceSettingConfiguration>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ServiceSettingConfiguration>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getServiceSettings(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<ServiceSetting>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ServiceSetting>>>(`/api/v1/settings`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<ServiceSetting>>>(`/api/v1/settings`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ServiceSetting>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ServiceSetting>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ServiceSetting>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getUser(userID: string): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<User>>(`/api/v1/users/${userID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<User>>(`/api/v1/users/${userID}`, {})
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2914,41 +3378,44 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<UserIngredientPreference>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<UserIngredientPreference>>>(
-        `/api/v1/user_ingredient_preferences`,
-        {
+      self.client
+        .get<APIResponse<Array<UserIngredientPreference>>>(`/api/v1/user_ingredient_preferences`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<UserIngredientPreference>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<UserIngredientPreference>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<UserIngredientPreference>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getUserNotification(userNotificationID: string): Promise<APIResponse<UserNotification>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<UserNotification>>(
-        `/api/v1/user_notifications/${userNotificationID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<UserNotification>>(`/api/v1/user_notifications/${userNotificationID}`, {})
+        .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -2957,76 +3424,88 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<UserNotification>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<UserNotification>>>(`/api/v1/user_notifications`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<UserNotification>>>(`/api/v1/user_notifications`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<UserNotification>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<UserNotification>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<UserNotification>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getUsers(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<User>>>(`/api/v1/users`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<User>>>(`/api/v1/users`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<User>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<User>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<User>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getValidIngredient(validIngredientID: string): Promise<APIResponse<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidIngredient>>(
-        `/api/v1/valid_ingredients/${validIngredientID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getValidIngredientGroup(validIngredientGroupID: string): Promise<APIResponse<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidIngredientGroup>>(
-        `/api/v1/valid_ingredient_groups/${validIngredientGroupID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3035,25 +3514,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientGroup>>>(
-        `/api/v1/valid_ingredient_groups`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidIngredientGroup>>>(`/api/v1/valid_ingredient_groups`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientGroup>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientGroup>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientGroup>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3062,16 +3543,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidIngredientMeasurementUnit>>(
-        `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidIngredientMeasurementUnit>>(
+          `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3080,25 +3565,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
-        `/api/v1/valid_ingredient_measurement_units`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(`/api/v1/valid_ingredient_measurement_units`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientMeasurementUnit>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientMeasurementUnit>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3108,25 +3595,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
-        `/api/v1/valid_ingredient_measurement_units/by_ingredient/${validIngredientID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
+          `/api/v1/valid_ingredient_measurement_units/by_ingredient/${validIngredientID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientMeasurementUnit>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientMeasurementUnit>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3136,25 +3628,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
-        `/api/v1/valid_ingredient_measurement_units/by_measurement_unit/${validMeasurementUnitID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
+          `/api/v1/valid_ingredient_measurement_units/by_measurement_unit/${validMeasurementUnitID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientMeasurementUnit>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientMeasurementUnit>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3163,16 +3660,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidIngredientPreparation>>(
-        `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidIngredientPreparation>>(
+          `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3181,25 +3682,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientPreparation>>>(
-        `/api/v1/valid_ingredient_preparations`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidIngredientPreparation>>>(`/api/v1/valid_ingredient_preparations`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientPreparation>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientPreparation>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientPreparation>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3209,25 +3712,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientPreparation>>>(
-        `/api/v1/valid_ingredient_preparations/by_ingredient/${validIngredientID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidIngredientPreparation>>>(
+          `/api/v1/valid_ingredient_preparations/by_ingredient/${validIngredientID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientPreparation>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientPreparation>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientPreparation>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3237,41 +3745,47 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientPreparation>>>(
-        `/api/v1/valid_ingredient_preparations/by_preparation/${validPreparationID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidIngredientPreparation>>>(
+          `/api/v1/valid_ingredient_preparations/by_preparation/${validPreparationID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientPreparation>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientPreparation>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientPreparation>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getValidIngredientState(validIngredientStateID: string): Promise<APIResponse<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidIngredientState>>(
-        `/api/v1/valid_ingredient_states/${validIngredientStateID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3280,16 +3794,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidIngredientStateIngredient>>(
-        `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidIngredientStateIngredient>>(
+          `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3298,25 +3816,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientStateIngredient>>>(
-        `/api/v1/valid_ingredient_state_ingredients`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidIngredientStateIngredient>>>(`/api/v1/valid_ingredient_state_ingredients`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientStateIngredient>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientStateIngredient>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3326,25 +3846,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientStateIngredient>>>(
-        `/api/v1/valid_ingredient_state_ingredients/by_ingredient/${validIngredientID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidIngredientStateIngredient>>>(
+          `/api/v1/valid_ingredient_state_ingredients/by_ingredient/${validIngredientID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientStateIngredient>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientStateIngredient>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3354,25 +3879,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientStateIngredient>>>(
-        `/api/v1/valid_ingredient_state_ingredients/by_ingredient_state/${validIngredientStateID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidIngredientStateIngredient>>>(
+          `/api/v1/valid_ingredient_state_ingredients/by_ingredient_state/${validIngredientStateID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientStateIngredient>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientStateIngredient>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3381,25 +3911,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientState>>>(
-        `/api/v1/valid_ingredient_states`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidIngredientState>>>(`/api/v1/valid_ingredient_states`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientState>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientState>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientState>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3408,38 +3940,44 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredient>>>(`/api/v1/valid_ingredients`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<ValidIngredient>>>(`/api/v1/valid_ingredients`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredient>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredient>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredient>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getValidInstrument(validInstrumentID: string): Promise<APIResponse<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidInstrument>>(
-        `/api/v1/valid_instruments/${validInstrumentID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3448,38 +3986,44 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidInstrument>>>(`/api/v1/valid_instruments`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<ValidInstrument>>>(`/api/v1/valid_instruments`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidInstrument>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidInstrument>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidInstrument>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getValidMeasurementUnit(validMeasurementUnitID: string): Promise<APIResponse<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidMeasurementUnit>>(
-        `/api/v1/valid_measurement_units/${validMeasurementUnitID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3488,16 +4032,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidMeasurementUnitConversion>>(
-        `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidMeasurementUnitConversion>>(
+          `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3507,25 +4055,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnitConversion>>>(
-        `/api/v1/valid_measurement_conversions/from_unit/${validMeasurementUnitID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidMeasurementUnitConversion>>>(
+          `/api/v1/valid_measurement_conversions/from_unit/${validMeasurementUnitID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidMeasurementUnitConversion>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidMeasurementUnitConversion>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3535,25 +4088,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnitConversion>>>(
-        `/api/v1/valid_measurement_conversions/to_unit/${validMeasurementUnitID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidMeasurementUnitConversion>>>(
+          `/api/v1/valid_measurement_conversions/to_unit/${validMeasurementUnitID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidMeasurementUnitConversion>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidMeasurementUnitConversion>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3562,41 +4120,44 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnit>>>(
-        `/api/v1/valid_measurement_units`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidMeasurementUnit>>>(`/api/v1/valid_measurement_units`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnit>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidMeasurementUnit>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidMeasurementUnit>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getValidPreparation(validPreparationID: string): Promise<APIResponse<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidPreparation>>(
-        `/api/v1/valid_preparations/${validPreparationID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3605,16 +4166,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidPreparationInstrument>>(
-        `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidPreparationInstrument>>(
+          `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
+          {},
+        )
+        .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3623,25 +4188,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidPreparationInstrument>>>(
-        `/api/v1/valid_preparation_instruments`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidPreparationInstrument>>>(`/api/v1/valid_preparation_instruments`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidPreparationInstrument>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidPreparationInstrument>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidPreparationInstrument>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3651,25 +4218,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidPreparationInstrument>>>(
-        `/api/v1/valid_preparation_instruments/by_instrument/${validInstrumentID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidPreparationInstrument>>>(
+          `/api/v1/valid_preparation_instruments/by_instrument/${validInstrumentID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidPreparationInstrument>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidPreparationInstrument>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidPreparationInstrument>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3679,41 +4251,47 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidPreparationInstrument>>>(
-        `/api/v1/valid_preparation_instruments/by_preparation/${validPreparationID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidPreparationInstrument>>>(
+          `/api/v1/valid_preparation_instruments/by_preparation/${validPreparationID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidPreparationInstrument>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidPreparationInstrument>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidPreparationInstrument>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getValidPreparationVessel(validPreparationVesselID: string): Promise<APIResponse<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidPreparationVessel>>(
-        `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
-        {},
-      );
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels/${validPreparationVesselID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3722,25 +4300,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidPreparationVessel>>>(
-        `/api/v1/valid_preparation_vessels`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidPreparationVessel>>>(`/api/v1/valid_preparation_vessels`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidPreparationVessel>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidPreparationVessel>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidPreparationVessel>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3750,25 +4330,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidPreparationVessel>>>(
-        `/api/v1/valid_preparation_vessels/by_preparation/${validPreparationID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidPreparationVessel>>>(
+          `/api/v1/valid_preparation_vessels/by_preparation/${validPreparationID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidPreparationVessel>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidPreparationVessel>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidPreparationVessel>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3778,25 +4363,30 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidPreparationVessel>>>(
-        `/api/v1/valid_preparation_vessels/by_vessel/${ValidVesselID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidPreparationVessel>>>(
+          `/api/v1/valid_preparation_vessels/by_vessel/${ValidVesselID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidPreparationVessel>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidPreparationVessel>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidPreparationVessel>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3805,131 +4395,166 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidPreparation>>>(`/api/v1/valid_preparations`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<ValidPreparation>>>(`/api/v1/valid_preparations`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidPreparation>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidPreparation>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidPreparation>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getValidVessel(validVesselID: string): Promise<APIResponse<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, {})
+        .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getValidVessels(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidVessel>>>(`/api/v1/valid_vessels`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<ValidVessel>>>(`/api/v1/valid_vessels`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidVessel>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidVessel>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidVessel>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getWebhook(webhookID: string): Promise<APIResponse<Webhook>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`, {});
-
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .get<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`, {})
+        .then((res: AxiosResponse<APIResponse<Webhook>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async getWebhooks(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Webhook>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<Webhook>>>(`/api/v1/webhooks`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<Webhook>>>(`/api/v1/webhooks`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<Webhook>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<Webhook>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<Webhook>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async loginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<JWTResponse>>(self.baseURL + `/users/login/jwt`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response);
+      self.client
+        .post<APIResponse<JWTResponse>>(`/users/login/jwt`, input)
+        .then((res: AxiosResponse<APIResponse<JWTResponse>>) => {
+          if (res.data.error && res.data.error.message.toLowerCase() != 'totp required') {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async redeemPasswordResetToken(input: PasswordResetTokenRedemptionRequestInput): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<User>>(`/users/password/reset/redeem`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<User>>(`/users/password/reset/redeem`, input)
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async refreshTOTPSecret(input: TOTPSecretRefreshInput): Promise<APIResponse<TOTPSecretRefreshResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<TOTPSecretRefreshResponse>>(
-        `/api/v1/users/totp_secret/new`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<TOTPSecretRefreshResponse>>(`/api/v1/users/totp_secret/new`, input)
+        .then((res: AxiosResponse<APIResponse<TOTPSecretRefreshResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3939,27 +4564,34 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<HouseholdInvitation>>(
-        `/api/v1/household_invitations/${householdInvitationID}/reject`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/reject`, input)
+        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async requestEmailVerificationEmail(): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<User>>(`/api/v1/users/email_address_verification`);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<User>>(`/api/v1/users/email_address_verification`)
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -3968,39 +4600,51 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<PasswordResetToken>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<PasswordResetToken>>(`/users/password/reset`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<PasswordResetToken>>(`/users/password/reset`, input)
+        .then((res: AxiosResponse<APIResponse<PasswordResetToken>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async requestUsernameReminder(input: UsernameReminderRequestInput): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<User>>(`/users/username/reminder`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<User>>(`/users/username/reminder`, input)
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async runFinalizeMealPlanWorker(input: FinalizeMealPlansRequest): Promise<APIResponse<FinalizeMealPlansResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<FinalizeMealPlansResponse>>(
-        `/api/v1/workers/finalize_meal_plans`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<FinalizeMealPlansResponse>>(`/api/v1/workers/finalize_meal_plans`, input)
+        .then((res: AxiosResponse<APIResponse<FinalizeMealPlansResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4009,15 +4653,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<InitializeMealPlanGroceryListResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<InitializeMealPlanGroceryListResponse>>(
-        `/api/v1/workers/meal_plan_grocery_list_init`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<InitializeMealPlanGroceryListResponse>>(`/api/v1/workers/meal_plan_grocery_list_init`, input)
+        .then((res: AxiosResponse<APIResponse<InitializeMealPlanGroceryListResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4026,59 +4672,71 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<CreateMealPlanTasksResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<CreateMealPlanTasksResponse>>(
-        `/api/v1/workers/meal_plan_tasks`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<CreateMealPlanTasksResponse>>(`/api/v1/workers/meal_plan_tasks`, input)
+        .then((res: AxiosResponse<APIResponse<CreateMealPlanTasksResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async searchForMeals(q: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Meal>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<Meal>>>(`/api/v1/meals/search`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<Meal>>>(`/api/v1/meals/search`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<Meal>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<Meal>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<Meal>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async searchForRecipes(q: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<Recipe>>>(`/api/v1/recipes/search`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<Recipe>>>(`/api/v1/recipes/search`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<Recipe>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<Recipe>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<Recipe>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4088,44 +4746,54 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ServiceSetting>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ServiceSetting>>>(`/api/v1/settings/search`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<ServiceSetting>>>(`/api/v1/settings/search`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ServiceSetting>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ServiceSetting>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ServiceSetting>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async searchForUsers(q: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<User>>>(`/api/v1/users/search`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<User>>>(`/api/v1/users/search`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<User>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<User>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<User>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4135,25 +4803,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientGroup>>>(
-        `/api/v1/valid_ingredient_groups/search`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidIngredientGroup>>>(`/api/v1/valid_ingredient_groups/search`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientGroup>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientGroup>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientGroup>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4163,25 +4833,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredientState>>>(
-        `/api/v1/valid_ingredient_states/search`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidIngredientState>>>(`/api/v1/valid_ingredient_states/search`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredientState>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredientState>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredientState>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4191,22 +4863,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredient>>>(`/api/v1/valid_ingredients/search`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<ValidIngredient>>>(`/api/v1/valid_ingredients/search`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredient>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredient>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredient>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4216,22 +4893,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidInstrument>>>(`/api/v1/valid_instruments/search`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<ValidInstrument>>>(`/api/v1/valid_instruments/search`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidInstrument>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidInstrument>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidInstrument>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4241,25 +4923,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnit>>>(
-        `/api/v1/valid_measurement_units/search`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidMeasurementUnit>>>(`/api/v1/valid_measurement_units/search`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnit>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidMeasurementUnit>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidMeasurementUnit>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4269,25 +4953,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidPreparation>>>(
-        `/api/v1/valid_preparations/search`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidPreparation>>>(`/api/v1/valid_preparations/search`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidPreparation>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidPreparation>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidPreparation>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4297,22 +4983,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidVessel>>>(`/api/v1/valid_vessels/search`, {
-        params: filter.asRecord(),
-      });
+      self.client
+        .get<APIResponse<Array<ValidVessel>>>(`/api/v1/valid_vessels/search`, {
+          params: filter.asRecord(),
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidVessel>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidVessel>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidVessel>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4323,25 +5014,27 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidIngredient>>>(
-        `/api/v1/valid_ingredients/by_preparation/${validPreparationID}`,
-        {
+      self.client
+        .get<APIResponse<Array<ValidIngredient>>>(`/api/v1/valid_ingredients/by_preparation/${validPreparationID}`, {
           params: filter.asRecord(),
-        },
-      );
+        })
+        .then((res: AxiosResponse<APIResponse<Array<ValidIngredient>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidIngredient>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidIngredient>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4352,37 +5045,47 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.get<APIResponse<Array<ValidMeasurementUnit>>>(
-        `/api/v1/valid_measurement_units/by_ingredient/${validIngredientID}`,
-        {
-          params: filter.asRecord(),
-        },
-      );
+      self.client
+        .get<APIResponse<Array<ValidMeasurementUnit>>>(
+          `/api/v1/valid_measurement_units/by_ingredient/${validIngredientID}`,
+          {
+            params: filter.asRecord(),
+          },
+        )
+        .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnit>>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
 
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      const result = new QueryFilteredResult<ValidMeasurementUnit>({
-        data: response.data.data,
-        totalCount: response.data.pagination?.totalCount,
-        page: response.data.pagination?.page,
-        limit: response.data.pagination?.limit,
-      });
-
-      resolve(result);
+          resolve(
+            new QueryFilteredResult<ValidMeasurementUnit>({
+              data: res.data.data,
+              totalCount: res.data.pagination?.totalCount,
+              page: res.data.pagination?.page,
+              limit: res.data.pagination?.limit,
+            }),
+          );
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async setDefaultHousehold(householdID: string): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<Household>>(`/api/v1/households/${householdID}/default`);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<Household>>(`/api/v1/households/${householdID}/default`)
+        .then((res: AxiosResponse<APIResponse<Household>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4392,27 +5095,34 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<Household>>(
-        `/api/v1/households/${householdID}/transfer`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<Household>>(`/api/v1/households/${householdID}/transfer`, input)
+        .then((res: AxiosResponse<APIResponse<Household>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async updateHousehold(householdID: string, input: HouseholdUpdateRequestInput): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<Household>>(`/api/v1/households/${householdID}`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<Household>>(`/api/v1/households/${householdID}`, input)
+        .then((res: AxiosResponse<APIResponse<Household>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4422,15 +5132,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<HouseholdInstrumentOwnership>>(
-        `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<HouseholdInstrumentOwnership>>(
+          `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4441,27 +5156,37 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<UserPermissionsResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.patch<APIResponse<UserPermissionsResponse>>(
-        `/api/v1/households/${householdID}/members/${userID}/permissions`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .patch<APIResponse<UserPermissionsResponse>>(
+          `/api/v1/households/${householdID}/members/${userID}/permissions`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<UserPermissionsResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async updateMealPlan(mealPlanID: string, input: MealPlanUpdateRequestInput): Promise<APIResponse<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, input)
+        .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4472,15 +5197,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<MealPlanEvent>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`, input)
+        .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4491,15 +5218,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<MealPlanGroceryListItem>>(
-        `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<MealPlanGroceryListItem>>(
+          `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4511,15 +5243,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<MealPlanOption>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<MealPlanOption>>(
+          `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4532,15 +5269,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOptionVote>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<MealPlanOptionVote>>(
-        `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<MealPlanOptionVote>>(
+          `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<MealPlanOptionVote>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4551,39 +5293,51 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.patch<APIResponse<MealPlanTask>>(
-        `/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .patch<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`, input)
+        .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async updatePassword(input: PasswordUpdateInput): Promise<AxiosResponse<APIResponse<PasswordResetResponse>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<PasswordResetResponse>>(`/api/v1/users/password/new`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response);
+      self.client
+        .put<APIResponse<PasswordResetResponse>>(`/api/v1/users/password/new`, input)
+        .then((res: AxiosResponse<APIResponse<PasswordResetResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async updateRecipe(recipeID: string, input: RecipeUpdateRequestInput): Promise<APIResponse<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, input)
+        .then((res: AxiosResponse<APIResponse<Recipe>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4594,15 +5348,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<RecipePrepTask>>(
-        `/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`, input)
+        .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4613,15 +5369,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<RecipeRating>>(
-        `/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`, input)
+        .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4632,15 +5390,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<RecipeStep>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`, input)
+        .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4652,15 +5412,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<RecipeStepCompletionCondition>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<RecipeStepCompletionCondition>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4672,15 +5437,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<RecipeStepIngredient>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<RecipeStepIngredient>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4692,15 +5462,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<RecipeStepInstrument>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<RecipeStepInstrument>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4712,15 +5487,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<RecipeStepProduct>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<RecipeStepProduct>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4732,15 +5512,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<RecipeStepVessel>>(
-        `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<RecipeStepVessel>>(
+          `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4750,39 +5535,54 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ServiceSettingConfiguration>>(
-        `/api/v1/settings/configurations/${serviceSettingConfigurationID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ServiceSettingConfiguration>>(
+          `/api/v1/settings/configurations/${serviceSettingConfigurationID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<ServiceSettingConfiguration>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async updateUserDetails(input: UserDetailsUpdateRequestInput): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<User>>(`/api/v1/users/details`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<User>>(`/api/v1/users/details`, input)
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async updateUserEmailAddress(input: UserEmailAddressUpdateInput): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<User>>(`/api/v1/users/email_address`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<User>>(`/api/v1/users/email_address`, input)
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4792,15 +5592,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<UserIngredientPreference>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<UserIngredientPreference>>(
-        `/api/v1/user_ingredient_preferences/${userIngredientPreferenceID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<UserIngredientPreference>>(
+          `/api/v1/user_ingredient_preferences/${userIngredientPreferenceID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<UserIngredientPreference>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4810,27 +5615,34 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<UserNotification>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.patch<APIResponse<UserNotification>>(
-        `/api/v1/user_notifications/${userNotificationID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .patch<APIResponse<UserNotification>>(`/api/v1/user_notifications/${userNotificationID}`, input)
+        .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async updateUserUsername(input: UsernameUpdateInput): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<User>>(`/api/v1/users/username`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<User>>(`/api/v1/users/username`, input)
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4840,15 +5652,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidIngredient>>(
-        `/api/v1/valid_ingredients/${validIngredientID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`, input)
+        .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4858,15 +5672,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidIngredientGroup>>(
-        `/api/v1/valid_ingredient_groups/${validIngredientGroupID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`, input)
+        .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4876,15 +5692,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidIngredientMeasurementUnit>>(
-        `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidIngredientMeasurementUnit>>(
+          `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4894,15 +5715,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidIngredientPreparation>>(
-        `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidIngredientPreparation>>(
+          `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4912,15 +5738,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidIngredientState>>(
-        `/api/v1/valid_ingredient_states/${validIngredientStateID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`, input)
+        .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4930,15 +5758,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidIngredientStateIngredient>>(
-        `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidIngredientStateIngredient>>(
+          `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4948,15 +5781,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidInstrument>>(
-        `/api/v1/valid_instruments/${validInstrumentID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`, input)
+        .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4966,15 +5801,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidMeasurementUnit>>(
-        `/api/v1/valid_measurement_units/${validMeasurementUnitID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`, input)
+        .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -4984,15 +5821,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidMeasurementUnitConversion>>(
-        `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidMeasurementUnitConversion>>(
+          `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -5002,15 +5844,17 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidPreparation>>(
-        `/api/v1/valid_preparations/${validPreparationID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`, input)
+        .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -5020,15 +5864,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidPreparationInstrument>>(
-        `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidPreparationInstrument>>(
+          `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -5038,15 +5887,20 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidPreparationVessel>>(
-        `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
-        input,
-      );
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidPreparationVessel>>(
+          `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
+          input,
+        )
+        .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
@@ -5056,48 +5910,68 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.put<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .put<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, input)
+        .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async uploadUserAvatar(input: AvatarUpdateInput): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<User>>(`/api/v1/users/avatar/upload`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<User>>(`/api/v1/users/avatar/upload`, input)
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async verifyEmailAddress(input: EmailAddressVerificationRequestInput): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<User>>(`/users/email_address/verify`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<User>>(`/users/email_address/verify`, input)
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 
   async verifyTOTPSecret(input: TOTPSecretVerificationInput): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      const response = await self.client.post<APIResponse<User>>(`/users/totp_secret/verify`, input);
-      if (response.data.error) {
-        reject(new Error(response.data.error.message));
-      }
-
-      resolve(response.data);
+      self.client
+        .post<APIResponse<User>>(`/users/totp_secret/verify`, input)
+        .then((res: AxiosResponse<APIResponse<User>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
     });
   }
 }

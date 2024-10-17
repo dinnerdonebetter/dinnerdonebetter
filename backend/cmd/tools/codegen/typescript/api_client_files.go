@@ -337,22 +337,24 @@ func (f *APIClientFunction) Render() (string, error) {
 ): Promise< QueryFilteredResult< {{ .ResponseType.TypeName }} > > {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
+    self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
       params: filter.asRecord(),
-    });
-
-    if (response.data.error) {
-      reject(new Error(response.data.error.message));
-    }
-
-    const result = new QueryFilteredResult<{{ .ResponseType.TypeName }}>({
-      data: response.data.data,
-      totalCount: response.data.pagination?.totalCount,
-      page: response.data.pagination?.page,
-      limit: response.data.pagination?.limit,
-    });
-
-    resolve(result);
+    })
+ 		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
+		  if (res.data.error) {
+			reject(new Error(res.data.error.message));
+		  }
+	
+          resolve(new QueryFilteredResult<{{ .ResponseType.TypeName }}>({
+		    data: res.data.data,
+		    totalCount: res.data.pagination?.totalCount,
+		    page: res.data.pagination?.page,
+		    limit: res.data.pagination?.limit,
+		  }));
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
   });
 }`
 		} else {
@@ -362,13 +364,16 @@ func (f *APIClientFunction) Render() (string, error) {
 	{{ end -}}): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }} {{ .ResponseType.TypeName }} >  {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}  {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {});
-
-    if (response.data.error) {
-      reject(new Error(response.data.error.message));
-    }
-
-    resolve(response.data);
+    self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {})
+ 		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
   });
 }`
 		}
@@ -380,12 +385,16 @@ func (f *APIClientFunction) Render() (string, error) {
 ): Promise< {{ if .ReturnRawResponse }} AxiosResponse< {{ end }} {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}  {{ .ResponseType.TypeName }} > {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }}  {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}{{ if .ReturnRawResponse }} > {{ end }} {
   let self = this;
   return new Promise(async function (resolve, reject) {
-    const response = await self.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }});
-	    if (response.data.error) {
-	      reject(new Error(response.data.error.message));
-	    }
-
-	    resolve(response{{ if not .ReturnRawResponse }}.data{{ end }});
+    self.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }})
+ 		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
+          if (res.data.error{{ if or (eq .Name "loginForJWT") (eq .Name "adminLoginForJWT") }} && res.data.error.message.toLowerCase() != "totp required" {{ end }}) {
+            reject(new Error(res.data.error.message));
+          }
+	    resolve(res{{ if not .ReturnRawResponse }}.data{{ end }});
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
 	  });
 }`
 	}

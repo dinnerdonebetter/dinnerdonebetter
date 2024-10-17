@@ -67,6 +67,7 @@ import { Span } from '@opentelemetry/api';
 import { buildServerSideLogger, LoggerType } from '@dinnerdonebetter/logger';
 ` + "import {\n\t" + strings.Join(modelsImports, ",\n\t") + "\n" + `} from "` + modelsPackage + `";` + `
 
+
 function _curlFromAxiosConfig(config: InternalAxiosRequestConfig): string {
   const method = (config?.method || 'UNKNOWN').toUpperCase();
   const url = config.url;
@@ -104,12 +105,14 @@ function _curlFromAxiosConfig(config: InternalAxiosRequestConfig): string {
 export class DinnerDoneBetterAPIClient {
   baseURL: string;
   client: AxiosInstance;
+  oauth2Token: string;
   requestInterceptorID: number;
   responseInterceptorID: number;
   logger: LoggerType = buildServerSideLogger('api_client');
 
-  constructor(clientName: string = 'DDB-Service-Client', baseURL: string = '', oauth2Token?: string) {
+  constructor(baseURL: string = '', oauth2Token?: string, clientName: string = 'DDB-Service-Client') {
     this.baseURL = baseURL;
+    this.oauth2Token = '';
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -117,6 +120,7 @@ export class DinnerDoneBetterAPIClient {
       'X-Service-Client': clientName,
     };
 
+    // because this client is used both in the browser and on the server, we can't mandate oauth2 tokens
     if (oauth2Token) {
       headers['Authorization'] = ` + "`" + `Bearer ${oauth2Token}` + "`" + `;
     }
@@ -131,8 +135,7 @@ export class DinnerDoneBetterAPIClient {
 
     this.requestInterceptorID = this.client.interceptors.request.use(
       (request: InternalAxiosRequestConfig) => {
-        // this.logger.debug(` + "`" + `Request: ${request.method} ${request.baseURL}${request.url}` + "`" + `);
-        console.log(` + "`" + `${_curlFromAxiosConfig(request)}` + "`" + `);
+        // console.log(` + "`" + `${_curlFromAxiosConfig(request)}` + "`" + `);
 
         return request;
       },
@@ -146,11 +149,6 @@ export class DinnerDoneBetterAPIClient {
 
     this.responseInterceptorID = this.client.interceptors.response.use(
       (response: AxiosResponse) => {
-        this.logger.debug(
-          ` + "`" + `Response: ${response.status} ${response.config.method} ${response.config.url}` + "`" + `,
-          // response.data,
-        );
-
         // console.log(` + "`" + `${response.status} ${_curlFromAxiosConfig(response.config)}` + "`" + `);
 
         return response;
@@ -168,12 +166,10 @@ export class DinnerDoneBetterAPIClient {
     this.client.interceptors.request.eject(this.requestInterceptorID);
     this.requestInterceptorID = this.client.interceptors.request.use(
       (request: InternalAxiosRequestConfig) => {
-        this.logger.debug(` + "`" + `Request: ${request.method} ${request.url}` + "`" + `, spanLogDetails);
-
         // console.log(_curlFromAxiosConfig(request));
 
         if (spanContext.traceId) {
-          request.headers.set('traceparent', spanContext.traceId);
+          request.headers.set('traceparent', spanLogDetails.traceID);
         }
 
         return request;
