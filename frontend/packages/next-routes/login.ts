@@ -86,10 +86,6 @@ export function buildLoginRoute(config: {
   admin: boolean;
 }) {
   return async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
-    console.log(
-      `calling login with url: ${config.baseURL} client ID: ${config.oauth2ClientID} and secret: ${config.oauth2ClientSecret}`,
-    );
-
     if (config.oauth2ClientID === '' || config.oauth2ClientSecret === '') {
       throw new Error('oauth2 client id and secret must be provided');
     }
