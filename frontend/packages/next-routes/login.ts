@@ -85,6 +85,8 @@ export function buildLoginRoute(config: {
   cookieFunc: cookieFunction;
   admin: boolean;
 }) {
+  console.log(`buildLoginRoute called with ${config.baseURL} ${config.oauth2ClientID} ${config.oauth2ClientSecret}`);
+
   return async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
     console.log(
       `calling login with url: ${config.baseURL} client ID: ${config.oauth2ClientID} and secret: ${config.oauth2ClientSecret}`,
@@ -110,7 +112,7 @@ export function buildLoginRoute(config: {
         }
       }
 
-      const apiClient = buildCookielessServerSideClient().withSpan(span);
+      const apiClient = buildCookielessServerSideClient(config.baseURL).withSpan(span);
       const loginPromise = config.admin ? apiClient.adminLoginForJWT(input) : apiClient.loginForJWT(input);
 
       await loginPromise
