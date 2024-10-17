@@ -267,7 +267,7 @@ export class DinnerDoneBetterAPIClient {
       (request: InternalAxiosRequestConfig) => {
         this.logger.debug(`Request: ${request.method} ${request.url}`, spanLogDetails);
 
-        // console.log(_curlFromAxiosConfig(request));
+        console.log(_curlFromAxiosConfig(request));
 
         if (spanContext.traceId) {
           request.headers.set('traceparent', spanContext.traceId);
