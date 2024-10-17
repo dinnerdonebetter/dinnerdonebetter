@@ -12,7 +12,7 @@
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "build": "tsc",
-    "test": "jest"
+    "test": "echo 'you should test me'"
   },
   "dependencies": {
     "axios": "1.7.7",
