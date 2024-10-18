@@ -8774,11 +8774,6 @@ write-file-atomic@^4.0.2:
     imurmurhash "^0.1.4"
     signal-exit "^3.0.7"
 
-xid-ts@^1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/xid-ts/-/xid-ts-1.1.4.tgz#f4013c58cb4d989d97cdadc16dd1be619490bdab"
-  integrity sha512-bdBn9nW1e8O/dcrNYhAHJ+Iabe384mLoPkRypAylyazI+AfJnV0JMIoH/1DUnsdcCHLn/ZEH7Pt5kRUH4xnJdA==
-
 y18n@^5.0.5:
   version "5.0.8"
   resolved "https://registry.npmjs.org/y18n/-/y18n-5.0.8.tgz"
