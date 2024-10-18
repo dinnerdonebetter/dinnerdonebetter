@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidIngredient } from './ValidIngredient';
-import { ValidMeasurementUnit } from './ValidMeasurementUnit';
+import { ValidIngredient } from './ValidIngredient.gen';
+import { ValidMeasurementUnit } from './ValidMeasurementUnit.gen';
 
 export interface IValidMeasurementUnitConversion {
   archivedAt: string;

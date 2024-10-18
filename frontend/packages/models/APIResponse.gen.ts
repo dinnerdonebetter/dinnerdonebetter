@@ -1,8 +1,8 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { IAPIError } from './APIError';
-import { ResponseDetails } from './ResponseDetails';
-import { Pagination } from './Pagination';
+import { IAPIError } from './APIError.gen';
+import { ResponseDetails } from './ResponseDetails.gen';
+import { Pagination } from './Pagination.gen';
 
 export class APIResponse<T> {
   data: T;

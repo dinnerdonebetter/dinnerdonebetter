@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidMeasurementUnit } from './ValidMeasurementUnit';
+import { ValidMeasurementUnit } from './ValidMeasurementUnit.gen';
 import { ValidRecipeStepProductType } from './enums.gen';
 import { NumberRange } from './number_range.gen';
 

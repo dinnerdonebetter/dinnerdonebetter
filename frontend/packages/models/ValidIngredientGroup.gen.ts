@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidIngredientGroupMember } from './ValidIngredientGroupMember';
+import { ValidIngredientGroupMember } from './ValidIngredientGroupMember.gen';
 
 export interface IValidIngredientGroup {
   archivedAt: string;

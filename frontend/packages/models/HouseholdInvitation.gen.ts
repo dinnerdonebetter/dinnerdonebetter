@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { Household } from './Household';
-import { User } from './User';
+import { Household } from './Household.gen';
+import { User } from './User.gen';
 
 export interface IHouseholdInvitation {
   archivedAt: string;

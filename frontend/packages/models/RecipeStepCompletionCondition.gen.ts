@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { RecipeStepCompletionConditionIngredient } from './RecipeStepCompletionConditionIngredient';
-import { ValidIngredientState } from './ValidIngredientState';
+import { RecipeStepCompletionConditionIngredient } from './RecipeStepCompletionConditionIngredient.gen';
+import { ValidIngredientState } from './ValidIngredientState.gen';
 
 export interface IRecipeStepCompletionCondition {
   archivedAt: string;

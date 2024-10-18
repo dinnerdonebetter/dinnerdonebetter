@@ -1,12 +1,12 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { RecipeMedia } from './RecipeMedia';
-import { RecipeStepCompletionCondition } from './RecipeStepCompletionCondition';
-import { RecipeStepIngredient } from './RecipeStepIngredient';
-import { RecipeStepInstrument } from './RecipeStepInstrument';
-import { RecipeStepProduct } from './RecipeStepProduct';
-import { RecipeStepVessel } from './RecipeStepVessel';
-import { ValidPreparation } from './ValidPreparation';
+import { RecipeMedia } from './RecipeMedia.gen';
+import { RecipeStepCompletionCondition } from './RecipeStepCompletionCondition.gen';
+import { RecipeStepIngredient } from './RecipeStepIngredient.gen';
+import { RecipeStepInstrument } from './RecipeStepInstrument.gen';
+import { RecipeStepProduct } from './RecipeStepProduct.gen';
+import { RecipeStepVessel } from './RecipeStepVessel.gen';
+import { ValidPreparation } from './ValidPreparation.gen';
 import { NumberRange } from './number_range.gen';
 
 export interface IRecipeStep {

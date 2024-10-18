@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { RecipePrepTaskStepCreationRequestInput } from './RecipePrepTaskStepCreationRequestInput';
+import { RecipePrepTaskStepCreationRequestInput } from './RecipePrepTaskStepCreationRequestInput.gen';
 import { NumberRange, NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IRecipePrepTaskCreationRequestInput {

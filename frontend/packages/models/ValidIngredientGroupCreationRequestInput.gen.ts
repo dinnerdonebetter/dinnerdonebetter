@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidIngredientGroupMemberCreationRequestInput } from './ValidIngredientGroupMemberCreationRequestInput';
+import { ValidIngredientGroupMemberCreationRequestInput } from './ValidIngredientGroupMemberCreationRequestInput.gen';
 
 export interface IValidIngredientGroupCreationRequestInput {
   description: string;

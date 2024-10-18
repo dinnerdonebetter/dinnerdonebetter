@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { MealComponent } from './MealComponent';
+import { MealComponent } from './MealComponent.gen';
 import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IMeal {

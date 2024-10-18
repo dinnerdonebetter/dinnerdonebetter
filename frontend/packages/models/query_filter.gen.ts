@@ -1,6 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 import { Span } from '@opentelemetry/api';
+import { Pagination } from './Pagination.gen';
 
 export class QueryFilteredResult<T> {
   data: T[];
@@ -101,6 +102,23 @@ export class QueryFilter {
       'pagination.limit': this.limit,
       'pagination.includeArchived': this.includeArchived,
     });
+  }
+
+  public toPagination(filteredCount?: number, totalCount?: number): Pagination {
+    const out = new Pagination({
+      limit: this.limit,
+      page: this.page,
+    });
+
+    if (filteredCount) {
+      out.filteredCount = filteredCount;
+    }
+
+    if (totalCount) {
+      out.totalCount = totalCount;
+    }
+
+    return out;
   }
 
   public static deriveFromPage(): QueryFilter {

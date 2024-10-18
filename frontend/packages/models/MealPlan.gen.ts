@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { MealPlanEvent } from './MealPlanEvent';
+import { MealPlanEvent } from './MealPlanEvent.gen';
 import { ValidMealPlanElectionMethod, ValidMealPlanStatus } from './enums.gen';
 
 export interface IMealPlan {

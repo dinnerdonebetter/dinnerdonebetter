@@ -174,7 +174,7 @@ export * from './Webhook.gen';
 export * from './WebhookCreationRequestInput.gen';
 export * from './WebhookTriggerEvent.gen';
 export * from './WebhookTriggerEventCreationRequestInput.gen';
-export * from './enums.gen.ts';
+export * from './enums.gen';
 export * from './APIResponse.gen';
 export * from './number_range.gen';
 export * from './query_filter.gen';

@@ -189,10 +189,21 @@ configs:
 queries:
 	go run $(THIS)/cmd/tools/gen_queries
 
-codegen:
-	go run $(THIS)/cmd/tools/codegen
-	@$(MAKE) format_golang
+.PHONY: codegen-ts
+codegen-ts:
+	go run $(THIS)/cmd/tools/codegen --typescript
 	@(cd ../frontend && $(MAKE) format)
+
+.PHONY: codegen-go
+codegen-go:
+	go run $(THIS)/cmd/tools/codegen --golang
+	@$(MAKE) format_golang
+
+.PHONY: codegen
+codegen: # codegen-ts codegen-go
+	go run $(THIS)/cmd/tools/codegen --typescript --golang
+	@(cd ../frontend && $(MAKE) format)
+	@$(MAKE) format_golang
 
 .PHONY: querier
 querier: queries queries_lint  ## TODO: This target is broken

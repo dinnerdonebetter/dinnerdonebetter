@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidInstrument } from './ValidInstrument';
+import { ValidInstrument } from './ValidInstrument.gen';
 
 export interface IHouseholdInstrumentOwnership {
   archivedAt: string;

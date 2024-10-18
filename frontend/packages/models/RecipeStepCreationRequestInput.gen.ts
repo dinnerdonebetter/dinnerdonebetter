@@ -1,10 +1,10 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { RecipeStepCompletionConditionCreationRequestInput } from './RecipeStepCompletionConditionCreationRequestInput';
-import { RecipeStepIngredientCreationRequestInput } from './RecipeStepIngredientCreationRequestInput';
-import { RecipeStepInstrumentCreationRequestInput } from './RecipeStepInstrumentCreationRequestInput';
-import { RecipeStepProductCreationRequestInput } from './RecipeStepProductCreationRequestInput';
-import { RecipeStepVesselCreationRequestInput } from './RecipeStepVesselCreationRequestInput';
+import { RecipeStepCompletionConditionCreationRequestInput } from './RecipeStepCompletionConditionCreationRequestInput.gen';
+import { RecipeStepIngredientCreationRequestInput } from './RecipeStepIngredientCreationRequestInput.gen';
+import { RecipeStepInstrumentCreationRequestInput } from './RecipeStepInstrumentCreationRequestInput.gen';
+import { RecipeStepProductCreationRequestInput } from './RecipeStepProductCreationRequestInput.gen';
+import { RecipeStepVesselCreationRequestInput } from './RecipeStepVesselCreationRequestInput.gen';
 import { NumberRange } from './number_range.gen';
 
 export interface IRecipeStepCreationRequestInput {

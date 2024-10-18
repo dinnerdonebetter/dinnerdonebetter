@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { MealPlanOptionVoteCreationInput } from './MealPlanOptionVoteCreationInput';
+import { MealPlanOptionVoteCreationInput } from './MealPlanOptionVoteCreationInput.gen';
 
 export interface IMealPlanOptionVoteCreationRequestInput {
   votes: MealPlanOptionVoteCreationInput[];

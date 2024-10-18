@@ -85,7 +85,7 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 			imports[modelsPackage] = append(imports[modelsPackage], function.InputType.Type)
 		}
 
-		if function.ResponseType.TypeName != "" && function.ResponseType.TypeName != "string" {
+		if function.ResponseType.TypeName != "" && function.ResponseType.TypeName != stringType {
 			imports[modelsPackage] = append(imports[modelsPackage], function.ResponseType.TypeName)
 		}
 
@@ -114,6 +114,9 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 		return fmt.Errorf("failed to write main file: %w", err)
 	}
 
+	createdTests = removeDuplicates(createdTests)
+	slices.Sort(createdTests)
+
 	testFile := buildClientTestFile(modelsImports)
 	for _, createdFile := range createdTests {
 		testFile += createdFile + "\n\n"
@@ -121,11 +124,15 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 	testFile += "\n})\n"
 
 	if err = os.WriteFile(fmt.Sprintf("%s/client.gen.test.ts", outputPath), []byte(testFile), 0o600); err != nil {
-		return fmt.Errorf("failed to write main file: %w", err)
+		return fmt.Errorf("failed to write client file: %w", err)
 	}
 
 	if err = os.WriteFile(fmt.Sprintf("%s/index.ts", outputPath), []byte(APIClientIndexFile), 0o600); err != nil {
-		return fmt.Errorf("failed to write main file: %w", err)
+		return fmt.Errorf("failed to write index file: %w", err)
+	}
+
+	if err = os.WriteFile(fmt.Sprintf("%s/jest.config.ts", outputPath), []byte(jestConfigFile), 0o600); err != nil {
+		return fmt.Errorf("failed to write jest config file: %w", err)
 	}
 
 	return nil
@@ -186,7 +193,7 @@ func WriteModelFiles(spec *openapi31.Spec, outputPath string) error {
 	for _, createdFile := range createdFiles {
 		indexFile += fmt.Sprintf("export * from './%s.gen';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", outputPath)), ".gen.ts"))
 	}
-	indexFile += "export * from './enums.gen.ts';\n"
+	indexFile += "export * from './enums.gen';\n"
 
 	if err = os.WriteFile(fmt.Sprintf("%s/enums.gen.ts", outputPath), []byte(enumsFile), 0o600); err != nil {
 		return fmt.Errorf("failed to write enums file: %w", err)
@@ -230,7 +237,7 @@ func WriteMockAPIFiles(spec *openapi31.Spec, outputPath string) error {
 		}
 
 		importStatement := "import type { Page, Route } from '@playwright/test';\n\n"
-		if function.ResponseType != "" && function.ResponseType != "string" {
+		if function.ResponseType != "" && function.ResponseType != stringType {
 			modelsImports := []string{
 				function.ResponseType,
 			}

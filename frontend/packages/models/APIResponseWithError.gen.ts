@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { APIError } from './APIError';
-import { ResponseDetails } from './ResponseDetails';
+import { APIError } from './APIError.gen';
+import { ResponseDetails } from './ResponseDetails.gen';
 
 export interface IAPIResponseWithError {
   details: ResponseDetails;

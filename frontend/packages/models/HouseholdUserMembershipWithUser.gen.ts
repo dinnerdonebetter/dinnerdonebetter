@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { User } from './User';
+import { User } from './User.gen';
 
 export interface IHouseholdUserMembershipWithUser {
   archivedAt: string;

@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidInstrument } from './ValidInstrument';
-import { ValidPreparation } from './ValidPreparation';
+import { ValidInstrument } from './ValidInstrument.gen';
+import { ValidPreparation } from './ValidPreparation.gen';
 
 export interface IValidPreparationInstrument {
   archivedAt: string;

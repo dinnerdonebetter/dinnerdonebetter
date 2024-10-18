@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { MealPlanOptionCreationRequestInput } from './MealPlanOptionCreationRequestInput';
+import { MealPlanOptionCreationRequestInput } from './MealPlanOptionCreationRequestInput.gen';
 
 export interface IMealPlanEventCreationRequestInput {
   endsAt: string;

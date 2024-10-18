@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidPreparation } from './ValidPreparation';
+import { ValidPreparation } from './ValidPreparation.gen';
 import { NumberRange } from './number_range.gen';
 
 export interface IRecipeStepUpdateRequestInput {

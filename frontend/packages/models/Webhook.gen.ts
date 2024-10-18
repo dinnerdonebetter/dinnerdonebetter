@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { WebhookTriggerEvent } from './WebhookTriggerEvent';
+import { WebhookTriggerEvent } from './WebhookTriggerEvent.gen';
 
 export interface IWebhook {
   archivedAt: string;

@@ -1,8 +1,8 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { RecipeMedia } from './RecipeMedia';
-import { RecipePrepTask } from './RecipePrepTask';
-import { RecipeStep } from './RecipeStep';
+import { RecipeMedia } from './RecipeMedia.gen';
+import { RecipePrepTask } from './RecipePrepTask.gen';
+import { RecipeStep } from './RecipeStep.gen';
 import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IRecipe {

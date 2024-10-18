@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidVessel } from './ValidVessel';
+import { ValidVessel } from './ValidVessel.gen';
 import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IRecipeStepVessel {

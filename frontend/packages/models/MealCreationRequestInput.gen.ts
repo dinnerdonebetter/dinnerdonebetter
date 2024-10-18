@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { MealComponentCreationRequestInput } from './MealComponentCreationRequestInput';
+import { MealComponentCreationRequestInput } from './MealComponentCreationRequestInput.gen';
 import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IMealCreationRequestInput {

@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { HouseholdUserMembershipWithUser } from './HouseholdUserMembershipWithUser';
+import { HouseholdUserMembershipWithUser } from './HouseholdUserMembershipWithUser.gen';
 
 export interface IHousehold {
   addressLine1: string;

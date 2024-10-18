@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidIngredient } from './ValidIngredient';
-import { ValidIngredientState } from './ValidIngredientState';
+import { ValidIngredient } from './ValidIngredient.gen';
+import { ValidIngredientState } from './ValidIngredientState.gen';
 
 export interface IValidIngredientStateIngredient {
   archivedAt: string;

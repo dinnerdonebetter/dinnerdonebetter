@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { MealPlanOption } from './MealPlanOption';
+import { MealPlanOption } from './MealPlanOption.gen';
 
 export interface IMealPlanEvent {
   archivedAt: string;

@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { MealPlanOption } from './MealPlanOption';
-import { RecipePrepTask } from './RecipePrepTask';
+import { MealPlanOption } from './MealPlanOption.gen';
+import { RecipePrepTask } from './RecipePrepTask.gen';
 import { MealPlanTaskStatus } from './enums.gen';
 
 export interface IMealPlanTask {

@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ServiceSetting } from './ServiceSetting';
+import { ServiceSetting } from './ServiceSetting.gen';
 
 export interface IServiceSettingConfiguration {
   archivedAt: string;

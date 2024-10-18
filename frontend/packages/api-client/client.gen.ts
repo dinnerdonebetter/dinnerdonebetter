@@ -312,11 +312,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -329,11 +334,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<JWTResponse>>) => {
           if (res.data.error && res.data.error.message.toLowerCase() != 'totp required') {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res);
           }
-          resolve(res);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<JWTResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -346,11 +356,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<UserStatusResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserStatusResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -359,15 +374,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<Household>>(`/api/v1/households/${householdID}`, {})
+        .delete<APIResponse<Household>>(`/api/v1/households/${householdID}`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Household>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -380,16 +400,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<HouseholdInstrumentOwnership>>(
           `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -398,15 +422,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<Meal>>(`/api/v1/meals/${mealID}`, {})
+        .delete<APIResponse<Meal>>(`/api/v1/meals/${mealID}`)
         .then((res: AxiosResponse<APIResponse<Meal>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Meal>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -415,15 +444,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, {})
+        .delete<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`)
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlan>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -432,15 +466,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`, {})
+        .delete<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanEvent>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -454,16 +493,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<MealPlanGroceryListItem>>(
           `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanGroceryListItem>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -478,16 +521,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<MealPlanOption>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanOption>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -503,16 +550,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<MealPlanOptionVote>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOptionVote>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanOptionVote>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -521,15 +572,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`, {})
+        .delete<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`)
         .then((res: AxiosResponse<APIResponse<OAuth2Client>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<OAuth2Client>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -538,15 +594,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, {})
+        .delete<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Recipe>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -555,15 +616,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`, {})
+        .delete<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipePrepTask>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -572,15 +638,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`, {})
+        .delete<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeRating>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -589,15 +660,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`, {})
+        .delete<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStep>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -612,16 +688,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<RecipeStepCompletionCondition>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepCompletionCondition>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -636,16 +716,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<RecipeStepIngredient>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -660,16 +744,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<RecipeStepInstrument>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -684,16 +772,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<RecipeStepProduct>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepProduct>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -708,16 +800,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<RecipeStepVessel>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -726,15 +822,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`, {})
+        .delete<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`)
         .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ServiceSetting>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -747,16 +848,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<ServiceSettingConfiguration>>(
           `/api/v1/settings/configurations/${serviceSettingConfigurationID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ServiceSettingConfiguration>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ServiceSettingConfiguration>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -765,15 +870,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<User>>(`/api/v1/users/${userID}`, {})
+        .delete<APIResponse<User>>(`/api/v1/users/${userID}`)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -786,16 +896,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<UserIngredientPreference>>(
           `/api/v1/user_ingredient_preferences/${userIngredientPreferenceID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<UserIngredientPreference>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserIngredientPreference>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -804,15 +918,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<HouseholdUserMembership>>(`/api/v1/households/${householdID}/members/${userID}`, {})
+        .delete<APIResponse<HouseholdUserMembership>>(`/api/v1/households/${householdID}/members/${userID}`)
         .then((res: AxiosResponse<APIResponse<HouseholdUserMembership>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdUserMembership>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -821,15 +940,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`, {})
+        .delete<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -838,15 +962,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`, {})
+        .delete<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientGroup>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -859,16 +988,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<ValidIngredientMeasurementUnit>>(
           `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientMeasurementUnit>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -881,16 +1014,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<ValidIngredientPreparation>>(
           `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientPreparation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -899,15 +1036,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`, {})
+        .delete<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientState>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -920,16 +1062,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<ValidIngredientStateIngredient>>(
           `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientStateIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -938,15 +1084,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`, {})
+        .delete<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -955,15 +1106,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`, {})
+        .delete<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidMeasurementUnit>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -976,16 +1132,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<ValidMeasurementUnitConversion>>(
           `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidMeasurementUnitConversion>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -994,15 +1154,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`, {})
+        .delete<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1015,16 +1180,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<ValidPreparationInstrument>>(
           `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparationInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1033,18 +1202,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<ValidPreparationVessel>>(
-          `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
-          {},
-        )
+        .delete<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels/${validPreparationVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparationVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1053,15 +1224,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, {})
+        .delete<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1070,15 +1246,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .delete<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`, {})
+        .delete<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`)
         .then((res: AxiosResponse<APIResponse<Webhook>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Webhook>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1092,16 +1273,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .delete<APIResponse<WebhookTriggerEvent>>(
           `/api/v1/webhooks/${webhookID}/trigger_events/${webhookTriggerEventID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<WebhookTriggerEvent>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<WebhookTriggerEvent>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1117,11 +1302,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1134,11 +1324,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<UserPermissionsResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserPermissionsResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1151,11 +1346,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Recipe>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1168,11 +1368,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Household>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1187,11 +1392,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1207,11 +1417,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1224,11 +1439,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Meal>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Meal>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1241,11 +1461,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlan>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1261,11 +1486,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanEvent>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1281,11 +1511,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanGroceryListItem>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1302,11 +1537,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanOption>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1326,11 +1566,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<MealPlanOptionVote>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<MealPlanOptionVote>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1346,11 +1591,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanTask>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1365,11 +1615,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<OAuth2ClientCreationResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<OAuth2ClientCreationResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1382,11 +1637,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Recipe>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1402,11 +1662,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipePrepTask>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1422,11 +1687,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeRating>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1439,11 +1709,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStep>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1463,11 +1738,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepCompletionCondition>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1484,11 +1764,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1505,11 +1790,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1526,11 +1816,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepProduct>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1547,11 +1842,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1564,11 +1864,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ServiceSetting>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1583,11 +1888,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ServiceSettingConfiguration>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ServiceSettingConfiguration>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1600,11 +1910,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<UserCreationResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserCreationResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1619,11 +1934,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<UserIngredientPreference>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<UserIngredientPreference>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1636,11 +1956,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserNotification>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1653,11 +1978,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1672,11 +2002,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientGroup>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1691,11 +2026,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientMeasurementUnit>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1710,11 +2050,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientPreparation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1729,11 +2074,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientState>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1748,11 +2098,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientStateIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1765,11 +2120,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1784,11 +2144,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidMeasurementUnit>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1803,11 +2168,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidMeasurementUnitConversion>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1820,11 +2190,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1839,11 +2214,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparationInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1858,11 +2238,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparationVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1875,11 +2260,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1892,11 +2282,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Webhook>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Webhook>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1912,11 +2307,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<WebhookTriggerEvent>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<WebhookTriggerEvent>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1929,11 +2329,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<FinalizeMealPlansResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<FinalizeMealPlansResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1942,15 +2347,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Household>>(`/api/v1/households/current`, {})
+        .get<APIResponse<Household>>(`/api/v1/households/current`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Household>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1967,19 +2377,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<AuditLogEntry>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<AuditLogEntry>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<AuditLogEntry>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<AuditLogEntry>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -1996,19 +2410,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<AuditLogEntry>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<AuditLogEntry>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<AuditLogEntry>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<AuditLogEntry>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2017,15 +2435,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<AuditLogEntry>>(`/api/v1/audit_log_entries/${auditLogEntryID}`, {})
+        .get<APIResponse<AuditLogEntry>>(`/api/v1/audit_log_entries/${auditLogEntryID}`)
         .then((res: AxiosResponse<APIResponse<AuditLogEntry>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<AuditLogEntry>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2034,15 +2457,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<UserStatusResponse>>(`/auth/status`, {})
+        .get<APIResponse<UserStatusResponse>>(`/auth/status`)
         .then((res: AxiosResponse<APIResponse<UserStatusResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserStatusResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2051,15 +2479,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Household>>(`/api/v1/households/${householdID}`, {})
+        .get<APIResponse<Household>>(`/api/v1/households/${householdID}`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Household>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2072,16 +2505,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<HouseholdInstrumentOwnership>>(
           `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2098,19 +2535,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<HouseholdInstrumentOwnership>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<HouseholdInstrumentOwnership>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<HouseholdInstrumentOwnership>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<HouseholdInstrumentOwnership>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2119,15 +2560,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}`, {})
+        .get<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}`)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2139,18 +2585,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<HouseholdInvitation>>(
-          `/api/v1/households/${householdID}/invitations/${householdInvitationID}`,
-          {},
-        )
+        .get<APIResponse<HouseholdInvitation>>(`/api/v1/households/${householdID}/invitations/${householdInvitationID}`)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2165,19 +2613,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<Household>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<Household>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<Household>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<Household>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2186,15 +2638,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Meal>>(`/api/v1/meals/${mealID}`, {})
+        .get<APIResponse<Meal>>(`/api/v1/meals/${mealID}`)
         .then((res: AxiosResponse<APIResponse<Meal>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Meal>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2203,15 +2660,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, {})
+        .get<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`)
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlan>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2220,15 +2682,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`, {})
+        .get<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanEvent>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2246,19 +2713,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<MealPlanEvent>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<MealPlanEvent>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<MealPlanEvent>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<MealPlanEvent>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2272,16 +2743,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<MealPlanGroceryListItem>>(
           `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanGroceryListItem>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2299,19 +2774,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<MealPlanGroceryListItem>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<MealPlanGroceryListItem>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<MealPlanGroceryListItem>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<MealPlanGroceryListItem>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2326,16 +2805,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<MealPlanOption>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanOption>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2351,16 +2834,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<MealPlanOptionVote>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOptionVote>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanOptionVote>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2383,19 +2870,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<MealPlanOptionVote>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<MealPlanOptionVote>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<MealPlanOptionVote>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<MealPlanOptionVote>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2414,19 +2905,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<MealPlanOption>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<MealPlanOption>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<MealPlanOption>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<MealPlanOption>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2435,15 +2930,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`, {})
+        .get<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`)
         .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanTask>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2461,19 +2961,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<MealPlanTask>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<MealPlanTask>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<MealPlanTask>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<MealPlanTask>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2488,19 +2992,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<MealPlan>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<MealPlan>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<MealPlan>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<MealPlan>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2515,19 +3023,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<Meal>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<Meal>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<Meal>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<Meal>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2536,15 +3048,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<string>>(`/api/v1/recipes/${recipeID}/mermaid`, {})
+        .get<APIResponse<string>>(`/api/v1/recipes/${recipeID}/mermaid`)
         .then((res: AxiosResponse<APIResponse<string>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<string>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2553,15 +3070,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`, {})
+        .get<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`)
         .then((res: AxiosResponse<APIResponse<OAuth2Client>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<OAuth2Client>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2576,19 +3098,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<OAuth2Client>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<OAuth2Client>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<OAuth2Client>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<OAuth2Client>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2597,15 +3123,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/random`, {})
+        .get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/random`)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2614,15 +3145,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/random`, {})
+        .get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/random`)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2631,15 +3167,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/random`, {})
+        .get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/random`)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2648,15 +3189,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/random`, {})
+        .get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/random`)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2673,19 +3219,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<HouseholdInvitation>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<HouseholdInvitation>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<HouseholdInvitation>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<HouseholdInvitation>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2694,15 +3244,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, {})
+        .get<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Recipe>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2711,15 +3266,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<RecipePrepTaskStep>>(`/api/v1/recipes/${recipeID}/prep_steps`, {})
+        .get<APIResponse<RecipePrepTaskStep>>(`/api/v1/recipes/${recipeID}/prep_steps`)
         .then((res: AxiosResponse<APIResponse<RecipePrepTaskStep>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipePrepTaskStep>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2728,15 +3288,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`, {})
+        .get<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipePrepTask>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2754,19 +3319,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<RecipePrepTask>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<RecipePrepTask>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<RecipePrepTask>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<RecipePrepTask>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2775,15 +3344,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`, {})
+        .get<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeRating>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2801,19 +3375,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<RecipeRating>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<RecipeRating>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<RecipeRating>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<RecipeRating>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2822,15 +3400,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`, {})
+        .get<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStep>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2845,16 +3428,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<RecipeStepCompletionCondition>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepCompletionCondition>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2876,19 +3463,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepCompletionCondition>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<RecipeStepCompletionCondition>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<RecipeStepCompletionCondition>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<RecipeStepCompletionCondition>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2903,16 +3494,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<RecipeStepIngredient>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2934,19 +3529,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepIngredient>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<RecipeStepIngredient>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<RecipeStepIngredient>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<RecipeStepIngredient>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2961,16 +3560,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<RecipeStepInstrument>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -2992,19 +3595,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepInstrument>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<RecipeStepInstrument>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<RecipeStepInstrument>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<RecipeStepInstrument>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3019,16 +3626,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<RecipeStepProduct>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepProduct>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3047,19 +3658,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepProduct>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<RecipeStepProduct>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<RecipeStepProduct>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<RecipeStepProduct>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3074,16 +3689,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<RecipeStepVessel>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3102,19 +3721,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepVessel>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<RecipeStepVessel>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<RecipeStepVessel>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<RecipeStepVessel>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3132,19 +3755,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<RecipeStep>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<RecipeStep>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<RecipeStep>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<RecipeStep>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3159,19 +3786,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<Recipe>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<Recipe>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<Recipe>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<Recipe>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3180,15 +3811,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<User>>(`/api/v1/users/self`, {})
+        .get<APIResponse<User>>(`/api/v1/users/self`)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3205,19 +3841,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<HouseholdInvitation>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<HouseholdInvitation>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<HouseholdInvitation>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<HouseholdInvitation>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3226,15 +3866,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`, {})
+        .get<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`)
         .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ServiceSetting>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3255,19 +3900,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ServiceSettingConfiguration>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ServiceSettingConfiguration>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ServiceSettingConfiguration>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3284,19 +3933,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ServiceSettingConfiguration>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ServiceSettingConfiguration>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ServiceSettingConfiguration>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3313,19 +3966,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ServiceSettingConfiguration>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ServiceSettingConfiguration>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ServiceSettingConfiguration>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3340,19 +3997,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ServiceSetting>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ServiceSetting>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ServiceSetting>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ServiceSetting>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3361,15 +4022,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<User>>(`/api/v1/users/${userID}`, {})
+        .get<APIResponse<User>>(`/api/v1/users/${userID}`)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3386,19 +4052,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<UserIngredientPreference>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<UserIngredientPreference>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<UserIngredientPreference>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<UserIngredientPreference>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3407,15 +4077,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<UserNotification>>(`/api/v1/user_notifications/${userNotificationID}`, {})
+        .get<APIResponse<UserNotification>>(`/api/v1/user_notifications/${userNotificationID}`)
         .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserNotification>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3432,19 +4107,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<UserNotification>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<UserNotification>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<UserNotification>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<UserNotification>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3459,19 +4138,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<User>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<User>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<User>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<User>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3480,15 +4163,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`, {})
+        .get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3497,15 +4185,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`, {})
+        .get<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientGroup>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3522,19 +4215,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientGroup>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientGroup>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientGroup>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientGroup>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3547,16 +4244,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<ValidIngredientMeasurementUnit>>(
           `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientMeasurementUnit>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3573,19 +4274,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientMeasurementUnit>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientMeasurementUnit>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3606,19 +4311,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientMeasurementUnit>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientMeasurementUnit>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3639,19 +4348,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientMeasurementUnit>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientMeasurementUnit>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3664,16 +4377,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<ValidIngredientPreparation>>(
           `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientPreparation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3690,19 +4407,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientPreparation>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientPreparation>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientPreparation>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientPreparation>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3723,19 +4444,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientPreparation>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientPreparation>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientPreparation>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientPreparation>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3756,19 +4481,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientPreparation>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientPreparation>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientPreparation>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientPreparation>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3777,15 +4506,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`, {})
+        .get<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientState>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3798,16 +4532,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<ValidIngredientStateIngredient>>(
           `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientStateIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3824,19 +4562,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientStateIngredient>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientStateIngredient>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3857,19 +4599,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientStateIngredient>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientStateIngredient>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3890,19 +4636,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientStateIngredient>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientStateIngredient>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3919,19 +4669,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientState>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientState>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientState>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientState>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3948,19 +4702,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredient>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredient>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredient>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredient>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3969,15 +4727,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`, {})
+        .get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -3994,19 +4757,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidInstrument>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidInstrument>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidInstrument>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidInstrument>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4015,15 +4782,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`, {})
+        .get<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidMeasurementUnit>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4036,16 +4808,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<ValidMeasurementUnitConversion>>(
           `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidMeasurementUnitConversion>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4066,19 +4842,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidMeasurementUnitConversion>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidMeasurementUnitConversion>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4099,19 +4879,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidMeasurementUnitConversion>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidMeasurementUnitConversion>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4128,19 +4912,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnit>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidMeasurementUnit>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidMeasurementUnit>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnit>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4149,15 +4937,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`, {})
+        .get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4170,16 +4963,20 @@ export class DinnerDoneBetterAPIClient {
       self.client
         .get<APIResponse<ValidPreparationInstrument>>(
           `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
-          {},
         )
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparationInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4196,19 +4993,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationInstrument>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidPreparationInstrument>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidPreparationInstrument>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidPreparationInstrument>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4229,19 +5030,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationInstrument>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidPreparationInstrument>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidPreparationInstrument>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidPreparationInstrument>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4262,19 +5067,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationInstrument>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidPreparationInstrument>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidPreparationInstrument>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidPreparationInstrument>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4283,15 +5092,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels/${validPreparationVesselID}`, {})
+        .get<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels/${validPreparationVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparationVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4308,19 +5122,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationVessel>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidPreparationVessel>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidPreparationVessel>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidPreparationVessel>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4341,19 +5159,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationVessel>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidPreparationVessel>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidPreparationVessel>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidPreparationVessel>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4374,19 +5196,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationVessel>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidPreparationVessel>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidPreparationVessel>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidPreparationVessel>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4403,19 +5229,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparation>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidPreparation>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidPreparation>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidPreparation>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4424,15 +5254,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, {})
+        .get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4447,19 +5282,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidVessel>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidVessel>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidVessel>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidVessel>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4468,15 +5307,20 @@ export class DinnerDoneBetterAPIClient {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`, {})
+        .get<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`)
         .then((res: AxiosResponse<APIResponse<Webhook>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Webhook>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4491,19 +5335,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<Webhook>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<Webhook>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<Webhook>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<Webhook>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4516,11 +5364,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<JWTResponse>>) => {
           if (res.data.error && res.data.error.message.toLowerCase() != 'totp required') {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res);
           }
-          resolve(res);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<JWTResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4533,11 +5386,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4550,11 +5408,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<TOTPSecretRefreshResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<TOTPSecretRefreshResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4570,11 +5433,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4587,11 +5455,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4606,11 +5479,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<PasswordResetToken>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<PasswordResetToken>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4623,11 +5501,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4640,11 +5523,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<FinalizeMealPlansResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<FinalizeMealPlansResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4659,11 +5547,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<InitializeMealPlanGroceryListResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<InitializeMealPlanGroceryListResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4678,11 +5571,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<CreateMealPlanTasksResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<CreateMealPlanTasksResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4697,19 +5595,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<Meal>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<Meal>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<Meal>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<Meal>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4724,19 +5626,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<Recipe>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<Recipe>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<Recipe>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<Recipe>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4754,19 +5660,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ServiceSetting>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ServiceSetting>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ServiceSetting>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ServiceSetting>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4781,19 +5691,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<User>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<User>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<User>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<User>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4811,19 +5725,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientGroup>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientGroup>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientGroup>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientGroup>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4841,19 +5759,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientState>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredientState>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredientState>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredientState>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4871,19 +5793,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredient>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredient>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredient>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredient>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4901,19 +5827,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidInstrument>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidInstrument>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidInstrument>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidInstrument>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4931,19 +5861,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnit>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidMeasurementUnit>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidMeasurementUnit>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnit>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4961,19 +5895,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparation>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidPreparation>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidPreparation>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidPreparation>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -4991,19 +5929,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidVessel>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidVessel>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidVessel>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidVessel>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5022,19 +5964,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredient>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidIngredient>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidIngredient>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidIngredient>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5056,19 +6002,23 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnit>>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(
+              new QueryFilteredResult<ValidMeasurementUnit>({
+                data: res.data.data,
+                totalCount: res.data.pagination?.totalCount,
+                page: res.data.pagination?.page,
+                limit: res.data.pagination?.limit,
+              }),
+            );
           }
-
-          resolve(
-            new QueryFilteredResult<ValidMeasurementUnit>({
-              data: res.data.data,
-              totalCount: res.data.pagination?.totalCount,
-              page: res.data.pagination?.page,
-              limit: res.data.pagination?.limit,
-            }),
-          );
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnit>>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5081,11 +6031,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Household>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5101,11 +6056,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Household>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5118,11 +6078,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Household>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5141,11 +6106,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5165,11 +6135,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<UserPermissionsResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserPermissionsResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5182,11 +6157,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlan>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5203,11 +6183,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanEvent>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5227,11 +6212,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanGroceryListItem>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5252,11 +6242,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanOption>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5278,11 +6273,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlanOptionVote>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanOptionVote>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5299,11 +6299,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<MealPlanTask>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5316,11 +6321,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<PasswordResetResponse>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res);
           }
-          resolve(res);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<PasswordResetResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5333,11 +6343,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<Recipe>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5354,11 +6369,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipePrepTask>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5375,11 +6395,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeRating>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5396,11 +6421,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStep>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5421,11 +6451,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepCompletionCondition>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5446,11 +6481,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5471,11 +6511,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5496,11 +6541,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepProduct>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5521,11 +6571,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<RecipeStepVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5544,11 +6599,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ServiceSettingConfiguration>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ServiceSettingConfiguration>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5561,11 +6621,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5578,11 +6643,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5601,11 +6671,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<UserIngredientPreference>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserIngredientPreference>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5621,11 +6696,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<UserNotification>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5638,11 +6718,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5658,11 +6743,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5678,11 +6768,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientGroup>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5701,11 +6796,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientMeasurementUnit>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5724,11 +6824,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientPreparation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5744,11 +6849,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientState>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5767,11 +6877,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidIngredientStateIngredient>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5787,11 +6902,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5807,11 +6927,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidMeasurementUnit>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5830,11 +6955,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidMeasurementUnitConversion>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5850,11 +6980,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5873,11 +7008,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparationInstrument>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5896,11 +7036,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidPreparationVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5916,11 +7061,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5933,11 +7083,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5950,11 +7105,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }
@@ -5967,11 +7127,16 @@ export class DinnerDoneBetterAPIClient {
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
             reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
           }
-          resolve(res.data);
         })
-        .catch((error: AxiosError) => {
-          reject(error);
+        .catch((error: AxiosError<APIResponse<User>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
         });
     });
   }

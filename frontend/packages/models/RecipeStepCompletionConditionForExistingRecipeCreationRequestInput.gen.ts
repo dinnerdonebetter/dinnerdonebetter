@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput } from './RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput';
+import { RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput } from './RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput.gen';
 
 export interface IRecipeStepCompletionConditionForExistingRecipeCreationRequestInput {
   belongsToRecipeStep: string;

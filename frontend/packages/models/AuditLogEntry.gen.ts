@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ChangeLog } from './ChangeLog';
+import { ChangeLog } from './ChangeLog.gen';
 
 export interface IAuditLogEntry {
   belongsToHousehold: string;

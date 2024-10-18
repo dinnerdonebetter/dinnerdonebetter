@@ -20,7 +20,7 @@ func Test_apiClientFunction_Render(T *testing.T) {
 			Params: []functionParam{
 				{
 					Name:         "thing",
-					Type:         "string",
+					Type:         stringType,
 					DefaultValue: `"baloney"`,
 				},
 				{

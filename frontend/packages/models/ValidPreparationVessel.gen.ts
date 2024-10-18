@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidPreparation } from './ValidPreparation';
-import { ValidVessel } from './ValidVessel';
+import { ValidPreparation } from './ValidPreparation.gen';
+import { ValidVessel } from './ValidVessel.gen';
 
 export interface IValidPreparationVessel {
   archivedAt: string;

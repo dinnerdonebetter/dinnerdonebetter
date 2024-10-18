@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { Recipe } from './Recipe';
+import { Recipe } from './Recipe.gen';
 import { MealComponentType } from './enums.gen';
 
 export interface IMealComponent {

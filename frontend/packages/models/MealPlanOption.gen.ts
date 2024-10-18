@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { Meal } from './Meal';
-import { MealPlanOptionVote } from './MealPlanOptionVote';
+import { Meal } from './Meal.gen';
+import { MealPlanOptionVote } from './MealPlanOptionVote.gen';
 
 export interface IMealPlanOption {
   archivedAt: string;

@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidIngredient } from './ValidIngredient';
-import { ValidPreparation } from './ValidPreparation';
+import { ValidIngredient } from './ValidIngredient.gen';
+import { ValidPreparation } from './ValidPreparation.gen';
 
 export interface IValidIngredientPreparation {
   archivedAt: string;

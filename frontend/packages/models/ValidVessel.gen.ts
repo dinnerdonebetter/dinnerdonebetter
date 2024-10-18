@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidMeasurementUnit } from './ValidMeasurementUnit';
+import { ValidMeasurementUnit } from './ValidMeasurementUnit.gen';
 import { ValidVesselShapeType } from './enums.gen';
 
 export interface IValidVessel {
