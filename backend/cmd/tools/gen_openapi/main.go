@@ -275,6 +275,8 @@ func neutralizeConfig(cfg *config.InstanceConfig) {
 		panic(err)
 	}
 
+	cfg.Observability.Logging.Provider = "noop"
+
 	cfg.Database.RunMigrations = false
 	cfg.Database.OAuth2TokenEncryptionKey = "BLAHBLAHBLAHBLAHBLAHBLAHBLAHBLAH"
 	cfg.Services.Auth.SSO.Google.ClientID = "blah blah blah blah"

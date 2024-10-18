@@ -7,7 +7,7 @@ import (
 const (
 	APIClientIndexFile = `import router from 'next/router';
 
-import { DinnerDoneBetterAPIClient } from './client';
+import { DinnerDoneBetterAPIClient } from './client.gen';
 
 export const buildServerSideClientWithOAuth2Token = (
   token: string,
@@ -51,9 +51,15 @@ export const buildLocalClient = (): DinnerDoneBetterAPIClient => {
 
 export default DinnerDoneBetterAPIClient;
 `
+
+	jestConfigFile = `export default {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+};
+`
 )
 
-func BuildClientFile(modelsImports []string) string {
+func buildClientFile(modelsImports []string) string {
 	return GeneratedDisclaimer + "\n\n" + `import axios, {
   AxiosInstance,
   AxiosError,
@@ -122,6 +128,7 @@ export class DinnerDoneBetterAPIClient {
 
     // because this client is used both in the browser and on the server, we can't mandate oauth2 tokens
     if (oauth2Token) {
+      this.oauth2Token = oauth2Token;
       headers['Authorization'] = ` + "`" + `Bearer ${oauth2Token}` + "`" + `;
     }
 
@@ -204,5 +211,53 @@ export class DinnerDoneBetterAPIClient {
     );
   }
 
+`
+}
+
+func buildClientTestFile(modelsImports []string) string {
+	return GeneratedDisclaimer + "\n\n" + `import axios, { AxiosResponse } from "axios";
+import AxiosMockAdapter from "axios-mock-adapter";
+
+` + "import {\n\tIAPIError,\n\tResponseDetails,\n\t" + strings.Join(modelsImports, ",\n\t") + "\n" + `} from "` + modelsPackage + `";` + `
+
+import { DinnerDoneBetterAPIClient } from "./client.gen";
+
+const mock = new AxiosMockAdapter(axios, { onNoMatch: "throwException" });
+const baseURL = "http://things.stuff";
+const fakeToken = 'test-token';
+const client = new DinnerDoneBetterAPIClient(baseURL, fakeToken);
+
+beforeEach(() => mock.reset());
+
+type responsePartial = {
+	error?: IAPIError;
+	details: ResponseDetails
+}
+
+function buildObligatoryError(msg: string): responsePartial {
+	return {
+		details: {
+			currentHouseholdID: 'test',
+			traceID: 'test',
+		},
+		error: {
+			message: msg,
+			code: 'E999',
+		},
+	}
+}
+
+function fakeID(): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+
+  for (let i = 0; i < 20; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+
+  return result;
+}
+
+describe('basic', () => {
 `
 }

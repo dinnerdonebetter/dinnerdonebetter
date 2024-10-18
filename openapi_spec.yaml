@@ -24,7 +24,7 @@ paths:
       - meta
   /api/v1/admin/users/status:
     post:
-      description: Operation for creating UserStatusResponse
+      description: Updates a user's account status
       operationId: AdminUpdateUserStatus
       requestBody:
         content:
@@ -92,7 +92,7 @@ paths:
       - users
   /api/v1/audit_log_entries/{auditLogEntryID}:
     get:
-      description: Operation for fetching AuditLogEntry
+      description: Retrieves an audit log entry by ID
       operationId: GetAuditLogEntryByID
       parameters:
       - in: path
@@ -156,7 +156,7 @@ paths:
       - audit log entries
   /api/v1/audit_log_entries/for_household:
     get:
-      description: Operation for fetching AuditLogEntry
+      description: Retrieves audit log entries for a household
       operationId: GetAuditLogEntriesForHousehold
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -272,7 +272,7 @@ paths:
       - audit log entries
   /api/v1/audit_log_entries/for_user:
     get:
-      description: Operation for fetching AuditLogEntry
+      description: Retrieves audit log entries for a user
       operationId: GetAuditLogEntriesForUser
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -388,7 +388,7 @@ paths:
       - audit log entries
   /api/v1/household_invitations/{householdInvitationID}:
     get:
-      description: Operation for fetching HouseholdInvitation
+      description: Fetches household invitations for a given household
       operationId: GetHouseholdInvitation
       parameters:
       - in: path
@@ -452,7 +452,7 @@ paths:
       - household invitations
   /api/v1/household_invitations/{householdInvitationID}/accept:
     put:
-      description: Operation for updating HouseholdInvitation
+      description: Accepts a received household invitation
       operationId: AcceptHouseholdInvitation
       parameters:
       - in: path
@@ -525,7 +525,7 @@ paths:
       - household invitations
   /api/v1/household_invitations/{householdInvitationID}/cancel:
     put:
-      description: Operation for updating HouseholdInvitation
+      description: Cancels a sent household invitation
       operationId: CancelHouseholdInvitation
       parameters:
       - in: path
@@ -598,7 +598,7 @@ paths:
       - household invitations
   /api/v1/household_invitations/{householdInvitationID}/reject:
     put:
-      description: Operation for updating HouseholdInvitation
+      description: Rejects a received household invitation
       operationId: RejectHouseholdInvitation
       parameters:
       - in: path
@@ -671,7 +671,7 @@ paths:
       - household invitations
   /api/v1/household_invitations/received:
     get:
-      description: Operation for fetching HouseholdInvitation
+      description: Fetches received household invitations
       operationId: GetReceivedHouseholdInvitations
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -787,7 +787,7 @@ paths:
       - household invitations
   /api/v1/household_invitations/sent:
     get:
-      description: Operation for fetching HouseholdInvitation
+      description: Fetches sent household invitations
       operationId: GetSentHouseholdInvitations
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -903,7 +903,7 @@ paths:
       - household invitations
   /api/v1/households:
     get:
-      description: Operation for fetching Household
+      description: Fetches a list of households
       operationId: GetHouseholds
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -1018,7 +1018,7 @@ paths:
       tags:
       - households
     post:
-      description: Operation for creating Household
+      description: Creates a household
       operationId: CreateHousehold
       requestBody:
         content:
@@ -1085,7 +1085,7 @@ paths:
       - households
   /api/v1/households/{householdID}:
     delete:
-      description: Operation for archiving Household
+      description: Archives a household
       operationId: ArchiveHousehold
       parameters:
       - in: path
@@ -1148,7 +1148,7 @@ paths:
       tags:
       - households
     get:
-      description: Operation for fetching Household
+      description: Fetches a household
       operationId: GetHousehold
       parameters:
       - in: path
@@ -1211,7 +1211,7 @@ paths:
       tags:
       - households
     put:
-      description: Operation for updating Household
+      description: Updates a household
       operationId: UpdateHousehold
       parameters:
       - in: path
@@ -1284,7 +1284,7 @@ paths:
       - households
   /api/v1/households/{householdID}/default:
     post:
-      description: Operation for creating Household
+      description: Updates the default household assigned at login
       operationId: SetDefaultHousehold
       parameters:
       - in: path
@@ -1348,7 +1348,7 @@ paths:
       - households
   /api/v1/households/{householdID}/invitations/{householdInvitationID}:
     get:
-      description: Operation for fetching HouseholdInvitation
+      description: Fetches a household invitation by its ID
       operationId: GetHouseholdInvitationByID
       parameters:
       - in: path
@@ -1418,7 +1418,7 @@ paths:
       - invitations
   /api/v1/households/{householdID}/invite:
     post:
-      description: Operation for creating HouseholdInvitation
+      description: Create a household invitation
       operationId: CreateHouseholdInvitation
       parameters:
       - in: path
@@ -1491,7 +1491,7 @@ paths:
       - households
   /api/v1/households/{householdID}/members/{userID}:
     delete:
-      description: Operation for archiving HouseholdUserMembership
+      description: Archive a household user membership
       operationId: ArchiveUserMembership
       parameters:
       - in: path
@@ -1561,7 +1561,7 @@ paths:
       - household members
   /api/v1/households/{householdID}/members/{userID}/permissions:
     patch:
-      description: Operation for updating UserPermissionsResponse
+      description: Update a household member's household permissions
       operationId: UpdateHouseholdMemberPermissions
       parameters:
       - in: path
@@ -1640,7 +1640,7 @@ paths:
       - household members
   /api/v1/households/{householdID}/transfer:
     post:
-      description: Operation for creating Household
+      description: Transfer household ownership to another user
       operationId: TransferHouseholdOwnership
       parameters:
       - in: path
@@ -1713,7 +1713,7 @@ paths:
       - households
   /api/v1/households/current:
     get:
-      description: Operation for fetching Household
+      description: Fetches the currently active household
       operationId: GetActiveHousehold
       responses:
         "200":
@@ -1771,7 +1771,7 @@ paths:
       - households
   /api/v1/households/instruments:
     get:
-      description: Operation for fetching HouseholdInstrumentOwnership
+      description: creates a household instrument
       operationId: GetHouseholdInstrumentOwnerships
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -1887,7 +1887,7 @@ paths:
       - households
       - household instrument ownerships
     post:
-      description: Operation for creating HouseholdInstrumentOwnership
+      description: Creates a household instrument ownership
       operationId: CreateHouseholdInstrumentOwnership
       requestBody:
         content:
@@ -1955,7 +1955,7 @@ paths:
       - household instrument ownerships
   /api/v1/households/instruments/{householdInstrumentOwnershipID}:
     delete:
-      description: Operation for archiving HouseholdInstrumentOwnership
+      description: Archives a household instrument ownership
       operationId: ArchiveHouseholdInstrumentOwnership
       parameters:
       - in: path
@@ -2019,7 +2019,7 @@ paths:
       - households
       - household instrument ownerships
     get:
-      description: Operation for fetching HouseholdInstrumentOwnership
+      description: Fetches a household instrument ownership
       operationId: GetHouseholdInstrumentOwnership
       parameters:
       - in: path
@@ -2083,7 +2083,7 @@ paths:
       - households
       - household instrument ownerships
     put:
-      description: Operation for updating HouseholdInstrumentOwnership
+      description: Updates a household instrument ownership
       operationId: UpdateHouseholdInstrumentOwnership
       parameters:
       - in: path
@@ -2157,7 +2157,7 @@ paths:
       - household instrument ownerships
   /api/v1/meal_plans:
     get:
-      description: Operation for fetching MealPlan
+      description: Fetches a MealPlans
       operationId: GetMealPlans
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -2272,7 +2272,7 @@ paths:
       tags:
       - meal plans
     post:
-      description: Operation for creating MealPlan
+      description: Creates a MealPlan
       operationId: CreateMealPlan
       requestBody:
         content:
@@ -2339,7 +2339,7 @@ paths:
       - meal plans
   /api/v1/meal_plans/{mealPlanID}:
     delete:
-      description: Operation for archiving MealPlan
+      description: Archives a MealPlan
       operationId: ArchiveMealPlan
       parameters:
       - in: path
@@ -2402,7 +2402,7 @@ paths:
       tags:
       - meal plans
     get:
-      description: Operation for fetching MealPlan
+      description: Fetches a MealPlan
       operationId: GetMealPlan
       parameters:
       - in: path
@@ -2465,7 +2465,7 @@ paths:
       tags:
       - meal plans
     put:
-      description: Operation for updating MealPlan
+      description: Updates a MealPlan
       operationId: UpdateMealPlan
       parameters:
       - in: path
@@ -2538,7 +2538,7 @@ paths:
       - meal plans
   /api/v1/meal_plans/{mealPlanID}/events:
     get:
-      description: Operation for fetching MealPlanEvent
+      description: Fetches a MealPlanEvents
       operationId: GetMealPlanEvents
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -2659,7 +2659,7 @@ paths:
       - meal plans
       - meal plan events
     post:
-      description: Operation for creating MealPlanEvent
+      description: Creates a MealPlanEvent
       operationId: CreateMealPlanEvent
       parameters:
       - in: path
@@ -2733,7 +2733,7 @@ paths:
       - meal plan events
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}:
     delete:
-      description: Operation for archiving MealPlanEvent
+      description: Archives a MealPlanEvent
       operationId: ArchiveMealPlanEvent
       parameters:
       - in: path
@@ -2802,7 +2802,7 @@ paths:
       - meal plans
       - meal plan events
     get:
-      description: Operation for fetching MealPlanEvent
+      description: Fetches a MealPlanEvent
       operationId: GetMealPlanEvent
       parameters:
       - in: path
@@ -2871,7 +2871,7 @@ paths:
       - meal plans
       - meal plan events
     put:
-      description: Operation for updating MealPlanEvent
+      description: Updates a MealPlanEvent
       operationId: UpdateMealPlanEvent
       parameters:
       - in: path
@@ -2950,7 +2950,7 @@ paths:
       - meal plan events
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/options:
     get:
-      description: Operation for fetching MealPlanOption
+      description: Fetches a meal plan's options
       operationId: GetMealPlanOptions
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -3077,7 +3077,7 @@ paths:
       - meal plan events
       - meal plan options
     post:
-      description: Operation for creating MealPlanOption
+      description: Creates a meal plan option
       operationId: CreateMealPlanOption
       parameters:
       - in: path
@@ -3157,7 +3157,7 @@ paths:
       - meal plan options
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/options/{mealPlanOptionID}:
     delete:
-      description: Operation for archiving MealPlanOption
+      description: Archives a MealPlanOption
       operationId: ArchiveMealPlanOption
       parameters:
       - in: path
@@ -3232,7 +3232,7 @@ paths:
       - meal plan events
       - meal plan options
     get:
-      description: Operation for fetching MealPlanOption
+      description: Fetches a meal plan option by its ID
       operationId: GetMealPlanOption
       parameters:
       - in: path
@@ -3307,7 +3307,7 @@ paths:
       - meal plan events
       - meal plan options
     put:
-      description: Operation for updating MealPlanOption
+      description: Updates a meal plan option
       operationId: UpdateMealPlanOption
       parameters:
       - in: path
@@ -3392,7 +3392,7 @@ paths:
       - meal plan options
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/options/{mealPlanOptionID}/votes:
     get:
-      description: Operation for fetching MealPlanOptionVote
+      description: Fetches a meal plan option's votes
       operationId: GetMealPlanOptionVotes
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -3526,7 +3526,7 @@ paths:
       - meal plan option votes
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/options/{mealPlanOptionID}/votes/{mealPlanOptionVoteID}:
     delete:
-      description: Operation for archiving MealPlanOptionVote
+      description: Archives a meal plan option vote
       operationId: ArchiveMealPlanOptionVote
       parameters:
       - in: path
@@ -3607,7 +3607,7 @@ paths:
       - meal plan options
       - meal plan option votes
     get:
-      description: Operation for fetching MealPlanOptionVote
+      description: Fetches a meal plan option vote
       operationId: GetMealPlanOptionVote
       parameters:
       - in: path
@@ -3688,7 +3688,7 @@ paths:
       - meal plan options
       - meal plan option votes
     put:
-      description: Operation for updating MealPlanOptionVote
+      description: Updates a meal plan option vote
       operationId: UpdateMealPlanOptionVote
       parameters:
       - in: path
@@ -3779,7 +3779,7 @@ paths:
       - meal plan option votes
   /api/v1/meal_plans/{mealPlanID}/events/{mealPlanEventID}/vote:
     post:
-      description: Operation for creating MealPlanOptionVote
+      description: Creates a MealPlanOptionVote
       operationId: CreateMealPlanOptionVote
       parameters:
       - in: path
@@ -3860,7 +3860,7 @@ paths:
       - meal plan events
   /api/v1/meal_plans/{mealPlanID}/finalize:
     post:
-      description: Operation for creating FinalizeMealPlansResponse
+      description: Finalizes a meal plan
       operationId: FinalizeMealPlan
       parameters:
       - in: path
@@ -3924,7 +3924,7 @@ paths:
       - meal plans
   /api/v1/meal_plans/{mealPlanID}/grocery_list_items:
     get:
-      description: Operation for fetching MealPlanGroceryListItem
+      description: Fetches a MealPlanGroceryListItemsForMealPlan
       operationId: GetMealPlanGroceryListItemsForMealPlan
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -4045,7 +4045,7 @@ paths:
       - meal plans
       - grocery list items
     post:
-      description: Operation for creating MealPlanGroceryListItem
+      description: Creates a MealPlanGroceryListItem
       operationId: CreateMealPlanGroceryListItem
       parameters:
       - in: path
@@ -4119,7 +4119,7 @@ paths:
       - grocery list items
   /api/v1/meal_plans/{mealPlanID}/grocery_list_items/{mealPlanGroceryListItemID}:
     delete:
-      description: Operation for archiving MealPlanGroceryListItem
+      description: Archives a MealPlanGroceryListItem
       operationId: ArchiveMealPlanGroceryListItem
       parameters:
       - in: path
@@ -4188,7 +4188,7 @@ paths:
       - meal plans
       - grocery list items
     get:
-      description: Operation for fetching MealPlanGroceryListItem
+      description: Fetches a MealPlanGroceryListItem
       operationId: GetMealPlanGroceryListItem
       parameters:
       - in: path
@@ -4257,7 +4257,7 @@ paths:
       - meal plans
       - grocery list items
     put:
-      description: Operation for updating MealPlanGroceryListItem
+      description: Updates a MealPlanGroceryListItem
       operationId: UpdateMealPlanGroceryListItem
       parameters:
       - in: path
@@ -4336,7 +4336,7 @@ paths:
       - grocery list items
   /api/v1/meal_plans/{mealPlanID}/tasks:
     get:
-      description: Operation for fetching MealPlanTask
+      description: Fetches a MealPlanTasks
       operationId: GetMealPlanTasks
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -4457,7 +4457,7 @@ paths:
       - meal plans
       - meal plan tasks
     post:
-      description: Operation for creating MealPlanTask
+      description: Creates a MealPlanTask
       operationId: CreateMealPlanTask
       parameters:
       - in: path
@@ -4531,7 +4531,7 @@ paths:
       - meal plan tasks
   /api/v1/meal_plans/{mealPlanID}/tasks/{mealPlanTaskID}:
     get:
-      description: Operation for fetching MealPlanTask
+      description: Fetches a MealPlanTask
       operationId: GetMealPlanTask
       parameters:
       - in: path
@@ -4600,7 +4600,7 @@ paths:
       - meal plans
       - meal plan tasks
     patch:
-      description: Operation for updating MealPlanTask
+      description: Updates a MealPlanTaskStatus
       operationId: UpdateMealPlanTaskStatus
       parameters:
       - in: path
@@ -4679,7 +4679,7 @@ paths:
       - meal plan tasks
   /api/v1/meals:
     get:
-      description: Operation for fetching Meal
+      description: Fetches a Meals
       operationId: GetMeals
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -4794,7 +4794,7 @@ paths:
       tags:
       - meals
     post:
-      description: Operation for creating Meal
+      description: Creates a Meal
       operationId: CreateMeal
       requestBody:
         content:
@@ -4861,7 +4861,7 @@ paths:
       - meals
   /api/v1/meals/{mealID}:
     delete:
-      description: Operation for archiving Meal
+      description: Archives a Meal
       operationId: ArchiveMeal
       parameters:
       - in: path
@@ -4924,7 +4924,7 @@ paths:
       tags:
       - meals
     get:
-      description: Operation for fetching Meal
+      description: Fetches a Meal
       operationId: GetMeal
       parameters:
       - in: path
@@ -4988,7 +4988,7 @@ paths:
       - meals
   /api/v1/meals/search:
     get:
-      description: Operation for fetching Meal
+      description: Searches for Meals
       operationId: SearchForMeals
       parameters:
       - description: the search query parameter
@@ -5110,7 +5110,7 @@ paths:
       - meals
   /api/v1/oauth2_clients:
     get:
-      description: Operation for fetching OAuth2Client
+      description: Fetches a OAuth2Clients
       operationId: GetOAuth2Clients
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -5225,7 +5225,7 @@ paths:
       tags:
       - oauth2
     post:
-      description: Operation for creating OAuth2ClientCreationResponse
+      description: Creates a OAuth2Client
       operationId: CreateOAuth2Client
       requestBody:
         content:
@@ -5292,7 +5292,7 @@ paths:
       - oauth2
   /api/v1/oauth2_clients/{oauth2ClientID}:
     delete:
-      description: Operation for archiving OAuth2Client
+      description: Archives a OAuth2Client
       operationId: ArchiveOAuth2Client
       parameters:
       - in: path
@@ -5355,7 +5355,7 @@ paths:
       tags:
       - oauth2
     get:
-      description: Operation for fetching OAuth2Client
+      description: Fetches a OAuth2Client
       operationId: GetOAuth2Client
       parameters:
       - in: path
@@ -5419,7 +5419,7 @@ paths:
       - oauth2
   /api/v1/recipes:
     get:
-      description: Operation for fetching Recipe
+      description: Fetches a Recipes
       operationId: GetRecipes
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -5534,7 +5534,7 @@ paths:
       tags:
       - recipes
     post:
-      description: Operation for creating Recipe
+      description: Creates a Recipe
       operationId: CreateRecipe
       requestBody:
         content:
@@ -5601,7 +5601,7 @@ paths:
       - recipes
   /api/v1/recipes/{recipeID}:
     delete:
-      description: Operation for archiving Recipe
+      description: Archives a Recipe
       operationId: ArchiveRecipe
       parameters:
       - in: path
@@ -5664,7 +5664,7 @@ paths:
       tags:
       - recipes
     get:
-      description: Operation for fetching Recipe
+      description: Fetches a Recipe
       operationId: GetRecipe
       parameters:
       - in: path
@@ -5727,7 +5727,7 @@ paths:
       tags:
       - recipes
     put:
-      description: Operation for updating Recipe
+      description: Updates a Recipe
       operationId: UpdateRecipe
       parameters:
       - in: path
@@ -5800,7 +5800,7 @@ paths:
       - recipes
   /api/v1/recipes/{recipeID}/clone:
     post:
-      description: Operation for creating Recipe
+      description: Clones a recipe
       operationId: CloneRecipe
       parameters:
       - in: path
@@ -5864,7 +5864,7 @@ paths:
       - recipes
   /api/v1/recipes/{recipeID}/dag:
     get:
-      description: Operation for fetching APIError
+      description: Fetches a RecipeDAG
       operationId: GetRecipeDAG
       parameters:
       - in: path
@@ -5886,7 +5886,7 @@ paths:
       - recipes
   /api/v1/recipes/{recipeID}/mermaid:
     get:
-      description: Operation for fetching string
+      description: Fetches a MermaidDiagramForRecipe
       operationId: GetMermaidDiagramForRecipe
       parameters:
       - in: path
@@ -5948,7 +5948,7 @@ paths:
       - recipes
   /api/v1/recipes/{recipeID}/prep_steps:
     get:
-      description: Operation for fetching RecipePrepTaskStep
+      description: Fetches a RecipeMealPlanTasks
       operationId: GetRecipeMealPlanTasks
       parameters:
       - in: path
@@ -6012,7 +6012,7 @@ paths:
       - recipes
   /api/v1/recipes/{recipeID}/prep_tasks:
     get:
-      description: Operation for fetching RecipePrepTask
+      description: Fetches a RecipePrepTasks
       operationId: GetRecipePrepTasks
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -6133,7 +6133,7 @@ paths:
       - recipes
       - recipe prep tasks
     post:
-      description: Operation for creating RecipePrepTask
+      description: Creates a RecipePrepTask
       operationId: CreateRecipePrepTask
       parameters:
       - in: path
@@ -6207,7 +6207,7 @@ paths:
       - recipe prep tasks
   /api/v1/recipes/{recipeID}/prep_tasks/{recipePrepTaskID}:
     delete:
-      description: Operation for archiving RecipePrepTask
+      description: Archives a RecipePrepTask
       operationId: ArchiveRecipePrepTask
       parameters:
       - in: path
@@ -6276,7 +6276,7 @@ paths:
       - recipes
       - recipe prep tasks
     get:
-      description: Operation for fetching RecipePrepTask
+      description: Fetches a RecipePrepTask
       operationId: GetRecipePrepTask
       parameters:
       - in: path
@@ -6345,7 +6345,7 @@ paths:
       - recipes
       - recipe prep tasks
     put:
-      description: Operation for updating RecipePrepTask
+      description: Updates a RecipePrepTask
       operationId: UpdateRecipePrepTask
       parameters:
       - in: path
@@ -6424,7 +6424,7 @@ paths:
       - recipe prep tasks
   /api/v1/recipes/{recipeID}/ratings:
     get:
-      description: Operation for fetching RecipeRating
+      description: Fetches a RecipeRatings
       operationId: GetRecipeRatings
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -6545,7 +6545,7 @@ paths:
       - recipes
       - recipe ratings
     post:
-      description: Operation for creating RecipeRating
+      description: Creates a RecipeRating
       operationId: CreateRecipeRating
       parameters:
       - in: path
@@ -6619,7 +6619,7 @@ paths:
       - recipe ratings
   /api/v1/recipes/{recipeID}/ratings/{recipeRatingID}:
     delete:
-      description: Operation for archiving RecipeRating
+      description: Archives a RecipeRating
       operationId: ArchiveRecipeRating
       parameters:
       - in: path
@@ -6688,7 +6688,7 @@ paths:
       - recipes
       - recipe ratings
     get:
-      description: Operation for fetching RecipeRating
+      description: Fetches a RecipeRating
       operationId: GetRecipeRating
       parameters:
       - in: path
@@ -6757,7 +6757,7 @@ paths:
       - recipes
       - recipe ratings
     put:
-      description: Operation for updating RecipeRating
+      description: Updates a RecipeRating
       operationId: UpdateRecipeRating
       parameters:
       - in: path
@@ -6836,7 +6836,7 @@ paths:
       - recipe ratings
   /api/v1/recipes/{recipeID}/steps:
     get:
-      description: Operation for fetching RecipeStep
+      description: Fetches a RecipeSteps
       operationId: GetRecipeSteps
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -6957,7 +6957,7 @@ paths:
       - recipes
       - recipe steps
     post:
-      description: Operation for creating RecipeStep
+      description: Creates a RecipeStep
       operationId: CreateRecipeStep
       parameters:
       - in: path
@@ -7031,7 +7031,7 @@ paths:
       - recipe steps
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}:
     delete:
-      description: Operation for archiving RecipeStep
+      description: Archives a RecipeStep
       operationId: ArchiveRecipeStep
       parameters:
       - in: path
@@ -7100,7 +7100,7 @@ paths:
       - recipes
       - recipe steps
     get:
-      description: Operation for fetching RecipeStep
+      description: Fetches a RecipeStep
       operationId: GetRecipeStep
       parameters:
       - in: path
@@ -7169,7 +7169,7 @@ paths:
       - recipes
       - recipe steps
     put:
-      description: Operation for updating RecipeStep
+      description: Updates a RecipeStep
       operationId: UpdateRecipeStep
       parameters:
       - in: path
@@ -7248,7 +7248,7 @@ paths:
       - recipe steps
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/completion_conditions:
     get:
-      description: Operation for fetching RecipeStepCompletionCondition
+      description: Fetches a RecipeStepCompletionConditions
       operationId: GetRecipeStepCompletionConditions
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -7375,7 +7375,7 @@ paths:
       - recipe steps
       - recipe step completion conditions
     post:
-      description: Operation for creating RecipeStepCompletionCondition
+      description: Creates a RecipeStepCompletionCondition
       operationId: CreateRecipeStepCompletionCondition
       parameters:
       - in: path
@@ -7455,7 +7455,7 @@ paths:
       - recipe step completion conditions
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/completion_conditions/{recipeStepCompletionConditionID}:
     delete:
-      description: Operation for archiving RecipeStepCompletionCondition
+      description: Archives a RecipeStepCompletionCondition
       operationId: ArchiveRecipeStepCompletionCondition
       parameters:
       - in: path
@@ -7530,7 +7530,7 @@ paths:
       - recipe steps
       - recipe step completion conditions
     get:
-      description: Operation for fetching RecipeStepCompletionCondition
+      description: Fetches a RecipeStepCompletionCondition
       operationId: GetRecipeStepCompletionCondition
       parameters:
       - in: path
@@ -7605,7 +7605,7 @@ paths:
       - recipe steps
       - recipe step completion conditions
     put:
-      description: Operation for updating RecipeStepCompletionCondition
+      description: Updates a RecipeStepCompletionCondition
       operationId: UpdateRecipeStepCompletionCondition
       parameters:
       - in: path
@@ -7690,7 +7690,7 @@ paths:
       - recipe step completion conditions
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/ingredients:
     get:
-      description: Operation for fetching RecipeStepIngredient
+      description: Fetches a RecipeStepIngredients
       operationId: GetRecipeStepIngredients
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -7817,7 +7817,7 @@ paths:
       - recipe steps
       - recipe step ingredients
     post:
-      description: Operation for creating RecipeStepIngredient
+      description: Creates a RecipeStepIngredient
       operationId: CreateRecipeStepIngredient
       parameters:
       - in: path
@@ -7897,7 +7897,7 @@ paths:
       - recipe step ingredients
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/ingredients/{recipeStepIngredientID}:
     delete:
-      description: Operation for archiving RecipeStepIngredient
+      description: Archives a RecipeStepIngredient
       operationId: ArchiveRecipeStepIngredient
       parameters:
       - in: path
@@ -7972,7 +7972,7 @@ paths:
       - recipe steps
       - recipe step ingredients
     get:
-      description: Operation for fetching RecipeStepIngredient
+      description: Fetches a RecipeStepIngredient
       operationId: GetRecipeStepIngredient
       parameters:
       - in: path
@@ -8047,7 +8047,7 @@ paths:
       - recipe steps
       - recipe step ingredients
     put:
-      description: Operation for updating RecipeStepIngredient
+      description: Updates a RecipeStepIngredient
       operationId: UpdateRecipeStepIngredient
       parameters:
       - in: path
@@ -8132,7 +8132,7 @@ paths:
       - recipe step ingredients
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/instruments:
     get:
-      description: Operation for fetching RecipeStepInstrument
+      description: Fetches a RecipeStepInstruments
       operationId: GetRecipeStepInstruments
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -8259,7 +8259,7 @@ paths:
       - recipe steps
       - household instrument ownerships
     post:
-      description: Operation for creating RecipeStepInstrument
+      description: Creates a RecipeStepInstrument
       operationId: CreateRecipeStepInstrument
       parameters:
       - in: path
@@ -8339,7 +8339,7 @@ paths:
       - household instrument ownerships
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/instruments/{recipeStepInstrumentID}:
     delete:
-      description: Operation for archiving RecipeStepInstrument
+      description: Archives a RecipeStepInstrument
       operationId: ArchiveRecipeStepInstrument
       parameters:
       - in: path
@@ -8414,7 +8414,7 @@ paths:
       - recipe steps
       - household instrument ownerships
     get:
-      description: Operation for fetching RecipeStepInstrument
+      description: Fetches a RecipeStepInstrument
       operationId: GetRecipeStepInstrument
       parameters:
       - in: path
@@ -8489,7 +8489,7 @@ paths:
       - recipe steps
       - household instrument ownerships
     put:
-      description: Operation for updating RecipeStepInstrument
+      description: Updates a RecipeStepInstrument
       operationId: UpdateRecipeStepInstrument
       parameters:
       - in: path
@@ -8574,7 +8574,7 @@ paths:
       - household instrument ownerships
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/products:
     get:
-      description: Operation for fetching RecipeStepProduct
+      description: Fetches a RecipeStepProducts
       operationId: GetRecipeStepProducts
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -8701,7 +8701,7 @@ paths:
       - recipe steps
       - recipe step products
     post:
-      description: Operation for creating RecipeStepProduct
+      description: Creates a RecipeStepProduct
       operationId: CreateRecipeStepProduct
       parameters:
       - in: path
@@ -8781,7 +8781,7 @@ paths:
       - recipe step products
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/products/{recipeStepProductID}:
     delete:
-      description: Operation for archiving RecipeStepProduct
+      description: Archives a RecipeStepProduct
       operationId: ArchiveRecipeStepProduct
       parameters:
       - in: path
@@ -8856,7 +8856,7 @@ paths:
       - recipe steps
       - recipe step products
     get:
-      description: Operation for fetching RecipeStepProduct
+      description: Fetches a RecipeStepProduct
       operationId: GetRecipeStepProduct
       parameters:
       - in: path
@@ -8931,7 +8931,7 @@ paths:
       - recipe steps
       - recipe step products
     put:
-      description: Operation for updating RecipeStepProduct
+      description: Updates a RecipeStepProduct
       operationId: UpdateRecipeStepProduct
       parameters:
       - in: path
@@ -9016,7 +9016,7 @@ paths:
       - recipe step products
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/vessels:
     get:
-      description: Operation for fetching RecipeStepVessel
+      description: Fetches a RecipeStepVessels
       operationId: GetRecipeStepVessels
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -9143,7 +9143,7 @@ paths:
       - recipe steps
       - recipe step vessels
     post:
-      description: Operation for creating RecipeStepVessel
+      description: Creates a RecipeStepVessel
       operationId: CreateRecipeStepVessel
       parameters:
       - in: path
@@ -9223,7 +9223,7 @@ paths:
       - recipe step vessels
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/vessels/{recipeStepVesselID}:
     delete:
-      description: Operation for archiving RecipeStepVessel
+      description: Archives a RecipeStepVessel
       operationId: ArchiveRecipeStepVessel
       parameters:
       - in: path
@@ -9298,7 +9298,7 @@ paths:
       - recipe steps
       - recipe step vessels
     get:
-      description: Operation for fetching RecipeStepVessel
+      description: Fetches a RecipeStepVessel
       operationId: GetRecipeStepVessel
       parameters:
       - in: path
@@ -9373,7 +9373,7 @@ paths:
       - recipe steps
       - recipe step vessels
     put:
-      description: Operation for updating RecipeStepVessel
+      description: Updates a RecipeStepVessel
       operationId: UpdateRecipeStepVessel
       parameters:
       - in: path
@@ -9458,7 +9458,7 @@ paths:
       - recipe step vessels
   /api/v1/recipes/search:
     get:
-      description: Operation for fetching Recipe
+      description: Searches for Recipes
       operationId: SearchForRecipes
       parameters:
       - description: the search query parameter
@@ -9580,7 +9580,7 @@ paths:
       - recipes
   /api/v1/settings:
     get:
-      description: Operation for fetching ServiceSetting
+      description: Fetches a ServiceSettings
       operationId: GetServiceSettings
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -9695,7 +9695,7 @@ paths:
       tags:
       - service settings
     post:
-      description: Operation for creating ServiceSetting
+      description: Creates a ServiceSetting
       operationId: CreateServiceSetting
       requestBody:
         content:
@@ -9762,7 +9762,7 @@ paths:
       - service settings
   /api/v1/settings/{serviceSettingID}:
     delete:
-      description: Operation for archiving ServiceSetting
+      description: Archives a ServiceSetting
       operationId: ArchiveServiceSetting
       parameters:
       - in: path
@@ -9825,7 +9825,7 @@ paths:
       tags:
       - service settings
     get:
-      description: Operation for fetching ServiceSetting
+      description: Fetches a ServiceSetting
       operationId: GetServiceSetting
       parameters:
       - in: path
@@ -9889,7 +9889,7 @@ paths:
       - service settings
   /api/v1/settings/configurations:
     post:
-      description: Operation for creating ServiceSettingConfiguration
+      description: Creates a ServiceSettingConfiguration
       operationId: CreateServiceSettingConfiguration
       requestBody:
         content:
@@ -9957,7 +9957,7 @@ paths:
       - service setting configurations
   /api/v1/settings/configurations/{serviceSettingConfigurationID}:
     delete:
-      description: Operation for archiving ServiceSettingConfiguration
+      description: Archives a ServiceSettingConfiguration
       operationId: ArchiveServiceSettingConfiguration
       parameters:
       - in: path
@@ -10021,7 +10021,7 @@ paths:
       - service settings
       - service setting configurations
     put:
-      description: Operation for updating ServiceSettingConfiguration
+      description: Updates a ServiceSettingConfiguration
       operationId: UpdateServiceSettingConfiguration
       parameters:
       - in: path
@@ -10095,7 +10095,7 @@ paths:
       - service setting configurations
   /api/v1/settings/configurations/household:
     get:
-      description: Operation for fetching ServiceSettingConfiguration
+      description: Fetches a ServiceSettingConfigurationsForHousehold
       operationId: GetServiceSettingConfigurationsForHousehold
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -10212,7 +10212,7 @@ paths:
       - service setting configurations
   /api/v1/settings/configurations/user:
     get:
-      description: Operation for fetching ServiceSettingConfiguration
+      description: Fetches a ServiceSettingConfigurationsForUser
       operationId: GetServiceSettingConfigurationsForUser
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -10329,7 +10329,7 @@ paths:
       - service setting configurations
   /api/v1/settings/configurations/user/{serviceSettingConfigurationName}:
     get:
-      description: Operation for fetching ServiceSettingConfiguration
+      description: Fetches a ServiceSettingConfigurationByName
       operationId: GetServiceSettingConfigurationByName
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -10452,7 +10452,7 @@ paths:
       - user
   /api/v1/settings/search:
     get:
-      description: Operation for fetching ServiceSetting
+      description: Searches for ServiceSettings
       operationId: SearchForServiceSettings
       parameters:
       - description: the search query parameter
@@ -10574,7 +10574,7 @@ paths:
       - service settings
   /api/v1/user_ingredient_preferences:
     get:
-      description: Operation for fetching UserIngredientPreference
+      description: Fetches a UserIngredientPreferences
       operationId: GetUserIngredientPreferences
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -10689,7 +10689,7 @@ paths:
       tags:
       - user ingredient preferences
     post:
-      description: Operation for creating UserIngredientPreference
+      description: Creates a UserIngredientPreference
       operationId: CreateUserIngredientPreference
       requestBody:
         content:
@@ -10758,7 +10758,7 @@ paths:
       - user ingredient preferences
   /api/v1/user_ingredient_preferences/{userIngredientPreferenceID}:
     delete:
-      description: Operation for archiving UserIngredientPreference
+      description: Archives a UserIngredientPreference
       operationId: ArchiveUserIngredientPreference
       parameters:
       - in: path
@@ -10821,7 +10821,7 @@ paths:
       tags:
       - user ingredient preferences
     put:
-      description: Operation for updating UserIngredientPreference
+      description: Updates a UserIngredientPreference
       operationId: UpdateUserIngredientPreference
       parameters:
       - in: path
@@ -10894,7 +10894,7 @@ paths:
       - user ingredient preferences
   /api/v1/user_notifications:
     get:
-      description: Operation for fetching UserNotification
+      description: Fetches a UserNotifications
       operationId: GetUserNotifications
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -11009,7 +11009,7 @@ paths:
       tags:
       - user notifications
     post:
-      description: Operation for creating UserNotification
+      description: Creates a UserNotification
       operationId: CreateUserNotification
       requestBody:
         content:
@@ -11076,7 +11076,7 @@ paths:
       - user notifications
   /api/v1/user_notifications/{userNotificationID}:
     get:
-      description: Operation for fetching UserNotification
+      description: Fetches a UserNotification
       operationId: GetUserNotification
       parameters:
       - in: path
@@ -11139,7 +11139,7 @@ paths:
       tags:
       - user notifications
     patch:
-      description: Operation for updating UserNotification
+      description: Updates a UserNotification
       operationId: UpdateUserNotification
       parameters:
       - in: path
@@ -11212,7 +11212,7 @@ paths:
       - user notifications
   /api/v1/users:
     get:
-      description: Operation for fetching User
+      description: Fetches a Users
       operationId: GetUsers
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -11328,7 +11328,7 @@ paths:
       - users
   /api/v1/users/{userID}:
     delete:
-      description: Operation for archiving User
+      description: Archives a User
       operationId: ArchiveUser
       parameters:
       - in: path
@@ -11391,7 +11391,7 @@ paths:
       tags:
       - users
     get:
-      description: Operation for fetching User
+      description: Fetches a User
       operationId: GetUser
       parameters:
       - in: path
@@ -11455,7 +11455,7 @@ paths:
       - users
   /api/v1/users/avatar/upload:
     post:
-      description: Operation for creating User
+      description: Uploads a new user avatar
       operationId: UploadUserAvatar
       requestBody:
         content:
@@ -11522,7 +11522,7 @@ paths:
       - users
   /api/v1/users/details:
     put:
-      description: Operation for updating User
+      description: Updates a UserDetails
       operationId: UpdateUserDetails
       requestBody:
         content:
@@ -11589,7 +11589,7 @@ paths:
       - users
   /api/v1/users/email_address:
     put:
-      description: Operation for updating User
+      description: Updates a UserEmailAddress
       operationId: UpdateUserEmailAddress
       requestBody:
         content:
@@ -11656,7 +11656,7 @@ paths:
       - users
   /api/v1/users/email_address_verification:
     post:
-      description: Operation for creating User
+      description: Requests an email address verification email
       operationId: RequestEmailVerificationEmail
       responses:
         "201":
@@ -11714,7 +11714,7 @@ paths:
       - users
   /api/v1/users/password/new:
     put:
-      description: Operation for updating PasswordResetResponse
+      description: Updates a Password
       operationId: UpdatePassword
       requestBody:
         content:
@@ -11782,7 +11782,7 @@ paths:
       - password
   /api/v1/users/permissions/check:
     post:
-      description: Operation for creating UserPermissionsResponse
+      description: Checks a user's permissions
       operationId: CheckPermissions
       requestBody:
         content:
@@ -11850,7 +11850,7 @@ paths:
       - permissions
   /api/v1/users/search:
     get:
-      description: Operation for fetching User
+      description: Searches for Users
       operationId: SearchForUsers
       parameters:
       - description: the search query parameter
@@ -11972,7 +11972,7 @@ paths:
       - users
   /api/v1/users/self:
     get:
-      description: Operation for fetching User
+      description: Fetches a Self
       operationId: GetSelf
       responses:
         "200":
@@ -12030,7 +12030,7 @@ paths:
       - users
   /api/v1/users/totp_secret/new:
     post:
-      description: Operation for creating TOTPSecretRefreshResponse
+      description: Refreshes a user's TOTP secret
       operationId: RefreshTOTPSecret
       requestBody:
         content:
@@ -12098,7 +12098,7 @@ paths:
       - totp secret
   /api/v1/users/username:
     put:
-      description: Operation for updating User
+      description: Updates a UserUsername
       operationId: UpdateUserUsername
       requestBody:
         content:
@@ -12165,7 +12165,7 @@ paths:
       - users
   /api/v1/valid_ingredient_groups:
     get:
-      description: Operation for fetching ValidIngredientGroup
+      description: Fetches a ValidIngredientGroups
       operationId: GetValidIngredientGroups
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -12280,7 +12280,7 @@ paths:
       tags:
       - valid ingredient groups
     post:
-      description: Operation for creating ValidIngredientGroup
+      description: Creates a ValidIngredientGroup
       operationId: CreateValidIngredientGroup
       requestBody:
         content:
@@ -12347,7 +12347,7 @@ paths:
       - valid ingredient groups
   /api/v1/valid_ingredient_groups/{validIngredientGroupID}:
     delete:
-      description: Operation for archiving ValidIngredientGroup
+      description: Archives a ValidIngredientGroup
       operationId: ArchiveValidIngredientGroup
       parameters:
       - in: path
@@ -12410,7 +12410,7 @@ paths:
       tags:
       - valid ingredient groups
     get:
-      description: Operation for fetching ValidIngredientGroup
+      description: Fetches a ValidIngredientGroup
       operationId: GetValidIngredientGroup
       parameters:
       - in: path
@@ -12473,7 +12473,7 @@ paths:
       tags:
       - valid ingredient groups
     put:
-      description: Operation for updating ValidIngredientGroup
+      description: Updates a ValidIngredientGroup
       operationId: UpdateValidIngredientGroup
       parameters:
       - in: path
@@ -12546,7 +12546,7 @@ paths:
       - valid ingredient groups
   /api/v1/valid_ingredient_groups/search:
     get:
-      description: Operation for fetching ValidIngredientGroup
+      description: Searches for ValidIngredientGroups
       operationId: SearchForValidIngredientGroups
       parameters:
       - description: the search query parameter
@@ -12668,7 +12668,7 @@ paths:
       - valid ingredient groups
   /api/v1/valid_ingredient_measurement_units:
     get:
-      description: Operation for fetching ValidIngredientMeasurementUnit
+      description: Fetches a ValidIngredientMeasurementUnits
       operationId: GetValidIngredientMeasurementUnits
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -12783,7 +12783,7 @@ paths:
       tags:
       - valid ingredient measurement units
     post:
-      description: Operation for creating ValidIngredientMeasurementUnit
+      description: Creates a ValidIngredientMeasurementUnit
       operationId: CreateValidIngredientMeasurementUnit
       requestBody:
         content:
@@ -12850,7 +12850,7 @@ paths:
       - valid ingredient measurement units
   /api/v1/valid_ingredient_measurement_units/{validIngredientMeasurementUnitID}:
     delete:
-      description: Operation for archiving ValidIngredientMeasurementUnit
+      description: Archives a ValidIngredientMeasurementUnit
       operationId: ArchiveValidIngredientMeasurementUnit
       parameters:
       - in: path
@@ -12913,7 +12913,7 @@ paths:
       tags:
       - valid ingredient measurement units
     get:
-      description: Operation for fetching ValidIngredientMeasurementUnit
+      description: Fetches a ValidIngredientMeasurementUnit
       operationId: GetValidIngredientMeasurementUnit
       parameters:
       - in: path
@@ -12976,7 +12976,7 @@ paths:
       tags:
       - valid ingredient measurement units
     put:
-      description: Operation for updating ValidIngredientMeasurementUnit
+      description: Updates a ValidIngredientMeasurementUnit
       operationId: UpdateValidIngredientMeasurementUnit
       parameters:
       - in: path
@@ -13049,7 +13049,7 @@ paths:
       - valid ingredient measurement units
   /api/v1/valid_ingredient_measurement_units/by_ingredient/{validIngredientID}:
     get:
-      description: Operation for fetching ValidIngredientMeasurementUnit
+      description: Fetches a ValidIngredientMeasurementUnitsByIngredient
       operationId: GetValidIngredientMeasurementUnitsByIngredient
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -13170,7 +13170,7 @@ paths:
       - valid ingredient measurement units
   /api/v1/valid_ingredient_measurement_units/by_measurement_unit/{validMeasurementUnitID}:
     get:
-      description: Operation for fetching ValidIngredientMeasurementUnit
+      description: Fetches a ValidIngredientMeasurementUnitsByMeasurementUnit
       operationId: GetValidIngredientMeasurementUnitsByMeasurementUnit
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -13291,7 +13291,7 @@ paths:
       - valid ingredient measurement units
   /api/v1/valid_ingredient_preparations:
     get:
-      description: Operation for fetching ValidIngredientPreparation
+      description: Fetches a ValidIngredientPreparations
       operationId: GetValidIngredientPreparations
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -13406,7 +13406,7 @@ paths:
       tags:
       - valid ingredient preparations
     post:
-      description: Operation for creating ValidIngredientPreparation
+      description: Creates a ValidIngredientPreparation
       operationId: CreateValidIngredientPreparation
       requestBody:
         content:
@@ -13473,7 +13473,7 @@ paths:
       - valid ingredient preparations
   /api/v1/valid_ingredient_preparations/{validIngredientPreparationID}:
     delete:
-      description: Operation for archiving ValidIngredientPreparation
+      description: Archives a ValidIngredientPreparation
       operationId: ArchiveValidIngredientPreparation
       parameters:
       - in: path
@@ -13536,7 +13536,7 @@ paths:
       tags:
       - valid ingredient preparations
     get:
-      description: Operation for fetching ValidIngredientPreparation
+      description: Fetches a ValidIngredientPreparation
       operationId: GetValidIngredientPreparation
       parameters:
       - in: path
@@ -13599,7 +13599,7 @@ paths:
       tags:
       - valid ingredient preparations
     put:
-      description: Operation for updating ValidIngredientPreparation
+      description: Updates a ValidIngredientPreparation
       operationId: UpdateValidIngredientPreparation
       parameters:
       - in: path
@@ -13672,7 +13672,7 @@ paths:
       - valid ingredient preparations
   /api/v1/valid_ingredient_preparations/by_ingredient/{validIngredientID}:
     get:
-      description: Operation for fetching ValidIngredientPreparation
+      description: Fetches a ValidIngredientPreparationsByIngredient
       operationId: GetValidIngredientPreparationsByIngredient
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -13793,7 +13793,7 @@ paths:
       - valid ingredient preparations
   /api/v1/valid_ingredient_preparations/by_preparation/{validPreparationID}:
     get:
-      description: Operation for fetching ValidIngredientPreparation
+      description: Fetches a ValidIngredientPreparationsByPreparation
       operationId: GetValidIngredientPreparationsByPreparation
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -13914,7 +13914,7 @@ paths:
       - valid ingredient preparations
   /api/v1/valid_ingredient_state_ingredients:
     get:
-      description: Operation for fetching ValidIngredientStateIngredient
+      description: Fetches a ValidIngredientStateIngredients
       operationId: GetValidIngredientStateIngredients
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -14029,7 +14029,7 @@ paths:
       tags:
       - valid ingredient state ingredients
     post:
-      description: Operation for creating ValidIngredientStateIngredient
+      description: Creates a ValidIngredientStateIngredient
       operationId: CreateValidIngredientStateIngredient
       requestBody:
         content:
@@ -14096,7 +14096,7 @@ paths:
       - valid ingredient state ingredients
   /api/v1/valid_ingredient_state_ingredients/{validIngredientStateIngredientID}:
     delete:
-      description: Operation for archiving ValidIngredientStateIngredient
+      description: Archives a ValidIngredientStateIngredient
       operationId: ArchiveValidIngredientStateIngredient
       parameters:
       - in: path
@@ -14159,7 +14159,7 @@ paths:
       tags:
       - valid ingredient state ingredients
     get:
-      description: Operation for fetching ValidIngredientStateIngredient
+      description: Fetches a ValidIngredientStateIngredient
       operationId: GetValidIngredientStateIngredient
       parameters:
       - in: path
@@ -14222,7 +14222,7 @@ paths:
       tags:
       - valid ingredient state ingredients
     put:
-      description: Operation for updating ValidIngredientStateIngredient
+      description: Updates a ValidIngredientStateIngredient
       operationId: UpdateValidIngredientStateIngredient
       parameters:
       - in: path
@@ -14295,7 +14295,7 @@ paths:
       - valid ingredient state ingredients
   /api/v1/valid_ingredient_state_ingredients/by_ingredient/{validIngredientID}:
     get:
-      description: Operation for fetching ValidIngredientStateIngredient
+      description: Fetches a ValidIngredientStateIngredientsByIngredient
       operationId: GetValidIngredientStateIngredientsByIngredient
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -14416,7 +14416,7 @@ paths:
       - valid ingredient state ingredients
   /api/v1/valid_ingredient_state_ingredients/by_ingredient_state/{validIngredientStateID}:
     get:
-      description: Operation for fetching ValidIngredientStateIngredient
+      description: Fetches a ValidIngredientStateIngredientsByIngredientState
       operationId: GetValidIngredientStateIngredientsByIngredientState
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -14537,7 +14537,7 @@ paths:
       - valid ingredient state ingredients
   /api/v1/valid_ingredient_states:
     get:
-      description: Operation for fetching ValidIngredientState
+      description: Fetches a ValidIngredientStates
       operationId: GetValidIngredientStates
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -14652,7 +14652,7 @@ paths:
       tags:
       - valid ingredient states
     post:
-      description: Operation for creating ValidIngredientState
+      description: Creates a ValidIngredientState
       operationId: CreateValidIngredientState
       requestBody:
         content:
@@ -14719,7 +14719,7 @@ paths:
       - valid ingredient states
   /api/v1/valid_ingredient_states/{validIngredientStateID}:
     delete:
-      description: Operation for archiving ValidIngredientState
+      description: Archives a ValidIngredientState
       operationId: ArchiveValidIngredientState
       parameters:
       - in: path
@@ -14782,7 +14782,7 @@ paths:
       tags:
       - valid ingredient states
     get:
-      description: Operation for fetching ValidIngredientState
+      description: Fetches a ValidIngredientState
       operationId: GetValidIngredientState
       parameters:
       - in: path
@@ -14845,7 +14845,7 @@ paths:
       tags:
       - valid ingredient states
     put:
-      description: Operation for updating ValidIngredientState
+      description: Updates a ValidIngredientState
       operationId: UpdateValidIngredientState
       parameters:
       - in: path
@@ -14918,7 +14918,7 @@ paths:
       - valid ingredient states
   /api/v1/valid_ingredient_states/search:
     get:
-      description: Operation for fetching ValidIngredientState
+      description: Searches for ValidIngredientStates
       operationId: SearchForValidIngredientStates
       parameters:
       - description: the search query parameter
@@ -15040,7 +15040,7 @@ paths:
       - valid ingredient states
   /api/v1/valid_ingredients:
     get:
-      description: Operation for fetching ValidIngredient
+      description: Fetches a ValidIngredients
       operationId: GetValidIngredients
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -15155,7 +15155,7 @@ paths:
       tags:
       - valid ingredients
     post:
-      description: Operation for creating ValidIngredient
+      description: Creates a ValidIngredient
       operationId: CreateValidIngredient
       requestBody:
         content:
@@ -15222,7 +15222,7 @@ paths:
       - valid ingredients
   /api/v1/valid_ingredients/{validIngredientID}:
     delete:
-      description: Operation for archiving ValidIngredient
+      description: Archives a ValidIngredient
       operationId: ArchiveValidIngredient
       parameters:
       - in: path
@@ -15285,7 +15285,7 @@ paths:
       tags:
       - valid ingredients
     get:
-      description: Operation for fetching ValidIngredient
+      description: Fetches a ValidIngredient
       operationId: GetValidIngredient
       parameters:
       - in: path
@@ -15348,7 +15348,7 @@ paths:
       tags:
       - valid ingredients
     put:
-      description: Operation for updating ValidIngredient
+      description: Updates a ValidIngredient
       operationId: UpdateValidIngredient
       parameters:
       - in: path
@@ -15421,7 +15421,7 @@ paths:
       - valid ingredients
   /api/v1/valid_ingredients/by_preparation/{validPreparationID}:
     get:
-      description: Operation for fetching ValidIngredient
+      description: Searches for ValidIngredients by a ValidPreparation ID
       operationId: SearchValidIngredientsByPreparation
       parameters:
       - description: the search query parameter
@@ -15548,7 +15548,7 @@ paths:
       - valid ingredients
   /api/v1/valid_ingredients/random:
     get:
-      description: Operation for fetching ValidIngredient
+      description: Fetches a RandomValidIngredient
       operationId: GetRandomValidIngredient
       responses:
         "200":
@@ -15606,7 +15606,7 @@ paths:
       - valid ingredients
   /api/v1/valid_ingredients/search:
     get:
-      description: Operation for fetching ValidIngredient
+      description: Searches for ValidIngredients
       operationId: SearchForValidIngredients
       parameters:
       - description: the search query parameter
@@ -15728,7 +15728,7 @@ paths:
       - valid ingredients
   /api/v1/valid_instruments:
     get:
-      description: Operation for fetching ValidInstrument
+      description: Fetches a ValidInstruments
       operationId: GetValidInstruments
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -15843,7 +15843,7 @@ paths:
       tags:
       - valid instruments
     post:
-      description: Operation for creating ValidInstrument
+      description: Creates a ValidInstrument
       operationId: CreateValidInstrument
       requestBody:
         content:
@@ -15910,7 +15910,7 @@ paths:
       - valid instruments
   /api/v1/valid_instruments/{validInstrumentID}:
     delete:
-      description: Operation for archiving ValidInstrument
+      description: Archives a ValidInstrument
       operationId: ArchiveValidInstrument
       parameters:
       - in: path
@@ -15973,7 +15973,7 @@ paths:
       tags:
       - valid instruments
     get:
-      description: Operation for fetching ValidInstrument
+      description: Fetches a ValidInstrument
       operationId: GetValidInstrument
       parameters:
       - in: path
@@ -16036,7 +16036,7 @@ paths:
       tags:
       - valid instruments
     put:
-      description: Operation for updating ValidInstrument
+      description: Updates a ValidInstrument
       operationId: UpdateValidInstrument
       parameters:
       - in: path
@@ -16109,7 +16109,7 @@ paths:
       - valid instruments
   /api/v1/valid_instruments/random:
     get:
-      description: Operation for fetching ValidInstrument
+      description: Fetches a RandomValidInstrument
       operationId: GetRandomValidInstrument
       responses:
         "200":
@@ -16167,7 +16167,7 @@ paths:
       - valid instruments
   /api/v1/valid_instruments/search:
     get:
-      description: Operation for fetching ValidInstrument
+      description: Searches for ValidInstruments
       operationId: SearchForValidInstruments
       parameters:
       - description: the search query parameter
@@ -16289,7 +16289,7 @@ paths:
       - valid instruments
   /api/v1/valid_measurement_conversions:
     post:
-      description: Operation for creating ValidMeasurementUnitConversion
+      description: Creates a ValidMeasurementUnitConversion
       operationId: CreateValidMeasurementUnitConversion
       requestBody:
         content:
@@ -16356,7 +16356,7 @@ paths:
       - valid measurement conversions
   /api/v1/valid_measurement_conversions/{validMeasurementUnitConversionID}:
     delete:
-      description: Operation for archiving ValidMeasurementUnitConversion
+      description: Archives a ValidMeasurementUnitConversion
       operationId: ArchiveValidMeasurementUnitConversion
       parameters:
       - in: path
@@ -16419,7 +16419,7 @@ paths:
       tags:
       - valid measurement conversions
     get:
-      description: Operation for fetching ValidMeasurementUnitConversion
+      description: Fetches a ValidMeasurementUnitConversion
       operationId: GetValidMeasurementUnitConversion
       parameters:
       - in: path
@@ -16482,7 +16482,7 @@ paths:
       tags:
       - valid measurement conversions
     put:
-      description: Operation for updating ValidMeasurementUnitConversion
+      description: Updates a ValidMeasurementUnitConversion
       operationId: UpdateValidMeasurementUnitConversion
       parameters:
       - in: path
@@ -16555,7 +16555,7 @@ paths:
       - valid measurement conversions
   /api/v1/valid_measurement_conversions/from_unit/{validMeasurementUnitID}:
     get:
-      description: Operation for fetching ValidMeasurementUnitConversion
+      description: Fetches a ValidMeasurementUnitConversionsFromUnit
       operationId: GetValidMeasurementUnitConversionsFromUnit
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -16676,7 +16676,7 @@ paths:
       - valid measurement conversions
   /api/v1/valid_measurement_conversions/to_unit/{validMeasurementUnitID}:
     get:
-      description: Operation for fetching ValidMeasurementUnitConversion
+      description: Fetches a ValidMeasurementUnitConversionsToUnit
       operationId: GetValidMeasurementUnitConversionsToUnit
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -16797,7 +16797,7 @@ paths:
       - valid measurement conversions
   /api/v1/valid_measurement_units:
     get:
-      description: Operation for fetching ValidMeasurementUnit
+      description: Fetches a ValidMeasurementUnits
       operationId: GetValidMeasurementUnits
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -16912,7 +16912,7 @@ paths:
       tags:
       - valid measurement units
     post:
-      description: Operation for creating ValidMeasurementUnit
+      description: Creates a ValidMeasurementUnit
       operationId: CreateValidMeasurementUnit
       requestBody:
         content:
@@ -16979,7 +16979,7 @@ paths:
       - valid measurement units
   /api/v1/valid_measurement_units/{validMeasurementUnitID}:
     delete:
-      description: Operation for archiving ValidMeasurementUnit
+      description: Archives a ValidMeasurementUnit
       operationId: ArchiveValidMeasurementUnit
       parameters:
       - in: path
@@ -17042,7 +17042,7 @@ paths:
       tags:
       - valid measurement units
     get:
-      description: Operation for fetching ValidMeasurementUnit
+      description: Fetches a ValidMeasurementUnit
       operationId: GetValidMeasurementUnit
       parameters:
       - in: path
@@ -17105,7 +17105,7 @@ paths:
       tags:
       - valid measurement units
     put:
-      description: Operation for updating ValidMeasurementUnit
+      description: Updates a ValidMeasurementUnit
       operationId: UpdateValidMeasurementUnit
       parameters:
       - in: path
@@ -17178,7 +17178,7 @@ paths:
       - valid measurement units
   /api/v1/valid_measurement_units/by_ingredient/{validIngredientID}:
     get:
-      description: Operation for fetching ValidMeasurementUnit
+      description: Searches for ValidMeasurementUnits by a ValidIngredient ID
       operationId: SearchValidMeasurementUnitsByIngredient
       parameters:
       - description: the search query parameter
@@ -17305,7 +17305,7 @@ paths:
       - valid measurement units
   /api/v1/valid_measurement_units/search:
     get:
-      description: Operation for fetching ValidMeasurementUnit
+      description: Searches for ValidMeasurementUnits
       operationId: SearchForValidMeasurementUnits
       parameters:
       - description: the search query parameter
@@ -17427,7 +17427,7 @@ paths:
       - valid measurement units
   /api/v1/valid_preparation_instruments:
     get:
-      description: Operation for fetching ValidPreparationInstrument
+      description: Fetches a ValidPreparationInstruments
       operationId: GetValidPreparationInstruments
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -17542,7 +17542,7 @@ paths:
       tags:
       - valid preparation instruments
     post:
-      description: Operation for creating ValidPreparationInstrument
+      description: Creates a ValidPreparationInstrument
       operationId: CreateValidPreparationInstrument
       requestBody:
         content:
@@ -17609,7 +17609,7 @@ paths:
       - valid preparation instruments
   /api/v1/valid_preparation_instruments/{validPreparationVesselID}:
     delete:
-      description: Operation for archiving ValidPreparationInstrument
+      description: Archives a ValidPreparationInstrument
       operationId: ArchiveValidPreparationInstrument
       parameters:
       - in: path
@@ -17672,7 +17672,7 @@ paths:
       tags:
       - valid preparation instruments
     get:
-      description: Operation for fetching ValidPreparationInstrument
+      description: Fetches a ValidPreparationInstrument
       operationId: GetValidPreparationInstrument
       parameters:
       - in: path
@@ -17735,7 +17735,7 @@ paths:
       tags:
       - valid preparation instruments
     put:
-      description: Operation for updating ValidPreparationInstrument
+      description: Updates a ValidPreparationInstrument
       operationId: UpdateValidPreparationInstrument
       parameters:
       - in: path
@@ -17808,7 +17808,7 @@ paths:
       - valid preparation instruments
   /api/v1/valid_preparation_instruments/by_instrument/{validInstrumentID}:
     get:
-      description: Operation for fetching ValidPreparationInstrument
+      description: Fetches a ValidPreparationInstrumentsByInstrument
       operationId: GetValidPreparationInstrumentsByInstrument
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -17929,7 +17929,7 @@ paths:
       - valid preparation instruments
   /api/v1/valid_preparation_instruments/by_preparation/{validPreparationID}:
     get:
-      description: Operation for fetching ValidPreparationInstrument
+      description: Fetches a ValidPreparationInstrumentsByPreparation
       operationId: GetValidPreparationInstrumentsByPreparation
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -18050,7 +18050,7 @@ paths:
       - valid preparation instruments
   /api/v1/valid_preparation_vessels:
     get:
-      description: Operation for fetching ValidPreparationVessel
+      description: Fetches a ValidPreparationVessels
       operationId: GetValidPreparationVessels
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -18165,7 +18165,7 @@ paths:
       tags:
       - valid preparation vessels
     post:
-      description: Operation for creating ValidPreparationVessel
+      description: Creates a ValidPreparationVessel
       operationId: CreateValidPreparationVessel
       requestBody:
         content:
@@ -18232,7 +18232,7 @@ paths:
       - valid preparation vessels
   /api/v1/valid_preparation_vessels/{validPreparationVesselID}:
     delete:
-      description: Operation for archiving ValidPreparationVessel
+      description: Archives a ValidPreparationVessel
       operationId: ArchiveValidPreparationVessel
       parameters:
       - in: path
@@ -18295,7 +18295,7 @@ paths:
       tags:
       - valid preparation vessels
     get:
-      description: Operation for fetching ValidPreparationVessel
+      description: Fetches a ValidPreparationVessel
       operationId: GetValidPreparationVessel
       parameters:
       - in: path
@@ -18358,7 +18358,7 @@ paths:
       tags:
       - valid preparation vessels
     put:
-      description: Operation for updating ValidPreparationVessel
+      description: Updates a ValidPreparationVessel
       operationId: UpdateValidPreparationVessel
       parameters:
       - in: path
@@ -18431,7 +18431,7 @@ paths:
       - valid preparation vessels
   /api/v1/valid_preparation_vessels/by_preparation/{validPreparationID}:
     get:
-      description: Operation for fetching ValidPreparationVessel
+      description: Fetches a ValidPreparationVesselsByPreparation
       operationId: GetValidPreparationVesselsByPreparation
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -18552,7 +18552,7 @@ paths:
       - valid preparation vessels
   /api/v1/valid_preparation_vessels/by_vessel/{ValidVesselID}:
     get:
-      description: Operation for fetching ValidPreparationVessel
+      description: Fetches a ValidPreparationVesselsByVessel
       operationId: GetValidPreparationVesselsByVessel
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -18673,7 +18673,7 @@ paths:
       - valid preparation vessels
   /api/v1/valid_preparations:
     get:
-      description: Operation for fetching ValidPreparation
+      description: Fetches a ValidPreparations
       operationId: GetValidPreparations
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -18788,7 +18788,7 @@ paths:
       tags:
       - valid preparations
     post:
-      description: Operation for creating ValidPreparation
+      description: Creates a ValidPreparation
       operationId: CreateValidPreparation
       requestBody:
         content:
@@ -18855,7 +18855,7 @@ paths:
       - valid preparations
   /api/v1/valid_preparations/{validPreparationID}:
     delete:
-      description: Operation for archiving ValidPreparation
+      description: Archives a ValidPreparation
       operationId: ArchiveValidPreparation
       parameters:
       - in: path
@@ -18918,7 +18918,7 @@ paths:
       tags:
       - valid preparations
     get:
-      description: Operation for fetching ValidPreparation
+      description: Fetches a ValidPreparation
       operationId: GetValidPreparation
       parameters:
       - in: path
@@ -18981,7 +18981,7 @@ paths:
       tags:
       - valid preparations
     put:
-      description: Operation for updating ValidPreparation
+      description: Updates a ValidPreparation
       operationId: UpdateValidPreparation
       parameters:
       - in: path
@@ -19054,7 +19054,7 @@ paths:
       - valid preparations
   /api/v1/valid_preparations/random:
     get:
-      description: Operation for fetching ValidPreparation
+      description: Fetches a RandomValidPreparation
       operationId: GetRandomValidPreparation
       responses:
         "200":
@@ -19112,7 +19112,7 @@ paths:
       - valid preparations
   /api/v1/valid_preparations/search:
     get:
-      description: Operation for fetching ValidPreparation
+      description: Searches for ValidPreparations
       operationId: SearchForValidPreparations
       parameters:
       - description: the search query parameter
@@ -19234,7 +19234,7 @@ paths:
       - valid preparations
   /api/v1/valid_vessels:
     get:
-      description: Operation for fetching ValidVessel
+      description: Fetches a ValidVessels
       operationId: GetValidVessels
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -19349,7 +19349,7 @@ paths:
       tags:
       - valid vessels
     post:
-      description: Operation for creating ValidVessel
+      description: Creates a ValidVessel
       operationId: CreateValidVessel
       requestBody:
         content:
@@ -19416,7 +19416,7 @@ paths:
       - valid vessels
   /api/v1/valid_vessels/{validVesselID}:
     delete:
-      description: Operation for archiving ValidVessel
+      description: Archives a ValidVessel
       operationId: ArchiveValidVessel
       parameters:
       - in: path
@@ -19479,7 +19479,7 @@ paths:
       tags:
       - valid vessels
     get:
-      description: Operation for fetching ValidVessel
+      description: Fetches a ValidVessel
       operationId: GetValidVessel
       parameters:
       - in: path
@@ -19542,7 +19542,7 @@ paths:
       tags:
       - valid vessels
     put:
-      description: Operation for updating ValidVessel
+      description: Updates a ValidVessel
       operationId: UpdateValidVessel
       parameters:
       - in: path
@@ -19615,7 +19615,7 @@ paths:
       - valid vessels
   /api/v1/valid_vessels/random:
     get:
-      description: Operation for fetching ValidVessel
+      description: Fetches a RandomValidVessel
       operationId: GetRandomValidVessel
       responses:
         "200":
@@ -19673,7 +19673,7 @@ paths:
       - valid vessels
   /api/v1/valid_vessels/search:
     get:
-      description: Operation for fetching ValidVessel
+      description: Searches for ValidVessels
       operationId: SearchForValidVessels
       parameters:
       - description: the search query parameter
@@ -19795,7 +19795,7 @@ paths:
       - valid vessels
   /api/v1/webhooks:
     get:
-      description: Operation for fetching Webhook
+      description: Fetches a Webhooks
       operationId: GetWebhooks
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -19910,7 +19910,7 @@ paths:
       tags:
       - webhooks
     post:
-      description: Operation for creating Webhook
+      description: Creates a Webhook
       operationId: CreateWebhook
       requestBody:
         content:
@@ -19977,7 +19977,7 @@ paths:
       - webhooks
   /api/v1/webhooks/{webhookID}:
     delete:
-      description: Operation for archiving Webhook
+      description: Archives a Webhook
       operationId: ArchiveWebhook
       parameters:
       - in: path
@@ -20040,7 +20040,7 @@ paths:
       tags:
       - webhooks
     get:
-      description: Operation for fetching Webhook
+      description: Fetches a Webhook
       operationId: GetWebhook
       parameters:
       - in: path
@@ -20104,7 +20104,7 @@ paths:
       - webhooks
   /api/v1/webhooks/{webhookID}/trigger_events:
     post:
-      description: Operation for creating WebhookTriggerEvent
+      description: Creates a WebhookTriggerEvent
       operationId: CreateWebhookTriggerEvent
       parameters:
       - in: path
@@ -20177,7 +20177,7 @@ paths:
       - webhooks
   /api/v1/webhooks/{webhookID}/trigger_events/{webhookTriggerEventID}:
     delete:
-      description: Operation for archiving WebhookTriggerEvent
+      description: Archives a WebhookTriggerEvent
       operationId: ArchiveWebhookTriggerEvent
       parameters:
       - in: path
@@ -20247,7 +20247,7 @@ paths:
       - webhook trigger events
   /api/v1/workers/finalize_meal_plans:
     post:
-      description: Operation for creating FinalizeMealPlansResponse
+      description: Runs the Finalize Meal Plans worker
       operationId: RunFinalizeMealPlanWorker
       requestBody:
         content:
@@ -20314,7 +20314,7 @@ paths:
       - workers
   /api/v1/workers/meal_plan_grocery_list_init:
     post:
-      description: Operation for creating InitializeMealPlanGroceryListResponse
+      description: Runs the meal plan grocery list initialization worker
       operationId: RunMealPlanGroceryListInitializerWorker
       requestBody:
         content:
@@ -20381,7 +20381,7 @@ paths:
       - workers
   /api/v1/workers/meal_plan_tasks:
     post:
-      description: Operation for creating CreateMealPlanTasksResponse
+      description: Runs the meal plan task creator worker
       operationId: RunMealPlanTaskCreatorWorker
       requestBody:
         content:
@@ -20448,7 +20448,7 @@ paths:
       - workers
   /auth/status:
     get:
-      description: Operation for fetching UserStatusResponse
+      description: Fetches a AuthStatus
       operationId: GetAuthStatus
       responses:
         "200":
@@ -20828,7 +20828,7 @@ paths:
       - password
   /users/password/reset/redeem:
     post:
-      description: Operation for redeeming a password reset token
+      description: Redeems a password reset token
       operationId: RedeemPasswordResetToken
       requestBody:
         content:

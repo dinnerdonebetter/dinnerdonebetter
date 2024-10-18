@@ -34,10 +34,10 @@ type TypeDefinition struct {
 }
 
 var defaultTypeValues = map[string]string{
-	"string":  `''`,
-	"number":  `0`,
-	"boolean": `false`,
-	"integer": `0`,
+	stringType: `''`,
+	"number":   `0`,
+	"boolean":  `false`,
+	"integer":  `0`,
 }
 
 func (f Field) defaultValueForType() string {
@@ -128,11 +128,11 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 								for _, x := range oneOf {
 									if y, ok6 := x.(map[string]any); ok6 {
 										if z, ok7 := y["type"]; ok7 {
-											if zstr, ok8 := z.(string); ok8 && zstr != "null" {
+											if zstr, ok8 := z.(string); ok8 && zstr != nullType {
 												field.Type = zstr
 											}
 										} else if z, ok7 = y["type"]; ok7 {
-											if zstr, ok8 := z.(string); ok8 && zstr != "null" {
+											if zstr, ok8 := z.(string); ok8 && zstr != nullType {
 												field.Nullable = true
 											}
 										} else if ref, ok8 := typeMap[refKey]; ok8 {
@@ -203,7 +203,7 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 					}
 
 					nativeTypes := []string{
-						"string",
+						stringType,
 						"boolean",
 						"number",
 						"object",
@@ -213,7 +213,7 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 					}
 
 					if !slices.Contains(nativeTypes, field.Type) && !slices.Contains(enumNames, field.Type) && def.Name != field.Type {
-						def.Imports[fmt.Sprintf("./%s", field.Type)] = []string{
+						def.Imports[fmt.Sprintf("./%s.gen", field.Type)] = []string{
 							field.Type,
 						}
 					}
@@ -283,7 +283,7 @@ export class {{ .Name }} implements I{{ .Name }} {
 		"lowercase": strings.ToLower,
 		"typeIsNative": func(x string) bool {
 			return slices.Contains([]string{
-				"string",
+				stringType,
 			}, x)
 		},
 		"join": strings.Join,

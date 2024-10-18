@@ -80,7 +80,7 @@ jobs:
       - name: Check for changes
         run: git diff --exit-code
 
-  typescript:
+  typescript-api-client:
     timeout-minutes: 10
     strategy:
      matrix:
@@ -106,11 +106,33 @@ jobs:
 
       - name: Ensure code can be generated
         working-directory: backend
-        run: make codegen format_golang
+        run: make codegen-ts
 
       - name: format files
         working-directory: frontend
         run: make format
+
+      - name: Check for changes
+        run: git diff --exit-code
+
+  golang-api-client:
+    timeout-minutes: 10
+    strategy:
+     matrix:
+       go-version: [ '1.22.x' ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Ensure code can be generated
+        working-directory: backend
+        run: make codegen-go format
 
       - name: Check for changes
         run: git diff --exit-code
