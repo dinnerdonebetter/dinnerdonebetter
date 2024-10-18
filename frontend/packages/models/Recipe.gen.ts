@@ -3,7 +3,7 @@
 import { RecipeMedia } from './RecipeMedia';
 import { RecipePrepTask } from './RecipePrepTask';
 import { RecipeStep } from './RecipeStep';
-import { NumberRangeWithOptionalMax } from './number_range';
+import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IRecipe {
   archivedAt: string;

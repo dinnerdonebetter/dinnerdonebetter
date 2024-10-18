@@ -8,6 +8,7 @@ import (
 	"text/template"
 	"unicode"
 
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/swaggest/openapi-go/openapi31"
@@ -287,6 +288,7 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		ReturnsList:       returnsList,
 		Params:            functionParams,
 		InputType:         ip,
+		Description:       pointer.Dereference(op.Description),
 		ResponseType:      rt,
 		PathTemplate:      strings.ReplaceAll(path, "{", "${"),
 	}
@@ -306,6 +308,7 @@ type functionParam struct {
 type APIClientFunction struct {
 	InputType    functionInputParam
 	ResponseType functionResponseType
+	Description,
 	Method,
 	Name,
 	PathTemplate string
@@ -423,73 +426,53 @@ func (f *APIClientFunction) RenderTest() (string, error) {
 		if f.QueryFiltered {
 			// GET routes that return lists
 
-			tmpl = `async {{ .Name }}(
-  {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
-{{ end -}}
-  filter: QueryFilter = QueryFilter.Default(),
-): Promise< QueryFilteredResult< {{ .ResponseType.TypeName }} > > {
-  let self = this;
-  return new Promise(async function (resolve, reject) {
-    self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
-      params: filter.asRecord(),
-    })
- 		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
-		  if (res.data.error) {
-			reject(new Error(res.data.error.message));
-		  }
-	
-          resolve(new QueryFilteredResult<{{ .ResponseType.TypeName }}>({
-		    data: res.data.data,
-		    totalCount: res.data.pagination?.totalCount,
-		    page: res.data.pagination?.page,
-		    limit: res.data.pagination?.limit,
-		  }));
-        })
-        .catch((error: AxiosError) => {
-          reject(error);
+			tmpl = `
+    it("should {{ .Description }}", () => {
+		{{ range .Params }}let {{ .Name }} = {{ fakeFor .Name .Type }};{{ end }}
+
+        const exampleResponse = new {{ .ResponseType.TypeName }}({
+            id: faker.string.uuid(),
         });
-  });
-}`
+        mock.onGet(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply(200, exampleResponse);
+
+        client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }}).then((response: {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}) => {
+            expect(response).toEqual(exampleResponse);
+        });
+    });
+`
 		} else {
 			// GET routes that don't return lists
-			tmpl = `async {{ .Name }}(
-  {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
-	{{ end -}}): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }} {{ .ResponseType.TypeName }} >  {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}  {
-  let self = this;
-  return new Promise(async function (resolve, reject) {
-    self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {})
- 		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
-          if (res.data.error) {
-            reject(new Error(res.data.error.message));
-          }
-          resolve(res.data);
-        })
-        .catch((error: AxiosError) => {
-          reject(error);
+			tmpl = `
+    it("should {{ .Description }}", () => {
+		{{ range .Params }}let {{ .Name }} = {{ fakeFor .Name .Type }};{{ end }}
+
+        const exampleResponse = new {{ .ResponseType.TypeName }}({
+            id: faker.string.uuid(),
         });
-  });
-}`
+        mock.onGet(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply(200, exampleResponse);
+
+        client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }}).then((response: {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}) => {
+            expect(response).toEqual(exampleResponse);
+        });
+    })
+`
 		}
 
 	case http.MethodPost, http.MethodPut, http.MethodPatch:
-		tmpl = `async {{ .Name }}(
-  {{ range .Params }}{{ .Name }}: {{ .Type }},{{ end }}
-  {{ if ne .InputType.Type "" }}input: {{ .InputType.Type }},{{ end }}
-): Promise< {{ if .ReturnRawResponse }} AxiosResponse< {{ end }} {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}  {{ .ResponseType.TypeName }} > {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }}  {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}{{ if .ReturnRawResponse }} > {{ end }} {
-  let self = this;
-  return new Promise(async function (resolve, reject) {
-    self.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }})
- 		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
-          if (res.data.error{{ if or (eq .Name "loginForJWT") (eq .Name "adminLoginForJWT") }} && res.data.error.message.toLowerCase() != "totp required" {{ end }}) {
-            reject(new Error(res.data.error.message));
-          }
-	    resolve(res{{ if not .ReturnRawResponse }}.data{{ end }});
-        })
-        .catch((error: AxiosError) => {
-          reject(error);
+		tmpl = `
+    it("should {{ .Description }}", () => {
+		{{ range .Params }}let {{ .Name }} = {{ fakeFor .Name .Type }};{{ end }}
+
+        const exampleResponse = new {{ .ResponseType.TypeName }}({
+            id: faker.string.uuid(),
         });
-	  });
-}`
+        mock.onGet(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply(200, exampleResponse);
+
+        client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }}).then((response: {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}) => {
+            expect(response).toEqual(exampleResponse);
+        });
+    })
+`
 	}
 
 	if tmpl == "" {
@@ -497,6 +480,14 @@ func (f *APIClientFunction) RenderTest() (string, error) {
 	}
 
 	t := template.Must(template.New("function").Funcs(map[string]any{
+		"fakeFor": func(name, typ string) string {
+			switch typ {
+			case "string":
+				return "faker.string.uuid()"
+			default:
+				return "null"
+			}
+		},
 		"lowercase": strings.ToLower,
 	}).Parse(tmpl))
 

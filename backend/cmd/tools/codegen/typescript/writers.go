@@ -13,8 +13,8 @@ import (
 const (
 	componentSchemaPrefix = "#/components/schemas/"
 
-	enumsFileName       = "./enums"
-	numberRangeFileName = "./number_range"
+	enumsFileName       = "./enums.gen"
+	numberRangeFileName = "./number_range.gen"
 
 	jsonContentType = "application/json"
 	refKey          = "$ref"
@@ -63,6 +63,7 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 	}
 
 	createdFunctions := []string{}
+	createdTests := []string{}
 	imports := map[string][]string{
 		modelsPackage: {
 			"QueryFilter",
@@ -73,6 +74,11 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 		fileContents, renderErr := function.Render()
 		if renderErr != nil {
 			return fmt.Errorf("failed to render: %w", renderErr)
+		}
+
+		testContent, renderErr := function.RenderTest()
+		if renderErr != nil {
+			return fmt.Errorf("failed to render test: %w", renderErr)
 		}
 
 		if function.InputType.Type != "" {
@@ -88,6 +94,7 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 		}
 
 		createdFunctions = append(createdFunctions, fileContents)
+		createdTests = append(createdTests, testContent)
 	}
 
 	createdFunctions = removeDuplicates(createdFunctions)
@@ -97,14 +104,23 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 	modelsImports = removeDuplicates(modelsImports)
 	slices.Sort(modelsImports)
 
-	clientFile := BuildClientFile(modelsImports)
+	clientFile := buildClientFile(modelsImports)
 	for _, createdFile := range createdFunctions {
 		clientFile += createdFile + "\n\n"
 	}
-
 	clientFile += "\n}\n"
 
 	if err = os.WriteFile(fmt.Sprintf("%s/client.gen.ts", outputPath), []byte(clientFile), 0o600); err != nil {
+		return fmt.Errorf("failed to write main file: %w", err)
+	}
+
+	testFile := buildClientTestFile(modelsImports)
+	for _, createdFile := range createdTests {
+		testFile += createdFile + "\n\n"
+	}
+	testFile += "\n})\n"
+
+	if err = os.WriteFile(fmt.Sprintf("%s/client.gen.test.ts", outputPath), []byte(testFile), 0o600); err != nil {
 		return fmt.Errorf("failed to write main file: %w", err)
 	}
 

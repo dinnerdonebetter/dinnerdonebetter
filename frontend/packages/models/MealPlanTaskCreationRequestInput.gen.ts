@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { MealPlanTaskStatus } from './enums';
+import { MealPlanTaskStatus } from './enums.gen';
 
 export interface IMealPlanTaskCreationRequestInput {
   assignedToUser: string;

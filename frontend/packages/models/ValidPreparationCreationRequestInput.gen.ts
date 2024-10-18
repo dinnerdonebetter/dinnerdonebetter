@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { NumberRangeWithOptionalMax } from './number_range';
+import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IValidPreparationCreationRequestInput {
   conditionExpressionRequired: boolean;

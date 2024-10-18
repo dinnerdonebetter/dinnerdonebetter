@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { NumberRange } from './number_range';
+import { NumberRange } from './number_range.gen';
 
 export interface IValidIngredientCreationRequestInput {
   animalDerived: boolean;

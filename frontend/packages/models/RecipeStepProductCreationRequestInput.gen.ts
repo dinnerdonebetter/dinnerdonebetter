@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidRecipeStepProductType } from './enums';
-import { NumberRange } from './number_range';
+import { ValidRecipeStepProductType } from './enums.gen';
+import { NumberRange } from './number_range.gen';
 
 export interface IRecipeStepProductCreationRequestInput {
   compostable: boolean;

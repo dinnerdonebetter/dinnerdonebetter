@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidVesselShapeType } from './enums';
+import { ValidVesselShapeType } from './enums.gen';
 
 export interface IValidVesselCreationRequestInput {
   capacity: number;

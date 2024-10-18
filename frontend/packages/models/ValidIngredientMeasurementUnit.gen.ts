@@ -2,7 +2,7 @@
 
 import { ValidIngredient } from './ValidIngredient';
 import { ValidMeasurementUnit } from './ValidMeasurementUnit';
-import { NumberRangeWithOptionalMax } from './number_range';
+import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IValidIngredientMeasurementUnit {
   allowableQuantity: NumberRangeWithOptionalMax;

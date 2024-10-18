@@ -5,7 +5,7 @@ import { RecipeStepIngredientCreationRequestInput } from './RecipeStepIngredient
 import { RecipeStepInstrumentCreationRequestInput } from './RecipeStepInstrumentCreationRequestInput';
 import { RecipeStepProductCreationRequestInput } from './RecipeStepProductCreationRequestInput';
 import { RecipeStepVesselCreationRequestInput } from './RecipeStepVesselCreationRequestInput';
-import { NumberRange } from './number_range';
+import { NumberRange } from './number_range.gen';
 
 export interface IRecipeStepCreationRequestInput {
   completionConditions: RecipeStepCompletionConditionCreationRequestInput[];

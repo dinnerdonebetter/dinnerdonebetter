@@ -2,8 +2,8 @@
 
 import { ValidIngredient } from './ValidIngredient';
 import { ValidMeasurementUnit } from './ValidMeasurementUnit';
-import { ValidMealPlanGroceryListItemStatus } from './enums';
-import { NumberRangeWithOptionalMax } from './number_range';
+import { ValidMealPlanGroceryListItemStatus } from './enums.gen';
+import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IMealPlanGroceryListItem {
   archivedAt: string;

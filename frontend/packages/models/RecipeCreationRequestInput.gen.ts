@@ -2,7 +2,7 @@
 
 import { RecipePrepTaskWithinRecipeCreationRequestInput } from './RecipePrepTaskWithinRecipeCreationRequestInput';
 import { RecipeStepCreationRequestInput } from './RecipeStepCreationRequestInput';
-import { NumberRangeWithOptionalMax } from './number_range';
+import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IRecipeCreationRequestInput {
   alsoCreateMeal: boolean;

@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 import { Recipe } from './Recipe';
-import { MealComponentType } from './enums';
+import { MealComponentType } from './enums.gen';
 
 export interface IMealComponent {
   componentType: MealComponentType;

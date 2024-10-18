@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 import { RecipePrepTaskStepUpdateRequestInput } from './RecipePrepTaskStepUpdateRequestInput';
-import { NumberRange, OptionalNumberRange } from './number_range';
+import { NumberRange, OptionalNumberRange } from './number_range.gen';
 
 export interface IRecipePrepTaskUpdateRequestInput {
   belongsToRecipe: string;

@@ -7,7 +7,7 @@ import { RecipeStepInstrument } from './RecipeStepInstrument';
 import { RecipeStepProduct } from './RecipeStepProduct';
 import { RecipeStepVessel } from './RecipeStepVessel';
 import { ValidPreparation } from './ValidPreparation';
-import { NumberRange } from './number_range';
+import { NumberRange } from './number_range.gen';
 
 export interface IRecipeStep {
   archivedAt: string;

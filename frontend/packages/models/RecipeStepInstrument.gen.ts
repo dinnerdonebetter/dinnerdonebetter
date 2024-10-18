@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 import { ValidInstrument } from './ValidInstrument';
-import { NumberRangeWithOptionalMax } from './number_range';
+import { NumberRangeWithOptionalMax } from './number_range.gen';
 
 export interface IRecipeStepInstrument {
   archivedAt: string;

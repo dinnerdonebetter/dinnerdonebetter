@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidIngredientStateAttributeType } from './enums';
+import { ValidIngredientStateAttributeType } from './enums.gen';
 
 export interface IValidIngredientState {
   archivedAt: string;

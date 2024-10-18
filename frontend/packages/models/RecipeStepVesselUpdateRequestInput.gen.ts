@@ -1,6 +1,6 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { OptionalNumberRange } from './number_range';
+import { OptionalNumberRange } from './number_range.gen';
 
 export interface IRecipeStepVesselUpdateRequestInput {
   belongsToRecipeStep: string;

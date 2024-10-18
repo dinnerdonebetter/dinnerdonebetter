@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 import { MealPlanEventCreationRequestInput } from './MealPlanEventCreationRequestInput';
-import { ValidMealPlanElectionMethod } from './enums';
+import { ValidMealPlanElectionMethod } from './enums.gen';
 
 export interface IMealPlanCreationRequestInput {
   electionMethod: ValidMealPlanElectionMethod;

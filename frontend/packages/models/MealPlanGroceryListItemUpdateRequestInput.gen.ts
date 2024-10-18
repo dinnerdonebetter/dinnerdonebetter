@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
-import { ValidMealPlanGroceryListItemStatus } from './enums';
-import { OptionalNumberRange } from './number_range';
+import { ValidMealPlanGroceryListItemStatus } from './enums.gen';
+import { OptionalNumberRange } from './number_range.gen';
 
 export interface IMealPlanGroceryListItemUpdateRequestInput {
   belongsToMealPlan: string;

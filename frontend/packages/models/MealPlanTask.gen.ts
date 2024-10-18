@@ -2,7 +2,7 @@
 
 import { MealPlanOption } from './MealPlanOption';
 import { RecipePrepTask } from './RecipePrepTask';
-import { MealPlanTaskStatus } from './enums';
+import { MealPlanTaskStatus } from './enums.gen';
 
 export interface IMealPlanTask {
   assignedToUser: string;

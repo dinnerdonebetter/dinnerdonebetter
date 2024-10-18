@@ -53,7 +53,7 @@ export default DinnerDoneBetterAPIClient;
 `
 )
 
-func BuildClientFile(modelsImports []string) string {
+func buildClientFile(modelsImports []string) string {
 	return GeneratedDisclaimer + "\n\n" + `import axios, {
   AxiosInstance,
   AxiosError,
@@ -205,5 +205,24 @@ export class DinnerDoneBetterAPIClient {
     );
   }
 
+`
+}
+
+func buildClientTestFile(modelsImports []string) string {
+	return GeneratedDisclaimer + "\n\n" + `import axios from "axios";
+import AxiosMockAdapter from "axios-mock-adapter";
+import { faker } from '@faker-js/faker';
+
+` + "import {\n\t" + strings.Join(modelsImports, ",\n\t") + "\n" + `} from "` + modelsPackage + `";` + `
+
+import { DinnerDoneBetterAPIClient } from "./client.gen";
+
+const mock = new AxiosMockAdapter(axios);
+const baseURL = "http://things.stuff";
+const client = new DinnerDoneBetterAPIClient(baseURL, 'test-token');
+
+beforeEach(() => mock.reset());
+
+describe('basic', () => {
 `
 }
