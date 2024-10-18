@@ -414,3 +414,96 @@ func (f *APIClientFunction) Render() (string, error) {
 
 	return b.String(), nil
 }
+
+func (f *APIClientFunction) RenderTest() (string, error) {
+	var tmpl string
+
+	switch f.Method {
+	case http.MethodGet, http.MethodDelete:
+		if f.QueryFiltered {
+			// GET routes that return lists
+
+			tmpl = `async {{ .Name }}(
+  {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
+{{ end -}}
+  filter: QueryFilter = QueryFilter.Default(),
+): Promise< QueryFilteredResult< {{ .ResponseType.TypeName }} > > {
+  let self = this;
+  return new Promise(async function (resolve, reject) {
+    self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
+      params: filter.asRecord(),
+    })
+ 		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
+		  if (res.data.error) {
+			reject(new Error(res.data.error.message));
+		  }
+	
+          resolve(new QueryFilteredResult<{{ .ResponseType.TypeName }}>({
+		    data: res.data.data,
+		    totalCount: res.data.pagination?.totalCount,
+		    page: res.data.pagination?.page,
+		    limit: res.data.pagination?.limit,
+		  }));
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
+  });
+}`
+		} else {
+			// GET routes that don't return lists
+			tmpl = `async {{ .Name }}(
+  {{ range .Params }}{{ .Name }}: {{ .Type }}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end }},
+	{{ end -}}): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }} {{ .ResponseType.TypeName }} >  {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}  {
+  let self = this;
+  return new Promise(async function (resolve, reject) {
+    self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {})
+ 		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          }
+          resolve(res.data);
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
+  });
+}`
+		}
+
+	case http.MethodPost, http.MethodPut, http.MethodPatch:
+		tmpl = `async {{ .Name }}(
+  {{ range .Params }}{{ .Name }}: {{ .Type }},{{ end }}
+  {{ if ne .InputType.Type "" }}input: {{ .InputType.Type }},{{ end }}
+): Promise< {{ if .ReturnRawResponse }} AxiosResponse< {{ end }} {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}  {{ .ResponseType.TypeName }} > {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }}  {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}{{ if .ReturnRawResponse }} > {{ end }} {
+  let self = this;
+  return new Promise(async function (resolve, reject) {
+    self.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }})
+ 		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
+          if (res.data.error{{ if or (eq .Name "loginForJWT") (eq .Name "adminLoginForJWT") }} && res.data.error.message.toLowerCase() != "totp required" {{ end }}) {
+            reject(new Error(res.data.error.message));
+          }
+	    resolve(res{{ if not .ReturnRawResponse }}.data{{ end }});
+        })
+        .catch((error: AxiosError) => {
+          reject(error);
+        });
+	  });
+}`
+	}
+
+	if tmpl == "" {
+		panic("Unknown template")
+	}
+
+	t := template.Must(template.New("function").Funcs(map[string]any{
+		"lowercase": strings.ToLower,
+	}).Parse(tmpl))
+
+	var b bytes.Buffer
+	if err := t.Execute(&b, f); err != nil {
+		return "", err
+	}
+
+	return b.String(), nil
+}
