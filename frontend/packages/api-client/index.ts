@@ -1,6 +1,6 @@
 import router from 'next/router';
 
-import { DinnerDoneBetterAPIClient } from './client';
+import { DinnerDoneBetterAPIClient } from './client.gen';
 
 export const buildServerSideClientWithOAuth2Token = (
   token: string,

@@ -13,8 +13,8 @@ import (
 const (
 	componentSchemaPrefix = "#/components/schemas/"
 
-	enumsFileName       = "./enums"
-	numberRangeFileName = "./number_range"
+	enumsFileName       = "./enums.gen"
+	numberRangeFileName = "./number_range.gen"
 
 	jsonContentType = "application/json"
 	refKey          = "$ref"
@@ -63,6 +63,7 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 	}
 
 	createdFunctions := []string{}
+	createdTests := []string{}
 	imports := map[string][]string{
 		modelsPackage: {
 			"QueryFilter",
@@ -75,11 +76,16 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 			return fmt.Errorf("failed to render: %w", renderErr)
 		}
 
+		testContent, renderErr := function.RenderTest()
+		if renderErr != nil {
+			return fmt.Errorf("failed to render test: %w", renderErr)
+		}
+
 		if function.InputType.Type != "" {
 			imports[modelsPackage] = append(imports[modelsPackage], function.InputType.Type)
 		}
 
-		if function.ResponseType.TypeName != "" && function.ResponseType.TypeName != "string" {
+		if function.ResponseType.TypeName != "" && function.ResponseType.TypeName != stringType {
 			imports[modelsPackage] = append(imports[modelsPackage], function.ResponseType.TypeName)
 		}
 
@@ -88,6 +94,7 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 		}
 
 		createdFunctions = append(createdFunctions, fileContents)
+		createdTests = append(createdTests, testContent)
 	}
 
 	createdFunctions = removeDuplicates(createdFunctions)
@@ -97,19 +104,35 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 	modelsImports = removeDuplicates(modelsImports)
 	slices.Sort(modelsImports)
 
-	clientFile := BuildClientFile(modelsImports)
+	clientFile := buildClientFile(modelsImports)
 	for _, createdFile := range createdFunctions {
 		clientFile += createdFile + "\n\n"
 	}
-
 	clientFile += "\n}\n"
 
-	if err = os.WriteFile(fmt.Sprintf("%s/client.ts", outputPath), []byte(clientFile), 0o600); err != nil {
+	if err = os.WriteFile(fmt.Sprintf("%s/client.gen.ts", outputPath), []byte(clientFile), 0o600); err != nil {
 		return fmt.Errorf("failed to write main file: %w", err)
 	}
 
+	createdTests = removeDuplicates(createdTests)
+	slices.Sort(createdTests)
+
+	testFile := buildClientTestFile(modelsImports)
+	for _, createdFile := range createdTests {
+		testFile += createdFile + "\n\n"
+	}
+	testFile += "\n})\n"
+
+	if err = os.WriteFile(fmt.Sprintf("%s/client.gen.test.ts", outputPath), []byte(testFile), 0o600); err != nil {
+		return fmt.Errorf("failed to write client file: %w", err)
+	}
+
 	if err = os.WriteFile(fmt.Sprintf("%s/index.ts", outputPath), []byte(APIClientIndexFile), 0o600); err != nil {
-		return fmt.Errorf("failed to write main file: %w", err)
+		return fmt.Errorf("failed to write index file: %w", err)
+	}
+
+	if err = os.WriteFile(fmt.Sprintf("%s/jest.config.ts", outputPath), []byte(jestConfigFile), 0o600); err != nil {
+		return fmt.Errorf("failed to write jest config file: %w", err)
 	}
 
 	return nil
@@ -149,7 +172,7 @@ func WriteModelFiles(spec *openapi31.Spec, outputPath string) error {
 
 	createdFiles := []string{}
 	for filename, function := range modelFiles {
-		actualFilepath := fmt.Sprintf("%s/%s.ts", outputPath, filename)
+		actualFilepath := fmt.Sprintf("%s/%s.gen.ts", outputPath, filename)
 
 		rawFileContents, renderErr := function.Render()
 		if renderErr != nil {
@@ -168,17 +191,17 @@ func WriteModelFiles(spec *openapi31.Spec, outputPath string) error {
 
 	indexFile := fmt.Sprintf("%s\n\n", GeneratedDisclaimer)
 	for _, createdFile := range createdFiles {
-		indexFile += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", outputPath)), ".ts"))
+		indexFile += fmt.Sprintf("export * from './%s.gen';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", outputPath)), ".gen.ts"))
 	}
-	indexFile += "export * from './enums';\n"
+	indexFile += "export * from './enums.gen';\n"
 
-	if err = os.WriteFile(fmt.Sprintf("%s/enums.ts", outputPath), []byte(enumsFile), 0o600); err != nil {
+	if err = os.WriteFile(fmt.Sprintf("%s/enums.gen.ts", outputPath), []byte(enumsFile), 0o600); err != nil {
 		return fmt.Errorf("failed to write enums file: %w", err)
 	}
 
 	for _, staticFile := range StaticModelsFiles {
-		indexFile += fmt.Sprintf("export * from './%s';\n", staticFile.Name)
-		if err = os.WriteFile(fmt.Sprintf("%s/%s.ts", outputPath, staticFile.Name), []byte(staticFile.Content), 0o600); err != nil {
+		indexFile += fmt.Sprintf("export * from './%s.gen';\n", staticFile.Name)
+		if err = os.WriteFile(fmt.Sprintf("%s/%s.gen.ts", outputPath, staticFile.Name), []byte(staticFile.Content), 0o600); err != nil {
 			return fmt.Errorf("failed to write index file: %w", err)
 		}
 	}
@@ -206,7 +229,7 @@ func WriteMockAPIFiles(spec *openapi31.Spec, outputPath string) error {
 
 	createdFiles := []string{}
 	for filename, function := range mockAPIFuncs {
-		actualFilepath := fmt.Sprintf("%s/%s.ts", outputPath, filename)
+		actualFilepath := fmt.Sprintf("%s/%s.gen.ts", outputPath, filename)
 
 		rawFileContents, renderErr := function.Render()
 		if renderErr != nil {
@@ -214,7 +237,7 @@ func WriteMockAPIFiles(spec *openapi31.Spec, outputPath string) error {
 		}
 
 		importStatement := "import type { Page, Route } from '@playwright/test';\n\n"
-		if function.ResponseType != "" && function.ResponseType != "string" {
+		if function.ResponseType != "" && function.ResponseType != stringType {
 			modelsImports := []string{
 				function.ResponseType,
 			}
@@ -239,14 +262,14 @@ func WriteMockAPIFiles(spec *openapi31.Spec, outputPath string) error {
 
 	indexFile := fmt.Sprintf("%s\n\n", GeneratedDisclaimer)
 	for _, createdFile := range createdFiles {
-		indexFile += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", outputPath)), ".ts"))
+		indexFile += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(strings.TrimPrefix(createdFile, fmt.Sprintf("%s/", outputPath)), ".gen.ts"))
 	}
 
 	if err = os.WriteFile(fmt.Sprintf("%s/index.ts", outputPath), []byte(indexFile), 0o600); err != nil {
 		return fmt.Errorf("failed to write index file: %w", err)
 	}
 
-	if err = os.WriteFile(fmt.Sprintf("%s/helpers.ts", outputPath), []byte(PlaywrightHelpersFile), 0o600); err != nil {
+	if err = os.WriteFile(fmt.Sprintf("%s/helpers.gen.ts", outputPath), []byte(PlaywrightHelpersFile), 0o600); err != nil {
 		return fmt.Errorf("failed to write helpers file: %w", err)
 	}
 

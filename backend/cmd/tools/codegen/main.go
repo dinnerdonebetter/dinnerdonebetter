@@ -4,18 +4,25 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/golang"
 	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/typescript"
 
+	"github.com/spf13/pflag"
 	"github.com/swaggest/openapi-go/openapi31"
 )
 
+var (
+	generateTypescript = pflag.BoolP("typescript", "", false, "generate typescript code")
+	generateGolang     = pflag.BoolP("golang", "", false, "generate go code")
+)
+
 const (
-	specFilepath                  = "../openapi_spec.yaml"
 	golangAPIClientOutputPath     = "pkg/apiclient"
-	typescriptAPIClientOutputPath = "../frontend/packages/api-client"
+	specFilepath                  = "../openapi_spec.yaml"
 	typescriptModelsOutputPath    = "../frontend/packages/models"
+	typescriptAPIClientOutputPath = "../frontend/packages/api-client"
 	typescriptMockAPIOutputPath   = "../frontend/packages/mock-playwright-api"
 )
 
@@ -60,16 +67,34 @@ func writeGoFiles(spec *openapi31.Spec) error {
 }
 
 func main() {
+	pflag.Parse()
+
 	spec, err := loadSpec(specFilepath)
 	if err != nil {
 		log.Fatalf("failed to load spec: %v", err)
 	}
 
-	if err = writeTypescriptFiles(spec); err != nil {
-		log.Fatalf("failed to write typescript files: %v", err)
+	var wg sync.WaitGroup
+
+	if *generateTypescript {
+		wg.Add(1)
+		go func() {
+			if err = writeTypescriptFiles(spec); err != nil {
+				log.Fatalf("failed to write typescript files: %v", err)
+			}
+			wg.Done()
+		}()
 	}
 
-	if err = writeGoFiles(spec); err != nil {
-		log.Fatalf("failed to write typescript files: %v", err)
+	if *generateGolang {
+		wg.Add(1)
+		go func() {
+			if err = writeGoFiles(spec); err != nil {
+				log.Fatalf("failed to write typescript files: %v", err)
+			}
+			wg.Done()
+		}()
 	}
+
+	wg.Wait()
 }
