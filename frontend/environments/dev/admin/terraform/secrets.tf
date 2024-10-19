@@ -43,7 +43,7 @@ resource "google_secret_manager_secret_version" "cookie_encryption_iv" {
 
 variable "DINNER_DONE_BETTER_OAUTH2_CLIENT_ID" {}
 resource "google_secret_manager_secret" "ddb_oauth2_client_id" {
-  secret_id = "webapp_ddb_oauth2_client_id"
+  secret_id = "admin_webapp_ddb_oauth2_client_id"
 
   replication {
     auto {}
@@ -60,7 +60,7 @@ resource "google_secret_manager_secret_version" "ddb_oauth2_client_id" {
 
 variable "DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET" {}
 resource "google_secret_manager_secret" "ddb_oauth2_client_secret" {
-  secret_id = "webapp_ddb_oauth2_client_secret"
+  secret_id = "admin_webapp_ddb_oauth2_client_secret"
 
   replication {
     auto {}
