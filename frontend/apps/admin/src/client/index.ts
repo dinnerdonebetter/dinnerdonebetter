@@ -10,7 +10,7 @@ import { encryptorDecryptor } from '../encryption';
 export const buildServerSideClient = (context: GetServerSidePropsContext): DinnerDoneBetterAPIClient => {
   const apiEndpoint = process.env.NEXT_API_ENDPOINT;
   if (!apiEndpoint) {
-    throw new Error('no API endpoint set!');
+    throw new Error('no API endpoint set');
   }
 
   let encryptedCookieData = context.req.cookies[webappCookieName];

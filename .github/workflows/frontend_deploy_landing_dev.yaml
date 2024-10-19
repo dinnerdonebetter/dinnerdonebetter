@@ -8,6 +8,7 @@ on: # [pull_request]
     paths:
       - frontend/apps/landing/**
       - frontend/packages/**
+      - frontend/environments/dev/landing/**
 
 name: frontend - deploy landing to dev
 jobs:
