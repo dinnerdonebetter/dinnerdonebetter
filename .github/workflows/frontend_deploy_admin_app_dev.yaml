@@ -8,6 +8,7 @@ on: # [pull_request]
     paths:
       - frontend/apps/admin/**
       - frontend/packages/**
+      - frontend/environments/dev/admin/**
 
 name: frontend - deploy admin app to dev
 jobs:
