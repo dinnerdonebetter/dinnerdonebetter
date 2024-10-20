@@ -12,7 +12,6 @@ import (
 )
 
 const archiveServiceSetting = `-- name: ArchiveServiceSetting :execrows
-
 UPDATE service_settings SET archived_at = NOW() WHERE id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveServiceSetting(ctx context.Context, db DBTX, id string)
 }
 
 const checkServiceSettingExistence = `-- name: CheckServiceSettingExistence :one
-
 SELECT EXISTS (
 	SELECT service_settings.id
 	FROM service_settings
@@ -42,7 +40,6 @@ func (q *Queries) CheckServiceSettingExistence(ctx context.Context, db DBTX, id 
 }
 
 const createServiceSetting = `-- name: CreateServiceSetting :exec
-
 INSERT INTO service_settings (
 	id,
 	name,
@@ -67,8 +64,8 @@ type CreateServiceSettingParams struct {
 	Name         string
 	Type         SettingType
 	Description  string
-	Enumeration  string
 	DefaultValue sql.NullString
+	Enumeration  string
 	AdminsOnly   bool
 }
 
@@ -86,7 +83,6 @@ func (q *Queries) CreateServiceSetting(ctx context.Context, db DBTX, arg *Create
 }
 
 const getServiceSetting = `-- name: GetServiceSetting :one
-
 SELECT
 	service_settings.id,
 	service_settings.name,
@@ -122,7 +118,6 @@ func (q *Queries) GetServiceSetting(ctx context.Context, db DBTX, id string) (*S
 }
 
 const getServiceSettings = `-- name: GetServiceSettings :many
-
 SELECT
 	service_settings.id,
 	service_settings.name,
@@ -180,18 +175,18 @@ type GetServiceSettingsParams struct {
 }
 
 type GetServiceSettingsRow struct {
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 	ID            string
 	Name          string
 	Type          SettingType
 	Description   string
-	Enumeration   string
 	DefaultValue  sql.NullString
+	Enumeration   string
+	AdminsOnly    bool
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 	FilteredCount int64
 	TotalCount    int64
-	AdminsOnly    bool
 }
 
 func (q *Queries) GetServiceSettings(ctx context.Context, db DBTX, arg *GetServiceSettingsParams) ([]*GetServiceSettingsRow, error) {
@@ -238,7 +233,6 @@ func (q *Queries) GetServiceSettings(ctx context.Context, db DBTX, arg *GetServi
 }
 
 const searchForServiceSettings = `-- name: SearchForServiceSettings :many
-
 SELECT
 	service_settings.id,
 	service_settings.name,

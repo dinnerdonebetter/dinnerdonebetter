@@ -153,6 +153,17 @@ func buildUsersQueries(database string) []*Query {
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "DeleteUser",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`,
+					usersTableName,
+					idColumn,
+					idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "ArchiveUserMemberships",
 					Type: ExecRowsType,
 				},

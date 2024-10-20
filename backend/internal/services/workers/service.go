@@ -24,7 +24,7 @@ const (
 var _ types.WorkerService = (*service)(nil)
 
 type (
-	// service handles valid vessels.
+	// service handles worker invocation requests.
 	service struct {
 		logger                         logging.Logger
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)

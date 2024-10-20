@@ -1,8 +1,7 @@
 -- name: ArchiveValidMeasurementUnit :execrows
-
 UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: CreateValidMeasurementUnit :exec
 
+-- name: CreateValidMeasurementUnit :exec
 INSERT INTO valid_measurement_units (
 	id,
 	name,
@@ -26,16 +25,16 @@ INSERT INTO valid_measurement_units (
 	sqlc.arg(slug),
 	sqlc.arg(plural_name)
 );
--- name: CheckValidMeasurementUnitExistence :one
 
+-- name: CheckValidMeasurementUnitExistence :one
 SELECT EXISTS (
 	SELECT valid_measurement_units.id
 	FROM valid_measurement_units
 	WHERE valid_measurement_units.archived_at IS NULL
 		AND valid_measurement_units.id = sqlc.arg(id)
 );
--- name: GetValidMeasurementUnits :many
 
+-- name: GetValidMeasurementUnits :many
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -88,8 +87,8 @@ GROUP BY valid_measurement_units.id
 ORDER BY valid_measurement_units.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidMeasurementUnitsNeedingIndexing :many
 
+-- name: GetValidMeasurementUnitsNeedingIndexing :many
 SELECT valid_measurement_units.id
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
@@ -97,8 +96,8 @@ WHERE valid_measurement_units.archived_at IS NULL
 	valid_measurement_units.last_indexed_at IS NULL
 	OR valid_measurement_units.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
--- name: GetValidMeasurementUnit :one
 
+-- name: GetValidMeasurementUnit :one
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -117,8 +116,8 @@ SELECT
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
 AND valid_measurement_units.id = sqlc.arg(id);
--- name: GetRandomValidMeasurementUnit :one
 
+-- name: GetRandomValidMeasurementUnit :one
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -137,8 +136,8 @@ SELECT
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
 ORDER BY RANDOM() LIMIT 1;
--- name: GetValidMeasurementUnitsWithIDs :many
 
+-- name: GetValidMeasurementUnitsWithIDs :many
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -157,8 +156,8 @@ SELECT
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
 	AND valid_measurement_units.id = ANY(sqlc.arg(ids)::text[]);
--- name: SearchForValidMeasurementUnits :many
 
+-- name: SearchForValidMeasurementUnits :many
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -178,8 +177,8 @@ FROM valid_measurement_units
 WHERE valid_measurement_units.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
 	AND valid_measurement_units.archived_at IS NULL
 LIMIT 50;
--- name: SearchValidMeasurementUnitsByIngredientID :many
 
+-- name: SearchValidMeasurementUnitsByIngredientID :many
 SELECT
 	DISTINCT(valid_measurement_units.id),
 	valid_measurement_units.name,
@@ -242,8 +241,8 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: UpdateValidMeasurementUnit :execrows
 
+-- name: UpdateValidMeasurementUnit :execrows
 UPDATE valid_measurement_units SET
 	name = sqlc.arg(name),
 	description = sqlc.arg(description),
@@ -257,6 +256,6 @@ UPDATE valid_measurement_units SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: UpdateValidMeasurementUnitLastIndexedAt :execrows
 
+-- name: UpdateValidMeasurementUnitLastIndexedAt :execrows
 UPDATE valid_measurement_units SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

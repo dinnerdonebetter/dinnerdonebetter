@@ -1,11 +1,10 @@
 -- name: ArchiveServiceSettingConfiguration :execrows
-
 UPDATE service_setting_configurations SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: CreateServiceSettingConfiguration :exec
 
+-- name: CreateServiceSettingConfiguration :exec
 INSERT INTO service_setting_configurations (
 	id,
 	value,
@@ -21,16 +20,16 @@ INSERT INTO service_setting_configurations (
 	sqlc.arg(belongs_to_user),
 	sqlc.arg(belongs_to_household)
 );
--- name: CheckServiceSettingConfigurationExistence :one
 
+-- name: CheckServiceSettingConfigurationExistence :one
 SELECT EXISTS (
 	SELECT service_setting_configurations.id
 	FROM service_setting_configurations
 	WHERE service_setting_configurations.archived_at IS NULL
 		AND service_setting_configurations.id = sqlc.arg(id)
 );
--- name: GetServiceSettingConfigurationByID :one
 
+-- name: GetServiceSettingConfigurationByID :one
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -55,8 +54,8 @@ FROM service_setting_configurations
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_setting_configurations.id = sqlc.arg(id);
+
 -- name: GetServiceSettingConfigurationForHouseholdBySettingName :one
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -82,8 +81,8 @@ WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_settings.name = sqlc.arg(name)
 	AND service_setting_configurations.belongs_to_household = sqlc.arg(belongs_to_household);
+
 -- name: GetServiceSettingConfigurationForUserBySettingName :one
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -109,8 +108,8 @@ WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_settings.name = sqlc.arg(name)
 	AND service_setting_configurations.belongs_to_user = sqlc.arg(belongs_to_user);
--- name: GetServiceSettingConfigurationsForHousehold :many
 
+-- name: GetServiceSettingConfigurationsForHousehold :many
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -135,8 +134,8 @@ FROM service_setting_configurations
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_setting_configurations.belongs_to_household = sqlc.arg(belongs_to_household);
--- name: GetServiceSettingConfigurationsForUser :many
 
+-- name: GetServiceSettingConfigurationsForUser :many
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -161,8 +160,8 @@ FROM service_setting_configurations
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_setting_configurations.belongs_to_user = sqlc.arg(belongs_to_user);
--- name: UpdateServiceSettingConfiguration :execrows
 
+-- name: UpdateServiceSettingConfiguration :execrows
 UPDATE service_setting_configurations SET
 	value = sqlc.arg(value),
 	notes = sqlc.arg(notes),

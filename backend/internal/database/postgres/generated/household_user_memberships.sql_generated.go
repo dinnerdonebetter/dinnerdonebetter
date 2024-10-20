@@ -10,7 +10,6 @@ import (
 )
 
 const addUserToHousehold = `-- name: AddUserToHousehold :exec
-
 INSERT INTO household_user_memberships (
 	id,
 	belongs_to_household,
@@ -42,7 +41,6 @@ func (q *Queries) AddUserToHousehold(ctx context.Context, db DBTX, arg *AddUserT
 }
 
 const createHouseholdUserMembershipForNewUser = `-- name: CreateHouseholdUserMembershipForNewUser :exec
-
 INSERT INTO household_user_memberships (
 	id,
 	belongs_to_household,
@@ -62,8 +60,8 @@ type CreateHouseholdUserMembershipForNewUserParams struct {
 	ID                 string
 	BelongsToHousehold string
 	BelongsToUser      string
-	HouseholdRole      string
 	DefaultHousehold   bool
+	HouseholdRole      string
 }
 
 func (q *Queries) CreateHouseholdUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateHouseholdUserMembershipForNewUserParams) error {
@@ -78,7 +76,6 @@ func (q *Queries) CreateHouseholdUserMembershipForNewUser(ctx context.Context, d
 }
 
 const getDefaultHouseholdIDForUser = `-- name: GetDefaultHouseholdIDForUser :one
-
 SELECT households.id
 FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
@@ -94,7 +91,6 @@ func (q *Queries) GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, bel
 }
 
 const getHouseholdUserMembershipsForUser = `-- name: GetHouseholdUserMembershipsForUser :many
-
 SELECT
 	household_user_memberships.id,
 	household_user_memberships.belongs_to_household,
@@ -143,7 +139,6 @@ func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBT
 }
 
 const markHouseholdUserMembershipAsUserDefault = `-- name: MarkHouseholdUserMembershipAsUserDefault :exec
-
 UPDATE household_user_memberships SET
 	default_household = (belongs_to_user = $1 AND belongs_to_household = $2)
 WHERE archived_at IS NULL
@@ -161,7 +156,6 @@ func (q *Queries) MarkHouseholdUserMembershipAsUserDefault(ctx context.Context, 
 }
 
 const modifyHouseholdUserPermissions = `-- name: ModifyHouseholdUserPermissions :exec
-
 UPDATE household_user_memberships SET
 	household_role = $1
 WHERE belongs_to_household = $2
@@ -180,7 +174,6 @@ func (q *Queries) ModifyHouseholdUserPermissions(ctx context.Context, db DBTX, a
 }
 
 const removeUserFromHousehold = `-- name: RemoveUserFromHousehold :exec
-
 UPDATE household_user_memberships SET
 	archived_at = NOW(),
 	default_household = 'false'
@@ -200,7 +193,6 @@ func (q *Queries) RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *Rem
 }
 
 const transferHouseholdMembership = `-- name: TransferHouseholdMembership :exec
-
 UPDATE household_user_memberships SET
 	belongs_to_user = $1
 WHERE archived_at IS NULL
@@ -219,7 +211,6 @@ func (q *Queries) TransferHouseholdMembership(ctx context.Context, db DBTX, arg 
 }
 
 const transferHouseholdOwnership = `-- name: TransferHouseholdOwnership :exec
-
 UPDATE households SET
 	belongs_to_user = $1
 WHERE archived_at IS NULL
@@ -239,7 +230,6 @@ func (q *Queries) TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *
 }
 
 const userIsHouseholdMember = `-- name: UserIsHouseholdMember :one
-
 SELECT EXISTS (
 	SELECT household_user_memberships.id
 	FROM household_user_memberships

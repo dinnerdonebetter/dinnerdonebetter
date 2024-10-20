@@ -1,8 +1,7 @@
 -- name: ArchiveRecipePrepTask :execrows
-
 UPDATE recipe_prep_tasks SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: CreateRecipePrepTask :exec
 
+-- name: CreateRecipePrepTask :exec
 INSERT INTO recipe_prep_tasks (
 	id,
 	name,
@@ -30,8 +29,8 @@ INSERT INTO recipe_prep_tasks (
 	sqlc.arg(maximum_storage_temperature_in_celsius),
 	sqlc.arg(belongs_to_recipe)
 );
--- name: CheckRecipePrepTaskExistence :one
 
+-- name: CheckRecipePrepTaskExistence :one
 SELECT EXISTS (
 	SELECT recipe_prep_tasks.id
 	FROM recipe_prep_tasks
@@ -42,8 +41,8 @@ SELECT EXISTS (
 		AND recipes.archived_at IS NULL
 		AND recipes.id = sqlc.arg(recipe_id)
 );
--- name: GetRecipePrepTask :many
 
+-- name: GetRecipePrepTask :many
 SELECT
 	recipe_prep_tasks.id,
 	recipe_prep_tasks.name,
@@ -68,8 +67,8 @@ FROM recipe_prep_tasks
 	JOIN recipe_prep_task_steps ON recipe_prep_tasks.id=recipe_prep_task_steps.belongs_to_recipe_prep_task
 WHERE recipe_prep_tasks.archived_at IS NULL
 	AND recipe_prep_tasks.id = sqlc.arg(recipe_prep_task_id);
--- name: ListAllRecipePrepTasksByRecipe :many
 
+-- name: ListAllRecipePrepTasksByRecipe :many
 SELECT
 	recipe_prep_tasks.id,
 	recipe_prep_tasks.name,
@@ -98,8 +97,8 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 	AND recipe_steps.archived_at IS NULL
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
--- name: UpdateRecipePrepTask :execrows
 
+-- name: UpdateRecipePrepTask :execrows
 UPDATE recipe_prep_tasks SET
 	name = sqlc.arg(name),
 	description = sqlc.arg(description),

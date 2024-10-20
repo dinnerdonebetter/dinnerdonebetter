@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidIngredientState = `-- name: ArchiveValidIngredientState :execrows
-
 UPDATE valid_ingredient_states SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidIngredientState(ctx context.Context, db DBTX, id s
 }
 
 const checkValidIngredientStateExistence = `-- name: CheckValidIngredientStateExistence :one
-
 SELECT EXISTS (
 	SELECT valid_ingredient_states.id
 	FROM valid_ingredient_states
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidIngredientStateExistence(ctx context.Context, db DBT
 }
 
 const createValidIngredientState = `-- name: CreateValidIngredientState :exec
-
 INSERT INTO valid_ingredient_states (
 	id,
 	name,
@@ -88,7 +85,6 @@ func (q *Queries) CreateValidIngredientState(ctx context.Context, db DBTX, arg *
 }
 
 const getValidIngredientState = `-- name: GetValidIngredientState :one
-
 SELECT
 	valid_ingredient_states.id,
 	valid_ingredient_states.name,
@@ -140,7 +136,6 @@ func (q *Queries) GetValidIngredientState(ctx context.Context, db DBTX, id strin
 }
 
 const getValidIngredientStates = `-- name: GetValidIngredientStates :many
-
 SELECT
 	valid_ingredient_states.id,
 	valid_ingredient_states.name,
@@ -262,7 +257,6 @@ func (q *Queries) GetValidIngredientStates(ctx context.Context, db DBTX, arg *Ge
 }
 
 const getValidIngredientStatesNeedingIndexing = `-- name: GetValidIngredientStatesNeedingIndexing :many
-
 SELECT valid_ingredient_states.id
 FROM valid_ingredient_states
 WHERE valid_ingredient_states.archived_at IS NULL
@@ -296,7 +290,6 @@ func (q *Queries) GetValidIngredientStatesNeedingIndexing(ctx context.Context, d
 }
 
 const getValidIngredientStatesWithIDs = `-- name: GetValidIngredientStatesWithIDs :many
-
 SELECT
 	valid_ingredient_states.id,
 	valid_ingredient_states.name,
@@ -364,7 +357,6 @@ func (q *Queries) GetValidIngredientStatesWithIDs(ctx context.Context, db DBTX, 
 }
 
 const searchForValidIngredientStates = `-- name: SearchForValidIngredientStates :many
-
 SELECT
 	valid_ingredient_states.id,
 	valid_ingredient_states.name,
@@ -433,7 +425,6 @@ func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, n
 }
 
 const updateValidIngredientState = `-- name: UpdateValidIngredientState :execrows
-
 UPDATE valid_ingredient_states SET
 	name = $1,
 	past_tense = $2,
@@ -473,7 +464,6 @@ func (q *Queries) UpdateValidIngredientState(ctx context.Context, db DBTX, arg *
 }
 
 const updateValidIngredientStateLastIndexedAt = `-- name: UpdateValidIngredientStateLastIndexedAt :execrows
-
 UPDATE valid_ingredient_states SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

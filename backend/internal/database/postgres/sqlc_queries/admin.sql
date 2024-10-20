@@ -1,5 +1,4 @@
 -- name: SetUserAccountStatus :execrows
-
 UPDATE users SET
 	last_updated_at = NOW(),
 	user_account_status = sqlc.arg(user_account_status),

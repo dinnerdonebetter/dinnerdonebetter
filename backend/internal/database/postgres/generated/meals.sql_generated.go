@@ -12,7 +12,6 @@ import (
 )
 
 const archiveMeal = `-- name: ArchiveMeal :execrows
-
 UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealPara
 }
 
 const checkMealExistence = `-- name: CheckMealExistence :one
-
 SELECT EXISTS (
 	SELECT meals.id
 	FROM meals
@@ -47,7 +45,6 @@ func (q *Queries) CheckMealExistence(ctx context.Context, db DBTX, id string) (b
 }
 
 const createMeal = `-- name: CreateMeal :exec
-
 INSERT INTO meals (
 	id,
 	name,
@@ -72,9 +69,9 @@ type CreateMealParams struct {
 	Name                 string
 	Description          string
 	MinEstimatedPortions string
-	CreatedByUser        string
 	MaxEstimatedPortions sql.NullString
 	EligibleForMealPlans bool
+	CreatedByUser        string
 }
 
 func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error {
@@ -91,7 +88,6 @@ func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams
 }
 
 const getMeal = `-- name: GetMeal :many
-
 SELECT
 	meals.id,
 	meals.name,
@@ -120,25 +116,25 @@ WHERE meals.archived_at IS NULL
 `
 
 type GetMealRow struct {
-	CreatedAt                  time.Time
-	ComponentCreatedAt         time.Time
-	ComponentArchivedAt        sql.NullTime
-	ComponentLastUpdatedAt     sql.NullTime
-	ArchivedAt                 sql.NullTime
-	LastUpdatedAt              sql.NullTime
+	ID                         string
+	Name                       string
+	Description                string
+	MinEstimatedPortions       string
+	MaxEstimatedPortions       sql.NullString
+	EligibleForMealPlans       bool
 	LastIndexedAt              sql.NullTime
-	ComponentMealID            string
+	CreatedAt                  time.Time
+	LastUpdatedAt              sql.NullTime
+	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                string
-	ID                         string
+	ComponentMealID            string
 	ComponentRecipeID          string
 	ComponentMealComponentType ComponentType
 	ComponentRecipeScale       string
-	MinEstimatedPortions       string
-	Description                string
-	Name                       string
-	MaxEstimatedPortions       sql.NullString
-	EligibleForMealPlans       bool
+	ComponentCreatedAt         time.Time
+	ComponentLastUpdatedAt     sql.NullTime
+	ComponentArchivedAt        sql.NullTime
 }
 
 func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error) {
@@ -185,7 +181,6 @@ func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRo
 }
 
 const getMeals = `-- name: GetMeals :many
-
 SELECT
 	meals.id,
 	meals.name,
@@ -245,19 +240,19 @@ type GetMealsParams struct {
 }
 
 type GetMealsRow struct {
-	CreatedAt            time.Time
-	ArchivedAt           sql.NullTime
-	LastIndexedAt        sql.NullTime
-	LastUpdatedAt        sql.NullTime
+	ID                   string
+	Name                 string
 	Description          string
 	MinEstimatedPortions string
-	Name                 string
-	ID                   string
-	CreatedByUser        string
 	MaxEstimatedPortions sql.NullString
+	EligibleForMealPlans bool
+	LastIndexedAt        sql.NullTime
+	CreatedAt            time.Time
+	LastUpdatedAt        sql.NullTime
+	ArchivedAt           sql.NullTime
+	CreatedByUser        string
 	FilteredCount        int64
 	TotalCount           int64
-	EligibleForMealPlans bool
 }
 
 func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error) {
@@ -305,7 +300,6 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 }
 
 const getMealsNeedingIndexing = `-- name: GetMealsNeedingIndexing :many
-
 SELECT meals.id
 	FROM meals
 	WHERE meals.archived_at IS NULL
@@ -339,7 +333,6 @@ func (q *Queries) GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]strin
 }
 
 const searchForMeals = `-- name: SearchForMeals :many
-
 SELECT
 	meals.id,
 	meals.name,
@@ -410,27 +403,27 @@ type SearchForMealsParams struct {
 }
 
 type SearchForMealsRow struct {
-	CreatedAt                  time.Time
-	ComponentCreatedAt         time.Time
-	ComponentArchivedAt        sql.NullTime
-	ComponentLastUpdatedAt     sql.NullTime
-	ArchivedAt                 sql.NullTime
-	LastUpdatedAt              sql.NullTime
-	LastIndexedAt              sql.NullTime
-	ComponentRecipeScale       string
-	ComponentMealComponentType ComponentType
+	ID                         string
 	Name                       string
+	Description                string
+	MinEstimatedPortions       string
+	MaxEstimatedPortions       sql.NullString
+	EligibleForMealPlans       bool
+	LastIndexedAt              sql.NullTime
+	CreatedAt                  time.Time
+	LastUpdatedAt              sql.NullTime
+	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                string
 	ComponentMealID            string
 	ComponentRecipeID          string
-	Description                string
-	ID                         string
-	MinEstimatedPortions       string
-	MaxEstimatedPortions       sql.NullString
+	ComponentMealComponentType ComponentType
+	ComponentRecipeScale       string
+	ComponentCreatedAt         time.Time
+	ComponentLastUpdatedAt     sql.NullTime
+	ComponentArchivedAt        sql.NullTime
 	FilteredCount              int64
 	TotalCount                 int64
-	EligibleForMealPlans       bool
 }
 
 func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error) {
@@ -487,7 +480,6 @@ func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMea
 }
 
 const updateMealLastIndexedAt = `-- name: UpdateMealLastIndexedAt :execrows
-
 UPDATE meals SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

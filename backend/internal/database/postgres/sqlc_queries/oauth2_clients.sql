@@ -1,11 +1,10 @@
 -- name: ArchiveOAuth2Client :execrows
-
 UPDATE oauth2_clients SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: CreateOAuth2Client :exec
 
+-- name: CreateOAuth2Client :exec
 INSERT INTO oauth2_clients (
 	id,
 	name,
@@ -19,8 +18,8 @@ INSERT INTO oauth2_clients (
 	sqlc.arg(client_id),
 	sqlc.arg(client_secret)
 );
--- name: GetOAuth2ClientByClientID :one
 
+-- name: GetOAuth2ClientByClientID :one
 SELECT
 	oauth2_clients.id,
 	oauth2_clients.name,
@@ -32,8 +31,8 @@ SELECT
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.client_id = sqlc.arg(client_id);
--- name: GetOAuth2ClientByDatabaseID :one
 
+-- name: GetOAuth2ClientByDatabaseID :one
 SELECT
 	oauth2_clients.id,
 	oauth2_clients.name,
@@ -45,8 +44,8 @@ SELECT
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.id = sqlc.arg(id);
--- name: GetOAuth2Clients :many
 
+-- name: GetOAuth2Clients :many
 SELECT
 	oauth2_clients.id,
 	oauth2_clients.name,

@@ -12,7 +12,6 @@ import (
 )
 
 const archiveValidPreparationInstrument = `-- name: ArchiveValidPreparationInstrument :execrows
-
 UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveValidPreparationInstrument(ctx context.Context, db DBTX
 }
 
 const checkValidPreparationInstrumentExistence = `-- name: CheckValidPreparationInstrumentExistence :one
-
 SELECT EXISTS (
 	SELECT valid_preparation_instruments.id
 	FROM valid_preparation_instruments
@@ -42,7 +40,6 @@ func (q *Queries) CheckValidPreparationInstrumentExistence(ctx context.Context, 
 }
 
 const createValidPreparationInstrument = `-- name: CreateValidPreparationInstrument :exec
-
 INSERT INTO valid_preparation_instruments (
 	id,
 	notes,
@@ -74,7 +71,6 @@ func (q *Queries) CreateValidPreparationInstrument(ctx context.Context, db DBTX,
 }
 
 const getValidPreparationInstrument = `-- name: GetValidPreparationInstrument :one
-
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -129,47 +125,47 @@ WHERE
 `
 
 type GetValidPreparationInstrumentRow struct {
-	ValidPreparationInstrumentCreatedAt           time.Time
-	ValidPreparationCreatedAt                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidPreparationArchivedAt                    sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
-	ValidPreparationLastUpdatedAt                 sql.NullTime
-	ValidPreparationLastIndexedAt                 sql.NullTime
-	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidPreparationInstrumentID                  string
+	ValidPreparationInstrumentNotes               string
 	ValidPreparationID                            string
+	ValidPreparationName                          string
+	ValidPreparationDescription                   string
 	ValidPreparationIconPath                      string
+	ValidPreparationYieldsNothing                 bool
+	ValidPreparationRestrictToIngredients         bool
+	ValidPreparationPastTense                     string
+	ValidPreparationSlug                          string
+	ValidPreparationMinimumIngredientCount        int32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationMinimumInstrumentCount        int32
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationTemperatureRequired           bool
+	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationConditionExpressionRequired   bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationOnlyForVessels                bool
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationLastIndexedAt                 sql.NullTime
+	ValidPreparationCreatedAt                     time.Time
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidInstrumentID                             string
+	ValidInstrumentName                           string
 	ValidInstrumentDescription                    string
 	ValidInstrumentIconPath                       string
-	ValidInstrumentName                           string
-	ValidPreparationDescription                   string
-	ValidPreparationInstrumentID                  string
-	ValidInstrumentSlug                           string
 	ValidInstrumentPluralName                     string
-	ValidInstrumentID                             string
-	ValidPreparationSlug                          string
-	ValidPreparationInstrumentNotes               string
-	ValidPreparationPastTense                     string
-	ValidPreparationName                          string
-	ValidPreparationMaximumVesselCount            sql.NullInt32
-	ValidPreparationMaximumIngredientCount        sql.NullInt32
-	ValidPreparationMaximumInstrumentCount        sql.NullInt32
-	ValidPreparationMinimumIngredientCount        int32
-	ValidPreparationMinimumVesselCount            int32
-	ValidPreparationMinimumInstrumentCount        int32
 	ValidInstrumentUsableForStorage               bool
-	ValidPreparationOnlyForVessels                bool
+	ValidInstrumentSlug                           string
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidPreparationConsumesVessel                bool
-	ValidPreparationConditionExpressionRequired   bool
-	ValidPreparationTimeEstimateRequired          bool
-	ValidPreparationTemperatureRequired           bool
-	ValidPreparationRestrictToIngredients         bool
-	ValidPreparationYieldsNothing                 bool
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
 }
 
 func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) (*GetValidPreparationInstrumentRow, error) {
@@ -222,7 +218,6 @@ func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id
 }
 
 const getValidPreparationInstruments = `-- name: GetValidPreparationInstruments :many
-
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -331,49 +326,49 @@ type GetValidPreparationInstrumentsParams struct {
 }
 
 type GetValidPreparationInstrumentsRow struct {
-	ValidPreparationInstrumentCreatedAt           time.Time
-	ValidPreparationCreatedAt                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidPreparationLastIndexedAt                 sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
-	ValidPreparationArchivedAt                    sql.NullTime
-	ValidPreparationLastUpdatedAt                 sql.NullTime
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
 	ValidPreparationInstrumentID                  string
-	ValidPreparationIconPath                      string
-	ValidInstrumentPluralName                     string
-	ValidPreparationDescription                   string
-	ValidPreparationName                          string
-	ValidPreparationSlug                          string
-	ValidPreparationPastTense                     string
-	ValidPreparationID                            string
-	ValidInstrumentIconPath                       string
-	ValidInstrumentDescription                    string
-	ValidInstrumentSlug                           string
 	ValidPreparationInstrumentNotes               string
-	ValidInstrumentName                           string
-	ValidInstrumentID                             string
-	TotalCount                                    int64
-	FilteredCount                                 int64
-	ValidPreparationMaximumIngredientCount        sql.NullInt32
-	ValidPreparationMaximumVesselCount            sql.NullInt32
-	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationID                            string
+	ValidPreparationName                          string
+	ValidPreparationDescription                   string
+	ValidPreparationIconPath                      string
+	ValidPreparationYieldsNothing                 bool
+	ValidPreparationRestrictToIngredients         bool
+	ValidPreparationPastTense                     string
+	ValidPreparationSlug                          string
 	ValidPreparationMinimumIngredientCount        int32
-	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
 	ValidPreparationMinimumInstrumentCount        int32
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationTemperatureRequired           bool
+	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationConditionExpressionRequired   bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationOnlyForVessels                bool
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationLastIndexedAt                 sql.NullTime
+	ValidPreparationCreatedAt                     time.Time
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidInstrumentID                             string
+	ValidInstrumentName                           string
+	ValidInstrumentDescription                    string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentPluralName                     string
 	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentSlug                           string
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidPreparationOnlyForVessels                bool
-	ValidPreparationConsumesVessel                bool
-	ValidPreparationConditionExpressionRequired   bool
-	ValidPreparationTimeEstimateRequired          bool
-	ValidPreparationTemperatureRequired           bool
-	ValidPreparationRestrictToIngredients         bool
-	ValidPreparationYieldsNothing                 bool
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
+	FilteredCount                                 int64
+	TotalCount                                    int64
 }
 
 func (q *Queries) GetValidPreparationInstruments(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsParams) ([]*GetValidPreparationInstrumentsRow, error) {
@@ -451,7 +446,6 @@ func (q *Queries) GetValidPreparationInstruments(ctx context.Context, db DBTX, a
 }
 
 const getValidPreparationInstrumentsForInstrument = `-- name: GetValidPreparationInstrumentsForInstrument :many
-
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -564,49 +558,49 @@ type GetValidPreparationInstrumentsForInstrumentParams struct {
 }
 
 type GetValidPreparationInstrumentsForInstrumentRow struct {
-	ValidPreparationInstrumentCreatedAt           time.Time
-	ValidPreparationCreatedAt                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidPreparationLastIndexedAt                 sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
-	ValidPreparationArchivedAt                    sql.NullTime
-	ValidPreparationLastUpdatedAt                 sql.NullTime
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
 	ValidPreparationInstrumentID                  string
-	ValidPreparationIconPath                      string
-	ValidInstrumentPluralName                     string
-	ValidPreparationDescription                   string
-	ValidPreparationName                          string
-	ValidPreparationSlug                          string
-	ValidPreparationPastTense                     string
-	ValidPreparationID                            string
-	ValidInstrumentIconPath                       string
-	ValidInstrumentDescription                    string
-	ValidInstrumentSlug                           string
 	ValidPreparationInstrumentNotes               string
-	ValidInstrumentName                           string
-	ValidInstrumentID                             string
-	TotalCount                                    int64
-	FilteredCount                                 int64
-	ValidPreparationMaximumIngredientCount        sql.NullInt32
-	ValidPreparationMaximumVesselCount            sql.NullInt32
-	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationID                            string
+	ValidPreparationName                          string
+	ValidPreparationDescription                   string
+	ValidPreparationIconPath                      string
+	ValidPreparationYieldsNothing                 bool
+	ValidPreparationRestrictToIngredients         bool
+	ValidPreparationPastTense                     string
+	ValidPreparationSlug                          string
 	ValidPreparationMinimumIngredientCount        int32
-	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
 	ValidPreparationMinimumInstrumentCount        int32
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationTemperatureRequired           bool
+	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationConditionExpressionRequired   bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationOnlyForVessels                bool
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationLastIndexedAt                 sql.NullTime
+	ValidPreparationCreatedAt                     time.Time
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidInstrumentID                             string
+	ValidInstrumentName                           string
+	ValidInstrumentDescription                    string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentPluralName                     string
 	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentSlug                           string
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidPreparationOnlyForVessels                bool
-	ValidPreparationConsumesVessel                bool
-	ValidPreparationConditionExpressionRequired   bool
-	ValidPreparationTimeEstimateRequired          bool
-	ValidPreparationTemperatureRequired           bool
-	ValidPreparationRestrictToIngredients         bool
-	ValidPreparationYieldsNothing                 bool
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
+	FilteredCount                                 int64
+	TotalCount                                    int64
 }
 
 func (q *Queries) GetValidPreparationInstrumentsForInstrument(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsForInstrumentParams) ([]*GetValidPreparationInstrumentsForInstrumentRow, error) {
@@ -685,7 +679,6 @@ func (q *Queries) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 }
 
 const getValidPreparationInstrumentsForPreparation = `-- name: GetValidPreparationInstrumentsForPreparation :many
-
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -798,49 +791,49 @@ type GetValidPreparationInstrumentsForPreparationParams struct {
 }
 
 type GetValidPreparationInstrumentsForPreparationRow struct {
-	ValidPreparationInstrumentCreatedAt           time.Time
-	ValidPreparationCreatedAt                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidPreparationLastIndexedAt                 sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
-	ValidPreparationArchivedAt                    sql.NullTime
-	ValidPreparationLastUpdatedAt                 sql.NullTime
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
 	ValidPreparationInstrumentID                  string
-	ValidPreparationIconPath                      string
-	ValidInstrumentPluralName                     string
-	ValidPreparationDescription                   string
-	ValidPreparationName                          string
-	ValidPreparationSlug                          string
-	ValidPreparationPastTense                     string
-	ValidPreparationID                            string
-	ValidInstrumentIconPath                       string
-	ValidInstrumentDescription                    string
-	ValidInstrumentSlug                           string
 	ValidPreparationInstrumentNotes               string
-	ValidInstrumentName                           string
-	ValidInstrumentID                             string
-	TotalCount                                    int64
-	FilteredCount                                 int64
-	ValidPreparationMaximumIngredientCount        sql.NullInt32
-	ValidPreparationMaximumVesselCount            sql.NullInt32
-	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationID                            string
+	ValidPreparationName                          string
+	ValidPreparationDescription                   string
+	ValidPreparationIconPath                      string
+	ValidPreparationYieldsNothing                 bool
+	ValidPreparationRestrictToIngredients         bool
+	ValidPreparationPastTense                     string
+	ValidPreparationSlug                          string
 	ValidPreparationMinimumIngredientCount        int32
-	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
 	ValidPreparationMinimumInstrumentCount        int32
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationTemperatureRequired           bool
+	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationConditionExpressionRequired   bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationOnlyForVessels                bool
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationLastIndexedAt                 sql.NullTime
+	ValidPreparationCreatedAt                     time.Time
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidInstrumentID                             string
+	ValidInstrumentName                           string
+	ValidInstrumentDescription                    string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentPluralName                     string
 	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentSlug                           string
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidPreparationOnlyForVessels                bool
-	ValidPreparationConsumesVessel                bool
-	ValidPreparationConditionExpressionRequired   bool
-	ValidPreparationTimeEstimateRequired          bool
-	ValidPreparationTemperatureRequired           bool
-	ValidPreparationRestrictToIngredients         bool
-	ValidPreparationYieldsNothing                 bool
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
+	FilteredCount                                 int64
+	TotalCount                                    int64
 }
 
 func (q *Queries) GetValidPreparationInstrumentsForPreparation(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsForPreparationParams) ([]*GetValidPreparationInstrumentsForPreparationRow, error) {
@@ -919,7 +912,6 @@ func (q *Queries) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 }
 
 const updateValidPreparationInstrument = `-- name: UpdateValidPreparationInstrument :execrows
-
 UPDATE valid_preparation_instruments SET
 	notes = $1,
 	valid_preparation_id = $2,
@@ -950,7 +942,6 @@ func (q *Queries) UpdateValidPreparationInstrument(ctx context.Context, db DBTX,
 }
 
 const validPreparationInstrumentPairIsValid = `-- name: ValidPreparationInstrumentPairIsValid :one
-
 SELECT EXISTS(
 	SELECT valid_preparation_instruments.id
 	FROM valid_preparation_instruments

@@ -78,7 +78,7 @@ func TestQuerier_Integration_OAuth2ClientTokens(t *testing.T) {
 	assert.NotNil(t, byCode)
 
 	// delete
-	assert.NoError(t, dbc.ArchiveOAuth2ClientTokenByCode(ctx, createdOAuth2ClientToken.Code))
+	assert.NoError(t, dbc.DeleteOAuth2ClientTokenByCode(ctx, createdOAuth2ClientToken.Code))
 
 	// create
 	createdOAuth2ClientToken = createOAuth2ClientTokenForTest(t, ctx, exampleOAuth2ClientToken, dbc)
@@ -89,7 +89,7 @@ func TestQuerier_Integration_OAuth2ClientTokens(t *testing.T) {
 	assert.NotNil(t, byAccess)
 
 	// delete
-	assert.NoError(t, dbc.ArchiveOAuth2ClientTokenByAccess(ctx, createdOAuth2ClientToken.Access))
+	assert.NoError(t, dbc.DeleteOAuth2ClientTokenByAccess(ctx, createdOAuth2ClientToken.Access))
 
 	// create
 	createdOAuth2ClientToken = createOAuth2ClientTokenForTest(t, ctx, exampleOAuth2ClientToken, dbc)
@@ -100,7 +100,7 @@ func TestQuerier_Integration_OAuth2ClientTokens(t *testing.T) {
 	assert.NotNil(t, byRefresh)
 
 	// delete
-	assert.NoError(t, dbc.ArchiveOAuth2ClientTokenByRefresh(ctx, createdOAuth2ClientToken.Refresh))
+	assert.NoError(t, dbc.DeleteOAuth2ClientTokenByRefresh(ctx, createdOAuth2ClientToken.Refresh))
 }
 
 func TestQuerier_ArchiveOAuth2ClientTokenByAccess(T *testing.T) {
@@ -112,7 +112,7 @@ func TestQuerier_ArchiveOAuth2ClientTokenByAccess(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveOAuth2ClientTokenByAccess(ctx, ""))
+		assert.Error(t, c.DeleteOAuth2ClientTokenByAccess(ctx, ""))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -127,7 +127,7 @@ func TestQuerier_ArchiveOAuth2ClientTokenByCode(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveOAuth2ClientTokenByCode(ctx, ""))
+		assert.Error(t, c.DeleteOAuth2ClientTokenByCode(ctx, ""))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -142,7 +142,7 @@ func TestQuerier_ArchiveOAuth2ClientTokenByRefresh(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveOAuth2ClientTokenByRefresh(ctx, ""))
+		assert.Error(t, c.DeleteOAuth2ClientTokenByRefresh(ctx, ""))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

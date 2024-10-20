@@ -12,7 +12,6 @@ import (
 )
 
 const archiveOAuth2Client = `-- name: ArchiveOAuth2Client :execrows
-
 UPDATE oauth2_clients SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -28,7 +27,6 @@ func (q *Queries) ArchiveOAuth2Client(ctx context.Context, db DBTX, id string) (
 }
 
 const createOAuth2Client = `-- name: CreateOAuth2Client :exec
-
 INSERT INTO oauth2_clients (
 	id,
 	name,
@@ -64,7 +62,6 @@ func (q *Queries) CreateOAuth2Client(ctx context.Context, db DBTX, arg *CreateOA
 }
 
 const getOAuth2ClientByClientID = `-- name: GetOAuth2ClientByClientID :one
-
 SELECT
 	oauth2_clients.id,
 	oauth2_clients.name,
@@ -94,7 +91,6 @@ func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, client
 }
 
 const getOAuth2ClientByDatabaseID = `-- name: GetOAuth2ClientByDatabaseID :one
-
 SELECT
 	oauth2_clients.id,
 	oauth2_clients.name,
@@ -124,7 +120,6 @@ func (q *Queries) GetOAuth2ClientByDatabaseID(ctx context.Context, db DBTX, id s
 }
 
 const getOAuth2Clients = `-- name: GetOAuth2Clients :many
-
 SELECT
 	oauth2_clients.id,
 	oauth2_clients.name,

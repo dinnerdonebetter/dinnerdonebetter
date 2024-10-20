@@ -35,14 +35,14 @@ func (m *OAuth2ClientTokenDataManagerMock) GetOAuth2ClientTokenByRefresh(ctx con
 	return returnVals.Get(0).(*types.OAuth2ClientToken), returnVals.Error(1)
 }
 
-func (m *OAuth2ClientTokenDataManagerMock) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
+func (m *OAuth2ClientTokenDataManagerMock) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
 	return m.Called(ctx, access).Error(0)
 }
 
-func (m *OAuth2ClientTokenDataManagerMock) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code string) error {
+func (m *OAuth2ClientTokenDataManagerMock) DeleteOAuth2ClientTokenByCode(ctx context.Context, code string) error {
 	return m.Called(ctx, code).Error(0)
 }
 
-func (m *OAuth2ClientTokenDataManagerMock) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
+func (m *OAuth2ClientTokenDataManagerMock) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
 	return m.Called(ctx, refresh).Error(0)
 }

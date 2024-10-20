@@ -12,7 +12,6 @@ import (
 )
 
 const archiveServiceSettingConfiguration = `-- name: ArchiveServiceSettingConfiguration :execrows
-
 UPDATE service_setting_configurations SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -28,7 +27,6 @@ func (q *Queries) ArchiveServiceSettingConfiguration(ctx context.Context, db DBT
 }
 
 const checkServiceSettingConfigurationExistence = `-- name: CheckServiceSettingConfigurationExistence :one
-
 SELECT EXISTS (
 	SELECT service_setting_configurations.id
 	FROM service_setting_configurations
@@ -45,7 +43,6 @@ func (q *Queries) CheckServiceSettingConfigurationExistence(ctx context.Context,
 }
 
 const createServiceSettingConfiguration = `-- name: CreateServiceSettingConfiguration :exec
-
 INSERT INTO service_setting_configurations (
 	id,
 	value,
@@ -85,7 +82,6 @@ func (q *Queries) CreateServiceSettingConfiguration(ctx context.Context, db DBTX
 }
 
 const getServiceSettingConfigurationByID = `-- name: GetServiceSettingConfigurationByID :one
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -113,24 +109,24 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingConfigurationByIDRow struct {
-	ServiceSettingCreatedAt     time.Time
-	CreatedAt                   time.Time
-	ArchivedAt                  sql.NullTime
-	LastUpdatedAt               sql.NullTime
-	ServiceSettingArchivedAt    sql.NullTime
-	ServiceSettingLastUpdatedAt sql.NullTime
-	ServiceSettingName          string
-	ServiceSettingEnumeration   string
-	ServiceSettingDescription   string
-	ServiceSettingType          SettingType
 	ID                          string
+	Value                       string
+	Notes                       string
+	ServiceSettingID            string
+	ServiceSettingName          string
+	ServiceSettingType          SettingType
+	ServiceSettingDescription   string
+	ServiceSettingDefaultValue  sql.NullString
+	ServiceSettingEnumeration   string
+	ServiceSettingAdminsOnly    bool
+	ServiceSettingCreatedAt     time.Time
+	ServiceSettingLastUpdatedAt sql.NullTime
+	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
 	BelongsToHousehold          string
-	ServiceSettingID            string
-	Notes                       string
-	Value                       string
-	ServiceSettingDefaultValue  sql.NullString
-	ServiceSettingAdminsOnly    bool
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
 }
 
 func (q *Queries) GetServiceSettingConfigurationByID(ctx context.Context, db DBTX, id string) (*GetServiceSettingConfigurationByIDRow, error) {
@@ -160,7 +156,6 @@ func (q *Queries) GetServiceSettingConfigurationByID(ctx context.Context, db DBT
 }
 
 const getServiceSettingConfigurationForHouseholdBySettingName = `-- name: GetServiceSettingConfigurationForHouseholdBySettingName :one
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -194,24 +189,24 @@ type GetServiceSettingConfigurationForHouseholdBySettingNameParams struct {
 }
 
 type GetServiceSettingConfigurationForHouseholdBySettingNameRow struct {
-	ServiceSettingCreatedAt     time.Time
-	CreatedAt                   time.Time
-	ArchivedAt                  sql.NullTime
-	LastUpdatedAt               sql.NullTime
-	ServiceSettingArchivedAt    sql.NullTime
-	ServiceSettingLastUpdatedAt sql.NullTime
-	ServiceSettingName          string
-	ServiceSettingEnumeration   string
-	ServiceSettingDescription   string
-	ServiceSettingType          SettingType
 	ID                          string
+	Value                       string
+	Notes                       string
+	ServiceSettingID            string
+	ServiceSettingName          string
+	ServiceSettingType          SettingType
+	ServiceSettingDescription   string
+	ServiceSettingDefaultValue  sql.NullString
+	ServiceSettingEnumeration   string
+	ServiceSettingAdminsOnly    bool
+	ServiceSettingCreatedAt     time.Time
+	ServiceSettingLastUpdatedAt sql.NullTime
+	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
 	BelongsToHousehold          string
-	ServiceSettingID            string
-	Notes                       string
-	Value                       string
-	ServiceSettingDefaultValue  sql.NullString
-	ServiceSettingAdminsOnly    bool
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
 }
 
 func (q *Queries) GetServiceSettingConfigurationForHouseholdBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForHouseholdBySettingNameParams) (*GetServiceSettingConfigurationForHouseholdBySettingNameRow, error) {
@@ -241,7 +236,6 @@ func (q *Queries) GetServiceSettingConfigurationForHouseholdBySettingName(ctx co
 }
 
 const getServiceSettingConfigurationForUserBySettingName = `-- name: GetServiceSettingConfigurationForUserBySettingName :one
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -275,24 +269,24 @@ type GetServiceSettingConfigurationForUserBySettingNameParams struct {
 }
 
 type GetServiceSettingConfigurationForUserBySettingNameRow struct {
-	ServiceSettingCreatedAt     time.Time
-	CreatedAt                   time.Time
-	ArchivedAt                  sql.NullTime
-	LastUpdatedAt               sql.NullTime
-	ServiceSettingArchivedAt    sql.NullTime
-	ServiceSettingLastUpdatedAt sql.NullTime
-	ServiceSettingName          string
-	ServiceSettingEnumeration   string
-	ServiceSettingDescription   string
-	ServiceSettingType          SettingType
 	ID                          string
+	Value                       string
+	Notes                       string
+	ServiceSettingID            string
+	ServiceSettingName          string
+	ServiceSettingType          SettingType
+	ServiceSettingDescription   string
+	ServiceSettingDefaultValue  sql.NullString
+	ServiceSettingEnumeration   string
+	ServiceSettingAdminsOnly    bool
+	ServiceSettingCreatedAt     time.Time
+	ServiceSettingLastUpdatedAt sql.NullTime
+	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
 	BelongsToHousehold          string
-	ServiceSettingID            string
-	Notes                       string
-	Value                       string
-	ServiceSettingDefaultValue  sql.NullString
-	ServiceSettingAdminsOnly    bool
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
 }
 
 func (q *Queries) GetServiceSettingConfigurationForUserBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForUserBySettingNameParams) (*GetServiceSettingConfigurationForUserBySettingNameRow, error) {
@@ -322,7 +316,6 @@ func (q *Queries) GetServiceSettingConfigurationForUserBySettingName(ctx context
 }
 
 const getServiceSettingConfigurationsForHousehold = `-- name: GetServiceSettingConfigurationsForHousehold :many
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -350,24 +343,24 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingConfigurationsForHouseholdRow struct {
-	ServiceSettingCreatedAt     time.Time
-	CreatedAt                   time.Time
-	ArchivedAt                  sql.NullTime
-	LastUpdatedAt               sql.NullTime
-	ServiceSettingArchivedAt    sql.NullTime
-	ServiceSettingLastUpdatedAt sql.NullTime
-	ServiceSettingName          string
-	ServiceSettingEnumeration   string
-	ServiceSettingDescription   string
-	ServiceSettingType          SettingType
 	ID                          string
+	Value                       string
+	Notes                       string
+	ServiceSettingID            string
+	ServiceSettingName          string
+	ServiceSettingType          SettingType
+	ServiceSettingDescription   string
+	ServiceSettingDefaultValue  sql.NullString
+	ServiceSettingEnumeration   string
+	ServiceSettingAdminsOnly    bool
+	ServiceSettingCreatedAt     time.Time
+	ServiceSettingLastUpdatedAt sql.NullTime
+	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
 	BelongsToHousehold          string
-	ServiceSettingID            string
-	Notes                       string
-	Value                       string
-	ServiceSettingDefaultValue  sql.NullString
-	ServiceSettingAdminsOnly    bool
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
 }
 
 func (q *Queries) GetServiceSettingConfigurationsForHousehold(ctx context.Context, db DBTX, belongsToHousehold string) ([]*GetServiceSettingConfigurationsForHouseholdRow, error) {
@@ -413,7 +406,6 @@ func (q *Queries) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 }
 
 const getServiceSettingConfigurationsForUser = `-- name: GetServiceSettingConfigurationsForUser :many
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -441,24 +433,24 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingConfigurationsForUserRow struct {
-	ServiceSettingCreatedAt     time.Time
-	CreatedAt                   time.Time
-	ArchivedAt                  sql.NullTime
-	LastUpdatedAt               sql.NullTime
-	ServiceSettingArchivedAt    sql.NullTime
-	ServiceSettingLastUpdatedAt sql.NullTime
-	ServiceSettingName          string
-	ServiceSettingEnumeration   string
-	ServiceSettingDescription   string
-	ServiceSettingType          SettingType
 	ID                          string
+	Value                       string
+	Notes                       string
+	ServiceSettingID            string
+	ServiceSettingName          string
+	ServiceSettingType          SettingType
+	ServiceSettingDescription   string
+	ServiceSettingDefaultValue  sql.NullString
+	ServiceSettingEnumeration   string
+	ServiceSettingAdminsOnly    bool
+	ServiceSettingCreatedAt     time.Time
+	ServiceSettingLastUpdatedAt sql.NullTime
+	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
 	BelongsToHousehold          string
-	ServiceSettingID            string
-	Notes                       string
-	Value                       string
-	ServiceSettingDefaultValue  sql.NullString
-	ServiceSettingAdminsOnly    bool
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
 }
 
 func (q *Queries) GetServiceSettingConfigurationsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetServiceSettingConfigurationsForUserRow, error) {
@@ -504,7 +496,6 @@ func (q *Queries) GetServiceSettingConfigurationsForUser(ctx context.Context, db
 }
 
 const updateServiceSettingConfiguration = `-- name: UpdateServiceSettingConfiguration :execrows
-
 UPDATE service_setting_configurations SET
 	value = $1,
 	notes = $2,

@@ -286,8 +286,8 @@ func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAut
 	return oauth2ClientToken, nil
 }
 
-// ArchiveOAuth2ClientTokenByAccess archives an OAuth2 client token from the database by its ID.
-func (q *Querier) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
+// DeleteOAuth2ClientTokenByAccess archives an OAuth2 client token from the database by its ID.
+func (q *Querier) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -301,20 +301,20 @@ func (q *Querier) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access s
 
 	encryptedAccess, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, access)
 	if err != nil {
-		return observability.PrepareError(err, span, "decrypting oauth2 token access")
+		return observability.PrepareError(err, span, "encrypting oauth2 token access")
 	}
 
 	if _, err = q.generatedQuerier.ArchiveOAuth2ClientTokenByAccess(ctx, q.db, encryptedAccess); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 
-	logger.Info("oauth2 client token archived by access")
+	logger.Info("oauth2 client token deleted by access")
 
 	return nil
 }
 
-// ArchiveOAuth2ClientTokenByCode archives an OAuth2 client token from the database by its ID.
-func (q *Querier) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code string) error {
+// DeleteOAuth2ClientTokenByCode archives an OAuth2 client token from the database by its access code.
+func (q *Querier) DeleteOAuth2ClientTokenByCode(ctx context.Context, code string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -328,20 +328,20 @@ func (q *Querier) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code strin
 
 	encryptedCode, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, code)
 	if err != nil {
-		return observability.PrepareError(err, span, "decrypting oauth2 token access")
+		return observability.PrepareError(err, span, "encrypting oauth2 token code")
 	}
 
 	if _, err = q.generatedQuerier.ArchiveOAuth2ClientTokenByCode(ctx, q.db, encryptedCode); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 
-	logger.Info("oauth2 client token archived by code")
+	logger.Info("oauth2 client token deleted by code")
 
 	return nil
 }
 
-// ArchiveOAuth2ClientTokenByRefresh archives an OAuth2 client token from the database by its ID.
-func (q *Querier) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
+// DeleteOAuth2ClientTokenByRefresh archives an OAuth2 client token from the database by its refresh token.
+func (q *Querier) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -355,14 +355,14 @@ func (q *Querier) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh
 
 	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
 	if err != nil {
-		return observability.PrepareError(err, span, "decrypting oauth2 token access")
+		return observability.PrepareError(err, span, "encrypting oauth2 token refresh")
 	}
 
 	if _, err = q.generatedQuerier.ArchiveOAuth2ClientTokenByRefresh(ctx, q.db, encryptedRefresh); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 
-	logger.Info("oauth2 client token archived by refresh")
+	logger.Info("oauth2 client token deleted by refresh")
 
 	return nil
 }

@@ -1,12 +1,11 @@
 -- name: ChangeMealPlanTaskStatus :exec
-
 UPDATE meal_plan_tasks SET
 	completed_at = sqlc.arg(completed_at),
 	status_explanation = sqlc.arg(status_explanation),
 	status = sqlc.arg(status)
 WHERE id = sqlc.arg(id);
--- name: CreateMealPlanTask :exec
 
+-- name: CreateMealPlanTask :exec
 INSERT INTO meal_plan_tasks (
 	id,
 	status,
@@ -24,8 +23,8 @@ INSERT INTO meal_plan_tasks (
 	sqlc.arg(belongs_to_recipe_prep_task),
 	sqlc.arg(assigned_to_user)
 );
--- name: CheckMealPlanTaskExistence :one
 
+-- name: CheckMealPlanTaskExistence :one
 SELECT EXISTS (
 	SELECT meal_plan_tasks.id
 	FROM meal_plan_tasks
@@ -37,8 +36,8 @@ SELECT EXISTS (
 		AND meal_plans.archived_at IS NULL
 		AND meal_plan_tasks.id = sqlc.arg(meal_plan_task_id)
 );
--- name: GetMealPlanTask :one
 
+-- name: GetMealPlanTask :one
 SELECT
 	meal_plan_tasks.id,
 	meal_plan_options.id as meal_plan_option_id,
@@ -95,8 +94,8 @@ WHERE meal_plan_options.archived_at IS NULL
 	AND meals.archived_at IS NULL
 	AND recipe_steps.archived_at IS NULL
 	AND meal_plan_tasks.id = sqlc.arg(meal_plan_task_id);
--- name: ListAllMealPlanTasksByMealPlan :many
 
+-- name: ListAllMealPlanTasksByMealPlan :many
 SELECT
 	meal_plan_tasks.id,
 	meal_plan_options.id as meal_plan_option_id,
@@ -153,8 +152,8 @@ WHERE meal_plan_options.archived_at IS NULL
 	AND meals.archived_at IS NULL
 	AND recipe_steps.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id);
--- name: ListIncompleteMealPlanTasksByMealPlanOption :many
 
+-- name: ListIncompleteMealPlanTasksByMealPlanOption :many
 SELECT
 	meal_plan_tasks.id,
 	meal_plan_options.id as meal_plan_option_id,

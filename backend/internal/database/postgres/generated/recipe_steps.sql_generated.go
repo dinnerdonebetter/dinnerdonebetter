@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeStep = `-- name: ArchiveRecipeStep :execrows
-
 UPDATE recipe_steps SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveRecipeStep(ctx context.Context, db DBTX, arg *ArchiveRe
 }
 
 const checkRecipeStepExistence = `-- name: CheckRecipeStepExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_steps.id
 	FROM recipe_steps
@@ -56,7 +54,6 @@ func (q *Queries) CheckRecipeStepExistence(ctx context.Context, db DBTX, arg *Ch
 }
 
 const createRecipeStep = `-- name: CreateRecipeStep :exec
-
 INSERT INTO recipe_steps (
 	id,
 	index,
@@ -90,18 +87,18 @@ INSERT INTO recipe_steps (
 
 type CreateRecipeStepParams struct {
 	ID                            string
-	BelongsToRecipe               string
-	PreparationID                 string
-	ConditionExpression           string
-	ExplicitInstructions          string
-	Notes                         string
-	MaximumTemperatureInCelsius   sql.NullString
-	MinimumTemperatureInCelsius   sql.NullString
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumEstimatedTimeInSeconds sql.NullInt64
 	Index                         int32
+	PreparationID                 string
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	MaximumEstimatedTimeInSeconds sql.NullInt64
+	MinimumTemperatureInCelsius   sql.NullString
+	MaximumTemperatureInCelsius   sql.NullString
+	Notes                         string
+	ExplicitInstructions          string
+	ConditionExpression           string
 	Optional                      bool
 	StartTimerAutomatically       bool
+	BelongsToRecipe               string
 }
 
 func (q *Queries) CreateRecipeStep(ctx context.Context, db DBTX, arg *CreateRecipeStepParams) error {
@@ -124,7 +121,6 @@ func (q *Queries) CreateRecipeStep(ctx context.Context, db DBTX, arg *CreateReci
 }
 
 const getRecipeStep = `-- name: GetRecipeStep :one
-
 SELECT
 	recipe_steps.id,
 	recipe_steps.index,
@@ -180,44 +176,44 @@ type GetRecipeStepParams struct {
 }
 
 type GetRecipeStepRow struct {
-	ValidPreparationCreatedAt                   time.Time
-	CreatedAt                                   time.Time
-	LastUpdatedAt                               sql.NullTime
-	ValidPreparationLastUpdatedAt               sql.NullTime
-	ValidPreparationArchivedAt                  sql.NullTime
-	ValidPreparationLastIndexedAt               sql.NullTime
-	ArchivedAt                                  sql.NullTime
-	ValidPreparationPastTense                   string
-	ValidPreparationIconPath                    string
-	ValidPreparationSlug                        string
-	ValidPreparationDescription                 string
-	ConditionExpression                         string
-	ExplicitInstructions                        string
-	Notes                                       string
 	ID                                          string
-	ValidPreparationName                        string
-	ValidPreparationID                          string
-	BelongsToRecipe                             string
-	MinimumTemperatureInCelsius                 sql.NullString
-	MaximumTemperatureInCelsius                 sql.NullString
-	MinimumEstimatedTimeInSeconds               sql.NullInt64
-	MaximumEstimatedTimeInSeconds               sql.NullInt64
-	ValidPreparationMaximumInstrumentCount      sql.NullInt32
-	ValidPreparationMaximumVesselCount          sql.NullInt32
-	ValidPreparationMaximumIngredientCount      sql.NullInt32
 	Index                                       int32
+	ValidPreparationID                          string
+	ValidPreparationName                        string
+	ValidPreparationDescription                 string
+	ValidPreparationIconPath                    string
+	ValidPreparationYieldsNothing               bool
+	ValidPreparationRestrictToIngredients       bool
+	ValidPreparationPastTense                   string
+	ValidPreparationSlug                        string
 	ValidPreparationMinimumIngredientCount      int32
-	ValidPreparationMinimumVesselCount          int32
+	ValidPreparationMaximumIngredientCount      sql.NullInt32
 	ValidPreparationMinimumInstrumentCount      int32
-	ValidPreparationConditionExpressionRequired bool
+	ValidPreparationMaximumInstrumentCount      sql.NullInt32
 	ValidPreparationTemperatureRequired         bool
 	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationConditionExpressionRequired bool
+	ValidPreparationConsumesVessel              bool
+	ValidPreparationOnlyForVessels              bool
+	ValidPreparationMinimumVesselCount          int32
+	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationLastIndexedAt               sql.NullTime
+	ValidPreparationCreatedAt                   time.Time
+	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidPreparationArchivedAt                  sql.NullTime
+	MinimumEstimatedTimeInSeconds               sql.NullInt64
+	MaximumEstimatedTimeInSeconds               sql.NullInt64
+	MinimumTemperatureInCelsius                 sql.NullString
+	MaximumTemperatureInCelsius                 sql.NullString
+	Notes                                       string
+	ExplicitInstructions                        string
+	ConditionExpression                         string
 	Optional                                    bool
 	StartTimerAutomatically                     bool
-	ValidPreparationConsumesVessel              bool
-	ValidPreparationRestrictToIngredients       bool
-	ValidPreparationYieldsNothing               bool
-	ValidPreparationOnlyForVessels              bool
+	CreatedAt                                   time.Time
+	LastUpdatedAt                               sql.NullTime
+	ArchivedAt                                  sql.NullTime
+	BelongsToRecipe                             string
 }
 
 func (q *Queries) GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStepParams) (*GetRecipeStepRow, error) {
@@ -267,7 +263,6 @@ func (q *Queries) GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStep
 }
 
 const getRecipeStepByRecipeID = `-- name: GetRecipeStepByRecipeID :one
-
 SELECT
 	recipe_steps.id,
 	recipe_steps.index,
@@ -315,44 +310,44 @@ WHERE recipe_steps.archived_at IS NULL
 `
 
 type GetRecipeStepByRecipeIDRow struct {
-	ValidPreparationCreatedAt                   time.Time
-	CreatedAt                                   time.Time
-	LastUpdatedAt                               sql.NullTime
-	ValidPreparationLastUpdatedAt               sql.NullTime
-	ValidPreparationArchivedAt                  sql.NullTime
-	ValidPreparationLastIndexedAt               sql.NullTime
-	ArchivedAt                                  sql.NullTime
-	ValidPreparationPastTense                   string
-	ValidPreparationIconPath                    string
-	ValidPreparationSlug                        string
-	ValidPreparationDescription                 string
-	ConditionExpression                         string
-	ExplicitInstructions                        string
-	Notes                                       string
 	ID                                          string
-	ValidPreparationName                        string
-	ValidPreparationID                          string
-	BelongsToRecipe                             string
-	MinimumTemperatureInCelsius                 sql.NullString
-	MaximumTemperatureInCelsius                 sql.NullString
-	MinimumEstimatedTimeInSeconds               sql.NullInt64
-	MaximumEstimatedTimeInSeconds               sql.NullInt64
-	ValidPreparationMaximumInstrumentCount      sql.NullInt32
-	ValidPreparationMaximumVesselCount          sql.NullInt32
-	ValidPreparationMaximumIngredientCount      sql.NullInt32
 	Index                                       int32
+	ValidPreparationID                          string
+	ValidPreparationName                        string
+	ValidPreparationDescription                 string
+	ValidPreparationIconPath                    string
+	ValidPreparationYieldsNothing               bool
+	ValidPreparationRestrictToIngredients       bool
+	ValidPreparationPastTense                   string
+	ValidPreparationSlug                        string
 	ValidPreparationMinimumIngredientCount      int32
-	ValidPreparationMinimumVesselCount          int32
+	ValidPreparationMaximumIngredientCount      sql.NullInt32
 	ValidPreparationMinimumInstrumentCount      int32
-	ValidPreparationConditionExpressionRequired bool
+	ValidPreparationMaximumInstrumentCount      sql.NullInt32
 	ValidPreparationTemperatureRequired         bool
 	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationConditionExpressionRequired bool
+	ValidPreparationConsumesVessel              bool
+	ValidPreparationOnlyForVessels              bool
+	ValidPreparationMinimumVesselCount          int32
+	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationLastIndexedAt               sql.NullTime
+	ValidPreparationCreatedAt                   time.Time
+	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidPreparationArchivedAt                  sql.NullTime
+	MinimumEstimatedTimeInSeconds               sql.NullInt64
+	MaximumEstimatedTimeInSeconds               sql.NullInt64
+	MinimumTemperatureInCelsius                 sql.NullString
+	MaximumTemperatureInCelsius                 sql.NullString
+	Notes                                       string
+	ExplicitInstructions                        string
+	ConditionExpression                         string
 	Optional                                    bool
 	StartTimerAutomatically                     bool
-	ValidPreparationConsumesVessel              bool
-	ValidPreparationRestrictToIngredients       bool
-	ValidPreparationYieldsNothing               bool
-	ValidPreparationOnlyForVessels              bool
+	CreatedAt                                   time.Time
+	LastUpdatedAt                               sql.NullTime
+	ArchivedAt                                  sql.NullTime
+	BelongsToRecipe                             string
 }
 
 func (q *Queries) GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id string) (*GetRecipeStepByRecipeIDRow, error) {
@@ -402,7 +397,6 @@ func (q *Queries) GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id strin
 }
 
 const getRecipeSteps = `-- name: GetRecipeSteps :many
-
 SELECT
 	recipe_steps.id,
 	recipe_steps.index,
@@ -493,46 +487,46 @@ type GetRecipeStepsParams struct {
 }
 
 type GetRecipeStepsRow struct {
-	CreatedAt                                   time.Time
-	ValidPreparationCreatedAt                   time.Time
-	ArchivedAt                                  sql.NullTime
-	ValidPreparationLastUpdatedAt               sql.NullTime
-	ValidPreparationLastIndexedAt               sql.NullTime
-	ValidPreparationArchivedAt                  sql.NullTime
-	LastUpdatedAt                               sql.NullTime
+	ID                                          string
+	Index                                       int32
+	ValidPreparationID                          string
+	ValidPreparationName                        string
+	ValidPreparationDescription                 string
 	ValidPreparationIconPath                    string
+	ValidPreparationYieldsNothing               bool
+	ValidPreparationRestrictToIngredients       bool
 	ValidPreparationPastTense                   string
 	ValidPreparationSlug                        string
-	BelongsToRecipe                             string
-	ID                                          string
-	ValidPreparationDescription                 string
-	ConditionExpression                         string
-	ExplicitInstructions                        string
-	Notes                                       string
-	ValidPreparationName                        string
-	ValidPreparationID                          string
-	MaximumTemperatureInCelsius                 sql.NullString
-	MinimumTemperatureInCelsius                 sql.NullString
-	MaximumEstimatedTimeInSeconds               sql.NullInt64
-	MinimumEstimatedTimeInSeconds               sql.NullInt64
-	FilteredCount                               int64
-	TotalCount                                  int64
-	ValidPreparationMaximumVesselCount          sql.NullInt32
-	ValidPreparationMaximumInstrumentCount      sql.NullInt32
+	ValidPreparationMinimumIngredientCount      int32
 	ValidPreparationMaximumIngredientCount      sql.NullInt32
 	ValidPreparationMinimumInstrumentCount      int32
-	ValidPreparationMinimumVesselCount          int32
-	ValidPreparationMinimumIngredientCount      int32
-	Index                                       int32
-	ValidPreparationConditionExpressionRequired bool
-	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationMaximumInstrumentCount      sql.NullInt32
 	ValidPreparationTemperatureRequired         bool
+	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationConditionExpressionRequired bool
 	ValidPreparationConsumesVessel              bool
+	ValidPreparationOnlyForVessels              bool
+	ValidPreparationMinimumVesselCount          int32
+	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationLastIndexedAt               sql.NullTime
+	ValidPreparationCreatedAt                   time.Time
+	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidPreparationArchivedAt                  sql.NullTime
+	MinimumEstimatedTimeInSeconds               sql.NullInt64
+	MaximumEstimatedTimeInSeconds               sql.NullInt64
+	MinimumTemperatureInCelsius                 sql.NullString
+	MaximumTemperatureInCelsius                 sql.NullString
+	Notes                                       string
+	ExplicitInstructions                        string
+	ConditionExpression                         string
 	Optional                                    bool
 	StartTimerAutomatically                     bool
-	ValidPreparationOnlyForVessels              bool
-	ValidPreparationRestrictToIngredients       bool
-	ValidPreparationYieldsNothing               bool
+	CreatedAt                                   time.Time
+	LastUpdatedAt                               sql.NullTime
+	ArchivedAt                                  sql.NullTime
+	BelongsToRecipe                             string
+	FilteredCount                               int64
+	TotalCount                                  int64
 }
 
 func (q *Queries) GetRecipeSteps(ctx context.Context, db DBTX, arg *GetRecipeStepsParams) ([]*GetRecipeStepsRow, error) {
@@ -608,7 +602,6 @@ func (q *Queries) GetRecipeSteps(ctx context.Context, db DBTX, arg *GetRecipeSte
 }
 
 const updateRecipeStep = `-- name: UpdateRecipeStep :execrows
-
 UPDATE recipe_steps SET
 	index = $1,
 	preparation_id = $2,
@@ -628,19 +621,19 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepParams struct {
-	ConditionExpression           string
+	Index                         int32
 	PreparationID                 string
-	ID                            string
-	BelongsToRecipe               string
-	Notes                         string
-	ExplicitInstructions          string
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	MaximumEstimatedTimeInSeconds sql.NullInt64
 	MinimumTemperatureInCelsius   sql.NullString
 	MaximumTemperatureInCelsius   sql.NullString
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	Index                         int32
+	Notes                         string
+	ExplicitInstructions          string
+	ConditionExpression           string
 	Optional                      bool
 	StartTimerAutomatically       bool
+	BelongsToRecipe               string
+	ID                            string
 }
 
 func (q *Queries) UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) (int64, error) {

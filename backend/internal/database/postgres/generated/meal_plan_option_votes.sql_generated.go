@@ -12,7 +12,6 @@ import (
 )
 
 const archiveMealPlanOptionVote = `-- name: ArchiveMealPlanOptionVote :execrows
-
 UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *A
 }
 
 const checkMealPlanOptionVoteExistence = `-- name: CheckMealPlanOptionVoteExistence :one
-
 SELECT EXISTS (
 	SELECT meal_plan_option_votes.id
 	FROM meal_plan_option_votes
@@ -53,8 +51,8 @@ SELECT EXISTS (
 type CheckMealPlanOptionVoteExistenceParams struct {
 	MealPlanOptionID     string
 	MealPlanOptionVoteID string
-	MealPlanID           string
 	MealPlanEventID      sql.NullString
+	MealPlanID           string
 }
 
 func (q *Queries) CheckMealPlanOptionVoteExistence(ctx context.Context, db DBTX, arg *CheckMealPlanOptionVoteExistenceParams) (bool, error) {
@@ -70,7 +68,6 @@ func (q *Queries) CheckMealPlanOptionVoteExistence(ctx context.Context, db DBTX,
 }
 
 const createMealPlanOptionVote = `-- name: CreateMealPlanOptionVote :exec
-
 INSERT INTO meal_plan_option_votes (
 	id,
 	rank,
@@ -90,11 +87,11 @@ INSERT INTO meal_plan_option_votes (
 
 type CreateMealPlanOptionVoteParams struct {
 	ID                      string
+	Rank                    int32
+	Abstain                 bool
 	Notes                   string
 	ByUser                  string
 	BelongsToMealPlanOption string
-	Rank                    int32
-	Abstain                 bool
 }
 
 func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *CreateMealPlanOptionVoteParams) error {
@@ -110,7 +107,6 @@ func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *Cr
 }
 
 const getMealPlanOptionVote = `-- name: GetMealPlanOptionVote :one
-
 SELECT
 	meal_plan_option_votes.id,
 	meal_plan_option_votes.rank,
@@ -140,8 +136,8 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 type GetMealPlanOptionVoteParams struct {
 	MealPlanOptionID     string
 	MealPlanOptionVoteID string
-	MealPlanID           string
 	MealPlanEventID      sql.NullString
+	MealPlanID           string
 }
 
 func (q *Queries) GetMealPlanOptionVote(ctx context.Context, db DBTX, arg *GetMealPlanOptionVoteParams) (*MealPlanOptionVotes, error) {
@@ -167,7 +163,6 @@ func (q *Queries) GetMealPlanOptionVote(ctx context.Context, db DBTX, arg *GetMe
 }
 
 const getMealPlanOptionVotes = `-- name: GetMealPlanOptionVotes :many
-
 SELECT
 	meal_plan_option_votes.id,
 	meal_plan_option_votes.rank,
@@ -238,24 +233,24 @@ type GetMealPlanOptionVotesParams struct {
 	UpdatedBefore    sql.NullTime
 	UpdatedAfter     sql.NullTime
 	MealPlanOptionID string
-	MealPlanID       string
 	MealPlanEventID  sql.NullString
+	MealPlanID       string
 	QueryOffset      sql.NullInt32
 	QueryLimit       sql.NullInt32
 }
 
 type GetMealPlanOptionVotesRow struct {
+	ID                      string
+	Rank                    int32
+	Abstain                 bool
+	Notes                   string
+	ByUser                  string
 	CreatedAt               time.Time
 	LastUpdatedAt           sql.NullTime
 	ArchivedAt              sql.NullTime
-	ID                      string
-	Notes                   string
-	ByUser                  string
 	BelongsToMealPlanOption string
 	FilteredCount           int64
 	TotalCount              int64
-	Rank                    int32
-	Abstain                 bool
 }
 
 func (q *Queries) GetMealPlanOptionVotes(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesParams) ([]*GetMealPlanOptionVotesRow, error) {
@@ -304,7 +299,6 @@ func (q *Queries) GetMealPlanOptionVotes(ctx context.Context, db DBTX, arg *GetM
 }
 
 const getMealPlanOptionVotesForMealPlanOption = `-- name: GetMealPlanOptionVotesForMealPlanOption :many
-
 SELECT
 	meal_plan_option_votes.id,
 	meal_plan_option_votes.rank,
@@ -333,8 +327,8 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 
 type GetMealPlanOptionVotesForMealPlanOptionParams struct {
 	MealPlanOptionID string
-	MealPlanID       string
 	MealPlanEventID  sql.NullString
+	MealPlanID       string
 }
 
 func (q *Queries) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesForMealPlanOptionParams) ([]*MealPlanOptionVotes, error) {
@@ -371,7 +365,6 @@ func (q *Queries) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, d
 }
 
 const updateMealPlanOptionVote = `-- name: UpdateMealPlanOptionVote :execrows
-
 UPDATE meal_plan_option_votes SET
 	rank = $1,
 	abstain = $2,
@@ -384,12 +377,12 @@ WHERE archived_at IS NULL
 `
 
 type UpdateMealPlanOptionVoteParams struct {
+	Rank                    int32
+	Abstain                 bool
 	Notes                   string
 	ByUser                  string
 	BelongsToMealPlanOption string
 	ID                      string
-	Rank                    int32
-	Abstain                 bool
 }
 
 func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) (int64, error) {

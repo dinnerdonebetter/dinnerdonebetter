@@ -48,4 +48,4 @@ rules:
   - name: no-delete
     message: "don't use delete statements"
     rule: |
-      query.sql.contains("DELETE") && !query.name.contains("OAuth2ClientToken")
+      query.sql.contains("DELETE") && !query.name.contains("OAuth2ClientToken") && query.name != "DeleteUser"

@@ -1,8 +1,7 @@
 -- name: ArchiveValidPreparationVessel :execrows
-
 UPDATE valid_preparation_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: CreateValidPreparationVessel :exec
 
+-- name: CreateValidPreparationVessel :exec
 INSERT INTO valid_preparation_vessels (
 	id,
 	notes,
@@ -14,16 +13,16 @@ INSERT INTO valid_preparation_vessels (
 	sqlc.arg(valid_preparation_id),
 	sqlc.arg(valid_vessel_id)
 );
--- name: CheckValidPreparationVesselExistence :one
 
+-- name: CheckValidPreparationVesselExistence :one
 SELECT EXISTS (
 	SELECT valid_preparation_vessels.id
 	FROM valid_preparation_vessels
 	WHERE valid_preparation_vessels.archived_at IS NULL
 		AND valid_preparation_vessels.id = sqlc.arg(id)
 );
--- name: GetValidPreparationVesselsForPreparation :many
 
+-- name: GetValidPreparationVesselsForPreparation :many
 SELECT
 	valid_preparation_vessels.id as valid_preparation_vessel_id,
 	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
@@ -127,8 +126,8 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidPreparationVesselsForVessel :many
 
+-- name: GetValidPreparationVesselsForVessel :many
 SELECT
 	valid_preparation_vessels.id as valid_preparation_vessel_id,
 	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
@@ -232,8 +231,8 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidPreparationVessels :many
 
+-- name: GetValidPreparationVessels :many
 SELECT
 	valid_preparation_vessels.id as valid_preparation_vessel_id,
 	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
@@ -336,8 +335,8 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidPreparationVessel :one
 
+-- name: GetValidPreparationVessel :one
 SELECT
 	valid_preparation_vessels.id as valid_preparation_vessel_id,
 	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
@@ -409,8 +408,8 @@ WHERE
 	AND valid_preparations.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_preparation_vessels.id = sqlc.arg(id);
--- name: ValidPreparationVesselPairIsValid :one
 
+-- name: ValidPreparationVesselPairIsValid :one
 SELECT EXISTS(
 	SELECT id
 	FROM valid_preparation_vessels
@@ -418,8 +417,8 @@ SELECT EXISTS(
 	AND valid_preparation_id = sqlc.arg(valid_preparation_id)
 	AND archived_at IS NULL
 );
--- name: UpdateValidPreparationVessel :execrows
 
+-- name: UpdateValidPreparationVessel :execrows
 UPDATE valid_preparation_vessels SET
 	notes = sqlc.arg(notes),
 	valid_preparation_id = sqlc.arg(valid_preparation_id),

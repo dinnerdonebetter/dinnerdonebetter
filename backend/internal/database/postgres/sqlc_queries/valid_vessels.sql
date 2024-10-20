@@ -1,8 +1,7 @@
 -- name: ArchiveValidVessel :execrows
-
 UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: CreateValidVessel :exec
 
+-- name: CreateValidVessel :exec
 INSERT INTO valid_vessels (
 	id,
 	name,
@@ -36,16 +35,16 @@ INSERT INTO valid_vessels (
 	sqlc.arg(height_in_millimeters),
 	sqlc.arg(shape)
 );
--- name: CheckValidVesselExistence :one
 
+-- name: CheckValidVesselExistence :one
 SELECT EXISTS (
 	SELECT valid_vessels.id
 	FROM valid_vessels
 	WHERE valid_vessels.archived_at IS NULL
 		AND valid_vessels.id = sqlc.arg(id)
 );
--- name: GetValidVessels :many
 
+-- name: GetValidVessels :many
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -103,8 +102,8 @@ GROUP BY valid_vessels.id
 ORDER BY valid_vessels.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidVesselIDsNeedingIndexing :many
 
+-- name: GetValidVesselIDsNeedingIndexing :many
 SELECT valid_vessels.id
 FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
@@ -112,8 +111,8 @@ WHERE valid_vessels.archived_at IS NULL
 	valid_vessels.last_indexed_at IS NULL
 	OR valid_vessels.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
--- name: GetValidVessel :one
 
+-- name: GetValidVessel :one
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -152,8 +151,8 @@ FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_vessels.id = sqlc.arg(id);
--- name: GetRandomValidVessel :one
 
+-- name: GetRandomValidVessel :one
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -192,8 +191,8 @@ FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 ORDER BY RANDOM() LIMIT 1;
--- name: GetValidVesselsWithIDs :many
 
+-- name: GetValidVesselsWithIDs :many
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -232,8 +231,8 @@ FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_vessels.id = ANY(sqlc.arg(ids)::text[]);
--- name: SearchForValidVessels :many
 
+-- name: SearchForValidVessels :many
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -258,8 +257,8 @@ FROM valid_vessels
 WHERE valid_vessels.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
 	AND valid_vessels.archived_at IS NULL
 LIMIT 50;
--- name: UpdateValidVessel :execrows
 
+-- name: UpdateValidVessel :execrows
 UPDATE valid_vessels SET
 	name = sqlc.arg(name),
 	plural_name = sqlc.arg(plural_name),
@@ -278,6 +277,6 @@ UPDATE valid_vessels SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: UpdateValidVesselLastIndexedAt :execrows
 
+-- name: UpdateValidVesselLastIndexedAt :execrows
 UPDATE valid_vessels SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeMedia = `-- name: ArchiveRecipeMedia :execrows
-
 UPDATE recipe_media SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) (i
 }
 
 const checkRecipeMediaExistence = `-- name: CheckRecipeMediaExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_media.id
 	FROM recipe_media
@@ -42,7 +40,6 @@ func (q *Queries) CheckRecipeMediaExistence(ctx context.Context, db DBTX, id str
 }
 
 const createRecipeMedia = `-- name: CreateRecipeMedia :exec
-
 INSERT INTO recipe_media (
 	id,
 	belongs_to_recipe,
@@ -64,11 +61,11 @@ INSERT INTO recipe_media (
 
 type CreateRecipeMediaParams struct {
 	ID                  string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	Index               int32
 }
 
@@ -86,7 +83,6 @@ func (q *Queries) CreateRecipeMedia(ctx context.Context, db DBTX, arg *CreateRec
 }
 
 const getRecipeMedia = `-- name: GetRecipeMedia :one
-
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,
@@ -104,16 +100,16 @@ WHERE recipe_media.archived_at IS NULL
 `
 
 type GetRecipeMediaRow struct {
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
 	ID                  string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	Index               int32
+	CreatedAt           time.Time
+	LastUpdatedAt       sql.NullTime
+	ArchivedAt          sql.NullTime
 }
 
 func (q *Queries) GetRecipeMedia(ctx context.Context, db DBTX, id string) (*GetRecipeMediaRow, error) {
@@ -135,7 +131,6 @@ func (q *Queries) GetRecipeMedia(ctx context.Context, db DBTX, id string) (*GetR
 }
 
 const getRecipeMediaForRecipe = `-- name: GetRecipeMediaForRecipe :many
-
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,
@@ -156,16 +151,16 @@ ORDER BY recipe_media.id
 `
 
 type GetRecipeMediaForRecipeRow struct {
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
 	ID                  string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	Index               int32
+	CreatedAt           time.Time
+	LastUpdatedAt       sql.NullTime
+	ArchivedAt          sql.NullTime
 }
 
 func (q *Queries) GetRecipeMediaForRecipe(ctx context.Context, db DBTX, recipeID sql.NullString) ([]*GetRecipeMediaForRecipeRow, error) {
@@ -203,7 +198,6 @@ func (q *Queries) GetRecipeMediaForRecipe(ctx context.Context, db DBTX, recipeID
 }
 
 const getRecipeMediaForRecipeStep = `-- name: GetRecipeMediaForRecipeStep :many
-
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,
@@ -229,16 +223,16 @@ type GetRecipeMediaForRecipeStepParams struct {
 }
 
 type GetRecipeMediaForRecipeStepRow struct {
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
 	ID                  string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	Index               int32
+	CreatedAt           time.Time
+	LastUpdatedAt       sql.NullTime
+	ArchivedAt          sql.NullTime
 }
 
 func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error) {
@@ -276,7 +270,6 @@ func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg 
 }
 
 const updateRecipeMedia = `-- name: UpdateRecipeMedia :execrows
-
 UPDATE recipe_media SET
 	belongs_to_recipe = $1,
 	belongs_to_recipe_step = $2,
@@ -290,13 +283,13 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeMediaParams struct {
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
-	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	Index               int32
+	ID                  string
 }
 
 func (q *Queries) UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) (int64, error) {

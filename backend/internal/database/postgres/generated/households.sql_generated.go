@@ -12,7 +12,6 @@ import (
 )
 
 const addToHouseholdDuringCreation = `-- name: AddToHouseholdDuringCreation :exec
-
 INSERT INTO household_user_memberships (
 	id,
 	belongs_to_household,
@@ -44,7 +43,6 @@ func (q *Queries) AddToHouseholdDuringCreation(ctx context.Context, db DBTX, arg
 }
 
 const archiveHousehold = `-- name: ArchiveHousehold :execrows
-
 UPDATE households SET
 	last_updated_at = NOW(),
 	archived_at = NOW()
@@ -67,7 +65,6 @@ func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHou
 }
 
 const createHousehold = `-- name: CreateHousehold :exec
-
 INSERT INTO households (
 	id,
 	name,
@@ -102,20 +99,20 @@ INSERT INTO households (
 `
 
 type CreateHouseholdParams struct {
-	AddressLine2      string
 	ID                string
+	Name              string
 	BillingStatus     string
 	ContactPhone      string
 	BelongsToUser     string
 	AddressLine1      string
-	Name              string
+	AddressLine2      string
 	City              string
-	Country           string
-	ZipCode           string
 	State             string
-	WebhookHmacSecret string
-	Longitude         sql.NullString
+	ZipCode           string
+	Country           string
 	Latitude          sql.NullString
+	Longitude         sql.NullString
+	WebhookHmacSecret string
 }
 
 func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error {
@@ -139,7 +136,6 @@ func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouse
 }
 
 const getHouseholdByIDWithMemberships = `-- name: GetHouseholdByIDWithMemberships :many
-
 SELECT
 	households.id,
 	households.name,
@@ -202,58 +198,58 @@ WHERE households.archived_at IS NULL
 `
 
 type GetHouseholdByIDWithMembershipsRow struct {
-	MembershipCreatedAt               time.Time
-	CreatedAt                         time.Time
-	UserCreatedAt                     time.Time
-	UserLastAcceptedPrivacyPolicy     sql.NullTime
-	UserEmailAddressVerifiedAt        sql.NullTime
-	UserLastUpdatedAt                 sql.NullTime
-	MembershipLastUpdatedAt           sql.NullTime
-	UserLastIndexedAt                 sql.NullTime
-	MembershipArchivedAt              sql.NullTime
-	UserLastAcceptedTermsOfService    sql.NullTime
-	UserArchivedAt                    sql.NullTime
-	UserBirthday                      sql.NullTime
-	UserTwoFactorSecretVerifiedAt     sql.NullTime
-	UserPasswordLastChangedAt         sql.NullTime
-	ArchivedAt                        sql.NullTime
-	LastUpdatedAt                     sql.NullTime
-	LastPaymentProviderSyncOccurredAt sql.NullTime
-	Country                           string
-	UserServiceRole                   string
+	ID                                string
 	Name                              string
 	BillingStatus                     string
-	UserID                            string
-	UserUsername                      string
 	ContactPhone                      string
-	UserEmailAddress                  string
-	UserHashedPassword                string
-	ID                                string
-	MembershipHouseholdRole           string
-	UserTwoFactorSecret               string
-	ZipCode                           string
-	MembershipBelongsToHousehold      string
-	UserUserAccountStatus             string
-	UserUserAccountStatusExplanation  string
-	State                             string
-	WebhookHmacSecret                 string
-	City                              string
-	UserFirstName                     string
-	UserLastName                      string
-	AddressLine2                      string
-	AddressLine1                      string
-	TimeZone                          TimeZone
-	BelongsToUser                     string
-	MembershipBelongsToUser           string
 	PaymentProcessorCustomerID        string
-	MembershipID                      string
-	UserEmailAddressVerificationToken sql.NullString
 	SubscriptionPlanID                sql.NullString
-	UserAvatarSrc                     sql.NullString
+	BelongsToUser                     string
+	TimeZone                          TimeZone
+	AddressLine1                      string
+	AddressLine2                      string
+	City                              string
+	State                             string
+	ZipCode                           string
+	Country                           string
 	Latitude                          sql.NullString
 	Longitude                         sql.NullString
-	MembershipDefaultHousehold        bool
+	LastPaymentProviderSyncOccurredAt sql.NullTime
+	WebhookHmacSecret                 string
+	CreatedAt                         time.Time
+	LastUpdatedAt                     sql.NullTime
+	ArchivedAt                        sql.NullTime
+	UserID                            string
+	UserUsername                      string
+	UserAvatarSrc                     sql.NullString
+	UserEmailAddress                  string
+	UserHashedPassword                string
+	UserPasswordLastChangedAt         sql.NullTime
 	UserRequiresPasswordChange        bool
+	UserTwoFactorSecret               string
+	UserTwoFactorSecretVerifiedAt     sql.NullTime
+	UserServiceRole                   string
+	UserUserAccountStatus             string
+	UserUserAccountStatusExplanation  string
+	UserBirthday                      sql.NullTime
+	UserEmailAddressVerificationToken sql.NullString
+	UserEmailAddressVerifiedAt        sql.NullTime
+	UserFirstName                     string
+	UserLastName                      string
+	UserLastAcceptedTermsOfService    sql.NullTime
+	UserLastAcceptedPrivacyPolicy     sql.NullTime
+	UserLastIndexedAt                 sql.NullTime
+	UserCreatedAt                     time.Time
+	UserLastUpdatedAt                 sql.NullTime
+	UserArchivedAt                    sql.NullTime
+	MembershipID                      string
+	MembershipBelongsToHousehold      string
+	MembershipBelongsToUser           string
+	MembershipDefaultHousehold        bool
+	MembershipHouseholdRole           string
+	MembershipCreatedAt               time.Time
+	MembershipLastUpdatedAt           sql.NullTime
+	MembershipArchivedAt              sql.NullTime
 }
 
 func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetHouseholdByIDWithMembershipsRow, error) {
@@ -333,7 +329,6 @@ func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, 
 }
 
 const getHouseholdsForUser = `-- name: GetHouseholdsForUser :many
-
 SELECT
 	households.id,
 	households.name,
@@ -409,27 +404,27 @@ type GetHouseholdsForUserParams struct {
 }
 
 type GetHouseholdsForUserRow struct {
-	CreatedAt                         time.Time
-	LastPaymentProviderSyncOccurredAt sql.NullTime
-	LastUpdatedAt                     sql.NullTime
-	ArchivedAt                        sql.NullTime
-	AddressLine1                      string
-	State                             string
+	ID                                string
+	Name                              string
+	BillingStatus                     string
+	ContactPhone                      string
+	PaymentProcessorCustomerID        string
+	SubscriptionPlanID                sql.NullString
 	BelongsToUser                     string
 	TimeZone                          TimeZone
-	PaymentProcessorCustomerID        string
+	AddressLine1                      string
 	AddressLine2                      string
 	City                              string
-	ID                                string
+	State                             string
 	ZipCode                           string
 	Country                           string
-	ContactPhone                      string
-	BillingStatus                     string
-	Name                              string
-	WebhookHmacSecret                 string
-	SubscriptionPlanID                sql.NullString
-	Longitude                         sql.NullString
 	Latitude                          sql.NullString
+	Longitude                         sql.NullString
+	LastPaymentProviderSyncOccurredAt sql.NullTime
+	WebhookHmacSecret                 string
+	CreatedAt                         time.Time
+	LastUpdatedAt                     sql.NullTime
+	ArchivedAt                        sql.NullTime
 	FilteredCount                     int64
 	TotalCount                        int64
 }
@@ -490,7 +485,6 @@ func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHou
 }
 
 const updateHousehold = `-- name: UpdateHousehold :execrows
-
 UPDATE households SET
 	name = $1,
 	contact_phone = $2,
@@ -517,10 +511,10 @@ type UpdateHouseholdParams struct {
 	State         string
 	ZipCode       string
 	Country       string
-	BelongsToUser string
-	ID            string
 	Latitude      sql.NullString
 	Longitude     sql.NullString
+	BelongsToUser string
+	ID            string
 }
 
 func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) (int64, error) {
@@ -545,7 +539,6 @@ func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouse
 }
 
 const updateHouseholdWebhookEncryptionKey = `-- name: UpdateHouseholdWebhookEncryptionKey :execrows
-
 UPDATE households SET
 	webhook_hmac_secret = $1,
 	last_updated_at = NOW()

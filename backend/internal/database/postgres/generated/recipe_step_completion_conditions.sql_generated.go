@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeStepCompletionCondition = `-- name: ArchiveRecipeStepCompletionCondition :execrows
-
 UPDATE recipe_step_completion_conditions SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveRecipeStepCompletionCondition(ctx context.Context, db D
 }
 
 const checkRecipeStepCompletionConditionExistence = `-- name: CheckRecipeStepCompletionConditionExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_step_completion_conditions.id
 	FROM recipe_step_completion_conditions
@@ -61,7 +59,6 @@ func (q *Queries) CheckRecipeStepCompletionConditionExistence(ctx context.Contex
 }
 
 const createRecipeStepCompletionCondition = `-- name: CreateRecipeStepCompletionCondition :exec
-
 INSERT INTO recipe_step_completion_conditions (
 	id,
 	optional,
@@ -79,10 +76,10 @@ INSERT INTO recipe_step_completion_conditions (
 
 type CreateRecipeStepCompletionConditionParams struct {
 	ID                  string
+	Optional            bool
 	Notes               string
 	BelongsToRecipeStep string
 	IngredientState     string
-	Optional            bool
 }
 
 func (q *Queries) CreateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *CreateRecipeStepCompletionConditionParams) error {
@@ -97,7 +94,6 @@ func (q *Queries) CreateRecipeStepCompletionCondition(ctx context.Context, db DB
 }
 
 const getAllRecipeStepCompletionConditionsForRecipe = `-- name: GetAllRecipeStepCompletionConditionsForRecipe :many
-
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
@@ -142,31 +138,31 @@ GROUP BY
 `
 
 type GetAllRecipeStepCompletionConditionsForRecipeRow struct {
-	RecipeStepCompletionConditionIngredientCreatedAt         time.Time
-	CreatedAt                                                time.Time
-	ValidIngredientStateCreatedAt                            time.Time
-	ValidIngredientStateLastIndexedAt                        sql.NullTime
-	RecipeStepCompletionConditionIngredientArchivedAt        sql.NullTime
-	RecipeStepCompletionConditionIngredientLastUpdatedAt     sql.NullTime
-	ArchivedAt                                               sql.NullTime
-	LastUpdatedAt                                            sql.NullTime
-	ValidIngredientStateArchivedAt                           sql.NullTime
-	ValidIngredientStateLastUpdatedAt                        sql.NullTime
-	ValidIngredientStateName                                 string
-	BelongsToRecipeStep                                      string
-	ValidIngredientStateIconPath                             string
-	ValidIngredientStateDescription                          string
-	ValidIngredientStateSlug                                 string
-	ValidIngredientStatePastTense                            string
-	Notes                                                    string
-	ValidIngredientStateAttributeType                        IngredientAttributeType
-	IngredientState                                          string
 	RecipeStepCompletionConditionIngredientID                string
-	ValidIngredientStateID                                   string
 	RecipeStepCompletionConditionIngredientBelongsToRecipeS  string
-	ID                                                       string
 	RecipeStepCompletionConditionIngredientRecipeStepIngredi string
+	ID                                                       string
 	Optional                                                 bool
+	ValidIngredientStateID                                   string
+	ValidIngredientStateName                                 string
+	ValidIngredientStatePastTense                            string
+	ValidIngredientStateSlug                                 string
+	ValidIngredientStateDescription                          string
+	ValidIngredientStateIconPath                             string
+	ValidIngredientStateAttributeType                        IngredientAttributeType
+	ValidIngredientStateLastIndexedAt                        sql.NullTime
+	ValidIngredientStateCreatedAt                            time.Time
+	ValidIngredientStateLastUpdatedAt                        sql.NullTime
+	ValidIngredientStateArchivedAt                           sql.NullTime
+	Notes                                                    string
+	BelongsToRecipeStep                                      string
+	IngredientState                                          string
+	CreatedAt                                                time.Time
+	LastUpdatedAt                                            sql.NullTime
+	ArchivedAt                                               sql.NullTime
+	RecipeStepCompletionConditionIngredientCreatedAt         time.Time
+	RecipeStepCompletionConditionIngredientLastUpdatedAt     sql.NullTime
+	RecipeStepCompletionConditionIngredientArchivedAt        sql.NullTime
 }
 
 func (q *Queries) GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetAllRecipeStepCompletionConditionsForRecipeRow, error) {
@@ -219,7 +215,6 @@ func (q *Queries) GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Cont
 }
 
 const getRecipeStepCompletionConditionWithIngredients = `-- name: GetRecipeStepCompletionConditionWithIngredients :many
-
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
@@ -269,31 +264,31 @@ type GetRecipeStepCompletionConditionWithIngredientsParams struct {
 }
 
 type GetRecipeStepCompletionConditionWithIngredientsRow struct {
-	RecipeStepCompletionConditionIngredientCreatedAt         time.Time
-	CreatedAt                                                time.Time
-	ValidIngredientStateCreatedAt                            time.Time
-	ValidIngredientStateLastIndexedAt                        sql.NullTime
-	RecipeStepCompletionConditionIngredientArchivedAt        sql.NullTime
-	RecipeStepCompletionConditionIngredientLastUpdatedAt     sql.NullTime
-	ArchivedAt                                               sql.NullTime
-	LastUpdatedAt                                            sql.NullTime
-	ValidIngredientStateArchivedAt                           sql.NullTime
-	ValidIngredientStateLastUpdatedAt                        sql.NullTime
-	ValidIngredientStateName                                 string
-	BelongsToRecipeStep                                      string
-	ValidIngredientStateIconPath                             string
-	ValidIngredientStateDescription                          string
-	ValidIngredientStateSlug                                 string
-	ValidIngredientStatePastTense                            string
-	Notes                                                    string
-	ValidIngredientStateAttributeType                        IngredientAttributeType
-	IngredientState                                          string
 	RecipeStepCompletionConditionIngredientID                string
-	ValidIngredientStateID                                   string
 	RecipeStepCompletionConditionIngredientBelongsToRecipeS  string
-	ID                                                       string
 	RecipeStepCompletionConditionIngredientRecipeStepIngredi string
+	ID                                                       string
 	Optional                                                 bool
+	ValidIngredientStateID                                   string
+	ValidIngredientStateName                                 string
+	ValidIngredientStatePastTense                            string
+	ValidIngredientStateSlug                                 string
+	ValidIngredientStateDescription                          string
+	ValidIngredientStateIconPath                             string
+	ValidIngredientStateAttributeType                        IngredientAttributeType
+	ValidIngredientStateLastIndexedAt                        sql.NullTime
+	ValidIngredientStateCreatedAt                            time.Time
+	ValidIngredientStateLastUpdatedAt                        sql.NullTime
+	ValidIngredientStateArchivedAt                           sql.NullTime
+	Notes                                                    string
+	BelongsToRecipeStep                                      string
+	IngredientState                                          string
+	CreatedAt                                                time.Time
+	LastUpdatedAt                                            sql.NullTime
+	ArchivedAt                                               sql.NullTime
+	RecipeStepCompletionConditionIngredientCreatedAt         time.Time
+	RecipeStepCompletionConditionIngredientLastUpdatedAt     sql.NullTime
+	RecipeStepCompletionConditionIngredientArchivedAt        sql.NullTime
 }
 
 func (q *Queries) GetRecipeStepCompletionConditionWithIngredients(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionWithIngredientsParams) ([]*GetRecipeStepCompletionConditionWithIngredientsRow, error) {
@@ -346,7 +341,6 @@ func (q *Queries) GetRecipeStepCompletionConditionWithIngredients(ctx context.Co
 }
 
 const getRecipeStepCompletionConditions = `-- name: GetRecipeStepCompletionConditions :many
-
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
@@ -425,33 +419,33 @@ type GetRecipeStepCompletionConditionsParams struct {
 }
 
 type GetRecipeStepCompletionConditionsRow struct {
-	RecipeStepCompletionConditionIngredientCreatedAt         time.Time
-	CreatedAt                                                time.Time
-	ValidIngredientStateCreatedAt                            time.Time
-	ValidIngredientStateLastIndexedAt                        sql.NullTime
-	RecipeStepCompletionConditionIngredientArchivedAt        sql.NullTime
-	RecipeStepCompletionConditionIngredientLastUpdatedAt     sql.NullTime
-	ArchivedAt                                               sql.NullTime
-	LastUpdatedAt                                            sql.NullTime
-	ValidIngredientStateArchivedAt                           sql.NullTime
-	ValidIngredientStateLastUpdatedAt                        sql.NullTime
-	ValidIngredientStateName                                 string
 	RecipeStepCompletionConditionIngredientID                string
-	ValidIngredientStateIconPath                             string
-	ValidIngredientStateDescription                          string
-	ValidIngredientStateSlug                                 string
+	RecipeStepCompletionConditionIngredientBelongsToRecipeS  string
+	RecipeStepCompletionConditionIngredientRecipeStepIngredi string
+	ID                                                       string
+	Optional                                                 bool
+	ValidIngredientStateID                                   string
+	ValidIngredientStateName                                 string
 	ValidIngredientStatePastTense                            string
+	ValidIngredientStateSlug                                 string
+	ValidIngredientStateDescription                          string
+	ValidIngredientStateIconPath                             string
+	ValidIngredientStateAttributeType                        IngredientAttributeType
+	ValidIngredientStateLastIndexedAt                        sql.NullTime
+	ValidIngredientStateCreatedAt                            time.Time
+	ValidIngredientStateLastUpdatedAt                        sql.NullTime
+	ValidIngredientStateArchivedAt                           sql.NullTime
 	Notes                                                    string
 	BelongsToRecipeStep                                      string
 	IngredientState                                          string
-	ValidIngredientStateAttributeType                        IngredientAttributeType
-	ValidIngredientStateID                                   string
-	RecipeStepCompletionConditionIngredientBelongsToRecipeS  string
-	ID                                                       string
-	RecipeStepCompletionConditionIngredientRecipeStepIngredi string
+	CreatedAt                                                time.Time
+	LastUpdatedAt                                            sql.NullTime
+	ArchivedAt                                               sql.NullTime
+	RecipeStepCompletionConditionIngredientCreatedAt         time.Time
+	RecipeStepCompletionConditionIngredientLastUpdatedAt     sql.NullTime
+	RecipeStepCompletionConditionIngredientArchivedAt        sql.NullTime
 	FilteredCount                                            int64
 	TotalCount                                               int64
-	Optional                                                 bool
 }
 
 func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionsParams) ([]*GetRecipeStepCompletionConditionsRow, error) {
@@ -514,7 +508,6 @@ func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX
 }
 
 const updateRecipeStepCompletionCondition = `-- name: UpdateRecipeStepCompletionCondition :execrows
-
 UPDATE recipe_step_completion_conditions SET
 	optional = $1,
 	notes = $2,
@@ -526,11 +519,11 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepCompletionConditionParams struct {
+	Optional            bool
 	Notes               string
 	BelongsToRecipeStep string
 	IngredientState     string
 	ID                  string
-	Optional            bool
 }
 
 func (q *Queries) UpdateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *UpdateRecipeStepCompletionConditionParams) (int64, error) {

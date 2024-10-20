@@ -1,8 +1,7 @@
 -- name: ArchiveRecipeMedia :execrows
-
 UPDATE recipe_media SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: CreateRecipeMedia :exec
 
+-- name: CreateRecipeMedia :exec
 INSERT INTO recipe_media (
 	id,
 	belongs_to_recipe,
@@ -20,16 +19,16 @@ INSERT INTO recipe_media (
 	sqlc.arg(external_path),
 	sqlc.arg(index)
 );
--- name: CheckRecipeMediaExistence :one
 
+-- name: CheckRecipeMediaExistence :one
 SELECT EXISTS (
 	SELECT recipe_media.id
 	FROM recipe_media
 	WHERE recipe_media.archived_at IS NULL
 		AND recipe_media.id = sqlc.arg(id)
 );
--- name: GetRecipeMediaForRecipe :many
 
+-- name: GetRecipeMediaForRecipe :many
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,
@@ -47,8 +46,8 @@ WHERE recipe_media.belongs_to_recipe = sqlc.arg(recipe_id)
 	AND recipe_media.archived_at IS NULL
 GROUP BY recipe_media.id
 ORDER BY recipe_media.id;
--- name: GetRecipeMediaForRecipeStep :many
 
+-- name: GetRecipeMediaForRecipeStep :many
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,
@@ -66,8 +65,8 @@ WHERE recipe_media.belongs_to_recipe = sqlc.arg(recipe_id)
 	AND recipe_media.archived_at IS NULL
 GROUP BY recipe_media.id
 ORDER BY recipe_media.id;
--- name: GetRecipeMedia :one
 
+-- name: GetRecipeMedia :one
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,
@@ -82,8 +81,8 @@ SELECT
 FROM recipe_media
 WHERE recipe_media.archived_at IS NULL
 	AND recipe_media.id = sqlc.arg(id);
--- name: UpdateRecipeMedia :execrows
 
+-- name: UpdateRecipeMedia :execrows
 UPDATE recipe_media SET
 	belongs_to_recipe = sqlc.arg(belongs_to_recipe),
 	belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step),

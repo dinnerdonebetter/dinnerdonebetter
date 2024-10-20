@@ -1,8 +1,7 @@
 -- name: ArchiveValidIngredientMeasurementUnit :execrows
-
 UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: CreateValidIngredientMeasurementUnit :exec
 
+-- name: CreateValidIngredientMeasurementUnit :exec
 INSERT INTO valid_ingredient_measurement_units (
 	id,
 	notes,
@@ -18,16 +17,16 @@ INSERT INTO valid_ingredient_measurement_units (
 	sqlc.arg(minimum_allowable_quantity),
 	sqlc.arg(maximum_allowable_quantity)
 );
--- name: CheckValidIngredientMeasurementUnitExistence :one
 
+-- name: CheckValidIngredientMeasurementUnitExistence :one
 SELECT EXISTS (
 	SELECT valid_ingredient_measurement_units.id
 	FROM valid_ingredient_measurement_units
 	WHERE valid_ingredient_measurement_units.archived_at IS NULL
 		AND valid_ingredient_measurement_units.id = sqlc.arg(id)
 );
--- name: GetValidIngredientMeasurementUnitsForIngredient :many
 
+-- name: GetValidIngredientMeasurementUnitsForIngredient :many
 SELECT
 	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
 	valid_ingredient_measurement_units.notes as valid_ingredient_measurement_unit_notes,
@@ -128,8 +127,8 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidIngredientMeasurementUnitsForMeasurementUnit :many
 
+-- name: GetValidIngredientMeasurementUnitsForMeasurementUnit :many
 SELECT
 	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
 	valid_ingredient_measurement_units.notes as valid_ingredient_measurement_unit_notes,
@@ -230,8 +229,8 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidIngredientMeasurementUnits :many
 
+-- name: GetValidIngredientMeasurementUnits :many
 SELECT
 	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
 	valid_ingredient_measurement_units.notes as valid_ingredient_measurement_unit_notes,
@@ -331,8 +330,8 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidIngredientMeasurementUnit :one
 
+-- name: GetValidIngredientMeasurementUnit :one
 SELECT
 	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
 	valid_ingredient_measurement_units.notes as valid_ingredient_measurement_unit_notes,
@@ -401,8 +400,8 @@ WHERE
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
 	AND valid_ingredient_measurement_units.id = sqlc.arg(id);
--- name: ValidIngredientMeasurementUnitPairIsValid :one
 
+-- name: ValidIngredientMeasurementUnitPairIsValid :one
 SELECT EXISTS(
 	SELECT id
 	FROM valid_ingredient_measurement_units
@@ -410,8 +409,8 @@ SELECT EXISTS(
 	AND valid_ingredient_id = sqlc.arg(valid_ingredient_id)
 	AND archived_at IS NULL
 );
--- name: UpdateValidIngredientMeasurementUnit :execrows
 
+-- name: UpdateValidIngredientMeasurementUnit :execrows
 UPDATE valid_ingredient_measurement_units SET
 	notes = sqlc.arg(notes),
 	valid_measurement_unit_id = sqlc.arg(valid_measurement_unit_id),

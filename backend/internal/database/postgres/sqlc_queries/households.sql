@@ -1,5 +1,4 @@
 -- name: AddToHouseholdDuringCreation :exec
-
 INSERT INTO household_user_memberships (
 	id,
 	belongs_to_household,
@@ -11,16 +10,16 @@ INSERT INTO household_user_memberships (
 	sqlc.arg(belongs_to_user),
 	sqlc.arg(household_role)
 );
--- name: ArchiveHousehold :execrows
 
+-- name: ArchiveHousehold :execrows
 UPDATE households SET
 	last_updated_at = NOW(),
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(belongs_to_user)
 	AND id = sqlc.arg(id);
--- name: CreateHousehold :exec
 
+-- name: CreateHousehold :exec
 INSERT INTO households (
 	id,
 	name,
@@ -52,8 +51,8 @@ INSERT INTO households (
 	sqlc.arg(longitude),
 	sqlc.arg(webhook_hmac_secret)
 );
--- name: GetHouseholdByIDWithMemberships :many
 
+-- name: GetHouseholdByIDWithMemberships :many
 SELECT
 	households.id,
 	households.name,
@@ -113,8 +112,8 @@ FROM households
 WHERE households.archived_at IS NULL
 	AND household_user_memberships.archived_at IS NULL
 	AND households.id = sqlc.arg(id);
--- name: GetHouseholdsForUser :many
 
+-- name: GetHouseholdsForUser :many
 SELECT
 	households.id,
 	households.name,
@@ -177,8 +176,8 @@ WHERE households.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: UpdateHousehold :execrows
 
+-- name: UpdateHousehold :execrows
 UPDATE households SET
 	name = sqlc.arg(name),
 	contact_phone = sqlc.arg(contact_phone),
@@ -194,8 +193,8 @@ UPDATE households SET
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(belongs_to_user)
 	AND id = sqlc.arg(id);
--- name: UpdateHouseholdWebhookEncryptionKey :execrows
 
+-- name: UpdateHouseholdWebhookEncryptionKey :execrows
 UPDATE households SET
 	webhook_hmac_secret = sqlc.arg(webhook_hmac_secret),
 	last_updated_at = NOW()

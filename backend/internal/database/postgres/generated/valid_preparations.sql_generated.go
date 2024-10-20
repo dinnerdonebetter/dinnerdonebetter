@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidPreparation = `-- name: ArchiveValidPreparation :execrows
-
 UPDATE valid_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidPreparation(ctx context.Context, db DBTX, id strin
 }
 
 const checkValidPreparationExistence = `-- name: CheckValidPreparationExistence :one
-
 SELECT EXISTS (
 	SELECT valid_preparations.id
 	FROM valid_preparations
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidPreparationExistence(ctx context.Context, db DBTX, i
 }
 
 const createValidPreparation = `-- name: CreateValidPreparation :exec
-
 INSERT INTO valid_preparations (
 	id,
 	name,
@@ -89,25 +86,25 @@ INSERT INTO valid_preparations (
 `
 
 type CreateValidPreparationParams struct {
+	ID                          string
 	Name                        string
 	Description                 string
 	IconPath                    string
-	ID                          string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
 	PastTense                   string
 	Slug                        string
-	MaximumVesselCount          sql.NullInt32
-	MaximumIngredientCount      sql.NullInt32
-	MaximumInstrumentCount      sql.NullInt32
-	MinimumVesselCount          int32
 	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
 	MinimumInstrumentCount      int32
-	YieldsNothing               bool
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
 	TimeEstimateRequired        bool
 	ConditionExpressionRequired bool
 	ConsumesVessel              bool
 	OnlyForVessels              bool
-	TemperatureRequired         bool
-	RestrictToIngredients       bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
 }
 
 func (q *Queries) CreateValidPreparation(ctx context.Context, db DBTX, arg *CreateValidPreparationParams) error {
@@ -136,7 +133,6 @@ func (q *Queries) CreateValidPreparation(ctx context.Context, db DBTX, arg *Crea
 }
 
 const getRandomValidPreparation = `-- name: GetRandomValidPreparation :one
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -167,29 +163,29 @@ ORDER BY RANDOM() LIMIT 1
 `
 
 type GetRandomValidPreparationRow struct {
+	ID                          string
+	Name                        string
+	Description                 string
+	IconPath                    string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
+	PastTense                   string
+	Slug                        string
+	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
+	MinimumInstrumentCount      int32
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
+	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
+	LastIndexedAt               sql.NullTime
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
-	LastIndexedAt               sql.NullTime
-	Name                        string
-	IconPath                    string
-	ID                          string
-	PastTense                   string
-	Description                 string
-	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumVesselCount          int32
-	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
-	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
-	TimeEstimateRequired        bool
-	TemperatureRequired         bool
-	YieldsNothing               bool
 }
 
 func (q *Queries) GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetRandomValidPreparationRow, error) {
@@ -224,7 +220,6 @@ func (q *Queries) GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetR
 }
 
 const getValidPreparation = `-- name: GetValidPreparation :one
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -255,29 +250,29 @@ WHERE valid_preparations.archived_at IS NULL
 `
 
 type GetValidPreparationRow struct {
+	ID                          string
+	Name                        string
+	Description                 string
+	IconPath                    string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
+	PastTense                   string
+	Slug                        string
+	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
+	MinimumInstrumentCount      int32
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
+	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
+	LastIndexedAt               sql.NullTime
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
-	LastIndexedAt               sql.NullTime
-	Name                        string
-	IconPath                    string
-	ID                          string
-	PastTense                   string
-	Description                 string
-	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumVesselCount          int32
-	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
-	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
-	TimeEstimateRequired        bool
-	TemperatureRequired         bool
-	YieldsNothing               bool
 }
 
 func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) (*GetValidPreparationRow, error) {
@@ -312,7 +307,6 @@ func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) (
 }
 
 const getValidPreparations = `-- name: GetValidPreparations :many
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -386,31 +380,31 @@ type GetValidPreparationsParams struct {
 }
 
 type GetValidPreparationsRow struct {
-	CreatedAt                   time.Time
-	ArchivedAt                  sql.NullTime
-	LastUpdatedAt               sql.NullTime
-	LastIndexedAt               sql.NullTime
 	ID                          string
 	Name                        string
 	Description                 string
 	IconPath                    string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
 	PastTense                   string
 	Slug                        string
-	TotalCount                  int64
-	FilteredCount               int64
-	MaximumVesselCount          sql.NullInt32
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumIngredientCount      sql.NullInt32
-	MinimumVesselCount          int32
-	MinimumInstrumentCount      int32
 	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
+	MinimumInstrumentCount      int32
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
 	TimeEstimateRequired        bool
 	ConditionExpressionRequired bool
 	ConsumesVessel              bool
 	OnlyForVessels              bool
-	TemperatureRequired         bool
-	RestrictToIngredients       bool
-	YieldsNothing               bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
+	LastIndexedAt               sql.NullTime
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
+	FilteredCount               int64
+	TotalCount                  int64
 }
 
 func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetValidPreparationsParams) ([]*GetValidPreparationsRow, error) {
@@ -470,7 +464,6 @@ func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetVal
 }
 
 const getValidPreparationsNeedingIndexing = `-- name: GetValidPreparationsNeedingIndexing :many
-
 SELECT valid_preparations.id
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
@@ -504,7 +497,6 @@ func (q *Queries) GetValidPreparationsNeedingIndexing(ctx context.Context, db DB
 }
 
 const getValidPreparationsWithIDs = `-- name: GetValidPreparationsWithIDs :many
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -535,29 +527,29 @@ WHERE valid_preparations.archived_at IS NULL
 `
 
 type GetValidPreparationsWithIDsRow struct {
+	ID                          string
+	Name                        string
+	Description                 string
+	IconPath                    string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
+	PastTense                   string
+	Slug                        string
+	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
+	MinimumInstrumentCount      int32
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
+	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
+	LastIndexedAt               sql.NullTime
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
-	LastIndexedAt               sql.NullTime
-	Name                        string
-	IconPath                    string
-	ID                          string
-	PastTense                   string
-	Description                 string
-	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumVesselCount          int32
-	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
-	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
-	TimeEstimateRequired        bool
-	TemperatureRequired         bool
-	YieldsNothing               bool
 }
 
 func (q *Queries) GetValidPreparationsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidPreparationsWithIDsRow, error) {
@@ -608,7 +600,6 @@ func (q *Queries) GetValidPreparationsWithIDs(ctx context.Context, db DBTX, ids 
 }
 
 const searchForValidPreparations = `-- name: SearchForValidPreparations :many
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -640,29 +631,29 @@ LIMIT 50
 `
 
 type SearchForValidPreparationsRow struct {
+	ID                          string
+	Name                        string
+	Description                 string
+	IconPath                    string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
+	PastTense                   string
+	Slug                        string
+	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
+	MinimumInstrumentCount      int32
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
+	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
+	LastIndexedAt               sql.NullTime
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
-	LastIndexedAt               sql.NullTime
-	Name                        string
-	IconPath                    string
-	ID                          string
-	PastTense                   string
-	Description                 string
-	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumVesselCount          int32
-	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
-	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
-	TimeEstimateRequired        bool
-	TemperatureRequired         bool
-	YieldsNothing               bool
 }
 
 func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidPreparationsRow, error) {
@@ -713,7 +704,6 @@ func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, nameQ
 }
 
 const updateValidPreparation = `-- name: UpdateValidPreparation :execrows
-
 UPDATE valid_preparations SET
 	name = $1,
 	description = $2,
@@ -739,25 +729,25 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidPreparationParams struct {
+	Name                        string
 	Description                 string
 	IconPath                    string
-	ID                          string
-	Name                        string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
 	PastTense                   string
 	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumVesselCount          int32
 	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
 	MinimumInstrumentCount      int32
-	RestrictToIngredients       bool
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
+	TimeEstimateRequired        bool
 	ConditionExpressionRequired bool
 	ConsumesVessel              bool
 	OnlyForVessels              bool
-	TimeEstimateRequired        bool
-	TemperatureRequired         bool
-	YieldsNothing               bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
+	ID                          string
 }
 
 func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) (int64, error) {
@@ -789,7 +779,6 @@ func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *Upda
 }
 
 const updateValidPreparationLastIndexedAt = `-- name: UpdateValidPreparationLastIndexedAt :execrows
-
 UPDATE valid_preparations SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

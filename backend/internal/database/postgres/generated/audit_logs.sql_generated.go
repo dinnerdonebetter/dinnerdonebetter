@@ -15,7 +15,6 @@ import (
 )
 
 const createAuditLogEntry = `-- name: CreateAuditLogEntry :exec
-
 INSERT INTO audit_log_entries (
 	id,
 	resource_type,
@@ -59,7 +58,6 @@ func (q *Queries) CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateA
 }
 
 const getAuditLogEntriesForHousehold = `-- name: GetAuditLogEntriesForHousehold :many
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -99,7 +97,6 @@ type GetAuditLogEntriesForHouseholdParams struct {
 }
 
 type GetAuditLogEntriesForHouseholdRow struct {
-	CreatedAt          time.Time
 	ID                 string
 	ResourceType       string
 	RelevantID         string
@@ -107,6 +104,7 @@ type GetAuditLogEntriesForHouseholdRow struct {
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
+	CreatedAt          time.Time
 	FilteredCount      int64
 	TotalCount         int64
 }
@@ -152,7 +150,6 @@ func (q *Queries) GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, a
 }
 
 const getAuditLogEntriesForHouseholdAndResourceType = `-- name: GetAuditLogEntriesForHouseholdAndResourceType :many
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -196,7 +193,6 @@ type GetAuditLogEntriesForHouseholdAndResourceTypeParams struct {
 }
 
 type GetAuditLogEntriesForHouseholdAndResourceTypeRow struct {
-	CreatedAt          time.Time
 	ID                 string
 	ResourceType       string
 	RelevantID         string
@@ -204,6 +200,7 @@ type GetAuditLogEntriesForHouseholdAndResourceTypeRow struct {
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
+	CreatedAt          time.Time
 	FilteredCount      int64
 	TotalCount         int64
 }
@@ -250,7 +247,6 @@ func (q *Queries) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 }
 
 const getAuditLogEntriesForUser = `-- name: GetAuditLogEntriesForUser :many
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -290,7 +286,6 @@ type GetAuditLogEntriesForUserParams struct {
 }
 
 type GetAuditLogEntriesForUserRow struct {
-	CreatedAt          time.Time
 	ID                 string
 	ResourceType       string
 	RelevantID         string
@@ -298,6 +293,7 @@ type GetAuditLogEntriesForUserRow struct {
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
+	CreatedAt          time.Time
 	FilteredCount      int64
 	TotalCount         int64
 }
@@ -343,7 +339,6 @@ func (q *Queries) GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *G
 }
 
 const getAuditLogEntriesForUserAndResourceType = `-- name: GetAuditLogEntriesForUserAndResourceType :many
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -387,7 +382,6 @@ type GetAuditLogEntriesForUserAndResourceTypeParams struct {
 }
 
 type GetAuditLogEntriesForUserAndResourceTypeRow struct {
-	CreatedAt          time.Time
 	ID                 string
 	ResourceType       string
 	RelevantID         string
@@ -395,6 +389,7 @@ type GetAuditLogEntriesForUserAndResourceTypeRow struct {
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
+	CreatedAt          time.Time
 	FilteredCount      int64
 	TotalCount         int64
 }
@@ -441,7 +436,6 @@ func (q *Queries) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 }
 
 const getAuditLogEntry = `-- name: GetAuditLogEntry :one
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -456,7 +450,6 @@ WHERE audit_log_entries.id = $1
 `
 
 type GetAuditLogEntryRow struct {
-	CreatedAt          time.Time
 	ID                 string
 	ResourceType       string
 	RelevantID         string
@@ -464,6 +457,7 @@ type GetAuditLogEntryRow struct {
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
+	CreatedAt          time.Time
 }
 
 func (q *Queries) GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error) {

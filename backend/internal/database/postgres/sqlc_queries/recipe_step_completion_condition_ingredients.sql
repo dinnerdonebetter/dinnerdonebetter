@@ -1,5 +1,4 @@
 -- name: CreateRecipeStepCompletionConditionIngredient :exec
-
 INSERT INTO recipe_step_completion_condition_ingredients (
 	id,
 	belongs_to_recipe_step_completion_condition,
@@ -9,8 +8,8 @@ INSERT INTO recipe_step_completion_condition_ingredients (
 	sqlc.arg(belongs_to_recipe_step_completion_condition),
 	sqlc.arg(recipe_step_ingredient)
 );
--- name: GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs :many
 
+-- name: GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs :many
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,

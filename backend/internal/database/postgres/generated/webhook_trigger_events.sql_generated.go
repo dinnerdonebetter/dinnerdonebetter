@@ -10,7 +10,6 @@ import (
 )
 
 const archiveWebhookTriggerEvent = `-- name: ArchiveWebhookTriggerEvent :execrows
-
 UPDATE webhook_trigger_events SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -32,7 +31,6 @@ func (q *Queries) ArchiveWebhookTriggerEvent(ctx context.Context, db DBTX, arg *
 }
 
 const createWebhookTriggerEvent = `-- name: CreateWebhookTriggerEvent :exec
-
 INSERT INTO webhook_trigger_events (
 	id,
 	trigger_event,

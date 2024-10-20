@@ -12,7 +12,6 @@ import (
 )
 
 const archiveHouseholdInstrumentOwnership = `-- name: ArchiveHouseholdInstrumentOwnership :execrows
-
 UPDATE household_instrument_ownerships SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -34,7 +33,6 @@ func (q *Queries) ArchiveHouseholdInstrumentOwnership(ctx context.Context, db DB
 }
 
 const checkHouseholdInstrumentOwnershipExistence = `-- name: CheckHouseholdInstrumentOwnershipExistence :one
-
 SELECT EXISTS (
 	SELECT household_instrument_ownerships.id
 	FROM household_instrument_ownerships
@@ -57,7 +55,6 @@ func (q *Queries) CheckHouseholdInstrumentOwnershipExistence(ctx context.Context
 }
 
 const createHouseholdInstrumentOwnership = `-- name: CreateHouseholdInstrumentOwnership :exec
-
 INSERT INTO household_instrument_ownerships (
 	id,
 	notes,
@@ -76,9 +73,9 @@ INSERT INTO household_instrument_ownerships (
 type CreateHouseholdInstrumentOwnershipParams struct {
 	ID                 string
 	Notes              string
+	Quantity           int32
 	ValidInstrumentID  string
 	BelongsToHousehold string
-	Quantity           int32
 }
 
 func (q *Queries) CreateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateHouseholdInstrumentOwnershipParams) error {
@@ -93,7 +90,6 @@ func (q *Queries) CreateHouseholdInstrumentOwnership(ctx context.Context, db DBT
 }
 
 const getHouseholdInstrumentOwnership = `-- name: GetHouseholdInstrumentOwnership :one
-
 SELECT
 	household_instrument_ownerships.id,
 	household_instrument_ownerships.notes,
@@ -128,26 +124,26 @@ type GetHouseholdInstrumentOwnershipParams struct {
 }
 
 type GetHouseholdInstrumentOwnershipRow struct {
-	CreatedAt                                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ArchivedAt                                    sql.NullTime
-	LastUpdatedAt                                 sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentDescription                    string
-	ValidInstrumentSlug                           string
-	ValidInstrumentPluralName                     string
-	ValidInstrumentIconPath                       string
 	ID                                            string
-	ValidInstrumentName                           string
-	BelongsToHousehold                            string
-	ValidInstrumentID                             string
 	Notes                                         string
 	Quantity                                      int32
+	ValidInstrumentID                             string
+	ValidInstrumentName                           string
+	ValidInstrumentDescription                    string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentPluralName                     string
 	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentSlug                           string
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	BelongsToHousehold                            string
+	CreatedAt                                     time.Time
+	LastUpdatedAt                                 sql.NullTime
+	ArchivedAt                                    sql.NullTime
 }
 
 func (q *Queries) GetHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipParams) (*GetHouseholdInstrumentOwnershipRow, error) {
@@ -179,7 +175,6 @@ func (q *Queries) GetHouseholdInstrumentOwnership(ctx context.Context, db DBTX, 
 }
 
 const getHouseholdInstrumentOwnerships = `-- name: GetHouseholdInstrumentOwnerships :many
-
 SELECT
 	household_instrument_ownerships.id,
 	household_instrument_ownerships.notes,
@@ -258,28 +253,28 @@ type GetHouseholdInstrumentOwnershipsParams struct {
 }
 
 type GetHouseholdInstrumentOwnershipsRow struct {
-	CreatedAt                                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ArchivedAt                                    sql.NullTime
-	LastUpdatedAt                                 sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentDescription                    string
-	ValidInstrumentID                             string
-	ValidInstrumentSlug                           string
-	Notes                                         string
-	BelongsToHousehold                            string
-	ValidInstrumentPluralName                     string
-	ValidInstrumentIconPath                       string
 	ID                                            string
+	Notes                                         string
+	Quantity                                      int32
+	ValidInstrumentID                             string
 	ValidInstrumentName                           string
+	ValidInstrumentDescription                    string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentPluralName                     string
+	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentSlug                           string
+	ValidInstrumentDisplayInSummaryLists          bool
+	ValidInstrumentIncludeInGeneratedInstructions bool
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	BelongsToHousehold                            string
+	CreatedAt                                     time.Time
+	LastUpdatedAt                                 sql.NullTime
+	ArchivedAt                                    sql.NullTime
 	FilteredCount                                 int64
 	TotalCount                                    int64
-	Quantity                                      int32
-	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidInstrumentUsableForStorage               bool
-	ValidInstrumentDisplayInSummaryLists          bool
 }
 
 func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipsParams) ([]*GetHouseholdInstrumentOwnershipsRow, error) {
@@ -337,7 +332,6 @@ func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX,
 }
 
 const updateHouseholdInstrumentOwnership = `-- name: UpdateHouseholdInstrumentOwnership :execrows
-
 UPDATE household_instrument_ownerships SET
 	notes = $1,
 	quantity = $2,
@@ -350,10 +344,10 @@ WHERE archived_at IS NULL
 
 type UpdateHouseholdInstrumentOwnershipParams struct {
 	Notes              string
+	Quantity           int32
 	ValidInstrumentID  string
 	ID                 string
 	BelongsToHousehold string
-	Quantity           int32
 }
 
 func (q *Queries) UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateHouseholdInstrumentOwnershipParams) (int64, error) {

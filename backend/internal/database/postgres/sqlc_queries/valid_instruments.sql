@@ -1,8 +1,7 @@
 -- name: ArchiveValidInstrument :execrows
-
 UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: CreateValidInstrument :exec
 
+-- name: CreateValidInstrument :exec
 INSERT INTO valid_instruments (
 	id,
 	name,
@@ -24,16 +23,16 @@ INSERT INTO valid_instruments (
 	sqlc.arg(display_in_summary_lists),
 	sqlc.arg(include_in_generated_instructions)
 );
--- name: CheckValidInstrumentExistence :one
 
+-- name: CheckValidInstrumentExistence :one
 SELECT EXISTS (
 	SELECT valid_instruments.id
 	FROM valid_instruments
 	WHERE valid_instruments.archived_at IS NULL
 		AND valid_instruments.id = sqlc.arg(id)
 );
--- name: GetValidInstruments :many
 
+-- name: GetValidInstruments :many
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -85,8 +84,8 @@ GROUP BY valid_instruments.id
 ORDER BY valid_instruments.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidInstrumentsNeedingIndexing :many
 
+-- name: GetValidInstrumentsNeedingIndexing :many
 SELECT valid_instruments.id
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
@@ -94,8 +93,8 @@ WHERE valid_instruments.archived_at IS NULL
 	valid_instruments.last_indexed_at IS NULL
 	OR valid_instruments.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
--- name: GetValidInstrument :one
 
+-- name: GetValidInstrument :one
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -113,8 +112,8 @@ SELECT
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
 AND valid_instruments.id = sqlc.arg(id);
--- name: GetRandomValidInstrument :one
 
+-- name: GetRandomValidInstrument :one
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -132,8 +131,8 @@ SELECT
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
 ORDER BY RANDOM() LIMIT 1;
--- name: GetValidInstrumentsWithIDs :many
 
+-- name: GetValidInstrumentsWithIDs :many
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -151,8 +150,8 @@ SELECT
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
 	AND valid_instruments.id = ANY(sqlc.arg(ids)::text[]);
--- name: SearchForValidInstruments :many
 
+-- name: SearchForValidInstruments :many
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -171,8 +170,8 @@ FROM valid_instruments
 WHERE valid_instruments.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
 	AND valid_instruments.archived_at IS NULL
 LIMIT 50;
--- name: UpdateValidInstrument :execrows
 
+-- name: UpdateValidInstrument :execrows
 UPDATE valid_instruments SET
 	name = sqlc.arg(name),
 	description = sqlc.arg(description),
@@ -185,6 +184,6 @@ UPDATE valid_instruments SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: UpdateValidInstrumentLastIndexedAt :execrows
 
+-- name: UpdateValidInstrumentLastIndexedAt :execrows
 UPDATE valid_instruments SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

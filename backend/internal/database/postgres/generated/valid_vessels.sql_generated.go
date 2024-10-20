@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidVessel = `-- name: ArchiveValidVessel :execrows
-
 UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidVessel(ctx context.Context, db DBTX, id string) (i
 }
 
 const checkValidVesselExistence = `-- name: CheckValidVesselExistence :one
-
 SELECT EXISTS (
 	SELECT valid_vessels.id
 	FROM valid_vessels
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidVesselExistence(ctx context.Context, db DBTX, id str
 }
 
 const createValidVessel = `-- name: CreateValidVessel :exec
-
 INSERT INTO valid_vessels (
 	id,
 	name,
@@ -81,21 +78,21 @@ INSERT INTO valid_vessels (
 `
 
 type CreateValidVesselParams struct {
-	Slug                           string
 	ID                             string
+	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
-	Shape                          VesselShape
-	Name                           string
+	UsableForStorage               bool
+	Slug                           string
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
 	Capacity                       string
 	CapacityUnit                   sql.NullString
 	WidthInMillimeters             sql.NullString
 	LengthInMillimeters            sql.NullString
 	HeightInMillimeters            sql.NullString
-	IncludeInGeneratedInstructions bool
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
+	Shape                          VesselShape
 }
 
 func (q *Queries) CreateValidVessel(ctx context.Context, db DBTX, arg *CreateValidVesselParams) error {
@@ -120,7 +117,6 @@ func (q *Queries) CreateValidVessel(ctx context.Context, db DBTX, arg *CreateVal
 }
 
 const getRandomValidVessel = `-- name: GetRandomValidVessel :one
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -162,38 +158,38 @@ ORDER BY RANDOM() LIMIT 1
 `
 
 type GetRandomValidVesselRow struct {
-	CreatedAt                         time.Time
-	ValidMeasurementUnitCreatedAt     time.Time
-	ValidMeasurementUnitArchivedAt    sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt sql.NullTime
-	ValidMeasurementUnitLastIndexedAt sql.NullTime
-	ArchivedAt                        sql.NullTime
-	LastIndexedAt                     sql.NullTime
-	LastUpdatedAt                     sql.NullTime
-	ValidMeasurementUnitDescription   string
-	Description                       string
-	ValidMeasurementUnitID            string
-	ValidMeasurementUnitName          string
+	ID                                string
 	Name                              string
 	PluralName                        string
-	ValidMeasurementUnitIconPath      string
-	ID                                string
+	Description                       string
+	IconPath                          string
+	UsableForStorage                  bool
 	Slug                              string
-	Shape                             VesselShape
+	DisplayInSummaryLists             bool
+	IncludeInGeneratedInstructions    bool
+	Capacity                          string
+	ValidMeasurementUnitID            string
+	ValidMeasurementUnitName          string
+	ValidMeasurementUnitDescription   string
+	ValidMeasurementUnitVolumetric    sql.NullBool
+	ValidMeasurementUnitIconPath      string
+	ValidMeasurementUnitUniversal     bool
+	ValidMeasurementUnitMetric        bool
+	ValidMeasurementUnitImperial      bool
 	ValidMeasurementUnitSlug          string
 	ValidMeasurementUnitPluralName    string
-	IconPath                          string
-	Capacity                          string
-	HeightInMillimeters               sql.NullString
+	ValidMeasurementUnitLastIndexedAt sql.NullTime
+	ValidMeasurementUnitCreatedAt     time.Time
+	ValidMeasurementUnitLastUpdatedAt sql.NullTime
+	ValidMeasurementUnitArchivedAt    sql.NullTime
 	WidthInMillimeters                sql.NullString
 	LengthInMillimeters               sql.NullString
-	ValidMeasurementUnitVolumetric    sql.NullBool
-	IncludeInGeneratedInstructions    bool
-	ValidMeasurementUnitImperial      bool
-	ValidMeasurementUnitMetric        bool
-	ValidMeasurementUnitUniversal     bool
-	DisplayInSummaryLists             bool
-	UsableForStorage                  bool
+	HeightInMillimeters               sql.NullString
+	Shape                             VesselShape
+	LastIndexedAt                     sql.NullTime
+	CreatedAt                         time.Time
+	LastUpdatedAt                     sql.NullTime
+	ArchivedAt                        sql.NullTime
 }
 
 func (q *Queries) GetRandomValidVessel(ctx context.Context, db DBTX) (*GetRandomValidVesselRow, error) {
@@ -237,7 +233,6 @@ func (q *Queries) GetRandomValidVessel(ctx context.Context, db DBTX) (*GetRandom
 }
 
 const getValidVessel = `-- name: GetValidVessel :one
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -279,38 +274,38 @@ WHERE valid_vessels.archived_at IS NULL
 `
 
 type GetValidVesselRow struct {
-	CreatedAt                         time.Time
-	ValidMeasurementUnitCreatedAt     sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt sql.NullTime
-	ValidMeasurementUnitLastIndexedAt sql.NullTime
-	LastIndexedAt                     sql.NullTime
-	ArchivedAt                        sql.NullTime
-	ValidMeasurementUnitArchivedAt    sql.NullTime
-	LastUpdatedAt                     sql.NullTime
-	Capacity                          string
-	PluralName                        string
-	Slug                              string
-	Name                              string
 	ID                                string
-	IconPath                          string
+	Name                              string
+	PluralName                        string
 	Description                       string
-	Shape                             VesselShape
-	ValidMeasurementUnitDescription   sql.NullString
-	HeightInMillimeters               sql.NullString
-	ValidMeasurementUnitSlug          sql.NullString
-	ValidMeasurementUnitPluralName    sql.NullString
-	ValidMeasurementUnitIconPath      sql.NullString
-	LengthInMillimeters               sql.NullString
-	ValidMeasurementUnitName          sql.NullString
+	IconPath                          string
+	UsableForStorage                  bool
+	Slug                              string
+	DisplayInSummaryLists             bool
+	IncludeInGeneratedInstructions    bool
+	Capacity                          string
 	ValidMeasurementUnitID            sql.NullString
-	WidthInMillimeters                sql.NullString
+	ValidMeasurementUnitName          sql.NullString
+	ValidMeasurementUnitDescription   sql.NullString
+	ValidMeasurementUnitVolumetric    sql.NullBool
+	ValidMeasurementUnitIconPath      sql.NullString
+	ValidMeasurementUnitUniversal     sql.NullBool
 	ValidMeasurementUnitMetric        sql.NullBool
 	ValidMeasurementUnitImperial      sql.NullBool
-	ValidMeasurementUnitUniversal     sql.NullBool
-	ValidMeasurementUnitVolumetric    sql.NullBool
-	IncludeInGeneratedInstructions    bool
-	DisplayInSummaryLists             bool
-	UsableForStorage                  bool
+	ValidMeasurementUnitSlug          sql.NullString
+	ValidMeasurementUnitPluralName    sql.NullString
+	ValidMeasurementUnitLastIndexedAt sql.NullTime
+	ValidMeasurementUnitCreatedAt     sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt sql.NullTime
+	ValidMeasurementUnitArchivedAt    sql.NullTime
+	WidthInMillimeters                sql.NullString
+	LengthInMillimeters               sql.NullString
+	HeightInMillimeters               sql.NullString
+	Shape                             VesselShape
+	LastIndexedAt                     sql.NullTime
+	CreatedAt                         time.Time
+	LastUpdatedAt                     sql.NullTime
+	ArchivedAt                        sql.NullTime
 }
 
 func (q *Queries) GetValidVessel(ctx context.Context, db DBTX, id string) (*GetValidVesselRow, error) {
@@ -354,7 +349,6 @@ func (q *Queries) GetValidVessel(ctx context.Context, db DBTX, id string) (*GetV
 }
 
 const getValidVesselIDsNeedingIndexing = `-- name: GetValidVesselIDsNeedingIndexing :many
-
 SELECT valid_vessels.id
 FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
@@ -388,7 +382,6 @@ func (q *Queries) GetValidVesselIDsNeedingIndexing(ctx context.Context, db DBTX)
 }
 
 const getValidVessels = `-- name: GetValidVessels :many
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -458,27 +451,27 @@ type GetValidVesselsParams struct {
 }
 
 type GetValidVesselsRow struct {
-	CreatedAt                      time.Time
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	LastIndexedAt                  sql.NullTime
-	Shape                          VesselShape
+	ID                             string
 	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
+	UsableForStorage               bool
 	Slug                           string
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
 	Capacity                       string
-	ID                             string
 	CapacityUnit                   sql.NullString
-	HeightInMillimeters            sql.NullString
-	LengthInMillimeters            sql.NullString
 	WidthInMillimeters             sql.NullString
+	LengthInMillimeters            sql.NullString
+	HeightInMillimeters            sql.NullString
+	Shape                          VesselShape
+	LastIndexedAt                  sql.NullTime
+	CreatedAt                      time.Time
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
 	FilteredCount                  int64
 	TotalCount                     int64
-	IncludeInGeneratedInstructions bool
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
 }
 
 func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVesselsParams) ([]*GetValidVesselsRow, error) {
@@ -534,7 +527,6 @@ func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVes
 }
 
 const getValidVesselsWithIDs = `-- name: GetValidVesselsWithIDs :many
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -576,38 +568,38 @@ WHERE valid_vessels.archived_at IS NULL
 `
 
 type GetValidVesselsWithIDsRow struct {
-	CreatedAt                         time.Time
-	ValidMeasurementUnitCreatedAt     time.Time
-	ValidMeasurementUnitArchivedAt    sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt sql.NullTime
-	ValidMeasurementUnitLastIndexedAt sql.NullTime
-	ArchivedAt                        sql.NullTime
-	LastIndexedAt                     sql.NullTime
-	LastUpdatedAt                     sql.NullTime
-	ValidMeasurementUnitDescription   string
-	Description                       string
-	ValidMeasurementUnitID            string
-	ValidMeasurementUnitName          string
+	ID                                string
 	Name                              string
 	PluralName                        string
-	ValidMeasurementUnitIconPath      string
-	ID                                string
+	Description                       string
+	IconPath                          string
+	UsableForStorage                  bool
 	Slug                              string
-	Shape                             VesselShape
+	DisplayInSummaryLists             bool
+	IncludeInGeneratedInstructions    bool
+	Capacity                          string
+	ValidMeasurementUnitID            string
+	ValidMeasurementUnitName          string
+	ValidMeasurementUnitDescription   string
+	ValidMeasurementUnitVolumetric    sql.NullBool
+	ValidMeasurementUnitIconPath      string
+	ValidMeasurementUnitUniversal     bool
+	ValidMeasurementUnitMetric        bool
+	ValidMeasurementUnitImperial      bool
 	ValidMeasurementUnitSlug          string
 	ValidMeasurementUnitPluralName    string
-	IconPath                          string
-	Capacity                          string
-	HeightInMillimeters               sql.NullString
+	ValidMeasurementUnitLastIndexedAt sql.NullTime
+	ValidMeasurementUnitCreatedAt     time.Time
+	ValidMeasurementUnitLastUpdatedAt sql.NullTime
+	ValidMeasurementUnitArchivedAt    sql.NullTime
 	WidthInMillimeters                sql.NullString
 	LengthInMillimeters               sql.NullString
-	ValidMeasurementUnitVolumetric    sql.NullBool
-	IncludeInGeneratedInstructions    bool
-	ValidMeasurementUnitImperial      bool
-	ValidMeasurementUnitMetric        bool
-	ValidMeasurementUnitUniversal     bool
-	DisplayInSummaryLists             bool
-	UsableForStorage                  bool
+	HeightInMillimeters               sql.NullString
+	Shape                             VesselShape
+	LastIndexedAt                     sql.NullTime
+	CreatedAt                         time.Time
+	LastUpdatedAt                     sql.NullTime
+	ArchivedAt                        sql.NullTime
 }
 
 func (q *Queries) GetValidVesselsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidVesselsWithIDsRow, error) {
@@ -667,7 +659,6 @@ func (q *Queries) GetValidVesselsWithIDs(ctx context.Context, db DBTX, ids []str
 }
 
 const searchForValidVessels = `-- name: SearchForValidVessels :many
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -738,7 +729,6 @@ func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, nameQuery 
 }
 
 const updateValidVessel = `-- name: UpdateValidVessel :execrows
-
 UPDATE valid_vessels SET
 	name = $1,
 	plural_name = $2,
@@ -760,21 +750,21 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidVesselParams struct {
-	Capacity                       string
+	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
-	ID                             string
+	UsableForStorage               bool
 	Slug                           string
-	Shape                          VesselShape
-	Name                           string
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
+	Capacity                       string
 	CapacityUnit                   sql.NullString
 	WidthInMillimeters             sql.NullString
 	LengthInMillimeters            sql.NullString
 	HeightInMillimeters            sql.NullString
-	IncludeInGeneratedInstructions bool
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
+	Shape                          VesselShape
+	ID                             string
 }
 
 func (q *Queries) UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateValidVesselParams) (int64, error) {
@@ -802,7 +792,6 @@ func (q *Queries) UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateVal
 }
 
 const updateValidVesselLastIndexedAt = `-- name: UpdateValidVesselLastIndexedAt :execrows
-
 UPDATE valid_vessels SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

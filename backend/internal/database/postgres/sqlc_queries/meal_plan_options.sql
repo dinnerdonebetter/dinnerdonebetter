@@ -1,12 +1,11 @@
 -- name: ArchiveMealPlanOption :execrows
-
 UPDATE meal_plan_options SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_meal_plan_event = sqlc.arg(belongs_to_meal_plan_event)
 	AND id = sqlc.arg(id);
--- name: CreateMealPlanOption :exec
 
+-- name: CreateMealPlanOption :exec
 INSERT INTO meal_plan_options (
 	id,
 	assigned_cook,
@@ -26,8 +25,8 @@ INSERT INTO meal_plan_options (
 	sqlc.arg(notes),
 	sqlc.arg(belongs_to_meal_plan_event)
 );
--- name: CheckMealPlanOptionExistence :one
 
+-- name: CheckMealPlanOptionExistence :one
 SELECT EXISTS (
 	SELECT meal_plan_options.id
 	FROM meal_plan_options
@@ -42,16 +41,16 @@ SELECT EXISTS (
 		AND meal_plans.archived_at IS NULL
 		AND meal_plans.id = sqlc.arg(meal_plan_id)
 );
--- name: FinalizeMealPlanOption :exec
 
+-- name: FinalizeMealPlanOption :exec
 UPDATE meal_plan_options SET
 	chosen = (belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id) AND id = sqlc.arg(id)),
 	tiebroken = sqlc.arg(tiebroken)
 WHERE archived_at IS NULL
 	AND belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)
 	AND id = sqlc.arg(id);
--- name: GetAllMealPlanOptionsForMealPlanEvent :many
 
+-- name: GetAllMealPlanOptionsForMealPlanEvent :many
 SELECT
 	meal_plan_options.id,
 	meal_plan_options.assigned_cook,
@@ -87,8 +86,8 @@ WHERE
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id);
--- name: GetMealPlanOptions :many
 
+-- name: GetMealPlanOptions :many
 SELECT
 	meal_plan_options.id,
 	meal_plan_options.assigned_cook,
@@ -158,8 +157,8 @@ WHERE
 	AND meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetMealPlanOption :one
 
+-- name: GetMealPlanOption :one
 SELECT
 	meal_plan_options.id,
 	meal_plan_options.assigned_cook,
@@ -195,8 +194,8 @@ WHERE meal_plan_options.archived_at IS NULL
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id);
--- name: GetMealPlanOptionByID :one
 
+-- name: GetMealPlanOptionByID :one
 SELECT
 	meal_plan_options.id,
 	meal_plan_options.assigned_cook,
@@ -227,8 +226,8 @@ FROM meal_plan_options
 	JOIN meals ON meal_plan_options.meal_id = meals.id
 WHERE meal_plan_options.archived_at IS NULL
 	AND meal_plan_options.id = sqlc.arg(meal_plan_option_id);
--- name: UpdateMealPlanOption :execrows
 
+-- name: UpdateMealPlanOption :execrows
 UPDATE meal_plan_options SET
 	assigned_cook = sqlc.arg(assigned_cook),
 	assigned_dishwasher = sqlc.arg(assigned_dishwasher),

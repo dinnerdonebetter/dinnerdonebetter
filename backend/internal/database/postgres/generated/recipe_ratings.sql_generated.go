@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeRating = `-- name: ArchiveRecipeRating :execrows
-
 UPDATE recipe_ratings SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveRecipeRating(ctx context.Context, db DBTX, id string) (
 }
 
 const checkRecipeRatingExistence = `-- name: CheckRecipeRatingExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_ratings.id
 	FROM recipe_ratings
@@ -42,7 +40,6 @@ func (q *Queries) CheckRecipeRatingExistence(ctx context.Context, db DBTX, id st
 }
 
 const createRecipeRating = `-- name: CreateRecipeRating :exec
-
 INSERT INTO recipe_ratings (
 	id,
 	recipe_id,
@@ -69,13 +66,13 @@ INSERT INTO recipe_ratings (
 type CreateRecipeRatingParams struct {
 	ID           string
 	RecipeID     string
-	Notes        string
-	ByUser       string
 	Taste        sql.NullString
 	Difficulty   sql.NullString
 	Cleanup      sql.NullString
 	Instructions sql.NullString
 	Overall      sql.NullString
+	Notes        string
+	ByUser       string
 }
 
 func (q *Queries) CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRecipeRatingParams) error {
@@ -94,7 +91,6 @@ func (q *Queries) CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRe
 }
 
 const getRecipeRating = `-- name: GetRecipeRating :one
-
 SELECT
 	recipe_ratings.id,
 	recipe_ratings.recipe_id,
@@ -134,7 +130,6 @@ func (q *Queries) GetRecipeRating(ctx context.Context, db DBTX, id string) (*Rec
 }
 
 const getRecipeRatings = `-- name: GetRecipeRatings :many
-
 SELECT
 	recipe_ratings.id,
 	recipe_ratings.recipe_id,
@@ -197,18 +192,18 @@ type GetRecipeRatingsParams struct {
 }
 
 type GetRecipeRatingsRow struct {
-	CreatedAt     time.Time
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
-	Notes         string
-	RecipeID      string
 	ID            string
-	ByUser        string
-	Difficulty    sql.NullString
-	Overall       sql.NullString
-	Instructions  sql.NullString
-	Cleanup       sql.NullString
+	RecipeID      string
 	Taste         sql.NullString
+	Difficulty    sql.NullString
+	Cleanup       sql.NullString
+	Instructions  sql.NullString
+	Overall       sql.NullString
+	Notes         string
+	ByUser        string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 	FilteredCount int64
 	TotalCount    int64
 }
@@ -259,7 +254,6 @@ func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeR
 }
 
 const updateRecipeRating = `-- name: UpdateRecipeRating :execrows
-
 UPDATE recipe_ratings SET
 	recipe_id = $1,
 	taste = $2,
@@ -275,13 +269,13 @@ WHERE archived_at IS NULL
 
 type UpdateRecipeRatingParams struct {
 	RecipeID     string
-	Notes        string
-	ID           string
 	Taste        sql.NullString
 	Difficulty   sql.NullString
 	Cleanup      sql.NullString
 	Instructions sql.NullString
 	Overall      sql.NullString
+	Notes        string
+	ID           string
 }
 
 func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) (int64, error) {

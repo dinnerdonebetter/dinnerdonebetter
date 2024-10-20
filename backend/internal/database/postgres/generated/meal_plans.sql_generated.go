@@ -12,7 +12,6 @@ import (
 )
 
 const archiveMealPlan = `-- name: ArchiveMealPlan :execrows
-
 UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMeal
 }
 
 const checkMealPlanExistence = `-- name: CheckMealPlanExistence :one
-
 SELECT EXISTS (
 	SELECT meal_plans.id
 	FROM meal_plans
@@ -53,7 +51,6 @@ func (q *Queries) CheckMealPlanExistence(ctx context.Context, db DBTX, arg *Chec
 }
 
 const createMealPlan = `-- name: CreateMealPlan :exec
-
 INSERT INTO meal_plans (
 	id,
 	notes,
@@ -93,7 +90,6 @@ func (q *Queries) CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPl
 }
 
 const finalizeMealPlan = `-- name: FinalizeMealPlan :exec
-
 UPDATE meal_plans SET status = $1 WHERE archived_at IS NULL AND id = $2
 `
 
@@ -108,7 +104,6 @@ func (q *Queries) FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMe
 }
 
 const getExpiredAndUnresolvedMealPlans = `-- name: GetExpiredAndUnresolvedMealPlans :many
-
 SELECT
 	meal_plans.id,
 	meal_plans.notes,
@@ -131,18 +126,18 @@ ORDER BY meal_plans.id
 `
 
 type GetExpiredAndUnresolvedMealPlansRow struct {
-	VotingDeadline         time.Time
-	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
-	ArchivedAt             sql.NullTime
 	ID                     string
 	Notes                  string
 	Status                 MealPlanStatus
-	ElectionMethod         ValidElectionMethod
-	BelongsToHousehold     string
-	CreatedByUser          string
+	VotingDeadline         time.Time
 	GroceryListInitialized bool
 	TasksCreated           bool
+	ElectionMethod         ValidElectionMethod
+	CreatedAt              time.Time
+	LastUpdatedAt          sql.NullTime
+	ArchivedAt             sql.NullTime
+	BelongsToHousehold     string
+	CreatedByUser          string
 }
 
 func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error) {
@@ -182,7 +177,6 @@ func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX)
 }
 
 const getFinalizedMealPlansForPlanning = `-- name: GetFinalizedMealPlansForPlanning :many
-
 SELECT
 	meal_plans.id as meal_plan_id,
 	meal_plan_options.id as meal_plan_option_id,
@@ -248,7 +242,6 @@ func (q *Queries) GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX)
 }
 
 const getFinalizedMealPlansWithoutGroceryListInit = `-- name: GetFinalizedMealPlansWithoutGroceryListInit :many
-
 SELECT
 	meal_plans.id,
 	meal_plans.belongs_to_household
@@ -287,7 +280,6 @@ func (q *Queries) GetFinalizedMealPlansWithoutGroceryListInit(ctx context.Contex
 }
 
 const getMealPlan = `-- name: GetMealPlan :one
-
 SELECT
 	meal_plans.id,
 	meal_plans.notes,
@@ -313,18 +305,18 @@ type GetMealPlanParams struct {
 }
 
 type GetMealPlanRow struct {
-	VotingDeadline         time.Time
-	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
-	ArchivedAt             sql.NullTime
 	ID                     string
 	Notes                  string
 	Status                 MealPlanStatus
-	ElectionMethod         ValidElectionMethod
-	BelongsToHousehold     string
-	CreatedByUser          string
+	VotingDeadline         time.Time
 	GroceryListInitialized bool
 	TasksCreated           bool
+	ElectionMethod         ValidElectionMethod
+	CreatedAt              time.Time
+	LastUpdatedAt          sql.NullTime
+	ArchivedAt             sql.NullTime
+	BelongsToHousehold     string
+	CreatedByUser          string
 }
 
 func (q *Queries) GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error) {
@@ -348,7 +340,6 @@ func (q *Queries) GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanPara
 }
 
 const getMealPlanPastVotingDeadline = `-- name: GetMealPlanPastVotingDeadline :one
-
 SELECT
 	meal_plans.id,
 	meal_plans.notes,
@@ -376,18 +367,18 @@ type GetMealPlanPastVotingDeadlineParams struct {
 }
 
 type GetMealPlanPastVotingDeadlineRow struct {
-	VotingDeadline         time.Time
-	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
-	ArchivedAt             sql.NullTime
 	ID                     string
 	Notes                  string
 	Status                 MealPlanStatus
-	ElectionMethod         ValidElectionMethod
-	BelongsToHousehold     string
-	CreatedByUser          string
+	VotingDeadline         time.Time
 	GroceryListInitialized bool
 	TasksCreated           bool
+	ElectionMethod         ValidElectionMethod
+	CreatedAt              time.Time
+	LastUpdatedAt          sql.NullTime
+	ArchivedAt             sql.NullTime
+	BelongsToHousehold     string
+	CreatedByUser          string
 }
 
 func (q *Queries) GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error) {
@@ -411,7 +402,6 @@ func (q *Queries) GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, ar
 }
 
 const getMealPlans = `-- name: GetMealPlans :many
-
 SELECT
 	meal_plans.id,
 	meal_plans.notes,
@@ -475,20 +465,20 @@ type GetMealPlansParams struct {
 }
 
 type GetMealPlansRow struct {
-	VotingDeadline         time.Time
-	CreatedAt              time.Time
-	ArchivedAt             sql.NullTime
-	LastUpdatedAt          sql.NullTime
-	Status                 MealPlanStatus
-	ElectionMethod         ValidElectionMethod
-	Notes                  string
 	ID                     string
+	Notes                  string
+	Status                 MealPlanStatus
+	VotingDeadline         time.Time
+	GroceryListInitialized bool
+	TasksCreated           bool
+	ElectionMethod         ValidElectionMethod
+	CreatedAt              time.Time
+	LastUpdatedAt          sql.NullTime
+	ArchivedAt             sql.NullTime
 	BelongsToHousehold     string
 	CreatedByUser          string
 	FilteredCount          int64
 	TotalCount             int64
-	GroceryListInitialized bool
-	TasksCreated           bool
 }
 
 func (q *Queries) GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansParams) ([]*GetMealPlansRow, error) {
@@ -538,7 +528,6 @@ func (q *Queries) GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansPa
 }
 
 const markMealPlanAsGroceryListInitialized = `-- name: MarkMealPlanAsGroceryListInitialized :exec
-
 UPDATE meal_plans SET
 	grocery_list_initialized = TRUE,
 	last_updated_at = NOW()
@@ -552,7 +541,6 @@ func (q *Queries) MarkMealPlanAsGroceryListInitialized(ctx context.Context, db D
 }
 
 const markMealPlanAsPrepTasksCreated = `-- name: MarkMealPlanAsPrepTasksCreated :exec
-
 UPDATE meal_plans SET
 	tasks_created = TRUE,
 	last_updated_at = NOW()
@@ -566,7 +554,6 @@ func (q *Queries) MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, i
 }
 
 const updateMealPlan = `-- name: UpdateMealPlan :execrows
-
 UPDATE meal_plans SET
 	notes = $1,
 	status = $2,

@@ -12,7 +12,6 @@ import (
 )
 
 const archiveMealPlanEvent = `-- name: ArchiveMealPlanEvent :execrows
-
 UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_meal_plan = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *Archiv
 }
 
 const checkMealPlanEventExistence = `-- name: CheckMealPlanEventExistence :one
-
 SELECT EXISTS (
 	SELECT meal_plan_events.id
 	FROM meal_plan_events
@@ -53,7 +51,6 @@ func (q *Queries) CheckMealPlanEventExistence(ctx context.Context, db DBTX, arg 
 }
 
 const createMealPlanEvent = `-- name: CreateMealPlanEvent :exec
-
 INSERT INTO meal_plan_events (
 	id,
 	notes,
@@ -93,7 +90,6 @@ func (q *Queries) CreateMealPlanEvent(ctx context.Context, db DBTX, arg *CreateM
 }
 
 const getAllMealPlanEventsForMealPlan = `-- name: GetAllMealPlanEventsForMealPlan :many
-
 SELECT
 	meal_plan_events.id,
 	meal_plan_events.notes,
@@ -144,7 +140,6 @@ func (q *Queries) GetAllMealPlanEventsForMealPlan(ctx context.Context, db DBTX, 
 }
 
 const getMealPlanEvent = `-- name: GetMealPlanEvent :one
-
 SELECT
 	meal_plan_events.id,
 	meal_plan_events.notes,
@@ -184,7 +179,6 @@ func (q *Queries) GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPla
 }
 
 const getMealPlanEvents = `-- name: GetMealPlanEvents :many
-
 SELECT
 	meal_plan_events.id,
 	meal_plan_events.notes,
@@ -305,7 +299,6 @@ func (q *Queries) GetMealPlanEvents(ctx context.Context, db DBTX, arg *GetMealPl
 }
 
 const mealPlanEventIsEligibleForVoting = `-- name: MealPlanEventIsEligibleForVoting :one
-
 SELECT EXISTS (
 	SELECT meal_plan_events.id
 	FROM meal_plan_events
@@ -333,7 +326,6 @@ func (q *Queries) MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX,
 }
 
 const updateMealPlanEvent = `-- name: UpdateMealPlanEvent :execrows
-
 UPDATE meal_plan_events SET
 	notes = $1,
 	starts_at = $2,

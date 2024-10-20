@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidIngredientGroup = `-- name: ArchiveValidIngredientGroup :execrows
-
 UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidIngredientGroup(ctx context.Context, db DBTX, id s
 }
 
 const archiveValidIngredientGroupMember = `-- name: ArchiveValidIngredientGroupMember :execrows
-
 UPDATE valid_ingredient_group_members SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -49,7 +47,6 @@ func (q *Queries) ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX
 }
 
 const checkValidIngredientGroupExistence = `-- name: CheckValidIngredientGroupExistence :one
-
 SELECT EXISTS (
 	SELECT valid_ingredient_groups.id
 	FROM valid_ingredient_groups
@@ -66,7 +63,6 @@ func (q *Queries) CheckValidIngredientGroupExistence(ctx context.Context, db DBT
 }
 
 const createValidIngredientGroup = `-- name: CreateValidIngredientGroup :exec
-
 INSERT INTO valid_ingredient_groups (
 	id,
 	name,
@@ -98,7 +94,6 @@ func (q *Queries) CreateValidIngredientGroup(ctx context.Context, db DBTX, arg *
 }
 
 const createValidIngredientGroupMember = `-- name: CreateValidIngredientGroupMember :exec
-
 INSERT INTO valid_ingredient_group_members (
 	id,
 	belongs_to_group,
@@ -122,7 +117,6 @@ func (q *Queries) CreateValidIngredientGroupMember(ctx context.Context, db DBTX,
 }
 
 const getValidIngredientGroup = `-- name: GetValidIngredientGroup :one
-
 SELECT
 	valid_ingredient_groups.id,
 	valid_ingredient_groups.name,
@@ -162,7 +156,6 @@ func (q *Queries) GetValidIngredientGroup(ctx context.Context, db DBTX, id strin
 }
 
 const getValidIngredientGroupMembers = `-- name: GetValidIngredientGroupMembers :many
-
 SELECT
 	valid_ingredient_group_members.id,
 	valid_ingredient_group_members.belongs_to_group,
@@ -216,48 +209,48 @@ WHERE
 `
 
 type GetValidIngredientGroupMembersRow struct {
-	ValidIngredientCreatedAt                               time.Time
-	CreatedAt                                              time.Time
-	ArchivedAt                                             sql.NullTime
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
 	ID                                                     string
-	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientDescription                             string
-	ValidIngredientName                                    string
-	ValidIngredientPluralName                              string
-	ValidIngredientID                                      string
 	BelongsToGroup                                         string
+	ValidIngredientID                                      string
+	ValidIngredientName                                    string
+	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientSlug                                    string
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientIconPath                                string
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsEgg                             bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsTreeNut                         bool
 	ValidIngredientContainsSoy                             bool
-	ValidIngredientIsFruit                                 bool
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientIconPath                                string
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientPluralName                              string
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientSlug                                    string
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
-	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsSalt                                  bool
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsEgg                             bool
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	CreatedAt                                              time.Time
+	ArchivedAt                                             sql.NullTime
 }
 
 func (q *Queries) GetValidIngredientGroupMembers(ctx context.Context, db DBTX, belongsToGroup string) ([]*GetValidIngredientGroupMembersRow, error) {
@@ -327,7 +320,6 @@ func (q *Queries) GetValidIngredientGroupMembers(ctx context.Context, db DBTX, b
 }
 
 const getValidIngredientGroups = `-- name: GetValidIngredientGroups :many
-
 SELECT
 	valid_ingredient_groups.id,
 	valid_ingredient_groups.name,
@@ -437,7 +429,6 @@ func (q *Queries) GetValidIngredientGroups(ctx context.Context, db DBTX, arg *Ge
 }
 
 const getValidIngredientGroupsWithIDs = `-- name: GetValidIngredientGroupsWithIDs :many
-
 SELECT
 	valid_ingredient_groups.id,
 	valid_ingredient_groups.name,
@@ -493,7 +484,6 @@ func (q *Queries) GetValidIngredientGroupsWithIDs(ctx context.Context, db DBTX, 
 }
 
 const searchForValidIngredientGroups = `-- name: SearchForValidIngredientGroups :many
-
 SELECT
 	valid_ingredient_groups.id,
 	valid_ingredient_groups.name,
@@ -606,7 +596,6 @@ func (q *Queries) SearchForValidIngredientGroups(ctx context.Context, db DBTX, a
 }
 
 const updateValidIngredientGroup = `-- name: UpdateValidIngredientGroup :execrows
-
 UPDATE valid_ingredient_groups SET
 	name = $1,
 	description = $2,

@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidMeasurementUnit = `-- name: ArchiveValidMeasurementUnit :execrows
-
 UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id s
 }
 
 const checkValidMeasurementUnitExistence = `-- name: CheckValidMeasurementUnitExistence :one
-
 SELECT EXISTS (
 	SELECT valid_measurement_units.id
 	FROM valid_measurement_units
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidMeasurementUnitExistence(ctx context.Context, db DBT
 }
 
 const createValidMeasurementUnit = `-- name: CreateValidMeasurementUnit :exec
-
 INSERT INTO valid_measurement_units (
 	id,
 	name,
@@ -74,13 +71,13 @@ type CreateValidMeasurementUnitParams struct {
 	ID          string
 	Name        string
 	Description string
-	IconPath    string
-	Slug        string
-	PluralName  string
 	Volumetric  sql.NullBool
+	IconPath    string
 	Universal   bool
 	Metric      bool
 	Imperial    bool
+	Slug        string
+	PluralName  string
 }
 
 func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitParams) error {
@@ -100,7 +97,6 @@ func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *
 }
 
 const getRandomValidMeasurementUnit = `-- name: GetRandomValidMeasurementUnit :one
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -122,20 +118,20 @@ ORDER BY RANDOM() LIMIT 1
 `
 
 type GetRandomValidMeasurementUnitRow struct {
-	CreatedAt     time.Time
-	LastIndexedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
+	ID            string
 	Name          string
 	Description   string
-	ID            string
+	Volumetric    sql.NullBool
 	IconPath      string
+	Universal     bool
+	Metric        bool
+	Imperial      bool
 	Slug          string
 	PluralName    string
-	Volumetric    sql.NullBool
-	Imperial      bool
-	Metric        bool
-	Universal     bool
+	LastIndexedAt sql.NullTime
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 func (q *Queries) GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error) {
@@ -161,7 +157,6 @@ func (q *Queries) GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*
 }
 
 const getValidMeasurementUnit = `-- name: GetValidMeasurementUnit :one
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -183,20 +178,20 @@ AND valid_measurement_units.id = $1
 `
 
 type GetValidMeasurementUnitRow struct {
-	CreatedAt     time.Time
-	LastIndexedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
+	ID            string
 	Name          string
 	Description   string
-	ID            string
+	Volumetric    sql.NullBool
 	IconPath      string
+	Universal     bool
+	Metric        bool
+	Imperial      bool
 	Slug          string
 	PluralName    string
-	Volumetric    sql.NullBool
-	Imperial      bool
-	Metric        bool
-	Universal     bool
+	LastIndexedAt sql.NullTime
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 func (q *Queries) GetValidMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitRow, error) {
@@ -222,7 +217,6 @@ func (q *Queries) GetValidMeasurementUnit(ctx context.Context, db DBTX, id strin
 }
 
 const getValidMeasurementUnits = `-- name: GetValidMeasurementUnits :many
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -287,22 +281,22 @@ type GetValidMeasurementUnitsParams struct {
 }
 
 type GetValidMeasurementUnitsRow struct {
-	CreatedAt     time.Time
-	LastIndexedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
-	IconPath      string
-	Slug          string
-	PluralName    string
 	ID            string
-	Description   string
 	Name          string
-	FilteredCount int64
-	TotalCount    int64
+	Description   string
 	Volumetric    sql.NullBool
+	IconPath      string
 	Universal     bool
 	Metric        bool
 	Imperial      bool
+	Slug          string
+	PluralName    string
+	LastIndexedAt sql.NullTime
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	FilteredCount int64
+	TotalCount    int64
 }
 
 func (q *Queries) GetValidMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidMeasurementUnitsParams) ([]*GetValidMeasurementUnitsRow, error) {
@@ -353,7 +347,6 @@ func (q *Queries) GetValidMeasurementUnits(ctx context.Context, db DBTX, arg *Ge
 }
 
 const getValidMeasurementUnitsNeedingIndexing = `-- name: GetValidMeasurementUnitsNeedingIndexing :many
-
 SELECT valid_measurement_units.id
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
@@ -387,7 +380,6 @@ func (q *Queries) GetValidMeasurementUnitsNeedingIndexing(ctx context.Context, d
 }
 
 const getValidMeasurementUnitsWithIDs = `-- name: GetValidMeasurementUnitsWithIDs :many
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -409,20 +401,20 @@ WHERE valid_measurement_units.archived_at IS NULL
 `
 
 type GetValidMeasurementUnitsWithIDsRow struct {
-	CreatedAt     time.Time
-	LastIndexedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
+	ID            string
 	Name          string
 	Description   string
-	ID            string
+	Volumetric    sql.NullBool
 	IconPath      string
+	Universal     bool
+	Metric        bool
+	Imperial      bool
 	Slug          string
 	PluralName    string
-	Volumetric    sql.NullBool
-	Imperial      bool
-	Metric        bool
-	Universal     bool
+	LastIndexedAt sql.NullTime
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 func (q *Queries) GetValidMeasurementUnitsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidMeasurementUnitsWithIDsRow, error) {
@@ -464,7 +456,6 @@ func (q *Queries) GetValidMeasurementUnitsWithIDs(ctx context.Context, db DBTX, 
 }
 
 const searchForValidMeasurementUnits = `-- name: SearchForValidMeasurementUnits :many
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -487,20 +478,20 @@ LIMIT 50
 `
 
 type SearchForValidMeasurementUnitsRow struct {
-	CreatedAt     time.Time
-	LastIndexedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
+	ID            string
 	Name          string
 	Description   string
-	ID            string
+	Volumetric    sql.NullBool
 	IconPath      string
+	Universal     bool
+	Metric        bool
+	Imperial      bool
 	Slug          string
 	PluralName    string
-	Volumetric    sql.NullBool
-	Imperial      bool
-	Metric        bool
-	Universal     bool
+	LastIndexedAt sql.NullTime
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidMeasurementUnitsRow, error) {
@@ -542,7 +533,6 @@ func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, n
 }
 
 const searchValidMeasurementUnitsByIngredientID = `-- name: SearchValidMeasurementUnitsByIngredientID :many
-
 SELECT
 	DISTINCT(valid_measurement_units.id),
 	valid_measurement_units.name,
@@ -618,22 +608,22 @@ type SearchValidMeasurementUnitsByIngredientIDParams struct {
 }
 
 type SearchValidMeasurementUnitsByIngredientIDRow struct {
-	CreatedAt     time.Time
-	LastIndexedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
-	IconPath      string
-	Slug          string
-	PluralName    string
 	ID            string
-	Description   string
 	Name          string
-	FilteredCount int64
-	TotalCount    int64
+	Description   string
 	Volumetric    sql.NullBool
+	IconPath      string
 	Universal     bool
 	Metric        bool
 	Imperial      bool
+	Slug          string
+	PluralName    string
+	LastIndexedAt sql.NullTime
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	FilteredCount int64
+	TotalCount    int64
 }
 
 func (q *Queries) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, db DBTX, arg *SearchValidMeasurementUnitsByIngredientIDParams) ([]*SearchValidMeasurementUnitsByIngredientIDRow, error) {
@@ -685,7 +675,6 @@ func (q *Queries) SearchValidMeasurementUnitsByIngredientID(ctx context.Context,
 }
 
 const updateValidMeasurementUnit = `-- name: UpdateValidMeasurementUnit :execrows
-
 UPDATE valid_measurement_units SET
 	name = $1,
 	description = $2,
@@ -704,14 +693,14 @@ WHERE archived_at IS NULL
 type UpdateValidMeasurementUnitParams struct {
 	Name        string
 	Description string
-	IconPath    string
-	Slug        string
-	PluralName  string
-	ID          string
 	Volumetric  sql.NullBool
+	IconPath    string
 	Universal   bool
 	Metric      bool
 	Imperial    bool
+	Slug        string
+	PluralName  string
+	ID          string
 }
 
 func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) (int64, error) {
@@ -734,7 +723,6 @@ func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *
 }
 
 const updateValidMeasurementUnitLastIndexedAt = `-- name: UpdateValidMeasurementUnitLastIndexedAt :execrows
-
 UPDATE valid_measurement_units SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
