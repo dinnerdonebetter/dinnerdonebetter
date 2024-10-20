@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"encoding/json"
+	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
 	"os"
 	"testing"
 	"time"
@@ -15,7 +16,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -120,6 +120,10 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 					MinimumPasswordLength: 8,
 					MinimumUsernameLength: 8,
 				},
+				DataPrivacy: dataprivacyservice.Config{
+					UserDataAggregationTopicName: "",
+					DataChangesTopicName:         "",
+				},
 			},
 		}
 
@@ -130,6 +134,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 
 		require.NoError(t, os.Setenv(gcpConfigFilePathEnvVarKey, f.Name()))
 		require.NoError(t, os.Setenv(gcpPortEnvVarKey, "1234"))
+		require.NoError(t, os.Setenv(gcpDataChangesTopicNameEnvVarKey, "data_changes"))
 		require.NoError(t, os.Setenv(gcpDatabaseSocketDirEnvVarKey, "/example/blah"))
 		require.NoError(t, os.Setenv(gcpDatabaseUserEnvVarKey, "user"))
 		require.NoError(t, os.Setenv(gcpDatabaseUserPasswordEnvVarKey, "hunter2"))
@@ -143,35 +148,13 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		require.NoError(t, os.Setenv(gcpOauth2TokenEncryptionKeyEnvVarKey, "fake_oauth2_token_encryption_key"))
 		require.NoError(t, os.Setenv(gcpGoogleSSOClientIDEnvVarKey, "fake_google_sso_client_id"))
 		require.NoError(t, os.Setenv(gcpGoogleSSOClientSecretEnvVarKey, "fake_google_sso_client_secret"))
+		require.NoError(t, os.Setenv(gcpUserAggregatorTopicName, "data_aggregator"))
 
 		ctx := context.Background()
-		client := &mockSecretVersionAccessor{}
-
-		client.On(
-			"AccessSecretVersion",
-			testutils.ContextMatcher,
-			&secretmanagerpb.AccessSecretVersionRequest{Name: buildSecretPathForGCPSecretStore(dataChangesTopicAccessName)},
-			[]gax.CallOption(nil),
-		).Return(
-			&secretmanagerpb.AccessSecretVersionResponse{
-				Name: dataChangesTopicAccessName,
-				Payload: &secretmanagerpb.SecretPayload{
-					Data: []byte("this_is_the_big_secret"),
-				},
-			},
-			nil,
-		)
-
-		originalGetSecretManagerFunc := getSecretManagerFunc
-		getSecretManagerFunc = func(context.Context) (SecretVersionAccessor, error) {
-			return client, nil
-		}
 
 		cfg, err := GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
 		assert.NoError(t, err)
 		assert.NotNil(t, cfg)
-
-		getSecretManagerFunc = originalGetSecretManagerFunc
 
 		require.NoError(t, os.Unsetenv(gcpConfigFilePathEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpPortEnvVarKey))
@@ -184,7 +167,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		require.NoError(t, os.Unsetenv(gcpSegmentTokenEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpAlgoliaAPIKeyEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpAlgoliaAppIDEnvVarKey))
-
-		mock.AssertExpectationsForObjects(t, client)
+		require.NoError(t, os.Unsetenv(gcpUserAggregatorTopicName))
+		require.NoError(t, os.Unsetenv(gcpDataChangesTopicNameEnvVarKey))
 	})
 }
