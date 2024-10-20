@@ -17,19 +17,19 @@ WIRE_TARGETS           := server/http/build
 CONTAINER_RUNNER       := docker
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
 LINTER_IMAGE           := golangci/golangci-lint:v1.60.1
-LINTER                 := golangci-lint
-#LINTER                 := $(CONTAINER_RUNNER) run --rm \
-#		--volume $(PWD):$(PWD) \
-#		--workdir=$(PWD) \
-#		--user $(MYSELF):$(MY_GROUP) \
-#		$(LINTER_IMAGE) golangci-lint
+#LINTER                 := golangci-lint
+LINTER                 := $(CONTAINER_RUNNER) run --rm \
+		--volume $(PWD):$(PWD) \
+		--workdir=$(PWD) \
+		--user $(MYSELF):$(MY_GROUP) \
+		$(LINTER_IMAGE) golangci-lint
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
-SQL_GENERATOR          := sqlc
-#SQL_GENERATOR          := $(CONTAINER_RUNNER) run --rm \
-#		--volume $(PWD):/src \
-#		--workdir /src \
-#		--user $(MYSELF):$(MY_GROUP) \
-#		$(SQL_GENERATOR_IMAGE)
+#SQL_GENERATOR          := sqlc
+SQL_GENERATOR          := $(CONTAINER_RUNNER) run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
+		--user $(MYSELF):$(MY_GROUP) \
+		$(SQL_GENERATOR_IMAGE)
 
 ## non-PHONY folders/files
 
