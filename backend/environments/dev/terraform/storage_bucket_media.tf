@@ -32,22 +32,6 @@ resource "google_storage_bucket" "api_media" {
   }
 }
 
-resource "google_storage_bucket_access_control" "public_rule" {
-  bucket = google_storage_bucket.api_media.name
-  role   = "READER"
-  entity = "allUsers"
-}
-
-
-data "google_iam_policy" "public_policy" {
-  binding {
-    role = "roles/storage.objectViewer"
-    members = [
-      "allUsers",
-    ]
-  }
-}
-
 resource "google_storage_bucket_iam_policy" "policy" {
   bucket      = google_storage_bucket.api_media.name
   policy_data = data.google_iam_policy.public_policy.policy_data
