@@ -2,6 +2,7 @@ package workers
 
 import (
 	"errors"
+	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"net/http"
 	"testing"
 
@@ -39,6 +40,14 @@ func TestWorkerService_DataDeletionHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.userDataManager = userDataManager
 
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
 		helper.service.DataDeletionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
@@ -46,7 +55,7 @@ func TestWorkerService_DataDeletionHandler(T *testing.T) {
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, userDataManager)
+		mock.AssertExpectationsForObjects(t, userDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error", func(t *testing.T) {

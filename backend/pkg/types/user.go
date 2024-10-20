@@ -13,8 +13,10 @@ import (
 const (
 	// UserSignedUpCustomerEventType indicates a user signed up.
 	UserSignedUpCustomerEventType ServiceEventType = "user_signed_up"
-	// UserArchivedCustomerEventType indicates a user deleted their account.
+	// UserArchivedCustomerEventType indicates a user archived their account.
 	UserArchivedCustomerEventType ServiceEventType = "user_archived"
+	// UserDataDestroyedCustomerEventType indicates a user destroyed their data.
+	UserDataDestroyedCustomerEventType ServiceEventType = "user_data_destroyed"
 
 	// GoodStandingUserAccountStatus indicates a User's household is in good standing.
 	GoodStandingUserAccountStatus userAccountStatus = "good"

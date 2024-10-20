@@ -38,11 +38,22 @@ func (s *service) DataDeletionHandler(res http.ResponseWriter, req *http.Request
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
+	destroyUserDataTimer := timing.NewMetric("database").WithDesc("destroy user data").Start()
 	if err = s.userDataManager.DeleteUser(ctx, sessionCtxData.Requester.UserID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "deleting user")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
+	}
+	destroyUserDataTimer.Stop()
+
+	if err = s.dataChangesPublisher.Publish(ctx, &types.DataChangeMessage{
+		Context:     nil,
+		EventType:   types.UserDataDestroyedCustomerEventType,
+		UserID:      sessionCtxData.Requester.UserID,
+		HouseholdID: sessionCtxData.ActiveHouseholdID,
+	}); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data")
 	}
 
 	responseValue := &types.APIResponse[types.DataDeletionResponse]{
