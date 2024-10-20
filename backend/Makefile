@@ -17,12 +17,11 @@ WIRE_TARGETS           := server/http/build
 CONTAINER_RUNNER       := docker
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
 LINTER_IMAGE           := golangci/golangci-lint:v1.60.1
-LINTER                 := golangci-lint
-#LINTER                 := $(CONTAINER_RUNNER) run --rm \
-#		--volume $(PWD):$(PWD) \
-#		--workdir=$(PWD) \
-#		--user $(MYSELF):$(MY_GROUP) \
-#		$(LINTER_IMAGE) golangci-lint
+#LINTER                 := golangci-lint
+LINTER                 := $(CONTAINER_RUNNER) run --rm \
+		--volume $(PWD):$(PWD) \
+		--workdir=$(PWD) \
+		$(LINTER_IMAGE) golangci-lint
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 #SQL_GENERATOR          := sqlc
 SQL_GENERATOR          := $(CONTAINER_RUNNER) run --rm \
@@ -42,10 +41,10 @@ $(ARTIFACTS_DIR):
 clean-$(ARTIFACTS_DIR):
 	@rm -rf $(ARTIFACTS_DIR)
 
+## prerequisites
+
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs
-
-## prerequisites
 
 .PHONY: ensure_wire_installed
 ensure_wire_installed:
