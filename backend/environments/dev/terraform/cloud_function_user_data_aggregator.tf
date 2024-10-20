@@ -21,6 +21,12 @@ resource "google_project_iam_custom_role" "user_data_aggregator_role" {
     "run.routes.invoke",
     "artifactregistry.dockerimages.get",
     "artifactregistry.dockerimages.list",
+    "storage.objects.list",
+    "storage.objects.get",
+    "storage.objects.update",
+    "storage.objects.create",
+    "storage.objects.delete",
+    "storage.objects.get",
   ]
 }
 

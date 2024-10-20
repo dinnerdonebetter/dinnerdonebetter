@@ -75,8 +75,6 @@ func buildDatabaseURIFromGCPEnvVars() string {
 	)
 }
 
-var getSecretManagerFunc = func(ctx context.Context) (SecretVersionAccessor, error) { return secretmanager.NewClient(ctx) }
-
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
 	configBytes, err := os.ReadFile(os.Getenv(gcpConfigFilePathEnvVarKey))

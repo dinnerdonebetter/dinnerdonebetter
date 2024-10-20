@@ -3,7 +3,6 @@ package config
 import (
 	"context"
 	"encoding/json"
-	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
 	"os"
 	"testing"
 	"time"
@@ -19,6 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
 	mealplanoptionsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptions"

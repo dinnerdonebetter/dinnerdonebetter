@@ -25,7 +25,7 @@ func buildTestService() *service {
 	}
 }
 
-func TestProvideValidVesselsService(T *testing.T) {
+func TestProvideService(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {

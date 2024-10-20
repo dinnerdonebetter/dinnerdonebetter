@@ -32,7 +32,7 @@ type (
 	}
 )
 
-// ProvideService builds a new ValidVesselsService.
+// ProvideService builds a new DataPrivacyService.
 func ProvideService(
 	_ context.Context,
 	logger logging.Logger,
