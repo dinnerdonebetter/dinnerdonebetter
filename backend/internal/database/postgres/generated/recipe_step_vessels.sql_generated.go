@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeStepVessel = `-- name: ArchiveRecipeStepVessel :execrows
-
 UPDATE recipe_step_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveRecipeStepVessel(ctx context.Context, db DBTX, arg *Arc
 }
 
 const checkRecipeStepVesselExistence = `-- name: CheckRecipeStepVesselExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_step_vessels.id
 	FROM recipe_step_vessels
@@ -61,7 +59,6 @@ func (q *Queries) CheckRecipeStepVesselExistence(ctx context.Context, db DBTX, a
 }
 
 const createRecipeStepVessel = `-- name: CreateRecipeStepVessel :exec
-
 INSERT INTO recipe_step_vessels (
 	id,
 	name,
@@ -117,7 +114,6 @@ func (q *Queries) CreateRecipeStepVessel(ctx context.Context, db DBTX, arg *Crea
 }
 
 const getRecipeStepVessel = `-- name: GetRecipeStepVessel :one
-
 SELECT
 	recipe_step_vessels.id,
 	valid_vessels.id as valid_vessel_id,
@@ -284,7 +280,6 @@ func (q *Queries) GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetReci
 }
 
 const getRecipeStepVessels = `-- name: GetRecipeStepVessels :many
-
 SELECT
 	recipe_step_vessels.id,
 	valid_vessels.id as valid_vessel_id,
@@ -516,7 +511,6 @@ func (q *Queries) GetRecipeStepVessels(ctx context.Context, db DBTX, arg *GetRec
 }
 
 const getRecipeStepVesselsForRecipe = `-- name: GetRecipeStepVesselsForRecipe :many
-
 SELECT
 	recipe_step_vessels.id,
 	valid_vessels.id as valid_vessel_id,
@@ -690,7 +684,6 @@ func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, re
 }
 
 const updateRecipeStepVessel = `-- name: UpdateRecipeStepVessel :execrows
-
 UPDATE recipe_step_vessels SET
 	name = $1,
 	notes = $2,

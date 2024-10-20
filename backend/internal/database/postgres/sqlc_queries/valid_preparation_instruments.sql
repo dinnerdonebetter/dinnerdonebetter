@@ -1,8 +1,7 @@
 -- name: ArchiveValidPreparationInstrument :execrows
-
 UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: CreateValidPreparationInstrument :exec
 
+-- name: CreateValidPreparationInstrument :exec
 INSERT INTO valid_preparation_instruments (
 	id,
 	notes,
@@ -14,16 +13,16 @@ INSERT INTO valid_preparation_instruments (
 	sqlc.arg(valid_preparation_id),
 	sqlc.arg(valid_instrument_id)
 );
--- name: CheckValidPreparationInstrumentExistence :one
 
+-- name: CheckValidPreparationInstrumentExistence :one
 SELECT EXISTS (
 	SELECT valid_preparation_instruments.id
 	FROM valid_preparation_instruments
 	WHERE valid_preparation_instruments.archived_at IS NULL
 		AND valid_preparation_instruments.id = sqlc.arg(id)
 );
--- name: GetValidPreparationInstrumentsForInstrument :many
 
+-- name: GetValidPreparationInstrumentsForInstrument :many
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -123,8 +122,8 @@ GROUP BY
 ORDER BY valid_preparation_instruments.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidPreparationInstrumentsForPreparation :many
 
+-- name: GetValidPreparationInstrumentsForPreparation :many
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -224,8 +223,8 @@ GROUP BY
 ORDER BY valid_preparation_instruments.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidPreparationInstruments :many
 
+-- name: GetValidPreparationInstruments :many
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -322,8 +321,8 @@ GROUP BY
 ORDER BY valid_preparation_instruments.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidPreparationInstrument :one
 
+-- name: GetValidPreparationInstrument :one
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -375,8 +374,8 @@ WHERE
 	AND valid_instruments.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
 	AND valid_preparation_instruments.id = sqlc.arg(id);
--- name: ValidPreparationInstrumentPairIsValid :one
 
+-- name: ValidPreparationInstrumentPairIsValid :one
 SELECT EXISTS(
 	SELECT valid_preparation_instruments.id
 	FROM valid_preparation_instruments
@@ -384,8 +383,8 @@ SELECT EXISTS(
 	AND valid_preparation_id = sqlc.arg(valid_preparation_id)
 	AND archived_at IS NULL
 );
--- name: UpdateValidPreparationInstrument :execrows
 
+-- name: UpdateValidPreparationInstrument :execrows
 UPDATE valid_preparation_instruments SET
 	notes = sqlc.arg(notes),
 	valid_preparation_id = sqlc.arg(valid_preparation_id),

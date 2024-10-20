@@ -24,6 +24,7 @@ var (
 		),
 		wire.FieldsOf(
 			new(*ServicesConfig),
+			// Core
 			"AuditLogEntries",
 			"Auth",
 			"Households",
@@ -34,6 +35,8 @@ var (
 			"UserNotifications",
 			"Webhooks",
 			"Workers",
+			"DataPrivacy",
+			// Data
 			"ValidMeasurementUnits",
 			"ValidInstruments",
 			"ValidIngredients",

@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeStepIngredient = `-- name: ArchiveRecipeStepIngredient :execrows
-
 UPDATE recipe_step_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveRecipeStepIngredient(ctx context.Context, db DBTX, arg 
 }
 
 const checkRecipeStepIngredientExistence = `-- name: CheckRecipeStepIngredientExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_step_ingredients.id
 	FROM recipe_step_ingredients
@@ -61,7 +59,6 @@ func (q *Queries) CheckRecipeStepIngredientExistence(ctx context.Context, db DBT
 }
 
 const createRecipeStepIngredient = `-- name: CreateRecipeStepIngredient :exec
-
 INSERT INTO recipe_step_ingredients (
 	id,
 	name,
@@ -141,7 +138,6 @@ func (q *Queries) CreateRecipeStepIngredient(ctx context.Context, db DBTX, arg *
 }
 
 const getAllRecipeStepIngredientsForRecipe = `-- name: GetAllRecipeStepIngredientsForRecipe :many
-
 SELECT
 	recipe_step_ingredients.id,
 	recipe_step_ingredients.name,
@@ -389,7 +385,6 @@ func (q *Queries) GetAllRecipeStepIngredientsForRecipe(ctx context.Context, db D
 }
 
 const getRecipeStepIngredient = `-- name: GetRecipeStepIngredient :one
-
 SELECT
 	recipe_step_ingredients.id,
 	recipe_step_ingredients.name,
@@ -631,7 +626,6 @@ func (q *Queries) GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *Get
 }
 
 const getRecipeStepIngredients = `-- name: GetRecipeStepIngredients :many
-
 SELECT
 	recipe_step_ingredients.id,
 	recipe_step_ingredients.name,
@@ -948,7 +942,6 @@ func (q *Queries) GetRecipeStepIngredients(ctx context.Context, db DBTX, arg *Ge
 }
 
 const updateRecipeStepIngredient = `-- name: UpdateRecipeStepIngredient :execrows
-
 UPDATE recipe_step_ingredients SET
 	name = $1,
 	optional = $2,

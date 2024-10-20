@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipe = `-- name: ArchiveRecipe :execrows
-
 UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipe
 }
 
 const checkRecipeExistence = `-- name: CheckRecipeExistence :one
-
 SELECT EXISTS (
 	SELECT recipes.id
 	FROM recipes
@@ -47,7 +45,6 @@ func (q *Queries) CheckRecipeExistence(ctx context.Context, db DBTX, id string) 
 }
 
 const createRecipe = `-- name: CreateRecipe :exec
-
 INSERT INTO recipes (
 	id,
 	name,
@@ -119,7 +116,6 @@ func (q *Queries) CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipePa
 }
 
 const getRecipeByID = `-- name: GetRecipeByID :many
-
 SELECT
 	recipes.id,
 	recipes.name,
@@ -328,7 +324,6 @@ func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, recipeID string) (
 }
 
 const getRecipeByIDAndAuthorID = `-- name: GetRecipeByIDAndAuthorID :many
-
 SELECT
 	recipes.id,
 	recipes.name,
@@ -543,7 +538,6 @@ func (q *Queries) GetRecipeByIDAndAuthorID(ctx context.Context, db DBTX, arg *Ge
 }
 
 const getRecipeIDsForMeal = `-- name: GetRecipeIDsForMeal :many
-
 SELECT recipes.id
 FROM recipes
 	JOIN meal_components ON meal_components.recipe_id = recipes.id
@@ -579,7 +573,6 @@ func (q *Queries) GetRecipeIDsForMeal(ctx context.Context, db DBTX, mealID strin
 }
 
 const getRecipes = `-- name: GetRecipes :many
-
 SELECT
 	recipes.id,
 	recipes.name,
@@ -722,7 +715,6 @@ func (q *Queries) GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams
 }
 
 const getRecipesNeedingIndexing = `-- name: GetRecipesNeedingIndexing :many
-
 SELECT recipes.id
 FROM recipes
 WHERE recipes.archived_at IS NULL
@@ -756,7 +748,6 @@ func (q *Queries) GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]str
 }
 
 const recipeSearch = `-- name: RecipeSearch :many
-
 SELECT
 	recipes.id,
 	recipes.name,
@@ -902,7 +893,6 @@ func (q *Queries) RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchPa
 }
 
 const updateRecipe = `-- name: UpdateRecipe :execrows
-
 UPDATE recipes SET
 	name = $1,
 	slug = $2,
@@ -963,7 +953,6 @@ func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipePa
 }
 
 const updateRecipeLastIndexedAt = `-- name: UpdateRecipeLastIndexedAt :execrows
-
 UPDATE recipes SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

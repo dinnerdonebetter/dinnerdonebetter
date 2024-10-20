@@ -12,7 +12,6 @@ import (
 )
 
 const archiveValidIngredientMeasurementUnit = `-- name: ArchiveValidIngredientMeasurementUnit :execrows
-
 UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveValidIngredientMeasurementUnit(ctx context.Context, db 
 }
 
 const checkValidIngredientMeasurementUnitExistence = `-- name: CheckValidIngredientMeasurementUnitExistence :one
-
 SELECT EXISTS (
 	SELECT valid_ingredient_measurement_units.id
 	FROM valid_ingredient_measurement_units
@@ -42,7 +40,6 @@ func (q *Queries) CheckValidIngredientMeasurementUnitExistence(ctx context.Conte
 }
 
 const createValidIngredientMeasurementUnit = `-- name: CreateValidIngredientMeasurementUnit :exec
-
 INSERT INTO valid_ingredient_measurement_units (
 	id,
 	notes,
@@ -82,7 +79,6 @@ func (q *Queries) CreateValidIngredientMeasurementUnit(ctx context.Context, db D
 }
 
 const getValidIngredientMeasurementUnit = `-- name: GetValidIngredientMeasurementUnit :one
-
 SELECT
 	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
 	valid_ingredient_measurement_units.notes as valid_ingredient_measurement_unit_notes,
@@ -283,7 +279,6 @@ func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX
 }
 
 const getValidIngredientMeasurementUnits = `-- name: GetValidIngredientMeasurementUnits :many
-
 SELECT
 	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
 	valid_ingredient_measurement_units.notes as valid_ingredient_measurement_unit_notes,
@@ -551,7 +546,6 @@ func (q *Queries) GetValidIngredientMeasurementUnits(ctx context.Context, db DBT
 }
 
 const getValidIngredientMeasurementUnitsForIngredient = `-- name: GetValidIngredientMeasurementUnitsForIngredient :many
-
 SELECT
 	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
 	valid_ingredient_measurement_units.notes as valid_ingredient_measurement_unit_notes,
@@ -822,7 +816,6 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 }
 
 const getValidIngredientMeasurementUnitsForMeasurementUnit = `-- name: GetValidIngredientMeasurementUnitsForMeasurementUnit :many
-
 SELECT
 	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
 	valid_ingredient_measurement_units.notes as valid_ingredient_measurement_unit_notes,
@@ -1093,7 +1086,6 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 }
 
 const updateValidIngredientMeasurementUnit = `-- name: UpdateValidIngredientMeasurementUnit :execrows
-
 UPDATE valid_ingredient_measurement_units SET
 	notes = $1,
 	valid_measurement_unit_id = $2,
@@ -1130,7 +1122,6 @@ func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db D
 }
 
 const validIngredientMeasurementUnitPairIsValid = `-- name: ValidIngredientMeasurementUnitPairIsValid :one
-
 SELECT EXISTS(
 	SELECT id
 	FROM valid_ingredient_measurement_units

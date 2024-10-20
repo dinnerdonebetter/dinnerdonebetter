@@ -1,8 +1,7 @@
 -- name: ArchiveRecipeStepProduct :execrows
-
 UPDATE recipe_step_products SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step) AND id = sqlc.arg(id);
--- name: CreateRecipeStepProduct :exec
 
+-- name: CreateRecipeStepProduct :exec
 INSERT INTO recipe_step_products (
 	id,
 	name,
@@ -40,8 +39,8 @@ INSERT INTO recipe_step_products (
 	sqlc.arg(contained_in_vessel_index),
 	sqlc.arg(belongs_to_recipe_step)
 );
--- name: CheckRecipeStepProductExistence :one
 
+-- name: CheckRecipeStepProductExistence :one
 SELECT EXISTS (
 	SELECT recipe_step_products.id
 	FROM recipe_step_products
@@ -56,8 +55,8 @@ SELECT EXISTS (
 		AND recipes.archived_at IS NULL
 		AND recipes.id = sqlc.arg(recipe_id)
 );
--- name: GetRecipeStepProductsForRecipe :many
 
+-- name: GetRecipeStepProductsForRecipe :many
 SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
@@ -101,8 +100,8 @@ WHERE recipe_step_products.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
--- name: GetRecipeStepProducts :many
 
+-- name: GetRecipeStepProducts :many
 SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
@@ -183,8 +182,8 @@ WHERE recipe_step_products.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetRecipeStepProduct :one
 
+-- name: GetRecipeStepProduct :one
 SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
@@ -231,8 +230,8 @@ WHERE recipe_step_products.archived_at IS NULL
 	AND recipe_steps.id = sqlc.arg(recipe_step_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
--- name: UpdateRecipeStepProduct :execrows
 
+-- name: UpdateRecipeStepProduct :execrows
 UPDATE recipe_step_products SET
 	name = sqlc.arg(name),
 	type = sqlc.arg(type),

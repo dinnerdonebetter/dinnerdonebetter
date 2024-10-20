@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeStepInstrument = `-- name: ArchiveRecipeStepInstrument :execrows
-
 UPDATE recipe_step_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveRecipeStepInstrument(ctx context.Context, db DBTX, arg 
 }
 
 const checkRecipeStepInstrumentExistence = `-- name: CheckRecipeStepInstrumentExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_step_instruments.id
 	FROM recipe_step_instruments
@@ -61,7 +59,6 @@ func (q *Queries) CheckRecipeStepInstrumentExistence(ctx context.Context, db DBT
 }
 
 const createRecipeStepInstrument = `-- name: CreateRecipeStepInstrument :exec
-
 INSERT INTO recipe_step_instruments (
 	id,
 	instrument_id,
@@ -121,7 +118,6 @@ func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, db DBTX, arg *
 }
 
 const getRecipeStepInstrument = `-- name: GetRecipeStepInstrument :one
-
 SELECT
 	recipe_step_instruments.id,
 	valid_instruments.id as valid_instrument_id,
@@ -233,7 +229,6 @@ func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *Get
 }
 
 const getRecipeStepInstruments = `-- name: GetRecipeStepInstruments :many
-
 SELECT
 	recipe_step_instruments.id,
 	valid_instruments.id as valid_instrument_id,
@@ -413,7 +408,6 @@ func (q *Queries) GetRecipeStepInstruments(ctx context.Context, db DBTX, arg *Ge
 }
 
 const getRecipeStepInstrumentsForRecipe = `-- name: GetRecipeStepInstrumentsForRecipe :many
-
 SELECT
 	recipe_step_instruments.id,
 	valid_instruments.id as valid_instrument_id,
@@ -532,7 +526,6 @@ func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX
 }
 
 const updateRecipeStepInstrument = `-- name: UpdateRecipeStepInstrument :execrows
-
 UPDATE recipe_step_instruments SET
 	instrument_id = $1,
 	recipe_step_product_id = $2,

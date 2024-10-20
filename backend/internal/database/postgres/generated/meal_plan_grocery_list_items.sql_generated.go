@@ -12,7 +12,6 @@ import (
 )
 
 const archiveMealPlanGroceryListItem = `-- name: ArchiveMealPlanGroceryListItem :execrows
-
 UPDATE meal_plan_grocery_list_items SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, i
 }
 
 const checkMealPlanGroceryListItemExistence = `-- name: CheckMealPlanGroceryListItemExistence :one
-
 SELECT EXISTS (
 	SELECT meal_plan_grocery_list_items.id
 	FROM meal_plan_grocery_list_items
@@ -48,7 +46,6 @@ func (q *Queries) CheckMealPlanGroceryListItemExistence(ctx context.Context, db 
 }
 
 const createMealPlanGroceryListItem = `-- name: CreateMealPlanGroceryListItem :exec
-
 INSERT INTO meal_plan_grocery_list_items (
 	id,
 	belongs_to_meal_plan,
@@ -112,7 +109,6 @@ func (q *Queries) CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, ar
 }
 
 const getMealPlanGroceryListItem = `-- name: GetMealPlanGroceryListItem :one
-
 SELECT
 	meal_plan_grocery_list_items.id,
 	meal_plan_grocery_list_items.belongs_to_meal_plan,
@@ -337,7 +333,6 @@ func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *
 }
 
 const getMealPlanGroceryListItemsForMealPlan = `-- name: GetMealPlanGroceryListItemsForMealPlan :many
-
 SELECT
 	meal_plan_grocery_list_items.id,
 	meal_plan_grocery_list_items.belongs_to_meal_plan,
@@ -579,7 +574,6 @@ func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db
 }
 
 const updateMealPlanGroceryListItem = `-- name: UpdateMealPlanGroceryListItem :execrows
-
 UPDATE meal_plan_grocery_list_items SET
 	belongs_to_meal_plan = $1,
 	valid_ingredient = $2,

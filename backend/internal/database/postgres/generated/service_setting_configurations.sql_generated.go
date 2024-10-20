@@ -12,7 +12,6 @@ import (
 )
 
 const archiveServiceSettingConfiguration = `-- name: ArchiveServiceSettingConfiguration :execrows
-
 UPDATE service_setting_configurations SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -28,7 +27,6 @@ func (q *Queries) ArchiveServiceSettingConfiguration(ctx context.Context, db DBT
 }
 
 const checkServiceSettingConfigurationExistence = `-- name: CheckServiceSettingConfigurationExistence :one
-
 SELECT EXISTS (
 	SELECT service_setting_configurations.id
 	FROM service_setting_configurations
@@ -45,7 +43,6 @@ func (q *Queries) CheckServiceSettingConfigurationExistence(ctx context.Context,
 }
 
 const createServiceSettingConfiguration = `-- name: CreateServiceSettingConfiguration :exec
-
 INSERT INTO service_setting_configurations (
 	id,
 	value,
@@ -85,7 +82,6 @@ func (q *Queries) CreateServiceSettingConfiguration(ctx context.Context, db DBTX
 }
 
 const getServiceSettingConfigurationByID = `-- name: GetServiceSettingConfigurationByID :one
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -160,7 +156,6 @@ func (q *Queries) GetServiceSettingConfigurationByID(ctx context.Context, db DBT
 }
 
 const getServiceSettingConfigurationForHouseholdBySettingName = `-- name: GetServiceSettingConfigurationForHouseholdBySettingName :one
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -241,7 +236,6 @@ func (q *Queries) GetServiceSettingConfigurationForHouseholdBySettingName(ctx co
 }
 
 const getServiceSettingConfigurationForUserBySettingName = `-- name: GetServiceSettingConfigurationForUserBySettingName :one
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -322,7 +316,6 @@ func (q *Queries) GetServiceSettingConfigurationForUserBySettingName(ctx context
 }
 
 const getServiceSettingConfigurationsForHousehold = `-- name: GetServiceSettingConfigurationsForHousehold :many
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -413,7 +406,6 @@ func (q *Queries) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 }
 
 const getServiceSettingConfigurationsForUser = `-- name: GetServiceSettingConfigurationsForUser :many
-
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -504,7 +496,6 @@ func (q *Queries) GetServiceSettingConfigurationsForUser(ctx context.Context, db
 }
 
 const updateServiceSettingConfiguration = `-- name: UpdateServiceSettingConfiguration :execrows
-
 UPDATE service_setting_configurations SET
 	value = $1,
 	notes = $2,

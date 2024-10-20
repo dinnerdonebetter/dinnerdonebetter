@@ -1,26 +1,28 @@
 -- name: AcceptPrivacyPolicyForUser :exec
-
 UPDATE users SET
 	last_accepted_privacy_policy = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: AcceptTermsOfServiceForUser :exec
 
+-- name: AcceptTermsOfServiceForUser :exec
 UPDATE users SET
 	last_accepted_terms_of_service = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
+
 -- name: ArchiveUser :execrows
-
 UPDATE users SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: ArchiveUserMemberships :execrows
 
+-- name: DeleteUser :execrows
+DELETE FROM users WHERE id = sqlc.arg(id);
+
+-- name: ArchiveUserMemberships :execrows
 UPDATE household_user_memberships SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(id);
--- name: CreateUser :exec
 
+-- name: CreateUser :exec
 INSERT INTO users
 (
 	id,
@@ -55,8 +57,8 @@ INSERT INTO users
 	sqlc.arg(first_name),
 	sqlc.arg(last_name)
 );
--- name: GetAdminUserByUsername :one
 
+-- name: GetAdminUserByUsername :one
 SELECT
 	users.id,
 	users.username,
@@ -86,8 +88,8 @@ WHERE users.archived_at IS NULL
 	AND users.service_role = 'service_admin'
 	AND users.username = sqlc.arg(username)
 	AND users.two_factor_secret_verified_at IS NOT NULL;
--- name: GetUserByEmail :one
 
+-- name: GetUserByEmail :one
 SELECT
 	users.id,
 	users.username,
@@ -115,8 +117,8 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address = sqlc.arg(email_address);
--- name: GetUserByEmailAddressVerificationToken :one
 
+-- name: GetUserByEmailAddressVerificationToken :one
 SELECT
 	users.id,
 	users.username,
@@ -144,8 +146,8 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address_verification_token = sqlc.arg(email_address_verification_token);
--- name: GetUserByID :one
 
+-- name: GetUserByID :one
 SELECT
 	users.id,
 	users.username,
@@ -173,8 +175,8 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id);
--- name: GetUserByUsername :one
 
+-- name: GetUserByUsername :one
 SELECT
 	users.id,
 	users.username,
@@ -202,16 +204,16 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.username = sqlc.arg(username);
--- name: GetEmailVerificationTokenByUserID :one
 
+-- name: GetEmailVerificationTokenByUserID :one
 SELECT
 	users.email_address_verification_token
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address_verified_at IS NULL
 	AND users.id = sqlc.arg(id);
--- name: GetUsers :many
 
+-- name: GetUsers :many
 SELECT
 	users.id,
 	users.username,
@@ -270,15 +272,15 @@ WHERE users.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetUserIDsNeedingIndexing :many
 
+-- name: GetUserIDsNeedingIndexing :many
 SELECT users.id
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.last_indexed_at IS NULL
 	OR users.last_indexed_at < NOW() - '24 hours'::INTERVAL;
--- name: GetUserWithUnverifiedTwoFactor :one
 
+-- name: GetUserWithUnverifiedTwoFactor :one
 SELECT
 	users.id,
 	users.username,
@@ -307,8 +309,8 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id)
 	AND users.two_factor_secret_verified_at IS NULL;
--- name: GetUserWithVerifiedTwoFactor :one
 
+-- name: GetUserWithVerifiedTwoFactor :one
 SELECT
 	users.id,
 	users.username,
@@ -337,8 +339,8 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id)
 	AND users.two_factor_secret_verified_at IS NOT NULL;
--- name: MarkEmailAddressAsVerified :exec
 
+-- name: MarkEmailAddressAsVerified :exec
 UPDATE users SET
 	email_address_verified_at = NOW(),
 	last_updated_at = NOW()
@@ -346,31 +348,31 @@ WHERE archived_at IS NULL
 	AND email_address_verified_at IS NULL
 	AND id = sqlc.arg(id)
 	AND email_address_verification_token = sqlc.arg(email_address_verification_token);
--- name: MarkEmailAddressAsUnverified :exec
 
+-- name: MarkEmailAddressAsUnverified :exec
 UPDATE users SET
 	email_address_verified_at = NULL,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND email_address_verified_at IS NOT NULL
 	AND id = sqlc.arg(id);
--- name: MarkTwoFactorSecretAsUnverified :exec
 
+-- name: MarkTwoFactorSecretAsUnverified :exec
 UPDATE users SET
 	two_factor_secret_verified_at = NULL,
 	two_factor_secret = sqlc.arg(two_factor_secret),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: MarkTwoFactorSecretAsVerified :exec
 
+-- name: MarkTwoFactorSecretAsVerified :exec
 UPDATE users SET
 	two_factor_secret_verified_at = NOW(),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: SearchUsersByUsername :many
 
+-- name: SearchUsersByUsername :many
 SELECT
 	users.id,
 	users.username,
@@ -398,15 +400,15 @@ SELECT
 FROM users
 WHERE users.username ILIKE '%' || sqlc.arg(username)::text || '%'
 AND users.archived_at IS NULL;
--- name: UpdateUserAvatarSrc :execrows
 
+-- name: UpdateUserAvatarSrc :execrows
 UPDATE users SET
 	avatar_src = sqlc.arg(avatar_src),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: UpdateUserDetails :execrows
 
+-- name: UpdateUserDetails :execrows
 UPDATE users SET
 	first_name = sqlc.arg(first_name),
 	last_name = sqlc.arg(last_name),
@@ -414,35 +416,35 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: UpdateUserEmailAddress :execrows
 
+-- name: UpdateUserEmailAddress :execrows
 UPDATE users SET
 	email_address = sqlc.arg(email_address),
 	email_address_verified_at = NULL,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
+
 -- name: UpdateUserLastIndexedAt :execrows
-
 UPDATE users SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;
--- name: UpdateUserPassword :execrows
 
+-- name: UpdateUserPassword :execrows
 UPDATE users SET
 	hashed_password = sqlc.arg(hashed_password),
 	password_last_changed_at = NOW(),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: UpdateUserTwoFactorSecret :execrows
 
+-- name: UpdateUserTwoFactorSecret :execrows
 UPDATE users SET
 	two_factor_secret_verified_at = NULL,
 	two_factor_secret = sqlc.arg(two_factor_secret),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
--- name: UpdateUserUsername :execrows
 
+-- name: UpdateUserUsername :execrows
 UPDATE users SET
 	username = sqlc.arg(username),
 	last_updated_at = NOW()

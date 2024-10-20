@@ -12,7 +12,6 @@ import (
 )
 
 const addToHouseholdDuringCreation = `-- name: AddToHouseholdDuringCreation :exec
-
 INSERT INTO household_user_memberships (
 	id,
 	belongs_to_household,
@@ -44,7 +43,6 @@ func (q *Queries) AddToHouseholdDuringCreation(ctx context.Context, db DBTX, arg
 }
 
 const archiveHousehold = `-- name: ArchiveHousehold :execrows
-
 UPDATE households SET
 	last_updated_at = NOW(),
 	archived_at = NOW()
@@ -67,7 +65,6 @@ func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHou
 }
 
 const createHousehold = `-- name: CreateHousehold :exec
-
 INSERT INTO households (
 	id,
 	name,
@@ -139,7 +136,6 @@ func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouse
 }
 
 const getHouseholdByIDWithMemberships = `-- name: GetHouseholdByIDWithMemberships :many
-
 SELECT
 	households.id,
 	households.name,
@@ -333,7 +329,6 @@ func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, 
 }
 
 const getHouseholdsForUser = `-- name: GetHouseholdsForUser :many
-
 SELECT
 	households.id,
 	households.name,
@@ -490,7 +485,6 @@ func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHou
 }
 
 const updateHousehold = `-- name: UpdateHousehold :execrows
-
 UPDATE households SET
 	name = $1,
 	contact_phone = $2,
@@ -545,7 +539,6 @@ func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouse
 }
 
 const updateHouseholdWebhookEncryptionKey = `-- name: UpdateHouseholdWebhookEncryptionKey :execrows
-
 UPDATE households SET
 	webhook_hmac_secret = $1,
 	last_updated_at = NOW()

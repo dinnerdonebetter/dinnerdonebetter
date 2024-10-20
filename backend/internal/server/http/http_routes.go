@@ -166,6 +166,10 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			})
 		})
 
+		v1Router.Route("/data_privacy", func(dataPrivacyRouter routing.Router) {
+			dataPrivacyRouter.Delete("/destroy", s.dataPrivacyService.DataDeletionHandler)
+		})
+
 		// Households
 		v1Router.Route("/households", func(householdsRouter routing.Router) {
 			householdsRouter.Post(root, s.householdsService.CreateHandler)

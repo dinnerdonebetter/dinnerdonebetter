@@ -12,7 +12,6 @@ import (
 )
 
 const acceptPrivacyPolicyForUser = `-- name: AcceptPrivacyPolicyForUser :exec
-
 UPDATE users SET
 	last_accepted_privacy_policy = NOW()
 WHERE archived_at IS NULL
@@ -25,7 +24,6 @@ func (q *Queries) AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id st
 }
 
 const acceptTermsOfServiceForUser = `-- name: AcceptTermsOfServiceForUser :exec
-
 UPDATE users SET
 	last_accepted_terms_of_service = NOW()
 WHERE archived_at IS NULL
@@ -38,7 +36,6 @@ func (q *Queries) AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id s
 }
 
 const archiveUser = `-- name: ArchiveUser :execrows
-
 UPDATE users SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -51,7 +48,6 @@ func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) (int64, e
 }
 
 const archiveUserMemberships = `-- name: ArchiveUserMemberships :execrows
-
 UPDATE household_user_memberships SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -67,7 +63,6 @@ func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, id string
 }
 
 const createUser = `-- name: CreateUser :exec
-
 INSERT INTO users
 (
 	id,
@@ -143,8 +138,19 @@ func (q *Queries) CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams
 	return err
 }
 
-const getAdminUserByUsername = `-- name: GetAdminUserByUsername :one
+const deleteUser = `-- name: DeleteUser :execrows
+DELETE FROM users WHERE id = $1
+`
 
+func (q *Queries) DeleteUser(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, deleteUser, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const getAdminUserByUsername = `-- name: GetAdminUserByUsername :one
 SELECT
 	users.id,
 	users.username,
@@ -234,7 +240,6 @@ func (q *Queries) GetAdminUserByUsername(ctx context.Context, db DBTX, username 
 }
 
 const getEmailVerificationTokenByUserID = `-- name: GetEmailVerificationTokenByUserID :one
-
 SELECT
 	users.email_address_verification_token
 FROM users
@@ -251,7 +256,6 @@ func (q *Queries) GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-
 SELECT
 	users.id,
 	users.username,
@@ -339,7 +343,6 @@ func (q *Queries) GetUserByEmail(ctx context.Context, db DBTX, emailAddress stri
 }
 
 const getUserByEmailAddressVerificationToken = `-- name: GetUserByEmailAddressVerificationToken :one
-
 SELECT
 	users.id,
 	users.username,
@@ -427,7 +430,6 @@ func (q *Queries) GetUserByEmailAddressVerificationToken(ctx context.Context, db
 }
 
 const getUserByID = `-- name: GetUserByID :one
-
 SELECT
 	users.id,
 	users.username,
@@ -515,7 +517,6 @@ func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUser
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-
 SELECT
 	users.id,
 	users.username,
@@ -603,7 +604,6 @@ func (q *Queries) GetUserByUsername(ctx context.Context, db DBTX, username strin
 }
 
 const getUserIDsNeedingIndexing = `-- name: GetUserIDsNeedingIndexing :many
-
 SELECT users.id
 FROM users
 WHERE users.archived_at IS NULL
@@ -635,7 +635,6 @@ func (q *Queries) GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]str
 }
 
 const getUserWithUnverifiedTwoFactor = `-- name: GetUserWithUnverifiedTwoFactor :one
-
 SELECT
 	users.id,
 	users.username,
@@ -724,7 +723,6 @@ func (q *Queries) GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, i
 }
 
 const getUserWithVerifiedTwoFactor = `-- name: GetUserWithVerifiedTwoFactor :one
-
 SELECT
 	users.id,
 	users.username,
@@ -813,7 +811,6 @@ func (q *Queries) GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id 
 }
 
 const getUsers = `-- name: GetUsers :many
-
 SELECT
 	users.id,
 	users.username,
@@ -968,7 +965,6 @@ func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([
 }
 
 const markEmailAddressAsUnverified = `-- name: MarkEmailAddressAsUnverified :exec
-
 UPDATE users SET
 	email_address_verified_at = NULL,
 	last_updated_at = NOW()
@@ -983,7 +979,6 @@ func (q *Queries) MarkEmailAddressAsUnverified(ctx context.Context, db DBTX, id 
 }
 
 const markEmailAddressAsVerified = `-- name: MarkEmailAddressAsVerified :exec
-
 UPDATE users SET
 	email_address_verified_at = NOW(),
 	last_updated_at = NOW()
@@ -1004,7 +999,6 @@ func (q *Queries) MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *
 }
 
 const markTwoFactorSecretAsUnverified = `-- name: MarkTwoFactorSecretAsUnverified :exec
-
 UPDATE users SET
 	two_factor_secret_verified_at = NULL,
 	two_factor_secret = $1,
@@ -1024,7 +1018,6 @@ func (q *Queries) MarkTwoFactorSecretAsUnverified(ctx context.Context, db DBTX, 
 }
 
 const markTwoFactorSecretAsVerified = `-- name: MarkTwoFactorSecretAsVerified :exec
-
 UPDATE users SET
 	two_factor_secret_verified_at = NOW(),
 	last_updated_at = NOW()
@@ -1038,7 +1031,6 @@ func (q *Queries) MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, id
 }
 
 const searchUsersByUsername = `-- name: SearchUsersByUsername :many
-
 SELECT
 	users.id,
 	users.username,
@@ -1142,7 +1134,6 @@ func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, username s
 }
 
 const updateUserAvatarSrc = `-- name: UpdateUserAvatarSrc :execrows
-
 UPDATE users SET
 	avatar_src = $1,
 	last_updated_at = NOW()
@@ -1164,7 +1155,6 @@ func (q *Queries) UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateU
 }
 
 const updateUserDetails = `-- name: UpdateUserDetails :execrows
-
 UPDATE users SET
 	first_name = $1,
 	last_name = $2,
@@ -1195,7 +1185,6 @@ func (q *Queries) UpdateUserDetails(ctx context.Context, db DBTX, arg *UpdateUse
 }
 
 const updateUserEmailAddress = `-- name: UpdateUserEmailAddress :execrows
-
 UPDATE users SET
 	email_address = $1,
 	email_address_verified_at = NULL,
@@ -1218,7 +1207,6 @@ func (q *Queries) UpdateUserEmailAddress(ctx context.Context, db DBTX, arg *Upda
 }
 
 const updateUserLastIndexedAt = `-- name: UpdateUserLastIndexedAt :execrows
-
 UPDATE users SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
@@ -1231,7 +1219,6 @@ func (q *Queries) UpdateUserLastIndexedAt(ctx context.Context, db DBTX, id strin
 }
 
 const updateUserPassword = `-- name: UpdateUserPassword :execrows
-
 UPDATE users SET
 	hashed_password = $1,
 	password_last_changed_at = NOW(),
@@ -1254,7 +1241,6 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUs
 }
 
 const updateUserTwoFactorSecret = `-- name: UpdateUserTwoFactorSecret :execrows
-
 UPDATE users SET
 	two_factor_secret_verified_at = NULL,
 	two_factor_secret = $1,
@@ -1277,7 +1263,6 @@ func (q *Queries) UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *U
 }
 
 const updateUserUsername = `-- name: UpdateUserUsername :execrows
-
 UPDATE users SET
 	username = $1,
 	last_updated_at = NOW()

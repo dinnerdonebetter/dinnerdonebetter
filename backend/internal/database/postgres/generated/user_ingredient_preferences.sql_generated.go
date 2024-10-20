@@ -12,7 +12,6 @@ import (
 )
 
 const archiveUserIngredientPreference = `-- name: ArchiveUserIngredientPreference :execrows
-
 UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveUserIngredientPreference(ctx context.Context, db DBTX, 
 }
 
 const checkUserIngredientPreferenceExistence = `-- name: CheckUserIngredientPreferenceExistence :one
-
 SELECT EXISTS (
 	SELECT user_ingredient_preferences.id
 	FROM user_ingredient_preferences
@@ -53,7 +51,6 @@ func (q *Queries) CheckUserIngredientPreferenceExistence(ctx context.Context, db
 }
 
 const createUserIngredientPreference = `-- name: CreateUserIngredientPreference :exec
-
 INSERT INTO user_ingredient_preferences (
 	id,
 	ingredient,
@@ -93,7 +90,6 @@ func (q *Queries) CreateUserIngredientPreference(ctx context.Context, db DBTX, a
 }
 
 const getUserIngredientPreference = `-- name: GetUserIngredientPreference :one
-
 SELECT
 	user_ingredient_preferences.id,
 	valid_ingredients.id as valid_ingredient_id,
@@ -258,7 +254,6 @@ func (q *Queries) GetUserIngredientPreference(ctx context.Context, db DBTX, arg 
 }
 
 const getUserIngredientPreferencesForUser = `-- name: GetUserIngredientPreferencesForUser :many
-
 SELECT
 	user_ingredient_preferences.id,
 	valid_ingredients.id as valid_ingredient_id,
@@ -487,7 +482,6 @@ func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DB
 }
 
 const updateUserIngredientPreference = `-- name: UpdateUserIngredientPreference :execrows
-
 UPDATE user_ingredient_preferences SET
 	ingredient = $1,
 	rating = $2,

@@ -31,6 +31,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -249,6 +250,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				JWTAudience:           "https://api.dinnerdonebetter.dev",
 				JWTLifetime:           5 * time.Minute,
 			},
+			DataPrivacy: dataprivacyservice.Config{DataChangesTopicName: dataChangesTopicName},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/avatars",
@@ -396,6 +398,7 @@ func buildLocalDevConfig() *config.InstanceConfig {
 				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				JWTLifetime:           5 * time.Minute,
 			},
+			DataPrivacy: dataprivacyservice.Config{DataChangesTopicName: dataChangesTopicName},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -637,6 +640,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				JWTLifetime:           5 * time.Minute,
 			},
+			DataPrivacy: dataprivacyservice.Config{DataChangesTopicName: dataChangesTopicName},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{

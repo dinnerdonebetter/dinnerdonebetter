@@ -12,7 +12,6 @@ import (
 )
 
 const archiveValidPreparationVessel = `-- name: ArchiveValidPreparationVessel :execrows
-
 UPDATE valid_preparation_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id
 }
 
 const checkValidPreparationVesselExistence = `-- name: CheckValidPreparationVesselExistence :one
-
 SELECT EXISTS (
 	SELECT valid_preparation_vessels.id
 	FROM valid_preparation_vessels
@@ -42,7 +40,6 @@ func (q *Queries) CheckValidPreparationVesselExistence(ctx context.Context, db D
 }
 
 const createValidPreparationVessel = `-- name: CreateValidPreparationVessel :exec
-
 INSERT INTO valid_preparation_vessels (
 	id,
 	notes,
@@ -74,7 +71,6 @@ func (q *Queries) CreateValidPreparationVessel(ctx context.Context, db DBTX, arg
 }
 
 const getValidPreparationVessel = `-- name: GetValidPreparationVessel :one
-
 SELECT
 	valid_preparation_vessels.id as valid_preparation_vessel_id,
 	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
@@ -280,7 +276,6 @@ func (q *Queries) GetValidPreparationVessel(ctx context.Context, db DBTX, id str
 }
 
 const getValidPreparationVessels = `-- name: GetValidPreparationVessels :many
-
 SELECT
 	valid_preparation_vessels.id as valid_preparation_vessel_id,
 	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
@@ -553,7 +548,6 @@ func (q *Queries) GetValidPreparationVessels(ctx context.Context, db DBTX, arg *
 }
 
 const getValidPreparationVesselsForPreparation = `-- name: GetValidPreparationVesselsForPreparation :many
-
 SELECT
 	valid_preparation_vessels.id as valid_preparation_vessel_id,
 	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
@@ -829,7 +823,6 @@ func (q *Queries) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 }
 
 const getValidPreparationVesselsForVessel = `-- name: GetValidPreparationVesselsForVessel :many
-
 SELECT
 	valid_preparation_vessels.id as valid_preparation_vessel_id,
 	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
@@ -1105,7 +1098,6 @@ func (q *Queries) GetValidPreparationVesselsForVessel(ctx context.Context, db DB
 }
 
 const updateValidPreparationVessel = `-- name: UpdateValidPreparationVessel :execrows
-
 UPDATE valid_preparation_vessels SET
 	notes = $1,
 	valid_preparation_id = $2,
@@ -1136,7 +1128,6 @@ func (q *Queries) UpdateValidPreparationVessel(ctx context.Context, db DBTX, arg
 }
 
 const validPreparationVesselPairIsValid = `-- name: ValidPreparationVesselPairIsValid :one
-
 SELECT EXISTS(
 	SELECT id
 	FROM valid_preparation_vessels

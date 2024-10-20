@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidVessel = `-- name: ArchiveValidVessel :execrows
-
 UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidVessel(ctx context.Context, db DBTX, id string) (i
 }
 
 const checkValidVesselExistence = `-- name: CheckValidVesselExistence :one
-
 SELECT EXISTS (
 	SELECT valid_vessels.id
 	FROM valid_vessels
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidVesselExistence(ctx context.Context, db DBTX, id str
 }
 
 const createValidVessel = `-- name: CreateValidVessel :exec
-
 INSERT INTO valid_vessels (
 	id,
 	name,
@@ -120,7 +117,6 @@ func (q *Queries) CreateValidVessel(ctx context.Context, db DBTX, arg *CreateVal
 }
 
 const getRandomValidVessel = `-- name: GetRandomValidVessel :one
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -237,7 +233,6 @@ func (q *Queries) GetRandomValidVessel(ctx context.Context, db DBTX) (*GetRandom
 }
 
 const getValidVessel = `-- name: GetValidVessel :one
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -354,7 +349,6 @@ func (q *Queries) GetValidVessel(ctx context.Context, db DBTX, id string) (*GetV
 }
 
 const getValidVesselIDsNeedingIndexing = `-- name: GetValidVesselIDsNeedingIndexing :many
-
 SELECT valid_vessels.id
 FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
@@ -388,7 +382,6 @@ func (q *Queries) GetValidVesselIDsNeedingIndexing(ctx context.Context, db DBTX)
 }
 
 const getValidVessels = `-- name: GetValidVessels :many
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -534,7 +527,6 @@ func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVes
 }
 
 const getValidVesselsWithIDs = `-- name: GetValidVesselsWithIDs :many
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -667,7 +659,6 @@ func (q *Queries) GetValidVesselsWithIDs(ctx context.Context, db DBTX, ids []str
 }
 
 const searchForValidVessels = `-- name: SearchForValidVessels :many
-
 SELECT
 	valid_vessels.id,
 	valid_vessels.name,
@@ -738,7 +729,6 @@ func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, nameQuery 
 }
 
 const updateValidVessel = `-- name: UpdateValidVessel :execrows
-
 UPDATE valid_vessels SET
 	name = $1,
 	plural_name = $2,
@@ -802,7 +792,6 @@ func (q *Queries) UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateVal
 }
 
 const updateValidVesselLastIndexedAt = `-- name: UpdateValidVesselLastIndexedAt :execrows
-
 UPDATE valid_vessels SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

@@ -45,21 +45,21 @@ func buildOAuth2ClientTokensQueries(database string) []*Query {
 		return []*Query{
 			{
 				Annotation: QueryAnnotation{
-					Name: "ArchiveOAuth2ClientTokenByAccess",
+					Name: "DeleteOAuth2ClientTokenByAccess",
 					Type: ExecRowsType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`, oauth2ClientTokensTableName, accessColumn, accessColumn)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "ArchiveOAuth2ClientTokenByCode",
+					Name: "DeleteOAuth2ClientTokenByCode",
 					Type: ExecRowsType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`, oauth2ClientTokensTableName, codeColumn, codeColumn)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "ArchiveOAuth2ClientTokenByRefresh",
+					Name: "DeleteOAuth2ClientTokenByRefresh",
 					Type: ExecRowsType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`, oauth2ClientTokensTableName, refreshColumn, refreshColumn)),

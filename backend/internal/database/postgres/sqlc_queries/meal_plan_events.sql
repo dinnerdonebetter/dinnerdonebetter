@@ -1,8 +1,7 @@
 -- name: ArchiveMealPlanEvent :execrows
-
 UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id) AND belongs_to_meal_plan = sqlc.arg(belongs_to_meal_plan);
--- name: CreateMealPlanEvent :exec
 
+-- name: CreateMealPlanEvent :exec
 INSERT INTO meal_plan_events (
 	id,
 	notes,
@@ -18,8 +17,8 @@ INSERT INTO meal_plan_events (
 	sqlc.arg(meal_name),
 	sqlc.arg(belongs_to_meal_plan)
 );
--- name: MealPlanEventIsEligibleForVoting :one
 
+-- name: MealPlanEventIsEligibleForVoting :one
 SELECT EXISTS (
 	SELECT meal_plan_events.id
 	FROM meal_plan_events
@@ -32,8 +31,8 @@ SELECT EXISTS (
 		AND meal_plan_events.id = sqlc.arg(meal_plan_event_id)
 		AND meal_plan_events.archived_at IS NULL
 );
--- name: CheckMealPlanEventExistence :one
 
+-- name: CheckMealPlanEventExistence :one
 SELECT EXISTS (
 	SELECT meal_plan_events.id
 	FROM meal_plan_events
@@ -41,8 +40,8 @@ SELECT EXISTS (
 		AND meal_plan_events.id = sqlc.arg(id)
 		AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 );
--- name: GetMealPlanEvents :many
 
+-- name: GetMealPlanEvents :many
 SELECT
 	meal_plan_events.id,
 	meal_plan_events.notes,
@@ -93,8 +92,8 @@ GROUP BY meal_plan_events.id
 ORDER BY meal_plan_events.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetAllMealPlanEventsForMealPlan :many
 
+-- name: GetAllMealPlanEventsForMealPlan :many
 SELECT
 	meal_plan_events.id,
 	meal_plan_events.notes,
@@ -109,8 +108,8 @@ FROM meal_plan_events
 WHERE
 	meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id);
--- name: GetMealPlanEvent :one
 
+-- name: GetMealPlanEvent :one
 SELECT
 	meal_plan_events.id,
 	meal_plan_events.notes,
@@ -125,8 +124,8 @@ FROM meal_plan_events
 WHERE meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.id = sqlc.arg(id)
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(belongs_to_meal_plan);
--- name: UpdateMealPlanEvent :execrows
 
+-- name: UpdateMealPlanEvent :execrows
 UPDATE meal_plan_events SET
 	notes = sqlc.arg(notes),
 	starts_at = sqlc.arg(starts_at),

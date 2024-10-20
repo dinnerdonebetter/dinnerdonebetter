@@ -13,6 +13,13 @@
 			"provider": "otel"
 		}
 	},
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
 	"analytics": {
 		"segment": null,
 		"posthog": null,
@@ -20,10 +27,9 @@
 		"circuitBreakerConfig": null,
 		"provider": ""
 	},
-	"email": {
-		"sendgrid": null,
-		"mailgun": null,
-		"mailjet": null,
+	"search": {
+		"algolia": null,
+		"elasticsearch": null,
 		"circuitBreakerConfig": null,
 		"provider": ""
 	},
@@ -33,22 +39,16 @@
 		"CircuitBreakingConfig": null,
 		"Provider": ""
 	},
-	"search": {
-		"algolia": null,
-		"elasticsearch": null,
-		"circuitBreakerConfig": null,
-		"provider": ""
-	},
 	"encoding": {
 		"contentType": "application/json"
-	},
-	"routing": {
-		"provider": "chi",
-		"enableCORSForLocalhost": true
 	},
 	"meta": {
 		"runMode": "testing",
 		"debug": false
+	},
+	"routing": {
+		"provider": "chi",
+		"enableCORSForLocalhost": true
 	},
 	"events": {
 		"consumers": {
@@ -94,13 +94,13 @@
 	},
 	"services": {
 		"auditLogEntries": {},
-		"recipeStepCompletionConditions": {
+		"mealPlanGroceryListItems": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanOptionVotes": {
+		"validInstrumentMeasurementUnits": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepVessels": {
+		"serviceSettingConfigurations": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeRatings": {
@@ -115,7 +115,7 @@
 		"serviceSettings": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validInstrumentMeasurementUnits": {
+		"mealPlanTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeStepInstruments": {
@@ -130,7 +130,7 @@
 		"recipePrepTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanEvents": {
+		"recipeStepCompletionConditions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"userIngredientPreferences": {
@@ -154,13 +154,13 @@
 		"validIngredientStateIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanGroceryListItems": {
+		"mealPlanEvents": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanTasks": {
+		"mealPlanOptionVotes": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"serviceSettingConfigurations": {
+		"recipeStepVessels": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validPreparationVessels": {
@@ -175,16 +175,8 @@
 		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"users": {
-			"dataChangesTopicName": "data_changes",
-			"publicMediaURLPrefix": "",
-			"uploads": {
-				"storageConfig": {
-					"bucketName": "avatars",
-					"provider": "memory"
-				},
-				"debug": false
-			}
+		"dataPrivacy": {
+			"dataChangesTopicName": "data_changes"
 		},
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://media.example.website/lol",
@@ -197,13 +189,20 @@
 				"debug": false
 			}
 		},
-		"validIngredientStates": {
+		"users": {
+			"dataChangesTopicName": "data_changes",
+			"publicMediaURLPrefix": "",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "avatars",
+					"provider": "memory"
+				},
+				"debug": false
+			}
+		},
+		"validInstruments": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
-		},
-		"webhooks": {
-			"dataChangesTopicName": "data_changes",
-			"debug": false
 		},
 		"validMeasurementUnits": {
 			"dataChangesTopicName": "data_changes",
@@ -212,15 +211,15 @@
 		"oauth2Clients": {
 			"creationEnabled": false
 		},
-		"meals": {
+		"webhooks": {
 			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
+			"debug": false
 		},
 		"validIngredients": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
-		"validInstruments": {
+		"meals": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
@@ -233,6 +232,10 @@
 			"debug": false
 		},
 		"validPreparations": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"validIngredientStates": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},

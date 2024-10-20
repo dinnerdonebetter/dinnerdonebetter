@@ -11,6 +11,7 @@ import {
   AvatarUpdateInput,
   CreateMealPlanTasksRequest,
   CreateMealPlanTasksResponse,
+  DataDeletionResponse,
   EmailAddressVerificationRequestInput,
   FinalizeMealPlansRequest,
   FinalizeMealPlansResponse,
@@ -418,6 +419,36 @@ describe('basic', () => {
     expect(client.createHouseholdInvitation(householdID, exampleInput)).rejects.toEqual(
       new Error(exampleResponse.error?.message),
     );
+  });
+
+  it("should Destroys a user's data", () => {
+    const exampleResponse = new APIResponse<DataDeletionResponse>();
+    mock.onDelete(`${baseURL}/api/v1/data_privacy/destroy`).reply(202, exampleResponse);
+
+    client
+      .destroyAllUserData()
+      .then((response: APIResponse<DataDeletionResponse>) => {
+        expect(response).toEqual(exampleResponse);
+      })
+      .then(() => {
+        expect(mock.history.delete.length).toBe(1);
+        expect(mock.history.delete[0].headers).toHaveProperty('Authorization');
+        expect((mock.history.delete[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
+      });
+  });
+
+  it("should raise errors appropriately when trying to Destroys a user's data", () => {
+    const exampleResponse = new APIResponse<DataDeletionResponse>(buildObligatoryError('destroyAllUserData'));
+    mock.onDelete(`${baseURL}/api/v1/data_privacy/destroy`).reply(202, exampleResponse);
+
+    expect(client.destroyAllUserData()).rejects.toEqual(new Error(exampleResponse.error?.message));
+  });
+
+  it("should raise service errors appropriately when trying to Destroys a user's data", () => {
+    const exampleResponse = new APIResponse<DataDeletionResponse>(buildObligatoryError('destroyAllUserData'));
+    mock.onDelete(`${baseURL}/api/v1/data_privacy/destroy`).reply(500, exampleResponse);
+
+    expect(client.destroyAllUserData()).rejects.toEqual(new Error(exampleResponse.error?.message));
   });
 
   it('should Finalizes a meal plan', () => {

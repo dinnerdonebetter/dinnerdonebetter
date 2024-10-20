@@ -1,8 +1,7 @@
 -- name: ArchiveRecipeStep :execrows
-
 UPDATE recipe_steps SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe = sqlc.arg(belongs_to_recipe) AND id = sqlc.arg(id);
--- name: CreateRecipeStep :exec
 
+-- name: CreateRecipeStep :exec
 INSERT INTO recipe_steps (
 	id,
 	index,
@@ -32,8 +31,8 @@ INSERT INTO recipe_steps (
 	sqlc.arg(start_timer_automatically),
 	sqlc.arg(belongs_to_recipe)
 );
--- name: CheckRecipeStepExistence :one
 
+-- name: CheckRecipeStepExistence :one
 SELECT EXISTS (
 	SELECT recipe_steps.id
 	FROM recipe_steps
@@ -44,8 +43,8 @@ SELECT EXISTS (
 		AND recipes.archived_at IS NULL
 		AND recipes.id = sqlc.arg(recipe_id)
 );
--- name: GetRecipeStep :one
 
+-- name: GetRecipeStep :one
 SELECT
 	recipe_steps.id,
 	recipe_steps.index,
@@ -93,8 +92,8 @@ WHERE recipe_steps.archived_at IS NULL
 	AND recipe_steps.id = sqlc.arg(recipe_step_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
--- name: GetRecipeSteps :many
 
+-- name: GetRecipeSteps :many
 SELECT
 	recipe_steps.id,
 	recipe_steps.index,
@@ -172,8 +171,8 @@ WHERE recipe_steps.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetRecipeStepByRecipeID :one
 
+-- name: GetRecipeStepByRecipeID :one
 SELECT
 	recipe_steps.id,
 	recipe_steps.index,
@@ -218,8 +217,8 @@ FROM recipe_steps
 	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipe_steps.archived_at IS NULL
 	AND recipe_steps.id = sqlc.arg(id);
--- name: UpdateRecipeStep :execrows
 
+-- name: UpdateRecipeStep :execrows
 UPDATE recipe_steps SET
 	index = sqlc.arg(index),
 	preparation_id = sqlc.arg(preparation_id),

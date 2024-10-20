@@ -10,8 +10,7 @@ import (
 	"time"
 )
 
-const archiveOAuth2ClientTokenByAccess = `-- name: ArchiveOAuth2ClientTokenByAccess :execrows
-
+const archiveOAuth2ClientTokenByAccess = `-- name: DeleteOAuth2ClientTokenByAccess :execrows
 DELETE FROM oauth2_client_tokens WHERE access = $1
 `
 
@@ -23,8 +22,7 @@ func (q *Queries) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, db DBTX,
 	return result.RowsAffected()
 }
 
-const archiveOAuth2ClientTokenByCode = `-- name: ArchiveOAuth2ClientTokenByCode :execrows
-
+const archiveOAuth2ClientTokenByCode = `-- name: DeleteOAuth2ClientTokenByCode :execrows
 DELETE FROM oauth2_client_tokens WHERE code = $1
 `
 
@@ -36,8 +34,7 @@ func (q *Queries) ArchiveOAuth2ClientTokenByCode(ctx context.Context, db DBTX, c
 	return result.RowsAffected()
 }
 
-const archiveOAuth2ClientTokenByRefresh = `-- name: ArchiveOAuth2ClientTokenByRefresh :execrows
-
+const archiveOAuth2ClientTokenByRefresh = `-- name: DeleteOAuth2ClientTokenByRefresh :execrows
 DELETE FROM oauth2_client_tokens WHERE refresh = $1
 `
 
@@ -50,7 +47,6 @@ func (q *Queries) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX
 }
 
 const checkOAuth2ClientTokenExistence = `-- name: CheckOAuth2ClientTokenExistence :one
-
 SELECT EXISTS (
 	SELECT oauth2_client_tokens.id
 	FROM oauth2_client_tokens
@@ -67,7 +63,6 @@ func (q *Queries) CheckOAuth2ClientTokenExistence(ctx context.Context, db DBTX, 
 }
 
 const createOAuth2ClientToken = `-- name: CreateOAuth2ClientToken :exec
-
 INSERT INTO oauth2_client_tokens (
 	id,
 	client_id,
@@ -147,7 +142,6 @@ func (q *Queries) CreateOAuth2ClientToken(ctx context.Context, db DBTX, arg *Cre
 }
 
 const getOAuth2ClientTokenByAccess = `-- name: GetOAuth2ClientTokenByAccess :one
-
 SELECT
 	oauth2_client_tokens.id,
 	oauth2_client_tokens.client_id,
@@ -194,7 +188,6 @@ func (q *Queries) GetOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, acc
 }
 
 const getOAuth2ClientTokenByCode = `-- name: GetOAuth2ClientTokenByCode :one
-
 SELECT
 	oauth2_client_tokens.id,
 	oauth2_client_tokens.client_id,
@@ -241,7 +234,6 @@ func (q *Queries) GetOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code 
 }
 
 const getOAuth2ClientTokenByRefresh = `-- name: GetOAuth2ClientTokenByRefresh :one
-
 SELECT
 	oauth2_client_tokens.id,
 	oauth2_client_tokens.client_id,

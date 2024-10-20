@@ -12,7 +12,6 @@ import (
 )
 
 const changeMealPlanTaskStatus = `-- name: ChangeMealPlanTaskStatus :exec
-
 UPDATE meal_plan_tasks SET
 	completed_at = $1,
 	status_explanation = $2,
@@ -38,7 +37,6 @@ func (q *Queries) ChangeMealPlanTaskStatus(ctx context.Context, db DBTX, arg *Ch
 }
 
 const checkMealPlanTaskExistence = `-- name: CheckMealPlanTaskExistence :one
-
 SELECT EXISTS (
 	SELECT meal_plan_tasks.id
 	FROM meal_plan_tasks
@@ -65,7 +63,6 @@ func (q *Queries) CheckMealPlanTaskExistence(ctx context.Context, db DBTX, arg *
 }
 
 const createMealPlanTask = `-- name: CreateMealPlanTask :exec
-
 INSERT INTO meal_plan_tasks (
 	id,
 	status,
@@ -109,7 +106,6 @@ func (q *Queries) CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMe
 }
 
 const getMealPlanTask = `-- name: GetMealPlanTask :one
-
 SELECT
 	meal_plan_tasks.id,
 	meal_plan_options.id as meal_plan_option_id,
@@ -262,7 +258,6 @@ func (q *Queries) GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID s
 }
 
 const listAllMealPlanTasksByMealPlan = `-- name: ListAllMealPlanTasksByMealPlan :many
-
 SELECT
 	meal_plan_tasks.id,
 	meal_plan_options.id as meal_plan_option_id,
@@ -431,7 +426,6 @@ func (q *Queries) ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, m
 }
 
 const listIncompleteMealPlanTasksByMealPlanOption = `-- name: ListIncompleteMealPlanTasksByMealPlanOption :many
-
 SELECT
 	meal_plan_tasks.id,
 	meal_plan_options.id as meal_plan_option_id,

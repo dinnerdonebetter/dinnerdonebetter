@@ -10,7 +10,6 @@ import (
 )
 
 const createMealComponent = `-- name: CreateMealComponent :exec
-
 INSERT INTO meal_components (
 	id,
 	meal_id,

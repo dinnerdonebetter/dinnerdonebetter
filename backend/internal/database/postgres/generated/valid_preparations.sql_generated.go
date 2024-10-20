@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidPreparation = `-- name: ArchiveValidPreparation :execrows
-
 UPDATE valid_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidPreparation(ctx context.Context, db DBTX, id strin
 }
 
 const checkValidPreparationExistence = `-- name: CheckValidPreparationExistence :one
-
 SELECT EXISTS (
 	SELECT valid_preparations.id
 	FROM valid_preparations
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidPreparationExistence(ctx context.Context, db DBTX, i
 }
 
 const createValidPreparation = `-- name: CreateValidPreparation :exec
-
 INSERT INTO valid_preparations (
 	id,
 	name,
@@ -136,7 +133,6 @@ func (q *Queries) CreateValidPreparation(ctx context.Context, db DBTX, arg *Crea
 }
 
 const getRandomValidPreparation = `-- name: GetRandomValidPreparation :one
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -224,7 +220,6 @@ func (q *Queries) GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetR
 }
 
 const getValidPreparation = `-- name: GetValidPreparation :one
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -312,7 +307,6 @@ func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) (
 }
 
 const getValidPreparations = `-- name: GetValidPreparations :many
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -470,7 +464,6 @@ func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetVal
 }
 
 const getValidPreparationsNeedingIndexing = `-- name: GetValidPreparationsNeedingIndexing :many
-
 SELECT valid_preparations.id
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
@@ -504,7 +497,6 @@ func (q *Queries) GetValidPreparationsNeedingIndexing(ctx context.Context, db DB
 }
 
 const getValidPreparationsWithIDs = `-- name: GetValidPreparationsWithIDs :many
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -608,7 +600,6 @@ func (q *Queries) GetValidPreparationsWithIDs(ctx context.Context, db DBTX, ids 
 }
 
 const searchForValidPreparations = `-- name: SearchForValidPreparations :many
-
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,
@@ -713,7 +704,6 @@ func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, nameQ
 }
 
 const updateValidPreparation = `-- name: UpdateValidPreparation :execrows
-
 UPDATE valid_preparations SET
 	name = $1,
 	description = $2,
@@ -789,7 +779,6 @@ func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *Upda
 }
 
 const updateValidPreparationLastIndexedAt = `-- name: UpdateValidPreparationLastIndexedAt :execrows
-
 UPDATE valid_preparations SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

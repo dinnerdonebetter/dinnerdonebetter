@@ -12,7 +12,6 @@ import (
 )
 
 const archiveWebhook = `-- name: ArchiveWebhook :execrows
-
 UPDATE webhooks SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -34,7 +33,6 @@ func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebho
 }
 
 const checkWebhookExistence = `-- name: CheckWebhookExistence :one
-
 SELECT EXISTS(
 	SELECT webhooks.id
 	FROM webhooks
@@ -57,7 +55,6 @@ func (q *Queries) CheckWebhookExistence(ctx context.Context, db DBTX, arg *Check
 }
 
 const createWebhook = `-- name: CreateWebhook :exec
-
 INSERT INTO webhooks (
 	id,
 	name,
@@ -97,7 +94,6 @@ func (q *Queries) CreateWebhook(ctx context.Context, db DBTX, arg *CreateWebhook
 }
 
 const getWebhook = `-- name: GetWebhook :many
-
 SELECT
 	webhooks.id as webhook_id,
 	webhooks.name as webhook_name,
@@ -182,7 +178,6 @@ func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams
 }
 
 const getWebhooksForHousehold = `-- name: GetWebhooksForHousehold :many
-
 SELECT
 	webhooks.id,
 	webhooks.name,
@@ -318,7 +313,6 @@ func (q *Queries) GetWebhooksForHousehold(ctx context.Context, db DBTX, arg *Get
 }
 
 const getWebhooksForHouseholdAndEvent = `-- name: GetWebhooksForHouseholdAndEvent :many
-
 SELECT
 	webhooks.id,
 	webhooks.name,

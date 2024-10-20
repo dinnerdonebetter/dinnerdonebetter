@@ -24,7 +24,7 @@ const (
 var _ types.WorkerService = (*service)(nil)
 
 type (
-	// service handles valid vessels.
+	// service handles worker invocation requests.
 	service struct {
 		logger                         logging.Logger
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
@@ -49,7 +49,7 @@ func ProvideService(
 ) (types.WorkerService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up workers service data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
 	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(

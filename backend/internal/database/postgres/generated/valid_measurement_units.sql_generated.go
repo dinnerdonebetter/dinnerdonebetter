@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidMeasurementUnit = `-- name: ArchiveValidMeasurementUnit :execrows
-
 UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id s
 }
 
 const checkValidMeasurementUnitExistence = `-- name: CheckValidMeasurementUnitExistence :one
-
 SELECT EXISTS (
 	SELECT valid_measurement_units.id
 	FROM valid_measurement_units
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidMeasurementUnitExistence(ctx context.Context, db DBT
 }
 
 const createValidMeasurementUnit = `-- name: CreateValidMeasurementUnit :exec
-
 INSERT INTO valid_measurement_units (
 	id,
 	name,
@@ -100,7 +97,6 @@ func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *
 }
 
 const getRandomValidMeasurementUnit = `-- name: GetRandomValidMeasurementUnit :one
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -161,7 +157,6 @@ func (q *Queries) GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*
 }
 
 const getValidMeasurementUnit = `-- name: GetValidMeasurementUnit :one
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -222,7 +217,6 @@ func (q *Queries) GetValidMeasurementUnit(ctx context.Context, db DBTX, id strin
 }
 
 const getValidMeasurementUnits = `-- name: GetValidMeasurementUnits :many
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -353,7 +347,6 @@ func (q *Queries) GetValidMeasurementUnits(ctx context.Context, db DBTX, arg *Ge
 }
 
 const getValidMeasurementUnitsNeedingIndexing = `-- name: GetValidMeasurementUnitsNeedingIndexing :many
-
 SELECT valid_measurement_units.id
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
@@ -387,7 +380,6 @@ func (q *Queries) GetValidMeasurementUnitsNeedingIndexing(ctx context.Context, d
 }
 
 const getValidMeasurementUnitsWithIDs = `-- name: GetValidMeasurementUnitsWithIDs :many
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -464,7 +456,6 @@ func (q *Queries) GetValidMeasurementUnitsWithIDs(ctx context.Context, db DBTX, 
 }
 
 const searchForValidMeasurementUnits = `-- name: SearchForValidMeasurementUnits :many
-
 SELECT
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -542,7 +533,6 @@ func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, n
 }
 
 const searchValidMeasurementUnitsByIngredientID = `-- name: SearchValidMeasurementUnitsByIngredientID :many
-
 SELECT
 	DISTINCT(valid_measurement_units.id),
 	valid_measurement_units.name,
@@ -685,7 +675,6 @@ func (q *Queries) SearchValidMeasurementUnitsByIngredientID(ctx context.Context,
 }
 
 const updateValidMeasurementUnit = `-- name: UpdateValidMeasurementUnit :execrows
-
 UPDATE valid_measurement_units SET
 	name = $1,
 	description = $2,
@@ -734,7 +723,6 @@ func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *
 }
 
 const updateValidMeasurementUnitLastIndexedAt = `-- name: UpdateValidMeasurementUnitLastIndexedAt :execrows
-
 UPDATE valid_measurement_units SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

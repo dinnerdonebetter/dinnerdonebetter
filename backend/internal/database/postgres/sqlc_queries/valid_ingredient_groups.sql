@@ -1,15 +1,14 @@
 -- name: ArchiveValidIngredientGroup :execrows
-
 UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
--- name: ArchiveValidIngredientGroupMember :execrows
 
+-- name: ArchiveValidIngredientGroupMember :execrows
 UPDATE valid_ingredient_group_members SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
 	AND belongs_to_group = sqlc.arg(belongs_to_group);
--- name: CreateValidIngredientGroup :exec
 
+-- name: CreateValidIngredientGroup :exec
 INSERT INTO valid_ingredient_groups (
 	id,
 	name,
@@ -21,8 +20,8 @@ INSERT INTO valid_ingredient_groups (
 	sqlc.arg(description),
 	sqlc.arg(slug)
 );
--- name: CreateValidIngredientGroupMember :exec
 
+-- name: CreateValidIngredientGroupMember :exec
 INSERT INTO valid_ingredient_group_members (
 	id,
 	belongs_to_group,
@@ -32,16 +31,16 @@ INSERT INTO valid_ingredient_group_members (
 	sqlc.arg(belongs_to_group),
 	sqlc.arg(valid_ingredient)
 );
--- name: CheckValidIngredientGroupExistence :one
 
+-- name: CheckValidIngredientGroupExistence :one
 SELECT EXISTS (
 	SELECT valid_ingredient_groups.id
 	FROM valid_ingredient_groups
 	WHERE valid_ingredient_groups.archived_at IS NULL
 		AND valid_ingredient_groups.id = sqlc.arg(id)
 );
--- name: GetValidIngredientGroups :many
 
+-- name: GetValidIngredientGroups :many
 SELECT
 	valid_ingredient_groups.id,
 	valid_ingredient_groups.name,
@@ -87,8 +86,8 @@ GROUP BY valid_ingredient_groups.id
 ORDER BY valid_ingredient_groups.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidIngredientGroupMembers :many
 
+-- name: GetValidIngredientGroupMembers :many
 SELECT
 	valid_ingredient_group_members.id,
 	valid_ingredient_group_members.belongs_to_group,
@@ -139,8 +138,8 @@ WHERE
 	valid_ingredient_groups.archived_at IS NULL
 	AND valid_ingredient_group_members.archived_at IS NULL
 	AND valid_ingredient_group_members.belongs_to_group = sqlc.arg(belongs_to_group);
--- name: GetValidIngredientGroup :one
 
+-- name: GetValidIngredientGroup :one
 SELECT
 	valid_ingredient_groups.id,
 	valid_ingredient_groups.name,
@@ -152,8 +151,8 @@ SELECT
 FROM valid_ingredient_groups
 WHERE valid_ingredient_groups.archived_at IS NULL
 AND valid_ingredient_groups.id = sqlc.arg(id);
--- name: SearchForValidIngredientGroups :many
 
+-- name: SearchForValidIngredientGroups :many
 SELECT
 	valid_ingredient_groups.id,
 	valid_ingredient_groups.name,
@@ -200,8 +199,8 @@ GROUP BY valid_ingredient_groups.id
 ORDER BY valid_ingredient_groups.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetValidIngredientGroupsWithIDs :many
 
+-- name: GetValidIngredientGroupsWithIDs :many
 SELECT
 	valid_ingredient_groups.id,
 	valid_ingredient_groups.name,
@@ -213,8 +212,8 @@ SELECT
 FROM valid_ingredient_groups
 WHERE valid_ingredient_groups.archived_at IS NULL
 	AND valid_ingredient_groups.id = ANY(sqlc.arg(ids)::text[]);
--- name: UpdateValidIngredientGroup :execrows
 
+-- name: UpdateValidIngredientGroup :execrows
 UPDATE valid_ingredient_groups SET
 	name = sqlc.arg(name),
 	description = sqlc.arg(description),

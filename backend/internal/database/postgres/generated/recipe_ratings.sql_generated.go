@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeRating = `-- name: ArchiveRecipeRating :execrows
-
 UPDATE recipe_ratings SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveRecipeRating(ctx context.Context, db DBTX, id string) (
 }
 
 const checkRecipeRatingExistence = `-- name: CheckRecipeRatingExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_ratings.id
 	FROM recipe_ratings
@@ -42,7 +40,6 @@ func (q *Queries) CheckRecipeRatingExistence(ctx context.Context, db DBTX, id st
 }
 
 const createRecipeRating = `-- name: CreateRecipeRating :exec
-
 INSERT INTO recipe_ratings (
 	id,
 	recipe_id,
@@ -94,7 +91,6 @@ func (q *Queries) CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRe
 }
 
 const getRecipeRating = `-- name: GetRecipeRating :one
-
 SELECT
 	recipe_ratings.id,
 	recipe_ratings.recipe_id,
@@ -134,7 +130,6 @@ func (q *Queries) GetRecipeRating(ctx context.Context, db DBTX, id string) (*Rec
 }
 
 const getRecipeRatings = `-- name: GetRecipeRatings :many
-
 SELECT
 	recipe_ratings.id,
 	recipe_ratings.recipe_id,
@@ -259,7 +254,6 @@ func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeR
 }
 
 const updateRecipeRating = `-- name: UpdateRecipeRating :execrows
-
 UPDATE recipe_ratings SET
 	recipe_id = $1,
 	taste = $2,

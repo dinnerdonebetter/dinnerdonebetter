@@ -7,6 +7,7 @@ export * from './AvatarUpdateInput.gen';
 export * from './ChangeLog.gen';
 export * from './CreateMealPlanTasksRequest.gen';
 export * from './CreateMealPlanTasksResponse.gen';
+export * from './DataDeletionResponse.gen';
 export * from './EmailAddressVerificationRequestInput.gen';
 export * from './FinalizeMealPlansRequest.gen';
 export * from './FinalizeMealPlansResponse.gen';

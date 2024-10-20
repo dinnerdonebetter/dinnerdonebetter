@@ -25,6 +25,7 @@ import (
 	adminservice "github.com/dinnerdonebetter/backend/internal/services/admin"
 	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationssservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -136,6 +137,7 @@ func Build(
 		workersservice.Providers,
 		usernotificationsservice.Providers,
 		auditlogentriesservice.Providers,
+		dataprivacyservice.Providers,
 	)
 
 	return nil, nil

@@ -188,12 +188,23 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	firstUser.LastUpdatedAt = u.LastUpdatedAt
 	assert.Equal(t, firstUser, u)
 
-	// delete
+	// archive
 	for _, user := range createdUsers {
 		assert.NoError(t, dbc.ArchiveUser(ctx, user.ID))
 
 		var y *types.User
 		y, err = dbc.GetUser(ctx, user.ID)
+		assert.Nil(t, y)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, sql.ErrNoRows)
+	}
+
+	// delete
+	for _, user := range createdUsers {
+		assert.NoError(t, dbc.DeleteUser(ctx, user.ID))
+
+		var y *types.QueryFilteredResult[types.Household]
+		y, err = dbc.GetHouseholds(ctx, user.ID, nil)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)
@@ -496,6 +507,19 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 		assert.Error(t, c.ArchiveUser(ctx, exampleUserID))
 
 		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_DeleteUser(T *testing.T) {
+	T.Parallel()
+
+	T.Run("with invalid user ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.DeleteUser(ctx, ""))
 	})
 }
 

@@ -81,21 +81,6 @@ func (s *TestSuite) TestUsers_Creating() {
 	})
 }
 
-func (s *TestSuite) TestUsers_Reading_Returns404ForNonexistentUser() {
-	s.runTest("should return an error when trying to read a userClient that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			actual, err := testClients.adminClient.GetUser(ctx, nonexistentID)
-			assert.Nil(t, actual)
-			assert.Error(t, err)
-		}
-	})
-}
-
 func (s *TestSuite) TestUsers_Reading() {
 	s.runTest("should be able to be read", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -114,6 +99,19 @@ func (s *TestSuite) TestUsers_Reading() {
 
 			// Clean up.
 			assert.NoError(t, testClients.adminClient.ArchiveUser(ctx, actual.ID))
+		}
+	})
+
+	s.runTest("should return an error when trying to read a userClient that does not exist", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			actual, err := testClients.adminClient.GetUser(ctx, nonexistentID)
+			assert.Nil(t, actual)
+			assert.Error(t, err)
 		}
 	})
 }
@@ -139,6 +137,24 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 
 			// Clean up.
 			assert.NoError(t, testClients.adminClient.ArchiveUser(ctx, user.ID))
+		}
+	})
+}
+
+func (s *TestSuite) TestUsers_Deleting() {
+	s.runTest("should be able to delete your data", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			require.NoError(t, testClients.userClient.DestroyAllUserData(ctx))
+
+			// Clean up.
+			u, err := testClients.adminClient.GetUser(ctx, testClients.user.ID)
+			assert.Nil(t, u)
+			assert.Error(t, err)
 		}
 	})
 }

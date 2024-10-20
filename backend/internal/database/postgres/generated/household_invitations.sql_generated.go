@@ -12,7 +12,6 @@ import (
 )
 
 const attachHouseholdInvitationsToUserID = `-- name: AttachHouseholdInvitationsToUserID :exec
-
 UPDATE household_invitations SET
 	to_user = $1,
 	last_updated_at = NOW()
@@ -31,7 +30,6 @@ func (q *Queries) AttachHouseholdInvitationsToUserID(ctx context.Context, db DBT
 }
 
 const checkHouseholdInvitationExistence = `-- name: CheckHouseholdInvitationExistence :one
-
 SELECT EXISTS (
 	SELECT household_invitations.id
 	FROM household_invitations
@@ -48,7 +46,6 @@ func (q *Queries) CheckHouseholdInvitationExistence(ctx context.Context, db DBTX
 }
 
 const createHouseholdInvitation = `-- name: CreateHouseholdInvitation :exec
-
 INSERT INTO household_invitations (
 	id,
 	from_user,
@@ -100,7 +97,6 @@ func (q *Queries) CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *C
 }
 
 const getHouseholdInvitationByEmailAndToken = `-- name: GetHouseholdInvitationByEmailAndToken :one
-
 SELECT
 	household_invitations.id,
 	households.id as household_id,
@@ -302,7 +298,6 @@ func (q *Queries) GetHouseholdInvitationByEmailAndToken(ctx context.Context, db 
 }
 
 const getHouseholdInvitationByHouseholdAndID = `-- name: GetHouseholdInvitationByHouseholdAndID :one
-
 SELECT
 	household_invitations.id,
 	households.id as household_id,
@@ -504,7 +499,6 @@ func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db
 }
 
 const getHouseholdInvitationByTokenAndID = `-- name: GetHouseholdInvitationByTokenAndID :one
-
 SELECT
 	household_invitations.id,
 	households.id as household_id,
@@ -706,7 +700,6 @@ func (q *Queries) GetHouseholdInvitationByTokenAndID(ctx context.Context, db DBT
 }
 
 const getPendingInvitesForUser = `-- name: GetPendingInvitesForUser :many
-
 SELECT
 	household_invitations.id,
 	households.id as household_id,
@@ -974,7 +967,6 @@ func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *Ge
 }
 
 const getPendingInvitesFromUser = `-- name: GetPendingInvitesFromUser :many
-
 SELECT
 	household_invitations.id,
 	households.id as household_id,
@@ -1242,7 +1234,6 @@ func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *G
 }
 
 const setHouseholdInvitationStatus = `-- name: SetHouseholdInvitationStatus :exec
-
 UPDATE household_invitations SET
 	status = $1,
 	status_note = $2,

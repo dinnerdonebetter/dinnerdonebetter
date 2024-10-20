@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeStepProduct = `-- name: ArchiveRecipeStepProduct :execrows
-
 UPDATE recipe_step_products SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveRecipeStepProduct(ctx context.Context, db DBTX, arg *Ar
 }
 
 const checkRecipeStepProductExistence = `-- name: CheckRecipeStepProductExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_step_products.id
 	FROM recipe_step_products
@@ -61,7 +59,6 @@ func (q *Queries) CheckRecipeStepProductExistence(ctx context.Context, db DBTX, 
 }
 
 const createRecipeStepProduct = `-- name: CreateRecipeStepProduct :exec
-
 INSERT INTO recipe_step_products (
 	id,
 	name,
@@ -145,7 +142,6 @@ func (q *Queries) CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *Cre
 }
 
 const getRecipeStepProduct = `-- name: GetRecipeStepProduct :one
-
 SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
@@ -278,7 +274,6 @@ func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRec
 }
 
 const getRecipeStepProducts = `-- name: GetRecipeStepProducts :many
-
 SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
@@ -479,7 +474,6 @@ func (q *Queries) GetRecipeStepProducts(ctx context.Context, db DBTX, arg *GetRe
 }
 
 const getRecipeStepProductsForRecipe = `-- name: GetRecipeStepProductsForRecipe :many
-
 SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
@@ -619,7 +613,6 @@ func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, r
 }
 
 const updateRecipeStepProduct = `-- name: UpdateRecipeStepProduct :execrows
-
 UPDATE recipe_step_products SET
 	name = $1,
 	type = $2,

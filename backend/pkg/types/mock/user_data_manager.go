@@ -119,6 +119,11 @@ func (m *UserDataManagerMock) ArchiveUser(ctx context.Context, userID string) er
 	return m.Called(ctx, userID).Error(0)
 }
 
+// DeleteUser is a mock function.
+func (m *UserDataManagerMock) DeleteUser(ctx context.Context, userID string) error {
+	return m.Called(ctx, userID).Error(0)
+}
+
 // GetEmailAddressVerificationTokenForUser is a mock function.
 func (m *UserDataManagerMock) GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error) {
 	args := m.Called(ctx, userID)

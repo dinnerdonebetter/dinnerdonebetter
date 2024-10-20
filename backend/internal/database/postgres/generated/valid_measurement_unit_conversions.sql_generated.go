@@ -12,7 +12,6 @@ import (
 )
 
 const archiveValidMeasurementUnitConversion = `-- name: ArchiveValidMeasurementUnitConversion :execrows
-
 UPDATE valid_measurement_unit_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveValidMeasurementUnitConversion(ctx context.Context, db 
 }
 
 const checkValidMeasurementUnitConversionExistence = `-- name: CheckValidMeasurementUnitConversionExistence :one
-
 SELECT EXISTS (
 	SELECT valid_measurement_unit_conversions.id
 	FROM valid_measurement_unit_conversions
@@ -42,7 +40,6 @@ func (q *Queries) CheckValidMeasurementUnitConversionExistence(ctx context.Conte
 }
 
 const createValidMeasurementUnitConversion = `-- name: CreateValidMeasurementUnitConversion :exec
-
 INSERT INTO valid_measurement_unit_conversions (
 	id,
 	from_unit,
@@ -82,7 +79,6 @@ func (q *Queries) CreateValidMeasurementUnitConversion(ctx context.Context, db D
 }
 
 const getAllValidMeasurementUnitConversionsFromMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsFromMeasurementUnit :many
-
 SELECT
 	valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
 	valid_measurement_units_from.id as from_unit_id,
@@ -348,7 +344,6 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx c
 }
 
 const getAllValidMeasurementUnitConversionsToMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsToMeasurementUnit :many
-
 SELECT
 	valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
 	valid_measurement_units_from.id as from_unit_id,
@@ -614,7 +609,6 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx con
 }
 
 const getValidMeasurementUnitConversion = `-- name: GetValidMeasurementUnitConversion :one
-
 SELECT
 	valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
 	valid_measurement_units_from.id as from_unit_id,
@@ -864,7 +858,6 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 }
 
 const updateValidMeasurementUnitConversion = `-- name: UpdateValidMeasurementUnitConversion :execrows
-
 UPDATE valid_measurement_unit_conversions SET
 	from_unit = $1,
 	to_unit = $2,

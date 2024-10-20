@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeMedia = `-- name: ArchiveRecipeMedia :execrows
-
 UPDATE recipe_media SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) (i
 }
 
 const checkRecipeMediaExistence = `-- name: CheckRecipeMediaExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_media.id
 	FROM recipe_media
@@ -42,7 +40,6 @@ func (q *Queries) CheckRecipeMediaExistence(ctx context.Context, db DBTX, id str
 }
 
 const createRecipeMedia = `-- name: CreateRecipeMedia :exec
-
 INSERT INTO recipe_media (
 	id,
 	belongs_to_recipe,
@@ -86,7 +83,6 @@ func (q *Queries) CreateRecipeMedia(ctx context.Context, db DBTX, arg *CreateRec
 }
 
 const getRecipeMedia = `-- name: GetRecipeMedia :one
-
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,
@@ -135,7 +131,6 @@ func (q *Queries) GetRecipeMedia(ctx context.Context, db DBTX, id string) (*GetR
 }
 
 const getRecipeMediaForRecipe = `-- name: GetRecipeMediaForRecipe :many
-
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,
@@ -203,7 +198,6 @@ func (q *Queries) GetRecipeMediaForRecipe(ctx context.Context, db DBTX, recipeID
 }
 
 const getRecipeMediaForRecipeStep = `-- name: GetRecipeMediaForRecipeStep :many
-
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,
@@ -276,7 +270,6 @@ func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg 
 }
 
 const updateRecipeMedia = `-- name: UpdateRecipeMedia :execrows
-
 UPDATE recipe_media SET
 	belongs_to_recipe = $1,
 	belongs_to_recipe_step = $2,

@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidIngredient = `-- name: ArchiveValidIngredient :execrows
-
 UPDATE valid_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidIngredient(ctx context.Context, db DBTX, id string
 }
 
 const checkValidIngredientExistence = `-- name: CheckValidIngredientExistence :one
-
 SELECT EXISTS (
 	SELECT valid_ingredients.id
 	FROM valid_ingredients
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidIngredientExistence(ctx context.Context, db DBTX, id
 }
 
 const createValidIngredient = `-- name: CreateValidIngredient :exec
-
 INSERT INTO valid_ingredients (
 	id,
 	name,
@@ -196,7 +193,6 @@ func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *Creat
 }
 
 const getRandomValidIngredient = `-- name: GetRandomValidIngredient :one
-
 SELECT
 	valid_ingredients.id,
 	valid_ingredients.name,
@@ -329,7 +325,6 @@ func (q *Queries) GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRa
 }
 
 const getValidIngredient = `-- name: GetValidIngredient :one
-
 SELECT
 	valid_ingredients.id,
 	valid_ingredients.name,
@@ -462,7 +457,6 @@ func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) (*
 }
 
 const getValidIngredients = `-- name: GetValidIngredients :many
-
 SELECT
 	valid_ingredients.id,
 	valid_ingredients.name,
@@ -665,7 +659,6 @@ func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX, arg *GetVali
 }
 
 const getValidIngredientsNeedingIndexing = `-- name: GetValidIngredientsNeedingIndexing :many
-
 SELECT valid_ingredients.id
 FROM valid_ingredients
 WHERE valid_ingredients.archived_at IS NULL
@@ -699,7 +692,6 @@ func (q *Queries) GetValidIngredientsNeedingIndexing(ctx context.Context, db DBT
 }
 
 const getValidIngredientsWithIDs = `-- name: GetValidIngredientsWithIDs :many
-
 SELECT
 	valid_ingredients.id,
 	valid_ingredients.name,
@@ -848,7 +840,6 @@ func (q *Queries) GetValidIngredientsWithIDs(ctx context.Context, db DBTX, ids [
 }
 
 const searchForValidIngredients = `-- name: SearchForValidIngredients :many
-
 SELECT
 	valid_ingredients.id,
 	valid_ingredients.name,
@@ -998,7 +989,6 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, nameQu
 }
 
 const searchValidIngredientsByPreparationAndIngredientName = `-- name: SearchValidIngredientsByPreparationAndIngredientName :many
-
 SELECT
 	DISTINCT(valid_ingredients.id),
 	valid_ingredients.name,
@@ -1160,7 +1150,6 @@ func (q *Queries) SearchValidIngredientsByPreparationAndIngredientName(ctx conte
 }
 
 const updateValidIngredient = `-- name: UpdateValidIngredient :execrows
-
 UPDATE valid_ingredients SET
 	name = $1,
 	description = $2,
@@ -1281,7 +1270,6 @@ func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *Updat
 }
 
 const updateValidIngredientLastIndexedAt = `-- name: UpdateValidIngredientLastIndexedAt :execrows
-
 UPDATE valid_ingredients SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

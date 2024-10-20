@@ -1,8 +1,7 @@
 -- name: ArchiveRecipeStepCompletionCondition :execrows
-
 UPDATE recipe_step_completion_conditions SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step) AND id = sqlc.arg(id);
--- name: CreateRecipeStepCompletionCondition :exec
 
+-- name: CreateRecipeStepCompletionCondition :exec
 INSERT INTO recipe_step_completion_conditions (
 	id,
 	optional,
@@ -16,8 +15,8 @@ INSERT INTO recipe_step_completion_conditions (
 	sqlc.arg(belongs_to_recipe_step),
 	sqlc.arg(ingredient_state)
 );
--- name: CheckRecipeStepCompletionConditionExistence :one
 
+-- name: CheckRecipeStepCompletionConditionExistence :one
 SELECT EXISTS (
 	SELECT recipe_step_completion_conditions.id
 	FROM recipe_step_completion_conditions
@@ -32,8 +31,8 @@ SELECT EXISTS (
 		AND recipes.archived_at IS NULL
 		AND recipes.id = sqlc.arg(recipe_id)
 );
--- name: GetAllRecipeStepCompletionConditionsForRecipe :many
 
+-- name: GetAllRecipeStepCompletionConditionsForRecipe :many
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
@@ -75,8 +74,8 @@ GROUP BY
 	recipe_step_completion_conditions.id,
 	recipe_step_completion_condition_ingredients.id,
 	valid_ingredient_states.id;
--- name: GetRecipeStepCompletionConditions :many
 
+-- name: GetRecipeStepCompletionConditions :many
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
@@ -142,8 +141,8 @@ WHERE recipe_step_completion_conditions.archived_at IS NULL
 	AND recipe_step_completion_conditions.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
--- name: GetRecipeStepCompletionConditionWithIngredients :many
 
+-- name: GetRecipeStepCompletionConditionWithIngredients :many
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
@@ -184,8 +183,8 @@ WHERE recipe_step_completion_conditions.archived_at IS NULL
 	AND recipe_steps.id = sqlc.arg(recipe_step_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
--- name: UpdateRecipeStepCompletionCondition :execrows
 
+-- name: UpdateRecipeStepCompletionCondition :execrows
 UPDATE recipe_step_completion_conditions SET
 	optional = sqlc.arg(optional),
 	notes = sqlc.arg(notes),

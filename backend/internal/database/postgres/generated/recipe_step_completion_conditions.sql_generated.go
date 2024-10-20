@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipeStepCompletionCondition = `-- name: ArchiveRecipeStepCompletionCondition :execrows
-
 UPDATE recipe_step_completion_conditions SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveRecipeStepCompletionCondition(ctx context.Context, db D
 }
 
 const checkRecipeStepCompletionConditionExistence = `-- name: CheckRecipeStepCompletionConditionExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_step_completion_conditions.id
 	FROM recipe_step_completion_conditions
@@ -61,7 +59,6 @@ func (q *Queries) CheckRecipeStepCompletionConditionExistence(ctx context.Contex
 }
 
 const createRecipeStepCompletionCondition = `-- name: CreateRecipeStepCompletionCondition :exec
-
 INSERT INTO recipe_step_completion_conditions (
 	id,
 	optional,
@@ -97,7 +94,6 @@ func (q *Queries) CreateRecipeStepCompletionCondition(ctx context.Context, db DB
 }
 
 const getAllRecipeStepCompletionConditionsForRecipe = `-- name: GetAllRecipeStepCompletionConditionsForRecipe :many
-
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
@@ -219,7 +215,6 @@ func (q *Queries) GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Cont
 }
 
 const getRecipeStepCompletionConditionWithIngredients = `-- name: GetRecipeStepCompletionConditionWithIngredients :many
-
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
@@ -346,7 +341,6 @@ func (q *Queries) GetRecipeStepCompletionConditionWithIngredients(ctx context.Co
 }
 
 const getRecipeStepCompletionConditions = `-- name: GetRecipeStepCompletionConditions :many
-
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
@@ -514,7 +508,6 @@ func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX
 }
 
 const updateRecipeStepCompletionCondition = `-- name: UpdateRecipeStepCompletionCondition :execrows
-
 UPDATE recipe_step_completion_conditions SET
 	optional = $1,
 	notes = $2,

@@ -12,7 +12,6 @@ import (
 )
 
 const archiveMealPlanOptionVote = `-- name: ArchiveMealPlanOptionVote :execrows
-
 UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *A
 }
 
 const checkMealPlanOptionVoteExistence = `-- name: CheckMealPlanOptionVoteExistence :one
-
 SELECT EXISTS (
 	SELECT meal_plan_option_votes.id
 	FROM meal_plan_option_votes
@@ -70,7 +68,6 @@ func (q *Queries) CheckMealPlanOptionVoteExistence(ctx context.Context, db DBTX,
 }
 
 const createMealPlanOptionVote = `-- name: CreateMealPlanOptionVote :exec
-
 INSERT INTO meal_plan_option_votes (
 	id,
 	rank,
@@ -110,7 +107,6 @@ func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *Cr
 }
 
 const getMealPlanOptionVote = `-- name: GetMealPlanOptionVote :one
-
 SELECT
 	meal_plan_option_votes.id,
 	meal_plan_option_votes.rank,
@@ -167,7 +163,6 @@ func (q *Queries) GetMealPlanOptionVote(ctx context.Context, db DBTX, arg *GetMe
 }
 
 const getMealPlanOptionVotes = `-- name: GetMealPlanOptionVotes :many
-
 SELECT
 	meal_plan_option_votes.id,
 	meal_plan_option_votes.rank,
@@ -304,7 +299,6 @@ func (q *Queries) GetMealPlanOptionVotes(ctx context.Context, db DBTX, arg *GetM
 }
 
 const getMealPlanOptionVotesForMealPlanOption = `-- name: GetMealPlanOptionVotesForMealPlanOption :many
-
 SELECT
 	meal_plan_option_votes.id,
 	meal_plan_option_votes.rank,
@@ -371,7 +365,6 @@ func (q *Queries) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, d
 }
 
 const updateMealPlanOptionVote = `-- name: UpdateMealPlanOptionVote :execrows
-
 UPDATE meal_plan_option_votes SET
 	rank = $1,
 	abstain = $2,

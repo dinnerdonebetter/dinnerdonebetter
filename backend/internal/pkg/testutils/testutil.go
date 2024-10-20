@@ -32,7 +32,7 @@ const (
 var errArbitrary = errors.New("blah")
 
 // BrokenSessionContextDataFetcher is a deliberately broken sessionContextDataFetcher.
-func BrokenSessionContextDataFetcher(*http.Request) (*types.SessionContextData, error) {
+func BrokenSessionContextDataFetcher(_ *http.Request) (*types.SessionContextData, error) {
 	return nil, errArbitrary
 }
 

@@ -11,6 +11,7 @@ const (
 	AuditLogEventTypeCreated  = "created"
 	AuditLogEventTypeUpdated  = "updated"
 	AuditLogEventTypeArchived = "archived"
+	AuditLogEventTypeDeleted  = "deleted"
 
 	AuditLogResourceTypesQueryParamKey = "resources"
 )

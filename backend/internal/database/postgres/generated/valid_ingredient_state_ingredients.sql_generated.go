@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidIngredientStateIngredient = `-- name: ArchiveValidIngredientStateIngredient :execrows
-
 UPDATE valid_ingredient_state_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidIngredientStateIngredient(ctx context.Context, db 
 }
 
 const checkValidIngredientStateIngredientExistence = `-- name: CheckValidIngredientStateIngredientExistence :one
-
 SELECT EXISTS (
 	SELECT valid_ingredient_state_ingredients.id
 	FROM valid_ingredient_state_ingredients
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidIngredientStateIngredientExistence(ctx context.Conte
 }
 
 const checkValidityOfValidIngredientStateIngredientPair = `-- name: CheckValidityOfValidIngredientStateIngredientPair :one
-
 SELECT EXISTS(
 	SELECT valid_ingredient_state_ingredients.id
 	FROM valid_ingredient_state_ingredients
@@ -67,7 +64,6 @@ func (q *Queries) CheckValidityOfValidIngredientStateIngredientPair(ctx context.
 }
 
 const createValidIngredientStateIngredient = `-- name: CreateValidIngredientStateIngredient :exec
-
 INSERT INTO valid_ingredient_state_ingredients (
 	id,
 	notes,
@@ -99,7 +95,6 @@ func (q *Queries) CreateValidIngredientStateIngredient(ctx context.Context, db D
 }
 
 const getValidIngredientStateIngredient = `-- name: GetValidIngredientStateIngredient :one
-
 SELECT
 	valid_ingredient_state_ingredients.id as valid_ingredient_state_ingredient_id,
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
@@ -291,7 +286,6 @@ func (q *Queries) GetValidIngredientStateIngredient(ctx context.Context, db DBTX
 }
 
 const getValidIngredientStateIngredients = `-- name: GetValidIngredientStateIngredients :many
-
 SELECT
 	valid_ingredient_state_ingredients.id as valid_ingredient_state_ingredient_id,
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
@@ -550,7 +544,6 @@ func (q *Queries) GetValidIngredientStateIngredients(ctx context.Context, db DBT
 }
 
 const getValidIngredientStateIngredientsForIngredient = `-- name: GetValidIngredientStateIngredientsForIngredient :many
-
 SELECT
 	valid_ingredient_state_ingredients.id as valid_ingredient_state_ingredient_id,
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
@@ -812,7 +805,6 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 }
 
 const getValidIngredientStateIngredientsForIngredientState = `-- name: GetValidIngredientStateIngredientsForIngredientState :many
-
 SELECT
 	valid_ingredient_state_ingredients.id as valid_ingredient_state_ingredient_id,
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
@@ -1074,7 +1066,6 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 }
 
 const getValidIngredientStateIngredientsWithIDs = `-- name: GetValidIngredientStateIngredientsWithIDs :many
-
 SELECT
 	valid_ingredient_state_ingredients.id as valid_ingredient_state_ingredient_id,
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
@@ -1282,7 +1273,6 @@ func (q *Queries) GetValidIngredientStateIngredientsWithIDs(ctx context.Context,
 }
 
 const updateValidIngredientStateIngredient = `-- name: UpdateValidIngredientStateIngredient :execrows
-
 UPDATE valid_ingredient_state_ingredients SET
 	notes = $1,
 	valid_ingredient_state = $2,

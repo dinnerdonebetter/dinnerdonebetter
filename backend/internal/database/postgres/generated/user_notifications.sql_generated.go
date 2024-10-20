@@ -12,7 +12,6 @@ import (
 )
 
 const checkUserNotificationExistence = `-- name: CheckUserNotificationExistence :one
-
 SELECT EXISTS(
 	SELECT user_notifications.id
 	FROM user_notifications
@@ -34,7 +33,6 @@ func (q *Queries) CheckUserNotificationExistence(ctx context.Context, db DBTX, a
 }
 
 const createUserNotification = `-- name: CreateUserNotification :exec
-
 INSERT INTO user_notifications (
 	id,
 	content,
@@ -58,7 +56,6 @@ func (q *Queries) CreateUserNotification(ctx context.Context, db DBTX, arg *Crea
 }
 
 const getUserNotification = `-- name: GetUserNotification :one
-
 SELECT
 	user_notifications.id,
 	user_notifications.content,
@@ -91,7 +88,6 @@ func (q *Queries) GetUserNotification(ctx context.Context, db DBTX, arg *GetUser
 }
 
 const getUserNotificationsForUser = `-- name: GetUserNotificationsForUser :many
-
 SELECT
 	user_notifications.id,
 	user_notifications.content,
@@ -201,7 +197,6 @@ func (q *Queries) GetUserNotificationsForUser(ctx context.Context, db DBTX, arg 
 }
 
 const updateUserNotification = `-- name: UpdateUserNotification :execrows
-
 UPDATE user_notifications SET
 	status = $1,
 	last_updated_at = NOW()

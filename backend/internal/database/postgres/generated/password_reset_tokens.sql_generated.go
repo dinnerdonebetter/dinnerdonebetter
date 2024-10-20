@@ -12,7 +12,6 @@ import (
 )
 
 const createPasswordResetToken = `-- name: CreatePasswordResetToken :exec
-
 INSERT INTO password_reset_tokens (
 	id,
 	token,
@@ -38,7 +37,6 @@ func (q *Queries) CreatePasswordResetToken(ctx context.Context, db DBTX, arg *Cr
 }
 
 const getPasswordResetToken = `-- name: GetPasswordResetToken :one
-
 SELECT
 	password_reset_tokens.id,
 	password_reset_tokens.token,
@@ -79,7 +77,6 @@ func (q *Queries) GetPasswordResetToken(ctx context.Context, db DBTX, token stri
 }
 
 const redeemPasswordResetToken = `-- name: RedeemPasswordResetToken :exec
-
 UPDATE password_reset_tokens SET
 	redeemed_at = NOW()
 WHERE redeemed_at IS NULL

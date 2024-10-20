@@ -14,7 +14,6 @@ import (
 )
 
 const archiveValidInstrument = `-- name: ArchiveValidInstrument :execrows
-
 UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -27,7 +26,6 @@ func (q *Queries) ArchiveValidInstrument(ctx context.Context, db DBTX, id string
 }
 
 const checkValidInstrumentExistence = `-- name: CheckValidInstrumentExistence :one
-
 SELECT EXISTS (
 	SELECT valid_instruments.id
 	FROM valid_instruments
@@ -44,7 +42,6 @@ func (q *Queries) CheckValidInstrumentExistence(ctx context.Context, db DBTX, id
 }
 
 const createValidInstrument = `-- name: CreateValidInstrument :exec
-
 INSERT INTO valid_instruments (
 	id,
 	name,
@@ -96,7 +93,6 @@ func (q *Queries) CreateValidInstrument(ctx context.Context, db DBTX, arg *Creat
 }
 
 const getRandomValidInstrument = `-- name: GetRandomValidInstrument :one
-
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -154,7 +150,6 @@ func (q *Queries) GetRandomValidInstrument(ctx context.Context, db DBTX) (*GetRa
 }
 
 const getValidInstrument = `-- name: GetValidInstrument :one
-
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -212,7 +207,6 @@ func (q *Queries) GetValidInstrument(ctx context.Context, db DBTX, id string) (*
 }
 
 const getValidInstruments = `-- name: GetValidInstruments :many
-
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -340,7 +334,6 @@ func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetVali
 }
 
 const getValidInstrumentsNeedingIndexing = `-- name: GetValidInstrumentsNeedingIndexing :many
-
 SELECT valid_instruments.id
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
@@ -374,7 +367,6 @@ func (q *Queries) GetValidInstrumentsNeedingIndexing(ctx context.Context, db DBT
 }
 
 const getValidInstrumentsWithIDs = `-- name: GetValidInstrumentsWithIDs :many
-
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -448,7 +440,6 @@ func (q *Queries) GetValidInstrumentsWithIDs(ctx context.Context, db DBTX, ids [
 }
 
 const searchForValidInstruments = `-- name: SearchForValidInstruments :many
-
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,
@@ -523,7 +514,6 @@ func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, nameQu
 }
 
 const updateValidInstrument = `-- name: UpdateValidInstrument :execrows
-
 UPDATE valid_instruments SET
 	name = $1,
 	description = $2,
@@ -569,7 +559,6 @@ func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *Updat
 }
 
 const updateValidInstrumentLastIndexedAt = `-- name: UpdateValidInstrumentLastIndexedAt :execrows
-
 UPDATE valid_instruments SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

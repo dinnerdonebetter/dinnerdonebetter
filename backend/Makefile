@@ -206,14 +206,14 @@ codegen: # codegen-ts codegen-go
 	@$(MAKE) format_golang
 
 .PHONY: querier
-querier: queries queries_lint  ## TODO: This target is broken
+querier: queries queries_lint  ## TODO: Why is this target broken?
 	rm --recursive --force internal/database/postgres/generated/*.go
-	$(CONTAINER_RUNNER) run \
-		--rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE) generate --no-remote
+	# $(CONTAINER_RUNNER) run \
+	# 	--rm \
+	# 	--volume $(PWD):/src \
+	# 	--workdir /src \
+	# 	--user $(MYSELF):$(MY_GROUP) \
+	sqlc generate --no-remote
 
 .PHONY: sqlc_struct_check
 sqlc_struct_check:

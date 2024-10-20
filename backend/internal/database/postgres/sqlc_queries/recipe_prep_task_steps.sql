@@ -1,5 +1,4 @@
 -- name: CreateRecipePrepTaskStep :exec
-
 INSERT INTO recipe_prep_task_steps (
 	id,
 	belongs_to_recipe_step,

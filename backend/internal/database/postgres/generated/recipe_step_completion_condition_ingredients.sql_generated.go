@@ -14,7 +14,6 @@ import (
 )
 
 const createRecipeStepCompletionConditionIngredient = `-- name: CreateRecipeStepCompletionConditionIngredient :exec
-
 INSERT INTO recipe_step_completion_condition_ingredients (
 	id,
 	belongs_to_recipe_step_completion_condition,
@@ -38,7 +37,6 @@ func (q *Queries) CreateRecipeStepCompletionConditionIngredient(ctx context.Cont
 }
 
 const getAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs = `-- name: GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs :many
-
 SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,

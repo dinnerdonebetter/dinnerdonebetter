@@ -12,7 +12,6 @@ import (
 )
 
 const archiveRecipePrepTask = `-- name: ArchiveRecipePrepTask :execrows
-
 UPDATE recipe_prep_tasks SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string)
 }
 
 const checkRecipePrepTaskExistence = `-- name: CheckRecipePrepTaskExistence :one
-
 SELECT EXISTS (
 	SELECT recipe_prep_tasks.id
 	FROM recipe_prep_tasks
@@ -51,7 +49,6 @@ func (q *Queries) CheckRecipePrepTaskExistence(ctx context.Context, db DBTX, arg
 }
 
 const createRecipePrepTask = `-- name: CreateRecipePrepTask :exec
-
 INSERT INTO recipe_prep_tasks (
 	id,
 	name,
@@ -115,7 +112,6 @@ func (q *Queries) CreateRecipePrepTask(ctx context.Context, db DBTX, arg *Create
 }
 
 const getRecipePrepTask = `-- name: GetRecipePrepTask :many
-
 SELECT
 	recipe_prep_tasks.id,
 	recipe_prep_tasks.name,
@@ -208,7 +204,6 @@ func (q *Queries) GetRecipePrepTask(ctx context.Context, db DBTX, recipePrepTask
 }
 
 const listAllRecipePrepTasksByRecipe = `-- name: ListAllRecipePrepTasksByRecipe :many
-
 SELECT
 	recipe_prep_tasks.id,
 	recipe_prep_tasks.name,
@@ -305,7 +300,6 @@ func (q *Queries) ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, r
 }
 
 const updateRecipePrepTask = `-- name: UpdateRecipePrepTask :execrows
-
 UPDATE recipe_prep_tasks SET
 	name = $1,
 	description = $2,

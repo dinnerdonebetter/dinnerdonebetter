@@ -15,7 +15,6 @@ import (
 )
 
 const createAuditLogEntry = `-- name: CreateAuditLogEntry :exec
-
 INSERT INTO audit_log_entries (
 	id,
 	resource_type,
@@ -59,7 +58,6 @@ func (q *Queries) CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateA
 }
 
 const getAuditLogEntriesForHousehold = `-- name: GetAuditLogEntriesForHousehold :many
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -152,7 +150,6 @@ func (q *Queries) GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, a
 }
 
 const getAuditLogEntriesForHouseholdAndResourceType = `-- name: GetAuditLogEntriesForHouseholdAndResourceType :many
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -250,7 +247,6 @@ func (q *Queries) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 }
 
 const getAuditLogEntriesForUser = `-- name: GetAuditLogEntriesForUser :many
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -343,7 +339,6 @@ func (q *Queries) GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *G
 }
 
 const getAuditLogEntriesForUserAndResourceType = `-- name: GetAuditLogEntriesForUserAndResourceType :many
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -441,7 +436,6 @@ func (q *Queries) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 }
 
 const getAuditLogEntry = `-- name: GetAuditLogEntry :one
-
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,

@@ -12,7 +12,6 @@ import (
 )
 
 const archiveMeal = `-- name: ArchiveMeal :execrows
-
 UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2
 `
 
@@ -30,7 +29,6 @@ func (q *Queries) ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealPara
 }
 
 const checkMealExistence = `-- name: CheckMealExistence :one
-
 SELECT EXISTS (
 	SELECT meals.id
 	FROM meals
@@ -47,7 +45,6 @@ func (q *Queries) CheckMealExistence(ctx context.Context, db DBTX, id string) (b
 }
 
 const createMeal = `-- name: CreateMeal :exec
-
 INSERT INTO meals (
 	id,
 	name,
@@ -91,7 +88,6 @@ func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams
 }
 
 const getMeal = `-- name: GetMeal :many
-
 SELECT
 	meals.id,
 	meals.name,
@@ -185,7 +181,6 @@ func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRo
 }
 
 const getMeals = `-- name: GetMeals :many
-
 SELECT
 	meals.id,
 	meals.name,
@@ -305,7 +300,6 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 }
 
 const getMealsNeedingIndexing = `-- name: GetMealsNeedingIndexing :many
-
 SELECT meals.id
 	FROM meals
 	WHERE meals.archived_at IS NULL
@@ -339,7 +333,6 @@ func (q *Queries) GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]strin
 }
 
 const searchForMeals = `-- name: SearchForMeals :many
-
 SELECT
 	meals.id,
 	meals.name,
@@ -487,7 +480,6 @@ func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMea
 }
 
 const updateMealLastIndexedAt = `-- name: UpdateMealLastIndexedAt :execrows
-
 UPDATE meals SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 

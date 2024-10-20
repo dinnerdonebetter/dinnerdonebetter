@@ -1111,6 +1111,31 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	return nil
 }
 
+// DeleteUser archives a user.
+func (q *Querier) DeleteUser(ctx context.Context, userID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger := q.logger.WithValue(keys.UserIDKey, userID)
+
+	changed, err := q.generatedQuerier.DeleteUser(ctx, q.db, userID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving user")
+	}
+
+	if changed == 0 {
+		return sql.ErrNoRows
+	}
+
+	logger.Info("user deleted")
+
+	return nil
+}
+
 func (q *Querier) GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

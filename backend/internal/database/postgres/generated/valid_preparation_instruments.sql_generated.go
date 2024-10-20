@@ -12,7 +12,6 @@ import (
 )
 
 const archiveValidPreparationInstrument = `-- name: ArchiveValidPreparationInstrument :execrows
-
 UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveValidPreparationInstrument(ctx context.Context, db DBTX
 }
 
 const checkValidPreparationInstrumentExistence = `-- name: CheckValidPreparationInstrumentExistence :one
-
 SELECT EXISTS (
 	SELECT valid_preparation_instruments.id
 	FROM valid_preparation_instruments
@@ -42,7 +40,6 @@ func (q *Queries) CheckValidPreparationInstrumentExistence(ctx context.Context, 
 }
 
 const createValidPreparationInstrument = `-- name: CreateValidPreparationInstrument :exec
-
 INSERT INTO valid_preparation_instruments (
 	id,
 	notes,
@@ -74,7 +71,6 @@ func (q *Queries) CreateValidPreparationInstrument(ctx context.Context, db DBTX,
 }
 
 const getValidPreparationInstrument = `-- name: GetValidPreparationInstrument :one
-
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -222,7 +218,6 @@ func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id
 }
 
 const getValidPreparationInstruments = `-- name: GetValidPreparationInstruments :many
-
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -451,7 +446,6 @@ func (q *Queries) GetValidPreparationInstruments(ctx context.Context, db DBTX, a
 }
 
 const getValidPreparationInstrumentsForInstrument = `-- name: GetValidPreparationInstrumentsForInstrument :many
-
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -685,7 +679,6 @@ func (q *Queries) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 }
 
 const getValidPreparationInstrumentsForPreparation = `-- name: GetValidPreparationInstrumentsForPreparation :many
-
 SELECT
 	valid_preparation_instruments.id as valid_preparation_instrument_id,
 	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
@@ -919,7 +912,6 @@ func (q *Queries) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 }
 
 const updateValidPreparationInstrument = `-- name: UpdateValidPreparationInstrument :execrows
-
 UPDATE valid_preparation_instruments SET
 	notes = $1,
 	valid_preparation_id = $2,
@@ -950,7 +942,6 @@ func (q *Queries) UpdateValidPreparationInstrument(ctx context.Context, db DBTX,
 }
 
 const validPreparationInstrumentPairIsValid = `-- name: ValidPreparationInstrumentPairIsValid :one
-
 SELECT EXISTS(
 	SELECT valid_preparation_instruments.id
 	FROM valid_preparation_instruments

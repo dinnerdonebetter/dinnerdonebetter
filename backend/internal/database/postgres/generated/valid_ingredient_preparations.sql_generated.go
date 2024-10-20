@@ -12,7 +12,6 @@ import (
 )
 
 const archiveValidIngredientPreparation = `-- name: ArchiveValidIngredientPreparation :execrows
-
 UPDATE valid_ingredient_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
@@ -25,7 +24,6 @@ func (q *Queries) ArchiveValidIngredientPreparation(ctx context.Context, db DBTX
 }
 
 const checkValidIngredientPreparationExistence = `-- name: CheckValidIngredientPreparationExistence :one
-
 SELECT EXISTS (
 	SELECT valid_ingredient_preparations.id
 	FROM valid_ingredient_preparations
@@ -42,7 +40,6 @@ func (q *Queries) CheckValidIngredientPreparationExistence(ctx context.Context, 
 }
 
 const createValidIngredientPreparation = `-- name: CreateValidIngredientPreparation :exec
-
 INSERT INTO valid_ingredient_preparations (
 	id,
 	notes,
@@ -74,7 +71,6 @@ func (q *Queries) CreateValidIngredientPreparation(ctx context.Context, db DBTX,
 }
 
 const getValidIngredientPreparation = `-- name: GetValidIngredientPreparation :one
-
 SELECT
 	valid_ingredient_preparations.id as valid_ingredient_preparation_id,
 	valid_ingredient_preparations.notes as valid_ingredient_preparation_notes,
@@ -296,7 +292,6 @@ func (q *Queries) GetValidIngredientPreparation(ctx context.Context, db DBTX, id
 }
 
 const getValidIngredientPreparations = `-- name: GetValidIngredientPreparations :many
-
 SELECT
 	valid_ingredient_preparations.id as valid_ingredient_preparation_id,
 	valid_ingredient_preparations.notes as valid_ingredient_preparation_notes,
@@ -583,7 +578,6 @@ func (q *Queries) GetValidIngredientPreparations(ctx context.Context, db DBTX, a
 }
 
 const getValidIngredientPreparationsForIngredient = `-- name: GetValidIngredientPreparationsForIngredient :many
-
 SELECT
 	valid_ingredient_preparations.id as valid_ingredient_preparation_id,
 	valid_ingredient_preparations.notes as valid_ingredient_preparation_notes,
@@ -873,7 +867,6 @@ func (q *Queries) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 }
 
 const getValidIngredientPreparationsForPreparation = `-- name: GetValidIngredientPreparationsForPreparation :many
-
 SELECT
 	valid_ingredient_preparations.id as valid_ingredient_preparation_id,
 	valid_ingredient_preparations.notes as valid_ingredient_preparation_notes,
@@ -1163,7 +1156,6 @@ func (q *Queries) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 }
 
 const searchValidIngredientPreparationsByPreparationAndIngredientName = `-- name: SearchValidIngredientPreparationsByPreparationAndIngredientName :many
-
 SELECT
 	valid_ingredient_preparations.id as valid_ingredient_preparation_id,
 	valid_ingredient_preparations.notes as valid_ingredient_preparation_notes,
@@ -1407,7 +1399,6 @@ func (q *Queries) SearchValidIngredientPreparationsByPreparationAndIngredientNam
 }
 
 const updateValidIngredientPreparation = `-- name: UpdateValidIngredientPreparation :execrows
-
 UPDATE valid_ingredient_preparations SET
 	notes = $1,
 	valid_preparation_id = $2,
@@ -1438,7 +1429,6 @@ func (q *Queries) UpdateValidIngredientPreparation(ctx context.Context, db DBTX,
 }
 
 const validIngredientPreparationPairIsValid = `-- name: ValidIngredientPreparationPairIsValid :one
-
 SELECT EXISTS(
 	SELECT id
 	FROM valid_ingredient_preparations

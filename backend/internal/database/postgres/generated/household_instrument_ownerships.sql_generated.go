@@ -12,7 +12,6 @@ import (
 )
 
 const archiveHouseholdInstrumentOwnership = `-- name: ArchiveHouseholdInstrumentOwnership :execrows
-
 UPDATE household_instrument_ownerships SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -34,7 +33,6 @@ func (q *Queries) ArchiveHouseholdInstrumentOwnership(ctx context.Context, db DB
 }
 
 const checkHouseholdInstrumentOwnershipExistence = `-- name: CheckHouseholdInstrumentOwnershipExistence :one
-
 SELECT EXISTS (
 	SELECT household_instrument_ownerships.id
 	FROM household_instrument_ownerships
@@ -57,7 +55,6 @@ func (q *Queries) CheckHouseholdInstrumentOwnershipExistence(ctx context.Context
 }
 
 const createHouseholdInstrumentOwnership = `-- name: CreateHouseholdInstrumentOwnership :exec
-
 INSERT INTO household_instrument_ownerships (
 	id,
 	notes,
@@ -93,7 +90,6 @@ func (q *Queries) CreateHouseholdInstrumentOwnership(ctx context.Context, db DBT
 }
 
 const getHouseholdInstrumentOwnership = `-- name: GetHouseholdInstrumentOwnership :one
-
 SELECT
 	household_instrument_ownerships.id,
 	household_instrument_ownerships.notes,
@@ -179,7 +175,6 @@ func (q *Queries) GetHouseholdInstrumentOwnership(ctx context.Context, db DBTX, 
 }
 
 const getHouseholdInstrumentOwnerships = `-- name: GetHouseholdInstrumentOwnerships :many
-
 SELECT
 	household_instrument_ownerships.id,
 	household_instrument_ownerships.notes,
@@ -337,7 +332,6 @@ func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX,
 }
 
 const updateHouseholdInstrumentOwnership = `-- name: UpdateHouseholdInstrumentOwnership :execrows
-
 UPDATE household_instrument_ownerships SET
 	notes = $1,
 	quantity = $2,

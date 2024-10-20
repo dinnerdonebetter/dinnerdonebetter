@@ -65,7 +65,7 @@ func (s *oauth2TokenStoreImpl) RemoveByCode(ctx context.Context, code string) er
 	logger := s.logger.WithValue("code", code)
 	logger.Debug("RemoveByCode invoked")
 
-	if err := s.dataManager.ArchiveOAuth2ClientTokenByCode(ctx, code); err != nil {
+	if err := s.dataManager.DeleteOAuth2ClientTokenByCode(ctx, code); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by code")
 	}
 
@@ -80,7 +80,7 @@ func (s *oauth2TokenStoreImpl) RemoveByAccess(ctx context.Context, access string
 	logger := s.logger.WithValue("access", access)
 	logger.Debug("RemoveByAccess invoked")
 
-	if err := s.dataManager.ArchiveOAuth2ClientTokenByAccess(ctx, access); err != nil {
+	if err := s.dataManager.DeleteOAuth2ClientTokenByAccess(ctx, access); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by access")
 	}
 
@@ -95,7 +95,7 @@ func (s *oauth2TokenStoreImpl) RemoveByRefresh(ctx context.Context, refresh stri
 	logger := s.logger.WithValue("refresh", refresh)
 	logger.Debug("RemoveByRefresh invoked")
 
-	if err := s.dataManager.ArchiveOAuth2ClientTokenByRefresh(ctx, refresh); err != nil {
+	if err := s.dataManager.DeleteOAuth2ClientTokenByRefresh(ctx, refresh); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by refresh")
 	}
 

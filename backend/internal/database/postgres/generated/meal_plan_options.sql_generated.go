@@ -12,7 +12,6 @@ import (
 )
 
 const archiveMealPlanOption = `-- name: ArchiveMealPlanOption :execrows
-
 UPDATE meal_plan_options SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
@@ -34,7 +33,6 @@ func (q *Queries) ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *Archi
 }
 
 const checkMealPlanOptionExistence = `-- name: CheckMealPlanOptionExistence :one
-
 SELECT EXISTS (
 	SELECT meal_plan_options.id
 	FROM meal_plan_options
@@ -65,7 +63,6 @@ func (q *Queries) CheckMealPlanOptionExistence(ctx context.Context, db DBTX, arg
 }
 
 const createMealPlanOption = `-- name: CreateMealPlanOption :exec
-
 INSERT INTO meal_plan_options (
 	id,
 	assigned_cook,
@@ -113,7 +110,6 @@ func (q *Queries) CreateMealPlanOption(ctx context.Context, db DBTX, arg *Create
 }
 
 const finalizeMealPlanOption = `-- name: FinalizeMealPlanOption :exec
-
 UPDATE meal_plan_options SET
 	chosen = (belongs_to_meal_plan_event = $1 AND id = $2),
 	tiebroken = $3
@@ -134,7 +130,6 @@ func (q *Queries) FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *Fina
 }
 
 const getAllMealPlanOptionsForMealPlanEvent = `-- name: GetAllMealPlanOptionsForMealPlanEvent :many
-
 SELECT
 	meal_plan_options.id,
 	meal_plan_options.assigned_cook,
@@ -251,7 +246,6 @@ func (q *Queries) GetAllMealPlanOptionsForMealPlanEvent(ctx context.Context, db 
 }
 
 const getMealPlanOption = `-- name: GetMealPlanOption :one
-
 SELECT
 	meal_plan_options.id,
 	meal_plan_options.assigned_cook,
@@ -353,7 +347,6 @@ func (q *Queries) GetMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPl
 }
 
 const getMealPlanOptionByID = `-- name: GetMealPlanOptionByID :one
-
 SELECT
 	meal_plan_options.id,
 	meal_plan_options.assigned_cook,
@@ -444,7 +437,6 @@ func (q *Queries) GetMealPlanOptionByID(ctx context.Context, db DBTX, mealPlanOp
 }
 
 const getMealPlanOptions = `-- name: GetMealPlanOptions :many
-
 SELECT
 	meal_plan_options.id,
 	meal_plan_options.assigned_cook,
@@ -614,7 +606,6 @@ func (q *Queries) GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealP
 }
 
 const updateMealPlanOption = `-- name: UpdateMealPlanOption :execrows
-
 UPDATE meal_plan_options SET
 	assigned_cook = $1,
 	assigned_dishwasher = $2,
