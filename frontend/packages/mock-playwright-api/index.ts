@@ -3,6 +3,7 @@
 export * from './AcceptHouseholdInvitation';
 export * from './AdminLoginForJWT';
 export * from './AdminUpdateUserStatus';
+export * from './AggregateUserDataReport';
 export * from './ArchiveHousehold';
 export * from './ArchiveHouseholdInstrumentOwnership';
 export * from './ArchiveMeal';

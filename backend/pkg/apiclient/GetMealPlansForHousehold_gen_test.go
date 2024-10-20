@@ -14,52 +14,39 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_GetRecipeRatings(T *testing.T) {
+func TestClient_GetMealPlansForHousehold(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%s/ratings"
+	const expectedPathFormat = "/api/v1/meal_plans"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		recipeID := fakes.BuildFakeID()
 
-		list := fakes.BuildFakeRecipeRatingsList()
+		list := fakes.BuildFakeMealPlansList()
 
-		expected := &types.APIResponse[[]*types.RecipeRating]{
+		expected := &types.APIResponse[[]*types.MealPlan]{
 			Pagination: &list.Pagination,
 			Data:       list.Data,
 		}
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, recipeID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.GetRecipeRatings(ctx, recipeID, nil)
+		actual, err := c.GetMealPlansForHousehold(ctx, nil)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, list, actual)
 	})
 
-	T.Run("with empty recipe ID", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetRecipeRatings(ctx, "", nil)
-
-		require.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		recipeID := fakes.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetRecipeRatings(ctx, recipeID, nil)
+		actual, err := c.GetMealPlansForHousehold(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -69,11 +56,10 @@ func TestClient_GetRecipeRatings(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		recipeID := fakes.BuildFakeID()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, recipeID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetRecipeRatings(ctx, recipeID, nil)
+		actual, err := c.GetMealPlansForHousehold(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

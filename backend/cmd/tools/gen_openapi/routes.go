@@ -39,6 +39,12 @@ var routeInfoMap = map[string]routeDetails{
 		ResponseType: &types.DataDeletionResponse{},
 		OAuth2Scopes: []string{householdMember},
 	},
+	"POST /api/v1/data_privacy/disclose": {
+		ID:           "AggregateUserDataReport",
+		Description:  "Aggregates a user's data into a big disclosure blob",
+		ResponseType: &types.UserDataCollectionResponse{},
+		OAuth2Scopes: []string{householdMember},
+	},
 	"POST /api/v1/admin/users/status": {
 		ID:           "AdminUpdateUserStatus",
 		Description:  "Updates a user's account status",

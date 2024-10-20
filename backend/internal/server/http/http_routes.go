@@ -168,6 +168,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 
 		v1Router.Route("/data_privacy", func(dataPrivacyRouter routing.Router) {
 			dataPrivacyRouter.Delete("/destroy", s.dataPrivacyService.DataDeletionHandler)
+			dataPrivacyRouter.Post("/disclose", s.dataPrivacyService.UserDataAggregationRequestHandler)
 		})
 
 		// Households

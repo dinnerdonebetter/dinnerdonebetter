@@ -105,6 +105,7 @@ import {
   User,
   UserAccountStatusUpdateInput,
   UserCreationResponse,
+  UserDataCollectionResponse,
   UserDetailsUpdateRequestInput,
   UserEmailAddressUpdateInput,
   UserIngredientPreference,
@@ -362,6 +363,28 @@ export class DinnerDoneBetterAPIClient {
           }
         })
         .catch((error: AxiosError<APIResponse<UserStatusResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
+        });
+    });
+  }
+
+  async aggregateUserDataReport(): Promise<APIResponse<UserDataCollectionResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      self.client
+        .post<APIResponse<UserDataCollectionResponse>>(`/api/v1/data_privacy/disclose`)
+        .then((res: AxiosResponse<APIResponse<UserDataCollectionResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
+          }
+        })
+        .catch((error: AxiosError<APIResponse<UserDataCollectionResponse>>) => {
           if (error?.response?.data?.error) {
             reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
           } else {
@@ -3005,7 +3028,7 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getMealPlans(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<MealPlan>> {
+  async getMealPlansForHousehold(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
@@ -3385,7 +3408,7 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getRecipeRatings(
+  async getRecipeRatingsForRecipe(
     recipeID: string,
     filter: QueryFilter = QueryFilter.Default(),
   ): Promise<QueryFilteredResult<RecipeRating>> {

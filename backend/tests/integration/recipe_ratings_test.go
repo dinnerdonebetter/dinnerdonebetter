@@ -85,7 +85,7 @@ func (s *TestSuite) TestRecipeRatings_Listing() {
 			checkRecipeRatingEquality(t, exampleRecipeRating, createdRecipeRating)
 
 			// assert recipe rating list equality
-			actual, err := testClients.adminClient.GetRecipeRatings(ctx, createdRecipe.ID, nil)
+			actual, err := testClients.adminClient.GetRecipeRatingsForRecipe(ctx, createdRecipe.ID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.Equal(t, len(actual.Data), 1, "expected %d to be <= %d", len(actual.Data), 1)
 

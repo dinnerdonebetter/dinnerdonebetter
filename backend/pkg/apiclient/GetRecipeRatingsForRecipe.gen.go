@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) GetRecipeRatings(
+func (c *Client) GetRecipeRatingsForRecipe(
 	ctx context.Context,
 	recipeID string,
 	filter *types.QueryFilter,

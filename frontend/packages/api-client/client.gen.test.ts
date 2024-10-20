@@ -99,6 +99,7 @@ import {
   User,
   UserAccountStatusUpdateInput,
   UserCreationResponse,
+  UserDataCollectionResponse,
   UserDetailsUpdateRequestInput,
   UserEmailAddressUpdateInput,
   UserIngredientPreference,
@@ -247,6 +248,41 @@ describe('basic', () => {
     expect(client.acceptHouseholdInvitation(householdInvitationID, exampleInput)).rejects.toEqual(
       new Error(exampleResponse.error?.message),
     );
+  });
+
+  it("should Aggregates a user's data into a big disclosure blob", () => {
+    const exampleResponse = new APIResponse<UserDataCollectionResponse>();
+    mock.onPost(`${baseURL}/api/v1/data_privacy/disclose`).reply(201, exampleResponse);
+
+    client
+      .aggregateUserDataReport()
+      .then((response: APIResponse<UserDataCollectionResponse>) => {
+        expect(response).toEqual(exampleResponse);
+      })
+      .then(() => {
+        expect(mock.history.post.length).toBe(1);
+
+        expect(mock.history.post[0].headers).toHaveProperty('Authorization');
+        expect((mock.history.post[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
+      });
+  });
+
+  it("should appropriately raise errors when they occur during Aggregates a user's data into a big disclosure blob", () => {
+    const exampleResponse = new APIResponse<UserDataCollectionResponse>(
+      buildObligatoryError('aggregateUserDataReport user error'),
+    );
+    mock.onPost(`${baseURL}/api/v1/data_privacy/disclose`).reply(201, exampleResponse);
+
+    expect(client.aggregateUserDataReport()).rejects.toEqual(new Error(exampleResponse.error?.message));
+  });
+
+  it("should appropriately raise service errors when they occur during Aggregates a user's data into a big disclosure blob", () => {
+    const exampleResponse = new APIResponse<UserDataCollectionResponse>(
+      buildObligatoryError('aggregateUserDataReport service error'),
+    );
+    mock.onPost(`${baseURL}/api/v1/data_privacy/disclose`).reply(500, exampleResponse);
+
+    expect(client.aggregateUserDataReport()).rejects.toEqual(new Error(exampleResponse.error?.message));
   });
 
   it('should Archive a household user membership', () => {
@@ -5774,7 +5810,7 @@ describe('basic', () => {
     mock.onGet(`${baseURL}/api/v1/meal_plans`).reply(200, exampleResponse);
 
     client
-      .getMealPlans()
+      .getMealPlansForHousehold()
       .then((response: QueryFilteredResult<MealPlan>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
@@ -5788,17 +5824,21 @@ describe('basic', () => {
   });
 
   it('should raise errors appropriately when trying to fetch a MealPlans', () => {
-    const exampleResponse = new APIResponse<Array<MealPlan>>(buildObligatoryError('getMealPlans user error'));
+    const exampleResponse = new APIResponse<Array<MealPlan>>(
+      buildObligatoryError('getMealPlansForHousehold user error'),
+    );
     mock.onGet(`${baseURL}/api/v1/meal_plans`).reply(200, exampleResponse);
 
-    expect(client.getMealPlans()).rejects.toEqual(new Error(exampleResponse.error?.message));
+    expect(client.getMealPlansForHousehold()).rejects.toEqual(new Error(exampleResponse.error?.message));
   });
 
   it('should raise service errors appropriately when trying to fetch a MealPlans', () => {
-    const exampleResponse = new APIResponse<Array<MealPlan>>(buildObligatoryError('getMealPlans service error'));
+    const exampleResponse = new APIResponse<Array<MealPlan>>(
+      buildObligatoryError('getMealPlansForHousehold service error'),
+    );
     mock.onGet(`${baseURL}/api/v1/meal_plans`).reply(500, exampleResponse);
 
-    expect(client.getMealPlans()).rejects.toEqual(new Error(exampleResponse.error?.message));
+    expect(client.getMealPlansForHousehold()).rejects.toEqual(new Error(exampleResponse.error?.message));
   });
 
   it('should fetch a Meals', () => {
@@ -6290,7 +6330,7 @@ describe('basic', () => {
     mock.onGet(`${baseURL}/api/v1/recipes/${recipeID}/ratings`).reply(200, exampleResponse);
 
     client
-      .getRecipeRatings(recipeID)
+      .getRecipeRatingsForRecipe(recipeID)
       .then((response: QueryFilteredResult<RecipeRating>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
@@ -6306,21 +6346,23 @@ describe('basic', () => {
   it('should raise errors appropriately when trying to fetch a RecipeRatings', () => {
     let recipeID = fakeID();
 
-    const exampleResponse = new APIResponse<Array<RecipeRating>>(buildObligatoryError('getRecipeRatings user error'));
+    const exampleResponse = new APIResponse<Array<RecipeRating>>(
+      buildObligatoryError('getRecipeRatingsForRecipe user error'),
+    );
     mock.onGet(`${baseURL}/api/v1/recipes/${recipeID}/ratings`).reply(200, exampleResponse);
 
-    expect(client.getRecipeRatings(recipeID)).rejects.toEqual(new Error(exampleResponse.error?.message));
+    expect(client.getRecipeRatingsForRecipe(recipeID)).rejects.toEqual(new Error(exampleResponse.error?.message));
   });
 
   it('should raise service errors appropriately when trying to fetch a RecipeRatings', () => {
     let recipeID = fakeID();
 
     const exampleResponse = new APIResponse<Array<RecipeRating>>(
-      buildObligatoryError('getRecipeRatings service error'),
+      buildObligatoryError('getRecipeRatingsForRecipe service error'),
     );
     mock.onGet(`${baseURL}/api/v1/recipes/${recipeID}/ratings`).reply(500, exampleResponse);
 
-    expect(client.getRecipeRatings(recipeID)).rejects.toEqual(new Error(exampleResponse.error?.message));
+    expect(client.getRecipeRatingsForRecipe(recipeID)).rejects.toEqual(new Error(exampleResponse.error?.message));
   });
 
   it('should fetch a RecipeStep', () => {

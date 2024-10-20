@@ -49,6 +49,7 @@ type (
 	// DataPrivacyService describes a structure capable of serving CCPA/GRPC-related requests.
 	DataPrivacyService interface {
 		DataDeletionHandler(http.ResponseWriter, *http.Request)
+		UserDataAggregationRequestHandler(http.ResponseWriter, *http.Request)
 	}
 
 	// DataPrivacyDataManager contains data privacy management functions.

@@ -434,7 +434,7 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			}
 
 			// assert meal plan list equality
-			actual, err := testClients.userClient.GetMealPlans(ctx, nil)
+			actual, err := testClients.userClient.GetMealPlansForHousehold(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
