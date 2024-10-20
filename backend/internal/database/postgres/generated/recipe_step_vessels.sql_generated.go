@@ -89,11 +89,11 @@ type CreateRecipeStepVesselParams struct {
 	Name                 string
 	Notes                string
 	BelongsToRecipeStep  string
+	VesselPredicate      string
 	RecipeStepProductID  sql.NullString
 	ValidVesselID        sql.NullString
-	VesselPredicate      string
-	MinimumQuantity      int32
 	MaximumQuantity      sql.NullInt32
+	MinimumQuantity      int32
 	UnavailableAfterStep bool
 }
 
@@ -181,50 +181,50 @@ type GetRecipeStepVesselParams struct {
 }
 
 type GetRecipeStepVesselRow struct {
+	CreatedAt                                 time.Time
+	ValidMeasurementUnitLastIndexedAt         sql.NullTime
+	ArchivedAt                                sql.NullTime
+	LastUpdatedAt                             sql.NullTime
+	ValidVesselArchivedAt                     sql.NullTime
+	ValidVesselLastUpdatedAt                  sql.NullTime
+	ValidVesselCreatedAt                      sql.NullTime
+	ValidVesselLastIndexedAt                  sql.NullTime
+	ValidMeasurementUnitArchivedAt            sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt         sql.NullTime
+	ValidMeasurementUnitCreatedAt             sql.NullTime
+	Name                                      string
 	ID                                        string
+	VesselPredicate                           string
+	BelongsToRecipeStep                       string
+	Notes                                     string
+	ValidVesselShape                          NullVesselShape
+	ValidVesselWidthInMillimeters             sql.NullString
 	ValidVesselID                             sql.NullString
-	ValidVesselName                           sql.NullString
-	ValidVesselPluralName                     sql.NullString
-	ValidVesselDescription                    sql.NullString
-	ValidVesselIconPath                       sql.NullString
-	ValidVesselUsableForStorage               sql.NullBool
-	ValidVesselSlug                           sql.NullString
-	ValidVesselDisplayInSummaryLists          sql.NullBool
-	ValidVesselIncludeInGeneratedInstructions sql.NullBool
-	ValidVesselCapacity                       sql.NullString
-	ValidMeasurementUnitID                    sql.NullString
-	ValidMeasurementUnitName                  sql.NullString
-	ValidMeasurementUnitDescription           sql.NullString
-	ValidMeasurementUnitVolumetric            sql.NullBool
-	ValidMeasurementUnitIconPath              sql.NullString
-	ValidMeasurementUnitUniversal             sql.NullBool
-	ValidMeasurementUnitMetric                sql.NullBool
-	ValidMeasurementUnitImperial              sql.NullBool
 	ValidMeasurementUnitSlug                  sql.NullString
 	ValidMeasurementUnitPluralName            sql.NullString
-	ValidMeasurementUnitLastIndexedAt         sql.NullTime
-	ValidMeasurementUnitCreatedAt             sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt         sql.NullTime
-	ValidMeasurementUnitArchivedAt            sql.NullTime
-	ValidVesselWidthInMillimeters             sql.NullString
+	ValidMeasurementUnitID                    sql.NullString
+	ValidVesselCapacity                       sql.NullString
+	ValidVesselName                           sql.NullString
+	ValidVesselPluralName                     sql.NullString
+	RecipeStepProductID                       sql.NullString
 	ValidVesselLengthInMillimeters            sql.NullString
 	ValidVesselHeightInMillimeters            sql.NullString
-	ValidVesselShape                          NullVesselShape
-	ValidVesselLastIndexedAt                  sql.NullTime
-	ValidVesselCreatedAt                      sql.NullTime
-	ValidVesselLastUpdatedAt                  sql.NullTime
-	ValidVesselArchivedAt                     sql.NullTime
-	Name                                      string
-	Notes                                     string
-	BelongsToRecipeStep                       string
-	RecipeStepProductID                       sql.NullString
-	VesselPredicate                           string
-	MinimumQuantity                           int32
+	ValidMeasurementUnitName                  sql.NullString
+	ValidVesselSlug                           sql.NullString
+	ValidMeasurementUnitDescription           sql.NullString
+	ValidVesselIconPath                       sql.NullString
+	ValidVesselDescription                    sql.NullString
+	ValidMeasurementUnitIconPath              sql.NullString
 	MaximumQuantity                           sql.NullInt32
+	MinimumQuantity                           int32
+	ValidVesselIncludeInGeneratedInstructions sql.NullBool
+	ValidMeasurementUnitVolumetric            sql.NullBool
+	ValidMeasurementUnitUniversal             sql.NullBool
+	ValidVesselUsableForStorage               sql.NullBool
+	ValidVesselDisplayInSummaryLists          sql.NullBool
+	ValidMeasurementUnitMetric                sql.NullBool
+	ValidMeasurementUnitImperial              sql.NullBool
 	UnavailableAfterStep                      bool
-	CreatedAt                                 time.Time
-	LastUpdatedAt                             sql.NullTime
-	ArchivedAt                                sql.NullTime
 }
 
 func (q *Queries) GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetRecipeStepVesselParams) (*GetRecipeStepVesselRow, error) {
@@ -383,52 +383,52 @@ type GetRecipeStepVesselsParams struct {
 }
 
 type GetRecipeStepVesselsRow struct {
+	CreatedAt                                 time.Time
+	ValidMeasurementUnitLastIndexedAt         sql.NullTime
+	ArchivedAt                                sql.NullTime
+	LastUpdatedAt                             sql.NullTime
+	ValidVesselArchivedAt                     sql.NullTime
+	ValidVesselLastUpdatedAt                  sql.NullTime
+	ValidVesselCreatedAt                      sql.NullTime
+	ValidVesselLastIndexedAt                  sql.NullTime
+	ValidMeasurementUnitArchivedAt            sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt         sql.NullTime
+	ValidMeasurementUnitCreatedAt             sql.NullTime
+	Name                                      string
 	ID                                        string
-	ValidVesselID                             sql.NullString
-	ValidVesselName                           sql.NullString
-	ValidVesselPluralName                     sql.NullString
-	ValidVesselDescription                    sql.NullString
-	ValidVesselIconPath                       sql.NullString
-	ValidVesselUsableForStorage               sql.NullBool
-	ValidVesselSlug                           sql.NullString
-	ValidVesselDisplayInSummaryLists          sql.NullBool
-	ValidVesselIncludeInGeneratedInstructions sql.NullBool
-	ValidVesselCapacity                       sql.NullString
-	ValidMeasurementUnitID                    sql.NullString
-	ValidMeasurementUnitName                  sql.NullString
-	ValidMeasurementUnitDescription           sql.NullString
-	ValidMeasurementUnitVolumetric            sql.NullBool
-	ValidMeasurementUnitIconPath              sql.NullString
-	ValidMeasurementUnitUniversal             sql.NullBool
-	ValidMeasurementUnitMetric                sql.NullBool
-	ValidMeasurementUnitImperial              sql.NullBool
+	VesselPredicate                           string
+	BelongsToRecipeStep                       string
+	Notes                                     string
+	ValidVesselShape                          NullVesselShape
+	ValidVesselHeightInMillimeters            sql.NullString
+	RecipeStepProductID                       sql.NullString
 	ValidMeasurementUnitSlug                  sql.NullString
 	ValidMeasurementUnitPluralName            sql.NullString
-	ValidMeasurementUnitLastIndexedAt         sql.NullTime
-	ValidMeasurementUnitCreatedAt             sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt         sql.NullTime
-	ValidMeasurementUnitArchivedAt            sql.NullTime
+	ValidMeasurementUnitID                    sql.NullString
+	ValidVesselCapacity                       sql.NullString
+	ValidMeasurementUnitIconPath              sql.NullString
+	ValidVesselID                             sql.NullString
 	ValidVesselWidthInMillimeters             sql.NullString
 	ValidVesselLengthInMillimeters            sql.NullString
-	ValidVesselHeightInMillimeters            sql.NullString
-	ValidVesselShape                          NullVesselShape
-	ValidVesselLastIndexedAt                  sql.NullTime
-	ValidVesselCreatedAt                      sql.NullTime
-	ValidVesselLastUpdatedAt                  sql.NullTime
-	ValidVesselArchivedAt                     sql.NullTime
-	Name                                      string
-	Notes                                     string
-	BelongsToRecipeStep                       string
-	RecipeStepProductID                       sql.NullString
-	VesselPredicate                           string
-	MinimumQuantity                           int32
-	MaximumQuantity                           sql.NullInt32
-	UnavailableAfterStep                      bool
-	CreatedAt                                 time.Time
-	LastUpdatedAt                             sql.NullTime
-	ArchivedAt                                sql.NullTime
+	ValidMeasurementUnitDescription           sql.NullString
+	ValidMeasurementUnitName                  sql.NullString
+	ValidVesselSlug                           sql.NullString
+	ValidVesselName                           sql.NullString
+	ValidVesselIconPath                       sql.NullString
+	ValidVesselDescription                    sql.NullString
+	ValidVesselPluralName                     sql.NullString
 	FilteredCount                             int64
 	TotalCount                                int64
+	MaximumQuantity                           sql.NullInt32
+	MinimumQuantity                           int32
+	ValidMeasurementUnitMetric                sql.NullBool
+	ValidMeasurementUnitVolumetric            sql.NullBool
+	ValidMeasurementUnitUniversal             sql.NullBool
+	ValidVesselUsableForStorage               sql.NullBool
+	ValidVesselDisplayInSummaryLists          sql.NullBool
+	ValidVesselIncludeInGeneratedInstructions sql.NullBool
+	ValidMeasurementUnitImperial              sql.NullBool
+	UnavailableAfterStep                      bool
 }
 
 func (q *Queries) GetRecipeStepVessels(ctx context.Context, db DBTX, arg *GetRecipeStepVesselsParams) ([]*GetRecipeStepVesselsRow, error) {
@@ -569,50 +569,50 @@ WHERE recipe_step_vessels.archived_at IS NULL
 `
 
 type GetRecipeStepVesselsForRecipeRow struct {
+	CreatedAt                                 time.Time
+	ValidMeasurementUnitLastIndexedAt         sql.NullTime
+	ArchivedAt                                sql.NullTime
+	LastUpdatedAt                             sql.NullTime
+	ValidVesselArchivedAt                     sql.NullTime
+	ValidVesselLastUpdatedAt                  sql.NullTime
+	ValidVesselCreatedAt                      sql.NullTime
+	ValidVesselLastIndexedAt                  sql.NullTime
+	ValidMeasurementUnitArchivedAt            sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt         sql.NullTime
+	ValidMeasurementUnitCreatedAt             sql.NullTime
+	Name                                      string
 	ID                                        string
+	VesselPredicate                           string
+	BelongsToRecipeStep                       string
+	Notes                                     string
+	ValidVesselShape                          NullVesselShape
+	ValidVesselWidthInMillimeters             sql.NullString
 	ValidVesselID                             sql.NullString
-	ValidVesselName                           sql.NullString
-	ValidVesselPluralName                     sql.NullString
-	ValidVesselDescription                    sql.NullString
-	ValidVesselIconPath                       sql.NullString
-	ValidVesselUsableForStorage               sql.NullBool
-	ValidVesselSlug                           sql.NullString
-	ValidVesselDisplayInSummaryLists          sql.NullBool
-	ValidVesselIncludeInGeneratedInstructions sql.NullBool
-	ValidVesselCapacity                       sql.NullString
-	ValidMeasurementUnitID                    sql.NullString
-	ValidMeasurementUnitName                  sql.NullString
-	ValidMeasurementUnitDescription           sql.NullString
-	ValidMeasurementUnitVolumetric            sql.NullBool
-	ValidMeasurementUnitIconPath              sql.NullString
-	ValidMeasurementUnitUniversal             sql.NullBool
-	ValidMeasurementUnitMetric                sql.NullBool
-	ValidMeasurementUnitImperial              sql.NullBool
 	ValidMeasurementUnitSlug                  sql.NullString
 	ValidMeasurementUnitPluralName            sql.NullString
-	ValidMeasurementUnitLastIndexedAt         sql.NullTime
-	ValidMeasurementUnitCreatedAt             sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt         sql.NullTime
-	ValidMeasurementUnitArchivedAt            sql.NullTime
-	ValidVesselWidthInMillimeters             sql.NullString
+	ValidMeasurementUnitID                    sql.NullString
+	ValidVesselCapacity                       sql.NullString
+	ValidVesselName                           sql.NullString
+	ValidVesselPluralName                     sql.NullString
+	RecipeStepProductID                       sql.NullString
 	ValidVesselLengthInMillimeters            sql.NullString
 	ValidVesselHeightInMillimeters            sql.NullString
-	ValidVesselShape                          NullVesselShape
-	ValidVesselLastIndexedAt                  sql.NullTime
-	ValidVesselCreatedAt                      sql.NullTime
-	ValidVesselLastUpdatedAt                  sql.NullTime
-	ValidVesselArchivedAt                     sql.NullTime
-	Name                                      string
-	Notes                                     string
-	BelongsToRecipeStep                       string
-	RecipeStepProductID                       sql.NullString
-	VesselPredicate                           string
-	MinimumQuantity                           int32
+	ValidMeasurementUnitName                  sql.NullString
+	ValidVesselSlug                           sql.NullString
+	ValidMeasurementUnitDescription           sql.NullString
+	ValidVesselIconPath                       sql.NullString
+	ValidVesselDescription                    sql.NullString
+	ValidMeasurementUnitIconPath              sql.NullString
 	MaximumQuantity                           sql.NullInt32
+	MinimumQuantity                           int32
+	ValidVesselIncludeInGeneratedInstructions sql.NullBool
+	ValidMeasurementUnitVolumetric            sql.NullBool
+	ValidMeasurementUnitUniversal             sql.NullBool
+	ValidVesselUsableForStorage               sql.NullBool
+	ValidVesselDisplayInSummaryLists          sql.NullBool
+	ValidMeasurementUnitMetric                sql.NullBool
+	ValidMeasurementUnitImperial              sql.NullBool
 	UnavailableAfterStep                      bool
-	CreatedAt                                 time.Time
-	LastUpdatedAt                             sql.NullTime
-	ArchivedAt                                sql.NullTime
 }
 
 func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeStepVesselsForRecipeRow, error) {
@@ -704,13 +704,13 @@ type UpdateRecipeStepVesselParams struct {
 	Name                 string
 	Notes                string
 	BelongsToRecipeStep  string
+	VesselPredicate      string
+	ID                   string
 	RecipeStepProductID  sql.NullString
 	ValidVesselID        sql.NullString
-	VesselPredicate      string
-	MinimumQuantity      int32
 	MaximumQuantity      sql.NullInt32
+	MinimumQuantity      int32
 	UnavailableAfterStep bool
-	ID                   string
 }
 
 func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *UpdateRecipeStepVesselParams) (int64, error) {

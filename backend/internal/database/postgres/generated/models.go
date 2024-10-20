@@ -1133,14 +1133,14 @@ func AllWebhookEventValues() []WebhookEvent {
 }
 
 type HouseholdUserMemberships struct {
-	ID                 string
-	BelongsToHousehold string
-	BelongsToUser      string
-	DefaultHousehold   bool
-	HouseholdRole      string
 	CreatedAt          time.Time
 	LastUpdatedAt      sql.NullTime
 	ArchivedAt         sql.NullTime
+	ID                 string
+	BelongsToHousehold string
+	BelongsToUser      string
+	HouseholdRole      string
+	DefaultHousehold   bool
 }
 
 type MealPlanEvents struct {
@@ -1156,34 +1156,34 @@ type MealPlanEvents struct {
 }
 
 type MealPlanOptionVotes struct {
-	ID                      string
-	Rank                    int32
-	Abstain                 bool
-	Notes                   string
-	ByUser                  string
 	CreatedAt               time.Time
 	LastUpdatedAt           sql.NullTime
 	ArchivedAt              sql.NullTime
+	ID                      string
+	Notes                   string
+	ByUser                  string
 	BelongsToMealPlanOption string
+	Rank                    int32
+	Abstain                 bool
 }
 
 type Oauth2ClientTokens struct {
-	ID                  string
-	ClientID            string
-	BelongsToUser       string
-	RedirectUri         string
-	Scope               Oauth2ClientTokenScopes
-	Code                string
+	AccessExpiresAt     time.Time
+	CodeExpiresAt       time.Time
+	RefreshExpiresAt    time.Time
+	RefreshCreatedAt    time.Time
+	CodeCreatedAt       time.Time
+	AccessCreatedAt     time.Time
 	CodeChallenge       string
 	CodeChallengeMethod string
-	CodeCreatedAt       time.Time
-	CodeExpiresAt       time.Time
+	Scope               Oauth2ClientTokenScopes
+	ClientID            string
 	Access              string
-	AccessCreatedAt     time.Time
-	AccessExpiresAt     time.Time
+	Code                string
+	ID                  string
 	Refresh             string
-	RefreshCreatedAt    time.Time
-	RefreshExpiresAt    time.Time
+	RedirectUri         string
+	BelongsToUser       string
 }
 
 type Oauth2Clients struct {
@@ -1197,31 +1197,31 @@ type Oauth2Clients struct {
 }
 
 type RecipeRatings struct {
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 	ID            string
 	RecipeID      string
+	Notes         string
+	ByUser        string
 	Taste         sql.NullString
 	Difficulty    sql.NullString
 	Cleanup       sql.NullString
 	Instructions  sql.NullString
 	Overall       sql.NullString
-	Notes         string
-	ByUser        string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 }
 
 type ServiceSettings struct {
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 	ID            string
 	Name          string
 	Type          SettingType
 	Description   string
-	DefaultValue  sql.NullString
 	Enumeration   string
+	DefaultValue  sql.NullString
 	AdminsOnly    bool
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 }
 
 type UserNotifications struct {
@@ -1234,25 +1234,25 @@ type UserNotifications struct {
 }
 
 type ValidVessels struct {
+	CreatedAt                      time.Time
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	LastIndexedAt                  sql.NullTime
 	ID                             string
 	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
-	UsableForStorage               bool
 	Slug                           string
-	DisplayInSummaryLists          bool
-	IncludeInGeneratedInstructions bool
 	Capacity                       string
-	CapacityUnit                   sql.NullString
-	WidthInMillimeters             sql.NullString
+	Shape                          VesselShape
 	LengthInMillimeters            sql.NullString
 	HeightInMillimeters            sql.NullString
-	Shape                          VesselShape
-	LastIndexedAt                  sql.NullTime
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
+	WidthInMillimeters             sql.NullString
+	CapacityUnit                   sql.NullString
+	IncludeInGeneratedInstructions bool
+	DisplayInSummaryLists          bool
+	UsableForStorage               bool
 }
 
 type Webhooks struct {

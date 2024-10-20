@@ -53,7 +53,7 @@ func ProvideHouseholdInvitationsService(
 ) (types.HouseholdInvitationDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up household invitations service data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
 	s := &service{

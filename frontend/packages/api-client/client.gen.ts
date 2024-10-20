@@ -17,6 +17,7 @@ import {
   AvatarUpdateInput,
   CreateMealPlanTasksRequest,
   CreateMealPlanTasksResponse,
+  DataDeletionResponse,
   EmailAddressVerificationRequestInput,
   FinalizeMealPlansRequest,
   FinalizeMealPlansResponse,
@@ -2312,6 +2313,28 @@ export class DinnerDoneBetterAPIClient {
           }
         })
         .catch((error: AxiosError<APIResponse<WebhookTriggerEvent>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
+        });
+    });
+  }
+
+  async destroyAllUserData(): Promise<APIResponse<DataDeletionResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      self.client
+        .delete<APIResponse<DataDeletionResponse>>(`/api/v1/data_privacy/destroy`)
+        .then((res: AxiosResponse<APIResponse<DataDeletionResponse>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
+          }
+        })
+        .catch((error: AxiosError<APIResponse<DataDeletionResponse>>) => {
           if (error?.response?.data?.error) {
             reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
           } else {

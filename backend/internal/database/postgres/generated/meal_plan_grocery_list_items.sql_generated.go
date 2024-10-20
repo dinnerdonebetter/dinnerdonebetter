@@ -81,13 +81,13 @@ type CreateMealPlanGroceryListItemParams struct {
 	ValidIngredient          string
 	ValidMeasurementUnit     string
 	MinimumQuantityNeeded    string
+	StatusExplanation        string
+	Status                   GroceryListItemStatus
 	MaximumQuantityNeeded    sql.NullString
 	QuantityPurchased        sql.NullString
 	PurchasedMeasurementUnit sql.NullString
 	PurchasedUpc             sql.NullString
 	PurchasePrice            sql.NullString
-	StatusExplanation        string
-	Status                   GroceryListItemStatus
 }
 
 func (q *Queries) CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *CreateMealPlanGroceryListItemParams) error {
@@ -192,71 +192,71 @@ type GetMealPlanGroceryListItemParams struct {
 }
 
 type GetMealPlanGroceryListItemRow struct {
-	ID                                                     string
+	ValidIngredientCreatedAt                               time.Time
+	CreatedAt                                              time.Time
+	ValidMeasurementUnitCreatedAt                          time.Time
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ArchivedAt                                             sql.NullTime
+	LastUpdatedAt                                          sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientPluralName                              string
+	StatusExplanation                                      string
 	BelongsToMealPlan                                      string
 	ValidIngredientID                                      string
+	ID                                                     string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
-	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientIsStarch                                bool
-	ValidIngredientIsProtein                               bool
-	ValidIngredientIsGrain                                 bool
-	ValidIngredientIsFruit                                 bool
-	ValidIngredientIsSalt                                  bool
-	ValidIngredientIsFat                                   bool
-	ValidIngredientIsAcid                                  bool
-	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
+	MinimumQuantityNeeded                                  string
 	ValidMeasurementUnitID                                 string
 	ValidMeasurementUnitName                               string
 	ValidMeasurementUnitDescription                        string
-	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidMeasurementUnitIconPath                           string
-	ValidMeasurementUnitUniversal                          bool
-	ValidMeasurementUnitMetric                             bool
-	ValidMeasurementUnitImperial                           bool
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientSlug                                    string
 	ValidMeasurementUnitSlug                               string
+	ValidIngredientShoppingSuggestions                     string
+	Status                                                 GroceryListItemStatus
+	ValidIngredientWarning                                 string
 	ValidMeasurementUnitPluralName                         string
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
-	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
-	MinimumQuantityNeeded                                  string
+	PurchasedUpc                                           sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	PurchasePrice                                          sql.NullString
 	MaximumQuantityNeeded                                  sql.NullString
 	QuantityPurchased                                      sql.NullString
 	PurchasedMeasurementUnit                               sql.NullString
-	PurchasedUpc                                           sql.NullString
-	PurchasePrice                                          sql.NullString
-	StatusExplanation                                      string
-	Status                                                 GroceryListItemStatus
-	CreatedAt                                              time.Time
-	LastUpdatedAt                                          sql.NullTime
-	ArchivedAt                                             sql.NullTime
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientIsHeat                                  bool
+	ValidIngredientIsAcid                                  bool
+	ValidIngredientIsFat                                   bool
+	ValidIngredientIsSalt                                  bool
+	ValidMeasurementUnitUniversal                          bool
+	ValidMeasurementUnitMetric                             bool
+	ValidMeasurementUnitImperial                           bool
+	ValidIngredientIsFruit                                 bool
+	ValidIngredientIsGrain                                 bool
+	ValidIngredientIsProtein                               bool
+	ValidIngredientIsStarch                                bool
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
 }
 
 func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *GetMealPlanGroceryListItemParams) (*GetMealPlanGroceryListItemRow, error) {
@@ -417,71 +417,71 @@ ORDER BY meal_plan_grocery_list_items.id
 `
 
 type GetMealPlanGroceryListItemsForMealPlanRow struct {
-	ID                                                     string
+	ValidIngredientCreatedAt                               time.Time
+	CreatedAt                                              time.Time
+	ValidMeasurementUnitCreatedAt                          time.Time
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ArchivedAt                                             sql.NullTime
+	LastUpdatedAt                                          sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientPluralName                              string
+	StatusExplanation                                      string
 	BelongsToMealPlan                                      string
 	ValidIngredientID                                      string
+	ID                                                     string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
-	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientIsStarch                                bool
-	ValidIngredientIsProtein                               bool
-	ValidIngredientIsGrain                                 bool
-	ValidIngredientIsFruit                                 bool
-	ValidIngredientIsSalt                                  bool
-	ValidIngredientIsFat                                   bool
-	ValidIngredientIsAcid                                  bool
-	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
+	MinimumQuantityNeeded                                  string
 	ValidMeasurementUnitID                                 string
 	ValidMeasurementUnitName                               string
 	ValidMeasurementUnitDescription                        string
-	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidMeasurementUnitIconPath                           string
-	ValidMeasurementUnitUniversal                          bool
-	ValidMeasurementUnitMetric                             bool
-	ValidMeasurementUnitImperial                           bool
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientSlug                                    string
 	ValidMeasurementUnitSlug                               string
+	ValidIngredientShoppingSuggestions                     string
+	Status                                                 GroceryListItemStatus
+	ValidIngredientWarning                                 string
 	ValidMeasurementUnitPluralName                         string
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
-	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
-	MinimumQuantityNeeded                                  string
+	PurchasedUpc                                           sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	PurchasePrice                                          sql.NullString
 	MaximumQuantityNeeded                                  sql.NullString
 	QuantityPurchased                                      sql.NullString
 	PurchasedMeasurementUnit                               sql.NullString
-	PurchasedUpc                                           sql.NullString
-	PurchasePrice                                          sql.NullString
-	StatusExplanation                                      string
-	Status                                                 GroceryListItemStatus
-	CreatedAt                                              time.Time
-	LastUpdatedAt                                          sql.NullTime
-	ArchivedAt                                             sql.NullTime
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientIsHeat                                  bool
+	ValidIngredientIsAcid                                  bool
+	ValidIngredientIsFat                                   bool
+	ValidIngredientIsSalt                                  bool
+	ValidMeasurementUnitUniversal                          bool
+	ValidMeasurementUnitMetric                             bool
+	ValidMeasurementUnitImperial                           bool
+	ValidIngredientIsFruit                                 bool
+	ValidIngredientIsGrain                                 bool
+	ValidIngredientIsProtein                               bool
+	ValidIngredientIsStarch                                bool
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
 }
 
 func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error) {
@@ -596,14 +596,14 @@ type UpdateMealPlanGroceryListItemParams struct {
 	ValidIngredient          string
 	ValidMeasurementUnit     string
 	MinimumQuantityNeeded    string
+	StatusExplanation        string
+	Status                   GroceryListItemStatus
+	ID                       string
 	MaximumQuantityNeeded    sql.NullString
 	QuantityPurchased        sql.NullString
 	PurchasedMeasurementUnit sql.NullString
 	PurchasedUpc             sql.NullString
 	PurchasePrice            sql.NullString
-	StatusExplanation        string
-	Status                   GroceryListItemStatus
-	ID                       string
 }
 
 func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) (int64, error) {

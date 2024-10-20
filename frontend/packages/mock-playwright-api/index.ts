@@ -84,6 +84,7 @@ export * from './CreateValidPreparationVessel';
 export * from './CreateValidVessel';
 export * from './CreateWebhook';
 export * from './CreateWebhookTriggerEvent';
+export * from './DestroyAllUserData';
 export * from './FinalizeMealPlan';
 export * from './GetActiveHousehold';
 export * from './GetAuditLogEntriesForHousehold';

@@ -54,7 +54,7 @@ func ProvideService(
 ) (types.ValidIngredientDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up valid ingredients service data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
 	searchIndex, err := searchcfg.ProvideIndex[types.ValidIngredientSearchSubset](ctx, logger, tracerProvider, searchConfig, search.IndexTypeValidIngredients)

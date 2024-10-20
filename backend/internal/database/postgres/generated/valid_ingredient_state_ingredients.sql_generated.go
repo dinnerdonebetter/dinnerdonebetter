@@ -163,45 +163,45 @@ WHERE
 `
 
 type GetValidIngredientStateIngredientRow struct {
-	ValidIngredientStateIngredientID                       string
-	ValidIngredientStateIngredientNotes                    string
-	ValidIngredientStateID                                 string
-	ValidIngredientStateName                               string
-	ValidIngredientStatePastTense                          string
-	ValidIngredientStateSlug                               string
-	ValidIngredientStateDescription                        string
-	ValidIngredientStateIconPath                           string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
-	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientStateIngredientCreatedAt                time.Time
 	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
 	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStatePastTense                          string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
+	ValidIngredientStateIconPath                           string
+	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
 	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientStateName                               string
+	ValidIngredientStateID                                 string
+	ValidIngredientStateIngredientNotes                    string
+	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientSlug                                    string
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientContainsGluten                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -210,15 +210,15 @@ type GetValidIngredientStateIngredientRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientStateIngredientValidIngredientState     string
-	ValidIngredientStateIngredientValidIngredient          string
-	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
 }
 
 func (q *Queries) GetValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientStateIngredientRow, error) {
@@ -394,45 +394,45 @@ type GetValidIngredientStateIngredientsParams struct {
 }
 
 type GetValidIngredientStateIngredientsRow struct {
-	ValidIngredientStateIngredientID                       string
-	ValidIngredientStateIngredientNotes                    string
-	ValidIngredientStateID                                 string
-	ValidIngredientStateName                               string
-	ValidIngredientStatePastTense                          string
-	ValidIngredientStateSlug                               string
-	ValidIngredientStateDescription                        string
-	ValidIngredientStateIconPath                           string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
-	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientStateIngredientCreatedAt                time.Time
 	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
 	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
+	ValidIngredientSlug                                    string
 	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientStateIconPath                           string
+	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
+	ValidIngredientStatePastTense                          string
+	ValidIngredientStateName                               string
+	ValidIngredientStateID                                 string
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	FilteredCount                                          int64
+	TotalCount                                             int64
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientAnimalDerived                           bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -441,17 +441,17 @@ type GetValidIngredientStateIngredientsRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientStateIngredientValidIngredientState     string
-	ValidIngredientStateIngredientValidIngredient          string
-	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
 }
 
 func (q *Queries) GetValidIngredientStateIngredients(ctx context.Context, db DBTX, arg *GetValidIngredientStateIngredientsParams) ([]*GetValidIngredientStateIngredientsRow, error) {
@@ -654,45 +654,45 @@ type GetValidIngredientStateIngredientsForIngredientParams struct {
 }
 
 type GetValidIngredientStateIngredientsForIngredientRow struct {
-	ValidIngredientStateIngredientID                       string
-	ValidIngredientStateIngredientNotes                    string
-	ValidIngredientStateID                                 string
-	ValidIngredientStateName                               string
-	ValidIngredientStatePastTense                          string
-	ValidIngredientStateSlug                               string
-	ValidIngredientStateDescription                        string
-	ValidIngredientStateIconPath                           string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
-	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientStateIngredientCreatedAt                time.Time
 	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
 	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
+	ValidIngredientSlug                                    string
 	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientStateIconPath                           string
+	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
+	ValidIngredientStatePastTense                          string
+	ValidIngredientStateName                               string
+	ValidIngredientStateID                                 string
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	FilteredCount                                          int64
+	TotalCount                                             int64
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientAnimalDerived                           bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -701,17 +701,17 @@ type GetValidIngredientStateIngredientsForIngredientRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientStateIngredientValidIngredientState     string
-	ValidIngredientStateIngredientValidIngredient          string
-	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
 }
 
 func (q *Queries) GetValidIngredientStateIngredientsForIngredient(ctx context.Context, db DBTX, arg *GetValidIngredientStateIngredientsForIngredientParams) ([]*GetValidIngredientStateIngredientsForIngredientRow, error) {
@@ -915,45 +915,45 @@ type GetValidIngredientStateIngredientsForIngredientStateParams struct {
 }
 
 type GetValidIngredientStateIngredientsForIngredientStateRow struct {
-	ValidIngredientStateIngredientID                       string
-	ValidIngredientStateIngredientNotes                    string
-	ValidIngredientStateID                                 string
-	ValidIngredientStateName                               string
-	ValidIngredientStatePastTense                          string
-	ValidIngredientStateSlug                               string
-	ValidIngredientStateDescription                        string
-	ValidIngredientStateIconPath                           string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
-	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientStateIngredientCreatedAt                time.Time
 	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
 	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
+	ValidIngredientSlug                                    string
 	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientStateIconPath                           string
+	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
+	ValidIngredientStatePastTense                          string
+	ValidIngredientStateName                               string
+	ValidIngredientStateID                                 string
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	FilteredCount                                          int64
+	TotalCount                                             int64
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientAnimalDerived                           bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -962,17 +962,17 @@ type GetValidIngredientStateIngredientsForIngredientStateRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientStateIngredientValidIngredientState     string
-	ValidIngredientStateIngredientValidIngredient          string
-	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
 }
 
 func (q *Queries) GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, db DBTX, arg *GetValidIngredientStateIngredientsForIngredientStateParams) ([]*GetValidIngredientStateIngredientsForIngredientStateRow, error) {
@@ -1134,45 +1134,45 @@ WHERE
 `
 
 type GetValidIngredientStateIngredientsWithIDsRow struct {
-	ValidIngredientStateIngredientID                       string
-	ValidIngredientStateIngredientNotes                    string
-	ValidIngredientStateID                                 string
-	ValidIngredientStateName                               string
-	ValidIngredientStatePastTense                          string
-	ValidIngredientStateSlug                               string
-	ValidIngredientStateDescription                        string
-	ValidIngredientStateIconPath                           string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
-	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientStateIngredientCreatedAt                time.Time
 	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
 	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStatePastTense                          string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
+	ValidIngredientStateIconPath                           string
+	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
 	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientStateName                               string
+	ValidIngredientStateID                                 string
+	ValidIngredientStateIngredientNotes                    string
+	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientSlug                                    string
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientContainsGluten                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -1181,15 +1181,15 @@ type GetValidIngredientStateIngredientsWithIDsRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientStateIngredientValidIngredientState     string
-	ValidIngredientStateIngredientValidIngredient          string
-	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
 }
 
 func (q *Queries) GetValidIngredientStateIngredientsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidIngredientStateIngredientsWithIDsRow, error) {

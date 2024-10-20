@@ -52,7 +52,7 @@ func ProvideService(
 ) (types.ValidInstrumentDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up valid instruments service data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
 	searchIndex, err := searchcfg.ProvideIndex[types.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, searchConfig, search.IndexTypeValidInstruments)

@@ -20,8 +20,8 @@ WHERE archived_at IS NULL
 `
 
 type AttachHouseholdInvitationsToUserIDParams struct {
-	ToUser  sql.NullString
 	ToEmail string
+	ToUser  sql.NullString
 }
 
 func (q *Queries) AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) error {
@@ -70,15 +70,15 @@ INSERT INTO household_invitations (
 `
 
 type CreateHouseholdInvitationParams struct {
+	ExpiresAt            time.Time
 	ID                   string
 	FromUser             string
-	ToUser               sql.NullString
 	ToName               string
 	Note                 string
 	ToEmail              string
 	Token                string
 	DestinationHousehold string
-	ExpiresAt            time.Time
+	ToUser               sql.NullString
 }
 
 func (q *Queries) CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *CreateHouseholdInvitationParams) error {
@@ -171,64 +171,64 @@ type GetHouseholdInvitationByEmailAndTokenParams struct {
 }
 
 type GetHouseholdInvitationByEmailAndTokenRow struct {
-	ID                                         string
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	HouseholdCountry                           string
+	HouseholdPaymentProcessorCustomerID        string
 	HouseholdID                                string
 	HouseholdName                              string
-	HouseholdBillingStatus                     string
-	HouseholdContactPhone                      string
-	HouseholdPaymentProcessorCustomerID        string
-	HouseholdSubscriptionPlanID                sql.NullString
-	HouseholdBelongsToUser                     string
-	HouseholdTimeZone                          TimeZone
-	HouseholdAddressLine1                      string
-	HouseholdAddressLine2                      string
-	HouseholdCity                              string
-	HouseholdState                             string
-	HouseholdZipCode                           string
-	HouseholdCountry                           string
-	HouseholdLatitude                          sql.NullString
-	HouseholdLongitude                         sql.NullString
-	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
-	HouseholdWebhookHmacSecret                 string
-	HouseholdCreatedAt                         time.Time
-	HouseholdLastUpdatedAt                     sql.NullTime
-	HouseholdArchivedAt                        sql.NullTime
 	FromUser                                   string
-	ToUser                                     sql.NullString
+	HouseholdBillingStatus                     string
 	UserID                                     string
 	UserUsername                               string
-	UserAvatarSrc                              sql.NullString
+	StatusNote                                 string
 	UserEmailAddress                           string
 	UserHashedPassword                         string
-	UserPasswordLastChangedAt                  sql.NullTime
-	UserRequiresPasswordChange                 bool
+	ID                                         string
+	Status                                     InvitationState
 	UserTwoFactorSecret                        string
-	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	HouseholdZipCode                           string
 	UserServiceRole                            string
 	UserUserAccountStatus                      string
 	UserUserAccountStatusExplanation           string
-	UserBirthday                               sql.NullTime
-	UserEmailAddressVerificationToken          sql.NullString
-	UserEmailAddressVerifiedAt                 sql.NullTime
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
 	UserFirstName                              string
 	UserLastName                               string
-	UserLastAcceptedTermsOfService             sql.NullTime
-	UserLastAcceptedPrivacyPolicy              sql.NullTime
-	UserLastIndexedAt                          sql.NullTime
-	UserCreatedAt                              time.Time
-	UserLastUpdatedAt                          sql.NullTime
-	UserArchivedAt                             sql.NullTime
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdWebhookHmacSecret                 string
 	ToName                                     string
 	Note                                       string
 	ToEmail                                    string
 	Token                                      string
-	DestinationHousehold                       string
-	ExpiresAt                                  time.Time
-	Status                                     InvitationState
-	StatusNote                                 string
-	CreatedAt                                  time.Time
-	LastUpdatedAt                              sql.NullTime
-	ArchivedAt                                 sql.NullTime
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetHouseholdInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByEmailAndTokenParams) (*GetHouseholdInvitationByEmailAndTokenRow, error) {
@@ -372,64 +372,64 @@ type GetHouseholdInvitationByHouseholdAndIDParams struct {
 }
 
 type GetHouseholdInvitationByHouseholdAndIDRow struct {
-	ID                                         string
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	HouseholdCountry                           string
+	HouseholdPaymentProcessorCustomerID        string
 	HouseholdID                                string
 	HouseholdName                              string
-	HouseholdBillingStatus                     string
-	HouseholdContactPhone                      string
-	HouseholdPaymentProcessorCustomerID        string
-	HouseholdSubscriptionPlanID                sql.NullString
-	HouseholdBelongsToUser                     string
-	HouseholdTimeZone                          TimeZone
-	HouseholdAddressLine1                      string
-	HouseholdAddressLine2                      string
-	HouseholdCity                              string
-	HouseholdState                             string
-	HouseholdZipCode                           string
-	HouseholdCountry                           string
-	HouseholdLatitude                          sql.NullString
-	HouseholdLongitude                         sql.NullString
-	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
-	HouseholdWebhookHmacSecret                 string
-	HouseholdCreatedAt                         time.Time
-	HouseholdLastUpdatedAt                     sql.NullTime
-	HouseholdArchivedAt                        sql.NullTime
 	FromUser                                   string
-	ToUser                                     sql.NullString
+	HouseholdBillingStatus                     string
 	UserID                                     string
 	UserUsername                               string
-	UserAvatarSrc                              sql.NullString
+	StatusNote                                 string
 	UserEmailAddress                           string
 	UserHashedPassword                         string
-	UserPasswordLastChangedAt                  sql.NullTime
-	UserRequiresPasswordChange                 bool
+	ID                                         string
+	Status                                     InvitationState
 	UserTwoFactorSecret                        string
-	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	HouseholdZipCode                           string
 	UserServiceRole                            string
 	UserUserAccountStatus                      string
 	UserUserAccountStatusExplanation           string
-	UserBirthday                               sql.NullTime
-	UserEmailAddressVerificationToken          sql.NullString
-	UserEmailAddressVerifiedAt                 sql.NullTime
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
 	UserFirstName                              string
 	UserLastName                               string
-	UserLastAcceptedTermsOfService             sql.NullTime
-	UserLastAcceptedPrivacyPolicy              sql.NullTime
-	UserLastIndexedAt                          sql.NullTime
-	UserCreatedAt                              time.Time
-	UserLastUpdatedAt                          sql.NullTime
-	UserArchivedAt                             sql.NullTime
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdWebhookHmacSecret                 string
 	ToName                                     string
 	Note                                       string
 	ToEmail                                    string
 	Token                                      string
-	DestinationHousehold                       string
-	ExpiresAt                                  time.Time
-	Status                                     InvitationState
-	StatusNote                                 string
-	CreatedAt                                  time.Time
-	LastUpdatedAt                              sql.NullTime
-	ArchivedAt                                 sql.NullTime
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByHouseholdAndIDParams) (*GetHouseholdInvitationByHouseholdAndIDRow, error) {
@@ -573,64 +573,64 @@ type GetHouseholdInvitationByTokenAndIDParams struct {
 }
 
 type GetHouseholdInvitationByTokenAndIDRow struct {
-	ID                                         string
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	HouseholdCountry                           string
+	HouseholdPaymentProcessorCustomerID        string
 	HouseholdID                                string
 	HouseholdName                              string
-	HouseholdBillingStatus                     string
-	HouseholdContactPhone                      string
-	HouseholdPaymentProcessorCustomerID        string
-	HouseholdSubscriptionPlanID                sql.NullString
-	HouseholdBelongsToUser                     string
-	HouseholdTimeZone                          TimeZone
-	HouseholdAddressLine1                      string
-	HouseholdAddressLine2                      string
-	HouseholdCity                              string
-	HouseholdState                             string
-	HouseholdZipCode                           string
-	HouseholdCountry                           string
-	HouseholdLatitude                          sql.NullString
-	HouseholdLongitude                         sql.NullString
-	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
-	HouseholdWebhookHmacSecret                 string
-	HouseholdCreatedAt                         time.Time
-	HouseholdLastUpdatedAt                     sql.NullTime
-	HouseholdArchivedAt                        sql.NullTime
 	FromUser                                   string
-	ToUser                                     sql.NullString
+	HouseholdBillingStatus                     string
 	UserID                                     string
 	UserUsername                               string
-	UserAvatarSrc                              sql.NullString
+	StatusNote                                 string
 	UserEmailAddress                           string
 	UserHashedPassword                         string
-	UserPasswordLastChangedAt                  sql.NullTime
-	UserRequiresPasswordChange                 bool
+	ID                                         string
+	Status                                     InvitationState
 	UserTwoFactorSecret                        string
-	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	HouseholdZipCode                           string
 	UserServiceRole                            string
 	UserUserAccountStatus                      string
 	UserUserAccountStatusExplanation           string
-	UserBirthday                               sql.NullTime
-	UserEmailAddressVerificationToken          sql.NullString
-	UserEmailAddressVerifiedAt                 sql.NullTime
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
 	UserFirstName                              string
 	UserLastName                               string
-	UserLastAcceptedTermsOfService             sql.NullTime
-	UserLastAcceptedPrivacyPolicy              sql.NullTime
-	UserLastIndexedAt                          sql.NullTime
-	UserCreatedAt                              time.Time
-	UserLastUpdatedAt                          sql.NullTime
-	UserArchivedAt                             sql.NullTime
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdWebhookHmacSecret                 string
 	ToName                                     string
 	Note                                       string
 	ToEmail                                    string
 	Token                                      string
-	DestinationHousehold                       string
-	ExpiresAt                                  time.Time
-	Status                                     InvitationState
-	StatusNote                                 string
-	CreatedAt                                  time.Time
-	LastUpdatedAt                              sql.NullTime
-	ArchivedAt                                 sql.NullTime
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetHouseholdInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByTokenAndIDParams) (*GetHouseholdInvitationByTokenAndIDRow, error) {
@@ -804,73 +804,73 @@ type GetPendingInvitesForUserParams struct {
 	CreatedBefore sql.NullTime
 	UpdatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
-	ToUser        sql.NullString
 	Status        InvitationState
+	ToUser        sql.NullString
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
 type GetPendingInvitesForUserRow struct {
-	ID                                         string
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	UserTwoFactorSecret                        string
+	UserFirstName                              string
 	HouseholdID                                string
 	HouseholdName                              string
-	HouseholdBillingStatus                     string
-	HouseholdContactPhone                      string
-	HouseholdPaymentProcessorCustomerID        string
-	HouseholdSubscriptionPlanID                sql.NullString
-	HouseholdBelongsToUser                     string
-	HouseholdTimeZone                          TimeZone
-	HouseholdAddressLine1                      string
-	HouseholdAddressLine2                      string
-	HouseholdCity                              string
-	HouseholdState                             string
-	HouseholdZipCode                           string
-	HouseholdCountry                           string
-	HouseholdLatitude                          sql.NullString
-	HouseholdLongitude                         sql.NullString
-	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
-	HouseholdWebhookHmacSecret                 string
-	HouseholdCreatedAt                         time.Time
-	HouseholdLastUpdatedAt                     sql.NullTime
-	HouseholdArchivedAt                        sql.NullTime
 	FromUser                                   string
-	ToUser                                     sql.NullString
+	HouseholdBillingStatus                     string
 	UserID                                     string
 	UserUsername                               string
-	UserAvatarSrc                              sql.NullString
+	StatusNote                                 string
 	UserEmailAddress                           string
 	UserHashedPassword                         string
-	UserPasswordLastChangedAt                  sql.NullTime
-	UserRequiresPasswordChange                 bool
-	UserTwoFactorSecret                        string
-	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	HouseholdCountry                           string
+	Status                                     InvitationState
+	ID                                         string
+	HouseholdZipCode                           string
 	UserServiceRole                            string
 	UserUserAccountStatus                      string
 	UserUserAccountStatusExplanation           string
-	UserBirthday                               sql.NullTime
-	UserEmailAddressVerificationToken          sql.NullString
-	UserEmailAddressVerifiedAt                 sql.NullTime
-	UserFirstName                              string
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
+	HouseholdWebhookHmacSecret                 string
 	UserLastName                               string
-	UserLastAcceptedTermsOfService             sql.NullTime
-	UserLastAcceptedPrivacyPolicy              sql.NullTime
-	UserLastIndexedAt                          sql.NullTime
-	UserCreatedAt                              time.Time
-	UserLastUpdatedAt                          sql.NullTime
-	UserArchivedAt                             sql.NullTime
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdPaymentProcessorCustomerID        string
 	ToName                                     string
 	Note                                       string
 	ToEmail                                    string
 	Token                                      string
-	DestinationHousehold                       string
-	ExpiresAt                                  time.Time
-	Status                                     InvitationState
-	StatusNote                                 string
-	CreatedAt                                  time.Time
-	LastUpdatedAt                              sql.NullTime
-	ArchivedAt                                 sql.NullTime
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
 	FilteredCount                              int64
 	TotalCount                                 int64
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *GetPendingInvitesForUserParams) ([]*GetPendingInvitesForUserRow, error) {
@@ -1078,66 +1078,66 @@ type GetPendingInvitesFromUserParams struct {
 }
 
 type GetPendingInvitesFromUserRow struct {
-	ID                                         string
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	UserTwoFactorSecret                        string
+	UserFirstName                              string
 	HouseholdID                                string
 	HouseholdName                              string
-	HouseholdBillingStatus                     string
-	HouseholdContactPhone                      string
-	HouseholdPaymentProcessorCustomerID        string
-	HouseholdSubscriptionPlanID                sql.NullString
-	HouseholdBelongsToUser                     string
-	HouseholdTimeZone                          TimeZone
-	HouseholdAddressLine1                      string
-	HouseholdAddressLine2                      string
-	HouseholdCity                              string
-	HouseholdState                             string
-	HouseholdZipCode                           string
-	HouseholdCountry                           string
-	HouseholdLatitude                          sql.NullString
-	HouseholdLongitude                         sql.NullString
-	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
-	HouseholdWebhookHmacSecret                 string
-	HouseholdCreatedAt                         time.Time
-	HouseholdLastUpdatedAt                     sql.NullTime
-	HouseholdArchivedAt                        sql.NullTime
 	FromUser                                   string
-	ToUser                                     sql.NullString
+	HouseholdBillingStatus                     string
 	UserID                                     string
 	UserUsername                               string
-	UserAvatarSrc                              sql.NullString
+	StatusNote                                 string
 	UserEmailAddress                           string
 	UserHashedPassword                         string
-	UserPasswordLastChangedAt                  sql.NullTime
-	UserRequiresPasswordChange                 bool
-	UserTwoFactorSecret                        string
-	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	HouseholdCountry                           string
+	Status                                     InvitationState
+	ID                                         string
+	HouseholdZipCode                           string
 	UserServiceRole                            string
 	UserUserAccountStatus                      string
 	UserUserAccountStatusExplanation           string
-	UserBirthday                               sql.NullTime
-	UserEmailAddressVerificationToken          sql.NullString
-	UserEmailAddressVerifiedAt                 sql.NullTime
-	UserFirstName                              string
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
+	HouseholdWebhookHmacSecret                 string
 	UserLastName                               string
-	UserLastAcceptedTermsOfService             sql.NullTime
-	UserLastAcceptedPrivacyPolicy              sql.NullTime
-	UserLastIndexedAt                          sql.NullTime
-	UserCreatedAt                              time.Time
-	UserLastUpdatedAt                          sql.NullTime
-	UserArchivedAt                             sql.NullTime
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdPaymentProcessorCustomerID        string
 	ToName                                     string
 	Note                                       string
 	ToEmail                                    string
 	Token                                      string
-	DestinationHousehold                       string
-	ExpiresAt                                  time.Time
-	Status                                     InvitationState
-	StatusNote                                 string
-	CreatedAt                                  time.Time
-	LastUpdatedAt                              sql.NullTime
-	ArchivedAt                                 sql.NullTime
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
 	FilteredCount                              int64
 	TotalCount                                 int64
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *GetPendingInvitesFromUserParams) ([]*GetPendingInvitesFromUserRow, error) {

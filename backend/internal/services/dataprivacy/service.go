@@ -27,7 +27,7 @@ type (
 		encoderDecoder            encoding.ServerEncoderDecoder
 		tracer                    tracing.Tracer
 		dataChangesPublisher      messagequeue.Publisher
-		dataManager               types.UserDataManager
+		userDataManager           types.UserDataManager
 	}
 )
 
@@ -43,7 +43,7 @@ func ProvideService(
 ) (types.DataPrivacyService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up data privacy service data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
 	svc := &service{
@@ -51,7 +51,7 @@ func ProvideService(
 		encoderDecoder:            encoder,
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		dataManager:               dataManager,
+		userDataManager:           dataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 	}
 

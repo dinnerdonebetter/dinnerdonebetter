@@ -69,9 +69,9 @@ type CreateMealParams struct {
 	Name                 string
 	Description          string
 	MinEstimatedPortions string
+	CreatedByUser        string
 	MaxEstimatedPortions sql.NullString
 	EligibleForMealPlans bool
-	CreatedByUser        string
 }
 
 func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error {
@@ -116,25 +116,25 @@ WHERE meals.archived_at IS NULL
 `
 
 type GetMealRow struct {
-	ID                         string
-	Name                       string
-	Description                string
-	MinEstimatedPortions       string
-	MaxEstimatedPortions       sql.NullString
-	EligibleForMealPlans       bool
-	LastIndexedAt              sql.NullTime
 	CreatedAt                  time.Time
-	LastUpdatedAt              sql.NullTime
+	ComponentCreatedAt         time.Time
+	ComponentArchivedAt        sql.NullTime
+	ComponentLastUpdatedAt     sql.NullTime
 	ArchivedAt                 sql.NullTime
+	LastUpdatedAt              sql.NullTime
+	LastIndexedAt              sql.NullTime
+	ComponentMealID            string
 	CreatedByUser              string
 	ComponentID                string
-	ComponentMealID            string
+	ID                         string
 	ComponentRecipeID          string
 	ComponentMealComponentType ComponentType
 	ComponentRecipeScale       string
-	ComponentCreatedAt         time.Time
-	ComponentLastUpdatedAt     sql.NullTime
-	ComponentArchivedAt        sql.NullTime
+	MinEstimatedPortions       string
+	Description                string
+	Name                       string
+	MaxEstimatedPortions       sql.NullString
+	EligibleForMealPlans       bool
 }
 
 func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error) {
@@ -240,19 +240,19 @@ type GetMealsParams struct {
 }
 
 type GetMealsRow struct {
-	ID                   string
-	Name                 string
+	CreatedAt            time.Time
+	ArchivedAt           sql.NullTime
+	LastIndexedAt        sql.NullTime
+	LastUpdatedAt        sql.NullTime
 	Description          string
 	MinEstimatedPortions string
-	MaxEstimatedPortions sql.NullString
-	EligibleForMealPlans bool
-	LastIndexedAt        sql.NullTime
-	CreatedAt            time.Time
-	LastUpdatedAt        sql.NullTime
-	ArchivedAt           sql.NullTime
+	Name                 string
+	ID                   string
 	CreatedByUser        string
+	MaxEstimatedPortions sql.NullString
 	FilteredCount        int64
 	TotalCount           int64
+	EligibleForMealPlans bool
 }
 
 func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error) {
@@ -403,27 +403,27 @@ type SearchForMealsParams struct {
 }
 
 type SearchForMealsRow struct {
-	ID                         string
-	Name                       string
-	Description                string
-	MinEstimatedPortions       string
-	MaxEstimatedPortions       sql.NullString
-	EligibleForMealPlans       bool
-	LastIndexedAt              sql.NullTime
 	CreatedAt                  time.Time
-	LastUpdatedAt              sql.NullTime
+	ComponentCreatedAt         time.Time
+	ComponentArchivedAt        sql.NullTime
+	ComponentLastUpdatedAt     sql.NullTime
 	ArchivedAt                 sql.NullTime
+	LastUpdatedAt              sql.NullTime
+	LastIndexedAt              sql.NullTime
+	ComponentRecipeScale       string
+	ComponentMealComponentType ComponentType
+	Name                       string
 	CreatedByUser              string
 	ComponentID                string
 	ComponentMealID            string
 	ComponentRecipeID          string
-	ComponentMealComponentType ComponentType
-	ComponentRecipeScale       string
-	ComponentCreatedAt         time.Time
-	ComponentLastUpdatedAt     sql.NullTime
-	ComponentArchivedAt        sql.NullTime
+	Description                string
+	ID                         string
+	MinEstimatedPortions       string
+	MaxEstimatedPortions       sql.NullString
 	FilteredCount              int64
 	TotalCount                 int64
+	EligibleForMealPlans       bool
 }
 
 func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error) {

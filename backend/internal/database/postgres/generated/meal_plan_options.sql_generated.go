@@ -20,8 +20,8 @@ WHERE archived_at IS NULL
 `
 
 type ArchiveMealPlanOptionParams struct {
-	BelongsToMealPlanEvent sql.NullString
 	ID                     string
+	BelongsToMealPlanEvent sql.NullString
 }
 
 func (q *Queries) ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) (int64, error) {
@@ -50,9 +50,9 @@ SELECT EXISTS (
 `
 
 type CheckMealPlanOptionExistenceParams struct {
-	MealPlanEventID  sql.NullString
 	MealPlanOptionID string
 	MealPlanID       string
+	MealPlanEventID  sql.NullString
 }
 
 func (q *Queries) CheckMealPlanOptionExistence(ctx context.Context, db DBTX, arg *CheckMealPlanOptionExistenceParams) (bool, error) {
@@ -86,13 +86,13 @@ INSERT INTO meal_plan_options (
 
 type CreateMealPlanOptionParams struct {
 	ID                     string
-	AssignedCook           sql.NullString
-	AssignedDishwasher     sql.NullString
-	Chosen                 bool
 	MealScale              string
 	MealID                 string
 	Notes                  string
+	AssignedCook           sql.NullString
+	AssignedDishwasher     sql.NullString
 	BelongsToMealPlanEvent sql.NullString
+	Chosen                 bool
 }
 
 func (q *Queries) CreateMealPlanOption(ctx context.Context, db DBTX, arg *CreateMealPlanOptionParams) error {
@@ -119,8 +119,8 @@ WHERE archived_at IS NULL
 `
 
 type FinalizeMealPlanOptionParams struct {
-	MealPlanEventID sql.NullString
 	ID              string
+	MealPlanEventID sql.NullString
 	Tiebroken       bool
 }
 
@@ -168,34 +168,34 @@ WHERE
 `
 
 type GetAllMealPlanOptionsForMealPlanEventParams struct {
-	MealPlanEventID sql.NullString
 	MealPlanID      string
+	MealPlanEventID sql.NullString
 }
 
 type GetAllMealPlanOptionsForMealPlanEventRow struct {
-	ID                       string
-	AssignedCook             sql.NullString
-	AssignedDishwasher       sql.NullString
-	Chosen                   bool
-	Tiebroken                bool
-	MealScale                string
-	MealID                   string
-	Notes                    string
 	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
+	MealCreatedAt            time.Time
+	MealArchivedAt           sql.NullTime
+	MealLastUpdatedAt        sql.NullTime
+	MealLastIndexedAt        sql.NullTime
 	ArchivedAt               sql.NullTime
-	BelongsToMealPlanEvent   sql.NullString
+	LastUpdatedAt            sql.NullTime
+	MealScale                string
+	MealCreatedByUser        string
+	MealID                   string
+	ID                       string
+	Notes                    string
 	MealID_2                 string
 	MealName                 string
 	MealDescription          string
 	MealMinEstimatedPortions string
+	BelongsToMealPlanEvent   sql.NullString
+	AssignedDishwasher       sql.NullString
+	AssignedCook             sql.NullString
 	MealMaxEstimatedPortions sql.NullString
 	MealEligibleForMealPlans bool
-	MealLastIndexedAt        sql.NullTime
-	MealCreatedAt            time.Time
-	MealLastUpdatedAt        sql.NullTime
-	MealArchivedAt           sql.NullTime
-	MealCreatedByUser        string
+	Tiebroken                bool
+	Chosen                   bool
 }
 
 func (q *Queries) GetAllMealPlanOptionsForMealPlanEvent(ctx context.Context, db DBTX, arg *GetAllMealPlanOptionsForMealPlanEventParams) ([]*GetAllMealPlanOptionsForMealPlanEventRow, error) {
@@ -284,35 +284,35 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type GetMealPlanOptionParams struct {
-	MealPlanEventID  sql.NullString
 	MealPlanOptionID string
 	MealPlanID       string
+	MealPlanEventID  sql.NullString
 }
 
 type GetMealPlanOptionRow struct {
-	ID                       string
-	AssignedCook             sql.NullString
-	AssignedDishwasher       sql.NullString
-	Chosen                   bool
-	Tiebroken                bool
-	MealScale                string
-	MealID                   string
-	Notes                    string
 	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
+	MealCreatedAt            time.Time
+	MealArchivedAt           sql.NullTime
+	MealLastUpdatedAt        sql.NullTime
+	MealLastIndexedAt        sql.NullTime
 	ArchivedAt               sql.NullTime
-	BelongsToMealPlanEvent   sql.NullString
+	LastUpdatedAt            sql.NullTime
+	MealScale                string
+	MealCreatedByUser        string
+	MealID                   string
+	ID                       string
+	Notes                    string
 	MealID_2                 string
 	MealName                 string
 	MealDescription          string
 	MealMinEstimatedPortions string
+	BelongsToMealPlanEvent   sql.NullString
+	AssignedDishwasher       sql.NullString
+	AssignedCook             sql.NullString
 	MealMaxEstimatedPortions sql.NullString
 	MealEligibleForMealPlans bool
-	MealLastIndexedAt        sql.NullTime
-	MealCreatedAt            time.Time
-	MealLastUpdatedAt        sql.NullTime
-	MealArchivedAt           sql.NullTime
-	MealCreatedByUser        string
+	Tiebroken                bool
+	Chosen                   bool
 }
 
 func (q *Queries) GetMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionParams) (*GetMealPlanOptionRow, error) {
@@ -380,29 +380,29 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type GetMealPlanOptionByIDRow struct {
-	ID                       string
-	AssignedCook             sql.NullString
-	AssignedDishwasher       sql.NullString
-	Chosen                   bool
-	Tiebroken                bool
-	MealScale                string
-	MealID                   string
-	Notes                    string
 	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
+	MealCreatedAt            time.Time
+	MealArchivedAt           sql.NullTime
+	MealLastUpdatedAt        sql.NullTime
+	MealLastIndexedAt        sql.NullTime
 	ArchivedAt               sql.NullTime
-	BelongsToMealPlanEvent   sql.NullString
+	LastUpdatedAt            sql.NullTime
+	MealScale                string
+	MealCreatedByUser        string
+	MealID                   string
+	ID                       string
+	Notes                    string
 	MealID_2                 string
 	MealName                 string
 	MealDescription          string
 	MealMinEstimatedPortions string
+	BelongsToMealPlanEvent   sql.NullString
+	AssignedDishwasher       sql.NullString
+	AssignedCook             sql.NullString
 	MealMaxEstimatedPortions sql.NullString
 	MealEligibleForMealPlans bool
-	MealLastIndexedAt        sql.NullTime
-	MealCreatedAt            time.Time
-	MealLastUpdatedAt        sql.NullTime
-	MealArchivedAt           sql.NullTime
-	MealCreatedByUser        string
+	Tiebroken                bool
+	Chosen                   bool
 }
 
 func (q *Queries) GetMealPlanOptionByID(ctx context.Context, db DBTX, mealPlanOptionID string) (*GetMealPlanOptionByIDRow, error) {
@@ -513,38 +513,38 @@ type GetMealPlanOptionsParams struct {
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
-	MealPlanEventID sql.NullString
 	MealPlanID      string
+	MealPlanEventID sql.NullString
 	QueryOffset     sql.NullInt32
 	QueryLimit      sql.NullInt32
 }
 
 type GetMealPlanOptionsRow struct {
-	ID                       string
-	AssignedCook             sql.NullString
-	AssignedDishwasher       sql.NullString
-	Chosen                   bool
-	Tiebroken                bool
-	MealScale                string
+	CreatedAt                time.Time
+	MealCreatedAt            time.Time
+	MealArchivedAt           sql.NullTime
+	MealLastUpdatedAt        sql.NullTime
+	MealLastIndexedAt        sql.NullTime
+	ArchivedAt               sql.NullTime
+	LastUpdatedAt            sql.NullTime
 	MealID                   string
 	Notes                    string
-	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
-	ArchivedAt               sql.NullTime
-	BelongsToMealPlanEvent   sql.NullString
+	ID                       string
+	MealScale                string
+	MealCreatedByUser        string
 	MealID_2                 string
 	MealName                 string
 	MealDescription          string
 	MealMinEstimatedPortions string
 	MealMaxEstimatedPortions sql.NullString
-	MealEligibleForMealPlans bool
-	MealLastIndexedAt        sql.NullTime
-	MealCreatedAt            time.Time
-	MealLastUpdatedAt        sql.NullTime
-	MealArchivedAt           sql.NullTime
-	MealCreatedByUser        string
+	AssignedDishwasher       sql.NullString
+	AssignedCook             sql.NullString
+	BelongsToMealPlanEvent   sql.NullString
 	FilteredCount            int64
 	TotalCount               int64
+	MealEligibleForMealPlans bool
+	Tiebroken                bool
+	Chosen                   bool
 }
 
 func (q *Queries) GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealPlanOptionsParams) ([]*GetMealPlanOptionsRow, error) {
@@ -619,13 +619,13 @@ WHERE archived_at IS NULL
 `
 
 type UpdateMealPlanOptionParams struct {
-	AssignedCook       sql.NullString
-	AssignedDishwasher sql.NullString
 	MealScale          string
 	MealID             string
 	Notes              string
-	MealPlanEventID    sql.NullString
 	MealPlanOptionID   string
+	AssignedCook       sql.NullString
+	AssignedDishwasher sql.NullString
+	MealPlanEventID    sql.NullString
 }
 
 func (q *Queries) UpdateMealPlanOption(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionParams) (int64, error) {

@@ -33,6 +33,12 @@ var routeInfoMap = map[string]routeDetails{
 		Description: "checks for service readiness",
 		Authless:    true,
 	},
+	"DELETE /api/v1/data_privacy/destroy": {
+		ID:           "DestroyAllUserData",
+		Description:  "Destroys a user's data",
+		ResponseType: &types.DataDeletionResponse{},
+		OAuth2Scopes: []string{householdMember},
+	},
 	"POST /api/v1/admin/users/status": {
 		ID:           "AdminUpdateUserStatus",
 		Description:  "Updates a user's account status",

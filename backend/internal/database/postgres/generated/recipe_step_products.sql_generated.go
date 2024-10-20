@@ -99,23 +99,23 @@ INSERT INTO recipe_step_products (
 `
 
 type CreateRecipeStepProductParams struct {
-	ID                                 string
+	StorageInstructions                string
 	Name                               string
 	Type                               RecipeStepProductType
+	QuantityNotes                      string
+	BelongsToRecipeStep                string
+	ID                                 string
 	MeasurementUnit                    sql.NullString
 	MinimumQuantityValue               sql.NullString
 	MaximumQuantityValue               sql.NullString
-	QuantityNotes                      string
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
 	MinimumStorageTemperatureInCelsius sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
+	MaximumStorageDurationInSeconds    sql.NullInt32
+	ContainedInVesselIndex             sql.NullInt32
+	Index                              int32
 	IsLiquid                           bool
 	IsWaste                            bool
-	Index                              int32
-	ContainedInVesselIndex             sql.NullInt32
-	BelongsToRecipeStep                string
+	Compostable                        bool
 }
 
 func (q *Queries) CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *CreateRecipeStepProductParams) error {
@@ -197,39 +197,39 @@ type GetRecipeStepProductParams struct {
 }
 
 type GetRecipeStepProductRow struct {
-	ID                                 string
-	Name                               string
-	Type                               RecipeStepProductType
-	ValidMeasurementUnitID             sql.NullString
-	ValidMeasurementUnitName           sql.NullString
-	ValidMeasurementUnitDescription    sql.NullString
-	ValidMeasurementUnitVolumetric     sql.NullBool
-	ValidMeasurementUnitIconPath       sql.NullString
-	ValidMeasurementUnitUniversal      sql.NullBool
-	ValidMeasurementUnitMetric         sql.NullBool
-	ValidMeasurementUnitImperial       sql.NullBool
-	ValidMeasurementUnitSlug           sql.NullString
-	ValidMeasurementUnitPluralName     sql.NullString
-	ValidMeasurementUnitLastIndexedAt  sql.NullTime
-	ValidMeasurementUnitCreatedAt      sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
-	ValidMeasurementUnitArchivedAt     sql.NullTime
-	MinimumQuantityValue               sql.NullString
-	MaximumQuantityValue               sql.NullString
-	QuantityNotes                      string
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	MinimumStorageTemperatureInCelsius sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
-	IsLiquid                           bool
-	IsWaste                            bool
-	Index                              int32
-	ContainedInVesselIndex             sql.NullInt32
 	CreatedAt                          time.Time
-	LastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitLastIndexedAt  sql.NullTime
 	ArchivedAt                         sql.NullTime
+	LastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitArchivedAt     sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
+	ValidMeasurementUnitCreatedAt      sql.NullTime
+	StorageInstructions                string
+	Type                               RecipeStepProductType
+	Name                               string
 	BelongsToRecipeStep                string
+	ID                                 string
+	QuantityNotes                      string
+	MaximumQuantityValue               sql.NullString
+	MinimumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitDescription    sql.NullString
+	ValidMeasurementUnitName           sql.NullString
+	MinimumQuantityValue               sql.NullString
+	ValidMeasurementUnitIconPath       sql.NullString
+	ValidMeasurementUnitPluralName     sql.NullString
+	ValidMeasurementUnitID             sql.NullString
+	ValidMeasurementUnitSlug           sql.NullString
+	MaximumStorageTemperatureInCelsius sql.NullString
+	MaximumStorageDurationInSeconds    sql.NullInt32
+	ContainedInVesselIndex             sql.NullInt32
+	Index                              int32
+	ValidMeasurementUnitVolumetric     sql.NullBool
+	ValidMeasurementUnitImperial       sql.NullBool
+	ValidMeasurementUnitMetric         sql.NullBool
+	ValidMeasurementUnitUniversal      sql.NullBool
+	Compostable                        bool
+	IsWaste                            bool
+	IsLiquid                           bool
 }
 
 func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
@@ -368,41 +368,41 @@ type GetRecipeStepProductsParams struct {
 }
 
 type GetRecipeStepProductsRow struct {
-	ID                                 string
+	CreatedAt                          time.Time
+	ValidMeasurementUnitLastIndexedAt  sql.NullTime
+	ArchivedAt                         sql.NullTime
+	LastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitArchivedAt     sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
+	ValidMeasurementUnitCreatedAt      sql.NullTime
+	StorageInstructions                string
+	BelongsToRecipeStep                string
 	Name                               string
 	Type                               RecipeStepProductType
+	ID                                 string
+	QuantityNotes                      string
+	MaximumQuantityValue               sql.NullString
 	ValidMeasurementUnitID             sql.NullString
-	ValidMeasurementUnitName           sql.NullString
 	ValidMeasurementUnitDescription    sql.NullString
-	ValidMeasurementUnitVolumetric     sql.NullBool
-	ValidMeasurementUnitIconPath       sql.NullString
-	ValidMeasurementUnitUniversal      sql.NullBool
-	ValidMeasurementUnitMetric         sql.NullBool
-	ValidMeasurementUnitImperial       sql.NullBool
+	ValidMeasurementUnitName           sql.NullString
+	MinimumQuantityValue               sql.NullString
 	ValidMeasurementUnitSlug           sql.NullString
 	ValidMeasurementUnitPluralName     sql.NullString
-	ValidMeasurementUnitLastIndexedAt  sql.NullTime
-	ValidMeasurementUnitCreatedAt      sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
-	ValidMeasurementUnitArchivedAt     sql.NullTime
-	MinimumQuantityValue               sql.NullString
-	MaximumQuantityValue               sql.NullString
-	QuantityNotes                      string
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	MinimumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitIconPath       sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
-	IsLiquid                           bool
-	IsWaste                            bool
-	Index                              int32
-	ContainedInVesselIndex             sql.NullInt32
-	CreatedAt                          time.Time
-	LastUpdatedAt                      sql.NullTime
-	ArchivedAt                         sql.NullTime
-	BelongsToRecipeStep                string
-	FilteredCount                      int64
+	MinimumStorageTemperatureInCelsius sql.NullString
 	TotalCount                         int64
+	FilteredCount                      int64
+	MaximumStorageDurationInSeconds    sql.NullInt32
+	ContainedInVesselIndex             sql.NullInt32
+	Index                              int32
+	ValidMeasurementUnitVolumetric     sql.NullBool
+	ValidMeasurementUnitUniversal      sql.NullBool
+	ValidMeasurementUnitImperial       sql.NullBool
+	ValidMeasurementUnitMetric         sql.NullBool
+	Compostable                        bool
+	IsWaste                            bool
+	IsLiquid                           bool
 }
 
 func (q *Queries) GetRecipeStepProducts(ctx context.Context, db DBTX, arg *GetRecipeStepProductsParams) ([]*GetRecipeStepProductsRow, error) {
@@ -520,39 +520,39 @@ WHERE recipe_step_products.archived_at IS NULL
 `
 
 type GetRecipeStepProductsForRecipeRow struct {
-	ID                                 string
-	Name                               string
-	Type                               RecipeStepProductType
-	ValidMeasurementUnitID             sql.NullString
-	ValidMeasurementUnitName           sql.NullString
-	ValidMeasurementUnitDescription    sql.NullString
-	ValidMeasurementUnitVolumetric     sql.NullBool
-	ValidMeasurementUnitIconPath       sql.NullString
-	ValidMeasurementUnitUniversal      sql.NullBool
-	ValidMeasurementUnitMetric         sql.NullBool
-	ValidMeasurementUnitImperial       sql.NullBool
-	ValidMeasurementUnitSlug           sql.NullString
-	ValidMeasurementUnitPluralName     sql.NullString
-	ValidMeasurementUnitLastIndexedAt  sql.NullTime
-	ValidMeasurementUnitCreatedAt      sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
-	ValidMeasurementUnitArchivedAt     sql.NullTime
-	MinimumQuantityValue               sql.NullString
-	MaximumQuantityValue               sql.NullString
-	QuantityNotes                      string
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	MinimumStorageTemperatureInCelsius sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
-	IsLiquid                           bool
-	IsWaste                            bool
-	Index                              int32
-	ContainedInVesselIndex             sql.NullInt32
 	CreatedAt                          time.Time
-	LastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitLastIndexedAt  sql.NullTime
 	ArchivedAt                         sql.NullTime
+	LastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitArchivedAt     sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
+	ValidMeasurementUnitCreatedAt      sql.NullTime
+	StorageInstructions                string
+	Type                               RecipeStepProductType
+	Name                               string
 	BelongsToRecipeStep                string
+	ID                                 string
+	QuantityNotes                      string
+	MaximumQuantityValue               sql.NullString
+	MinimumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitDescription    sql.NullString
+	ValidMeasurementUnitName           sql.NullString
+	MinimumQuantityValue               sql.NullString
+	ValidMeasurementUnitIconPath       sql.NullString
+	ValidMeasurementUnitPluralName     sql.NullString
+	ValidMeasurementUnitID             sql.NullString
+	ValidMeasurementUnitSlug           sql.NullString
+	MaximumStorageTemperatureInCelsius sql.NullString
+	MaximumStorageDurationInSeconds    sql.NullInt32
+	ContainedInVesselIndex             sql.NullInt32
+	Index                              int32
+	ValidMeasurementUnitVolumetric     sql.NullBool
+	ValidMeasurementUnitImperial       sql.NullBool
+	ValidMeasurementUnitMetric         sql.NullBool
+	ValidMeasurementUnitUniversal      sql.NullBool
+	Compostable                        bool
+	IsWaste                            bool
+	IsLiquid                           bool
 }
 
 func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeStepProductsForRecipeRow, error) {
@@ -638,21 +638,21 @@ WHERE archived_at IS NULL
 type UpdateRecipeStepProductParams struct {
 	Name                               string
 	Type                               RecipeStepProductType
-	MeasurementUnit                    sql.NullString
-	MinimumQuantityValue               sql.NullString
-	MaximumQuantityValue               sql.NullString
+	ID                                 string
+	BelongsToRecipeStep                string
+	StorageInstructions                string
 	QuantityNotes                      string
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
 	MinimumStorageTemperatureInCelsius sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
+	MaximumQuantityValue               sql.NullString
+	MinimumQuantityValue               sql.NullString
+	MeasurementUnit                    sql.NullString
+	MaximumStorageDurationInSeconds    sql.NullInt32
+	ContainedInVesselIndex             sql.NullInt32
+	Index                              int32
+	Compostable                        bool
 	IsLiquid                           bool
 	IsWaste                            bool
-	Index                              int32
-	ContainedInVesselIndex             sql.NullInt32
-	BelongsToRecipeStep                string
-	ID                                 string
 }
 
 func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *UpdateRecipeStepProductParams) (int64, error) {

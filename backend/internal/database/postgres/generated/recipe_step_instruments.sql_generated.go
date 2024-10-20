@@ -88,16 +88,16 @@ INSERT INTO recipe_step_instruments (
 
 type CreateRecipeStepInstrumentParams struct {
 	ID                  string
-	InstrumentID        sql.NullString
-	RecipeStepProductID sql.NullString
 	Name                string
 	Notes               string
-	PreferenceRank      int32
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     sql.NullInt32
-	OptionIndex         int32
 	BelongsToRecipeStep string
+	InstrumentID        sql.NullString
+	RecipeStepProductID sql.NullString
+	MaximumQuantity     sql.NullInt32
+	PreferenceRank      int32
+	MinimumQuantity     int32
+	OptionIndex         int32
+	Optional            bool
 }
 
 func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, db DBTX, arg *CreateRecipeStepInstrumentParams) error {
@@ -166,32 +166,32 @@ type GetRecipeStepInstrumentParams struct {
 }
 
 type GetRecipeStepInstrumentRow struct {
-	ID                                            string
-	ValidInstrumentID                             sql.NullString
-	ValidInstrumentName                           sql.NullString
-	ValidInstrumentDescription                    sql.NullString
-	ValidInstrumentIconPath                       sql.NullString
-	ValidInstrumentPluralName                     sql.NullString
-	ValidInstrumentUsableForStorage               sql.NullBool
-	ValidInstrumentSlug                           sql.NullString
-	ValidInstrumentDisplayInSummaryLists          sql.NullBool
-	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ValidInstrumentCreatedAt                      sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	RecipeStepProductID                           sql.NullString
-	Name                                          string
-	Notes                                         string
-	PreferenceRank                                int32
-	Optional                                      bool
-	MinimumQuantity                               int32
-	MaximumQuantity                               sql.NullInt32
-	OptionIndex                                   int32
 	CreatedAt                                     time.Time
-	LastUpdatedAt                                 sql.NullTime
 	ArchivedAt                                    sql.NullTime
+	LastUpdatedAt                                 sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	Name                                          string
 	BelongsToRecipeStep                           string
+	Notes                                         string
+	ID                                            string
+	RecipeStepProductID                           sql.NullString
+	ValidInstrumentIconPath                       sql.NullString
+	ValidInstrumentDescription                    sql.NullString
+	ValidInstrumentPluralName                     sql.NullString
+	ValidInstrumentName                           sql.NullString
+	ValidInstrumentSlug                           sql.NullString
+	ValidInstrumentID                             sql.NullString
+	MaximumQuantity                               sql.NullInt32
+	PreferenceRank                                int32
+	MinimumQuantity                               int32
+	OptionIndex                                   int32
+	ValidInstrumentUsableForStorage               sql.NullBool
+	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
+	ValidInstrumentDisplayInSummaryLists          sql.NullBool
+	Optional                                      bool
 }
 
 func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) (*GetRecipeStepInstrumentRow, error) {
@@ -316,34 +316,34 @@ type GetRecipeStepInstrumentsParams struct {
 }
 
 type GetRecipeStepInstrumentsRow struct {
-	ID                                            string
-	ValidInstrumentID                             sql.NullString
-	ValidInstrumentName                           sql.NullString
-	ValidInstrumentDescription                    sql.NullString
-	ValidInstrumentIconPath                       sql.NullString
-	ValidInstrumentPluralName                     sql.NullString
-	ValidInstrumentUsableForStorage               sql.NullBool
-	ValidInstrumentSlug                           sql.NullString
-	ValidInstrumentDisplayInSummaryLists          sql.NullBool
-	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ValidInstrumentCreatedAt                      sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	RecipeStepProductID                           sql.NullString
-	Name                                          string
-	Notes                                         string
-	PreferenceRank                                int32
-	Optional                                      bool
-	MinimumQuantity                               int32
-	MaximumQuantity                               sql.NullInt32
-	OptionIndex                                   int32
 	CreatedAt                                     time.Time
-	LastUpdatedAt                                 sql.NullTime
+	ValidInstrumentCreatedAt                      sql.NullTime
 	ArchivedAt                                    sql.NullTime
+	LastUpdatedAt                                 sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
 	BelongsToRecipeStep                           string
+	Notes                                         string
+	Name                                          string
+	ID                                            string
+	RecipeStepProductID                           sql.NullString
+	ValidInstrumentName                           sql.NullString
+	ValidInstrumentID                             sql.NullString
+	ValidInstrumentSlug                           sql.NullString
+	ValidInstrumentDescription                    sql.NullString
+	ValidInstrumentPluralName                     sql.NullString
+	ValidInstrumentIconPath                       sql.NullString
 	FilteredCount                                 int64
 	TotalCount                                    int64
+	MaximumQuantity                               sql.NullInt32
+	MinimumQuantity                               int32
+	OptionIndex                                   int32
+	PreferenceRank                                int32
+	ValidInstrumentUsableForStorage               sql.NullBool
+	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
+	ValidInstrumentDisplayInSummaryLists          sql.NullBool
+	Optional                                      bool
 }
 
 func (q *Queries) GetRecipeStepInstruments(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentsParams) ([]*GetRecipeStepInstrumentsRow, error) {
@@ -447,32 +447,32 @@ WHERE recipe_step_instruments.archived_at IS NULL
 `
 
 type GetRecipeStepInstrumentsForRecipeRow struct {
-	ID                                            string
-	ValidInstrumentID                             sql.NullString
-	ValidInstrumentName                           sql.NullString
-	ValidInstrumentDescription                    sql.NullString
-	ValidInstrumentIconPath                       sql.NullString
-	ValidInstrumentPluralName                     sql.NullString
-	ValidInstrumentUsableForStorage               sql.NullBool
-	ValidInstrumentSlug                           sql.NullString
-	ValidInstrumentDisplayInSummaryLists          sql.NullBool
-	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ValidInstrumentCreatedAt                      sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	RecipeStepProductID                           sql.NullString
-	Name                                          string
-	Notes                                         string
-	PreferenceRank                                int32
-	Optional                                      bool
-	MinimumQuantity                               int32
-	MaximumQuantity                               sql.NullInt32
-	OptionIndex                                   int32
 	CreatedAt                                     time.Time
-	LastUpdatedAt                                 sql.NullTime
 	ArchivedAt                                    sql.NullTime
+	LastUpdatedAt                                 sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	Name                                          string
 	BelongsToRecipeStep                           string
+	Notes                                         string
+	ID                                            string
+	RecipeStepProductID                           sql.NullString
+	ValidInstrumentIconPath                       sql.NullString
+	ValidInstrumentDescription                    sql.NullString
+	ValidInstrumentPluralName                     sql.NullString
+	ValidInstrumentName                           sql.NullString
+	ValidInstrumentSlug                           sql.NullString
+	ValidInstrumentID                             sql.NullString
+	MaximumQuantity                               sql.NullInt32
+	PreferenceRank                                int32
+	MinimumQuantity                               int32
+	OptionIndex                                   int32
+	ValidInstrumentUsableForStorage               sql.NullBool
+	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
+	ValidInstrumentDisplayInSummaryLists          sql.NullBool
+	Optional                                      bool
 }
 
 func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeStepInstrumentsForRecipeRow, error) {
@@ -543,17 +543,17 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepInstrumentParams struct {
-	InstrumentID        sql.NullString
-	RecipeStepProductID sql.NullString
 	Name                string
 	Notes               string
-	PreferenceRank      int32
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     sql.NullInt32
-	OptionIndex         int32
 	BelongsToRecipeStep string
 	ID                  string
+	InstrumentID        sql.NullString
+	RecipeStepProductID sql.NullString
+	MaximumQuantity     sql.NullInt32
+	PreferenceRank      int32
+	MinimumQuantity     int32
+	OptionIndex         int32
+	Optional            bool
 }
 
 func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *UpdateRecipeStepInstrumentParams) (int64, error) {

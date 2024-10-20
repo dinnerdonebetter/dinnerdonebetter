@@ -150,48 +150,48 @@ WHERE
 `
 
 type GetValidIngredientMeasurementUnitRow struct {
-	ValidIngredientMeasurementUnitID                       string
-	ValidIngredientMeasurementUnitNotes                    string
-	ValidMeasurementUnitID                                 string
-	ValidMeasurementUnitName                               string
-	ValidMeasurementUnitDescription                        string
-	ValidMeasurementUnitVolumetric                         sql.NullBool
-	ValidMeasurementUnitIconPath                           string
-	ValidMeasurementUnitUniversal                          bool
-	ValidMeasurementUnitMetric                             bool
-	ValidMeasurementUnitImperial                           bool
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitPluralName                         string
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
 	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientMeasurementUnitCreatedAt                time.Time
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
-	ValidIngredientID                                      string
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
+	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitDescription                        string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
+	ValidMeasurementUnitPluralName                         string
 	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitIconPath                           string
 	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
-	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidIngredientID                                      string
+	ValidMeasurementUnitName                               string
+	ValidMeasurementUnitID                                 string
+	ValidIngredientMeasurementUnitNotes                    string
 	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientSlug                                    string
+	ValidIngredientMeasurementUnitID                       string
+	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientContainsShellfish                       bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -200,15 +200,15 @@ type GetValidIngredientMeasurementUnitRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
-	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
-	ValidIngredientMeasurementUnitCreatedAt                time.Time
-	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
+	ValidMeasurementUnitImperial                           bool
+	ValidMeasurementUnitMetric                             bool
+	ValidMeasurementUnitUniversal                          bool
 }
 
 func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidIngredientMeasurementUnitRow, error) {
@@ -390,48 +390,48 @@ type GetValidIngredientMeasurementUnitsParams struct {
 }
 
 type GetValidIngredientMeasurementUnitsRow struct {
-	ValidIngredientMeasurementUnitID                       string
-	ValidIngredientMeasurementUnitNotes                    string
-	ValidMeasurementUnitID                                 string
-	ValidMeasurementUnitName                               string
-	ValidMeasurementUnitDescription                        string
-	ValidMeasurementUnitVolumetric                         sql.NullBool
-	ValidMeasurementUnitIconPath                           string
-	ValidMeasurementUnitUniversal                          bool
-	ValidMeasurementUnitMetric                             bool
-	ValidMeasurementUnitImperial                           bool
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitPluralName                         string
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
 	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientMeasurementUnitCreatedAt                time.Time
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
-	ValidIngredientID                                      string
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
+	ValidMeasurementUnitSlug                               string
+	ValidIngredientWarning                                 string
+	ValidMeasurementUnitName                               string
+	ValidIngredientPluralName                              string
+	ValidIngredientStorageInstructions                     string
+	ValidMeasurementUnitID                                 string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitIconPath                           string
+	ValidMeasurementUnitDescription                        string
+	ValidIngredientID                                      string
 	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitPluralName                         string
 	ValidIngredientSlug                                    string
-	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientMeasurementUnitNotes                    string
+	ValidIngredientMeasurementUnitID                       string
 	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	TotalCount                                             int64
+	FilteredCount                                          int64
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -440,17 +440,17 @@ type GetValidIngredientMeasurementUnitsRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
-	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
-	ValidIngredientMeasurementUnitCreatedAt                time.Time
-	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
+	ValidMeasurementUnitImperial                           bool
+	ValidMeasurementUnitMetric                             bool
+	ValidMeasurementUnitUniversal                          bool
 }
 
 func (q *Queries) GetValidIngredientMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidIngredientMeasurementUnitsParams) ([]*GetValidIngredientMeasurementUnitsRow, error) {
@@ -659,48 +659,48 @@ type GetValidIngredientMeasurementUnitsForIngredientParams struct {
 }
 
 type GetValidIngredientMeasurementUnitsForIngredientRow struct {
-	ValidIngredientMeasurementUnitID                       string
-	ValidIngredientMeasurementUnitNotes                    string
-	ValidMeasurementUnitID                                 string
-	ValidMeasurementUnitName                               string
-	ValidMeasurementUnitDescription                        string
-	ValidMeasurementUnitVolumetric                         sql.NullBool
-	ValidMeasurementUnitIconPath                           string
-	ValidMeasurementUnitUniversal                          bool
-	ValidMeasurementUnitMetric                             bool
-	ValidMeasurementUnitImperial                           bool
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitPluralName                         string
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
 	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientMeasurementUnitCreatedAt                time.Time
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
-	ValidIngredientID                                      string
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
+	ValidMeasurementUnitSlug                               string
+	ValidIngredientWarning                                 string
+	ValidMeasurementUnitName                               string
+	ValidIngredientPluralName                              string
+	ValidIngredientStorageInstructions                     string
+	ValidMeasurementUnitID                                 string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitIconPath                           string
+	ValidMeasurementUnitDescription                        string
+	ValidIngredientID                                      string
 	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitPluralName                         string
 	ValidIngredientSlug                                    string
-	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientMeasurementUnitNotes                    string
+	ValidIngredientMeasurementUnitID                       string
 	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	TotalCount                                             int64
+	FilteredCount                                          int64
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -709,17 +709,17 @@ type GetValidIngredientMeasurementUnitsForIngredientRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
-	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
-	ValidIngredientMeasurementUnitCreatedAt                time.Time
-	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
+	ValidMeasurementUnitImperial                           bool
+	ValidMeasurementUnitMetric                             bool
+	ValidMeasurementUnitUniversal                          bool
 }
 
 func (q *Queries) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, db DBTX, arg *GetValidIngredientMeasurementUnitsForIngredientParams) ([]*GetValidIngredientMeasurementUnitsForIngredientRow, error) {
@@ -929,48 +929,48 @@ type GetValidIngredientMeasurementUnitsForMeasurementUnitParams struct {
 }
 
 type GetValidIngredientMeasurementUnitsForMeasurementUnitRow struct {
-	ValidIngredientMeasurementUnitID                       string
-	ValidIngredientMeasurementUnitNotes                    string
-	ValidMeasurementUnitID                                 string
-	ValidMeasurementUnitName                               string
-	ValidMeasurementUnitDescription                        string
-	ValidMeasurementUnitVolumetric                         sql.NullBool
-	ValidMeasurementUnitIconPath                           string
-	ValidMeasurementUnitUniversal                          bool
-	ValidMeasurementUnitMetric                             bool
-	ValidMeasurementUnitImperial                           bool
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitPluralName                         string
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
 	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientMeasurementUnitCreatedAt                time.Time
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
-	ValidIngredientID                                      string
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
+	ValidMeasurementUnitSlug                               string
+	ValidIngredientWarning                                 string
+	ValidMeasurementUnitName                               string
+	ValidIngredientPluralName                              string
+	ValidIngredientStorageInstructions                     string
+	ValidMeasurementUnitID                                 string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitIconPath                           string
+	ValidMeasurementUnitDescription                        string
+	ValidIngredientID                                      string
 	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitPluralName                         string
 	ValidIngredientSlug                                    string
-	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientMeasurementUnitNotes                    string
+	ValidIngredientMeasurementUnitID                       string
 	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	TotalCount                                             int64
+	FilteredCount                                          int64
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -979,17 +979,17 @@ type GetValidIngredientMeasurementUnitsForMeasurementUnitRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
-	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
-	ValidIngredientMeasurementUnitCreatedAt                time.Time
-	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
+	ValidMeasurementUnitImperial                           bool
+	ValidMeasurementUnitMetric                             bool
+	ValidMeasurementUnitUniversal                          bool
 }
 
 func (q *Queries) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, db DBTX, arg *GetValidIngredientMeasurementUnitsForMeasurementUnitParams) ([]*GetValidIngredientMeasurementUnitsForMeasurementUnitRow, error) {
@@ -1102,8 +1102,8 @@ type UpdateValidIngredientMeasurementUnitParams struct {
 	ValidMeasurementUnitID   string
 	ValidIngredientID        string
 	MinimumAllowableQuantity string
-	MaximumAllowableQuantity sql.NullString
 	ID                       string
+	MaximumAllowableQuantity sql.NullString
 }
 
 func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidIngredientMeasurementUnitParams) (int64, error) {

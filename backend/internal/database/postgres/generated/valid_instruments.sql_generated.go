@@ -71,8 +71,8 @@ type CreateValidInstrumentParams struct {
 	Description                    string
 	IconPath                       string
 	PluralName                     string
-	UsableForStorage               bool
 	Slug                           string
+	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
 }
@@ -113,19 +113,19 @@ ORDER BY RANDOM() LIMIT 1
 `
 
 type GetRandomValidInstrumentRow struct {
-	ID                             string
-	Name                           string
-	Description                    string
+	CreatedAt                      time.Time
+	LastIndexedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
 	IconPath                       string
-	PluralName                     string
-	UsableForStorage               bool
 	Slug                           string
+	PluralName                     string
+	ID                             string
+	Description                    string
+	Name                           string
+	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
-	LastIndexedAt                  sql.NullTime
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
 }
 
 func (q *Queries) GetRandomValidInstrument(ctx context.Context, db DBTX) (*GetRandomValidInstrumentRow, error) {
@@ -170,19 +170,19 @@ AND valid_instruments.id = $1
 `
 
 type GetValidInstrumentRow struct {
-	ID                             string
-	Name                           string
-	Description                    string
+	CreatedAt                      time.Time
+	LastIndexedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
 	IconPath                       string
-	PluralName                     string
-	UsableForStorage               bool
 	Slug                           string
+	PluralName                     string
+	ID                             string
+	Description                    string
+	Name                           string
+	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
-	LastIndexedAt                  sql.NullTime
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
 }
 
 func (q *Queries) GetValidInstrument(ctx context.Context, db DBTX, id string) (*GetValidInstrumentRow, error) {
@@ -270,21 +270,21 @@ type GetValidInstrumentsParams struct {
 }
 
 type GetValidInstrumentsRow struct {
-	ID                             string
-	Name                           string
-	Description                    string
-	IconPath                       string
-	PluralName                     string
-	UsableForStorage               bool
-	Slug                           string
-	DisplayInSummaryLists          bool
-	IncludeInGeneratedInstructions bool
-	LastIndexedAt                  sql.NullTime
 	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
+	LastIndexedAt                  sql.NullTime
 	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	IconPath                       string
+	Slug                           string
+	PluralName                     string
+	ID                             string
+	Description                    string
+	Name                           string
 	FilteredCount                  int64
 	TotalCount                     int64
+	UsableForStorage               bool
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
 }
 
 func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error) {
@@ -387,19 +387,19 @@ WHERE valid_instruments.archived_at IS NULL
 `
 
 type GetValidInstrumentsWithIDsRow struct {
-	ID                             string
-	Name                           string
-	Description                    string
+	CreatedAt                      time.Time
+	LastIndexedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
 	IconPath                       string
-	PluralName                     string
-	UsableForStorage               bool
 	Slug                           string
+	PluralName                     string
+	ID                             string
+	Description                    string
+	Name                           string
+	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
-	LastIndexedAt                  sql.NullTime
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
 }
 
 func (q *Queries) GetValidInstrumentsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidInstrumentsWithIDsRow, error) {
@@ -461,19 +461,19 @@ LIMIT 50
 `
 
 type SearchForValidInstrumentsRow struct {
-	ID                             string
-	Name                           string
-	Description                    string
+	CreatedAt                      time.Time
+	LastIndexedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
 	IconPath                       string
-	PluralName                     string
-	UsableForStorage               bool
 	Slug                           string
+	PluralName                     string
+	ID                             string
+	Description                    string
+	Name                           string
+	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
-	LastIndexedAt                  sql.NullTime
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
 }
 
 func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidInstrumentsRow, error) {
@@ -533,11 +533,11 @@ type UpdateValidInstrumentParams struct {
 	Description                    string
 	IconPath                       string
 	PluralName                     string
-	UsableForStorage               bool
 	Slug                           string
+	ID                             string
+	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
-	ID                             string
 }
 
 func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) (int64, error) {

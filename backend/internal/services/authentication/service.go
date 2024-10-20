@@ -78,7 +78,7 @@ func ProvideService(
 ) (types.AuthService, error) {
 	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if publisherProviderErr != nil {
-		return nil, fmt.Errorf("setting up auth service data changes publisher: %w", publisherProviderErr)
+		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, publisherProviderErr)
 	}
 
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))

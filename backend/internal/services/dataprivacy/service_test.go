@@ -8,7 +8,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
-	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -49,7 +48,6 @@ func TestProvideValidVesselsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			pp,
 			tracing.NewNoopTracerProvider(),
-			&recipeanalysis.MockRecipeAnalyzer{},
 		)
 
 		assert.NotNil(t, s)
@@ -79,7 +77,6 @@ func TestProvideValidVesselsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			pp,
 			tracing.NewNoopTracerProvider(),
-			&recipeanalysis.MockRecipeAnalyzer{},
 		)
 
 		assert.Nil(t, s)

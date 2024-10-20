@@ -77,6 +77,7 @@ type (
 		userNotificationsService               types.UserNotificationDataService
 		workerService                          types.WorkerService
 		auditLogEntriesService                 types.AuditLogEntryDataService
+		dataPrivacyService                     types.DataPrivacyService
 		logger                                 logging.Logger
 		router                                 routing.Router
 		tracer                                 tracing.Tracer
@@ -139,6 +140,7 @@ func ProvideHTTPServer(
 	workerService types.WorkerService,
 	userNotificationsService types.UserNotificationDataService,
 	auditLogService types.AuditLogEntryDataService,
+	dataPrivacyService types.DataPrivacyService,
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,
@@ -151,18 +153,22 @@ func ProvideHTTPServer(
 		dataManager:    dataManager,
 		tracerProvider: tracerProvider,
 
-		// services,
-		adminService:                           adminService,
-		auditLogEntriesService:                 auditLogService,
-		authService:                            authService,
-		householdsService:                      householdsService,
-		householdInvitationsService:            householdInvitationsService,
-		serviceSettingsService:                 serviceSettingDataService,
-		serviceSettingConfigurationsService:    serviceSettingConfigurationsService,
-		usersService:                           usersService,
-		userNotificationsService:               userNotificationsService,
-		webhooksService:                        webhooksService,
-		workerService:                          workerService,
+		// core services
+		adminService:                        adminService,
+		auditLogEntriesService:              auditLogService,
+		authService:                         authService,
+		householdsService:                   householdsService,
+		householdInvitationsService:         householdInvitationsService,
+		serviceSettingsService:              serviceSettingDataService,
+		serviceSettingConfigurationsService: serviceSettingConfigurationsService,
+		usersService:                        usersService,
+		userNotificationsService:            userNotificationsService,
+		oauth2ClientsService:                oauth2ClientDataService,
+		webhooksService:                     webhooksService,
+		workerService:                       workerService,
+		dataPrivacyService:                  dataPrivacyService,
+
+		// data services
 		validInstrumentsService:                validInstrumentsService,
 		validIngredientsService:                validIngredientsService,
 		validIngredientGroupsService:           validIngredientGroupsService,
@@ -192,7 +198,6 @@ func ProvideHTTPServer(
 		userIngredientPreferencesService:       userIngredientPreferencesService,
 		recipeRatingsService:                   recipeRatingsService,
 		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
-		oauth2ClientsService:                   oauth2ClientDataService,
 		validVesselsService:                    validVesselsService,
 		validPreparationVesselsService:         validPreparationVesselsService,
 	}
