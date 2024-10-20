@@ -140,6 +140,10 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing households list retrieval query")
 	}
 
+	if len(results) == 0 {
+		return nil, sql.ErrNoRows
+	}
+
 	for _, result := range results {
 		x.Data = append(x.Data, &types.Household{
 			CreatedAt:                  result.CreatedAt,
