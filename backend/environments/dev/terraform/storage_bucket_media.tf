@@ -40,7 +40,7 @@ resource "google_storage_bucket_iam_policy" "api_media_policy" {
 resource "cloudflare_record" "api_media" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "media"
-  value   = "c.storage.googleapis.com"
+  content = "c.storage.googleapis.com"
   type    = "CNAME"
   proxied = true
   ttl     = 1

@@ -34,11 +34,13 @@ func TestProvideService(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		cfg := &Config{
-			DataChangesTopicName: "data_changes",
+			DataChangesTopicName:         "data_changes",
+			UserDataAggregationTopicName: "user_data_aggregation",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", cfg.UserDataAggregationTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			ctx,
@@ -68,6 +70,36 @@ func TestProvideService(T *testing.T) {
 
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+
+		s, err := ProvideService(
+			ctx,
+			logger,
+			cfg,
+			database.NewMockDatabase(),
+			mockencoding.NewMockEncoderDecoder(),
+			pp,
+			tracing.NewNoopTracerProvider(),
+		)
+
+		assert.Nil(t, s)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, pp)
+	})
+
+	T.Run("with error providing user data aggregation producer", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
+		cfg := &Config{
+			DataChangesTopicName: "data_changes",
+		}
+
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", cfg.UserDataAggregationTopicName).Return(&mockpublishers.Publisher{}, errors.New("blah"))
 
 		s, err := ProvideService(
 			ctx,
