@@ -1,12 +1,12 @@
 concurrency:
   group: ${{ github.ref }}
 
-on: # [pull_request]
-  push:
-    branches:
-      - dev
-    paths:
-      - backend/**
+on: [pull_request]
+#  push:
+#    branches:
+#      - dev
+#    paths:
+#      - backend/**
 
 name: backend - deploy
 jobs:
@@ -63,6 +63,10 @@ jobs:
       - name: Build webhook executor cloud function directory
         working-directory: backend/
         run: ./scripts/build_cloud_function.sh webhook_executor
+
+      - name: Build webhook executor cloud function directory
+        working-directory: backend/
+        run: ./scripts/build_cloud_function.sh user_data_aggregator
 
       - name: copy API server config file
         working-directory: backend/environments/dev

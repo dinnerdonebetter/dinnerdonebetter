@@ -160,7 +160,12 @@ func (qf *QueryFilter) SetPage(page *uint16) {
 // QueryOffset calculates a query page from the current filter values.
 func (qf *QueryFilter) QueryOffset() uint16 {
 	if qf != nil && qf.Limit != nil && qf.Page != nil {
-		return uint16(*qf.Limit) * (*qf.Page - 1)
+		page := *qf.Page
+		if page == 0 {
+			page = 1
+		}
+
+		return uint16(*qf.Limit) * (page - 1)
 	}
 	return 0
 }

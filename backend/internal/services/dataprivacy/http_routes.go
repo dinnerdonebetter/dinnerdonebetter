@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	servertiming "github.com/mitchellh/go-server-timing"
@@ -39,7 +41,7 @@ func (s *service) DataDeletionHandler(res http.ResponseWriter, req *http.Request
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	destroyUserDataTimer := timing.NewMetric("database").WithDesc("destroy user data").Start()
-	if err = s.userDataManager.DeleteUser(ctx, sessionCtxData.Requester.UserID); err != nil {
+	if err = s.dataPrivacyDataManager.DeleteUser(ctx, sessionCtxData.Requester.UserID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "deleting user")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -49,7 +51,7 @@ func (s *service) DataDeletionHandler(res http.ResponseWriter, req *http.Request
 
 	if err = s.dataChangesPublisher.Publish(ctx, &types.DataChangeMessage{
 		Context:     nil,
-		EventType:   types.UserDataDestroyedCustomerEventType,
+		EventType:   types.UserDataDestroyedServiceEventType,
 		UserID:      sessionCtxData.Requester.UserID,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 	}); err != nil {
@@ -58,6 +60,66 @@ func (s *service) DataDeletionHandler(res http.ResponseWriter, req *http.Request
 
 	responseValue := &types.APIResponse[types.DataDeletionResponse]{
 		Data:    types.DataDeletionResponse{Successful: true},
+		Details: responseDetails,
+	}
+
+	logger.Info("user data deleted")
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
+}
+
+// UserDataAggregationRequestHandler sends a message to the queue for data aggregation.
+func (s *service) UserDataAggregationRequestHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	logger.Info("meal plan finalization worker invoked")
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	reportID := identifiers.New()
+	tracing.AttachToSpan(span, keys.UserDataAggregationReportIDKey, reportID)
+	logger = logger.WithValue(keys.UserDataAggregationReportIDKey, reportID)
+
+	if err = s.userDataAggregationPublisher.Publish(ctx, &types.UserDataAggregationRequest{
+		UserID:   sessionCtxData.Requester.UserID,
+		ReportID: reportID,
+	}); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data aggregation request")
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, &types.DataChangeMessage{
+		Context: map[string]any{
+			keys.UserDataAggregationReportIDKey: reportID,
+		},
+		EventType:   types.UserDataAggregationRequestServiceEventType,
+		UserID:      sessionCtxData.Requester.UserID,
+		HouseholdID: sessionCtxData.ActiveHouseholdID,
+	}); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
+	responseValue := &types.APIResponse[types.UserDataCollectionResponse]{
+		Data:    types.UserDataCollectionResponse{ReportID: reportID},
 		Details: responseDetails,
 	}
 

@@ -81,7 +81,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:      types.ServiceSettingCreatedCustomerEventType,
+		EventType:      types.ServiceSettingCreatedServiceEventType,
 		ServiceSetting: serviceSetting,
 		UserID:         sessionCtxData.Requester.UserID,
 	}
@@ -319,7 +319,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ServiceSettingArchivedCustomerEventType,
+		EventType: types.ServiceSettingArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 

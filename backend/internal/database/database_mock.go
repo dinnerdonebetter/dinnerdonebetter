@@ -60,14 +60,26 @@ func NewMockDatabase() *MockDatabase {
 		UserNotificationDataManagerMock:               &mocktypes.UserNotificationDataManagerMock{},
 		AuditLogEntryDataManagerMock:                  &mocktypes.AuditLogEntryDataManagerMock{},
 		MaintenanceDataManagerMock:                    &mocktypes.MaintenanceDataManagerMock{},
+		DataPrivacyDataManagerMock:                    &mocktypes.DataPrivacyDataManagerMock{},
 	}
 }
 
 // MockDatabase is our mock database structure. Note, when using this in tests, you must directly access the type name of all the implicit fields.
 // So `mockDB.On("GetUserByUsername"...)` is destined to fail, whereas `mockDB.UserDataManagerMock.On("GetUserByUsername"...)` would do what you want it to do.
 type MockDatabase struct {
-	*mocktypes.ValidIngredientStateDataManagerMock
+	*mocktypes.OAuth2ClientDataManagerMock
+	*mocktypes.OAuth2ClientTokenDataManagerMock
+	*mocktypes.UserNotificationDataManagerMock
+	*mocktypes.AuditLogEntryDataManagerMock
+	*mocktypes.MaintenanceDataManagerMock
+	*mocktypes.DataPrivacyDataManagerMock
+	*mocktypes.UserDataManagerMock
+	*mocktypes.PasswordResetTokenDataManagerMock
+	*mocktypes.WebhookDataManagerMock
+	*mocktypes.HouseholdDataManagerMock
+	*mocktypes.HouseholdInvitationDataManagerMock
 	*mocktypes.AdminUserDataManagerMock
+	*mocktypes.ValidIngredientStateDataManagerMock
 	*mocktypes.HouseholdUserMembershipDataManagerMock
 	*mocktypes.ValidInstrumentDataManagerMock
 	*mocktypes.ValidIngredientDataManagerMock
@@ -83,11 +95,6 @@ type MockDatabase struct {
 	*mocktypes.MealPlanDataManagerMock
 	*mocktypes.MealPlanOptionDataManagerMock
 	*mocktypes.MealPlanOptionVoteDataManagerMock
-	*mocktypes.UserDataManagerMock
-	*mocktypes.PasswordResetTokenDataManagerMock
-	*mocktypes.WebhookDataManagerMock
-	*mocktypes.HouseholdDataManagerMock
-	*mocktypes.HouseholdInvitationDataManagerMock
 	*mocktypes.ValidMeasurementUnitDataManagerMock
 	*mocktypes.ValidPreparationInstrumentDataManagerMock
 	*mocktypes.ValidIngredientMeasurementUnitDataManagerMock
@@ -105,13 +112,8 @@ type MockDatabase struct {
 	*mocktypes.UserIngredientPreferenceDataManagerMock
 	*mocktypes.HouseholdInstrumentOwnershipDataManagerMock
 	*mocktypes.RecipeRatingDataManagerMock
-	*mocktypes.OAuth2ClientDataManagerMock
-	*mocktypes.OAuth2ClientTokenDataManagerMock
 	*mocktypes.ValidVesselDataManagerMock
 	*mocktypes.ValidPreparationVesselDataManagerMock
-	*mocktypes.UserNotificationDataManagerMock
-	*mocktypes.AuditLogEntryDataManagerMock
-	*mocktypes.MaintenanceDataManagerMock
 
 	mock.Mock
 }

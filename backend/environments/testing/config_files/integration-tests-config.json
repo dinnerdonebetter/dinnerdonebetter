@@ -176,6 +176,7 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"dataPrivacy": {
+			"userDataAggregationTopicName": "user_data_aggregation_requests",
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeSteps": {

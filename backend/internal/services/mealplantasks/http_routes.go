@@ -87,7 +87,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:    types.MealPlanCreatedCustomerEventType,
+		EventType:    types.MealPlanCreatedServiceEventType,
 		MealPlanID:   mealPlanID,
 		MealPlanTask: mealPlanTask,
 		HouseholdID:  sessionCtxData.ActiveHouseholdID,
@@ -307,7 +307,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:      types.MealPlanTaskStatusChangedCustomerEventType,
+		EventType:      types.MealPlanTaskStatusChangedServiceEventType,
 		MealPlanTask:   mealPlanTask,
 		MealPlanTaskID: mealPlanTaskID,
 		HouseholdID:    sessionCtxData.ActiveHouseholdID,

@@ -86,7 +86,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:        types.RecipeStepVesselCreatedCustomerEventType,
+		EventType:        types.RecipeStepVesselCreatedServiceEventType,
 		RecipeStepVessel: recipeStepVessel,
 		HouseholdID:      sessionCtxData.ActiveHouseholdID,
 		UserID:           sessionCtxData.Requester.UserID,
@@ -323,7 +323,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:        types.RecipeStepVesselUpdatedCustomerEventType,
+		EventType:        types.RecipeStepVesselUpdatedServiceEventType,
 		RecipeStepVessel: recipeStepVessel,
 		HouseholdID:      sessionCtxData.ActiveHouseholdID,
 		UserID:           sessionCtxData.Requester.UserID,
@@ -409,7 +409,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.RecipeStepVesselArchivedCustomerEventType,
+		EventType:   types.RecipeStepVesselArchivedServiceEventType,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
 	}

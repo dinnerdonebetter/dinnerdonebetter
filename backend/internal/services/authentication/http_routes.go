@@ -167,7 +167,7 @@ func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseh
 	defer span.End()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.UserLoggedInCustomerEventType,
+		EventType:   types.UserLoggedInServiceEventType,
 		HouseholdID: defaultHouseholdID,
 		UserID:      user.ID,
 	}

@@ -225,7 +225,7 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetMealPlans",
+					Name: "GetMealPlansForHousehold",
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -239,14 +239,14 @@ WHERE %s.%s IS NULL
 					strings.Join(applyToEach(mealPlansColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", mealPlansTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(mealPlansTableName, true, true, "meal_plans.belongs_to_household = sqlc.arg(household_id)"),
-					buildTotalCountSelect(mealPlansTableName, true, "meal_plans.belongs_to_household = sqlc.arg(household_id)"),
+					buildFilterCountSelect(mealPlansTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)),
+					buildTotalCountSelect(mealPlansTableName, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)),
 					mealPlansTableName,
 					mealPlansTableName, archivedAtColumn,
 					buildFilterConditions(
 						mealPlansTableName,
 						true,
-						"meal_plans.belongs_to_household = sqlc.arg(household_id)",
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn),
 					),
 					offsetLimitAddendum,
 				)),

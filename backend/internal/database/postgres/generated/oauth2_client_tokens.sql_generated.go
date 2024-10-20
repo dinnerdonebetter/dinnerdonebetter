@@ -10,42 +10,6 @@ import (
 	"time"
 )
 
-const archiveOAuth2ClientTokenByAccess = `-- name: DeleteOAuth2ClientTokenByAccess :execrows
-DELETE FROM oauth2_client_tokens WHERE access = $1
-`
-
-func (q *Queries) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, access string) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByAccess, access)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
-}
-
-const archiveOAuth2ClientTokenByCode = `-- name: DeleteOAuth2ClientTokenByCode :execrows
-DELETE FROM oauth2_client_tokens WHERE code = $1
-`
-
-func (q *Queries) ArchiveOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByCode, code)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
-}
-
-const archiveOAuth2ClientTokenByRefresh = `-- name: DeleteOAuth2ClientTokenByRefresh :execrows
-DELETE FROM oauth2_client_tokens WHERE refresh = $1
-`
-
-func (q *Queries) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByRefresh, refresh)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
-}
-
 const checkOAuth2ClientTokenExistence = `-- name: CheckOAuth2ClientTokenExistence :one
 SELECT EXISTS (
 	SELECT oauth2_client_tokens.id
@@ -139,6 +103,42 @@ func (q *Queries) CreateOAuth2ClientToken(ctx context.Context, db DBTX, arg *Cre
 		arg.RefreshExpiresAt,
 	)
 	return err
+}
+
+const deleteOAuth2ClientTokenByAccess = `-- name: DeleteOAuth2ClientTokenByAccess :execrows
+DELETE FROM oauth2_client_tokens WHERE access = $1
+`
+
+func (q *Queries) DeleteOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, access string) (int64, error) {
+	result, err := db.ExecContext(ctx, deleteOAuth2ClientTokenByAccess, access)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const deleteOAuth2ClientTokenByCode = `-- name: DeleteOAuth2ClientTokenByCode :execrows
+DELETE FROM oauth2_client_tokens WHERE code = $1
+`
+
+func (q *Queries) DeleteOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) (int64, error) {
+	result, err := db.ExecContext(ctx, deleteOAuth2ClientTokenByCode, code)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const deleteOAuth2ClientTokenByRefresh = `-- name: DeleteOAuth2ClientTokenByRefresh :execrows
+DELETE FROM oauth2_client_tokens WHERE refresh = $1
+`
+
+func (q *Queries) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) (int64, error) {
+	result, err := db.ExecContext(ctx, deleteOAuth2ClientTokenByRefresh, refresh)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const getOAuth2ClientTokenByAccess = `-- name: GetOAuth2ClientTokenByAccess :one

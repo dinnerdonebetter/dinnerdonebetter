@@ -82,7 +82,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:        types.ValidPreparationCreatedCustomerEventType,
+		EventType:        types.ValidPreparationCreatedServiceEventType,
 		ValidPreparation: validPreparation,
 		UserID:           sessionCtxData.Requester.UserID,
 	}
@@ -367,7 +367,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:        types.ValidPreparationUpdatedCustomerEventType,
+		EventType:        types.ValidPreparationUpdatedServiceEventType,
 		ValidPreparation: validPreparation,
 		UserID:           sessionCtxData.Requester.UserID,
 	}
@@ -442,7 +442,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ValidPreparationArchivedCustomerEventType,
+		EventType: types.ValidPreparationArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 

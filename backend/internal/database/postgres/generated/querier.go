@@ -23,9 +23,6 @@ type Querier interface {
 	ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) (int64, error)
 	ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) (int64, error)
 	ArchiveOAuth2Client(ctx context.Context, db DBTX, id string) (int64, error)
-	ArchiveOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, access string) (int64, error)
-	ArchiveOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) (int64, error)
-	ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) (int64, error)
 	ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) (int64, error)
 	ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string) (int64, error)
@@ -148,6 +145,9 @@ type Querier interface {
 	CreateWebhook(ctx context.Context, db DBTX, arg *CreateWebhookParams) error
 	CreateWebhookTriggerEvent(ctx context.Context, db DBTX, arg *CreateWebhookTriggerEventParams) error
 	DeleteExpiredOAuth2ClientTokens(ctx context.Context, db DBTX) (int64, error)
+	DeleteOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, access string) (int64, error)
+	DeleteOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) (int64, error)
+	DeleteOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) (int64, error)
 	DeleteUser(ctx context.Context, db DBTX, id string) (int64, error)
 	FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMealPlanParams) error
 	FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error
@@ -191,8 +191,9 @@ type Querier interface {
 	GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealPlanOptionsParams) ([]*GetMealPlanOptionsRow, error)
 	GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error)
 	GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskRow, error)
-	GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansParams) ([]*GetMealPlansRow, error)
+	GetMealPlansForHousehold(ctx context.Context, db DBTX, arg *GetMealPlansForHouseholdParams) ([]*GetMealPlansForHouseholdRow, error)
 	GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error)
+	GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error)
 	GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetOAuth2ClientByClientID(ctx context.Context, db DBTX, clientID string) (*Oauth2Clients, error)
 	GetOAuth2ClientByDatabaseID(ctx context.Context, db DBTX, id string) (*Oauth2Clients, error)
@@ -216,7 +217,8 @@ type Querier interface {
 	GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error)
 	GetRecipePrepTask(ctx context.Context, db DBTX, recipePrepTaskID string) ([]*GetRecipePrepTaskRow, error)
 	GetRecipeRating(ctx context.Context, db DBTX, id string) (*RecipeRatings, error)
-	GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeRatingsParams) ([]*GetRecipeRatingsRow, error)
+	GetRecipeRatingsForRecipe(ctx context.Context, db DBTX, arg *GetRecipeRatingsForRecipeParams) ([]*GetRecipeRatingsForRecipeRow, error)
+	GetRecipeRatingsForUser(ctx context.Context, db DBTX, arg *GetRecipeRatingsForUserParams) ([]*GetRecipeRatingsForUserRow, error)
 	GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStepParams) (*GetRecipeStepRow, error)
 	GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id string) (*GetRecipeStepByRecipeIDRow, error)
 	GetRecipeStepCompletionConditionWithIngredients(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionWithIngredientsParams) ([]*GetRecipeStepCompletionConditionWithIngredientsRow, error)
@@ -234,6 +236,7 @@ type Querier interface {
 	GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeStepVesselsForRecipeRow, error)
 	GetRecipeSteps(ctx context.Context, db DBTX, arg *GetRecipeStepsParams) ([]*GetRecipeStepsRow, error)
 	GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams) ([]*GetRecipesRow, error)
+	GetRecipesCreatedByUser(ctx context.Context, db DBTX, arg *GetRecipesCreatedByUserParams) ([]*GetRecipesCreatedByUserRow, error)
 	GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetServiceSetting(ctx context.Context, db DBTX, id string) (*ServiceSettings, error)
 	GetServiceSettingConfigurationByID(ctx context.Context, db DBTX, id string) (*GetServiceSettingConfigurationByIDRow, error)

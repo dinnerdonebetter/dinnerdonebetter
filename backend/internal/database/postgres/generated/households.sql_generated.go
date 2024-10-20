@@ -354,51 +354,49 @@ SELECT
 	(
 		SELECT COUNT(households.id)
 		FROM households
-			JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 		WHERE households.archived_at IS NULL
-			AND household_user_memberships.belongs_to_user = $1
-			AND households.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
-			AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+			
+			AND households.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND households.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				households.last_updated_at IS NULL
-				OR households.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+				OR households.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 			)
 			AND (
 				households.last_updated_at IS NULL
-				OR households.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
+				OR households.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND households.belongs_to_user = $5
 	) as filtered_count,
 	(
 		SELECT COUNT(households.id)
 		FROM households
 		WHERE households.archived_at IS NULL
+			AND households.belongs_to_user = $5
 	) AS total_count
 FROM households
-	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-	JOIN users ON household_user_memberships.belongs_to_user = users.id
 WHERE households.archived_at IS NULL
-	AND household_user_memberships.archived_at IS NULL
-	AND household_user_memberships.belongs_to_user = $1
-	AND households.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
-	AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	AND households.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND households.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		households.last_updated_at IS NULL
-		OR households.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+		OR households.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		households.last_updated_at IS NULL
-		OR households.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
+		OR households.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 	)
+	AND households.belongs_to_user = $5
 LIMIT $7
 OFFSET $6
 `
 
 type GetHouseholdsForUserParams struct {
-	BelongsToUser string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	BelongsToUser string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -431,11 +429,11 @@ type GetHouseholdsForUserRow struct {
 
 func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHouseholdsForUserParams) ([]*GetHouseholdsForUserRow, error) {
 	rows, err := db.QueryContext(ctx, getHouseholdsForUser,
-		arg.BelongsToUser,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.BelongsToUser,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)

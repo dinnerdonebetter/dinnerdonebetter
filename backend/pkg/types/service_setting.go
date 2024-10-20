@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	// ServiceSettingCreatedCustomerEventType indicates a service setting was created.
-	ServiceSettingCreatedCustomerEventType ServiceEventType = "service_setting_created"
-	// ServiceSettingArchivedCustomerEventType indicates a service setting was archived.
-	ServiceSettingArchivedCustomerEventType ServiceEventType = "service_setting_archived"
+	// ServiceSettingCreatedServiceEventType indicates a service setting was created.
+	ServiceSettingCreatedServiceEventType ServiceEventType = "service_setting_created"
+	// ServiceSettingArchivedServiceEventType indicates a service setting was archived.
+	ServiceSettingArchivedServiceEventType ServiceEventType = "service_setting_archived"
 )
 
 func init() {

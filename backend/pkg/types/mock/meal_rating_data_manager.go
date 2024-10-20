@@ -27,9 +27,15 @@ func (m *RecipeRatingDataManagerMock) GetRecipeRating(ctx context.Context, recip
 	return args.Get(0).(*types.RecipeRating), args.Error(1)
 }
 
-// GetRecipeRatings is a mock function.
-func (m *RecipeRatingDataManagerMock) GetRecipeRatings(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeRating], error) {
-	args := m.Called(ctx, filter)
+// GetRecipeRatingsForRecipe is a mock function.
+func (m *RecipeRatingDataManagerMock) GetRecipeRatingsForRecipe(ctx context.Context, recipeID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeRating], error) {
+	args := m.Called(ctx, recipeID, filter)
+	return args.Get(0).(*types.QueryFilteredResult[types.RecipeRating]), args.Error(1)
+}
+
+// GetRecipeRatingsForUser is a mock function.
+func (m *RecipeRatingDataManagerMock) GetRecipeRatingsForUser(ctx context.Context, user string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeRating], error) {
+	args := m.Called(ctx, user, filter)
 	return args.Get(0).(*types.QueryFilteredResult[types.RecipeRating]), args.Error(1)
 }
 

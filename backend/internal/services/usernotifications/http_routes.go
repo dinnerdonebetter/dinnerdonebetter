@@ -78,7 +78,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:        types.UserNotificationCreatedCustomerEventType,
+		EventType:        types.UserNotificationCreatedServiceEventType,
 		UserNotification: userNotification,
 		HouseholdID:      sessionCtxData.ActiveHouseholdID,
 		UserID:           sessionCtxData.Requester.UserID,
@@ -285,7 +285,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:        types.UserNotificationUpdatedCustomerEventType,
+		EventType:        types.UserNotificationUpdatedServiceEventType,
 		UserNotification: userNotification,
 		HouseholdID:      sessionCtxData.ActiveHouseholdID,
 		UserID:           sessionCtxData.Requester.UserID,

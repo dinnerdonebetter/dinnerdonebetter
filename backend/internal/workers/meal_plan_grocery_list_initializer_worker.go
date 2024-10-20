@@ -98,7 +98,7 @@ func (w *mealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealP
 			if err = w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
 				MealPlanGroceryListItem:   createdItem,
 				MealPlanGroceryListItemID: createdItem.ID,
-				EventType:                 types.MealPlanGroceryListItemCreatedCustomerEventType,
+				EventType:                 types.MealPlanGroceryListItemCreatedServiceEventType,
 				MealPlanID:                dbInput.BelongsToMealPlan,
 			}); err != nil {
 				l.Error(err, "failed to write update message for meal plan grocery list item")

@@ -106,7 +106,7 @@ WHERE meal_plans.archived_at IS NULL
   AND meal_plans.id = sqlc.arg(id)
   AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household);
 
--- name: GetMealPlans :many
+-- name: GetMealPlansForHousehold :many
 SELECT
 	meal_plans.id,
 	meal_plans.notes,
@@ -134,13 +134,13 @@ SELECT
 				meal_plans.last_updated_at IS NULL
 				OR meal_plans.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
-			AND meal_plans.belongs_to_household = sqlc.arg(household_id)
+			AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household)
 	) AS filtered_count,
 	(
 		SELECT COUNT(meal_plans.id)
 		FROM meal_plans
 		WHERE meal_plans.archived_at IS NULL
-			AND meal_plans.belongs_to_household = sqlc.arg(household_id)
+			AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household)
 	) AS total_count
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
@@ -154,7 +154,7 @@ WHERE meal_plans.archived_at IS NULL
 		meal_plans.last_updated_at IS NULL
 		OR meal_plans.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	AND meal_plans.belongs_to_household = sqlc.arg(household_id)
+	AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 

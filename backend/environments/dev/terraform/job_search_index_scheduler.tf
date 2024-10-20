@@ -93,7 +93,7 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
         }
 
         env {
-          name  = "DATA_CHANGES_TOPIC_NAME"
+          name  = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
           value = google_pubsub_topic.data_changes_topic.name
         }
 

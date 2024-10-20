@@ -299,6 +299,131 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 	return items, nil
 }
 
+const getMealsCreatedByUser = `-- name: GetMealsCreatedByUser :many
+SELECT
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.min_estimated_portions,
+	meals.max_estimated_portions,
+	meals.eligible_for_meal_plans,
+	meals.last_indexed_at,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
+	meals.created_by_user,
+	(
+		SELECT COUNT(meals.id)
+		FROM meals
+		WHERE meals.archived_at IS NULL
+			AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND meals.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meals.last_updated_at IS NULL
+				OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meals.last_updated_at IS NULL
+				OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND meals.created_by_user = $5
+	) AS filtered_count,
+	(
+		SELECT COUNT(meals.id)
+		FROM meals
+		WHERE meals.archived_at IS NULL
+			AND meals.created_by_user = $5
+	) AS total_count
+FROM meals
+WHERE
+	meals.archived_at IS NULL
+	AND meals.created_by_user = $5
+	AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND meals.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		meals.last_updated_at IS NULL
+		OR meals.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		meals.last_updated_at IS NULL
+		OR meals.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND meals.created_by_user = $5
+LIMIT $7
+OFFSET $6
+`
+
+type GetMealsCreatedByUserParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	CreatedByUser string
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetMealsCreatedByUserRow struct {
+	CreatedAt            time.Time
+	ArchivedAt           sql.NullTime
+	LastIndexedAt        sql.NullTime
+	LastUpdatedAt        sql.NullTime
+	Description          string
+	MinEstimatedPortions string
+	Name                 string
+	ID                   string
+	CreatedByUser        string
+	MaxEstimatedPortions sql.NullString
+	FilteredCount        int64
+	TotalCount           int64
+	EligibleForMealPlans bool
+}
+
+func (q *Queries) GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error) {
+	rows, err := db.QueryContext(ctx, getMealsCreatedByUser,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.CreatedByUser,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetMealsCreatedByUserRow{}
+	for rows.Next() {
+		var i GetMealsCreatedByUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.EligibleForMealPlans,
+			&i.LastIndexedAt,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMealsNeedingIndexing = `-- name: GetMealsNeedingIndexing :many
 SELECT meals.id
 	FROM meals

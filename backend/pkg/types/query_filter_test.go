@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -111,6 +112,7 @@ func TestQueryFilter_QueryPage(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
+
 		qf := &QueryFilter{
 			Limit: pointer.To(uint8(10)),
 			Page:  pointer.To(uint16(11)),
@@ -123,7 +125,22 @@ func TestQueryFilter_QueryPage(T *testing.T) {
 
 	T.Run("with nil values", func(t *testing.T) {
 		t.Parallel()
+
 		qf := &QueryFilter{}
+		expected := uint16(0)
+		actual := qf.QueryOffset()
+
+		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with max values", func(t *testing.T) {
+		t.Parallel()
+
+		qf := &QueryFilter{
+			Page:            pointer.To(uint16(0)),
+			Limit:           pointer.To(uint8(math.MaxUint8)),
+			IncludeArchived: pointer.To(true),
+		}
 		expected := uint16(0)
 		actual := qf.QueryOffset()
 

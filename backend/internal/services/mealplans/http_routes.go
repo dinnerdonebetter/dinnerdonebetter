@@ -97,7 +97,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.MealPlanCreatedCustomerEventType,
+		EventType:   types.MealPlanCreatedServiceEventType,
 		MealPlan:    mealPlan,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -205,7 +205,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	mealPlans, err := s.mealPlanDataManager.GetMealPlans(ctx, sessionCtxData.ActiveHouseholdID, filter)
+	mealPlans, err := s.mealPlanDataManager.GetMealPlansForHousehold(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		mealPlans = &types.QueryFilteredResult[types.MealPlan]{Data: []*types.MealPlan{}}
@@ -305,7 +305,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.MealPlanUpdatedCustomerEventType,
+		EventType:   types.MealPlanUpdatedServiceEventType,
 		MealPlan:    mealPlan,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -381,7 +381,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.MealPlanArchivedCustomerEventType,
+		EventType:   types.MealPlanArchivedServiceEventType,
 		MealPlanID:  mealPlanID,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -470,7 +470,7 @@ func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else {
 		dcm := &types.DataChangeMessage{
-			EventType:   types.MealPlanFinalizedCustomerEventType,
+			EventType:   types.MealPlanFinalizedServiceEventType,
 			MealPlan:    mealPlan,
 			HouseholdID: householdID,
 			UserID:      sessionCtxData.Requester.UserID,

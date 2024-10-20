@@ -106,7 +106,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	for _, vote := range mealPlanOptionVotes {
 		dcm := &types.DataChangeMessage{
-			EventType:            types.MealPlanOptionVoteCreatedCustomerEventType,
+			EventType:            types.MealPlanOptionVoteCreatedServiceEventType,
 			MealPlanID:           mealPlanID,
 			MealPlanOptionID:     vote.BelongsToMealPlanOption,
 			MealPlanOptionVote:   vote,
@@ -137,7 +137,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			logger.Debug("meal plan option finalized")
 			// fire event
 			dcm := &types.DataChangeMessage{
-				EventType:            types.MealPlanOptionFinalizedCreatedCustomerEventType,
+				EventType:            types.MealPlanOptionFinalizedCreatedServiceEventType,
 				MealPlanID:           mealPlanID,
 				MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
 				MealPlanOptionVote:   lastVote,
@@ -162,7 +162,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 				logger.Debug("meal plan finalized")
 				// fire event
 				dcm = &types.DataChangeMessage{
-					EventType:            types.MealPlanFinalizedCustomerEventType,
+					EventType:            types.MealPlanFinalizedServiceEventType,
 					MealPlanID:           mealPlanID,
 					MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
 					MealPlanOptionVote:   lastVote,
@@ -411,7 +411,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:            types.MealPlanOptionVoteUpdatedCustomerEventType,
+		EventType:            types.MealPlanOptionVoteUpdatedServiceEventType,
 		MealPlanID:           mealPlanID,
 		MealPlanOptionID:     mealPlanOptionID,
 		MealPlanOptionVote:   mealPlanOptionVote,
@@ -501,7 +501,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:            types.MealPlanOptionVoteArchivedCustomerEventType,
+		EventType:            types.MealPlanOptionVoteArchivedServiceEventType,
 		MealPlanID:           mealPlanID,
 		MealPlanOptionID:     mealPlanOptionID,
 		MealPlanOptionVoteID: mealPlanOptionVoteID,

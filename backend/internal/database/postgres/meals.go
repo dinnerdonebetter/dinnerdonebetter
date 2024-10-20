@@ -155,6 +155,66 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 	return x, nil
 }
 
+// GetMealsCreatedByUser fetches a list of meals from the database that meet a particular filter.
+func (q *Querier) GetMealsCreatedByUser(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x = &types.QueryFilteredResult[types.Meal]{
+		Pagination: filter.ToPagination(),
+	}
+
+	if userID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+
+	results, err := q.generatedQuerier.GetMealsCreatedByUser(ctx, q.db, &generated.GetMealsCreatedByUserParams{
+		CreatedByUser: userID,
+		CreatedAfter:  sql.NullTime{},
+		CreatedBefore: sql.NullTime{},
+		UpdatedAfter:  sql.NullTime{},
+		UpdatedBefore: sql.NullTime{},
+		QueryOffset:   sql.NullInt32{},
+		QueryLimit:    sql.NullInt32{},
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
+	}
+
+	for _, result := range results {
+		x.Data = append(x.Data, &types.Meal{
+			CreatedAt:     result.CreatedAt,
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ID:            result.ID,
+			Description:   result.Description,
+			CreatedByUser: result.CreatedByUser,
+			Name:          result.Name,
+			Components:    nil,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Min: database.Float32FromString(result.MinEstimatedPortions),
+				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+			},
+			EligibleForMealPlans: result.EligibleForMealPlans,
+		})
+
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
+	}
+
+	return x, nil
+}
+
 // GetMealsWithIDs fetches a list of meals from the database that have IDs within a given set.
 func (q *Querier) GetMealsWithIDs(ctx context.Context, ids []string) ([]*types.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

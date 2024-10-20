@@ -91,7 +91,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:      types.RecipePrepTaskCreatedCustomerEventType,
+		EventType:      types.RecipePrepTaskCreatedServiceEventType,
 		RecipePrepTask: recipePrepTask,
 		HouseholdID:    sessionCtxData.ActiveHouseholdID,
 		UserID:         sessionCtxData.Requester.UserID,
@@ -103,7 +103,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	for _, step := range recipePrepTask.TaskSteps {
 		dcm = &types.DataChangeMessage{
-			EventType:          types.RecipePrepTaskStepCreatedCustomerEventType,
+			EventType:          types.RecipePrepTaskStepCreatedServiceEventType,
 			RecipePrepTask:     recipePrepTask,
 			RecipePrepTaskStep: step,
 			HouseholdID:        sessionCtxData.ActiveHouseholdID,
@@ -327,7 +327,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:      types.RecipePrepTaskUpdatedCustomerEventType,
+		EventType:      types.RecipePrepTaskUpdatedServiceEventType,
 		RecipePrepTask: recipePrepTask,
 		HouseholdID:    sessionCtxData.ActiveHouseholdID,
 		UserID:         sessionCtxData.Requester.UserID,
@@ -408,7 +408,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.RecipePrepTaskArchivedCustomerEventType,
+		EventType:   types.RecipePrepTaskArchivedServiceEventType,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
 	}

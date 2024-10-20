@@ -2214,7 +2214,7 @@ paths:
   /api/v1/meal_plans:
     get:
       description: Fetches a MealPlans
-      operationId: GetMealPlans
+      operationId: GetMealPlansForHousehold
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -6481,7 +6481,7 @@ paths:
   /api/v1/recipes/{recipeID}/ratings:
     get:
       description: Fetches a RecipeRatings
-      operationId: GetRecipeRatings
+      operationId: GetRecipeRatingsForRecipe
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -23761,6 +23761,71 @@ components:
         twoFactorSecret:
           type: string
         username:
+          type: string
+      type: object
+    UserDataAggregationRequest:
+      properties:
+        reportID:
+          type: string
+        userID:
+          type: string
+      type: object
+    UserDataCollection:
+      properties:
+        auditLogEntries:
+          type: object
+        householdInstrumentOwnerships:
+          type: object
+        households:
+          items:
+            $ref: '#/components/schemas/Household'
+          type: array
+        mealPlans:
+          type: object
+        meals:
+          items:
+            $ref: '#/components/schemas/Meal'
+          type: array
+        receivedInvites:
+          items:
+            $ref: '#/components/schemas/HouseholdInvitation'
+          type: array
+        recipeRatings:
+          items:
+            $ref: '#/components/schemas/RecipeRating'
+          type: array
+        recipes:
+          items:
+            $ref: '#/components/schemas/Recipe'
+          type: array
+        reportID:
+          type: string
+        sentInvites:
+          items:
+            $ref: '#/components/schemas/HouseholdInvitation'
+          type: array
+        serviceSettingConfigurations:
+          type: object
+        user:
+          $ref: '#/components/schemas/User'
+        userAuditLogEntries:
+          items:
+            $ref: '#/components/schemas/AuditLogEntry'
+          type: array
+        userIngredientPreferences:
+          items:
+            $ref: '#/components/schemas/UserIngredientPreference'
+          type: array
+        userServiceSettingConfigurations:
+          items:
+            $ref: '#/components/schemas/ServiceSettingConfiguration'
+          type: array
+        webhooks:
+          type: object
+      type: object
+    UserDataCollectionResponse:
+      properties:
+        reportID:
           type: string
       type: object
     UserDetailsUpdateRequestInput:

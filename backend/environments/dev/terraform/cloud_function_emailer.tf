@@ -118,7 +118,7 @@ resource "google_cloudfunctions2_function" "outbound_emailer" {
     }
 
     secret_environment_variables {
-      key        = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC"
+      key        = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
       project_id = local.project_id
       secret     = google_secret_manager_secret.data_changes_topic_name.secret_id
       version    = "latest"

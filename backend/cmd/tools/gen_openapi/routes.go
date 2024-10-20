@@ -386,7 +386,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdAdmin},
 	},
 	"GET /api/v1/meal_plans/": {
-		ID:           "GetMealPlans",
+		ID:           "GetMealPlansForHousehold",
 		Description:  "Fetches a MealPlans",
 		ResponseType: &types.MealPlan{},
 		ListRoute:    true,
@@ -781,7 +781,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/recipes/{recipeID}/ratings/": {
-		ID:           "GetRecipeRatings",
+		ID:           "GetRecipeRatingsForRecipe",
 		Description:  "Fetches a RecipeRatings",
 		ResponseType: &types.RecipeRating{},
 		ListRoute:    true,

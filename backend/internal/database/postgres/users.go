@@ -33,15 +33,17 @@ func (q *Querier) GetUser(ctx context.Context, userID string) (*types.User, erro
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if userID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-
+	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	result, err := q.generatedQuerier.GetUserByID(ctx, q.db, userID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "getting user with verified two factor")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting user")
 	}
 
 	u := &types.User{
@@ -1107,31 +1109,6 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	}
 
 	logger.Info("user archived")
-
-	return nil
-}
-
-// DeleteUser archives a user.
-func (q *Querier) DeleteUser(ctx context.Context, userID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if userID == "" {
-		return ErrInvalidIDProvided
-	}
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
-
-	changed, err := q.generatedQuerier.DeleteUser(ctx, q.db, userID)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving user")
-	}
-
-	if changed == 0 {
-		return sql.ErrNoRows
-	}
-
-	logger.Info("user deleted")
 
 	return nil
 }

@@ -15,14 +15,14 @@ const (
 	// MealPlanElectionMethodInstantRunoff is used to denote the Instant Runoff election method.
 	MealPlanElectionMethodInstantRunoff = "instant-runoff"
 
-	// MealPlanCreatedCustomerEventType indicates a meal plan was created.
-	MealPlanCreatedCustomerEventType ServiceEventType = "meal_plan_created"
-	// MealPlanUpdatedCustomerEventType indicates a meal plan was updated.
-	MealPlanUpdatedCustomerEventType ServiceEventType = "meal_plan_updated"
-	// MealPlanArchivedCustomerEventType indicates a meal plan was archived.
-	MealPlanArchivedCustomerEventType ServiceEventType = "meal_plan_archived"
-	// MealPlanFinalizedCustomerEventType indicates a meal plan was finalized.
-	MealPlanFinalizedCustomerEventType ServiceEventType = "meal_plan_finalized"
+	// MealPlanCreatedServiceEventType indicates a meal plan was created.
+	MealPlanCreatedServiceEventType ServiceEventType = "meal_plan_created"
+	// MealPlanUpdatedServiceEventType indicates a meal plan was updated.
+	MealPlanUpdatedServiceEventType ServiceEventType = "meal_plan_updated"
+	// MealPlanArchivedServiceEventType indicates a meal plan was archived.
+	MealPlanArchivedServiceEventType ServiceEventType = "meal_plan_archived"
+	// MealPlanFinalizedServiceEventType indicates a meal plan was finalized.
+	MealPlanFinalizedServiceEventType ServiceEventType = "meal_plan_finalized"
 
 	// MealPlanStatusAwaitingVotes indicates a household invitation is pending.
 	MealPlanStatusAwaitingVotes MealPlanStatus = "awaiting_votes"
@@ -104,7 +104,7 @@ type (
 	MealPlanDataManager interface {
 		MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error)
 		GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*MealPlan, error)
-		GetMealPlans(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[MealPlan], error)
+		GetMealPlansForHousehold(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[MealPlan], error)
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error

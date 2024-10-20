@@ -105,8 +105,8 @@ func (q *Querier) GetMealPlan(ctx context.Context, mealPlanID, householdID strin
 	return q.getMealPlan(ctx, mealPlanID, householdID)
 }
 
-// GetMealPlans fetches a list of meal plans from the database that meet a particular filter.
-func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlan], err error) {
+// GetMealPlansForHousehold fetches a list of meal plans from the database that meet a particular filter.
+func (q *Querier) GetMealPlansForHousehold(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlan], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -122,14 +122,14 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetMealPlans(ctx, q.db, &generated.GetMealPlansParams{
-		HouseholdID:   householdID,
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
+	results, err := q.generatedQuerier.GetMealPlansForHousehold(ctx, q.db, &generated.GetMealPlansForHouseholdParams{
+		BelongsToHousehold: householdID,
+		CreatedBefore:      database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:       database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:      database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:       database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:        database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:         database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plans retrieval")

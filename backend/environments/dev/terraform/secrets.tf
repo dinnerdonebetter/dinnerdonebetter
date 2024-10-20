@@ -24,6 +24,14 @@ resource "google_secret_manager_secret" "data_changes_topic_name" {
   }
 }
 
+resource "google_secret_manager_secret_version" "data_changes_topic_name" {
+  secret = google_secret_manager_secret.data_changes_topic_name.id
+
+  secret_data = google_pubsub_topic.data_changes_topic.name
+}
+
+# outbound emails
+
 resource "google_secret_manager_secret" "outbound_emails_topic_name" {
   secret_id = "outbound_emails_topic_name"
 
@@ -32,16 +40,26 @@ resource "google_secret_manager_secret" "outbound_emails_topic_name" {
   }
 }
 
-resource "google_secret_manager_secret_version" "data_changes_topic_name" {
-  secret = google_secret_manager_secret.data_changes_topic_name.id
-
-  secret_data = google_pubsub_topic.data_changes_topic.name
-}
-
 resource "google_secret_manager_secret_version" "outbound_emails_topic_name" {
   secret = google_secret_manager_secret.outbound_emails_topic_name.id
 
   secret_data = google_pubsub_topic.outbound_emails_topic.name
+}
+
+# data aggregation
+
+resource "google_secret_manager_secret" "data_aggregation_topic_name" {
+  secret_id = "data_aggregation_topic_name"
+
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "data_aggregation_topic_names" {
+  secret = google_secret_manager_secret.data_aggregation_topic_name.id
+
+  secret_data = google_pubsub_topic.user_data_aggregator_topic.name
 }
 
 # API server oauth2 token encryption key

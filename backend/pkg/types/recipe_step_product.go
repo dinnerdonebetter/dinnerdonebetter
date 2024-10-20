@@ -17,12 +17,12 @@ const (
 	// RecipeStepProductVesselType represents one of the valid recipe step product type values.
 	RecipeStepProductVesselType = "vessel"
 
-	// RecipeStepProductCreatedCustomerEventType indicates a recipe step product was created.
-	RecipeStepProductCreatedCustomerEventType ServiceEventType = "recipe_step_product_created"
-	// RecipeStepProductUpdatedCustomerEventType indicates a recipe step product was updated.
-	RecipeStepProductUpdatedCustomerEventType ServiceEventType = "recipe_step_product_updated"
-	// RecipeStepProductArchivedCustomerEventType indicates a recipe step product was archived.
-	RecipeStepProductArchivedCustomerEventType ServiceEventType = "recipe_step_product_archived"
+	// RecipeStepProductCreatedServiceEventType indicates a recipe step product was created.
+	RecipeStepProductCreatedServiceEventType ServiceEventType = "recipe_step_product_created"
+	// RecipeStepProductUpdatedServiceEventType indicates a recipe step product was updated.
+	RecipeStepProductUpdatedServiceEventType ServiceEventType = "recipe_step_product_updated"
+	// RecipeStepProductArchivedServiceEventType indicates a recipe step product was archived.
+	RecipeStepProductArchivedServiceEventType ServiceEventType = "recipe_step_product_archived"
 )
 
 func init() {

@@ -199,8 +199,13 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
 
       env {
-        name  = "DATA_CHANGES_TOPIC_NAME"
+        name  = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
         value = google_pubsub_topic.data_changes_topic.name
+      }
+
+      env {
+        name  = "DINNER_DONE_BETTER_USER_AGGREGATOR_TOPIC_NAME"
+        value = google_pubsub_topic.user_data_aggregator_topic.name
       }
 
       env {

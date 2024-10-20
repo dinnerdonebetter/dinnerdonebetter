@@ -83,6 +83,8 @@ const (
 	UserAgentMobileKey = "is_mobile"
 	// ValidationErrorKey is the standard key for referring to a struct validation error.
 	ValidationErrorKey = "validation_error"
+	// UserDataAggregationReportIDKey is the standard key for referring to a user data aggregation report.
+	UserDataAggregationReportIDKey = "user_data_aggregation_report.id"
 
 	// ValidInstrumentIDKey is the standard key for referring to a valid instrument's ID.
 	ValidInstrumentIDKey = "valid_instrument.id"

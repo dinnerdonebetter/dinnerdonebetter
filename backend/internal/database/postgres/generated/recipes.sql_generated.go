@@ -714,6 +714,154 @@ func (q *Queries) GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams
 	return items, nil
 }
 
+const getRecipesCreatedByUser = `-- name: GetRecipesCreatedByUser :many
+SELECT
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.description,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.seal_of_approval,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+			AND recipes.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipes.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND recipes.created_by_user = $5
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+			AND recipes.created_by_user = $5
+	) AS total_count
+FROM recipes
+	WHERE recipes.archived_at IS NULL AND
+	recipes.created_by_user = $5
+	AND recipes.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipes.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND recipes.created_by_user = $5
+LIMIT $7
+OFFSET $6
+`
+
+type GetRecipesCreatedByUserParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	CreatedByUser string
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetRecipesCreatedByUserRow struct {
+	CreatedAt            time.Time
+	LastValidatedAt      sql.NullTime
+	LastIndexedAt        sql.NullTime
+	LastUpdatedAt        sql.NullTime
+	ArchivedAt           sql.NullTime
+	MinEstimatedPortions string
+	ID                   string
+	CreatedByUser        string
+	PortionName          string
+	PluralPortionName    string
+	Description          string
+	Source               string
+	YieldsComponentType  ComponentType
+	Slug                 string
+	Name                 string
+	InspiredByRecipeID   sql.NullString
+	MaxEstimatedPortions sql.NullString
+	FilteredCount        int64
+	TotalCount           int64
+	EligibleForMeals     bool
+	SealOfApproval       bool
+}
+
+func (q *Queries) GetRecipesCreatedByUser(ctx context.Context, db DBTX, arg *GetRecipesCreatedByUserParams) ([]*GetRecipesCreatedByUserRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipesCreatedByUser,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.CreatedByUser,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetRecipesCreatedByUserRow{}
+	for rows.Next() {
+		var i GetRecipesCreatedByUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Slug,
+			&i.Source,
+			&i.Description,
+			&i.InspiredByRecipeID,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.PortionName,
+			&i.PluralPortionName,
+			&i.SealOfApproval,
+			&i.EligibleForMeals,
+			&i.YieldsComponentType,
+			&i.LastIndexedAt,
+			&i.LastValidatedAt,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getRecipesNeedingIndexing = `-- name: GetRecipesNeedingIndexing :many
 SELECT recipes.id
 FROM recipes

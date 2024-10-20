@@ -181,6 +181,34 @@ FROM %s
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetRecipesCreatedByUser",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+	WHERE %s.%s IS NULL AND
+	%s.%s = sqlc.arg(%s)
+	%s
+%s;`,
+					strings.Join(applyToEach(recipesColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", recipesTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(recipesTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipesTableName, createdByUserColumn, createdByUserColumn)),
+					buildTotalCountSelect(recipesTableName, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipesTableName, createdByUserColumn, createdByUserColumn)),
+					recipesTableName,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, createdByUserColumn, createdByUserColumn,
+					buildFilterConditions(recipesTableName, true,
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipesTableName, createdByUserColumn, createdByUserColumn),
+					),
+					offsetLimitAddendum,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "RecipeSearch",
 					Type: ManyType,
 				},

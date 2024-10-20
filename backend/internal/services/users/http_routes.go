@@ -326,7 +326,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	dcm := &types.DataChangeMessage{
 		HouseholdID:            defaultHouseholdID,
-		EventType:              types.UserSignedUpCustomerEventType,
+		EventType:              types.UserSignedUpServiceEventType,
 		UserID:                 user.ID,
 		EmailVerificationToken: emailVerificationToken,
 	}
@@ -647,7 +647,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.TwoFactorSecretVerifiedCustomerEventType,
+		EventType: types.TwoFactorSecretVerifiedServiceEventType,
 		UserID:    user.ID,
 	}
 
@@ -768,7 +768,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	user.TwoFactorSecretVerifiedAt = nil
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.TwoFactorSecretChangedCustomerEventType,
+		EventType: types.TwoFactorSecretChangedServiceEventType,
 		UserID:    user.ID,
 	}
 
@@ -1269,7 +1269,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	dcm := &types.DataChangeMessage{
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		EventType:   types.UserArchivedCustomerEventType,
+		EventType:   types.UserArchivedServiceEventType,
 		UserID:      userID,
 	}
 

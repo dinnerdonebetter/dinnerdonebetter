@@ -22,15 +22,15 @@ const (
 	// UserRegistrationInputContextKey is the non-string type we use for referencing SessionContextData structs.
 	UserRegistrationInputContextKey ContextKey = "user_registration_input"
 
-	// TwoFactorSecretVerifiedCustomerEventType indicates a user's two factor secret was verified.
+	// TwoFactorSecretVerifiedServiceEventType indicates a user's two factor secret was verified.
 	/* #nosec G101 */
-	TwoFactorSecretVerifiedCustomerEventType ServiceEventType = "two_factor_secret_verified"
-	// TwoFactorDeactivatedCustomerEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
+	TwoFactorSecretVerifiedServiceEventType ServiceEventType = "two_factor_secret_verified"
+	// TwoFactorDeactivatedServiceEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
 	/* #nosec G101 */
-	TwoFactorDeactivatedCustomerEventType ServiceEventType = "two_factor_deactivated"
-	// TwoFactorSecretChangedCustomerEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
+	TwoFactorDeactivatedServiceEventType ServiceEventType = "two_factor_deactivated"
+	// TwoFactorSecretChangedServiceEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
 	/* #nosec G101 */
-	TwoFactorSecretChangedCustomerEventType ServiceEventType = "two_factor_secret_changed"
+	TwoFactorSecretChangedServiceEventType ServiceEventType = "two_factor_secret_changed"
 	// PasswordResetTokenCreatedEventType indicates a user created a password reset token.
 	PasswordResetTokenCreatedEventType ServiceEventType = "password_reset_token_created"
 	// PasswordResetTokenRedeemedEventType indicates a user created a password reset token.
@@ -45,12 +45,12 @@ const (
 	UserDetailsChangedEventType ServiceEventType = "user_details_changed"
 	// UsernameReminderRequestedEventType indicates a user requested a username reminder.
 	UsernameReminderRequestedEventType ServiceEventType = "username_reminder_requested"
-	// UserLoggedInCustomerEventType indicates a user has logged in.
-	UserLoggedInCustomerEventType ServiceEventType = "user_logged_in"
-	// UserLoggedOutCustomerEventType indicates a user has logged in.
-	UserLoggedOutCustomerEventType ServiceEventType = "user_logged_out"
-	// UserChangedActiveHouseholdCustomerEventType indicates a user has logged in.
-	UserChangedActiveHouseholdCustomerEventType ServiceEventType = "changed_active_household"
+	// UserLoggedInServiceEventType indicates a user has logged in.
+	UserLoggedInServiceEventType ServiceEventType = "user_logged_in"
+	// UserLoggedOutServiceEventType indicates a user has logged in.
+	UserLoggedOutServiceEventType ServiceEventType = "user_logged_out"
+	// UserChangedActiveHouseholdServiceEventType indicates a user has logged in.
+	UserChangedActiveHouseholdServiceEventType ServiceEventType = "changed_active_household"
 	// UserEmailAddressVerifiedEventType indicates a user created a password reset token.
 	UserEmailAddressVerifiedEventType ServiceEventType = "user_email_address_verified"
 	// UserEmailAddressVerificationEmailRequestedEventType indicates a user created a password reset token.

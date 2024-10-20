@@ -22,12 +22,13 @@ var _ types.DataPrivacyService = (*service)(nil)
 type (
 	// service handles data privacy.
 	service struct {
-		logger                    logging.Logger
-		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		encoderDecoder            encoding.ServerEncoderDecoder
-		tracer                    tracing.Tracer
-		dataChangesPublisher      messagequeue.Publisher
-		userDataManager           types.UserDataManager
+		logger                       logging.Logger
+		sessionContextDataFetcher    func(*http.Request) (*types.SessionContextData, error)
+		encoderDecoder               encoding.ServerEncoderDecoder
+		tracer                       tracing.Tracer
+		dataChangesPublisher         messagequeue.Publisher
+		dataPrivacyDataManager       types.DataPrivacyDataManager
+		userDataAggregationPublisher messagequeue.Publisher
 	}
 )
 
@@ -36,7 +37,7 @@ func ProvideService(
 	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
-	dataManager types.UserDataManager,
+	dataManager types.DataPrivacyDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
@@ -46,13 +47,19 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
+	userDataAggregationPublisher, err := publisherProvider.ProvidePublisher(cfg.UserDataAggregationTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
+	}
+
 	svc := &service{
-		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
-		encoderDecoder:            encoder,
-		sessionContextDataFetcher: authservice.FetchContextFromRequest,
-		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		userDataManager:           dataManager,
-		dataChangesPublisher:      dataChangesPublisher,
+		logger:                       logging.EnsureLogger(logger).WithName(serviceName),
+		encoderDecoder:               encoder,
+		sessionContextDataFetcher:    authservice.FetchContextFromRequest,
+		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		dataPrivacyDataManager:       dataManager,
+		dataChangesPublisher:         dataChangesPublisher,
+		userDataAggregationPublisher: userDataAggregationPublisher,
 	}
 
 	return svc, nil

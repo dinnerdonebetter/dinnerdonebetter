@@ -81,7 +81,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:    types.RecipeRatingCreatedCustomerEventType,
+		EventType:    types.RecipeRatingCreatedServiceEventType,
 		RecipeRating: recipeRating,
 		UserID:       sessionCtxData.Requester.UserID,
 	}
@@ -177,6 +177,11 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachRequestToSpan(span, req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -193,7 +198,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	recipeRatings, err := s.recipeRatingDataManager.GetRecipeRatings(ctx, filter)
+	recipeRatings, err := s.recipeRatingDataManager.GetRecipeRatingsForRecipe(ctx, recipeID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		recipeRatings = &types.QueryFilteredResult[types.RecipeRating]{Data: []*types.RecipeRating{}}
@@ -297,7 +302,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:    types.RecipeRatingUpdatedCustomerEventType,
+		EventType:    types.RecipeRatingUpdatedServiceEventType,
 		RecipeRating: recipeRating,
 		UserID:       sessionCtxData.Requester.UserID,
 	}
@@ -377,7 +382,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.RecipeRatingArchivedCustomerEventType,
+		EventType: types.RecipeRatingArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 

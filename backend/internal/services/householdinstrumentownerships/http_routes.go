@@ -81,7 +81,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:                    types.HouseholdInstrumentOwnershipCreatedCustomerEventType,
+		EventType:                    types.HouseholdInstrumentOwnershipCreatedServiceEventType,
 		HouseholdInstrumentOwnership: householdInstrumentOwnership,
 		UserID:                       sessionCtxData.Requester.UserID,
 	}
@@ -281,7 +281,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:                    types.HouseholdInstrumentOwnershipUpdatedCustomerEventType,
+		EventType:                    types.HouseholdInstrumentOwnershipUpdatedServiceEventType,
 		HouseholdInstrumentOwnership: householdInstrumentOwnership,
 		UserID:                       sessionCtxData.Requester.UserID,
 	}
@@ -356,7 +356,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.HouseholdInstrumentOwnershipArchivedCustomerEventType,
+		EventType: types.HouseholdInstrumentOwnershipArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 

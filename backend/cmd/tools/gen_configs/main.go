@@ -88,7 +88,8 @@ const (
 	testingEnv     = "testing"
 
 	// message provider topics.
-	dataChangesTopicName = "data_changes"
+	dataChangesTopicName         = "data_changes"
+	userDataAggregationTopicName = "user_data_aggregation_requests"
 
 	maxAttempts = 50
 
@@ -250,7 +251,10 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				JWTAudience:           "https://api.dinnerdonebetter.dev",
 				JWTLifetime:           5 * time.Minute,
 			},
-			DataPrivacy: dataprivacyservice.Config{DataChangesTopicName: dataChangesTopicName},
+			DataPrivacy: dataprivacyservice.Config{
+				DataChangesTopicName:         dataChangesTopicName,
+				UserDataAggregationTopicName: userDataAggregationTopicName,
+			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/avatars",
@@ -398,7 +402,10 @@ func buildLocalDevConfig() *config.InstanceConfig {
 				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				JWTLifetime:           5 * time.Minute,
 			},
-			DataPrivacy: dataprivacyservice.Config{DataChangesTopicName: dataChangesTopicName},
+			DataPrivacy: dataprivacyservice.Config{
+				DataChangesTopicName:         dataChangesTopicName,
+				UserDataAggregationTopicName: userDataAggregationTopicName,
+			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -640,7 +647,10 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				JWTLifetime:           5 * time.Minute,
 			},
-			DataPrivacy: dataprivacyservice.Config{DataChangesTopicName: dataChangesTopicName},
+			DataPrivacy: dataprivacyservice.Config{
+				DataChangesTopicName:         dataChangesTopicName,
+				UserDataAggregationTopicName: userDataAggregationTopicName,
+			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{

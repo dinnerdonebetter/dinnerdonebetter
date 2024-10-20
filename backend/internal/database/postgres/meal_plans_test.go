@@ -164,7 +164,7 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	}
 
 	// fetch as list
-	mealPlans, err := dbc.GetMealPlans(ctx, householdID, nil)
+	mealPlans, err := dbc.GetMealPlansForHousehold(ctx, householdID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, mealPlans.Data)
 	assert.Equal(t, len(createdMealPlans), len(mealPlans.Data))

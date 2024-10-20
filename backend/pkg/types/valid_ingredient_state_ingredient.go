@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	// ValidIngredientStateIngredientCreatedCustomerEventType indicates a valid ingredient state ingredient was created.
-	ValidIngredientStateIngredientCreatedCustomerEventType ServiceEventType = "valid_ingredient_state_ingredient_created"
-	// ValidIngredientStateIngredientUpdatedCustomerEventType indicates a valid ingredient state ingredient was updated.
-	ValidIngredientStateIngredientUpdatedCustomerEventType ServiceEventType = "valid_ingredient_state_ingredient_updated"
-	// ValidIngredientStateIngredientArchivedCustomerEventType indicates a valid ingredient state ingredient was archived.
-	ValidIngredientStateIngredientArchivedCustomerEventType ServiceEventType = "valid_ingredient_state_ingredient_archived"
+	// ValidIngredientStateIngredientCreatedServiceEventType indicates a valid ingredient state ingredient was created.
+	ValidIngredientStateIngredientCreatedServiceEventType ServiceEventType = "valid_ingredient_state_ingredient_created"
+	// ValidIngredientStateIngredientUpdatedServiceEventType indicates a valid ingredient state ingredient was updated.
+	ValidIngredientStateIngredientUpdatedServiceEventType ServiceEventType = "valid_ingredient_state_ingredient_updated"
+	// ValidIngredientStateIngredientArchivedServiceEventType indicates a valid ingredient state ingredient was archived.
+	ValidIngredientStateIngredientArchivedServiceEventType ServiceEventType = "valid_ingredient_state_ingredient_archived"
 )
 
 func init() {

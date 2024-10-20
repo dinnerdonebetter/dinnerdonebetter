@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math"
 	"sync"
 	"time"
 
@@ -15,7 +16,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/encryption"
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/encryption/salsa20"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
@@ -174,4 +177,35 @@ func (q *Querier) rollbackTransaction(ctx context.Context, tx database.SQLQueryE
 	}
 
 	q.logger.Debug("transaction rolled back")
+}
+
+func fetchAllRows[T any](fetchFunc func(*types.QueryFilter) (*types.QueryFilteredResult[T], error)) ([]T, error) {
+	var done bool
+	allData := []T{}
+
+	filter := &types.QueryFilter{
+		Page:            pointer.To(uint16(1)),
+		Limit:           pointer.To(uint8(math.MaxUint8)),
+		IncludeArchived: pointer.To(true),
+	}
+
+	for !done {
+		data, err := fetchFunc(filter)
+		if err != nil {
+			return nil, fmt.Errorf("getting data: %w", err)
+		}
+
+		for _, x := range data.Data {
+			if x != nil {
+				allData = append(allData, *x)
+			}
+		}
+
+		if data.TotalCount <= uint64(len(allData)) {
+			done = true
+		}
+		filter.Page = pointer.To(*filter.Page + 1)
+	}
+
+	return allData, nil
 }

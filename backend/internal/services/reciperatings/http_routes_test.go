@@ -315,7 +315,7 @@ func TestRecipeRatingsService_ListHandler(T *testing.T) {
 
 		recipeRatingDataManager := &mocktypes.RecipeRatingDataManagerMock{}
 		recipeRatingDataManager.On(
-			"GetRecipeRatings",
+			"GetRecipeRatingsForRecipe",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleRecipeRatingList, nil)
@@ -354,7 +354,7 @@ func TestRecipeRatingsService_ListHandler(T *testing.T) {
 
 		recipeRatingDataManager := &mocktypes.RecipeRatingDataManagerMock{}
 		recipeRatingDataManager.On(
-			"GetRecipeRatings",
+			"GetRecipeRatingsForRecipe",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.RecipeRating])(nil), sql.ErrNoRows)
@@ -378,7 +378,7 @@ func TestRecipeRatingsService_ListHandler(T *testing.T) {
 
 		recipeRatingDataManager := &mocktypes.RecipeRatingDataManagerMock{}
 		recipeRatingDataManager.On(
-			"GetRecipeRatings",
+			"GetRecipeRatingsForRecipe",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.RecipeRating])(nil), errors.New("blah"))

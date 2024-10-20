@@ -328,4 +328,6 @@ func neutralizeConfig(cfg *config.InstanceConfig) {
 	cfg.Services.ValidPreparationVessels.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Workers.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.UserNotifications.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.DataPrivacy.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.DataPrivacy.UserDataAggregationTopicName = dataChangesTopicName
 }
