@@ -2,17 +2,13 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { RecipeRating, QueryFilteredResult } from '@dinnerdonebetter/models';
+import { MealPlan, QueryFilteredResult } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockGetRecipeRatingsResponseConfig extends ResponseConfig<QueryFilteredResult<RecipeRating>> {
-  recipeID: string;
-
-  constructor(recipeID: string, status: number = 200, body: RecipeRating[] = []) {
+export class MockGetMealPlansForHouseholdResponseConfig extends ResponseConfig<QueryFilteredResult<MealPlan>> {
+  constructor(status: number = 200, body: MealPlan[] = []) {
     super();
-
-    this.recipeID = recipeID;
 
     this.status = status;
     if (this.body) {
@@ -21,10 +17,10 @@ export class MockGetRecipeRatingsResponseConfig extends ResponseConfig<QueryFilt
   }
 }
 
-export const mockGetRecipeRatingss = (resCfg: MockGetRecipeRatingsResponseConfig) => {
+export const mockGetMealPlansForHouseholds = (resCfg: MockGetMealPlansForHouseholdResponseConfig) => {
   return (page: Page) =>
     page.route(
-      `**/api/v1/recipes/${resCfg.recipeID}/ratings`,
+      `**/api/v1/meal_plans`,
       (route: Route) => {
         const req = route.request();
 

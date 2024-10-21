@@ -52,7 +52,7 @@ func BuildFakeWebhooksList() *types.QueryFilteredResult[types.Webhook] {
 func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
 	return &types.WebhookTriggerEvent{
 		ID:               BuildFakeID(),
-		TriggerEvent:     string(types.WebhookCreatedCustomerEventType),
+		TriggerEvent:     string(types.WebhookCreatedServiceEventType),
 		BelongsToWebhook: BuildFakeID(),
 		CreatedAt:        BuildFakeTime(),
 		ArchivedAt:       nil,

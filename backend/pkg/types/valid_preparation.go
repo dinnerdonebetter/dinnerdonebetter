@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	// ValidPreparationCreatedCustomerEventType indicates a valid preparation was created.
-	ValidPreparationCreatedCustomerEventType ServiceEventType = "valid_preparation_created"
-	// ValidPreparationUpdatedCustomerEventType indicates a valid preparation was updated.
-	ValidPreparationUpdatedCustomerEventType ServiceEventType = "valid_preparation_updated"
-	// ValidPreparationArchivedCustomerEventType indicates a valid preparation was archived.
-	ValidPreparationArchivedCustomerEventType ServiceEventType = "valid_preparation_archived"
+	// ValidPreparationCreatedServiceEventType indicates a valid preparation was created.
+	ValidPreparationCreatedServiceEventType ServiceEventType = "valid_preparation_created"
+	// ValidPreparationUpdatedServiceEventType indicates a valid preparation was updated.
+	ValidPreparationUpdatedServiceEventType ServiceEventType = "valid_preparation_updated"
+	// ValidPreparationArchivedServiceEventType indicates a valid preparation was archived.
+	ValidPreparationArchivedServiceEventType ServiceEventType = "valid_preparation_archived"
 )
 
 func init() {

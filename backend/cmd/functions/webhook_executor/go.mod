@@ -1,4 +1,4 @@
-module github.com/dinnerdonebetter/backend/cmd/functions/search_indexer
+module github.com/dinnerdonebetter/backend/cmd/functions/webhook_executor
 
 go 1.22
 

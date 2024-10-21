@@ -21,12 +21,12 @@ const (
 	// MealPlanGroceryListItemStatusAcquired represents the database-side enum member for grocery list item status.
 	MealPlanGroceryListItemStatusAcquired = "acquired"
 
-	// MealPlanGroceryListItemCreatedCustomerEventType indicates a meal plan grocery list item was created.
-	MealPlanGroceryListItemCreatedCustomerEventType ServiceEventType = "meal_plan_grocery_list_item_created"
-	// MealPlanGroceryListItemUpdatedCustomerEventType indicates a meal plan grocery list item was updated.
-	MealPlanGroceryListItemUpdatedCustomerEventType ServiceEventType = "meal_plan_grocery_list_item_updated"
-	// MealPlanGroceryListItemArchivedCustomerEventType indicates a meal plan grocery list item was archived.
-	MealPlanGroceryListItemArchivedCustomerEventType ServiceEventType = "meal_plan_grocery_list_item_archived"
+	// MealPlanGroceryListItemCreatedServiceEventType indicates a meal plan grocery list item was created.
+	MealPlanGroceryListItemCreatedServiceEventType ServiceEventType = "meal_plan_grocery_list_item_created"
+	// MealPlanGroceryListItemUpdatedServiceEventType indicates a meal plan grocery list item was updated.
+	MealPlanGroceryListItemUpdatedServiceEventType ServiceEventType = "meal_plan_grocery_list_item_updated"
+	// MealPlanGroceryListItemArchivedServiceEventType indicates a meal plan grocery list item was archived.
+	MealPlanGroceryListItemArchivedServiceEventType ServiceEventType = "meal_plan_grocery_list_item_archived"
 )
 
 func init() {

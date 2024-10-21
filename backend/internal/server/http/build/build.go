@@ -66,7 +66,7 @@ import (
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	workersservice "github.com/dinnerdonebetter/backend/internal/services/workers"
-	"github.com/dinnerdonebetter/backend/internal/uploads/images"
+	images "github.com/dinnerdonebetter/backend/internal/uploads/images"
 
 	"github.com/google/wire"
 )

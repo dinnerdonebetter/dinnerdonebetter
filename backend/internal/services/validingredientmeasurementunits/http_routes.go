@@ -84,7 +84,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:                      types.ValidIngredientMeasurementUnitCreatedCustomerEventType,
+		EventType:                      types.ValidIngredientMeasurementUnitCreatedServiceEventType,
 		ValidIngredientMeasurementUnit: validIngredientMeasurementUnit,
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
@@ -285,7 +285,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:                      types.ValidIngredientMeasurementUnitUpdatedCustomerEventType,
+		EventType:                      types.ValidIngredientMeasurementUnitUpdatedServiceEventType,
 		ValidIngredientMeasurementUnit: validIngredientMeasurementUnit,
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
@@ -360,7 +360,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ValidIngredientMeasurementUnitArchivedCustomerEventType,
+		EventType: types.ValidIngredientMeasurementUnitArchivedServiceEventType,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

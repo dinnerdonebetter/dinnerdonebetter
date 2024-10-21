@@ -98,7 +98,7 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	createdEvent, err := dbc.AddWebhookTriggerEvent(ctx, householdID, &types.WebhookTriggerEventDatabaseCreationInput{
 		ID:               identifiers.New(),
 		BelongsToWebhook: createdWebhooks[0].ID,
-		TriggerEvent:     string(types.WebhookArchivedCustomerEventType),
+		TriggerEvent:     string(types.WebhookArchivedServiceEventType),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, createdEvent)

@@ -67,7 +67,7 @@ func doTheThing() error {
 
 	defer publisherProvider.Close()
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DATA_CHANGES_TOPIC_NAME"))
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"))
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}

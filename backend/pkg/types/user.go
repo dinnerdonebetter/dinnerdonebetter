@@ -11,12 +11,14 @@ import (
 )
 
 const (
-	// UserSignedUpCustomerEventType indicates a user signed up.
-	UserSignedUpCustomerEventType ServiceEventType = "user_signed_up"
-	// UserArchivedCustomerEventType indicates a user archived their account.
-	UserArchivedCustomerEventType ServiceEventType = "user_archived"
-	// UserDataDestroyedCustomerEventType indicates a user destroyed their data.
-	UserDataDestroyedCustomerEventType ServiceEventType = "user_data_destroyed"
+	// UserSignedUpServiceEventType indicates a user signed up.
+	UserSignedUpServiceEventType ServiceEventType = "user_signed_up"
+	// UserArchivedServiceEventType indicates a user archived their account.
+	UserArchivedServiceEventType ServiceEventType = "user_archived"
+	// UserDataDestroyedServiceEventType indicates a user destroyed their data.
+	UserDataDestroyedServiceEventType ServiceEventType = "user_data_destroyed"
+	// UserDataAggregationRequestServiceEventType indicates a user requested their data be aggregated.
+	UserDataAggregationRequestServiceEventType ServiceEventType = "user_data_aggregation_requested"
 
 	// GoodStandingUserAccountStatus indicates a User's household is in good standing.
 	GoodStandingUserAccountStatus userAccountStatus = "good"
@@ -250,7 +252,6 @@ type (
 		UpdateUserDetails(ctx context.Context, userID string, input *UserDetailsDatabaseUpdateInput) error
 		UpdateUserPassword(ctx context.Context, userID, newHash string) error
 		ArchiveUser(ctx context.Context, userID string) error
-		DeleteUser(ctx context.Context, userID string) error
 		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
 		MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error

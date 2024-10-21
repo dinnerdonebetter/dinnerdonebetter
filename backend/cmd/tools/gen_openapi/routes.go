@@ -39,6 +39,18 @@ var routeInfoMap = map[string]routeDetails{
 		ResponseType: &types.DataDeletionResponse{},
 		OAuth2Scopes: []string{householdMember},
 	},
+	"POST /api/v1/data_privacy/disclose": {
+		ID:           "AggregateUserDataReport",
+		Description:  "Aggregates a user's data into a big disclosure blob",
+		ResponseType: &types.UserDataCollectionResponse{},
+		OAuth2Scopes: []string{householdMember},
+	},
+	"GET /api/v1/data_privacy/reports/{userDataAggregationReportID}": {
+		ID:           "FetchUserDataReport",
+		Description:  "Reads a user's data report from storage",
+		ResponseType: &types.UserDataCollection{},
+		OAuth2Scopes: []string{householdMember},
+	},
 	"POST /api/v1/admin/users/status": {
 		ID:           "AdminUpdateUserStatus",
 		Description:  "Updates a user's account status",
@@ -386,7 +398,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdAdmin},
 	},
 	"GET /api/v1/meal_plans/": {
-		ID:           "GetMealPlans",
+		ID:           "GetMealPlansForHousehold",
 		Description:  "Fetches a MealPlans",
 		ResponseType: &types.MealPlan{},
 		ListRoute:    true,
@@ -781,7 +793,7 @@ var routeInfoMap = map[string]routeDetails{
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/recipes/{recipeID}/ratings/": {
-		ID:           "GetRecipeRatings",
+		ID:           "GetRecipeRatingsForRecipe",
 		Description:  "Fetches a RecipeRatings",
 		ResponseType: &types.RecipeRating{},
 		ListRoute:    true,

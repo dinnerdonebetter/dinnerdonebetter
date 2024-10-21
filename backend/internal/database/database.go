@@ -106,5 +106,6 @@ type (
 		types.UserNotificationDataManager
 		types.AuditLogEntryDataManager
 		types.MaintenanceDataManager
+		types.DataPrivacyDataManager
 	}
 )

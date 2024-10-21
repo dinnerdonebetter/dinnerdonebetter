@@ -88,7 +88,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:     types.MealPlanEventCreatedCustomerEventType,
+		EventType:     types.MealPlanEventCreatedServiceEventType,
 		MealPlanEvent: mealPlanEvent,
 		HouseholdID:   sessionCtxData.ActiveHouseholdID,
 		UserID:        sessionCtxData.Requester.UserID,
@@ -304,7 +304,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:     types.MealPlanEventUpdatedCustomerEventType,
+		EventType:     types.MealPlanEventUpdatedServiceEventType,
 		MealPlanEvent: mealPlanEvent,
 		HouseholdID:   sessionCtxData.ActiveHouseholdID,
 		UserID:        sessionCtxData.Requester.UserID,
@@ -385,7 +385,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:       types.MealPlanEventArchivedCustomerEventType,
+		EventType:       types.MealPlanEventArchivedServiceEventType,
 		MealPlanEventID: mealPlanEventID,
 		HouseholdID:     sessionCtxData.ActiveHouseholdID,
 		UserID:          sessionCtxData.Requester.UserID,

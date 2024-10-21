@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	// ValidVesselCreatedCustomerEventType indicates a valid vessel was created.
-	ValidVesselCreatedCustomerEventType ServiceEventType = "valid_vessel_created"
-	// ValidVesselUpdatedCustomerEventType indicates a valid vessel was updated.
-	ValidVesselUpdatedCustomerEventType ServiceEventType = "valid_vessel_updated"
-	// ValidVesselArchivedCustomerEventType indicates a valid vessel was archived.
-	ValidVesselArchivedCustomerEventType ServiceEventType = "valid_vessel_archived"
+	// ValidVesselCreatedServiceEventType indicates a valid vessel was created.
+	ValidVesselCreatedServiceEventType ServiceEventType = "valid_vessel_created"
+	// ValidVesselUpdatedServiceEventType indicates a valid vessel was updated.
+	ValidVesselUpdatedServiceEventType ServiceEventType = "valid_vessel_updated"
+	// ValidVesselArchivedServiceEventType indicates a valid vessel was archived.
+	ValidVesselArchivedServiceEventType ServiceEventType = "valid_vessel_archived"
 )
 
 func init() {

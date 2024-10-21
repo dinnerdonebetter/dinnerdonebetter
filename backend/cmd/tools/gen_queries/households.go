@@ -157,17 +157,12 @@ WHERE %s.%s IS NULL
 	(
 		SELECT COUNT(%s.%s)
 		FROM %s
-			JOIN %s ON %s.%s = %s.%s
 		WHERE %s.%s IS NULL
-			AND %s.%s = sqlc.arg(%s)%s
+			%s
 	) as filtered_count,
 	%s
 FROM %s
-	JOIN %s ON %s.%s = %s.%s
-	JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
-	AND %s.%s IS NULL
-	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 					strings.Join(applyToEach(householdsColumns, func(_ int, s string) string {
@@ -175,28 +170,25 @@ WHERE %s.%s IS NULL
 					}), ",\n\t"),
 					householdsTableName, idColumn,
 					householdsTableName,
-					householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
 					householdsTableName, archivedAtColumn,
-					householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 					strings.Join(applyToEach(strings.Split(buildFilterConditions(
 						householdsTableName,
 						true,
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn),
 					), "\n"), func(i int, s string) string {
 						if i == 0 {
 							return fmt.Sprintf("\n\t\t\t%s", s)
 						}
 						return fmt.Sprintf("\n\t\t%s", s)
 					}), ""),
-					buildTotalCountSelect(householdsTableName, true),
+					buildTotalCountSelect(householdsTableName, true,
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn)),
 					householdsTableName,
-					householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
-					usersTableName, householdUserMembershipsTableName, belongsToUserColumn, usersTableName, idColumn,
 					householdsTableName, archivedAtColumn,
-					householdUserMembershipsTableName, archivedAtColumn,
-					householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 					buildFilterConditions(
 						householdsTableName,
 						true,
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn),
 					),
 					offsetLimitAddendum,
 				)),

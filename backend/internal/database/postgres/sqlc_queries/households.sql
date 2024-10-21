@@ -139,9 +139,8 @@ SELECT
 	(
 		SELECT COUNT(households.id)
 		FROM households
-			JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 		WHERE households.archived_at IS NULL
-			AND household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
+			
 			AND households.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
@@ -152,18 +151,16 @@ SELECT
 				households.last_updated_at IS NULL
 				OR households.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND households.belongs_to_user = sqlc.arg(belongs_to_user)
 	) as filtered_count,
 	(
 		SELECT COUNT(households.id)
 		FROM households
 		WHERE households.archived_at IS NULL
+			AND households.belongs_to_user = sqlc.arg(belongs_to_user)
 	) AS total_count
 FROM households
-	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-	JOIN users ON household_user_memberships.belongs_to_user = users.id
 WHERE households.archived_at IS NULL
-	AND household_user_memberships.archived_at IS NULL
-	AND household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
 	AND households.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -174,6 +171,7 @@ WHERE households.archived_at IS NULL
 		households.last_updated_at IS NULL
 		OR households.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
+	AND households.belongs_to_user = sqlc.arg(belongs_to_user)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 

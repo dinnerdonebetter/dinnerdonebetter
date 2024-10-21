@@ -44,11 +44,11 @@ var (
 	errRequiredDataIsNil = errors.New("required data is nil")
 
 	nonWebhookEventTypes = []types.ServiceEventType{
-		types.UserSignedUpCustomerEventType,
-		types.UserArchivedCustomerEventType,
-		types.TwoFactorSecretVerifiedCustomerEventType,
-		types.TwoFactorDeactivatedCustomerEventType,
-		types.TwoFactorSecretChangedCustomerEventType,
+		types.UserSignedUpServiceEventType,
+		types.UserArchivedServiceEventType,
+		types.TwoFactorSecretVerifiedServiceEventType,
+		types.TwoFactorDeactivatedServiceEventType,
+		types.TwoFactorSecretChangedServiceEventType,
 		types.PasswordResetTokenCreatedEventType,
 		types.PasswordResetTokenRedeemedEventType,
 		types.PasswordChangedEventType,
@@ -56,16 +56,16 @@ var (
 		types.UsernameChangedEventType,
 		types.UserDetailsChangedEventType,
 		types.UsernameReminderRequestedEventType,
-		types.UserLoggedInCustomerEventType,
-		types.UserLoggedOutCustomerEventType,
-		types.UserChangedActiveHouseholdCustomerEventType,
+		types.UserLoggedInServiceEventType,
+		types.UserLoggedOutServiceEventType,
+		types.UserChangedActiveHouseholdServiceEventType,
 		types.UserEmailAddressVerifiedEventType,
 		types.UserEmailAddressVerificationEmailRequestedEventType,
-		types.HouseholdMemberRemovedCustomerEventType,
-		types.HouseholdMembershipPermissionsUpdatedCustomerEventType,
-		types.HouseholdOwnershipTransferredCustomerEventType,
-		types.OAuth2ClientCreatedCustomerEventType,
-		types.OAuth2ClientArchivedCustomerEventType,
+		types.HouseholdMemberRemovedServiceEventType,
+		types.HouseholdMembershipPermissionsUpdatedServiceEventType,
+		types.HouseholdOwnershipTransferredServiceEventType,
+		types.OAuth2ClientCreatedServiceEventType,
+		types.OAuth2ClientArchivedServiceEventType,
 	}
 )
 
@@ -228,8 +228,8 @@ func handleSearchIndexUpdates(
 	logger := l.WithValue("event_type", changeMessage.EventType)
 
 	switch changeMessage.EventType {
-	case types.UserSignedUpCustomerEventType,
-		types.UserArchivedCustomerEventType,
+	case types.UserSignedUpServiceEventType,
+		types.UserArchivedServiceEventType,
 		types.EmailAddressChangedEventType,
 		types.UsernameChangedEventType,
 		types.UserDetailsChangedEventType,
@@ -241,15 +241,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.UserID,
 			IndexType: search.IndexTypeUsers,
-			Delete:    changeMessage.EventType == types.UserArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.UserArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.RecipeCreatedCustomerEventType,
-		types.RecipeUpdatedCustomerEventType,
-		types.RecipeArchivedCustomerEventType:
+	case types.RecipeCreatedServiceEventType,
+		types.RecipeUpdatedServiceEventType,
+		types.RecipeArchivedServiceEventType:
 		if changeMessage.Recipe == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for Recipe")
 		}
@@ -257,15 +257,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.Recipe.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.RecipeArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.RecipeArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.MealCreatedCustomerEventType,
-		types.MealUpdatedCustomerEventType,
-		types.MealArchivedCustomerEventType:
+	case types.MealCreatedServiceEventType,
+		types.MealUpdatedServiceEventType,
+		types.MealArchivedServiceEventType:
 		if changeMessage.Meal == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for Meal")
 		}
@@ -273,15 +273,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.Meal.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.MealArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.MealArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.ValidIngredientCreatedCustomerEventType,
-		types.ValidIngredientUpdatedCustomerEventType,
-		types.ValidIngredientArchivedCustomerEventType:
+	case types.ValidIngredientCreatedServiceEventType,
+		types.ValidIngredientUpdatedServiceEventType,
+		types.ValidIngredientArchivedServiceEventType:
 		if changeMessage.ValidIngredient == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredient")
 		}
@@ -289,15 +289,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidIngredient.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.ValidIngredientArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.ValidIngredientArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.ValidInstrumentCreatedCustomerEventType,
-		types.ValidInstrumentUpdatedCustomerEventType,
-		types.ValidInstrumentArchivedCustomerEventType:
+	case types.ValidInstrumentCreatedServiceEventType,
+		types.ValidInstrumentUpdatedServiceEventType,
+		types.ValidInstrumentArchivedServiceEventType:
 		if changeMessage.ValidInstrument == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidInstrument")
 		}
@@ -305,15 +305,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidInstrument.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.ValidInstrumentArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.ValidInstrumentArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.ValidMeasurementUnitCreatedCustomerEventType,
-		types.ValidMeasurementUnitUpdatedCustomerEventType,
-		types.ValidMeasurementUnitArchivedCustomerEventType:
+	case types.ValidMeasurementUnitCreatedServiceEventType,
+		types.ValidMeasurementUnitUpdatedServiceEventType,
+		types.ValidMeasurementUnitArchivedServiceEventType:
 		if changeMessage.ValidMeasurementUnit == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidMeasurementUnit")
 		}
@@ -321,15 +321,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidMeasurementUnit.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.ValidMeasurementUnitArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.ValidMeasurementUnitArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.ValidPreparationCreatedCustomerEventType,
-		types.ValidPreparationUpdatedCustomerEventType,
-		types.ValidPreparationArchivedCustomerEventType:
+	case types.ValidPreparationCreatedServiceEventType,
+		types.ValidPreparationUpdatedServiceEventType,
+		types.ValidPreparationArchivedServiceEventType:
 		if changeMessage.ValidPreparation == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidPreparation")
 		}
@@ -337,15 +337,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidPreparation.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.ValidPreparationArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.ValidPreparationArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.ValidIngredientStateCreatedCustomerEventType,
-		types.ValidIngredientStateUpdatedCustomerEventType,
-		types.ValidIngredientStateArchivedCustomerEventType:
+	case types.ValidIngredientStateCreatedServiceEventType,
+		types.ValidIngredientStateUpdatedServiceEventType,
+		types.ValidIngredientStateArchivedServiceEventType:
 		if changeMessage.ValidIngredientState == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredientState")
 		}
@@ -353,15 +353,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidIngredientState.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.ValidIngredientStateArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.ValidIngredientStateArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.ValidIngredientMeasurementUnitCreatedCustomerEventType,
-		types.ValidIngredientMeasurementUnitUpdatedCustomerEventType,
-		types.ValidIngredientMeasurementUnitArchivedCustomerEventType:
+	case types.ValidIngredientMeasurementUnitCreatedServiceEventType,
+		types.ValidIngredientMeasurementUnitUpdatedServiceEventType,
+		types.ValidIngredientMeasurementUnitArchivedServiceEventType:
 		if changeMessage.ValidIngredientMeasurementUnit == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredientMeasurementUnit")
 		}
@@ -369,15 +369,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidIngredientMeasurementUnit.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.ValidIngredientMeasurementUnitArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.ValidIngredientMeasurementUnitArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.ValidPreparationInstrumentCreatedCustomerEventType,
-		types.ValidPreparationInstrumentUpdatedCustomerEventType,
-		types.ValidPreparationInstrumentArchivedCustomerEventType:
+	case types.ValidPreparationInstrumentCreatedServiceEventType,
+		types.ValidPreparationInstrumentUpdatedServiceEventType,
+		types.ValidPreparationInstrumentArchivedServiceEventType:
 		if changeMessage.ValidPreparationInstrument == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidPreparationInstrument")
 		}
@@ -385,15 +385,15 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidPreparationInstrument.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.ValidPreparationInstrumentArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.ValidPreparationInstrumentArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
 
 		return nil
-	case types.ValidIngredientPreparationCreatedCustomerEventType,
-		types.ValidIngredientPreparationUpdatedCustomerEventType,
-		types.ValidIngredientPreparationArchivedCustomerEventType:
+	case types.ValidIngredientPreparationCreatedServiceEventType,
+		types.ValidIngredientPreparationUpdatedServiceEventType,
+		types.ValidIngredientPreparationArchivedServiceEventType:
 		if changeMessage.ValidIngredientPreparation == nil {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredientPreparation")
 		}
@@ -401,7 +401,7 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidIngredientPreparation.ID,
 			IndexType: search.IndexTypeRecipes,
-			Delete:    changeMessage.EventType == types.ValidIngredientPreparationArchivedCustomerEventType,
+			Delete:    changeMessage.EventType == types.ValidIngredientPreparationArchivedServiceEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
@@ -434,7 +434,7 @@ func handleOutboundNotifications(
 	logger := l.WithValue("event_type", changeMessage.EventType)
 
 	switch changeMessage.EventType {
-	case types.UserSignedUpCustomerEventType:
+	case types.UserSignedUpServiceEventType:
 		emailType = "user signup"
 		if err := analyticsEventReporter.AddUser(ctx, changeMessage.UserID, changeMessage.Context); err != nil {
 			observability.AcknowledgeError(err, logger, span, "notifying customer data platform")
@@ -453,7 +453,7 @@ func handleOutboundNotifications(
 			Template:               email.TemplateTypeVerifyEmailAddress,
 			EmailVerificationToken: changeMessage.EmailVerificationToken,
 		})
-	case types.MealPlanCreatedCustomerEventType:
+	case types.MealPlanCreatedServiceEventType:
 		emailType = "meal plan created"
 		mealPlan := changeMessage.MealPlan
 		if mealPlan == nil {
@@ -507,7 +507,7 @@ func handleOutboundNotifications(
 			Template: email.TemplateTypePasswordReset,
 		})
 
-	case types.HouseholdInvitationCreatedCustomerEventType:
+	case types.HouseholdInvitationCreatedServiceEventType:
 		emailType = "household invitation created"
 		if changeMessage.HouseholdInvitation == nil {
 			return observability.PrepareError(fmt.Errorf("household invitation is nil"), span, "publishing password reset token redemption email")

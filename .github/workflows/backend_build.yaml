@@ -33,7 +33,7 @@ jobs:
         working-directory: backend/
         run: make build
 
-  cloud functions:
+  cloud_functions:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
@@ -47,6 +47,7 @@ jobs:
           'meal_plan_finalizer',
           'meal_plan_task_creator',
           'meal_plan_grocery_list_initializer',
+          'user_data_aggregator',
         ]
     steps:
       - name: Install Go

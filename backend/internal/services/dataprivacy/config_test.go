@@ -15,7 +15,8 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			DataChangesTopicName: "blah",
+			UserDataAggregationTopicName: "blah",
+			DataChangesTopicName:         "blah",
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

@@ -315,7 +315,7 @@ func TestMealPlansService_ListHandler(T *testing.T) {
 
 		mealPlanDataManager := &mocktypes.MealPlanDataManagerMock{}
 		mealPlanDataManager.On(
-			"GetMealPlans",
+			"GetMealPlansForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
@@ -355,7 +355,7 @@ func TestMealPlansService_ListHandler(T *testing.T) {
 
 		mealPlanDataManager := &mocktypes.MealPlanDataManagerMock{}
 		mealPlanDataManager.On(
-			"GetMealPlans",
+			"GetMealPlansForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
@@ -380,7 +380,7 @@ func TestMealPlansService_ListHandler(T *testing.T) {
 
 		mealPlanDataManager := &mocktypes.MealPlanDataManagerMock{}
 		mealPlanDataManager.On(
-			"GetMealPlans",
+			"GetMealPlansForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),

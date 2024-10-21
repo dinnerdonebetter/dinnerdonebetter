@@ -12,14 +12,14 @@ import (
 )
 
 const (
-	// RecipeCreatedCustomerEventType indicates a recipe was created.
-	RecipeCreatedCustomerEventType ServiceEventType = "recipe_created"
-	// RecipeUpdatedCustomerEventType indicates a recipe was updated.
-	RecipeUpdatedCustomerEventType ServiceEventType = "recipe_updated"
-	// RecipeArchivedCustomerEventType indicates a recipe was archived.
-	RecipeArchivedCustomerEventType ServiceEventType = "recipe_archived"
-	// RecipeClonedCustomerEventType indicates a recipe was cloned.
-	RecipeClonedCustomerEventType ServiceEventType = "recipe_cloned"
+	// RecipeCreatedServiceEventType indicates a recipe was created.
+	RecipeCreatedServiceEventType ServiceEventType = "recipe_created"
+	// RecipeUpdatedServiceEventType indicates a recipe was updated.
+	RecipeUpdatedServiceEventType ServiceEventType = "recipe_updated"
+	// RecipeArchivedServiceEventType indicates a recipe was archived.
+	RecipeArchivedServiceEventType ServiceEventType = "recipe_archived"
+	// RecipeClonedServiceEventType indicates a recipe was cloned.
+	RecipeClonedServiceEventType ServiceEventType = "recipe_cloned"
 )
 
 func init() {
@@ -128,6 +128,7 @@ type (
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
+		GetRecipesCreatedByUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
 		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error

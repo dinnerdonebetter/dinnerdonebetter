@@ -106,7 +106,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, client.ID)
 
 	dcm := &types.DataChangeMessage{
-		EventType:      types.OAuth2ClientCreatedCustomerEventType,
+		EventType:      types.OAuth2ClientCreatedServiceEventType,
 		OAuth2ClientID: client.ID,
 		HouseholdID:    sessionCtxData.ActiveHouseholdID,
 		UserID:         sessionCtxData.Requester.UserID,
@@ -294,7 +294,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:      types.OAuth2ClientArchivedCustomerEventType,
+		EventType:      types.OAuth2ClientArchivedServiceEventType,
 		OAuth2ClientID: oauth2ClientID,
 		HouseholdID:    sessionCtxData.ActiveHouseholdID,
 		UserID:         sessionCtxData.Requester.UserID,

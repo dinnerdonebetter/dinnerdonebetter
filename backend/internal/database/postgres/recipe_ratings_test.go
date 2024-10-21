@@ -72,7 +72,7 @@ func TestQuerier_Integration_RecipeRatings(t *testing.T) {
 	createdRecipeRatings = append(createdRecipeRatings, createRecipeRatingForTest(t, ctx, exampleRecipeRating, dbc))
 
 	// fetch as list
-	recipeRatings, err := dbc.GetRecipeRatings(ctx, nil)
+	recipeRatings, err := dbc.GetRecipeRatingsForRecipe(ctx, createdRecipe.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, recipeRatings.Data)
 	assert.Equal(t, len(createdRecipeRatings), len(recipeRatings.Data))

@@ -10,14 +10,14 @@ import (
 )
 
 const (
-	// WebhookCreatedCustomerEventType indicates a webhook was created.
-	WebhookCreatedCustomerEventType ServiceEventType = "webhook_created"
-	// WebhookArchivedCustomerEventType indicates a webhook was archived.
-	WebhookArchivedCustomerEventType ServiceEventType = "webhook_archived"
-	// WebhookTriggerEventCreatedCustomerEventType indicates a webhook was created.
-	WebhookTriggerEventCreatedCustomerEventType ServiceEventType = "webhook_trigger_event_created"
-	// WebhookTriggerEventArchivedCustomerEventType indicates a webhook was archived.
-	WebhookTriggerEventArchivedCustomerEventType ServiceEventType = "webhook_trigger_event_archived"
+	// WebhookCreatedServiceEventType indicates a webhook was created.
+	WebhookCreatedServiceEventType ServiceEventType = "webhook_created"
+	// WebhookArchivedServiceEventType indicates a webhook was archived.
+	WebhookArchivedServiceEventType ServiceEventType = "webhook_archived"
+	// WebhookTriggerEventCreatedServiceEventType indicates a webhook was created.
+	WebhookTriggerEventCreatedServiceEventType ServiceEventType = "webhook_trigger_event_created"
+	// WebhookTriggerEventArchivedServiceEventType indicates a webhook was archived.
+	WebhookTriggerEventArchivedServiceEventType ServiceEventType = "webhook_trigger_event_archived"
 )
 
 type (

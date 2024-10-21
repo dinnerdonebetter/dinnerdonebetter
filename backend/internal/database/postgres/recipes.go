@@ -294,6 +294,71 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	return x, nil
 }
 
+// GetRecipesCreatedByUser fetches a list of recipes from the database that meet a particular filter.
+func (q *Querier) GetRecipesCreatedByUser(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Recipe], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if userID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+
+	x = &types.QueryFilteredResult[types.Recipe]{
+		Pagination: filter.ToPagination(),
+	}
+
+	results, err := q.generatedQuerier.GetRecipesCreatedByUser(ctx, q.db, &generated.GetRecipesCreatedByUserParams{
+		CreatedByUser: userID,
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval query")
+	}
+
+	for _, result := range results {
+		x.Data = append(x.Data, &types.Recipe{
+			CreatedAt:           result.CreatedAt,
+			InspiredByRecipeID:  database.StringPointerFromNullString(result.InspiredByRecipeID),
+			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+			PluralPortionName:   result.PluralPortionName,
+			Description:         result.Description,
+			Name:                result.Name,
+			PortionName:         result.PortionName,
+			ID:                  result.ID,
+			CreatedByUser:       result.CreatedByUser,
+			Source:              result.Source,
+			Slug:                result.Slug,
+			YieldsComponentType: string(result.YieldsComponentType),
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
+				Min: database.Float32FromString(result.MinEstimatedPortions),
+			},
+			SealOfApproval:   result.SealOfApproval,
+			EligibleForMeals: result.EligibleForMeals,
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
+	}
+
+	return x, nil
+}
+
 // GetRecipesWithIDs fetches a list of recipes from the database that meet a particular filter.
 func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

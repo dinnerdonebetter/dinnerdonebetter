@@ -30,12 +30,12 @@ const (
 	// MealComponentTypesDessert represents the dessert meal component type.
 	MealComponentTypesDessert = "dessert"
 
-	// MealCreatedCustomerEventType indicates a meal was created.
-	MealCreatedCustomerEventType ServiceEventType = "meal_created"
-	// MealUpdatedCustomerEventType indicates a meal was updated.
-	MealUpdatedCustomerEventType ServiceEventType = "meal_updated"
-	// MealArchivedCustomerEventType indicates a meal was archived.
-	MealArchivedCustomerEventType ServiceEventType = "meal_archived"
+	// MealCreatedServiceEventType indicates a meal was created.
+	MealCreatedServiceEventType ServiceEventType = "meal_created"
+	// MealUpdatedServiceEventType indicates a meal was updated.
+	MealUpdatedServiceEventType ServiceEventType = "meal_updated"
+	// MealArchivedServiceEventType indicates a meal was archived.
+	MealArchivedServiceEventType ServiceEventType = "meal_archived"
 )
 
 func init() {
@@ -148,6 +148,7 @@ type (
 		MealExists(ctx context.Context, mealID string) (bool, error)
 		GetMeal(ctx context.Context, mealID string) (*Meal, error)
 		GetMeals(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
+		GetMealsCreatedByUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
 		SearchForMeals(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
 		CreateMeal(ctx context.Context, input *MealDatabaseCreationInput) (*Meal, error)
 		MarkMealAsIndexed(ctx context.Context, mealID string) error

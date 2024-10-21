@@ -231,6 +231,66 @@ FROM recipes
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
+-- name: GetRecipesCreatedByUser :many
+SELECT
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.description,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.seal_of_approval,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+			AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND recipes.created_by_user = sqlc.arg(created_by_user)
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+			AND recipes.created_by_user = sqlc.arg(created_by_user)
+	) AS total_count
+FROM recipes
+	WHERE recipes.archived_at IS NULL AND
+	recipes.created_by_user = sqlc.arg(created_by_user)
+	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND recipes.created_by_user = sqlc.arg(created_by_user)
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
+
 -- name: RecipeSearch :many
 SELECT
 	recipes.id,

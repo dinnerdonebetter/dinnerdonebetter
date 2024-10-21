@@ -84,8 +84,8 @@ func (q *Querier) GetRecipeRating(ctx context.Context, recipeID, recipeRatingID 
 	return recipeRating, nil
 }
 
-// GetRecipeRatings fetches a list of recipe ratings from the database that meet a particular filter.
-func (q *Querier) GetRecipeRatings(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.RecipeRating], err error) {
+// GetRecipeRatingsForRecipe fetches a list of recipe ratings from the database that meet a particular filter.
+func (q *Querier) GetRecipeRatingsForRecipe(ctx context.Context, recipeID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.RecipeRating], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -97,11 +97,76 @@ func (q *Querier) GetRecipeRatings(ctx context.Context, filter *types.QueryFilte
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+
 	x = &types.QueryFilteredResult[types.RecipeRating]{
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetRecipeRatings(ctx, q.db, &generated.GetRecipeRatingsParams{
+	results, err := q.generatedQuerier.GetRecipeRatingsForRecipe(ctx, q.db, &generated.GetRecipeRatingsForRecipeParams{
+		RecipeID:      recipeID,
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe ratings list retrieval query")
+	}
+
+	for _, result := range results {
+		x.Data = append(x.Data, &types.RecipeRating{
+			CreatedAt:     result.CreatedAt,
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+			Notes:         result.Notes,
+			ID:            result.ID,
+			RecipeID:      result.RecipeID,
+			ByUser:        result.ByUser,
+			Taste:         database.Float32FromNullString(result.Taste),
+			Instructions:  database.Float32FromNullString(result.Instructions),
+			Overall:       database.Float32FromNullString(result.Overall),
+			Cleanup:       database.Float32FromNullString(result.Cleanup),
+			Difficulty:    database.Float32FromNullString(result.Difficulty),
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
+	}
+
+	return x, nil
+}
+
+// GetRecipeRatingsForUser fetches a list of recipe ratings from the database that meet a particular filter.
+func (q *Querier) GetRecipeRatingsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.RecipeRating], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if userID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+
+	x = &types.QueryFilteredResult[types.RecipeRating]{
+		Pagination: filter.ToPagination(),
+	}
+
+	results, err := q.generatedQuerier.GetRecipeRatingsForUser(ctx, q.db, &generated.GetRecipeRatingsForUserParams{
+		ByUser:        userID,
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),

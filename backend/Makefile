@@ -12,12 +12,23 @@ ENVIRONMENTS_DIR       := environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
 CLOUD_JOBS             := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler email_prober
-CLOUD_FUNCTIONS        := data_changes outbound_emailer search_indexer webhook_executor
+CLOUD_FUNCTIONS        := data_changes outbound_emailer search_indexer webhook_executor user_data_aggregator
 WIRE_TARGETS           := server/http/build
 CONTAINER_RUNNER       := docker
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
 LINTER_IMAGE           := golangci/golangci-lint:v1.60.1
+#LINTER                 := golangci-lint
+LINTER                 := $(CONTAINER_RUNNER) run --rm \
+		--volume $(PWD):$(PWD) \
+		--workdir=$(PWD) \
+		$(LINTER_IMAGE) golangci-lint
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
+#SQL_GENERATOR          := sqlc
+SQL_GENERATOR          := $(CONTAINER_RUNNER) run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
+		--user $(MYSELF):$(MY_GROUP) \
+		$(SQL_GENERATOR_IMAGE)
 
 ## non-PHONY folders/files
 
@@ -30,10 +41,10 @@ $(ARTIFACTS_DIR):
 clean-$(ARTIFACTS_DIR):
 	@rm -rf $(ARTIFACTS_DIR)
 
+## prerequisites
+
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs
-
-## prerequisites
 
 .PHONY: ensure_wire_installed
 ensure_wire_installed:
@@ -140,24 +151,13 @@ lint_containers:
 .PHONY: queries_lint
 queries_lint:
 	@$(CONTAINER_RUNNER) pull --quiet $(SQL_GENERATOR_IMAGE)
-	$(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE) compile --no-remote
-	$(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE) vet --no-remote
+	$(SQL_GENERATOR) compile --no-remote
+	$(SQL_GENERATOR) vet --no-remote
 
 .PHONY: golang_lint
 golang_lint:
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
-	$(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):$(PWD) \
-		--workdir=$(PWD) \
-		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
+	$(LINTER) run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
 lint: lint_containers queries_lint golang_lint
@@ -208,12 +208,7 @@ codegen: # codegen-ts codegen-go
 .PHONY: querier
 querier: queries queries_lint  ## TODO: Why is this target broken?
 	rm --recursive --force internal/database/postgres/generated/*.go
-	# $(CONTAINER_RUNNER) run \
-	# 	--rm \
-	# 	--volume $(PWD):/src \
-	# 	--workdir /src \
-	# 	--user $(MYSELF):$(MY_GROUP) \
-	sqlc generate --no-remote
+	$(SQL_GENERATOR) generate --no-remote
 
 .PHONY: sqlc_struct_check
 sqlc_struct_check:

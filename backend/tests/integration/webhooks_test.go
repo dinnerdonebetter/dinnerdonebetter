@@ -50,7 +50,7 @@ func (s *TestSuite) TestWebhooks_Creating() {
 
 			webhookTriggerEvent := fakes.BuildFakeWebhookTriggerEvent()
 			webhookTriggerEvent.BelongsToWebhook = createdWebhook.ID
-			webhookTriggerEvent.TriggerEvent = string(types.WebhookArchivedCustomerEventType)
+			webhookTriggerEvent.TriggerEvent = string(types.WebhookArchivedServiceEventType)
 			eventInput := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(webhookTriggerEvent)
 
 			event, err := testClients.userClient.CreateWebhookTriggerEvent(ctx, createdWebhook.ID, eventInput)

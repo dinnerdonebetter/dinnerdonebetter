@@ -7,7 +7,7 @@ resource "cloudflare_record" "landing_cname_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = local.web_location
   type    = "CNAME"
-  value   = "ghs.googlehosted.com"
+  content = "ghs.googlehosted.com"
   ttl     = 1
   proxied = true
   comment = "Managed by Terraform"
@@ -17,7 +17,7 @@ resource "cloudflare_record" "landing_cname_record_2" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = local.base_location
   type    = "CNAME"
-  value   = "ghs.googlehosted.com"
+  content = "ghs.googlehosted.com"
   ttl     = 1
   proxied = true
   comment = "Managed by Terraform"

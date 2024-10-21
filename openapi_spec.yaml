@@ -442,6 +442,124 @@ paths:
       security:
       - oauth2:
         - household_member
+  /api/v1/data_privacy/disclose:
+    post:
+      description: Aggregates a user's data into a big disclosure blob
+      operationId: AggregateUserDataReport
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserDataCollectionResponse'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserDataCollectionResponse'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+      security:
+      - oauth2:
+        - household_member
+  /api/v1/data_privacy/reports/{userDataAggregationReportID}:
+    get:
+      description: Reads a user's data report from storage
+      operationId: FetchUserDataReport
+      parameters:
+      - in: path
+        name: userDataAggregationReportID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserDataCollection'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserDataCollection'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+      security:
+      - oauth2:
+        - household_member
   /api/v1/household_invitations/{householdInvitationID}:
     get:
       description: Fetches household invitations for a given household
@@ -2214,7 +2332,7 @@ paths:
   /api/v1/meal_plans:
     get:
       description: Fetches a MealPlans
-      operationId: GetMealPlans
+      operationId: GetMealPlansForHousehold
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -6481,7 +6599,7 @@ paths:
   /api/v1/recipes/{recipeID}/ratings:
     get:
       description: Fetches a RecipeRatings
-      operationId: GetRecipeRatings
+      operationId: GetRecipeRatingsForRecipe
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -23761,6 +23879,71 @@ components:
         twoFactorSecret:
           type: string
         username:
+          type: string
+      type: object
+    UserDataAggregationRequest:
+      properties:
+        reportID:
+          type: string
+        userID:
+          type: string
+      type: object
+    UserDataCollection:
+      properties:
+        auditLogEntries:
+          type: object
+        householdInstrumentOwnerships:
+          type: object
+        households:
+          items:
+            $ref: '#/components/schemas/Household'
+          type: array
+        mealPlans:
+          type: object
+        meals:
+          items:
+            $ref: '#/components/schemas/Meal'
+          type: array
+        receivedInvites:
+          items:
+            $ref: '#/components/schemas/HouseholdInvitation'
+          type: array
+        recipeRatings:
+          items:
+            $ref: '#/components/schemas/RecipeRating'
+          type: array
+        recipes:
+          items:
+            $ref: '#/components/schemas/Recipe'
+          type: array
+        reportID:
+          type: string
+        sentInvites:
+          items:
+            $ref: '#/components/schemas/HouseholdInvitation'
+          type: array
+        serviceSettingConfigurations:
+          type: object
+        user:
+          $ref: '#/components/schemas/User'
+        userAuditLogEntries:
+          items:
+            $ref: '#/components/schemas/AuditLogEntry'
+          type: array
+        userIngredientPreferences:
+          items:
+            $ref: '#/components/schemas/UserIngredientPreference'
+          type: array
+        userServiceSettingConfigurations:
+          items:
+            $ref: '#/components/schemas/ServiceSettingConfiguration'
+          type: array
+        webhooks:
+          type: object
+      type: object
+    UserDataCollectionResponse:
+      properties:
+        reportID:
           type: string
       type: object
     UserDetailsUpdateRequestInput:

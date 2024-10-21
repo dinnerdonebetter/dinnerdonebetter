@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) GetMealPlans(
+func (c *Client) GetMealPlansForHousehold(
 	ctx context.Context,
 	filter *types.QueryFilter,
 ) (*types.QueryFilteredResult[types.MealPlan], error) {

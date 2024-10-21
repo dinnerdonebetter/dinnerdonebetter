@@ -52,7 +52,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchMealPlansTimer = timing.addEvent('fetch meal plans');
   const { data: mealPlans } = await apiClient
-    .getMealPlans(qf)
+    .getMealPlansForHousehold(qf)
     .then((result) => {
       span.addEvent('meal plan list retrieved');
       return result;

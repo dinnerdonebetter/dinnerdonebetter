@@ -54,6 +54,7 @@ var (
 		ProvideOAuth2ClientTokenDataManager,
 		ProvideUserNotificationDataManager,
 		ProvideAuditLogEntryDataManager,
+		ProvideDataPrivacyDataManager,
 	)
 )
 
@@ -279,5 +280,10 @@ func ProvideUserNotificationDataManager(db DataManager) types.UserNotificationDa
 
 // ProvideAuditLogEntryDataManager is an arbitrary function for dependency injection's sake.
 func ProvideAuditLogEntryDataManager(db DataManager) types.AuditLogEntryDataManager {
+	return db
+}
+
+// ProvideDataPrivacyDataManager is an arbitrary function for dependency injection's sake.
+func ProvideDataPrivacyDataManager(db DataManager) types.DataPrivacyDataManager {
 	return db
 }

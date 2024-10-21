@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	// RecipeStepIngredientCreatedCustomerEventType indicates a recipe step ingredient was created.
-	RecipeStepIngredientCreatedCustomerEventType ServiceEventType = "recipe_step_ingredient_created"
-	// RecipeStepIngredientUpdatedCustomerEventType indicates a recipe step ingredient was updated.
-	RecipeStepIngredientUpdatedCustomerEventType ServiceEventType = "recipe_step_ingredient_updated"
-	// RecipeStepIngredientArchivedCustomerEventType indicates a recipe step ingredient was archived.
-	RecipeStepIngredientArchivedCustomerEventType ServiceEventType = "recipe_step_ingredient_archived"
+	// RecipeStepIngredientCreatedServiceEventType indicates a recipe step ingredient was created.
+	RecipeStepIngredientCreatedServiceEventType ServiceEventType = "recipe_step_ingredient_created"
+	// RecipeStepIngredientUpdatedServiceEventType indicates a recipe step ingredient was updated.
+	RecipeStepIngredientUpdatedServiceEventType ServiceEventType = "recipe_step_ingredient_updated"
+	// RecipeStepIngredientArchivedServiceEventType indicates a recipe step ingredient was archived.
+	RecipeStepIngredientArchivedServiceEventType ServiceEventType = "recipe_step_ingredient_archived"
 )
 
 func init() {

@@ -176,7 +176,18 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"dataPrivacy": {
-			"dataChangesTopicName": "data_changes"
+			"userDataAggregationTopicName": "user_data_aggregation_requests",
+			"dataChangesTopicName": "data_changes",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/tmp"
+					},
+					"bucketName": "userdata",
+					"provider": "filesystem"
+				},
+				"debug": false
+			}
 		},
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://media.example.website/lol",

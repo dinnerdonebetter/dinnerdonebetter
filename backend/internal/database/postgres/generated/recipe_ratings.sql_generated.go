@@ -129,7 +129,7 @@ func (q *Queries) GetRecipeRating(ctx context.Context, db DBTX, id string) (*Rec
 	return &i, err
 }
 
-const getRecipeRatings = `-- name: GetRecipeRatings :many
+const getRecipeRatingsForRecipe = `-- name: GetRecipeRatingsForRecipe :many
 SELECT
 	recipe_ratings.id,
 	recipe_ratings.recipe_id,
@@ -157,15 +157,18 @@ SELECT
 				recipe_ratings.last_updated_at IS NULL
 				OR recipe_ratings.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND recipe_ratings.recipe_id = $5
 	) AS filtered_count,
 	(
 		SELECT COUNT(recipe_ratings.id)
 		FROM recipe_ratings
 		WHERE recipe_ratings.archived_at IS NULL
+			AND recipe_ratings.recipe_id = $5
 	) AS total_count
 FROM recipe_ratings
 WHERE
-	recipe_ratings.archived_at IS NULL
+	recipe_ratings.archived_at IS NULL AND
+	recipe_ratings.recipe_id = $5
 	AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -176,22 +179,24 @@ WHERE
 		recipe_ratings.last_updated_at IS NULL
 		OR recipe_ratings.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
+	AND recipe_ratings.recipe_id = $5
 GROUP BY recipe_ratings.id
 ORDER BY recipe_ratings.id
-LIMIT $6
-OFFSET $5
+LIMIT $7
+OFFSET $6
 `
 
-type GetRecipeRatingsParams struct {
+type GetRecipeRatingsForRecipeParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
+	RecipeID      string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
-type GetRecipeRatingsRow struct {
+type GetRecipeRatingsForRecipeRow struct {
 	CreatedAt     time.Time
 	ArchivedAt    sql.NullTime
 	LastUpdatedAt sql.NullTime
@@ -208,12 +213,13 @@ type GetRecipeRatingsRow struct {
 	TotalCount    int64
 }
 
-func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeRatingsParams) ([]*GetRecipeRatingsRow, error) {
-	rows, err := db.QueryContext(ctx, getRecipeRatings,
+func (q *Queries) GetRecipeRatingsForRecipe(ctx context.Context, db DBTX, arg *GetRecipeRatingsForRecipeParams) ([]*GetRecipeRatingsForRecipeRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipeRatingsForRecipe,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
+		arg.RecipeID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -221,9 +227,139 @@ func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeR
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*GetRecipeRatingsRow{}
+	items := []*GetRecipeRatingsForRecipeRow{}
 	for rows.Next() {
-		var i GetRecipeRatingsRow
+		var i GetRecipeRatingsForRecipeRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.RecipeID,
+			&i.Taste,
+			&i.Difficulty,
+			&i.Cleanup,
+			&i.Instructions,
+			&i.Overall,
+			&i.Notes,
+			&i.ByUser,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecipeRatingsForUser = `-- name: GetRecipeRatingsForUser :many
+SELECT
+	recipe_ratings.id,
+	recipe_ratings.recipe_id,
+	recipe_ratings.taste,
+	recipe_ratings.difficulty,
+	recipe_ratings.cleanup,
+	recipe_ratings.instructions,
+	recipe_ratings.overall,
+	recipe_ratings.notes,
+	recipe_ratings.by_user,
+	recipe_ratings.created_at,
+	recipe_ratings.last_updated_at,
+	recipe_ratings.archived_at,
+	(
+		SELECT COUNT(recipe_ratings.id)
+		FROM recipe_ratings
+		WHERE recipe_ratings.archived_at IS NULL
+			AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_ratings.last_updated_at IS NULL
+				OR recipe_ratings.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_ratings.last_updated_at IS NULL
+				OR recipe_ratings.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND recipe_ratings.by_user = $5
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipe_ratings.id)
+		FROM recipe_ratings
+		WHERE recipe_ratings.archived_at IS NULL
+			AND recipe_ratings.by_user = $5
+	) AS total_count
+FROM recipe_ratings
+WHERE
+	recipe_ratings.archived_at IS NULL AND
+	recipe_ratings.by_user = $5
+	AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_ratings.last_updated_at IS NULL
+		OR recipe_ratings.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_ratings.last_updated_at IS NULL
+		OR recipe_ratings.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND recipe_ratings.by_user = $5
+GROUP BY recipe_ratings.id
+ORDER BY recipe_ratings.id
+LIMIT $7
+OFFSET $6
+`
+
+type GetRecipeRatingsForUserParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	ByUser        string
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetRecipeRatingsForUserRow struct {
+	CreatedAt     time.Time
+	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	Notes         string
+	RecipeID      string
+	ID            string
+	ByUser        string
+	Difficulty    sql.NullString
+	Overall       sql.NullString
+	Instructions  sql.NullString
+	Cleanup       sql.NullString
+	Taste         sql.NullString
+	FilteredCount int64
+	TotalCount    int64
+}
+
+func (q *Queries) GetRecipeRatingsForUser(ctx context.Context, db DBTX, arg *GetRecipeRatingsForUserParams) ([]*GetRecipeRatingsForUserRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipeRatingsForUser,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.ByUser,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetRecipeRatingsForUserRow{}
+	for rows.Next() {
+		var i GetRecipeRatingsForUserRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.RecipeID,

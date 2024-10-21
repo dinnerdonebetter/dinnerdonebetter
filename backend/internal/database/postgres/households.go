@@ -127,7 +127,7 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetHouseholdsForUser(ctx, querier, &generated.GetHouseholdsForUserParams{
+	args := &generated.GetHouseholdsForUserParams{
 		BelongsToUser: userID,
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -135,7 +135,8 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
-	})
+	}
+	results, err := q.generatedQuerier.GetHouseholdsForUser(ctx, querier, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing households list retrieval query")
 	}

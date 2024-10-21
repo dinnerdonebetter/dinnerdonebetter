@@ -10,18 +10,18 @@ import (
 )
 
 const (
-	// HouseholdCreatedCustomerEventType indicates a household was created.
-	HouseholdCreatedCustomerEventType ServiceEventType = "household_created"
-	// HouseholdUpdatedCustomerEventType indicates a household was updated.
-	HouseholdUpdatedCustomerEventType ServiceEventType = "household_updated"
-	// HouseholdArchivedCustomerEventType indicates a household was archived.
-	HouseholdArchivedCustomerEventType ServiceEventType = "household_archived"
-	// HouseholdMemberRemovedCustomerEventType indicates a household member was removed.
-	HouseholdMemberRemovedCustomerEventType ServiceEventType = "household_member_removed"
-	// HouseholdMembershipPermissionsUpdatedCustomerEventType indicates a household member's permissions were modified.
-	HouseholdMembershipPermissionsUpdatedCustomerEventType ServiceEventType = "household_membership_permissions_updated"
-	// HouseholdOwnershipTransferredCustomerEventType indicates a household was transferred to another owner.
-	HouseholdOwnershipTransferredCustomerEventType ServiceEventType = "household_ownership_transferred"
+	// HouseholdCreatedServiceEventType indicates a household was created.
+	HouseholdCreatedServiceEventType ServiceEventType = "household_created"
+	// HouseholdUpdatedServiceEventType indicates a household was updated.
+	HouseholdUpdatedServiceEventType ServiceEventType = "household_updated"
+	// HouseholdArchivedServiceEventType indicates a household was archived.
+	HouseholdArchivedServiceEventType ServiceEventType = "household_archived"
+	// HouseholdMemberRemovedServiceEventType indicates a household member was removed.
+	HouseholdMemberRemovedServiceEventType ServiceEventType = "household_member_removed"
+	// HouseholdMembershipPermissionsUpdatedServiceEventType indicates a household member's permissions were modified.
+	HouseholdMembershipPermissionsUpdatedServiceEventType ServiceEventType = "household_membership_permissions_updated"
+	// HouseholdOwnershipTransferredServiceEventType indicates a household was transferred to another owner.
+	HouseholdOwnershipTransferredServiceEventType ServiceEventType = "household_ownership_transferred"
 
 	// UnpaidHouseholdBillingStatus indicates a household is not paid.
 	UnpaidHouseholdBillingStatus = "unpaid"

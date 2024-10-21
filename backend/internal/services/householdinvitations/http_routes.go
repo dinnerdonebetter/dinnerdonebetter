@@ -123,7 +123,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:           types.HouseholdInvitationCreatedCustomerEventType,
+		EventType:           types.HouseholdInvitationCreatedServiceEventType,
 		HouseholdInvitation: householdInvitation,
 		HouseholdID:         householdID,
 		UserID:              userID,
@@ -381,7 +381,7 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:             types.HouseholdInvitationAcceptedCustomerEventType,
+		EventType:             types.HouseholdInvitationAcceptedServiceEventType,
 		HouseholdID:           invitation.DestinationHousehold.ID,
 		HouseholdInvitationID: householdInvitationID,
 		UserID:                sessionCtxData.Requester.UserID,
@@ -470,7 +470,7 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:             types.HouseholdInvitationCanceledCustomerEventType,
+		EventType:             types.HouseholdInvitationCanceledServiceEventType,
 		HouseholdID:           invitation.DestinationHousehold.ID,
 		HouseholdInvitationID: householdInvitationID,
 		UserID:                sessionCtxData.Requester.UserID,
@@ -558,7 +558,7 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:             types.HouseholdInvitationRejectedCustomerEventType,
+		EventType:             types.HouseholdInvitationRejectedServiceEventType,
 		HouseholdID:           invitation.DestinationHousehold.ID,
 		HouseholdInvitationID: householdInvitationID,
 		UserID:                sessionCtxData.Requester.UserID,

@@ -401,7 +401,7 @@ func (q *Queries) GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, ar
 	return &i, err
 }
 
-const getMealPlans = `-- name: GetMealPlans :many
+const getMealPlansForHousehold = `-- name: GetMealPlansForHousehold :many
 SELECT
 	meal_plans.id,
 	meal_plans.notes,
@@ -454,17 +454,17 @@ LIMIT $7
 OFFSET $6
 `
 
-type GetMealPlansParams struct {
-	CreatedAfter  sql.NullTime
-	CreatedBefore sql.NullTime
-	UpdatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
-	HouseholdID   string
-	QueryOffset   sql.NullInt32
-	QueryLimit    sql.NullInt32
+type GetMealPlansForHouseholdParams struct {
+	CreatedAfter       sql.NullTime
+	CreatedBefore      sql.NullTime
+	UpdatedBefore      sql.NullTime
+	UpdatedAfter       sql.NullTime
+	BelongsToHousehold string
+	QueryOffset        sql.NullInt32
+	QueryLimit         sql.NullInt32
 }
 
-type GetMealPlansRow struct {
+type GetMealPlansForHouseholdRow struct {
 	VotingDeadline         time.Time
 	CreatedAt              time.Time
 	ArchivedAt             sql.NullTime
@@ -481,13 +481,13 @@ type GetMealPlansRow struct {
 	TasksCreated           bool
 }
 
-func (q *Queries) GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansParams) ([]*GetMealPlansRow, error) {
-	rows, err := db.QueryContext(ctx, getMealPlans,
+func (q *Queries) GetMealPlansForHousehold(ctx context.Context, db DBTX, arg *GetMealPlansForHouseholdParams) ([]*GetMealPlansForHouseholdRow, error) {
+	rows, err := db.QueryContext(ctx, getMealPlansForHousehold,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
-		arg.HouseholdID,
+		arg.BelongsToHousehold,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -495,9 +495,9 @@ func (q *Queries) GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansPa
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*GetMealPlansRow{}
+	items := []*GetMealPlansForHouseholdRow{}
 	for rows.Next() {
-		var i GetMealPlansRow
+		var i GetMealPlansForHouseholdRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Notes,

@@ -91,7 +91,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.RecipeCreatedCustomerEventType,
+		EventType:   types.RecipeCreatedServiceEventType,
 		Recipe:      recipe,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -394,7 +394,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.RecipeUpdatedCustomerEventType,
+		EventType:   types.RecipeUpdatedServiceEventType,
 		Recipe:      recipe,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -470,7 +470,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.RecipeArchivedCustomerEventType,
+		EventType:   types.RecipeArchivedServiceEventType,
 		RecipeID:    recipeID,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -706,7 +706,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 		created = append(created, createdMedia)
 
 		dcm := &types.DataChangeMessage{
-			EventType:     types.RecipeMediaCreatedCustomerEventType,
+			EventType:     types.RecipeMediaCreatedServiceEventType,
 			RecipeID:      recipeID,
 			RecipeMediaID: input.ID,
 			HouseholdID:   sessionCtxData.ActiveHouseholdID,
@@ -924,7 +924,7 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.RecipeClonedCustomerEventType,
+		EventType:   types.RecipeClonedServiceEventType,
 		Recipe:      created,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,

@@ -510,19 +510,6 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 	})
 }
 
-func TestQuerier_DeleteUser(T *testing.T) {
-	T.Parallel()
-
-	T.Run("with invalid user ID", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		assert.Error(t, c.DeleteUser(ctx, ""))
-	})
-}
-
 func TestQuerier_GetUserByEmailAddressVerificationToken(T *testing.T) {
 	T.Parallel()
 

@@ -86,7 +86,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.WebhookCreatedCustomerEventType,
+		EventType:   types.WebhookCreatedServiceEventType,
 		Webhook:     webhook,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -286,7 +286,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.WebhookTriggerEventArchivedCustomerEventType,
+		EventType:   types.WebhookTriggerEventArchivedServiceEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,
 	}
@@ -381,7 +381,7 @@ func (s *service) AddWebhookTriggerEventHandler(res http.ResponseWriter, req *ht
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.WebhookTriggerEventCreatedCustomerEventType,
+		EventType:   types.WebhookTriggerEventCreatedServiceEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,
 	}
@@ -463,7 +463,7 @@ func (s *service) ArchiveWebhookTriggerEventHandler(res http.ResponseWriter, req
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.WebhookArchivedCustomerEventType,
+		EventType:   types.WebhookArchivedServiceEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,
 	}

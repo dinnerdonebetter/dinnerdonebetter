@@ -877,6 +877,25 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		data.TwoFactorSecret = ""
 		// the two factor secret validation is never transmitted over the wire.
 		data.TwoFactorSecretVerifiedAt = nil
+		{{ else if eq .Name "FetchUserDataReport" }} 
+		data.User.TwoFactorSecret = ""
+		data.User.HashedPassword = ""
+		data.User.TwoFactorSecretVerifiedAt = nil
+		for i := range data.Households {
+			data.Households[i].WebhookEncryptionKey = ""
+		}
+		for i := range data.SentInvites {
+			data.SentInvites[i].DestinationHousehold.WebhookEncryptionKey = ""
+			data.SentInvites[i].FromUser.TwoFactorSecret = ""
+			data.SentInvites[i].FromUser.HashedPassword = ""
+			data.SentInvites[i].FromUser.TwoFactorSecretVerifiedAt = nil
+		}
+		for i := range data.ReceivedInvites {
+			data.ReceivedInvites[i].DestinationHousehold.WebhookEncryptionKey = ""
+			data.ReceivedInvites[i].FromUser.TwoFactorSecret = ""
+			data.ReceivedInvites[i].FromUser.HashedPassword = ""
+			data.ReceivedInvites[i].FromUser.TwoFactorSecretVerifiedAt = nil
+		}
 		{{ else if eq (uppercaseFirstLetter .ResponseType.TypeName) "Household" }} 
 		data.WebhookEncryptionKey = ""
 		{{ else if or (eq (uppercaseFirstLetter .ResponseType.TypeName) "HouseholdInvitation") }} 

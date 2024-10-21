@@ -113,6 +113,59 @@ WHERE
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
+-- name: GetMealsCreatedByUser :many
+SELECT
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.min_estimated_portions,
+	meals.max_estimated_portions,
+	meals.eligible_for_meal_plans,
+	meals.last_indexed_at,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
+	meals.created_by_user,
+	(
+		SELECT COUNT(meals.id)
+		FROM meals
+		WHERE meals.archived_at IS NULL
+			AND meals.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND meals.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meals.last_updated_at IS NULL
+				OR meals.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meals.last_updated_at IS NULL
+				OR meals.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND meals.created_by_user = sqlc.arg(created_by_user)
+	) AS filtered_count,
+	(
+		SELECT COUNT(meals.id)
+		FROM meals
+		WHERE meals.archived_at IS NULL
+			AND meals.created_by_user = sqlc.arg(created_by_user)
+	) AS total_count
+FROM meals
+WHERE
+	meals.archived_at IS NULL
+	AND meals.created_by_user = sqlc.arg(created_by_user)
+	AND meals.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND meals.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		meals.last_updated_at IS NULL
+		OR meals.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		meals.last_updated_at IS NULL
+		OR meals.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND meals.created_by_user = sqlc.arg(created_by_user)
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
+
 -- name: SearchForMeals :many
 SELECT
 	meals.id,

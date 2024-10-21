@@ -29,6 +29,7 @@ const (
 	gcpConfigFilePathEnvVarKey           = "CONFIGURATION_FILEPATH"
 	gcpPortEnvVarKey                     = "PORT"
 	gcpDatabaseSocketDirEnvVarKey        = "DB_SOCKET_DIR"
+	gcpDataChangesTopicNameEnvVarKey     = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
 	gcpDatabaseUserEnvVarKey             = "DINNER_DONE_BETTER_DATABASE_USER"
 	gcpDatabaseNameEnvVarKey             = "DINNER_DONE_BETTER_DATABASE_NAME"
 	gcpDatabaseInstanceConnNameEnvVarKey = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
@@ -36,6 +37,7 @@ const (
 	gcpAlgoliaAppIDEnvVarKey             = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
 	gcpGoogleSSOClientIDEnvVarKey        = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_ID"
 	gcpGoogleSSOClientSecretEnvVarKey    = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_SECRET"
+	gcpUserAggregatorTopicName           = "DINNER_DONE_BETTER_USER_AGGREGATOR_TOPIC_NAME"
 	/* #nosec G101 */
 	gcpJWTSigningKeyEnvVarKey = "DINNER_DONE_BETTER_JWT_SIGNING_KEY"
 	/* #nosec G101 */
@@ -73,15 +75,8 @@ func buildDatabaseURIFromGCPEnvVars() string {
 	)
 }
 
-var getSecretManagerFunc = func(ctx context.Context) (SecretVersionAccessor, error) { return secretmanager.NewClient(ctx) }
-
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
-	secretManagerClient, err := getSecretManagerFunc(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("instantiating secret manager: %w", err)
-	}
-
 	configBytes, err := os.ReadFile(os.Getenv(gcpConfigFilePathEnvVarKey))
 	if err != nil {
 		return nil, err
@@ -117,12 +112,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 		},
 	}
 
-	// TODO: get this from the env var DATA_CHANGES_TOPIC_NAME, dump GOOGLE_CLOUD_SECRET_STORE_PREFIX
-	changesTopic, err := fetchSecretFromSecretStore(ctx, secretManagerClient, dataChangesTopicAccessName)
-	if err != nil {
-		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", err)
-	}
-	dataChangesTopicName := string(changesTopic)
+	dataChangesTopicName := os.Getenv(gcpDataChangesTopicNameEnvVarKey)
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
@@ -167,6 +157,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	cfg.Services.Workers.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.UserNotifications.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.DataPrivacy.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.DataPrivacy.UserDataAggregationTopicName = os.Getenv(gcpUserAggregatorTopicName)
 
 	if err = cfg.ValidateWithContext(ctx, true); err != nil {
 		return nil, err
@@ -351,6 +342,23 @@ func GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx context.C
 
 // GetSearchDataIndexerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{}
+
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+// GetUserDataAggregatorConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetUserDataAggregatorConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return nil, err
