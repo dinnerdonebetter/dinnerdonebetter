@@ -357,6 +357,23 @@ func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	return cfg, nil
 }
 
+// GetUserDataAggregatorConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetUserDataAggregatorConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{}
+
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
 // GetEmailProberConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)

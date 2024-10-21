@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/routing/chi"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"log/slog"
 	"os"
 	"strings"
@@ -54,7 +57,7 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 
 	logger.Info("getting config")
 
-	cfg, err := config.GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.GetUserDataAggregatorConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
@@ -92,6 +95,8 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
 	}
 
+	logger = logger.WithValue(keys.UserDataAggregationReportIDKey, userDataCollectionRequest.ReportID)
+	tracing.AttachToSpan(span, keys.UserDataAggregationReportIDKey, userDataCollectionRequest.ReportID)
 	logger.Info("loaded payload, aggregating data")
 
 	collection, err := dataManager.AggregateUserData(ctx, userDataCollectionRequest.UserID)
@@ -101,7 +106,33 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 	collection.ReportID = userDataCollectionRequest.ReportID
 
 	// TODO: save this in the cloud somewhere
-	logger.Info("compiled payload, would save")
+	logger.Info("compiled payload, saving")
+
+	storageConfig := &objectstorage.Config{
+		GCPConfig:         &objectstorage.GCPConfig{BucketName: "userdata.dinnerdonebetter.dev"},
+		BucketPrefix:      "",
+		BucketName:        "userdata.dinnerdonebetter.dev",
+		UploadFilenameKey: "",
+		Provider:          objectstorage.GCPCloudStorageProvider,
+	}
+
+	logger.Info("establishing upload manager")
+
+	uploadManager, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, storageConfig, chi.NewRouteParamManager())
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "creating upload manager")
+	}
+
+	collectionBytes, err := json.Marshal(collection)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marshalling collection")
+	}
+
+	logger.Info("saving file")
+
+	if err = uploadManager.SaveFile(ctx, fmt.Sprintf("%s.json", userDataCollectionRequest.ReportID), collectionBytes); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "saving collection")
+	}
 
 	return nil
 }

@@ -122,6 +122,13 @@ resource "google_cloudfunctions2_function" "user_data_aggregator" {
       secret     = google_secret_manager_secret.api_user_database_password.secret_id
       version    = "latest"
     }
+
+    secret_environment_variables {
+      key        = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.oauth2_token_encryption_key.secret_id
+      version    = "latest"
+    }
   }
 
   event_trigger {
