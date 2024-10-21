@@ -176,6 +176,8 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"dataPrivacy": {
+			"userDataAggregationTopicName": "user_data_aggregation_requests",
+			"dataChangesTopicName": "data_changes",
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {
@@ -185,9 +187,7 @@
 					"provider": "filesystem"
 				},
 				"debug": false
-			},
-			"userDataAggregationTopicName": "user_data_aggregation_requests",
-			"dataChangesTopicName": "data_changes"
+			}
 		},
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://media.example.website/lol",

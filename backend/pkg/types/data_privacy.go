@@ -27,7 +27,8 @@ type (
 	}
 
 	UserDataCollection struct {
-		_                                struct{}                                  `json:"-"`
+		_ struct{} `json:"-"`
+
 		Webhooks                         map[string][]Webhook                      `json:"webhooks"`
 		ServiceSettingConfigurations     map[string][]ServiceSettingConfiguration  `json:"serviceSettingConfigurations"`
 		HouseholdInstrumentOwnerships    map[string][]HouseholdInstrumentOwnership `json:"householdInstrumentOwnerships"`

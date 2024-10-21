@@ -26,6 +26,25 @@ func TestClient_FetchUserDataReport(T *testing.T) {
 		userDataAggregationReportID := fakes.BuildFakeID()
 
 		data := fakes.BuildFakeUserDataCollection()
+		data.User.TwoFactorSecret = ""
+		data.User.HashedPassword = ""
+		data.User.TwoFactorSecretVerifiedAt = nil
+		for i := range data.Households {
+			data.Households[i].WebhookEncryptionKey = ""
+		}
+		for i := range data.SentInvites {
+			data.SentInvites[i].DestinationHousehold.WebhookEncryptionKey = ""
+			data.SentInvites[i].FromUser.TwoFactorSecret = ""
+			data.SentInvites[i].FromUser.HashedPassword = ""
+			data.SentInvites[i].FromUser.TwoFactorSecretVerifiedAt = nil
+		}
+		for i := range data.ReceivedInvites {
+			data.ReceivedInvites[i].DestinationHousehold.WebhookEncryptionKey = ""
+			data.ReceivedInvites[i].FromUser.TwoFactorSecret = ""
+			data.ReceivedInvites[i].FromUser.HashedPassword = ""
+			data.ReceivedInvites[i].FromUser.TwoFactorSecretVerifiedAt = nil
+		}
+
 		expected := &types.APIResponse[*types.UserDataCollection]{
 			Data: data,
 		}
