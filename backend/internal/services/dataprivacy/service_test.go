@@ -13,6 +13,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
+	"github.com/dinnerdonebetter/backend/internal/uploads"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -36,6 +38,15 @@ func TestProvideService(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		cfg := &Config{
+			Uploads: uploads.Config{
+				Storage: objectstorage.Config{
+					BucketName:        "testing",
+					UploadFilenameKey: "prefix",
+					FilesystemConfig:  &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
+					Provider:          objectstorage.FilesystemProvider,
+				},
+				Debug: false,
+			},
 			DataChangesTopicName:         "data_changes",
 			UserDataAggregationTopicName: "user_data_aggregation",
 		}
@@ -44,6 +55,11 @@ func TestProvideService(T *testing.T) {
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			ReportIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
+
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			cfg.Uploads.Storage.UploadFilenameKey,
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
@@ -61,8 +77,8 @@ func TestProvideService(T *testing.T) {
 			rpm,
 		)
 
-		assert.NotNil(t, s)
 		assert.NoError(t, err)
+		assert.NotNil(t, s)
 
 		mock.AssertExpectationsForObjects(t, pp)
 	})
@@ -74,7 +90,17 @@ func TestProvideService(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		cfg := &Config{
-			DataChangesTopicName: "data_changes",
+			Uploads: uploads.Config{
+				Storage: objectstorage.Config{
+					BucketName:        "testing",
+					UploadFilenameKey: "prefix",
+					FilesystemConfig:  &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
+					Provider:          objectstorage.FilesystemProvider,
+				},
+				Debug: false,
+			},
+			DataChangesTopicName:         "data_changes",
+			UserDataAggregationTopicName: "user_data_aggregation",
 		}
 
 		rpm := mockrouting.NewRouteParamManager()
@@ -110,7 +136,17 @@ func TestProvideService(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		cfg := &Config{
-			DataChangesTopicName: "data_changes",
+			Uploads: uploads.Config{
+				Storage: objectstorage.Config{
+					BucketName:        "testing",
+					UploadFilenameKey: "prefix",
+					FilesystemConfig:  &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
+					Provider:          objectstorage.FilesystemProvider,
+				},
+				Debug: false,
+			},
+			DataChangesTopicName:         "data_changes",
+			UserDataAggregationTopicName: "user_data_aggregation",
 		}
 
 		rpm := mockrouting.NewRouteParamManager()
