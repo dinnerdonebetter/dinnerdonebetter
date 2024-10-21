@@ -168,7 +168,7 @@ func (s *service) ReadUserDataAggregationReportHandler(res http.ResponseWriter, 
 	tracing.AttachToSpan(span, keys.UserDataAggregationReportIDKey, reportID)
 	logger = logger.WithValue(keys.UserDataAggregationReportIDKey, reportID)
 
-	fileContents, err := s.uploader.ReadFile(ctx, fmt.Sprintf("%s.json"))
+	fileContents, err := s.uploader.ReadFile(ctx, fmt.Sprintf("%s.json", reportID))
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving report")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
