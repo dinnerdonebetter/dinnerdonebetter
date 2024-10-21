@@ -35,6 +35,10 @@ func TestQuerier_Integration_DataPrivacy(t *testing.T) {
 	// create
 	createdUser := createUserForTest(t, ctx, exampleUser, dbc)
 
+	collection, err := dbc.AggregateUserData(ctx, createdUser.ID)
+	require.NoError(t, err)
+	assert.NotNil(t, collection.User)
+
 	assert.NoError(t, dbc.DeleteUser(ctx, createdUser.ID))
 }
 
