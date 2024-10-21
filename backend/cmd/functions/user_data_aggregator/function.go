@@ -52,6 +52,8 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 		return observability.PrepareAndLogError(email.ErrMissingEnvCfg, logger, nil, "getting environment config")
 	}
 
+	logger.Info("getting config")
+
 	cfg, err := config.GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
@@ -66,6 +68,8 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer_cloud_function"))
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
+
+	logger.Info("connecting to database")
 
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
@@ -88,6 +92,8 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
 	}
 
+	logger.Info("loaded payload, aggregating data")
+
 	collection, err := dataManager.AggregateUserData(ctx, userDataCollectionRequest.UserID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "collecting user data")
@@ -95,6 +101,7 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 	collection.ReportID = userDataCollectionRequest.ReportID
 
 	// TODO: save this in the cloud somewhere
+	logger.Info("compiled payload, would save")
 
 	return nil
 }
