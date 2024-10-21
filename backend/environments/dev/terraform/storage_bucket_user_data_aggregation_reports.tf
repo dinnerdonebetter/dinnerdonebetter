@@ -32,6 +32,11 @@
 #   }
 # }
 #
+# resource "google_storage_bucket_access_control" "user_data_public_rule" {
+#   bucket = google_storage_bucket.user_data_storage.name
+#   role   = "READER"
+#   entity = "allUsers"
+# }
 #
 # resource "google_storage_bucket_iam_policy" "user_data_policy" {
 #   bucket      = google_storage_bucket.user_data_storage.name
