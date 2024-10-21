@@ -105,6 +105,7 @@ import {
   User,
   UserAccountStatusUpdateInput,
   UserCreationResponse,
+  UserDataCollection,
   UserDataCollectionResponse,
   UserDetailsUpdateRequestInput,
   UserEmailAddressUpdateInput,
@@ -2358,6 +2359,28 @@ export class DinnerDoneBetterAPIClient {
           }
         })
         .catch((error: AxiosError<APIResponse<DataDeletionResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+          } else {
+            reject(error);
+          }
+        });
+    });
+  }
+
+  async fetchUserDataReport(userDataAggregationReportID: string): Promise<APIResponse<UserDataCollection>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      self.client
+        .get<APIResponse<UserDataCollection>>(`/api/v1/data_privacy/reports/${userDataAggregationReportID}`)
+        .then((res: AxiosResponse<APIResponse<UserDataCollection>>) => {
+          if (res.data.error) {
+            reject(new Error(res.data.error.message));
+          } else {
+            resolve(res.data);
+          }
+        })
+        .catch((error: AxiosError<APIResponse<UserDataCollection>>) => {
           if (error?.response?.data?.error) {
             reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
           } else {

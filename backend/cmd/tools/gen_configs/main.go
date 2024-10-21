@@ -252,6 +252,14 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				JWTLifetime:           5 * time.Minute,
 			},
 			DataPrivacy: dataprivacyservice.Config{
+				Uploads: uploads.Config{
+					Storage: objectstorage.Config{
+						GCPConfig:  &objectstorage.GCPConfig{BucketName: "userdata.dinnerdonebetter.dev"},
+						BucketName: "userdata.dinnerdonebetter.dev",
+						Provider:   objectstorage.GCPCloudStorageProvider,
+					},
+					Debug: false,
+				},
 				DataChangesTopicName:         dataChangesTopicName,
 				UserDataAggregationTopicName: userDataAggregationTopicName,
 			},
@@ -403,6 +411,14 @@ func buildLocalDevConfig() *config.InstanceConfig {
 				JWTLifetime:           5 * time.Minute,
 			},
 			DataPrivacy: dataprivacyservice.Config{
+				Uploads: uploads.Config{
+					Storage: objectstorage.Config{
+						FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
+						BucketName:       "userdata",
+						Provider:         objectstorage.FilesystemProvider,
+					},
+					Debug: false,
+				},
 				DataChangesTopicName:         dataChangesTopicName,
 				UserDataAggregationTopicName: userDataAggregationTopicName,
 			},
@@ -648,6 +664,14 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				JWTLifetime:           5 * time.Minute,
 			},
 			DataPrivacy: dataprivacyservice.Config{
+				Uploads: uploads.Config{
+					Storage: objectstorage.Config{
+						FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
+						BucketName:       "userdata",
+						Provider:         objectstorage.FilesystemProvider,
+					},
+					Debug: false,
+				},
 				DataChangesTopicName:         dataChangesTopicName,
 				UserDataAggregationTopicName: userDataAggregationTopicName,
 			},

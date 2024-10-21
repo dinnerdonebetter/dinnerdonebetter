@@ -99,6 +99,7 @@ import {
   User,
   UserAccountStatusUpdateInput,
   UserCreationResponse,
+  UserDataCollection,
   UserDataCollectionResponse,
   UserDetailsUpdateRequestInput,
   UserEmailAddressUpdateInput,
@@ -752,6 +753,46 @@ describe('basic', () => {
     mock.onPost(`${baseURL}/users/username/reminder`).reply(500, exampleResponse);
 
     expect(client.requestUsernameReminder(exampleInput)).rejects.toEqual(new Error(exampleResponse.error?.message));
+  });
+
+  it("should Reads a user's data report from storage", () => {
+    let userDataAggregationReportID = fakeID();
+
+    const exampleResponse = new APIResponse<UserDataCollection>();
+    mock.onGet(`${baseURL}/api/v1/data_privacy/reports/${userDataAggregationReportID}`).reply(200, exampleResponse);
+
+    client
+      .fetchUserDataReport(userDataAggregationReportID)
+      .then((response: APIResponse<UserDataCollection>) => {
+        expect(response).toEqual(exampleResponse);
+      })
+      .then(() => {
+        expect(mock.history.get.length).toBe(1);
+        expect(mock.history.get[0].headers).toHaveProperty('Authorization');
+        expect((mock.history.get[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
+      });
+  });
+
+  it("should raise errors appropriately when trying to Reads a user's data report from storage", () => {
+    let userDataAggregationReportID = fakeID();
+
+    const exampleResponse = new APIResponse<UserDataCollection>(buildObligatoryError('fetchUserDataReport'));
+    mock.onGet(`${baseURL}/api/v1/data_privacy/reports/${userDataAggregationReportID}`).reply(200, exampleResponse);
+
+    expect(client.fetchUserDataReport(userDataAggregationReportID)).rejects.toEqual(
+      new Error(exampleResponse.error?.message),
+    );
+  });
+
+  it("should raise service errors appropriately when trying to Reads a user's data report from storage", () => {
+    let userDataAggregationReportID = fakeID();
+
+    const exampleResponse = new APIResponse<UserDataCollection>(buildObligatoryError('fetchUserDataReport'));
+    mock.onGet(`${baseURL}/api/v1/data_privacy/reports/${userDataAggregationReportID}`).reply(500, exampleResponse);
+
+    expect(client.fetchUserDataReport(userDataAggregationReportID)).rejects.toEqual(
+      new Error(exampleResponse.error?.message),
+    );
   });
 
   it('should Redeems a password reset token', () => {

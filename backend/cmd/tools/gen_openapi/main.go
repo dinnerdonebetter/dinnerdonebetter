@@ -282,12 +282,17 @@ func neutralizeConfig(cfg *config.InstanceConfig) {
 	cfg.Services.Auth.SSO.Google.ClientID = "blah blah blah blah"
 	cfg.Services.Auth.SSO.Google.ClientSecret = "blah blah blah blah"
 	cfg.Analytics.Provider = ""
+
 	cfg.Services.Recipes.Uploads.Storage.GCPConfig = nil
 	cfg.Services.Recipes.Uploads.Storage.Provider = objectstorage.FilesystemProvider
 	cfg.Services.Recipes.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
 	cfg.Services.RecipeSteps.Uploads.Storage.GCPConfig = nil
 	cfg.Services.RecipeSteps.Uploads.Storage.Provider = objectstorage.FilesystemProvider
 	cfg.Services.RecipeSteps.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
+	cfg.Services.DataPrivacy.Uploads.Storage.GCPConfig = nil
+	cfg.Services.DataPrivacy.Uploads.Storage.Provider = objectstorage.FilesystemProvider
+	cfg.Services.DataPrivacy.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
+
 	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName

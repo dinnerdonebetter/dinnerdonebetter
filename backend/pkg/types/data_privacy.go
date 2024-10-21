@@ -50,6 +50,7 @@ type (
 	DataPrivacyService interface {
 		DataDeletionHandler(http.ResponseWriter, *http.Request)
 		UserDataAggregationRequestHandler(http.ResponseWriter, *http.Request)
+		ReadUserDataAggregationReportHandler(http.ResponseWriter, *http.Request)
 	}
 
 	// DataPrivacyDataManager contains data privacy management functions.

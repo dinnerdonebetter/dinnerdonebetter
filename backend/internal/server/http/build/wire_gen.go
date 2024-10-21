@@ -372,7 +372,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	}
 	config13 := &servicesConfig.DataPrivacy
 	dataPrivacyDataManager := database.ProvideDataPrivacyDataManager(dataManager)
-	dataPrivacyService, err := workers2.ProvideService(ctx, logger, config13, dataPrivacyDataManager, serverEncoderDecoder, publisherProvider, tracerProvider)
+	dataPrivacyService, err := workers2.ProvideService(ctx, logger, config13, dataPrivacyDataManager, serverEncoderDecoder, publisherProvider, tracerProvider, routeParamManager)
 	if err != nil {
 		return nil, err
 	}

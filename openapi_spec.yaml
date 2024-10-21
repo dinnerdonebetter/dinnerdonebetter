@@ -498,6 +498,68 @@ paths:
       security:
       - oauth2:
         - household_member
+  /api/v1/data_privacy/reports/{userDataAggregationReportID}:
+    get:
+      description: Reads a user's data report from storage
+      operationId: FetchUserDataReport
+      parameters:
+      - in: path
+        name: userDataAggregationReportID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserDataCollection'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/UserDataCollection'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+      security:
+      - oauth2:
+        - household_member
   /api/v1/household_invitations/{householdInvitationID}:
     get:
       description: Fetches household invitations for a given household

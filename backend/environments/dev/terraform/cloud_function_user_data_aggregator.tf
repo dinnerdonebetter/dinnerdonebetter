@@ -100,7 +100,7 @@ resource "google_cloudfunctions2_function" "user_data_aggregator" {
       DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
       GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
-    }
+     }
 
     secret_environment_variables {
       key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
@@ -119,7 +119,7 @@ resource "google_cloudfunctions2_function" "user_data_aggregator" {
     secret_environment_variables {
       key        = "DINNER_DONE_BETTER_USER_AGGREGATOR_TOPIC_NAME"
       project_id = local.project_id
-      secret     = google_secret_manager_secret.api_user_database_password.secret_id
+      secret     = google_secret_manager_secret.data_aggregation_topic_name.secret_id
       version    = "latest"
     }
 

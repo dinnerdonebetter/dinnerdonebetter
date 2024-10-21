@@ -45,6 +45,12 @@ var routeInfoMap = map[string]routeDetails{
 		ResponseType: &types.UserDataCollectionResponse{},
 		OAuth2Scopes: []string{householdMember},
 	},
+	"GET /api/v1/data_privacy/reports/{userDataAggregationReportID}": {
+		ID:           "FetchUserDataReport",
+		Description:  "Reads a user's data report from storage",
+		ResponseType: &types.UserDataCollection{},
+		OAuth2Scopes: []string{householdMember},
+	},
 	"POST /api/v1/admin/users/status": {
 		ID:           "AdminUpdateUserStatus",
 		Description:  "Updates a user's account status",

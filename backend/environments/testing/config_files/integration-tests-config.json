@@ -176,6 +176,16 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"dataPrivacy": {
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/tmp"
+					},
+					"bucketName": "userdata",
+					"provider": "filesystem"
+				},
+				"debug": false
+			},
 			"userDataAggregationTopicName": "user_data_aggregation_requests",
 			"dataChangesTopicName": "data_changes"
 		},

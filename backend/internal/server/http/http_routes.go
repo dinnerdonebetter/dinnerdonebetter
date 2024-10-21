@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -169,6 +170,11 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 		v1Router.Route("/data_privacy", func(dataPrivacyRouter routing.Router) {
 			dataPrivacyRouter.Delete("/destroy", s.dataPrivacyService.DataDeletionHandler)
 			dataPrivacyRouter.Post("/disclose", s.dataPrivacyService.UserDataAggregationRequestHandler)
+
+			singleReportRoute := buildURLVarChunk(dataprivacyservice.ReportIDURIParamKey, "")
+			dataPrivacyRouter.Route("/reports", func(singleReportRouter routing.Router) {
+				singleReportRouter.Get(singleReportRoute, s.dataPrivacyService.ReadUserDataAggregationReportHandler)
+			})
 		})
 
 		// Households
