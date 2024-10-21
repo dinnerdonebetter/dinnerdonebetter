@@ -100,7 +100,7 @@ resource "google_cloudfunctions2_function" "user_data_aggregator" {
       DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
       GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
-     }
+    }
 
     secret_environment_variables {
       key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
