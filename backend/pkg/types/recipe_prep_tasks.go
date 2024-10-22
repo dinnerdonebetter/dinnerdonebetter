@@ -132,11 +132,11 @@ type (
 
 	// RecipePrepTaskDataService describes a structure capable of serving traffic related to recipes.
 	RecipePrepTaskDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
+		CreateRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
+		ReadRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
+		UpdateRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
+		ArchiveRecipePrepTaskHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

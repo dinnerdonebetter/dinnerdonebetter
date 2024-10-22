@@ -20,8 +20,8 @@ const (
 	RecipeStepCompletionConditionIDURIParamKey = "recipeStepCompletionConditionID"
 )
 
-// CreateHandler is our recipe step completion condition creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateRecipeStepCompletionConditionHandler is our recipe step completion condition creation route.
+func (s *service) CreateRecipeStepCompletionConditionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -109,8 +109,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a recipe step completion condition.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadRecipeStepCompletionConditionHandler returns a GET handler that returns a recipe step completion condition.
+func (s *service) ReadRecipeStepCompletionConditionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -174,8 +174,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListRecipeStepCompletionConditionsHandler is our list route.
+func (s *service) ListRecipeStepCompletionConditionsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -189,7 +189,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -237,8 +237,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a recipe step completion condition.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateRecipeStepCompletionConditionHandler returns a handler that updates a recipe step completion condition.
+func (s *service) UpdateRecipeStepCompletionConditionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -341,8 +341,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a recipe step completion condition.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveRecipeStepCompletionConditionHandler returns a handler that archives a recipe step completion condition.
+func (s *service) ArchiveRecipeStepCompletionConditionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

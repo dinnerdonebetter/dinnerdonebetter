@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
+func TestValidPreparationInstrumentsService_CreateValidPreparationInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -77,7 +77,7 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -100,7 +100,7 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -125,7 +125,7 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -156,7 +156,7 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		).Return((*types.ValidPreparationInstrument)(nil), errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -197,7 +197,7 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -209,7 +209,7 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
+func TestValidPreparationInstrumentsService_ReadValidPreparationInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -225,7 +225,7 @@ func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidPreparationInstrument, nil)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -242,7 +242,7 @@ func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -264,7 +264,7 @@ func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidPreparationInstrument)(nil), sql.ErrNoRows)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -288,7 +288,7 @@ func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidPreparationInstrument)(nil), errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -300,7 +300,7 @@ func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
+func TestValidPreparationInstrumentsService_ListValidPreparationInstrumentsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -318,7 +318,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 		).Return(exampleValidPreparationInstrumentList, nil)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidPreparationInstrument]
@@ -336,7 +336,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -358,7 +358,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), sql.ErrNoRows)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -382,7 +382,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -394,7 +394,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
+func TestValidPreparationInstrumentsService_UpdateValidPreparationInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -433,7 +433,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -458,7 +458,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -473,7 +473,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -493,7 +493,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -524,7 +524,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidPreparationInstrument)(nil), sql.ErrNoRows)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -557,7 +557,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidPreparationInstrument)(nil), errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -596,7 +596,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -643,7 +643,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -655,7 +655,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
+func TestValidPreparationInstrumentsService_ArchiveValidPreparationInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -685,7 +685,7 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -701,7 +701,7 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -723,7 +723,7 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -747,7 +747,7 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -777,7 +777,7 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -815,7 +815,7 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -826,7 +826,7 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testing.T) {
+func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -845,7 +845,7 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 		).Return(exampleValidPreparationInstrumentList, nil)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationInstrumentsByPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidPreparationInstrument]
@@ -866,7 +866,7 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 			return nil, errors.New("blah")
 		}
 
-		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationInstrumentsByPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -889,7 +889,7 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationInstrumentsByPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -901,7 +901,7 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 	})
 }
 
-func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing.T) {
+func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -919,7 +919,7 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 		).Return(exampleValidPreparationInstrumentList, nil)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.SearchByInstrumentHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationInstrumentsByInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidPreparationInstrument]
@@ -940,7 +940,7 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 			return nil, errors.New("blah")
 		}
 
-		helper.service.SearchByInstrumentHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationInstrumentsByInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]
@@ -963,7 +963,7 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
-		helper.service.SearchByInstrumentHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationInstrumentsByInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparationInstrument]

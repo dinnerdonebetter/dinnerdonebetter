@@ -118,7 +118,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()

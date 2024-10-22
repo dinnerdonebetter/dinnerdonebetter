@@ -83,13 +83,13 @@ type (
 
 	// ValidIngredientMeasurementUnitDataService describes a structure capable of serving traffic related to valid ingredient measurement units.
 	ValidIngredientMeasurementUnitDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
-		SearchByIngredientHandler(http.ResponseWriter, *http.Request)
-		SearchByMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		ListValidIngredientMeasurementUnitsHandler(http.ResponseWriter, *http.Request)
+		CreateValidIngredientMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		ReadValidIngredientMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		UpdateValidIngredientMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidIngredientMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		SearchValidIngredientMeasurementUnitsByIngredientHandler(http.ResponseWriter, *http.Request)
+		SearchValidIngredientMeasurementUnitsByMeasurementUnitHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

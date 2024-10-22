@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
+func TestServiceSettingConfigurationsService_CreateServiceSettingConfigurationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -77,7 +77,7 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -100,7 +100,7 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -125,7 +125,7 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -156,7 +156,7 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 		).Return((*types.ServiceSettingConfiguration)(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -197,7 +197,7 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -226,7 +226,7 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 		).Return(helper.exampleServiceSettingConfiguration, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ForUserByNameHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -243,7 +243,7 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ForUserByNameHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -266,7 +266,7 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 		).Return((*types.ServiceSettingConfiguration)(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ForUserByNameHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -291,7 +291,7 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 		).Return((*types.ServiceSettingConfiguration)(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ForUserByNameHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -320,7 +320,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 		).Return(helper.exampleServiceSettingConfigurationList, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ForUserHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ServiceSettingConfiguration]
@@ -337,7 +337,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ForUserHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -360,7 +360,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ForUserHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -385,7 +385,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ForUserHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -397,7 +397,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 	})
 }
 
-func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
+func TestServiceSettingConfigurationsService_GetServiceSettingConfigurationsForHouseholdHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -414,7 +414,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 		).Return(helper.exampleServiceSettingConfigurationList, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ForHouseholdHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ServiceSettingConfiguration]
@@ -431,7 +431,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ForHouseholdHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -454,7 +454,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ForHouseholdHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -479,7 +479,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ForHouseholdHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -491,7 +491,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 	})
 }
 
-func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
+func TestServiceSettingConfigurationsService_UpdateServiceSettingConfigurationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -530,7 +530,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -555,7 +555,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -570,7 +570,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -590,7 +590,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -621,7 +621,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ServiceSettingConfiguration)(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -654,7 +654,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ServiceSettingConfiguration)(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -693,7 +693,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -740,7 +740,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -752,7 +752,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
+func TestServiceSettingConfigurationsService_ArchiveServiceSettingConfigurationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -782,7 +782,7 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -798,7 +798,7 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -820,7 +820,7 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -844,7 +844,7 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -874,7 +874,7 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -912,7 +912,7 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveServiceSettingConfigurationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]

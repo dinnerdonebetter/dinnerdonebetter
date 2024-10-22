@@ -80,13 +80,13 @@ type (
 
 	// ValidPreparationInstrumentDataService describes a structure capable of serving traffic related to valid preparation instruments.
 	ValidPreparationInstrumentDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
-		SearchByPreparationHandler(http.ResponseWriter, *http.Request)
-		SearchByInstrumentHandler(http.ResponseWriter, *http.Request)
+		ListValidPreparationInstrumentsHandler(http.ResponseWriter, *http.Request)
+		CreateValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
+		ReadValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
+		UpdateValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
+		SearchValidPreparationInstrumentsByPreparationHandler(http.ResponseWriter, *http.Request)
+		SearchValidPreparationInstrumentsByInstrumentHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

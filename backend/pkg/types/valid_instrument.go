@@ -131,13 +131,13 @@ type (
 
 	// ValidInstrumentDataService describes a structure capable of serving traffic related to valid instruments.
 	ValidInstrumentDataService interface {
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		RandomHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		SearchValidInstrumentsHandler(http.ResponseWriter, *http.Request)
+		ListValidInstrumentsHandler(http.ResponseWriter, *http.Request)
+		CreateValidInstrumentHandler(http.ResponseWriter, *http.Request)
+		ReadValidInstrumentHandler(http.ResponseWriter, *http.Request)
+		RandomValidInstrumentHandler(http.ResponseWriter, *http.Request)
+		UpdateValidInstrumentHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidInstrumentHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

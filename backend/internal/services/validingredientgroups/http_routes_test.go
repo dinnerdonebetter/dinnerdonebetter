@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
+func TestValidIngredientGroupsService_CreateValidIngredientGroupHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -57,7 +57,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -79,7 +79,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -102,7 +102,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -127,7 +127,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -158,7 +158,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 		).Return((*types.ValidIngredientGroup)(nil), errors.New("blah"))
 		helper.service.validIngredientGroupDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -199,7 +199,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -211,7 +211,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientGroupsService_ReadHandler(T *testing.T) {
+func TestValidIngredientGroupsService_ReadValidIngredientGroupHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -227,7 +227,7 @@ func TestValidIngredientGroupsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidIngredientGroup, nil)
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -244,7 +244,7 @@ func TestValidIngredientGroupsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -266,7 +266,7 @@ func TestValidIngredientGroupsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidIngredientGroup)(nil), sql.ErrNoRows)
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -290,7 +290,7 @@ func TestValidIngredientGroupsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidIngredientGroup)(nil), errors.New("blah"))
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -302,7 +302,7 @@ func TestValidIngredientGroupsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
+func TestValidIngredientGroupsService_ListValidIngredientGroupsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -320,7 +320,7 @@ func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
 		).Return(exampleValidIngredientGroupList, nil)
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientGroupsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -333,7 +333,7 @@ func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientGroupsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -355,7 +355,7 @@ func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidIngredientGroup])(nil), sql.ErrNoRows)
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientGroupsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -375,7 +375,7 @@ func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidIngredientGroup])(nil), errors.New("blah"))
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientGroupsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -387,7 +387,7 @@ func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
+func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *testing.T) {
 	T.Parallel()
 
 	exampleQuery := "whatever"
@@ -413,7 +413,7 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 		).Return(exampleValidIngredientGroupList.Data, nil)
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientGroupsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -426,7 +426,7 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientGroupsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -454,7 +454,7 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 		).Return([]*types.ValidIngredientGroup{}, sql.ErrNoRows)
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientGroupsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -479,7 +479,7 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 		).Return([]*types.ValidIngredientGroup(nil), errors.New("blah"))
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientGroupsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -530,7 +530,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -551,7 +551,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -566,7 +566,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -586,7 +586,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -617,7 +617,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidIngredientGroup)(nil), sql.ErrNoRows)
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -650,7 +650,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidIngredientGroup)(nil), errors.New("blah"))
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -689,7 +689,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validIngredientGroupDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -736,7 +736,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -744,7 +744,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
+func TestValidIngredientGroupsService_ArchiveValidIngredientGroupHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -774,7 +774,7 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -787,7 +787,7 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -809,7 +809,7 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -833,7 +833,7 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.validIngredientGroupDataManager = validIngredientGroupDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -863,7 +863,7 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validIngredientGroupDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientGroup]
@@ -901,7 +901,7 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 

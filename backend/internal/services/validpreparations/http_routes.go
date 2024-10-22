@@ -22,8 +22,8 @@ const (
 	ValidPreparationIDURIParamKey = "validPreparationID"
 )
 
-// CreateHandler is our valid preparation creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidPreparationHandler is our valid preparation creation route.
+func (s *service) CreateValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -99,8 +99,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid preparation.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidPreparationHandler returns a GET handler that returns a valid preparation.
+func (s *service) ReadValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -156,8 +156,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidPreparationsHandler is our list route.
+func (s *service) ListValidPreparationsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -171,7 +171,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -211,8 +211,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchHandler is our search route.
-func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidPreparationsHandler is our search route.
+func (s *service) SearchValidPreparationsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -225,7 +225,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
@@ -290,8 +290,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a valid preparation.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidPreparationHandler returns a handler that updates a valid preparation.
+func (s *service) UpdateValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -385,8 +385,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a valid preparation.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidPreparationHandler returns a handler that archives a valid preparation.
+func (s *service) ArchiveValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -458,8 +458,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// RandomHandler returns a GET handler that returns a valid preparation.
-func (s *service) RandomHandler(res http.ResponseWriter, req *http.Request) {
+// RandomValidPreparationHandler returns a GET handler that returns a valid preparation.
+func (s *service) RandomValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

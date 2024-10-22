@@ -21,8 +21,8 @@ const (
 	MealPlanTaskIDURIParamKey = "mealPlanTaskID"
 )
 
-// CreateHandler is our meal plan task creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateMealPlanTaskHandler is our meal plan task creation route.
+func (s *service) CreateMealPlanTaskHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -106,8 +106,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a meal plan task.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadMealPlanTaskHandler returns a GET handler that returns a meal plan task.
+func (s *service) ReadMealPlanTaskHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -168,8 +168,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListByMealPlanHandler is our list route.
-func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Request) {
+// ListMealPlanTasksByMealPlanHandler is our list route.
+func (s *service) ListMealPlanTasksByMealPlanHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -183,7 +183,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -228,8 +228,8 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// StatusChangeHandler returns a handler that updates a meal plan task.
-func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request) {
+// MealPlanTaskStatusChangeHandler returns a handler that updates a meal plan task.
+func (s *service) MealPlanTaskStatusChangeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

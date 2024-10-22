@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
+func TestMealPlanOptionsService_CreateMealPlanOptionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -77,7 +77,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -100,7 +100,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -125,7 +125,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -156,7 +156,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 		).Return((*types.MealPlanOption)(nil), errors.New("blah"))
 		helper.service.mealPlanOptionDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -197,7 +197,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -209,7 +209,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestMealPlanOptionsService_ReadHandler(T *testing.T) {
+func TestMealPlanOptionsService_ReadMealPlanOptionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -227,7 +227,7 @@ func TestMealPlanOptionsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleMealPlanOption, nil)
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -244,7 +244,7 @@ func TestMealPlanOptionsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -268,7 +268,7 @@ func TestMealPlanOptionsService_ReadHandler(T *testing.T) {
 		).Return((*types.MealPlanOption)(nil), sql.ErrNoRows)
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -294,7 +294,7 @@ func TestMealPlanOptionsService_ReadHandler(T *testing.T) {
 		).Return((*types.MealPlanOption)(nil), errors.New("blah"))
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -306,7 +306,7 @@ func TestMealPlanOptionsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestMealPlanOptionsService_ListHandler(T *testing.T) {
+func TestMealPlanOptionsService_ListMealPlanOptionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -326,7 +326,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 		).Return(exampleMealPlanOptionList, nil)
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.MealPlanOption]
@@ -343,7 +343,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -367,7 +367,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.MealPlanOption])(nil), sql.ErrNoRows)
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.MealPlanOption]
@@ -393,7 +393,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.MealPlanOption])(nil), errors.New("blah"))
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -405,7 +405,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
+func TestMealPlanOptionsService_UpdateMealPlanOptionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -446,7 +446,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -471,7 +471,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -486,7 +486,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -506,7 +506,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -539,7 +539,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		).Return((*types.MealPlanOption)(nil), sql.ErrNoRows)
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -574,7 +574,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		).Return((*types.MealPlanOption)(nil), errors.New("blah"))
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -615,7 +615,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.mealPlanOptionDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -664,7 +664,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -676,7 +676,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
+func TestMealPlanOptionsService_ArchiveMealPlanOptionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -710,7 +710,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -726,7 +726,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -750,7 +750,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -776,7 +776,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -810,7 +810,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.mealPlanOptionDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]
@@ -852,7 +852,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealPlanOptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanOption]

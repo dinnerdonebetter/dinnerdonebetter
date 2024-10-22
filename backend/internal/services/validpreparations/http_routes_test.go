@@ -26,7 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidPreparationsService_CreateHandler(T *testing.T) {
+func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -59,7 +59,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -81,7 +81,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -104,7 +104,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -129,7 +129,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -160,7 +160,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
 		helper.service.validPreparationDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -201,7 +201,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -213,7 +213,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationsService_ReadHandler(T *testing.T) {
+func TestValidPreparationsService_ReadValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -229,7 +229,7 @@ func TestValidPreparationsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidPreparation, nil)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -246,7 +246,7 @@ func TestValidPreparationsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -268,7 +268,7 @@ func TestValidPreparationsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -292,7 +292,7 @@ func TestValidPreparationsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -304,7 +304,7 @@ func TestValidPreparationsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationsService_ListHandler(T *testing.T) {
+func TestValidPreparationsService_ListValidPreparationsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -322,7 +322,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 		).Return(exampleValidPreparationList, nil)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidPreparation]
@@ -340,7 +340,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -362,7 +362,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidPreparation])(nil), sql.ErrNoRows)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -385,7 +385,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidPreparation])(nil), errors.New("blah"))
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -397,7 +397,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationsService_SearchHandler(T *testing.T) {
+func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 	T.Parallel()
 
 	exampleQuery := "whatever"
@@ -422,7 +422,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 		).Return(exampleValidPreparationList.Data, nil)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidPreparation]
@@ -467,7 +467,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 		).Return(exampleValidPreparationList.Data, nil)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidPreparation]
@@ -484,7 +484,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -511,7 +511,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 		).Return([]*types.ValidPreparation{}, sql.ErrNoRows)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -539,7 +539,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 		).Return([]*types.ValidPreparation{}, errors.New("blah"))
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -551,7 +551,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationsService_UpdateHandler(T *testing.T) {
+func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -590,7 +590,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -615,7 +615,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -630,7 +630,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -650,7 +650,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -681,7 +681,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -714,7 +714,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -753,7 +753,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validPreparationDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -800,7 +800,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -808,7 +808,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
+func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -838,7 +838,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -854,7 +854,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -876,7 +876,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -900,7 +900,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -930,7 +930,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validPreparationDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -968,7 +968,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -979,7 +979,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 	})
 }
 
-func TestValidPreparationsService_RandomHandler(T *testing.T) {
+func TestValidPreparationsService_RandomValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -994,7 +994,7 @@ func TestValidPreparationsService_RandomHandler(T *testing.T) {
 		).Return(helper.exampleValidPreparation, nil)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.RandomHandler(helper.res, helper.req)
+		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -1011,7 +1011,7 @@ func TestValidPreparationsService_RandomHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.RandomHandler(helper.res, helper.req)
+		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -1032,7 +1032,7 @@ func TestValidPreparationsService_RandomHandler(T *testing.T) {
 		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.RandomHandler(helper.res, helper.req)
+		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]
@@ -1055,7 +1055,7 @@ func TestValidPreparationsService_RandomHandler(T *testing.T) {
 		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.RandomHandler(helper.res, helper.req)
+		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidPreparation]

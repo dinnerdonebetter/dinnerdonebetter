@@ -101,11 +101,11 @@ type (
 
 	// RecipeStepVesselDataService describes a structure capable of serving traffic related to recipe step instruments.
 	RecipeStepVesselDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListRecipeStepVesselsHandler(http.ResponseWriter, *http.Request)
+		CreateRecipeStepVesselHandler(http.ResponseWriter, *http.Request)
+		ReadRecipeStepVesselHandler(http.ResponseWriter, *http.Request)
+		UpdateRecipeStepVesselHandler(http.ResponseWriter, *http.Request)
+		ArchiveRecipeStepVesselHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

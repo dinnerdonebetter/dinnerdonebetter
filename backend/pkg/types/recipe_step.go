@@ -137,12 +137,12 @@ type (
 
 	// RecipeStepDataService describes a structure capable of serving traffic related to recipe steps.
 	RecipeStepDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
-		ImageUploadHandler(http.ResponseWriter, *http.Request)
+		ListRecipeStepsHandler(http.ResponseWriter, *http.Request)
+		CreateRecipeStepHandler(http.ResponseWriter, *http.Request)
+		ReadRecipeStepHandler(http.ResponseWriter, *http.Request)
+		UpdateRecipeStepHandler(http.ResponseWriter, *http.Request)
+		ArchiveRecipeStepHandler(http.ResponseWriter, *http.Request)
+		RecipeStepImageUploadHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

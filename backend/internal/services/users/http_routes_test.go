@@ -273,7 +273,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 	})
 }
 
-func TestService_ListHandler(T *testing.T) {
+func TestService_ListUsersHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -291,7 +291,7 @@ func TestService_ListHandler(T *testing.T) {
 		).Return(exampleUserList, nil)
 		helper.service.userDataManager = mockDB
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUsersHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.User]
@@ -318,7 +318,7 @@ func TestService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.User])(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUsersHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
@@ -330,7 +330,7 @@ func TestService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestService_CreateHandler(T *testing.T) {
+func TestService_CreateUserHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -396,7 +396,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -422,7 +422,7 @@ func TestService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.authSettings.EnableUserSignup = false
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
 	})
@@ -439,7 +439,7 @@ func TestService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
@@ -467,7 +467,7 @@ func TestService_CreateHandler(T *testing.T) {
 		exampleHousehold.BelongsToUser = helper.exampleUser.ID
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
@@ -503,7 +503,7 @@ func TestService_CreateHandler(T *testing.T) {
 		)
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
@@ -587,7 +587,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -651,7 +651,7 @@ func TestService_CreateHandler(T *testing.T) {
 		)
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -714,7 +714,7 @@ func TestService_CreateHandler(T *testing.T) {
 		)
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -756,7 +756,7 @@ func TestService_CreateHandler(T *testing.T) {
 		)
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -827,7 +827,7 @@ func TestService_CreateHandler(T *testing.T) {
 		)
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -877,7 +877,7 @@ func TestService_CreateHandler(T *testing.T) {
 		)
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -927,7 +927,7 @@ func TestService_CreateHandler(T *testing.T) {
 		)
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -1001,7 +1001,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -1067,7 +1067,7 @@ func TestService_CreateHandler(T *testing.T) {
 		)
 
 		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserCreationResponse]
@@ -1186,7 +1186,7 @@ func TestService_SelfHandler(T *testing.T) {
 	})
 }
 
-func TestService_PermissionsHandler(T *testing.T) {
+func TestService_UserPermissionsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -1202,7 +1202,7 @@ func TestService_PermissionsHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.PermissionsHandler(helper.res, helper.req)
+		helper.service.UserPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.UserPermissionsResponse]
@@ -1217,7 +1217,7 @@ func TestService_PermissionsHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.PermissionsHandler(helper.res, helper.req)
+		helper.service.UserPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
@@ -1227,7 +1227,7 @@ func TestService_PermissionsHandler(T *testing.T) {
 	})
 }
 
-func TestService_ReadHandler(T *testing.T) {
+func TestService_ReadUserHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -1243,7 +1243,7 @@ func TestService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
@@ -1268,7 +1268,7 @@ func TestService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleUser, sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
@@ -1292,7 +1292,7 @@ func TestService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleUser, errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
@@ -2639,7 +2639,7 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 	})
 }
 
-func TestService_ArchiveHandler(T *testing.T) {
+func TestService_ArchiveUserHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -2663,7 +2663,7 @@ func TestService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[any]
@@ -2686,7 +2686,7 @@ func TestService_ArchiveHandler(T *testing.T) {
 		).Return(sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
@@ -2710,7 +2710,7 @@ func TestService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.User]

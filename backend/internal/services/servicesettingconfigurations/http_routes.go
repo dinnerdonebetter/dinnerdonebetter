@@ -22,8 +22,8 @@ const (
 	ServiceSettingConfigurationNameURIParamKey = "serviceSettingConfigurationName"
 )
 
-// CreateHandler is our service setting creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateServiceSettingConfigurationHandler is our service setting creation route.
+func (s *service) CreateServiceSettingConfigurationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -101,8 +101,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ForUserByNameHandler returns a GET handler that returns a service setting configuration.
-func (s *service) ForUserByNameHandler(res http.ResponseWriter, req *http.Request) {
+// GetServiceSettingConfigurationsForUserByNameHandler returns a GET handler that returns a service setting configuration.
+func (s *service) GetServiceSettingConfigurationsForUserByNameHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -154,8 +154,8 @@ func (s *service) ForUserByNameHandler(res http.ResponseWriter, req *http.Reques
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ForUserHandler returns a GET handler that returns a service setting configuration.
-func (s *service) ForUserHandler(res http.ResponseWriter, req *http.Request) {
+// GetServiceSettingConfigurationsForUserHandler returns a GET handler that returns a service setting configuration.
+func (s *service) GetServiceSettingConfigurationsForUserHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -207,8 +207,8 @@ func (s *service) ForUserHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ForHouseholdHandler returns a GET handler that returns a service setting configuration.
-func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request) {
+// GetServiceSettingConfigurationsForHouseholdHandler returns a GET handler that returns a service setting configuration.
+func (s *service) GetServiceSettingConfigurationsForHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -265,8 +265,8 @@ func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a service setting configuration.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateServiceSettingConfigurationHandler returns a handler that updates a service setting configuration.
+func (s *service) UpdateServiceSettingConfigurationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -358,8 +358,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a service setting configuration.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveServiceSettingConfigurationHandler returns a handler that archives a service setting configuration.
+func (s *service) ArchiveServiceSettingConfigurationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

@@ -72,11 +72,11 @@ func filterFromSlice(slice []string, filtered ...string) []string {
 	return output
 }
 
-func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []string {
+func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet int) []string {
 	output := []string{}
 
 	for i, col1 := range columns1 {
-		if i == int(indexToInsertSecondSet) {
+		if i == indexToInsertSecondSet {
 			output = append(output, columns2...)
 		}
 		output = append(output, col1)

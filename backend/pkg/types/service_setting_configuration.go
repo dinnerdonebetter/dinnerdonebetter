@@ -88,12 +88,12 @@ type (
 
 	// ServiceSettingConfigurationDataService describes a structure capable of serving traffic related to service settings.
 	ServiceSettingConfigurationDataService interface {
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ForUserHandler(http.ResponseWriter, *http.Request)
-		ForHouseholdHandler(http.ResponseWriter, *http.Request)
-		ForUserByNameHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		CreateServiceSettingConfigurationHandler(http.ResponseWriter, *http.Request)
+		GetServiceSettingConfigurationsForUserHandler(http.ResponseWriter, *http.Request)
+		GetServiceSettingConfigurationsForHouseholdHandler(http.ResponseWriter, *http.Request)
+		GetServiceSettingConfigurationsForUserByNameHandler(http.ResponseWriter, *http.Request)
+		UpdateServiceSettingConfigurationHandler(http.ResponseWriter, *http.Request)
+		ArchiveServiceSettingConfigurationHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

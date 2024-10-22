@@ -63,21 +63,6 @@ func AttachToSpan[T any](span trace.Span, attachmentKey string, x T) {
 	}
 }
 
-// AttachFilterDataToSpan provides a consistent way to attach a filter's info to a span.
-func AttachFilterDataToSpan(span trace.Span, page *uint16, limit *uint8, sortBy *string) {
-	if page != nil {
-		AttachToSpan(span, keys.FilterPageKey, *page)
-	}
-
-	if limit != nil {
-		AttachToSpan(span, keys.FilterLimitKey, *limit)
-	}
-
-	if sortBy != nil {
-		AttachToSpan(span, keys.FilterSortByKey, *sortBy)
-	}
-}
-
 // AttachSessionContextDataToSpan provides a consistent way to attach a SessionContextData object to a span.
 func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.SessionContextData) {
 	if sessionCtxData != nil {

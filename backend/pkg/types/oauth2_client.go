@@ -70,10 +70,10 @@ type (
 
 	// OAuth2ClientDataService describes a structure capable of serving traffic related to OAuth2 clients.
 	OAuth2ClientDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListOAuth2ClientsHandler(http.ResponseWriter, *http.Request)
+		CreateOAuth2ClientHandler(http.ResponseWriter, *http.Request)
+		ReadOAuth2ClientHandler(http.ResponseWriter, *http.Request)
+		ArchiveOAuth2ClientHandler(http.ResponseWriter, *http.Request)
 	}
 
 	OAuth2Service interface {

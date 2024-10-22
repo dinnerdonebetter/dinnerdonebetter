@@ -80,10 +80,10 @@ type (
 
 	// UserNotificationDataService describes a structure capable of serving traffic related to user notifications.
 	UserNotificationDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
+		ListUserNotificationsHandler(http.ResponseWriter, *http.Request)
+		CreateUserNotificationHandler(http.ResponseWriter, *http.Request)
+		ReadUserNotificationHandler(http.ResponseWriter, *http.Request)
+		UpdateUserNotificationHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

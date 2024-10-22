@@ -24,8 +24,8 @@ const (
 	ValidVesselIDURIParamKey = "ValidVesselID"
 )
 
-// CreateHandler is our valid preparation vessel creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidPreparationVesselHandler is our valid preparation vessel creation route.
+func (s *service) CreateValidPreparationVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -101,8 +101,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid preparation vessel.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidPreparationVesselHandler returns a GET handler that returns a valid preparation vessel.
+func (s *service) ReadValidPreparationVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -156,8 +156,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidPreparationVesselsHandler is our list route.
+func (s *service) ListValidPreparationVesselsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -171,7 +171,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -209,8 +209,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a valid preparation vessel.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidPreparationVesselHandler returns a handler that updates a valid preparation vessel.
+func (s *service) UpdateValidPreparationVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -302,8 +302,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a valid preparation vessel.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidPreparationVesselHandler returns a handler that archives a valid preparation vessel.
+func (s *service) ArchiveValidPreparationVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -374,8 +374,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchByPreparationHandler is our valid preparation vessel search route for preparations.
-func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidPreparationVesselsByPreparationHandler is our valid preparation vessel search route for preparations.
+func (s *service) SearchValidPreparationVesselsByPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -385,7 +385,7 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	logger = filter.AttachToLogger(logger)
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
@@ -425,8 +425,8 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// SearchByVesselHandler is our valid preparation vessel search route by vessel.
-func (s *service) SearchByVesselHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidPreparationVesselsByVesselHandler is our valid preparation vessel search route by vessel.
+func (s *service) SearchValidPreparationVesselsByVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -434,7 +434,7 @@ func (s *service) SearchByVesselHandler(res http.ResponseWriter, req *http.Reque
 	tracing.AttachRequestToSpan(span, req)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),

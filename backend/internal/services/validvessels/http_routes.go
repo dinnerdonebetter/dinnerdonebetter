@@ -22,8 +22,8 @@ const (
 	ValidVesselIDURIParamKey = "validVesselID"
 )
 
-// CreateHandler is our valid vessel creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidVesselHandler is our valid vessel creation route.
+func (s *service) CreateValidVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -101,8 +101,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid vessel.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidVesselHandler returns a GET handler that returns a valid vessel.
+func (s *service) ReadValidVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -158,8 +158,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidVesselsHandler is our list route.
+func (s *service) ListValidVesselsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -173,7 +173,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -213,8 +213,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchHandler is our search route.
-func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidVesselsHandler is our search route.
+func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -223,7 +223,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	query := req.URL.Query().Get(types.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
@@ -296,8 +296,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a valid vessel.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidVesselHandler returns a handler that updates a valid vessel.
+func (s *service) UpdateValidVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -393,8 +393,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a valid vessel.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidVesselHandler returns a handler that archives a valid vessel.
+func (s *service) ArchiveValidVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -466,8 +466,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// RandomHandler returns a GET handler that returns a valid vessel.
-func (s *service) RandomHandler(res http.ResponseWriter, req *http.Request) {
+// RandomValidVesselHandler returns a GET handler that returns a valid vessel.
+func (s *service) RandomValidVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

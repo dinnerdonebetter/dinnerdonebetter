@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
+func TestValidIngredientPreparationsService_CreateValidIngredientPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -77,7 +77,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -100,7 +100,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -125,7 +125,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -156,7 +156,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		).Return((*types.ValidIngredientPreparation)(nil), errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -197,7 +197,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -209,7 +209,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
+func TestValidIngredientPreparationsService_ReadValidIngredientPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -225,7 +225,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidIngredientPreparation, nil)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -242,7 +242,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -264,7 +264,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidIngredientPreparation)(nil), sql.ErrNoRows)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -288,7 +288,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidIngredientPreparation)(nil), errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -300,7 +300,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
+func TestValidIngredientPreparationsService_ListValidIngredientPreparationsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -318,7 +318,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		).Return(exampleValidIngredientPreparationList, nil)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidIngredientPreparation]
@@ -336,7 +336,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -358,7 +358,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), sql.ErrNoRows)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidIngredientPreparation]
@@ -382,7 +382,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -394,7 +394,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
+func TestValidIngredientPreparationsService_UpdateValidIngredientPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -433,7 +433,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -458,7 +458,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -473,7 +473,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -493,7 +493,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -524,7 +524,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidIngredientPreparation)(nil), sql.ErrNoRows)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -557,7 +557,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidIngredientPreparation)(nil), errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -596,7 +596,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -643,7 +643,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -651,7 +651,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
+func TestValidIngredientPreparationsService_ArchiveValidIngredientPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -681,7 +681,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -698,7 +698,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -720,7 +720,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -744,7 +744,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -774,7 +774,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -812,7 +812,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -824,7 +824,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing.T) {
+func TestValidIngredientPreparationsService_SearchValidIngredientPreparationsByIngredientHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -843,7 +843,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 		).Return(exampleResponse, nil)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.SearchByIngredientHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientPreparationsByIngredientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidIngredientPreparation]
@@ -864,7 +864,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 			return nil, errors.New("blah")
 		}
 
-		helper.service.SearchByIngredientHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientPreparationsByIngredientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -887,7 +887,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.SearchByIngredientHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientPreparationsByIngredientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -899,7 +899,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 	})
 }
 
-func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testing.T) {
+func TestValidIngredientPreparationsService_SearchValidIngredientPreparationsByPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -918,7 +918,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 		).Return(exampleResponse, nil)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientPreparationsByPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidIngredientPreparation]
@@ -939,7 +939,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 			return nil, errors.New("blah")
 		}
 
-		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientPreparationsByPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]
@@ -962,7 +962,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientPreparationsByPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientPreparation]

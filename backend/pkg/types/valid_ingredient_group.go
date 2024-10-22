@@ -109,12 +109,12 @@ type (
 
 	// ValidIngredientGroupDataService describes a structure capable of serving traffic related to valid ingredient groups.
 	ValidIngredientGroupDataService interface {
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		SearchValidIngredientGroupsHandler(http.ResponseWriter, *http.Request)
+		ListValidIngredientGroupsHandler(http.ResponseWriter, *http.Request)
+		CreateValidIngredientGroupHandler(http.ResponseWriter, *http.Request)
+		ReadValidIngredientGroupHandler(http.ResponseWriter, *http.Request)
+		UpdateValidIngredientGroupHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidIngredientGroupHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

@@ -20,6 +20,7 @@ _PR description goes here_
       - [ ] Fakes
       - [ ] Converters
       - [ ] Mocks
+      - [ ] Added to UserDataCollection struct
   - [ ] Data Manager
       - [ ] Storage methods
       - [ ] Unit tests

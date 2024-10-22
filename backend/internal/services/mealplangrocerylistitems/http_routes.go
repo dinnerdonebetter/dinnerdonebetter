@@ -21,8 +21,8 @@ const (
 	MealPlanGroceryListItemIDURIParamKey = "mealPlanGroceryListItemID"
 )
 
-// CreateHandler is our meal plan grocery list item creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateMealPlanGroceryListItemHandler is our meal plan grocery list item creation route.
+func (s *service) CreateMealPlanGroceryListItemHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -107,8 +107,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a meal plan grocery list item.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadMealPlanGroceryListItemHandler returns a GET handler that returns a meal plan grocery list item.
+func (s *service) ReadMealPlanGroceryListItemHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -167,8 +167,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListByMealPlanHandler is our list route.
-func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Request) {
+// ListMealPlanGroceryListItemsByMealPlanHandler is our list route.
+func (s *service) ListMealPlanGroceryListItemsByMealPlanHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -224,8 +224,8 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a meal plan grocery list item.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateMealPlanGroceryListItemHandler returns a handler that updates a meal plan grocery list item.
+func (s *service) UpdateMealPlanGroceryListItemHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -322,8 +322,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a GET handler that returns a meal plan grocery list item.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveMealPlanGroceryListItemHandler returns a GET handler that returns a meal plan grocery list item.
+func (s *service) ArchiveMealPlanGroceryListItemHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

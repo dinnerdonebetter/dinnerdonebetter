@@ -22,8 +22,8 @@ const (
 	ValidIngredientStateIDURIParamKey = "validIngredientStateID"
 )
 
-// CreateHandler is our valid ingredient state creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidIngredientStateHandler is our valid ingredient state creation route.
+func (s *service) CreateValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -99,8 +99,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid ingredient state.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidIngredientStateHandler returns a GET handler that returns a valid ingredient state.
+func (s *service) ReadValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -154,8 +154,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidIngredientStatesHandler is our list route.
+func (s *service) ListValidIngredientStatesHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -169,7 +169,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -207,8 +207,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchHandler is our search route.
-func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidIngredientStatesHandler is our search route.
+func (s *service) SearchValidIngredientStatesHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -218,7 +218,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	logger := s.logger.WithRequest(req).WithSpan(span).
 		WithValue(keys.SearchQueryKey, query).
@@ -282,8 +282,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a valid ingredient state.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidIngredientStateHandler returns a handler that updates a valid ingredient state.
+func (s *service) UpdateValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -375,8 +375,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a valid ingredient state.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidIngredientStateHandler returns a handler that archives a valid ingredient state.
+func (s *service) ArchiveValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

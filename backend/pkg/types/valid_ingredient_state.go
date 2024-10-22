@@ -124,12 +124,12 @@ type (
 
 	// ValidIngredientStateDataService describes a structure capable of serving traffic related to valid ingredient states.
 	ValidIngredientStateDataService interface {
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		SearchValidIngredientStatesHandler(http.ResponseWriter, *http.Request)
+		ListValidIngredientStatesHandler(http.ResponseWriter, *http.Request)
+		CreateValidIngredientStateHandler(http.ResponseWriter, *http.Request)
+		ReadValidIngredientStateHandler(http.ResponseWriter, *http.Request)
+		UpdateValidIngredientStateHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidIngredientStateHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

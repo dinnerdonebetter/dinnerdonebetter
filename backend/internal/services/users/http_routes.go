@@ -128,8 +128,8 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is a handler for responding with a list of users.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListUsersHandler is a handler for responding with a list of users.
+func (s *service) ListUsersHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -165,8 +165,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// CreateHandler is our user creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateUserHandler is our user creation route.
+func (s *service) CreateUserHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -468,8 +468,8 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// PermissionsHandler returns information about the user making the request.
-func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request) {
+// UserPermissionsHandler returns information about the user making the request.
+func (s *service) UserPermissionsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -524,8 +524,8 @@ func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request)
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ReadHandler is our read route.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadUserHandler is our read route.
+func (s *service) ReadUserHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -1220,8 +1220,8 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
-// ArchiveHandler is a handler for archiving a user.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveUserHandler is a handler for archiving a user.
+func (s *service) ArchiveUserHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

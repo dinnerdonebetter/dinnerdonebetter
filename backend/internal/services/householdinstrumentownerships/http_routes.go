@@ -20,8 +20,8 @@ const (
 	HouseholdInstrumentOwnershipIDURIParamKey = "householdInstrumentOwnershipID"
 )
 
-// CreateHandler is our household instrument ownership creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateHouseholdInstrumentOwnershipHandler is our household instrument ownership creation route.
+func (s *service) CreateHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -98,8 +98,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a household instrument ownership.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadHouseholdInstrumentOwnershipHandler returns a GET handler that returns a household instrument ownership.
+func (s *service) ReadHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -153,8 +153,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListHouseholdInstrumentOwnershipHandler is our list route.
+func (s *service) ListHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -168,7 +168,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -206,8 +206,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a household instrument ownership.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateHouseholdInstrumentOwnershipHandler returns a handler that updates a household instrument ownership.
+func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -299,8 +299,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a household instrument ownership.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveHouseholdInstrumentOwnershipHandler returns a handler that archives a household instrument ownership.
+func (s *service) ArchiveHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

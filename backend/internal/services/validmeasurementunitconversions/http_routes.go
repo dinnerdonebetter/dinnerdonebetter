@@ -23,8 +23,8 @@ const (
 	ValidMeasurementUnitIDURIParamKey = "validMeasurementUnitID"
 )
 
-// CreateHandler is our valid measurement conversion creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidMeasurementUnitConversionHandler is our valid measurement conversion creation route.
+func (s *service) CreateValidMeasurementUnitConversionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -100,8 +100,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid measurement conversion.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidMeasurementUnitConversionHandler returns a GET handler that returns a valid measurement conversion.
+func (s *service) ReadValidMeasurementUnitConversionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -155,8 +155,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a valid measurement conversion.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidMeasurementUnitConversionHandler returns a handler that updates a valid measurement conversion.
+func (s *service) UpdateValidMeasurementUnitConversionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -248,8 +248,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a valid measurement conversion.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidMeasurementUnitConversionHandler returns a handler that archives a valid measurement conversion.
+func (s *service) ArchiveValidMeasurementUnitConversionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -321,7 +321,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-func (s *service) FromMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
+func (s *service) ValidMeasurementUnitConversionsFromMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -378,7 +378,7 @@ func (s *service) FromMeasurementUnitHandler(res http.ResponseWriter, req *http.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-func (s *service) ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
+func (s *service) ValidMeasurementUnitConversionsToMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

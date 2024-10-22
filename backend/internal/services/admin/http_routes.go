@@ -13,11 +13,6 @@ import (
 	servertiming "github.com/mitchellh/go-server-timing"
 )
 
-const (
-	// UserIDURIParamKey is used to refer to user IDs in router params.
-	UserIDURIParamKey = "userID"
-)
-
 // UserAccountStatusChangeHandler changes a user's status.
 func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())

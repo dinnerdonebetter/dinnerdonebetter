@@ -79,13 +79,13 @@ type (
 
 	// ValidIngredientPreparationDataService describes a structure capable of serving traffic related to valid ingredient preparations.
 	ValidIngredientPreparationDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
-		SearchByIngredientHandler(http.ResponseWriter, *http.Request)
-		SearchByPreparationHandler(http.ResponseWriter, *http.Request)
+		ListValidIngredientPreparationsHandler(http.ResponseWriter, *http.Request)
+		CreateValidIngredientPreparationHandler(http.ResponseWriter, *http.Request)
+		ReadValidIngredientPreparationHandler(http.ResponseWriter, *http.Request)
+		UpdateValidIngredientPreparationHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidIngredientPreparationHandler(http.ResponseWriter, *http.Request)
+		SearchValidIngredientPreparationsByIngredientHandler(http.ResponseWriter, *http.Request)
+		SearchValidIngredientPreparationsByPreparationHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

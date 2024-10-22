@@ -141,8 +141,8 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a household invitation.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadHouseholdInviteHandler returns a GET handler that returns a household invitation.
+func (s *service) ReadHouseholdInviteHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

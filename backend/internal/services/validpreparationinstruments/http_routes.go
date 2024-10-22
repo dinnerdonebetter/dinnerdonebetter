@@ -24,8 +24,8 @@ const (
 	ValidInstrumentIDURIParamKey = "validInstrumentID"
 )
 
-// CreateHandler is our valid preparation instrument creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidPreparationInstrumentHandler is our valid preparation instrument creation route.
+func (s *service) CreateValidPreparationInstrumentHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -101,8 +101,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid preparation instrument.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidPreparationInstrumentHandler returns a GET handler that returns a valid preparation instrument.
+func (s *service) ReadValidPreparationInstrumentHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -156,8 +156,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidPreparationInstrumentsHandler is our list route.
+func (s *service) ListValidPreparationInstrumentsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -171,7 +171,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -209,8 +209,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a valid preparation instrument.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidPreparationInstrumentHandler returns a handler that updates a valid preparation instrument.
+func (s *service) UpdateValidPreparationInstrumentHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -302,8 +302,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a valid preparation instrument.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidPreparationInstrumentHandler returns a handler that archives a valid preparation instrument.
+func (s *service) ArchiveValidPreparationInstrumentHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -375,8 +375,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchByPreparationHandler is our valid preparation instrument search route for preparations.
-func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidPreparationInstrumentsByPreparationHandler is our valid preparation instrument search route for preparations.
+func (s *service) SearchValidPreparationInstrumentsByPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -385,7 +385,7 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	tracing.AttachRequestToSpan(span, req)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -426,8 +426,8 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// SearchByInstrumentHandler is our valid preparation instrument search route for instruments.
-func (s *service) SearchByInstrumentHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidPreparationInstrumentsByInstrumentHandler is our valid preparation instrument search route for instruments.
+func (s *service) SearchValidPreparationInstrumentsByInstrumentHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -436,7 +436,7 @@ func (s *service) SearchByInstrumentHandler(res http.ResponseWriter, req *http.R
 	tracing.AttachRequestToSpan(span, req)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),

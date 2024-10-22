@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
+func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -77,7 +77,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -100,7 +100,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -125,7 +125,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -156,7 +156,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 		).Return((*types.HouseholdInstrumentOwnership)(nil), errors.New("blah"))
 		helper.service.householdInstrumentOwnershipDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -197,7 +197,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -209,7 +209,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestHouseholdInstrumentOwnershipsService_ReadHandler(T *testing.T) {
+func TestHouseholdInstrumentOwnershipsService_ReadHouseholdInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -226,7 +226,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -243,7 +243,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -266,7 +266,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHandler(T *testing.T) {
 		).Return((*types.HouseholdInstrumentOwnership)(nil), sql.ErrNoRows)
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -291,7 +291,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHandler(T *testing.T) {
 		).Return((*types.HouseholdInstrumentOwnership)(nil), errors.New("blah"))
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -303,7 +303,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
+func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -322,7 +322,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
 		).Return(exampleHouseholdInstrumentOwnershipList, nil)
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.HouseholdInstrumentOwnership]
@@ -339,7 +339,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -362,7 +362,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), sql.ErrNoRows)
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.HouseholdInstrumentOwnership]
@@ -387,7 +387,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), errors.New("blah"))
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -399,7 +399,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
+func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -439,7 +439,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -464,7 +464,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -479,7 +479,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -499,7 +499,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -531,7 +531,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		).Return((*types.HouseholdInstrumentOwnership)(nil), sql.ErrNoRows)
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -565,7 +565,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		).Return((*types.HouseholdInstrumentOwnership)(nil), errors.New("blah"))
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -605,7 +605,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.householdInstrumentOwnershipDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -653,7 +653,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -665,7 +665,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
+func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -697,7 +697,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -713,7 +713,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -736,7 +736,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -761,7 +761,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -793,7 +793,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
@@ -833,7 +833,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]

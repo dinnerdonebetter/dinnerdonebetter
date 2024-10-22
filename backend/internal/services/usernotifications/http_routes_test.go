@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUserNotificationsService_CreateHandler(T *testing.T) {
+func TestUserNotificationsService_CreateUserNotificationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestUserNotificationsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -77,7 +77,7 @@ func TestUserNotificationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -100,7 +100,7 @@ func TestUserNotificationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -125,7 +125,7 @@ func TestUserNotificationsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -156,7 +156,7 @@ func TestUserNotificationsService_CreateHandler(T *testing.T) {
 		).Return((*types.UserNotification)(nil), errors.New("blah"))
 		helper.service.userNotificationDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -197,7 +197,7 @@ func TestUserNotificationsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -209,7 +209,7 @@ func TestUserNotificationsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestUserNotificationsService_ReadHandler(T *testing.T) {
+func TestUserNotificationsService_ReadUserNotificationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -226,7 +226,7 @@ func TestUserNotificationsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleUserNotification, nil)
 		helper.service.userNotificationDataManager = userNotificationDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -243,7 +243,7 @@ func TestUserNotificationsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -266,7 +266,7 @@ func TestUserNotificationsService_ReadHandler(T *testing.T) {
 		).Return((*types.UserNotification)(nil), sql.ErrNoRows)
 		helper.service.userNotificationDataManager = userNotificationDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -291,7 +291,7 @@ func TestUserNotificationsService_ReadHandler(T *testing.T) {
 		).Return((*types.UserNotification)(nil), errors.New("blah"))
 		helper.service.userNotificationDataManager = userNotificationDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -303,7 +303,7 @@ func TestUserNotificationsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestUserNotificationsService_ListHandler(T *testing.T) {
+func TestUserNotificationsService_ListUserNotificationsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -322,7 +322,7 @@ func TestUserNotificationsService_ListHandler(T *testing.T) {
 		).Return(exampleUserNotificationList, nil)
 		helper.service.userNotificationDataManager = userNotificationDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUserNotificationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.UserNotification]
@@ -339,7 +339,7 @@ func TestUserNotificationsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUserNotificationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -362,7 +362,7 @@ func TestUserNotificationsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.UserNotification])(nil), sql.ErrNoRows)
 		helper.service.userNotificationDataManager = userNotificationDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUserNotificationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.UserNotification]
@@ -387,7 +387,7 @@ func TestUserNotificationsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.UserNotification])(nil), errors.New("blah"))
 		helper.service.userNotificationDataManager = userNotificationDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUserNotificationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -399,7 +399,7 @@ func TestUserNotificationsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestUserNotificationsService_UpdateHandler(T *testing.T) {
+func TestUserNotificationsService_UpdateUserNotificationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -439,7 +439,7 @@ func TestUserNotificationsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -464,7 +464,7 @@ func TestUserNotificationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -479,7 +479,7 @@ func TestUserNotificationsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -499,7 +499,7 @@ func TestUserNotificationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -531,7 +531,7 @@ func TestUserNotificationsService_UpdateHandler(T *testing.T) {
 		).Return((*types.UserNotification)(nil), sql.ErrNoRows)
 		helper.service.userNotificationDataManager = userNotificationDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -565,7 +565,7 @@ func TestUserNotificationsService_UpdateHandler(T *testing.T) {
 		).Return((*types.UserNotification)(nil), errors.New("blah"))
 		helper.service.userNotificationDataManager = userNotificationDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -605,7 +605,7 @@ func TestUserNotificationsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.userNotificationDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]
@@ -653,7 +653,7 @@ func TestUserNotificationsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserNotificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.UserNotification]

@@ -3,6 +3,8 @@ package converters
 import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	safecast "github.com/ccoveille/go-safecast"
 )
 
 // ConvertRecipeStepCompletionConditionCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput creates a RecipeStepCompletionConditionDatabaseCreationInput from a RecipeStepCompletionConditionCreationRequestInput.
@@ -83,7 +85,9 @@ func ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreation
 	for _, ingredientIndex := range recipeStepCompletionCondition.Ingredients {
 		for i, ingredient := range recipeStep.Ingredients {
 			if ingredient.ID == ingredientIndex.RecipeStepIngredient {
-				ingredients = append(ingredients, uint64(i))
+				x, err := safecast.ToUint64(i)
+				mustnt(err)
+				ingredients = append(ingredients, x)
 			}
 		}
 	}

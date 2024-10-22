@@ -122,11 +122,11 @@ type (
 
 	// RecipeStepIngredientDataService describes a structure capable of serving traffic related to recipe step ingredients.
 	RecipeStepIngredientDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListRecipeStepIngredientsHandler(http.ResponseWriter, *http.Request)
+		CreateRecipeStepIngredientHandler(http.ResponseWriter, *http.Request)
+		ReadRecipeStepIngredientHandler(http.ResponseWriter, *http.Request)
+		UpdateRecipeStepIngredientHandler(http.ResponseWriter, *http.Request)
+		ArchiveRecipeStepIngredientHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

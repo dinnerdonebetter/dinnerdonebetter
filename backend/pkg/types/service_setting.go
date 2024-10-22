@@ -77,11 +77,11 @@ type (
 
 	// ServiceSettingDataService describes a structure capable of serving traffic related to service settings.
 	ServiceSettingDataService interface {
-		CreateHandler(http.ResponseWriter, *http.Request)
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ListHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		CreateServiceSettingHandler(http.ResponseWriter, *http.Request)
+		SearchServiceSettingsHandler(http.ResponseWriter, *http.Request)
+		ListServiceSettingsHandler(http.ResponseWriter, *http.Request)
+		ReadServiceSettingHandler(http.ResponseWriter, *http.Request)
+		ArchiveServiceSettingHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

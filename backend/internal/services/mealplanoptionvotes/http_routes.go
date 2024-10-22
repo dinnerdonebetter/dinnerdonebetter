@@ -20,8 +20,8 @@ const (
 	MealPlanOptionVoteIDURIParamKey = "mealPlanOptionVoteID"
 )
 
-// CreateHandler is our meal plan option vote creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateMealPlanOptionVoteHandler is our meal plan option vote creation route.
+func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -185,8 +185,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a meal plan option vote.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadMealPlanOptionVoteHandler returns a GET handler that returns a meal plan option vote.
+func (s *service) ReadMealPlanOptionVoteHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -255,8 +255,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListMealPlanOptionVoteHandler is our list route.
+func (s *service) ListMealPlanOptionVoteHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -270,7 +270,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -323,8 +323,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a meal plan option vote.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateMealPlanOptionVoteHandler returns a handler that updates a meal plan option vote.
+func (s *service) UpdateMealPlanOptionVoteHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -433,8 +433,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a meal plan option vote.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveMealPlanOptionVoteHandler returns a handler that archives a meal plan option vote.
+func (s *service) ArchiveMealPlanOptionVoteHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

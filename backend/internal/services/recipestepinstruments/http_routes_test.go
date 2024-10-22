@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
+func TestRecipeStepInstrumentsService_CreateRecipeStepInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -77,7 +77,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -100,7 +100,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -125,7 +125,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -156,7 +156,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 		).Return((*types.RecipeStepInstrument)(nil), errors.New("blah"))
 		helper.service.recipeStepInstrumentDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -197,7 +197,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -209,7 +209,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepInstrumentsService_ReadHandler(T *testing.T) {
+func TestRecipeStepInstrumentsService_ReadRecipeStepInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -227,7 +227,7 @@ func TestRecipeStepInstrumentsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleRecipeStepInstrument, nil)
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -244,7 +244,7 @@ func TestRecipeStepInstrumentsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -268,7 +268,7 @@ func TestRecipeStepInstrumentsService_ReadHandler(T *testing.T) {
 		).Return((*types.RecipeStepInstrument)(nil), sql.ErrNoRows)
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -294,7 +294,7 @@ func TestRecipeStepInstrumentsService_ReadHandler(T *testing.T) {
 		).Return((*types.RecipeStepInstrument)(nil), errors.New("blah"))
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -306,7 +306,7 @@ func TestRecipeStepInstrumentsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
+func TestRecipeStepInstrumentsService_ListRecipeStepInstrumentsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -326,7 +326,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 		).Return(exampleRecipeStepInstrumentList, nil)
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.RecipeStepInstrument]
@@ -343,7 +343,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -367,7 +367,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.RecipeStepInstrument])(nil), sql.ErrNoRows)
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.RecipeStepInstrument]
@@ -393,7 +393,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.RecipeStepInstrument])(nil), errors.New("blah"))
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -405,7 +405,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
+func TestRecipeStepInstrumentsService_UpdateRecipeStepInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -447,7 +447,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -472,7 +472,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -487,7 +487,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -507,7 +507,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -540,7 +540,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return((*types.RecipeStepInstrument)(nil), sql.ErrNoRows)
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -575,7 +575,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return((*types.RecipeStepInstrument)(nil), errors.New("blah"))
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -617,7 +617,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.recipeStepInstrumentDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -667,7 +667,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -679,7 +679,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
+func TestRecipeStepInstrumentsService_ArchiveRecipeStepInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -712,7 +712,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -728,7 +728,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -752,7 +752,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -778,7 +778,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -811,7 +811,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.recipeStepInstrumentDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]
@@ -852,7 +852,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepInstrument]

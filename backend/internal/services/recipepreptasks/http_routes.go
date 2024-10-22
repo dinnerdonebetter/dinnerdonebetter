@@ -21,8 +21,8 @@ const (
 	RecipePrepTaskIDURIParamKey = "recipePrepTaskID"
 )
 
-// CreateHandler is our recipe prep task creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateRecipePrepTaskHandler is our recipe prep task creation route.
+func (s *service) CreateRecipePrepTaskHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -123,8 +123,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a recipe prep task.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadRecipePrepTaskHandler returns a GET handler that returns a recipe prep task.
+func (s *service) ReadRecipePrepTaskHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -185,8 +185,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListRecipePrepTaskHandler is our list route.
+func (s *service) ListRecipePrepTaskHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -200,7 +200,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -245,8 +245,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a recipe prep task.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateRecipePrepTaskHandler returns a handler that updates a recipe prep task.
+func (s *service) UpdateRecipePrepTaskHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -346,8 +346,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a recipe prep task.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveRecipePrepTaskHandler returns a handler that archives a recipe prep task.
+func (s *service) ArchiveRecipePrepTaskHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

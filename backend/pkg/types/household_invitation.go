@@ -99,7 +99,7 @@ type (
 
 	// HouseholdInvitationDataService describes a structure capable of serving traffic related to household invitations.
 	HouseholdInvitationDataService interface {
-		ReadHandler(http.ResponseWriter, *http.Request)
+		ReadHouseholdInviteHandler(http.ResponseWriter, *http.Request)
 		InboundInvitesHandler(http.ResponseWriter, *http.Request)
 		OutboundInvitesHandler(http.ResponseWriter, *http.Request)
 		InviteMemberHandler(http.ResponseWriter, *http.Request)

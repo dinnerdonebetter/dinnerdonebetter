@@ -113,11 +113,11 @@ type (
 
 	// MealPlanOptionVoteDataService describes a structure capable of serving traffic related to meal plan option votes.
 	MealPlanOptionVoteDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
+		CreateMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
+		ReadMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
+		UpdateMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
+		ArchiveMealPlanOptionVoteHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

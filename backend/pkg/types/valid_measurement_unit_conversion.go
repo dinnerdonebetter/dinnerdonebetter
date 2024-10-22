@@ -87,12 +87,12 @@ type (
 
 	// ValidMeasurementUnitConversionDataService describes a structure capable of serving traffic related to valid measurement conversions.
 	ValidMeasurementUnitConversionDataService interface {
-		FromMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		ToMeasurementUnitHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ValidMeasurementUnitConversionsFromMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		ValidMeasurementUnitConversionsToMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		CreateValidMeasurementUnitConversionHandler(http.ResponseWriter, *http.Request)
+		ReadValidMeasurementUnitConversionHandler(http.ResponseWriter, *http.Request)
+		UpdateValidMeasurementUnitConversionHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidMeasurementUnitConversionHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
