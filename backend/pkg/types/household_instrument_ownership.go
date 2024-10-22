@@ -81,11 +81,11 @@ type (
 
 	// HouseholdInstrumentOwnershipDataService describes a structure capable of serving traffic related to household instrument ownerships.
 	HouseholdInstrumentOwnershipDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
+		CreateHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
+		ReadHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
+		UpdateHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
+		ArchiveHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

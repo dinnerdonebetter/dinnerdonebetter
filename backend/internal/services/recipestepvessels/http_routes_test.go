@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
+func TestRecipeStepVesselsService_CreateRecipeStepVesselHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -77,7 +77,7 @@ func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -100,7 +100,7 @@ func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -125,7 +125,7 @@ func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -156,7 +156,7 @@ func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
 		).Return((*types.RecipeStepVessel)(nil), errors.New("blah"))
 		helper.service.recipeStepVesselDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -197,7 +197,7 @@ func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -209,7 +209,7 @@ func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepVesselsService_ReadHandler(T *testing.T) {
+func TestRecipeStepVesselsService_ReadRecipeStepVesselHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -227,7 +227,7 @@ func TestRecipeStepVesselsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleRecipeStepVessel, nil)
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -244,7 +244,7 @@ func TestRecipeStepVesselsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -268,7 +268,7 @@ func TestRecipeStepVesselsService_ReadHandler(T *testing.T) {
 		).Return((*types.RecipeStepVessel)(nil), sql.ErrNoRows)
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -294,7 +294,7 @@ func TestRecipeStepVesselsService_ReadHandler(T *testing.T) {
 		).Return((*types.RecipeStepVessel)(nil), errors.New("blah"))
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -306,7 +306,7 @@ func TestRecipeStepVesselsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepVesselsService_ListHandler(T *testing.T) {
+func TestRecipeStepVesselsService_ListRecipeStepVesselsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -326,7 +326,7 @@ func TestRecipeStepVesselsService_ListHandler(T *testing.T) {
 		).Return(exampleRecipeStepVesselList, nil)
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.RecipeStepVessel]
@@ -343,7 +343,7 @@ func TestRecipeStepVesselsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -367,7 +367,7 @@ func TestRecipeStepVesselsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.RecipeStepVessel])(nil), sql.ErrNoRows)
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -393,7 +393,7 @@ func TestRecipeStepVesselsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.RecipeStepVessel])(nil), errors.New("blah"))
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -405,7 +405,7 @@ func TestRecipeStepVesselsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
+func TestRecipeStepVesselsService_UpdateRecipeStepVesselHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -447,7 +447,7 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -472,7 +472,7 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -487,7 +487,7 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -507,7 +507,7 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -540,7 +540,7 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		).Return((*types.RecipeStepVessel)(nil), sql.ErrNoRows)
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -575,7 +575,7 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		).Return((*types.RecipeStepVessel)(nil), errors.New("blah"))
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -617,7 +617,7 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.recipeStepVesselDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -667,7 +667,7 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -679,7 +679,7 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepVesselsService_ArchiveHandler(T *testing.T) {
+func TestRecipeStepVesselsService_ArchiveRecipeStepVesselHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -712,7 +712,7 @@ func TestRecipeStepVesselsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -728,7 +728,7 @@ func TestRecipeStepVesselsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -752,7 +752,7 @@ func TestRecipeStepVesselsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -778,7 +778,7 @@ func TestRecipeStepVesselsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.recipeStepVesselDataManager = recipeStepVesselDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -811,7 +811,7 @@ func TestRecipeStepVesselsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.recipeStepVesselDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]
@@ -852,7 +852,7 @@ func TestRecipeStepVesselsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepVessel]

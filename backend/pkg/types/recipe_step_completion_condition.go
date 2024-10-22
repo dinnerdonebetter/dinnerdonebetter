@@ -122,11 +122,11 @@ type (
 
 	// RecipeStepCompletionConditionDataService describes a structure capable of serving traffic related to recipe step completion conditions.
 	RecipeStepCompletionConditionDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListRecipeStepCompletionConditionsHandler(http.ResponseWriter, *http.Request)
+		CreateRecipeStepCompletionConditionHandler(http.ResponseWriter, *http.Request)
+		ReadRecipeStepCompletionConditionHandler(http.ResponseWriter, *http.Request)
+		UpdateRecipeStepCompletionConditionHandler(http.ResponseWriter, *http.Request)
+		ArchiveRecipeStepCompletionConditionHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

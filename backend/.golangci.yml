@@ -187,7 +187,7 @@ linters:
     - dogsled                      # Checks assignments with too many blank identifiers (e.g. x, , , _, := f())
     - durationcheck                # check for two durations multiplied together
     - errorlint                    # errorlint is a linter for that can be used to find code that will cause problems with the error wrapping scheme introduced in Go 1.13.
-    - exportloopref                # checks for pointers to enclosing loop variables
+    - copyloopvar                  # checks for pointers to enclosing loop variables
     - forbidigo                    # Forbids identifiers
     - forcetypeassert              # finds forced type assertions
     - goconst                      # Finds repeated strings that could be replaced by a constant
@@ -415,6 +415,11 @@ issues:
     - linters:
         - gosec
       text: "G304:"
+
+    # ignore this error type because it isn't defined anywhere, and it's detecting a false positive
+    - linters:
+        - gosec
+      text: "G115:"
 
     - path: cmd/tools/codegen
       linters:

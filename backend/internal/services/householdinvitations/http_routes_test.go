@@ -429,7 +429,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 	})
 }
 
-func Test_service_ReadHandler(T *testing.T) {
+func Test_service_ReadHouseholdInviteHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -446,7 +446,7 @@ func Test_service_ReadHandler(T *testing.T) {
 		).Return(helper.exampleHouseholdInvitation, nil)
 		helper.service.householdInvitationDataManager = wd
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
@@ -465,7 +465,7 @@ func Test_service_ReadHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
@@ -488,7 +488,7 @@ func Test_service_ReadHandler(T *testing.T) {
 		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
 		helper.service.householdInvitationDataManager = wd
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
@@ -513,7 +513,7 @@ func Test_service_ReadHandler(T *testing.T) {
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
 		helper.service.householdInvitationDataManager = wd
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]

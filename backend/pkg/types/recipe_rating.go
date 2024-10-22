@@ -100,11 +100,11 @@ type (
 
 	// RecipeRatingDataService describes a structure capable of serving traffic related to recipe ratings.
 	RecipeRatingDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListRecipeRatingsHandler(http.ResponseWriter, *http.Request)
+		ReadRecipeRatingHandler(http.ResponseWriter, *http.Request)
+		CreateRecipeRatingHandler(http.ResponseWriter, *http.Request)
+		UpdateRecipeRatingHandler(http.ResponseWriter, *http.Request)
+		ArchiveRecipeRatingHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

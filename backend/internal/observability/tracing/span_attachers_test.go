@@ -1,78 +1,17 @@
 package tracing
 
-/*
+import (
+	"context"
+	"errors"
+	"net/http"
+	"testing"
 
-func Test_attachUint8ToSpan(T *testing.T) {
-	T.Parallel()
+	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachUint8ToSpan(span, t.Name(), 1)
-	})
-}
-
-func Test_attachUint64ToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachUint64ToSpan(span, t.Name(), 123)
-	})
-}
-
-func Test_attachStringToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachStringToSpan(span, t.Name(), "blah")
-	})
-}
-
-func Test_attachBooleanToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachBooleanToSpan(span, t.Name(), false)
-	})
-}
-
-func Test_attachSliceToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachSliceOfStringsToSpan(span, t.Name(), []string{t.Name()})
-	})
-}
-
-func TestAttachFilterToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachFilterDataToSpan(span, pointers.Pointer(uint16(1)), pointers.Pointer(uint8(2)), pointers.Pointer(t.Name()))
-	})
-}
+	"github.com/stretchr/testify/require"
+)
 
 func TestAttachSessionContextDataToSpan(T *testing.T) {
 	T.Parallel()
@@ -148,18 +87,6 @@ func TestAttachErrorToSpan(T *testing.T) {
 	})
 }
 
-func TestAttachDatabaseQueryToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachDatabaseQueryToSpan(span, "description", "query", []any{"blah"})
-	})
-}
-
 func TestAttachQueryFilterToSpan(T *testing.T) {
 	T.Parallel()
 
@@ -180,4 +107,162 @@ func TestAttachQueryFilterToSpan(T *testing.T) {
 	})
 }
 
-*/
+func TestAttachToSpan(T *testing.T) {
+	T.Parallel()
+
+	type testCase struct {
+		x             any
+		name          string
+		attachmentKey string
+	}
+	tests := []testCase{
+
+		{
+			name:          "int",
+			attachmentKey: T.Name(),
+			x:             1,
+		},
+		{
+			name:          "int slice",
+			attachmentKey: T.Name(),
+			x:             []int{1},
+		},
+		{
+			name:          "int8",
+			attachmentKey: T.Name(),
+			x:             int8(1),
+		},
+		{
+			name:          "int8 slice",
+			attachmentKey: T.Name(),
+			x:             []int8{int8(1)},
+		},
+		{
+			name:          "int16",
+			attachmentKey: T.Name(),
+			x:             int16(1),
+		},
+		{
+			name:          "int16 slice",
+			attachmentKey: T.Name(),
+			x:             []int16{int16(1)},
+		},
+		{
+			name:          "int32",
+			attachmentKey: T.Name(),
+			x:             int32(1),
+		},
+		{
+			name:          "int32 slice",
+			attachmentKey: T.Name(),
+			x:             []int32{int32(1)},
+		},
+		{
+			name:          "int64",
+			attachmentKey: T.Name(),
+			x:             int64(1),
+		},
+		{
+			name:          "int64 slice",
+			attachmentKey: T.Name(),
+			x:             []int64{int64(1)},
+		},
+		{
+			name:          "uint",
+			attachmentKey: T.Name(),
+			x:             uint(1),
+		},
+		{
+			name:          "uint slice",
+			attachmentKey: T.Name(),
+			x:             []uint{uint(1)},
+		},
+		{
+			name:          "uint8",
+			attachmentKey: T.Name(),
+			x:             uint8(1),
+		},
+		{
+			name:          "uint8 slice",
+			attachmentKey: T.Name(),
+			x:             []uint8{uint8(1)},
+		},
+		{
+			name:          "uint16",
+			attachmentKey: T.Name(),
+			x:             uint16(1),
+		},
+		{
+			name:          "uint16 slice",
+			attachmentKey: T.Name(),
+			x:             []uint16{uint16(1)},
+		},
+		{
+			name:          "uint32",
+			attachmentKey: T.Name(),
+			x:             uint32(1),
+		},
+		{
+			name:          "uint32 slice",
+			attachmentKey: T.Name(),
+			x:             []uint32{uint32(1)},
+		},
+		{
+			name:          "uint64",
+			attachmentKey: T.Name(),
+			x:             uint64(1),
+		},
+		{
+			name:          "uint64 slice",
+			attachmentKey: T.Name(),
+			x:             []uint64{uint64(1)},
+		},
+		{
+			name:          "float32",
+			attachmentKey: T.Name(),
+			x:             float32(1),
+		},
+		{
+			name:          "float32 slice",
+			attachmentKey: T.Name(),
+			x:             []float32{float32(1)},
+		},
+		{
+			name:          "float64",
+			attachmentKey: T.Name(),
+			x:             float64(1),
+		},
+		{
+			name:          "float64 slice",
+			attachmentKey: T.Name(),
+			x:             []float64{float64(1)},
+		},
+		{
+			name:          "string",
+			attachmentKey: T.Name(),
+			x:             "test",
+		},
+		{
+			name:          "string slice",
+			attachmentKey: T.Name(),
+			x:             []string{"test"},
+		},
+		{
+			name:          "bool",
+			attachmentKey: T.Name(),
+			x:             true,
+		},
+		{
+			name:          "bool slice",
+			attachmentKey: T.Name(),
+			x:             []bool{true},
+		},
+	}
+	for _, tt := range tests {
+		T.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			_, span := StartSpan(context.Background())
+			AttachToSpan(span, tt.attachmentKey, tt.x)
+		})
+	}
+}

@@ -19,14 +19,10 @@ import (
 const (
 	// ValidIngredientGroupIDURIParamKey is a standard string that we'll use to refer to valid ingredient IDs with.
 	ValidIngredientGroupIDURIParamKey = "validIngredientGroupID"
-	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
-	ValidPreparationIDURIParamKey = "validPreparationID"
-	// ValidIngredientGroupStateIDURIParamKey is a standard string that we'll use to refer to valid ingredient state IDs with.
-	ValidIngredientGroupStateIDURIParamKey = "validIngredientGroupStateID"
 )
 
-// CreateHandler is our valid ingredient creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidIngredientGroupHandler is our valid ingredient creation route.
+func (s *service) CreateValidIngredientGroupHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -102,8 +98,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid ingredient.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidIngredientGroupHandler returns a GET handler that returns a valid ingredient.
+func (s *service) ReadValidIngredientGroupHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -159,8 +155,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidIngredientGroupsHandler is our list route.
+func (s *service) ListValidIngredientGroupsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -174,7 +170,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -214,8 +210,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchHandler is our search route.
-func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidIngredientGroupsHandler is our search route.
+func (s *service) SearchValidIngredientGroupsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -230,7 +226,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -265,8 +261,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a valid ingredient.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidIngredientGroupHandler returns a handler that updates a valid ingredient.
+func (s *service) UpdateValidIngredientGroupHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -358,8 +354,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a valid ingredient.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidIngredientGroupHandler returns a handler that archives a valid ingredient.
+func (s *service) ArchiveValidIngredientGroupHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

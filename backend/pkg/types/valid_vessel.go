@@ -163,13 +163,13 @@ type (
 
 	// ValidVesselDataService describes a structure capable of serving traffic related to valid vessels.
 	ValidVesselDataService interface {
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		RandomHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		SearchValidVesselsHandler(http.ResponseWriter, *http.Request)
+		ListValidVesselsHandler(http.ResponseWriter, *http.Request)
+		CreateValidVesselHandler(http.ResponseWriter, *http.Request)
+		ReadValidVesselHandler(http.ResponseWriter, *http.Request)
+		RandomValidVesselHandler(http.ResponseWriter, *http.Request)
+		UpdateValidVesselHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidVesselHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

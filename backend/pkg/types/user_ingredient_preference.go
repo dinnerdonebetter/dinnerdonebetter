@@ -88,10 +88,10 @@ type (
 
 	// UserIngredientPreferenceDataService describes a structure capable of serving traffic related to user ingredient preferences.
 	UserIngredientPreferenceDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListUserIngredientPreferencesHandler(http.ResponseWriter, *http.Request)
+		CreateUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
+		UpdateUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
+		ArchiveUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

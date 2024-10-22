@@ -19,7 +19,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMealPlanTasksService_ReadHandler(T *testing.T) {
+func TestMealPlanTasksService_ReadMealPlanTaskHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -35,7 +35,7 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleMealPlanTask, nil)
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealPlanTaskHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]
@@ -52,7 +52,7 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealPlanTaskHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]
@@ -74,7 +74,7 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 		).Return((*types.MealPlanTask)(nil), sql.ErrNoRows)
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealPlanTaskHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]
@@ -98,7 +98,7 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 		).Return((*types.MealPlanTask)(nil), errors.New("blah"))
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealPlanTaskHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]
@@ -110,7 +110,7 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestMealPlanTasksService_ListHandler(T *testing.T) {
+func TestMealPlanTasksService_ListMealPlanTasksByMealPlanHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -128,7 +128,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 		).Return(exampleMealPlanTaskList, nil)
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
-		helper.service.ListByMealPlanHandler(helper.res, helper.req)
+		helper.service.ListMealPlanTasksByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.MealPlanTask]
@@ -145,7 +145,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListByMealPlanHandler(helper.res, helper.req)
+		helper.service.ListMealPlanTasksByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]
@@ -167,7 +167,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 		).Return([]*types.MealPlanTask(nil), sql.ErrNoRows)
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
-		helper.service.ListByMealPlanHandler(helper.res, helper.req)
+		helper.service.ListMealPlanTasksByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.MealPlanTask]
@@ -191,7 +191,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 		).Return([]*types.MealPlanTask(nil), errors.New("blah"))
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
-		helper.service.ListByMealPlanHandler(helper.res, helper.req)
+		helper.service.ListMealPlanTasksByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]
@@ -203,7 +203,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
+func TestMealPlanTasksService_MealPlanTaskStatusChangeHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -246,7 +246,7 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.StatusChangeHandler(helper.res, helper.req)
+		helper.service.MealPlanTaskStatusChangeHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]
@@ -263,7 +263,7 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.StatusChangeHandler(helper.res, helper.req)
+		helper.service.MealPlanTaskStatusChangeHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]
@@ -300,7 +300,7 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.mealPlanTaskDataManager = dbManager
 
-		helper.service.StatusChangeHandler(helper.res, helper.req)
+		helper.service.MealPlanTaskStatusChangeHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]
@@ -351,7 +351,7 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.StatusChangeHandler(helper.res, helper.req)
+		helper.service.MealPlanTaskStatusChangeHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.MealPlanTask]

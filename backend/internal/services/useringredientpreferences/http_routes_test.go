@@ -12,7 +12,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	testutils "github.com/dinnerdonebetter/backend/internal/pkg/testutils"
+	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
+func TestUserIngredientPreferencesService_CreateUserIngredientPreferenceHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -57,7 +57,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[[]*types.UserIngredientPreference]
@@ -79,7 +79,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -102,7 +102,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -127,7 +127,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -158,7 +158,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 		).Return([]*types.UserIngredientPreference(nil), errors.New("blah"))
 		helper.service.userIngredientPreferenceDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -201,7 +201,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[[]*types.UserIngredientPreference]
@@ -213,7 +213,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestUserIngredientPreferencesService_ListHandler(T *testing.T) {
+func TestUserIngredientPreferencesService_ListUserIngredientPreferencesHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -232,7 +232,7 @@ func TestUserIngredientPreferencesService_ListHandler(T *testing.T) {
 		).Return(exampleUserIngredientPreferenceList, nil)
 		helper.service.userIngredientPreferenceDataManager = userIngredientPreferenceDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUserIngredientPreferencesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.UserIngredientPreference]
@@ -249,7 +249,7 @@ func TestUserIngredientPreferencesService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUserIngredientPreferencesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -272,7 +272,7 @@ func TestUserIngredientPreferencesService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.UserIngredientPreference])(nil), sql.ErrNoRows)
 		helper.service.userIngredientPreferenceDataManager = userIngredientPreferenceDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUserIngredientPreferencesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -293,7 +293,7 @@ func TestUserIngredientPreferencesService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.UserIngredientPreference])(nil), errors.New("blah"))
 		helper.service.userIngredientPreferenceDataManager = userIngredientPreferenceDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListUserIngredientPreferencesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -305,7 +305,7 @@ func TestUserIngredientPreferencesService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
+func TestUserIngredientPreferencesService_UpdateUserIngredientPreferenceHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -345,7 +345,7 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -370,7 +370,7 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -385,7 +385,7 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -405,7 +405,7 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -437,7 +437,7 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		).Return((*types.UserIngredientPreference)(nil), sql.ErrNoRows)
 		helper.service.userIngredientPreferenceDataManager = userIngredientPreferenceDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -471,7 +471,7 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		).Return((*types.UserIngredientPreference)(nil), errors.New("blah"))
 		helper.service.userIngredientPreferenceDataManager = userIngredientPreferenceDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -511,7 +511,7 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.userIngredientPreferenceDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -559,7 +559,7 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -571,7 +571,7 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestUserIngredientPreferencesService_ArchiveHandler(T *testing.T) {
+func TestUserIngredientPreferencesService_ArchiveUserIngredientPreferenceHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -603,7 +603,7 @@ func TestUserIngredientPreferencesService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -619,7 +619,7 @@ func TestUserIngredientPreferencesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -642,7 +642,7 @@ func TestUserIngredientPreferencesService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.userIngredientPreferenceDataManager = userIngredientPreferenceDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -667,7 +667,7 @@ func TestUserIngredientPreferencesService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.userIngredientPreferenceDataManager = userIngredientPreferenceDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -699,7 +699,7 @@ func TestUserIngredientPreferencesService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.userIngredientPreferenceDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]
@@ -739,7 +739,7 @@ func TestUserIngredientPreferencesService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveUserIngredientPreferenceHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.UserIngredientPreference]

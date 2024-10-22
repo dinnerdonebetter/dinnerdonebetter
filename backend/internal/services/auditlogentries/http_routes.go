@@ -90,7 +90,7 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	resourceTypes := req.URL.Query()[types.AuditLogResourceTypesQueryParamKey]
 	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
@@ -155,7 +155,7 @@ func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, r
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	resourceTypes := req.URL.Query()[types.AuditLogResourceTypesQueryParamKey]
 	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)

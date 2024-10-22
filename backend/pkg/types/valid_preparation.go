@@ -141,13 +141,13 @@ type (
 
 	// ValidPreparationDataService describes a structure capable of serving traffic related to valid preparations.
 	ValidPreparationDataService interface {
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		RandomHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		SearchValidPreparationsHandler(http.ResponseWriter, *http.Request)
+		ListValidPreparationsHandler(http.ResponseWriter, *http.Request)
+		CreateValidPreparationHandler(http.ResponseWriter, *http.Request)
+		ReadValidPreparationHandler(http.ResponseWriter, *http.Request)
+		RandomValidPreparationHandler(http.ResponseWriter, *http.Request)
+		UpdateValidPreparationHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidPreparationHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

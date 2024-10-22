@@ -22,8 +22,8 @@ const (
 	RecipeStepIDURIParamKey = "recipeStepID"
 )
 
-// CreateHandler is our recipe step creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateRecipeStepHandler is our recipe step creation route.
+func (s *service) CreateRecipeStepHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -118,8 +118,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a recipe step.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadRecipeStepHandler returns a GET handler that returns a recipe step.
+func (s *service) ReadRecipeStepHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -180,8 +180,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListRecipeStepsHandler is our list route.
+func (s *service) ListRecipeStepsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -195,7 +195,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -240,8 +240,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a recipe step.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateRecipeStepHandler returns a handler that updates a recipe step.
+func (s *service) UpdateRecipeStepHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -341,8 +341,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a recipe step.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveRecipeStepHandler returns a handler that archives a recipe step.
+func (s *service) ArchiveRecipeStepHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -420,8 +420,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ImageUploadHandler updates a user's avatar.
-func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request) {
+// RecipeStepImageUploadHandler updates a user's avatar.
+func (s *service) RecipeStepImageUploadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -429,7 +429,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	logger.Info("ImageUploadHandler invoked")
+	logger.Info("ImageUploadRecipeStepHandler invoked")
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),

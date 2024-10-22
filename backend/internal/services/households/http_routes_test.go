@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHouseholdsService_ListHandler(T *testing.T) {
+func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -42,7 +42,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 		).Return(exampleHouseholdList, nil)
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListHouseholdsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.Household]
@@ -65,7 +65,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListHouseholdsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -88,7 +88,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.Household])(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListHouseholdsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.Household]
@@ -113,7 +113,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.Household])(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListHouseholdsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -125,7 +125,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestHouseholdsService_CreateHandler(T *testing.T) {
+func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -158,7 +158,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -186,7 +186,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -206,7 +206,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -229,7 +229,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -260,7 +260,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -301,7 +301,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -406,7 +406,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 	})
 }
 
-func TestHouseholdsService_ReadHandler(T *testing.T) {
+func TestHouseholdsService_ReadHouseholdHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -422,7 +422,7 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -440,7 +440,7 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -462,7 +462,7 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -486,7 +486,7 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -498,7 +498,7 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestHouseholdsService_UpdateHandler(T *testing.T) {
+func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -536,7 +536,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -564,7 +564,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -584,7 +584,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -607,7 +607,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -638,7 +638,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -671,7 +671,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -712,7 +712,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -758,7 +758,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -771,7 +771,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestHouseholdsService_ArchiveHandler(T *testing.T) {
+func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -796,7 +796,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -812,7 +812,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -835,7 +835,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		).Return(sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -860,7 +860,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]
@@ -893,7 +893,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Household]

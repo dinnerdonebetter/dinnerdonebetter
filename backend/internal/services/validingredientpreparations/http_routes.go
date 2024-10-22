@@ -24,8 +24,8 @@ const (
 	ValidIngredientIDURIParamKey = "validIngredientID"
 )
 
-// CreateHandler is our valid ingredient preparation creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidIngredientPreparationHandler is our valid ingredient preparation creation route.
+func (s *service) CreateValidIngredientPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -101,8 +101,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid ingredient preparation.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidIngredientPreparationHandler returns a GET handler that returns a valid ingredient preparation.
+func (s *service) ReadValidIngredientPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -156,8 +156,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidIngredientPreparationsHandler is our list route.
+func (s *service) ListValidIngredientPreparationsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -171,7 +171,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -209,8 +209,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a valid ingredient preparation.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidIngredientPreparationHandler returns a handler that updates a valid ingredient preparation.
+func (s *service) UpdateValidIngredientPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -302,8 +302,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a valid ingredient preparation.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidIngredientPreparationHandler returns a handler that archives a valid ingredient preparation.
+func (s *service) ArchiveValidIngredientPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -375,8 +375,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// SearchByIngredientHandler is our valid ingredient measurement unit search route.
-func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidIngredientPreparationsByIngredientHandler is our valid ingredient measurement unit search route.
+func (s *service) SearchValidIngredientPreparationsByIngredientHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -385,7 +385,7 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 	tracing.AttachRequestToSpan(span, req)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -427,8 +427,8 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// SearchByPreparationHandler is our valid ingredient measurement unit search route.
-func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidIngredientPreparationsByPreparationHandler is our valid ingredient measurement unit search route.
+func (s *service) SearchValidIngredientPreparationsByPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -437,7 +437,7 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	tracing.AttachRequestToSpan(span, req)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{

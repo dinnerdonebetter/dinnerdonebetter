@@ -20,8 +20,8 @@ const (
 	RecipeStepVesselIDURIParamKey = "recipeStepVesselID"
 )
 
-// CreateHandler is our recipe step vessel creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateRecipeStepVesselHandler is our recipe step vessel creation route.
+func (s *service) CreateRecipeStepVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -104,8 +104,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a recipe step vessel.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadRecipeStepVesselHandler returns a GET handler that returns a recipe step vessel.
+func (s *service) ReadRecipeStepVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -171,8 +171,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListRecipeStepVesselsHandler is our list route.
+func (s *service) ListRecipeStepVesselsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -186,7 +186,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -236,8 +236,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a recipe step vessel.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateRecipeStepVesselHandler returns a handler that updates a recipe step vessel.
+func (s *service) UpdateRecipeStepVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -342,8 +342,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a recipe step vessel.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveRecipeStepVesselHandler returns a handler that archives a recipe step vessel.
+func (s *service) ArchiveRecipeStepVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

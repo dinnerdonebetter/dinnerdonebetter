@@ -116,11 +116,11 @@ type (
 
 	// MealPlanGroceryListItemDataService describes a structure capable of serving traffic related to meal plan grocery list items.
 	MealPlanGroceryListItemDataService interface {
-		ListByMealPlanHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListMealPlanGroceryListItemsByMealPlanHandler(http.ResponseWriter, *http.Request)
+		CreateMealPlanGroceryListItemHandler(http.ResponseWriter, *http.Request)
+		ReadMealPlanGroceryListItemHandler(http.ResponseWriter, *http.Request)
+		UpdateMealPlanGroceryListItemHandler(http.ResponseWriter, *http.Request)
+		ArchiveMealPlanGroceryListItemHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

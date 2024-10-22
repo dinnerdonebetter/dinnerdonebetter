@@ -19,8 +19,8 @@ const (
 	UserIngredientPreferenceIDURIParamKey = "userIngredientPreferenceID"
 )
 
-// CreateHandler is our user ingredient preference creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateUserIngredientPreferenceHandler is our user ingredient preference creation route.
+func (s *service) CreateUserIngredientPreferenceHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -94,8 +94,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListUserIngredientPreferencesHandler is our list route.
+func (s *service) ListUserIngredientPreferencesHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -109,7 +109,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -147,8 +147,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a user ingredient preference.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateUserIngredientPreferenceHandler returns a handler that updates a user ingredient preference.
+func (s *service) UpdateUserIngredientPreferenceHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -240,8 +240,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a user ingredient preference.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveUserIngredientPreferenceHandler returns a handler that archives a user ingredient preference.
+func (s *service) ArchiveUserIngredientPreferenceHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

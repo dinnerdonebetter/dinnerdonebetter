@@ -25,8 +25,8 @@ const (
 
 var _ types.HouseholdDataService = (*service)(nil)
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListHouseholdsHandler is our list route.
+func (s *service) ListHouseholdsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -40,7 +40,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// fetch session context data
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -80,8 +80,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// CreateHandler is our household creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateHouseholdHandler is our household creation route.
+func (s *service) CreateHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -236,8 +236,8 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ReadHandler returns a GET handler that returns a household.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadHouseholdHandler returns a GET handler that returns a household.
+func (s *service) ReadHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -306,8 +306,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a household.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateHouseholdHandler returns a handler that updates a household.
+func (s *service) UpdateHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -406,8 +406,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a household.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveHouseholdHandler returns a handler that archives a household.
+func (s *service) ArchiveHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

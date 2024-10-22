@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServiceSettingsService_ReadHandler(T *testing.T) {
+func TestServiceSettingsService_ReadServiceSettingHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -34,7 +34,7 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleServiceSetting, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadServiceSettingHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSetting]
@@ -51,7 +51,7 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadServiceSettingHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSetting]
@@ -73,7 +73,7 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 		).Return((*types.ServiceSetting)(nil), sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadServiceSettingHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSetting]
@@ -97,7 +97,7 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 		).Return((*types.ServiceSetting)(nil), errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadServiceSettingHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSetting]
@@ -109,7 +109,7 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestServiceSettingsService_ListHandler(T *testing.T) {
+func TestServiceSettingsService_ListServiceSettingsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -127,7 +127,7 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 		).Return(exampleServiceSettingList, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListServiceSettingsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ServiceSetting]
@@ -144,7 +144,7 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListServiceSettingsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSetting]
@@ -166,7 +166,7 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ServiceSetting])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListServiceSettingsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ServiceSetting]
@@ -190,7 +190,7 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ServiceSetting])(nil), errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListServiceSettingsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSetting]
@@ -202,7 +202,7 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestServiceSettingsService_SearchHandler(T *testing.T) {
+func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 	T.Parallel()
 
 	exampleQuery := "whatever"
@@ -227,7 +227,7 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		).Return(exampleServiceSettingList.Data, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchServiceSettingsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ServiceSetting]
@@ -244,7 +244,7 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchServiceSettingsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSetting]
@@ -271,7 +271,7 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		).Return([]*types.ServiceSetting{}, sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchServiceSettingsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ServiceSetting]
@@ -299,7 +299,7 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		).Return([]*types.ServiceSetting{}, errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchServiceSettingsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSetting]

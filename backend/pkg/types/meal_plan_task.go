@@ -102,10 +102,10 @@ type (
 
 	// MealPlanTaskDataService describes a structure capable of serving traffic related to meal plan tasks.
 	MealPlanTaskDataService interface {
-		ListByMealPlanHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		StatusChangeHandler(http.ResponseWriter, *http.Request)
+		ListMealPlanTasksByMealPlanHandler(http.ResponseWriter, *http.Request)
+		ReadMealPlanTaskHandler(http.ResponseWriter, *http.Request)
+		CreateMealPlanTaskHandler(http.ResponseWriter, *http.Request)
+		MealPlanTaskStatusChangeHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

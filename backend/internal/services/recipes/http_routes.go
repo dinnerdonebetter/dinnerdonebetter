@@ -25,8 +25,8 @@ const (
 	RecipeIDURIParamKey = "recipeID"
 )
 
-// CreateHandler is our recipe creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateRecipeHandler is our recipe creation route.
+func (s *service) CreateRecipeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -109,8 +109,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a recipe.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadRecipeHandler returns a GET handler that returns a recipe.
+func (s *service) ReadRecipeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -168,8 +168,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListRecipesHandler is our list route.
+func (s *service) ListRecipesHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -183,7 +183,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -223,8 +223,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchHandler is our list route.
-func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
+// SearchRecipesHandler is our list route.
+func (s *service) SearchRecipesHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -237,7 +237,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
@@ -311,8 +311,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a recipe.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateRecipeHandler returns a handler that updates a recipe.
+func (s *service) UpdateRecipeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -413,8 +413,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a recipe.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveRecipeHandler returns a handler that archives a recipe.
+func (s *service) ArchiveRecipeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -488,8 +488,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// DAGHandler is a handler that returns a DAG image.
-func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
+// RecipeDAGHandler is a handler that returns a DAG image.
+func (s *service) RecipeDAGHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -553,8 +553,8 @@ func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// EstimatedPrepStepsHandler is a handler that returns expected prep steps for a given recipe.
-func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.Request) {
+// RecipeEstimatedPrepStepsHandler is a handler that returns expected prep steps for a given recipe.
+func (s *service) RecipeEstimatedPrepStepsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -626,8 +626,8 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ImageUploadHandler updates a user's avatar.
-func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request) {
+// RecipeImageUploadHandler updates a user's avatar.
+func (s *service) RecipeImageUploadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -728,8 +728,8 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// MermaidHandler returns a GET handler that returns a recipe in Mermaid format.
-func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
+// RecipeMermaidHandler returns a GET handler that returns a recipe in Mermaid format.
+func (s *service) RecipeMermaidHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -787,8 +787,8 @@ func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// CloneHandler returns a POST handler that returns a cloned recipe.
-func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
+// CloneRecipeHandler returns a POST handler that returns a cloned recipe.
+func (s *service) CloneRecipeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

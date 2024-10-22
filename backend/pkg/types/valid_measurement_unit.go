@@ -137,13 +137,13 @@ type (
 
 	// ValidMeasurementUnitDataService describes a structure capable of serving traffic related to valid measurement units.
 	ValidMeasurementUnitDataService interface {
-		SearchHandler(http.ResponseWriter, *http.Request)
-		SearchByIngredientIDHandler(http.ResponseWriter, *http.Request)
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		SearchValidMeasurementUnitsHandler(http.ResponseWriter, *http.Request)
+		SearchValidMeasurementUnitsByIngredientIDHandler(http.ResponseWriter, *http.Request)
+		ListValidMeasurementUnitsHandler(http.ResponseWriter, *http.Request)
+		CreateValidMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		ReadValidMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		UpdateValidMeasurementUnitHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidMeasurementUnitHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_CreateValidMeasurementUnitConversionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -77,7 +77,7 @@ func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -100,7 +100,7 @@ func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -125,7 +125,7 @@ func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -156,7 +156,7 @@ func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 		).Return((*types.ValidMeasurementUnitConversion)(nil), errors.New("blah"))
 		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -197,7 +197,7 @@ func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
@@ -205,7 +205,7 @@ func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_ReadValidMeasurementUnitConversionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -221,7 +221,7 @@ func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidMeasurementUnitConversion, nil)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -238,7 +238,7 @@ func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -260,7 +260,7 @@ func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidMeasurementUnitConversion)(nil), sql.ErrNoRows)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -284,7 +284,7 @@ func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidMeasurementUnitConversion)(nil), errors.New("blah"))
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -296,7 +296,7 @@ func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_UpdateValidMeasurementUnitConversionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -335,7 +335,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -360,7 +360,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -375,7 +375,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -395,7 +395,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -426,7 +426,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidMeasurementUnitConversion)(nil), sql.ErrNoRows)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -459,7 +459,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidMeasurementUnitConversion)(nil), errors.New("blah"))
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -498,7 +498,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -545,7 +545,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -557,7 +557,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_ArchiveValidMeasurementUnitConversionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -587,7 +587,7 @@ func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -600,7 +600,7 @@ func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -622,7 +622,7 @@ func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -646,7 +646,7 @@ func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -676,7 +676,7 @@ func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -714,7 +714,7 @@ func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -722,7 +722,7 @@ func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
 	})
 }
 
-func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_ValidMeasurementUnitConversionsFromMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -739,7 +739,7 @@ func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *te
 		).Return(expected, nil)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ValidMeasurementUnitConversionsFromMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
@@ -756,7 +756,7 @@ func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *te
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ValidMeasurementUnitConversionsFromMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -778,7 +778,7 @@ func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *te
 		).Return([]*types.ValidMeasurementUnitConversion(nil), sql.ErrNoRows)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ValidMeasurementUnitConversionsFromMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -802,7 +802,7 @@ func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *te
 		).Return([]*types.ValidMeasurementUnitConversion(nil), errors.New("blah"))
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ValidMeasurementUnitConversionsFromMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -814,7 +814,7 @@ func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *te
 	})
 }
 
-func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_ValidMeasurementUnitConversionsToMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -831,7 +831,7 @@ func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *test
 		).Return(expected, nil)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ValidMeasurementUnitConversionsToMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
@@ -848,7 +848,7 @@ func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *test
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ValidMeasurementUnitConversionsToMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -870,7 +870,7 @@ func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *test
 		).Return([]*types.ValidMeasurementUnitConversion(nil), sql.ErrNoRows)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ValidMeasurementUnitConversionsToMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
@@ -894,7 +894,7 @@ func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *test
 		).Return([]*types.ValidMeasurementUnitConversion(nil), errors.New("blah"))
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
-		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ValidMeasurementUnitConversionsToMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]

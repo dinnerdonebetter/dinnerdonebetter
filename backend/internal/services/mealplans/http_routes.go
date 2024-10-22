@@ -21,8 +21,8 @@ const (
 	MealPlanIDURIParamKey = "mealPlanID"
 )
 
-// CreateHandler is our meal plan creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateMealPlanHandler is our meal plan creation route.
+func (s *service) CreateMealPlanHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -115,8 +115,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a meal plan.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadMealPlanHandler returns a GET handler that returns a meal plan.
+func (s *service) ReadMealPlanHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -172,8 +172,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListMealPlanHandler is our list route.
+func (s *service) ListMealPlanHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -187,7 +187,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -227,8 +227,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateHandler returns a handler that updates a meal plan.
-func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateMealPlanHandler returns a handler that updates a meal plan.
+func (s *service) UpdateMealPlanHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -324,8 +324,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives a meal plan.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveMealPlanHandler returns a handler that archives a meal plan.
+func (s *service) ArchiveMealPlanHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -399,8 +399,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// FinalizeHandler returns a handler that attempts to finalize a meal plan.
-func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
+// FinalizeMealPlanHandler returns a handler that attempts to finalize a meal plan.
+func (s *service) FinalizeMealPlanHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

@@ -49,9 +49,6 @@ func buildTestHelper(t *testing.T) *validIngredientsServiceHTTPRoutesTestHelper 
 	helper.service.validIngredientIDFetcher = func(*http.Request) string {
 		return helper.exampleValidIngredient.ID
 	}
-	helper.service.validIngredientStateIDFetcher = func(*http.Request) string {
-		return helper.exampleValidIngredientState.ID
-	}
 	helper.service.validPreparationIDFetcher = func(*http.Request) string {
 		return helper.exampleValidPreparation.ID
 	}

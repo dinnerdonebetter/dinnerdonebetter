@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
+func TestRecipeStepCompletionConditionsService_CreateRecipeStepCompletionConditionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -77,7 +77,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -100,7 +100,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -125,7 +125,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -156,7 +156,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		).Return((*types.RecipeStepCompletionCondition)(nil), errors.New("blah"))
 		helper.service.recipeStepCompletionConditionDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -197,7 +197,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -209,7 +209,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepCompletionConditionsService_ReadHandler(T *testing.T) {
+func TestRecipeStepCompletionConditionsService_ReadRecipeStepCompletionConditionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -227,7 +227,7 @@ func TestRecipeStepCompletionConditionsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleRecipeStepCompletionCondition, nil)
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -244,7 +244,7 @@ func TestRecipeStepCompletionConditionsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -268,7 +268,7 @@ func TestRecipeStepCompletionConditionsService_ReadHandler(T *testing.T) {
 		).Return((*types.RecipeStepCompletionCondition)(nil), sql.ErrNoRows)
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -294,7 +294,7 @@ func TestRecipeStepCompletionConditionsService_ReadHandler(T *testing.T) {
 		).Return((*types.RecipeStepCompletionCondition)(nil), errors.New("blah"))
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -306,7 +306,7 @@ func TestRecipeStepCompletionConditionsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
+func TestRecipeStepCompletionConditionsService_ListRecipeStepCompletionConditionsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -326,7 +326,7 @@ func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
 		).Return(exampleRecipeStepCompletionConditionList, nil)
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepCompletionConditionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.RecipeStepCompletionCondition]
@@ -343,7 +343,7 @@ func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepCompletionConditionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -367,7 +367,7 @@ func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.RecipeStepCompletionCondition])(nil), sql.ErrNoRows)
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepCompletionConditionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.RecipeStepCompletionCondition]
@@ -393,7 +393,7 @@ func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.RecipeStepCompletionCondition])(nil), errors.New("blah"))
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListRecipeStepCompletionConditionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -405,7 +405,7 @@ func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
+func TestRecipeStepCompletionConditionsService_UpdateRecipeStepCompletionConditionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -446,7 +446,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -471,7 +471,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -486,7 +486,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -506,7 +506,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -539,7 +539,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		).Return((*types.RecipeStepCompletionCondition)(nil), sql.ErrNoRows)
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -574,7 +574,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		).Return((*types.RecipeStepCompletionCondition)(nil), errors.New("blah"))
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -615,7 +615,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.recipeStepCompletionConditionDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -664,7 +664,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -676,7 +676,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
+func TestRecipeStepCompletionConditionsService_ArchiveRecipeStepCompletionConditionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -709,7 +709,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -725,7 +725,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -749,7 +749,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -775,7 +775,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.recipeStepCompletionConditionDataManager = recipeStepCompletionConditionDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -808,7 +808,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.recipeStepCompletionConditionDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]
@@ -849,7 +849,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveRecipeStepCompletionConditionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.RecipeStepCompletionCondition]

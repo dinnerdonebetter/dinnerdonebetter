@@ -253,15 +253,14 @@ type (
 
 	// ValidIngredientDataService describes a structure capable of serving traffic related to valid ingredients.
 	ValidIngredientDataService interface {
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ForValidIngredientStateHandler(http.ResponseWriter, *http.Request)
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		RandomHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
-		SearchByPreparationAndIngredientNameHandler(http.ResponseWriter, *http.Request)
+		SearchValidIngredientsHandler(http.ResponseWriter, *http.Request)
+		ListValidIngredientsHandler(http.ResponseWriter, *http.Request)
+		CreateValidIngredientHandler(http.ResponseWriter, *http.Request)
+		ReadValidIngredientHandler(http.ResponseWriter, *http.Request)
+		RandomValidIngredientHandler(http.ResponseWriter, *http.Request)
+		UpdateValidIngredientHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidIngredientHandler(http.ResponseWriter, *http.Request)
+		SearchValidIngredientsByPreparationAndIngredientNameHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

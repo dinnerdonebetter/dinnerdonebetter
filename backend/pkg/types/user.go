@@ -265,11 +265,11 @@ type (
 
 	// UserDataService describes a structure capable of serving traffic related to users.
 	UserDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
+		ListUsersHandler(http.ResponseWriter, *http.Request)
+		CreateUserHandler(http.ResponseWriter, *http.Request)
+		ReadUserHandler(http.ResponseWriter, *http.Request)
 		SelfHandler(http.ResponseWriter, *http.Request)
-		PermissionsHandler(http.ResponseWriter, *http.Request)
+		UserPermissionsHandler(http.ResponseWriter, *http.Request)
 		UsernameSearchHandler(http.ResponseWriter, *http.Request)
 		NewTOTPSecretHandler(http.ResponseWriter, *http.Request)
 		TOTPSecretVerificationHandler(http.ResponseWriter, *http.Request)
@@ -278,7 +278,7 @@ type (
 		UpdateUserUsernameHandler(http.ResponseWriter, *http.Request)
 		UpdateUserDetailsHandler(http.ResponseWriter, *http.Request)
 		AvatarUploadHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ArchiveUserHandler(http.ResponseWriter, *http.Request)
 		CreatePasswordResetTokenHandler(http.ResponseWriter, *http.Request)
 		PasswordResetTokenRedemptionHandler(http.ResponseWriter, *http.Request)
 		RequestUsernameReminderHandler(http.ResponseWriter, *http.Request)

@@ -27,7 +27,7 @@ var oauth2ClientCreationInputMatcher any = mock.MatchedBy(func(input *types.OAut
 	return true
 })
 
-func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
+func TestOAuth2ClientsService_CreateOAuth2ClientHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -78,7 +78,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2ClientCreationResponse]
@@ -96,7 +96,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -116,7 +116,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -139,7 +139,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -184,7 +184,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 
 		helper.service.oauth2ClientDataManager = mockDB
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -225,7 +225,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleOAuth2Client, nil)
 		helper.service.oauth2ClientDataManager = mockDB
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -277,7 +277,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 
 		helper.service.oauth2ClientDataManager = mockDB
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -336,7 +336,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2ClientCreationResponse]
@@ -348,7 +348,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
+func TestOAuth2ClientsService_ReadOAuth2ClientHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -364,7 +364,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleOAuth2Client, nil)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -381,7 +381,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -403,7 +403,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 		).Return((*types.OAuth2Client)(nil), sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -427,7 +427,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 		).Return((*types.OAuth2Client)(nil), errors.New("blah"))
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -439,7 +439,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestOAuth2ClientsService_ListHandler(T *testing.T) {
+func TestOAuth2ClientsService_ListOAuth2ClientHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -457,7 +457,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		).Return(exampleOAuth2ClientList, nil)
 		helper.service.oauth2ClientDataManager = mockDB
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListOAuth2ClientsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.OAuth2Client]
@@ -474,7 +474,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListOAuth2ClientsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -496,7 +496,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = mockDB
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListOAuth2ClientsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.OAuth2Client]
@@ -520,7 +520,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), errors.New("blah"))
 		helper.service.oauth2ClientDataManager = mockDB
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListOAuth2ClientsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -532,7 +532,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
+func TestOAuth2ClientsService_ArchiveOAuth2ClientHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -556,7 +556,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -572,7 +572,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -594,7 +594,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 		).Return(sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -618,7 +618,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]
@@ -650,7 +650,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveOAuth2ClientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.OAuth2Client]

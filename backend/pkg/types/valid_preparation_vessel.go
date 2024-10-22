@@ -79,13 +79,13 @@ type (
 
 	// ValidPreparationVesselDataService describes a structure capable of serving traffic related to valid preparation instruments.
 	ValidPreparationVesselDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
-		SearchByPreparationHandler(http.ResponseWriter, *http.Request)
-		SearchByVesselHandler(http.ResponseWriter, *http.Request)
+		ListValidPreparationVesselsHandler(http.ResponseWriter, *http.Request)
+		CreateValidPreparationVesselHandler(http.ResponseWriter, *http.Request)
+		ReadValidPreparationVesselHandler(http.ResponseWriter, *http.Request)
+		UpdateValidPreparationVesselHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidPreparationVesselHandler(http.ResponseWriter, *http.Request)
+		SearchValidPreparationVesselsByPreparationHandler(http.ResponseWriter, *http.Request)
+		SearchValidPreparationVesselsByVesselHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

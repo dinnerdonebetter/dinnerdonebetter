@@ -106,11 +106,11 @@ type (
 
 	// RecipeStepInstrumentDataService describes a structure capable of serving traffic related to recipe step instruments.
 	RecipeStepInstrumentDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListRecipeStepInstrumentsHandler(http.ResponseWriter, *http.Request)
+		CreateRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
+		ReadRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
+		UpdateRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
+		ArchiveRecipeStepInstrumentHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

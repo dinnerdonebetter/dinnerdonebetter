@@ -24,12 +24,8 @@ import (
 )
 
 const (
-	serviceName           = "auth_service"
-	userIDContextKey      = string(types.UserIDContextKey)
-	householdIDContextKey = string(types.HouseholdIDContextKey)
-	cookieErrorLogName    = "_COOKIE_CONSTRUCTION_ERROR_"
-	cookieSecretSize      = 64
-	AuthProviderParamKey  = "auth_provider"
+	serviceName          = "auth_service"
+	AuthProviderParamKey = "auth_provider"
 )
 
 // TODO: remove this.

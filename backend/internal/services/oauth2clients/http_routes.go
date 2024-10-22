@@ -25,8 +25,8 @@ const (
 	clientSecretSize = 16
 )
 
-// CreateHandler is our OAuth2 client creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateOAuth2ClientHandler is our OAuth2 client creation route.
+func (s *service) CreateOAuth2ClientHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -130,8 +130,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns an OAuth2 client.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadOAuth2ClientHandler returns a GET handler that returns an OAuth2 client.
+func (s *service) ReadOAuth2ClientHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -187,8 +187,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListHandler is a handler that returns a list of OAuth2 clients.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListOAuth2ClientsHandler is a handler that returns a list of OAuth2 clients.
+func (s *service) ListOAuth2ClientsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -202,7 +202,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// determine user.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -245,8 +245,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveHandler returns a handler that archives an OAuth2 client.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveOAuth2ClientHandler returns a handler that archives an OAuth2 client.
+func (s *service) ArchiveOAuth2ClientHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

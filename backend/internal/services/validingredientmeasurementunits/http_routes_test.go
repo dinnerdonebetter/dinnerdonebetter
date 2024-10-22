@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
+func TestValidIngredientMeasurementUnitsService_CreateValidIngredientMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
@@ -73,7 +73,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -96,7 +96,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -121,7 +121,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -152,7 +152,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		).Return((*types.ValidIngredientMeasurementUnit)(nil), errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -193,7 +193,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
@@ -201,7 +201,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
+func TestValidIngredientMeasurementUnitsService_ReadValidIngredientMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -217,7 +217,7 @@ func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidIngredientMeasurementUnit, nil)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -234,7 +234,7 @@ func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -256,7 +256,7 @@ func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidIngredientMeasurementUnit)(nil), sql.ErrNoRows)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -280,7 +280,7 @@ func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidIngredientMeasurementUnit)(nil), errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -292,7 +292,7 @@ func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
+func TestValidIngredientMeasurementUnitsService_ListValidIngredientMeasurementUnitsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -310,7 +310,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 		).Return(exampleResponse, nil)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
@@ -328,7 +328,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -350,7 +350,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), sql.ErrNoRows)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
@@ -374,7 +374,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListValidIngredientMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -386,7 +386,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
+func TestValidIngredientMeasurementUnitsService_UpdateValidIngredientMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -425,7 +425,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -446,7 +446,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -461,7 +461,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -481,7 +481,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -512,7 +512,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidIngredientMeasurementUnit)(nil), sql.ErrNoRows)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -545,7 +545,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		).Return((*types.ValidIngredientMeasurementUnit)(nil), errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -584,7 +584,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = dbManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -631,7 +631,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHandler(helper.res, helper.req)
+		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -639,7 +639,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
+func TestValValidIngredientMeasurementUnitidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -669,7 +669,7 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -682,7 +682,7 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -704,7 +704,7 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -728,7 +728,7 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -758,7 +758,7 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -796,7 +796,7 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -804,7 +804,7 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 	})
 }
 
-func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *testing.T) {
+func TestValidIngredientMeasurementUnitsService_SearchValidIngredientMeasurementUnitsByIngredientHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -823,7 +823,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *tes
 		).Return(exampleResponse, nil)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.SearchByIngredientHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientMeasurementUnitsByIngredientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
@@ -844,7 +844,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *tes
 			return nil, errors.New("blah")
 		}
 
-		helper.service.SearchByIngredientHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientMeasurementUnitsByIngredientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -867,7 +867,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *tes
 		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.SearchByIngredientHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientMeasurementUnitsByIngredientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -879,7 +879,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *tes
 	})
 }
 
-func TestValidIngredientMeasurementUnitsService_SearchByMeasurementUnitHandler(T *testing.T) {
+func TestValidIngredientMeasurementUnitsService_SearchValidIngredientMeasurementUnitsByMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -898,7 +898,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByMeasurementUnitHandler(T
 		).Return(exampleResponse, nil)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.SearchByMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientMeasurementUnitsByMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
@@ -919,7 +919,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByMeasurementUnitHandler(T
 			return nil, errors.New("blah")
 		}
 
-		helper.service.SearchByMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientMeasurementUnitsByMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
@@ -942,7 +942,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByMeasurementUnitHandler(T
 		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
-		helper.service.SearchByMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.SearchValidIngredientMeasurementUnitsByMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]

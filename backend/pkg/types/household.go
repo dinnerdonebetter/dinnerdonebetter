@@ -117,12 +117,12 @@ type (
 
 	// HouseholdDataService describes a structure capable of serving traffic related to households.
 	HouseholdDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
+		ListHouseholdsHandler(http.ResponseWriter, *http.Request)
+		CreateHouseholdHandler(http.ResponseWriter, *http.Request)
 		CurrentInfoHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ReadHouseholdHandler(http.ResponseWriter, *http.Request)
+		UpdateHouseholdHandler(http.ResponseWriter, *http.Request)
+		ArchiveHouseholdHandler(http.ResponseWriter, *http.Request)
 		RemoveMemberHandler(http.ResponseWriter, *http.Request)
 		MarkAsDefaultHouseholdHandler(http.ResponseWriter, *http.Request)
 		ModifyMemberPermissionsHandler(http.ResponseWriter, *http.Request)

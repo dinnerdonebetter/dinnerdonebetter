@@ -95,11 +95,11 @@ type (
 
 	// MealPlanOptionDataService describes a structure capable of serving traffic related to meal plan options.
 	MealPlanOptionDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListMealPlanOptionHandler(http.ResponseWriter, *http.Request)
+		CreateMealPlanOptionHandler(http.ResponseWriter, *http.Request)
+		ReadMealPlanOptionHandler(http.ResponseWriter, *http.Request)
+		UpdateMealPlanOptionHandler(http.ResponseWriter, *http.Request)
+		ArchiveMealPlanOptionHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
