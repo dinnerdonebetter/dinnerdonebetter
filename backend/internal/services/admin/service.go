@@ -25,13 +25,13 @@ type (
 	}
 )
 
-// ProvideService builds a new AuthService.
+// ProvideService builds a new AuthDataService.
 func ProvideService(
 	logger logging.Logger,
 	userDataManager types.AdminUserDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
-) types.AdminService {
+) types.AdminDataService {
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		encoderDecoder:            encoder,

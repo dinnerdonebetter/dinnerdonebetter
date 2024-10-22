@@ -57,7 +57,7 @@ type (
 	}
 )
 
-// ProvideService builds a new AuthService.
+// ProvideService builds a new AuthDataService.
 func ProvideService(
 	ctx context.Context,
 	logger logging.Logger,
@@ -71,7 +71,7 @@ func ProvideService(
 	featureFlagManager featureflags.FeatureFlagManager,
 	analyticsReporter analytics.EventReporter,
 	routeParamManager routing.RouteParamManager,
-) (types.AuthService, error) {
+) (types.AuthDataService, error) {
 	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if publisherProviderErr != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, publisherProviderErr)

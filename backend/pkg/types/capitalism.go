@@ -3,8 +3,8 @@ package types
 import "net/http"
 
 type (
-	// CapitalismService describes a structure capable of serving worker-oriented requests.
-	CapitalismService interface {
+	// CapitalismDataService describes a structure capable of serving worker-oriented requests.
+	CapitalismDataService interface {
 		IncomingWebhookHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
