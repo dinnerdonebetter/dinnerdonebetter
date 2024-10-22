@@ -26,17 +26,16 @@ var _ types.ValidIngredientDataService = (*service)(nil)
 type (
 	// service handles valid ingredients.
 	service struct {
-		cfg                           *Config
-		logger                        logging.Logger
-		validIngredientDataManager    types.ValidIngredientDataManager
-		validIngredientIDFetcher      func(*http.Request) string
-		validIngredientStateIDFetcher func(*http.Request) string
-		validPreparationIDFetcher     func(*http.Request) string
-		sessionContextDataFetcher     func(*http.Request) (*types.SessionContextData, error)
-		dataChangesPublisher          messagequeue.Publisher
-		encoderDecoder                encoding.ServerEncoderDecoder
-		tracer                        tracing.Tracer
-		searchIndex                   search.IndexSearcher[types.ValidIngredientSearchSubset]
+		cfg                        *Config
+		logger                     logging.Logger
+		validIngredientDataManager types.ValidIngredientDataManager
+		validIngredientIDFetcher   func(*http.Request) string
+		validPreparationIDFetcher  func(*http.Request) string
+		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
+		dataChangesPublisher       messagequeue.Publisher
+		encoderDecoder             encoding.ServerEncoderDecoder
+		tracer                     tracing.Tracer
+		searchIndex                search.IndexSearcher[types.ValidIngredientSearchSubset]
 	}
 )
 
@@ -63,17 +62,16 @@ func ProvideService(
 	}
 
 	svc := &service{
-		cfg:                           cfg,
-		logger:                        logging.EnsureLogger(logger).WithName(serviceName),
-		validIngredientIDFetcher:      routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
-		validIngredientStateIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientStateIDURIParamKey),
-		validPreparationIDFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(ValidPreparationIDURIParamKey),
-		sessionContextDataFetcher:     authservice.FetchContextFromRequest,
-		validIngredientDataManager:    validIngredientDataManager,
-		dataChangesPublisher:          dataChangesPublisher,
-		encoderDecoder:                encoder,
-		tracer:                        tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		searchIndex:                   searchIndex,
+		cfg:                        cfg,
+		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
+		validIngredientIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
+		validPreparationIDFetcher:  routeParamManager.BuildRouteParamStringIDFetcher(ValidPreparationIDURIParamKey),
+		sessionContextDataFetcher:  authservice.FetchContextFromRequest,
+		validIngredientDataManager: validIngredientDataManager,
+		dataChangesPublisher:       dataChangesPublisher,
+		encoderDecoder:             encoder,
+		tracer:                     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		searchIndex:                searchIndex,
 	}
 
 	return svc, nil

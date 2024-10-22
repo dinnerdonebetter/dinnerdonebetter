@@ -21,8 +21,6 @@ const (
 	ValidIngredientIDURIParamKey = "validIngredientID"
 	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
 	ValidPreparationIDURIParamKey = "validPreparationID"
-	// ValidIngredientStateIDURIParamKey is a standard string that we'll use to refer to valid ingredient state IDs with.
-	ValidIngredientStateIDURIParamKey = "validIngredientStateID"
 )
 
 // CreateValidIngredientHandler is our valid ingredient creation route.

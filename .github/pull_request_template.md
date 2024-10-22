@@ -16,27 +16,27 @@ _PR description goes here_
   - [ ] Queries
   - [ ] Observability keys
   - [ ] Types
-      - [ ] Definitions
-      - [ ] Fakes
-      - [ ] Converters
-      - [ ] Mocks
-      - [ ] Added to UserDataCollection struct
+    - [ ] Definitions
+    - [ ] Fakes
+    - [ ] Converters
+    - [ ] Mocks
+    - [ ] Added to UserDataCollection struct
   - [ ] Data Manager
-      - [ ] Storage methods
-      - [ ] Unit tests
-      - [ ] Mocks
-      - [ ] DB Manager interface
-      - [ ] Wire providers
+    - [ ] Storage methods
+    - [ ] Unit tests
+    - [ ] Mocks
+    - [ ] DB Manager interface
+    - [ ] Wire providers
   - [ ] Service
-      - [ ] Service routes
-      - [ ] Routes unit tests
-      - [ ] Hook service into server with wire
-      - [ ] Assign routes to paths
+    - [ ] Service routes
+    - [ ] Routes unit tests
+    - [ ] Hook service into server with wire
+    - [ ] Assign routes to paths
   - [ ] Permissions
   - [ ] Configs
-      - [ ] Service config struct
-      - [ ] Config generators
+    - [ ] Service config struct
+    - [ ] Config generators
   - [ ] API client
-      - [ ] Request executors
-      - [ ] Request executor tests
+    - [ ] Request executors
+    - [ ] Request executor tests
   - [ ] Integration tests

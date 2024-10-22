@@ -21,12 +21,11 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                        logging.NewNoopLogger(),
-		validIngredientDataManager:    &mocktypes.ValidIngredientDataManagerMock{},
-		validIngredientIDFetcher:      func(req *http.Request) string { return "" },
-		validIngredientStateIDFetcher: func(req *http.Request) string { return "" },
-		encoderDecoder:                encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		tracer:                        tracing.NewTracerForTest("test"),
+		logger:                     logging.NewNoopLogger(),
+		validIngredientDataManager: &mocktypes.ValidIngredientDataManagerMock{},
+		validIngredientIDFetcher:   func(req *http.Request) string { return "" },
+		encoderDecoder:             encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
+		tracer:                     tracing.NewTracerForTest("test"),
 		cfg: &Config{
 			UseSearchService: false,
 		},
@@ -46,10 +45,6 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			ValidIngredientIDURIParamKey,
-		).Return(func(*http.Request) string { return "" })
-		rpm.On(
-			"BuildRouteParamStringIDFetcher",
-			ValidIngredientStateIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",

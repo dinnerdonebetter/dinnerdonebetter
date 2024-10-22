@@ -107,7 +107,9 @@ func TestAttachQueryFilterToSpan(T *testing.T) {
 	})
 }
 
-func TestAttachToSpan(t *testing.T) {
+func TestAttachToSpan(T *testing.T) {
+	T.Parallel()
+
 	type testCase struct {
 		x             any
 		name          string
@@ -117,147 +119,148 @@ func TestAttachToSpan(t *testing.T) {
 
 		{
 			name:          "int",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             1,
 		},
 		{
-			name:          "int xlice",
-			attachmentKey: t.Name(),
+			name:          "int slice",
+			attachmentKey: T.Name(),
 			x:             []int{1},
 		},
 		{
 			name:          "int8",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             int8(1),
 		},
 		{
-			name:          "int8 xlice",
-			attachmentKey: t.Name(),
+			name:          "int8 slice",
+			attachmentKey: T.Name(),
 			x:             []int8{int8(1)},
 		},
 		{
 			name:          "int16",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             int16(1),
 		},
 		{
-			name:          "int16 xlice",
-			attachmentKey: t.Name(),
+			name:          "int16 slice",
+			attachmentKey: T.Name(),
 			x:             []int16{int16(1)},
 		},
 		{
 			name:          "int32",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             int32(1),
 		},
 		{
-			name:          "int32 xlice",
-			attachmentKey: t.Name(),
+			name:          "int32 slice",
+			attachmentKey: T.Name(),
 			x:             []int32{int32(1)},
 		},
 		{
 			name:          "int64",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             int64(1),
 		},
 		{
-			name:          "int64 xlice",
-			attachmentKey: t.Name(),
+			name:          "int64 slice",
+			attachmentKey: T.Name(),
 			x:             []int64{int64(1)},
 		},
 		{
 			name:          "uint",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             uint(1),
 		},
 		{
-			name:          "uint xlice",
-			attachmentKey: t.Name(),
+			name:          "uint slice",
+			attachmentKey: T.Name(),
 			x:             []uint{uint(1)},
 		},
 		{
 			name:          "uint8",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             uint8(1),
 		},
 		{
-			name:          "uint8 xlice",
-			attachmentKey: t.Name(),
+			name:          "uint8 slice",
+			attachmentKey: T.Name(),
 			x:             []uint8{uint8(1)},
 		},
 		{
 			name:          "uint16",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             uint16(1),
 		},
 		{
-			name:          "uint16 xlice",
-			attachmentKey: t.Name(),
+			name:          "uint16 slice",
+			attachmentKey: T.Name(),
 			x:             []uint16{uint16(1)},
 		},
 		{
 			name:          "uint32",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             uint32(1),
 		},
 		{
-			name:          "uint32 xlice",
-			attachmentKey: t.Name(),
+			name:          "uint32 slice",
+			attachmentKey: T.Name(),
 			x:             []uint32{uint32(1)},
 		},
 		{
 			name:          "uint64",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             uint64(1),
 		},
 		{
-			name:          "uint64 xlice",
-			attachmentKey: t.Name(),
+			name:          "uint64 slice",
+			attachmentKey: T.Name(),
 			x:             []uint64{uint64(1)},
 		},
 		{
 			name:          "float32",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             float32(1),
 		},
 		{
-			name:          "float32 xlice",
-			attachmentKey: t.Name(),
+			name:          "float32 slice",
+			attachmentKey: T.Name(),
 			x:             []float32{float32(1)},
 		},
 		{
 			name:          "float64",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             float64(1),
 		},
 		{
-			name:          "float64 xlice",
-			attachmentKey: t.Name(),
+			name:          "float64 slice",
+			attachmentKey: T.Name(),
 			x:             []float64{float64(1)},
 		},
 		{
 			name:          "string",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             "test",
 		},
 		{
-			name:          "string xlice",
-			attachmentKey: t.Name(),
+			name:          "string slice",
+			attachmentKey: T.Name(),
 			x:             []string{"test"},
 		},
 		{
 			name:          "bool",
-			attachmentKey: t.Name(),
+			attachmentKey: T.Name(),
 			x:             true,
 		},
 		{
-			name:          "bool xlice",
-			attachmentKey: t.Name(),
+			name:          "bool slice",
+			attachmentKey: T.Name(),
 			x:             []bool{true},
 		},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		T.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			_, span := StartSpan(context.Background())
 			AttachToSpan(span, tt.attachmentKey, tt.x)
 		})
