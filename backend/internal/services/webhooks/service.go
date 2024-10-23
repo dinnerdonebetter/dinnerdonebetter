@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -53,7 +53,7 @@ func ProvideWebhooksService(
 		webhookDataManager:           webhookDataManager,
 		encoderDecoder:               encoder,
 		dataChangesPublisher:         dataChangesPublisher,
-		sessionContextDataFetcher:    authservice.FetchContextFromRequest,
+		sessionContextDataFetcher:    authentication.FetchContextFromRequest,
 		webhookIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(WebhookIDURIParamKey),
 		webhookTriggerEventIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(WebhookTriggerEventIDURIParamKey),
 		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),

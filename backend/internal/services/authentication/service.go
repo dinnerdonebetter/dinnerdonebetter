@@ -96,7 +96,7 @@ func ProvideService(
 		userDataManager:            dataManager,
 		householdMembershipManager: householdMembershipManager,
 		authenticator:              authenticator,
-		sessionContextDataFetcher:  FetchContextFromRequest,
+		sessionContextDataFetcher:  authentication.FetchContextFromRequest,
 		tracer:                     tracer,
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,

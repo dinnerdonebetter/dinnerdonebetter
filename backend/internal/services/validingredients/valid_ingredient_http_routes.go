@@ -257,7 +257,7 @@ func (s *service) SearchValidIngredientsHandler(res http.ResponseWriter, req *ht
 		validIngredients, err = s.validIngredientDataManager.SearchForValidIngredients(ctx, query, filter)
 	} else {
 		var validIngredientSubsets []*types.ValidIngredientSearchSubset
-		validIngredientSubsets, err = s.searchIndex.Search(ctx, query)
+		validIngredientSubsets, err = s.validIngredientSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid ingredients")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

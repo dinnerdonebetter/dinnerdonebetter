@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -55,7 +55,7 @@ func ProvideOAuth2ClientsService(
 		oauth2ClientDataManager:   clientDataManager,
 		encoderDecoder:            encoderDecoder,
 		urlClientIDExtractor:      routeParamManager.BuildRouteParamStringIDFetcher(OAuth2ClientIDURIParamKey),
-		sessionContextDataFetcher: authservice.FetchContextFromRequest,
+		sessionContextDataFetcher: authentication.FetchContextFromRequest,
 		secretGenerator:           secretGenerator,
 		dataChangesPublisher:      dataChangesPublisher,
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),

@@ -258,7 +258,7 @@ func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.R
 		readTimer.Stop()
 	} else {
 		var validVesselSubsets []*types.ValidVesselSearchSubset
-		validVesselSubsets, err = s.searchIndex.Search(ctx, query)
+		validVesselSubsets, err = s.validVesselsSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid vessels")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

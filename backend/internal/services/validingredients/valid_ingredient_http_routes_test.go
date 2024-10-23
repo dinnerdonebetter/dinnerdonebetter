@@ -456,7 +456,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(validIngredientSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		helper.service.validIngredientSearchIndex = searchIndex
 
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
 		validIngredientDataManager.On(
@@ -564,7 +564,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ValidIngredientSearchSubset(nil), errors.New("blah"))
-		helper.service.searchIndex = searchIndex
+		helper.service.validIngredientSearchIndex = searchIndex
 
 		helper.service.SearchValidIngredientsHandler(helper.res, helper.req)
 

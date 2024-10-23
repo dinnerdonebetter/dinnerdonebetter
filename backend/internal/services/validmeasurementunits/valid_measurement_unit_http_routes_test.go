@@ -457,7 +457,7 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(validMeasurementUnitSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		helper.service.validMeasurementUnitSearchIndex = searchIndex
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(

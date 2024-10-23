@@ -253,7 +253,7 @@ func (s *service) SearchValidPreparationsHandler(res http.ResponseWriter, req *h
 		validPreparations, err = s.validPreparationDataManager.SearchForValidPreparations(ctx, query)
 	} else {
 		var validPreparationSubsets []*types.ValidPreparationSearchSubset
-		validPreparationSubsets, err = s.searchIndex.Search(ctx, query)
+		validPreparationSubsets, err = s.validPreparationsSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid preparations")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

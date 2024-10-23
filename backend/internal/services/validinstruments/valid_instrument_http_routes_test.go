@@ -454,7 +454,7 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(validInstrumentSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		helper.service.validInstrumentSearchIndex = searchIndex
 
 		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(

@@ -256,7 +256,7 @@ func (s *service) SearchValidMeasurementUnitsHandler(res http.ResponseWriter, re
 		validMeasurementUnits, err = s.validMeasurementUnitDataManager.SearchForValidMeasurementUnits(ctx, query)
 	} else {
 		var validMeasurementUnitSubsets []*types.ValidMeasurementUnitSearchSubset
-		validMeasurementUnitSubsets, err = s.searchIndex.Search(ctx, query)
+		validMeasurementUnitSubsets, err = s.validMeasurementUnitSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid measurement units")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

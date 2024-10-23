@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -13,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -35,7 +35,7 @@ type (
 		dataChangesPublisher            messagequeue.Publisher
 		encoderDecoder                  encoding.ServerEncoderDecoder
 		tracer                          tracing.Tracer
-		searchIndex                     search.IndexSearcher[types.ValidMeasurementUnitSearchSubset]
+		validMeasurementUnitSearchIndex search.IndexSearcher[types.ValidMeasurementUnitSearchSubset]
 	}
 )
 
@@ -66,12 +66,12 @@ func ProvideService(
 		logger:                          logging.EnsureLogger(logger).WithName(serviceName),
 		validMeasurementUnitIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidMeasurementUnitIDURIParamKey),
 		validIngredientIDFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
-		sessionContextDataFetcher:       authservice.FetchContextFromRequest,
+		sessionContextDataFetcher:       authentication.FetchContextFromRequest,
 		validMeasurementUnitDataManager: validMeasurementUnitDataManager,
 		dataChangesPublisher:            dataChangesPublisher,
 		encoderDecoder:                  encoder,
 		tracer:                          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		searchIndex:                     searchIndex,
+		validMeasurementUnitSearchIndex: searchIndex,
 	}
 
 	return svc, nil

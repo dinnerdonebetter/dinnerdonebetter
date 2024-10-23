@@ -246,7 +246,7 @@ func (s *service) SearchValidIngredientStatesHandler(res http.ResponseWriter, re
 		validIngredientStates, err = s.validIngredientStateDataManager.SearchForValidIngredientStates(ctx, query)
 	} else {
 		var validIngredientStateSubsets []*types.ValidIngredientStateSearchSubset
-		validIngredientStateSubsets, err = s.searchIndex.Search(ctx, query)
+		validIngredientStateSubsets, err = s.validIngredientStatesSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid ingredient states")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

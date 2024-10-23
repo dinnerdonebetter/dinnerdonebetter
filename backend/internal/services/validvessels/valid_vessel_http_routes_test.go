@@ -457,7 +457,7 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(validVesselSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		helper.service.validVesselsSearchIndex = searchIndex
 
 		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
 		validVesselDataManager.On(

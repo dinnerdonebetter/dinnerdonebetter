@@ -457,7 +457,7 @@ func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(validPreparationSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		helper.service.validPreparationsSearchIndex = searchIndex
 
 		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(

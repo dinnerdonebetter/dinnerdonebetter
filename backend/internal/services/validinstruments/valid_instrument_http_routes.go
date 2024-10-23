@@ -253,7 +253,7 @@ func (s *service) SearchValidInstrumentsHandler(res http.ResponseWriter, req *ht
 		validInstruments, err = s.validInstrumentDataManager.SearchForValidInstruments(ctx, query)
 	} else {
 		var validInstrumentSubsets []*types.ValidInstrumentSearchSubset
-		validInstrumentSubsets, err = s.searchIndex.Search(ctx, query)
+		validInstrumentSubsets, err = s.validInstrumentSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid instruments")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
