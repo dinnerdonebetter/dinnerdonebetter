@@ -18,6 +18,7 @@ func (c *Client) GetRecipeStepVessel(
 	recipeID string,
 	recipeStepID string,
 	recipeStepVesselID string,
+	reqMods ...RequestModifier,
 ) (*types.RecipeStepVessel, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -46,6 +47,10 @@ func (c *Client) GetRecipeStepVessel(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a RecipeStepVessel")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepVessel]

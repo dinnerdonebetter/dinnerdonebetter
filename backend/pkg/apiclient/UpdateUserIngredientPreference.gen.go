@@ -17,6 +17,7 @@ func (c *Client) UpdateUserIngredientPreference(
 	ctx context.Context,
 	userIngredientPreferenceID string,
 	input *types.UserIngredientPreferenceUpdateRequestInput,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -33,6 +34,10 @@ func (c *Client) UpdateUserIngredientPreference(
 	req, err := c.buildDataRequest(ctx, http.MethodPut, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a UserIngredientPreference")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.UserIngredientPreference]

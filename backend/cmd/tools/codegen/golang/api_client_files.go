@@ -349,6 +349,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	{{ range .Params }}{{ .Name }} {{ .Type }},
 	{{ end -}}
 	filter *types.QueryFilter,
+	reqMods ...RequestModifier,
 ) (*types.QueryFilteredResult[types.{{ .ResponseType.TypeName }}], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -379,6 +380,10 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	req, err := http.NewRequestWithContext(ctx, http.Method{{ title .Method }}, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of {{ .ResponseType.TypeName }}")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 	
 	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}[]*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
@@ -412,7 +417,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 			tmpl = `func (c *Client) {{ .Name }}(
 	ctx context.Context,
 {{ range .Params }}{{ .Name }} {{ .Type }},
-{{ end -}}
+{{ end -}} reqMods ...RequestModifier,
 ) ({{ if notNative .ResponseType.TypeName }} *types.{{ end }}{{ .ResponseType.TypeName }}, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -431,6 +436,10 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	req, err := http.NewRequestWithContext(ctx, http.Method{{ title .Method }}, u, http.NoBody)
 	if err != nil {
 		return {{ if notNative .ResponseType.TypeName }}nil{{ else }} {{ nativeDefault .ResponseType.TypeName }}{{ end }}, observability.PrepareAndLogError(err, logger, span, "building request to fetch a {{ .ResponseType.TypeName }}")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}{{ if notNative .ResponseType.TypeName }} *types.{{ end }}{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
@@ -463,6 +472,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}}
 	{{ if ne .InputType.Type "" }}input *types.{{ .InputType.Type }},{{ end }}
+	reqMods ...RequestModifier,
 ) ({{ if .ReturnsList }}[]{{ end }}*types.{{ .ResponseType.TypeName }}, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -491,6 +501,10 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, {{ if ne .InputType.Type "" }}input{{ else }}http.NoBody{{ end }})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}{{ if .ReturnsList }}[]{{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
@@ -523,6 +537,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}}
 input *types.{{ .InputType.Type }},
+reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -541,6 +556,10 @@ input *types.{{ .InputType.Type }},
 	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, input)
 	if err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
@@ -572,6 +591,7 @@ input *types.{{ .InputType.Type }},
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}}
 input *types.{{ .InputType.Type }},
+reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -590,6 +610,10 @@ input *types.{{ .InputType.Type }},
 	req, err := c.buildDataRequest(ctx, http.Method{{ title .Method }}, u, input)
 	if err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
@@ -620,7 +644,7 @@ input *types.{{ .InputType.Type }},
 		tmpl = `func (c *Client) {{ .Name }}(
 	ctx context.Context,
 {{ range .Params }}{{ .Name }} {{ .Type }},
-{{ end -}}
+{{ end -}} reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -639,6 +663,10 @@ input *types.{{ .InputType.Type }},
 	req, err := http.NewRequestWithContext(ctx, http.Method{{ title .Method }}, u, http.NoBody)
 	if err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "building request to create a {{ .ResponseType.TypeName }}")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}

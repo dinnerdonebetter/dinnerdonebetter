@@ -17,6 +17,7 @@ func (c *Client) ArchiveRecipeStep(
 	ctx context.Context,
 	recipeID string,
 	recipeStepID string,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -39,6 +40,10 @@ func (c *Client) ArchiveRecipeStep(
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, http.NoBody)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a RecipeStep")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStep]

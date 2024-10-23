@@ -17,6 +17,7 @@ func (c *Client) GetServiceSettingConfigurationByName(
 	ctx context.Context,
 	serviceSettingConfigurationName string,
 	filter *types.QueryFilter,
+	reqMods ...RequestModifier,
 ) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -41,6 +42,10 @@ func (c *Client) GetServiceSettingConfigurationByName(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of ServiceSettingConfiguration")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[[]*types.ServiceSettingConfiguration]

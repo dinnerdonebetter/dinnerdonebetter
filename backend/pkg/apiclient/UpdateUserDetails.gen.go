@@ -13,6 +13,7 @@ import (
 func (c *Client) UpdateUserDetails(
 	ctx context.Context,
 	input *types.UserDetailsUpdateRequestInput,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -23,6 +24,10 @@ func (c *Client) UpdateUserDetails(
 	req, err := c.buildDataRequest(ctx, http.MethodPut, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a User")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.User]

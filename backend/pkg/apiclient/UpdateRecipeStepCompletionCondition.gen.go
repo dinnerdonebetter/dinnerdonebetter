@@ -19,6 +19,7 @@ func (c *Client) UpdateRecipeStepCompletionCondition(
 	recipeStepID string,
 	recipeStepCompletionConditionID string,
 	input *types.RecipeStepCompletionConditionUpdateRequestInput,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -47,6 +48,10 @@ func (c *Client) UpdateRecipeStepCompletionCondition(
 	req, err := c.buildDataRequest(ctx, http.MethodPut, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a RecipeStepCompletionCondition")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]

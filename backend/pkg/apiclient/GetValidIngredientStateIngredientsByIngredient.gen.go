@@ -17,6 +17,7 @@ func (c *Client) GetValidIngredientStateIngredientsByIngredient(
 	ctx context.Context,
 	validIngredientID string,
 	filter *types.QueryFilter,
+	reqMods ...RequestModifier,
 ) (*types.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -41,6 +42,10 @@ func (c *Client) GetValidIngredientStateIngredientsByIngredient(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of ValidIngredientStateIngredient")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[[]*types.ValidIngredientStateIngredient]

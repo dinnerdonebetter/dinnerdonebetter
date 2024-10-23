@@ -13,6 +13,7 @@ import (
 func (c *Client) CreateOAuth2Client(
 	ctx context.Context,
 	input *types.OAuth2ClientCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.OAuth2ClientCreationResponse, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -31,6 +32,10 @@ func (c *Client) CreateOAuth2Client(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a OAuth2ClientCreationResponse")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.OAuth2ClientCreationResponse]

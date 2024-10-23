@@ -16,6 +16,7 @@ import (
 func (c *Client) GetOAuth2Client(
 	ctx context.Context,
 	oauth2ClientID string,
+	reqMods ...RequestModifier,
 ) (*types.OAuth2Client, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -32,6 +33,10 @@ func (c *Client) GetOAuth2Client(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a OAuth2Client")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.OAuth2Client]

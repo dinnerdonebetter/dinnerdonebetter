@@ -17,6 +17,7 @@ func (c *Client) UpdateValidInstrument(
 	ctx context.Context,
 	validInstrumentID string,
 	input *types.ValidInstrumentUpdateRequestInput,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -33,6 +34,10 @@ func (c *Client) UpdateValidInstrument(
 	req, err := c.buildDataRequest(ctx, http.MethodPut, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a ValidInstrument")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.ValidInstrument]

@@ -17,6 +17,7 @@ func (c *Client) CreateRecipePrepTask(
 	ctx context.Context,
 	recipeID string,
 	input *types.RecipePrepTaskCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.RecipePrepTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -41,6 +42,10 @@ func (c *Client) CreateRecipePrepTask(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a RecipePrepTask")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipePrepTask]

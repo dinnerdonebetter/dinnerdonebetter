@@ -18,6 +18,7 @@ func (c *Client) CreateRecipeStepProduct(
 	recipeID string,
 	recipeStepID string,
 	input *types.RecipeStepProductCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.RecipeStepProduct, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -48,6 +49,10 @@ func (c *Client) CreateRecipeStepProduct(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a RecipeStepProduct")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepProduct]

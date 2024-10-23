@@ -18,6 +18,7 @@ func (c *Client) SearchValidMeasurementUnitsByIngredient(
 	q string,
 	validIngredientID string,
 	filter *types.QueryFilter,
+	reqMods ...RequestModifier,
 ) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -43,6 +44,10 @@ func (c *Client) SearchValidMeasurementUnitsByIngredient(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of ValidMeasurementUnit")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[[]*types.ValidMeasurementUnit]

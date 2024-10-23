@@ -14,6 +14,7 @@ import (
 func (c *Client) GetHouseholdInstrumentOwnerships(
 	ctx context.Context,
 	filter *types.QueryFilter,
+	reqMods ...RequestModifier,
 ) (*types.QueryFilteredResult[types.HouseholdInstrumentOwnership], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -32,6 +33,10 @@ func (c *Client) GetHouseholdInstrumentOwnerships(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of HouseholdInstrumentOwnership")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[[]*types.HouseholdInstrumentOwnership]

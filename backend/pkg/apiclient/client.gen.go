@@ -251,3 +251,5 @@ func (c *Client) buildDataRequest(ctx context.Context, method, uri string, in an
 
 	return req, nil
 }
+
+type RequestModifier func(*http.Request)

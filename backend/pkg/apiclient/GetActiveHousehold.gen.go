@@ -12,6 +12,7 @@ import (
 
 func (c *Client) GetActiveHousehold(
 	ctx context.Context,
+	reqMods ...RequestModifier,
 ) (*types.Household, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -22,6 +23,10 @@ func (c *Client) GetActiveHousehold(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a Household")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.Household]

@@ -13,6 +13,7 @@ import (
 func (c *Client) CreateValidPreparationInstrument(
 	ctx context.Context,
 	input *types.ValidPreparationInstrumentCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.ValidPreparationInstrument, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -31,6 +32,10 @@ func (c *Client) CreateValidPreparationInstrument(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a ValidPreparationInstrument")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.ValidPreparationInstrument]

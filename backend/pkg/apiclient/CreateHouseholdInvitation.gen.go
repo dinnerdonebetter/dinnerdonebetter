@@ -17,6 +17,7 @@ func (c *Client) CreateHouseholdInvitation(
 	ctx context.Context,
 	householdID string,
 	input *types.HouseholdInvitationCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.HouseholdInvitation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -41,6 +42,10 @@ func (c *Client) CreateHouseholdInvitation(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a HouseholdInvitation")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInvitation]

@@ -17,6 +17,7 @@ func (c *Client) UpdateUserNotification(
 	ctx context.Context,
 	userNotificationID string,
 	input *types.UserNotificationUpdateRequestInput,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -33,6 +34,10 @@ func (c *Client) UpdateUserNotification(
 	req, err := c.buildDataRequest(ctx, http.MethodPatch, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a UserNotification")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.UserNotification]

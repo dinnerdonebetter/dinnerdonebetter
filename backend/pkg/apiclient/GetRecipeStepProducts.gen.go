@@ -18,6 +18,7 @@ func (c *Client) GetRecipeStepProducts(
 	recipeID string,
 	recipeStepID string,
 	filter *types.QueryFilter,
+	reqMods ...RequestModifier,
 ) (*types.QueryFilteredResult[types.RecipeStepProduct], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -48,6 +49,10 @@ func (c *Client) GetRecipeStepProducts(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of RecipeStepProduct")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[[]*types.RecipeStepProduct]
