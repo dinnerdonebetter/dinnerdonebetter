@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanevents"
 	mealplanoptionsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptions"
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
@@ -67,7 +67,7 @@ func ProvideService(
 		mealPlanEventIDFetcher:      routeParamManager.BuildRouteParamStringIDFetcher(mealplaneventsservice.MealPlanEventIDURIParamKey),
 		mealPlanOptionIDFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(mealplanoptionsservice.MealPlanOptionIDURIParamKey),
 		mealPlanOptionVoteIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(MealPlanOptionVoteIDURIParamKey),
-		sessionContextDataFetcher:   authservice.FetchContextFromRequest,
+		sessionContextDataFetcher:   authentication.FetchContextFromRequest,
 		dataManager:                 dataManager,
 		dataChangesPublisher:        dataChangesPublisher,
 		encoderDecoder:              encoder,

@@ -16,6 +16,7 @@ import (
 func (c *Client) ArchiveOAuth2Client(
 	ctx context.Context,
 	oauth2ClientID string,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -32,6 +33,10 @@ func (c *Client) ArchiveOAuth2Client(
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, http.NoBody)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a OAuth2Client")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.OAuth2Client]

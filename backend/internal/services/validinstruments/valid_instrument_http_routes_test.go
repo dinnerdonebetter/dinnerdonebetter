@@ -1,4 +1,4 @@
-package validmeasurementunits
+package validinstruments
 
 import (
 	"bytes"
@@ -26,7 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testing.T) {
+func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -35,7 +35,7 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -44,12 +44,12 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"CreateValidMeasurementUnit",
+		dbManager.ValidInstrumentDataManagerMock.On(
+			"CreateValidInstrument",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidMeasurementUnitDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidMeasurementUnit, nil)
-		helper.service.validMeasurementUnitDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidInstrument, nil)
+		helper.service.validInstrumentDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -59,12 +59,12 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
+		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
@@ -81,10 +81,10 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -96,7 +96,7 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.ValidMeasurementUnitCreationRequestInput{}
+		exampleCreationInput := &types.ValidInstrumentCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -104,10 +104,10 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -119,7 +119,7 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -129,10 +129,10 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -144,7 +144,7 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -153,17 +153,17 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"CreateValidMeasurementUnit",
+		dbManager.ValidInstrumentDataManagerMock.On(
+			"CreateValidInstrument",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidMeasurementUnitDatabaseCreationInput) bool { return true }),
-		).Return((*types.ValidMeasurementUnit)(nil), errors.New("blah"))
-		helper.service.validMeasurementUnitDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
+		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
+		helper.service.validInstrumentDataManager = dbManager
 
-		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -177,7 +177,7 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -186,12 +186,12 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"CreateValidMeasurementUnit",
+		dbManager.ValidInstrumentDataManagerMock.On(
+			"CreateValidInstrument",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidMeasurementUnitDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidMeasurementUnit, nil)
-		helper.service.validMeasurementUnitDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidInstrument, nil)
+		helper.service.validInstrumentDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -201,19 +201,15 @@ func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testi
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
-		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
-func TestValidMeasurementUnitsService_ReadValidMeasurementUnitHandler(T *testing.T) {
+func TestValidInstrumentsService_ReadValidInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -221,23 +217,23 @@ func TestValidMeasurementUnitsService_ReadValidMeasurementUnitHandler(T *testing
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"GetValidMeasurementUnit",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
-		).Return(helper.exampleValidMeasurementUnit, nil)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+			helper.exampleValidInstrument.ID,
+		).Return(helper.exampleValidInstrument, nil)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ReadValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ReadValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
+		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -246,37 +242,37 @@ func TestValidMeasurementUnitsService_ReadValidMeasurementUnitHandler(T *testing
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ReadValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid measurement unit in the database", func(t *testing.T) {
+	T.Run("with no such valid instrument in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"GetValidMeasurementUnit",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
-		).Return((*types.ValidMeasurementUnit)(nil), sql.ErrNoRows)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+			helper.exampleValidInstrument.ID,
+		).Return((*types.ValidInstrument)(nil), sql.ErrNoRows)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ReadValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ReadValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -284,27 +280,27 @@ func TestValidMeasurementUnitsService_ReadValidMeasurementUnitHandler(T *testing
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"GetValidMeasurementUnit",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
-		).Return((*types.ValidMeasurementUnit)(nil), errors.New("blah"))
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+			helper.exampleValidInstrument.ID,
+		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ReadValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ReadValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 }
 
-func TestValidMeasurementUnitsService_ListValidMeasurementUnitsHandler(T *testing.T) {
+func TestValidInstrumentsService_ListValidInstrumentsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -312,26 +308,26 @@ func TestValidMeasurementUnitsService_ListValidMeasurementUnitsHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitsList()
+		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentsList()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"GetValidMeasurementUnits",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstruments",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleValidMeasurementUnitList, nil)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+		).Return(exampleValidInstrumentList, nil)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
+		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[[]*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
-		assert.Equal(t, *actual.Pagination, exampleValidMeasurementUnitList.Pagination)
+		assert.Equal(t, actual.Data, exampleValidInstrumentList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidInstrumentList.Pagination)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -340,10 +336,10 @@ func TestValidMeasurementUnitsService_ListValidMeasurementUnitsHandler(T *testin
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
+		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -354,55 +350,56 @@ func TestValidMeasurementUnitsService_ListValidMeasurementUnitsHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"GetValidMeasurementUnits",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstruments",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+		).Return((*types.QueryFilteredResult[types.ValidInstrument])(nil), sql.ErrNoRows)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
+		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[[]*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
-	T.Run("with error retrieving valid measurement units from database", func(t *testing.T) {
+	T.Run("with error retrieving valid instruments from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"GetValidMeasurementUnits",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstruments",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+		).Return((*types.QueryFilteredResult[types.ValidInstrument])(nil), errors.New("blah"))
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
+		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 }
 
-func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *testing.T) {
+func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 	T.Parallel()
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitsList()
+	exampleValidInstrumentList := fakes.BuildFakeValidInstrumentsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -414,23 +411,23 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"SearchForValidMeasurementUnits",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"SearchForValidInstruments",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(exampleValidMeasurementUnitList.Data, nil)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+		).Return(exampleValidInstrumentList.Data, nil)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
+		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[[]*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
+		assert.Equal(t, actual.Data, exampleValidInstrumentList.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
 	T.Run("using external service", func(t *testing.T) {
@@ -445,37 +442,33 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 		}.Encode()
 
 		expectedIDs := []string{}
-		validMeasurementUnitSearchSubsets := make([]*types.ValidMeasurementUnitSearchSubset, len(exampleValidMeasurementUnitList.Data))
-		for i := range exampleValidMeasurementUnitList.Data {
-			expectedIDs = append(expectedIDs, exampleValidMeasurementUnitList.Data[i].ID)
-			validMeasurementUnitSearchSubsets[i] = converters.ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(exampleValidMeasurementUnitList.Data[i])
+		validInstrumentSearchSubsets := make([]*types.ValidInstrumentSearchSubset, len(exampleValidInstrumentList.Data))
+		for i := range exampleValidInstrumentList.Data {
+			expectedIDs = append(expectedIDs, exampleValidInstrumentList.Data[i].ID)
+			validInstrumentSearchSubsets[i] = converters.ConvertValidInstrumentToValidInstrumentSearchSubset(exampleValidInstrumentList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidMeasurementUnitSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[types.ValidInstrumentSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(validMeasurementUnitSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		).Return(validInstrumentSearchSubsets, nil)
+		helper.service.validInstrumentSearchIndex = searchIndex
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"GetValidMeasurementUnitsWithIDs",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstrumentsWithIDs",
 			testutils.ContextMatcher,
 			expectedIDs,
-		).Return(exampleValidMeasurementUnitList.Data, nil)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+		).Return(exampleValidInstrumentList.Data, nil)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
+		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
-		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager, searchIndex)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, searchIndex)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -484,10 +477,10 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
+		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -503,23 +496,23 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"SearchForValidMeasurementUnits",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"SearchForValidInstruments",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return([]*types.ValidMeasurementUnit{}, sql.ErrNoRows)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+		).Return([]*types.ValidInstrument{}, sql.ErrNoRows)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
+		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[[]*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
 	T.Run("with error retrieving from database", func(t *testing.T) {
@@ -531,140 +524,27 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"SearchForValidMeasurementUnits",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"SearchForValidInstruments",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return([]*types.ValidMeasurementUnit(nil), errors.New("blah"))
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+		).Return([]*types.ValidInstrument{}, errors.New("blah"))
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
+		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 }
 
-func TestVaValidMeasurementUnitslidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) {
-	T.Parallel()
-
-	exampleQuery := "whatever"
-	exampleLimit := uint8(123)
-	exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitsList()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
-		}.Encode()
-
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"ValidMeasurementUnitsForIngredientID",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleValidMeasurementUnitList, nil)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
-
-		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
-		assert.Equal(t, *actual.Pagination, exampleValidMeasurementUnitList.Pagination)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
-	})
-
-	T.Run("with error retrieving session context data", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-	})
-
-	T.Run("with no rows returned", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
-		}.Encode()
-
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"ValidMeasurementUnitsForIngredientID",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
-
-		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
-	})
-
-	T.Run("with error retrieving from database", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
-		}.Encode()
-
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"ValidMeasurementUnitsForIngredientID",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
-
-		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
-	})
-}
-
-func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testing.T) {
+func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -673,7 +553,7 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -682,18 +562,18 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"GetValidMeasurementUnit",
+		dbManager.ValidInstrumentDataManagerMock.On(
+			"GetValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
-		).Return(helper.exampleValidMeasurementUnit, nil)
+			helper.exampleValidInstrument.ID,
+		).Return(helper.exampleValidInstrument, nil)
 
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"UpdateValidMeasurementUnit",
+		dbManager.ValidInstrumentDataManagerMock.On(
+			"UpdateValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit,
+			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
 		).Return(nil)
-		helper.service.validMeasurementUnitDataManager = dbManager
+		helper.service.validInstrumentDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -703,12 +583,12 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
+		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
@@ -720,7 +600,7 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.ValidMeasurementUnitUpdateRequestInput{}
+		exampleCreationInput := &types.ValidInstrumentUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -728,10 +608,10 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -743,10 +623,10 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -763,22 +643,22 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid measurement unit", func(t *testing.T) {
+	T.Run("with no such valid instrument", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -786,32 +666,32 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"GetValidMeasurementUnit",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
-		).Return((*types.ValidMeasurementUnit)(nil), sql.ErrNoRows)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+			helper.exampleValidInstrument.ID,
+		).Return((*types.ValidInstrument)(nil), sql.ErrNoRows)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
-	T.Run("with error retrieving valid measurement unit from database", func(t *testing.T) {
+	T.Run("with error retrieving valid instrument from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -819,23 +699,23 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"GetValidMeasurementUnit",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
-		).Return((*types.ValidMeasurementUnit)(nil), errors.New("blah"))
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+			helper.exampleValidInstrument.ID,
+		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -844,7 +724,7 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -853,23 +733,23 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"GetValidMeasurementUnit",
+		dbManager.ValidInstrumentDataManagerMock.On(
+			"GetValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
-		).Return(helper.exampleValidMeasurementUnit, nil)
+			helper.exampleValidInstrument.ID,
+		).Return(helper.exampleValidInstrument, nil)
 
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"UpdateValidMeasurementUnit",
+		dbManager.ValidInstrumentDataManagerMock.On(
+			"UpdateValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit,
+			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
 		).Return(errors.New("blah"))
-		helper.service.validMeasurementUnitDataManager = dbManager
+		helper.service.validInstrumentDataManager = dbManager
 
-		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -883,7 +763,7 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -892,18 +772,18 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"GetValidMeasurementUnit",
+		dbManager.ValidInstrumentDataManagerMock.On(
+			"GetValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
-		).Return(helper.exampleValidMeasurementUnit, nil)
+			helper.exampleValidInstrument.ID,
+		).Return(helper.exampleValidInstrument, nil)
 
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"UpdateValidMeasurementUnit",
+		dbManager.ValidInstrumentDataManagerMock.On(
+			"UpdateValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit,
+			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
 		).Return(nil)
-		helper.service.validMeasurementUnitDataManager = dbManager
+		helper.service.validInstrumentDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -913,19 +793,15 @@ func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testi
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
-		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
-func TestValidMeasurementUnitsService_ArchiveValidMeasurementUnitHandler(T *testing.T) {
+func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -933,19 +809,19 @@ func TestValidMeasurementUnitsService_ArchiveValidMeasurementUnitHandler(T *test
 
 		helper := buildTestHelper(t)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"ValidMeasurementUnitExists",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"ValidInstrumentExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
+			helper.exampleValidInstrument.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"ArchiveValidMeasurementUnit",
+		validInstrumentDataManager.On(
+			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
+			helper.exampleValidInstrument.ID,
 		).Return(nil)
-		helper.service.validMeasurementUnitDataManager = dbManager
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -955,15 +831,11 @@ func TestValidMeasurementUnitsService_ArchiveValidMeasurementUnitHandler(T *test
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -972,37 +844,37 @@ func TestValidMeasurementUnitsService_ArchiveValidMeasurementUnitHandler(T *test
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid measurement unit in the database", func(t *testing.T) {
+	T.Run("with no such valid instrument in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"ValidMeasurementUnitExists",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"ValidInstrumentExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
+			helper.exampleValidInstrument.ID,
 		).Return(false, nil)
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {
@@ -1010,23 +882,23 @@ func TestValidMeasurementUnitsService_ArchiveValidMeasurementUnitHandler(T *test
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
-		validMeasurementUnitDataManager.On(
-			"ValidMeasurementUnitExists",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"ValidInstrumentExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
+			helper.exampleValidInstrument.ID,
 		).Return(false, errors.New("blah"))
-		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -1034,29 +906,29 @@ func TestValidMeasurementUnitsService_ArchiveValidMeasurementUnitHandler(T *test
 
 		helper := buildTestHelper(t)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"ValidMeasurementUnitExists",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"ValidInstrumentExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
+			helper.exampleValidInstrument.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"ArchiveValidMeasurementUnit",
+		validInstrumentDataManager.On(
+			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
+			helper.exampleValidInstrument.ID,
 		).Return(errors.New("blah"))
-		helper.service.validMeasurementUnitDataManager = dbManager
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, dbManager)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
 	T.Run("with error publishing to message queue", func(t *testing.T) {
@@ -1064,19 +936,19 @@ func TestValidMeasurementUnitsService_ArchiveValidMeasurementUnitHandler(T *test
 
 		helper := buildTestHelper(t)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"ValidMeasurementUnitExists",
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"ValidInstrumentExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
+			helper.exampleValidInstrument.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementUnitDataManagerMock.On(
-			"ArchiveValidMeasurementUnit",
+		validInstrumentDataManager.On(
+			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnit.ID,
+			helper.exampleValidInstrument.ID,
 		).Return(nil)
-		helper.service.validMeasurementUnitDataManager = dbManager
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1086,14 +958,98 @@ func TestValidMeasurementUnitsService_ArchiveValidMeasurementUnitHandler(T *test
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
+		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, dataChangesPublisher)
+	})
+}
+
+func TestValidInstrumentsService_RandomValidInstrumentHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetRandomValidInstrument",
+			testutils.ContextMatcher,
+		).Return(helper.exampleValidInstrument, nil)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
+
+		helper.service.RandomValidInstrumentHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidInstrument]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.RandomValidInstrumentHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+	})
+
+	T.Run("with no such valid instrument in the database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetRandomValidInstrument",
+			testutils.ContextMatcher,
+		).Return((*types.ValidInstrument)(nil), sql.ErrNoRows)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
+
+		helper.service.RandomValidInstrumentHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetRandomValidInstrument",
+			testutils.ContextMatcher,
+		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
+
+		helper.service.RandomValidInstrumentHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
@@ -15,7 +16,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
@@ -86,7 +86,7 @@ func ProvideService(
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		recipeIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(RecipeIDURIParamKey),
-		sessionContextDataFetcher: authservice.FetchContextFromRequest,
+		sessionContextDataFetcher: authentication.FetchContextFromRequest,
 		recipeDataManager:         recipeDataManager,
 		cfg:                       cfg,
 		recipeMediaDataManager:    recipeMediaDataManager,

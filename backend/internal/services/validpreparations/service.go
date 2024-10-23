@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -13,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -26,15 +26,15 @@ var _ types.ValidPreparationDataService = (*service)(nil)
 type (
 	// service handles valid preparations.
 	service struct {
-		cfg                         *Config
-		logger                      logging.Logger
-		validPreparationDataManager types.ValidPreparationDataManager
-		validPreparationIDFetcher   func(*http.Request) string
-		sessionContextDataFetcher   func(*http.Request) (*types.SessionContextData, error)
-		dataChangesPublisher        messagequeue.Publisher
-		encoderDecoder              encoding.ServerEncoderDecoder
-		tracer                      tracing.Tracer
-		searchIndex                 search.IndexSearcher[types.ValidPreparationSearchSubset]
+		cfg                          *Config
+		logger                       logging.Logger
+		validPreparationDataManager  types.ValidPreparationDataManager
+		validPreparationIDFetcher    func(*http.Request) string
+		sessionContextDataFetcher    func(*http.Request) (*types.SessionContextData, error)
+		dataChangesPublisher         messagequeue.Publisher
+		encoderDecoder               encoding.ServerEncoderDecoder
+		tracer                       tracing.Tracer
+		validPreparationsSearchIndex search.IndexSearcher[types.ValidPreparationSearchSubset]
 	}
 )
 
@@ -61,15 +61,15 @@ func ProvideService(
 	}
 
 	svc := &service{
-		logger:                      logging.EnsureLogger(logger).WithName(serviceName),
-		validPreparationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidPreparationIDURIParamKey),
-		sessionContextDataFetcher:   authservice.FetchContextFromRequest,
-		validPreparationDataManager: validPreparationDataManager,
-		dataChangesPublisher:        dataChangesPublisher,
-		cfg:                         cfg,
-		encoderDecoder:              encoder,
-		tracer:                      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		searchIndex:                 searchIndex,
+		logger:                       logging.EnsureLogger(logger).WithName(serviceName),
+		validPreparationIDFetcher:    routeParamManager.BuildRouteParamStringIDFetcher(ValidPreparationIDURIParamKey),
+		sessionContextDataFetcher:    authentication.FetchContextFromRequest,
+		validPreparationDataManager:  validPreparationDataManager,
+		dataChangesPublisher:         dataChangesPublisher,
+		cfg:                          cfg,
+		encoderDecoder:               encoder,
+		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		validPreparationsSearchIndex: searchIndex,
 	}
 
 	return svc, nil

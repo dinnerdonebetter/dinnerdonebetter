@@ -13,6 +13,7 @@ import (
 func (c *Client) CreateValidIngredientPreparation(
 	ctx context.Context,
 	input *types.ValidIngredientPreparationCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.ValidIngredientPreparation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -31,6 +32,10 @@ func (c *Client) CreateValidIngredientPreparation(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a ValidIngredientPreparation")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientPreparation]

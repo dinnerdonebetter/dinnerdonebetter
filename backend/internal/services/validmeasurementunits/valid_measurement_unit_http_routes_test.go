@@ -1,4 +1,4 @@
-package validingredients
+package validmeasurementunits
 
 import (
 	"bytes"
@@ -26,7 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
+func TestValidMeasurementUnitsService_CreateValidMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -35,7 +35,7 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -44,12 +44,12 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManagerMock.On(
-			"CreateValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"CreateValidMeasurementUnit",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidIngredientDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidIngredient, nil)
-		helper.service.validIngredientDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidMeasurementUnitDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidMeasurementUnit, nil)
+		helper.service.validMeasurementUnitDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -59,12 +59,12 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateValidIngredientHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidIngredient)
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
@@ -81,10 +81,10 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateValidIngredientHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -96,7 +96,7 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.ValidIngredientCreationRequestInput{}
+		exampleCreationInput := &types.ValidMeasurementUnitCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -104,10 +104,10 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateValidIngredientHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -119,7 +119,7 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -129,10 +129,10 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateValidIngredientHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -144,7 +144,7 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -153,17 +153,17 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManagerMock.On(
-			"CreateValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"CreateValidMeasurementUnit",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidIngredientDatabaseCreationInput) bool { return true }),
-		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
-		helper.service.validIngredientDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidMeasurementUnitDatabaseCreationInput) bool { return true }),
+		).Return((*types.ValidMeasurementUnit)(nil), errors.New("blah"))
+		helper.service.validMeasurementUnitDataManager = dbManager
 
-		helper.service.CreateValidIngredientHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -177,7 +177,7 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -186,12 +186,12 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManagerMock.On(
-			"CreateValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"CreateValidMeasurementUnit",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidIngredientDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidIngredient, nil)
-		helper.service.validIngredientDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidMeasurementUnitDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidMeasurementUnit, nil)
+		helper.service.validMeasurementUnitDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -201,15 +201,19 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateValidIngredientHandler(helper.res, helper.req)
+		helper.service.CreateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
-func TestValidIngredientsService_ReadValidIngredientHandler(T *testing.T) {
+func TestValidMeasurementUnitsService_ReadValidMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -217,23 +221,23 @@ func TestValidIngredientsService_ReadValidIngredientHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetValidIngredient",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(helper.exampleValidIngredient, nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+			helper.exampleValidMeasurementUnit.ID,
+		).Return(helper.exampleValidMeasurementUnit, nil)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.ReadValidIngredientHandler(helper.res, helper.req)
+		helper.service.ReadValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidIngredient)
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -242,37 +246,37 @@ func TestValidIngredientsService_ReadValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadValidIngredientHandler(helper.res, helper.req)
+		helper.service.ReadValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid ingredient in the database", func(t *testing.T) {
+	T.Run("with no such valid measurement unit in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetValidIngredient",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return((*types.ValidIngredient)(nil), sql.ErrNoRows)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+			helper.exampleValidMeasurementUnit.ID,
+		).Return((*types.ValidMeasurementUnit)(nil), sql.ErrNoRows)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.ReadValidIngredientHandler(helper.res, helper.req)
+		helper.service.ReadValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -280,27 +284,27 @@ func TestValidIngredientsService_ReadValidIngredientHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetValidIngredient",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
-		helper.service.validIngredientDataManager = validIngredientDataManager
+			helper.exampleValidMeasurementUnit.ID,
+		).Return((*types.ValidMeasurementUnit)(nil), errors.New("blah"))
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.ReadValidIngredientHandler(helper.res, helper.req)
+		helper.service.ReadValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 }
 
-func TestValidIngredientsService_ListValidIngredientsHandler(T *testing.T) {
+func TestValidMeasurementUnitsService_ListValidMeasurementUnitsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -308,26 +312,26 @@ func TestValidIngredientsService_ListValidIngredientsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidIngredientList := fakes.BuildFakeValidIngredientsList()
+		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitsList()
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetValidIngredients",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleValidIngredientList, nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		).Return(exampleValidMeasurementUnitList, nil)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.ListValidIngredientsHandler(helper.res, helper.req)
+		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidIngredient]
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidIngredientList.Data)
-		assert.Equal(t, *actual.Pagination, exampleValidIngredientList.Pagination)
+		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidMeasurementUnitList.Pagination)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -336,10 +340,10 @@ func TestValidIngredientsService_ListValidIngredientsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListValidIngredientsHandler(helper.res, helper.req)
+		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -350,56 +354,55 @@ func TestValidIngredientsService_ListValidIngredientsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetValidIngredients",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredient])(nil), sql.ErrNoRows)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.ListValidIngredientsHandler(helper.res, helper.req)
+		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidIngredient]
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
-	T.Run("with error retrieving valid ingredients from database", func(t *testing.T) {
+	T.Run("with error retrieving valid measurement units from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetValidIngredients",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredient])(nil), errors.New("blah"))
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.ListValidIngredientsHandler(helper.res, helper.req)
+		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 }
 
-func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
+func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *testing.T) {
 	T.Parallel()
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidIngredientList := fakes.BuildFakeValidIngredientsList()
+	exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -411,25 +414,23 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"SearchForValidIngredients",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"SearchForValidMeasurementUnits",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleValidIngredientList, nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		).Return(exampleValidMeasurementUnitList.Data, nil)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.SearchValidIngredientsHandler(helper.res, helper.req)
+		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidIngredient]
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidIngredientList.Data)
-		assert.Equal(t, *actual.Pagination, exampleValidIngredientList.Pagination)
+		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
 	T.Run("using external service", func(t *testing.T) {
@@ -444,33 +445,37 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		}.Encode()
 
 		expectedIDs := []string{}
-		validIngredientSearchSubsets := make([]*types.ValidIngredientSearchSubset, len(exampleValidIngredientList.Data))
-		for i := range exampleValidIngredientList.Data {
-			expectedIDs = append(expectedIDs, exampleValidIngredientList.Data[i].ID)
-			validIngredientSearchSubsets[i] = converters.ConvertValidIngredientToValidIngredientSearchSubset(exampleValidIngredientList.Data[i])
+		validMeasurementUnitSearchSubsets := make([]*types.ValidMeasurementUnitSearchSubset, len(exampleValidMeasurementUnitList.Data))
+		for i := range exampleValidMeasurementUnitList.Data {
+			expectedIDs = append(expectedIDs, exampleValidMeasurementUnitList.Data[i].ID)
+			validMeasurementUnitSearchSubsets[i] = converters.ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(exampleValidMeasurementUnitList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[types.ValidMeasurementUnitSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(validIngredientSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		).Return(validMeasurementUnitSearchSubsets, nil)
+		helper.service.validMeasurementUnitSearchIndex = searchIndex
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetValidIngredientsWithIDs",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnitsWithIDs",
 			testutils.ContextMatcher,
 			expectedIDs,
-		).Return(exampleValidIngredientList.Data, nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		).Return(exampleValidMeasurementUnitList.Data, nil)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.SearchValidIngredientsHandler(helper.res, helper.req)
+		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, searchIndex)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager, searchIndex)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -479,10 +484,10 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.SearchValidIngredientsHandler(helper.res, helper.req)
+		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -498,24 +503,23 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"SearchForValidIngredients",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"SearchForValidMeasurementUnits",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
-		).Return(&types.QueryFilteredResult[types.ValidIngredient]{}, sql.ErrNoRows)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		).Return([]*types.ValidMeasurementUnit{}, sql.ErrNoRows)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.SearchValidIngredientsHandler(helper.res, helper.req)
+		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidIngredient]
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
 	T.Run("with error retrieving from database", func(t *testing.T) {
@@ -527,140 +531,140 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"SearchForValidIngredients",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"SearchForValidMeasurementUnits",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredient])(nil), errors.New("blah"))
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		).Return([]*types.ValidMeasurementUnit(nil), errors.New("blah"))
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.SearchValidIngredientsHandler(helper.res, helper.req)
+		helper.service.SearchValidMeasurementUnitsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
-	})
-
-	T.Run("with error retrieving from external service", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.cfg.UseSearchService = true
-
-		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
-		}.Encode()
-
-		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
-		searchIndex.On(
-			"Search",
-			testutils.ContextMatcher,
-			exampleQuery,
-		).Return([]*types.ValidIngredientSearchSubset(nil), errors.New("blah"))
-		helper.service.searchIndex = searchIndex
-
-		helper.service.SearchValidIngredientsHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-
-		mock.AssertExpectationsForObjects(t, searchIndex)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 }
 
-func TestValidIngredientsService_SearchValidIngredientsByPreparationAndIngredientNameHandler(T *testing.T) {
+func TestVaValidMeasurementUnitslidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleQuery := "whatever"
+	exampleLimit := uint8(123)
+	exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		exampleValidIngredientList := fakes.BuildFakeValidIngredientsList()
+		helper.req.URL.RawQuery = url.Values{
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"SearchForValidIngredientsForPreparation",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"ValidMeasurementUnitsForIngredientID",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-			helper.exampleValidIngredient.Name,
+			helper.exampleValidIngredient.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleValidIngredientList, nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		).Return(exampleValidMeasurementUnitList, nil)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		newQueryParams := helper.req.URL.Query()
-		newQueryParams.Set(types.QueryKeySearch, helper.exampleValidIngredient.Name)
-		helper.req.URL.RawQuery = newQueryParams.Encode()
-
-		helper.service.SearchValidIngredientsByPreparationAndIngredientNameHandler(helper.res, helper.req)
+		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidIngredient]
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidIngredientList.Data)
-		assert.Equal(t, *actual.Pagination, exampleValidIngredientList.Pagination)
+		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidMeasurementUnitList.Pagination)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
-	T.Run("with error fetching session context data", func(t *testing.T) {
+	T.Run("with error retrieving session context data", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.SearchValidIngredientsByPreparationAndIngredientNameHandler(helper.res, helper.req)
+		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with database error", func(t *testing.T) {
+	T.Run("with no rows returned", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"SearchForValidIngredientsForPreparation",
+		helper.req.URL.RawQuery = url.Values{
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"ValidMeasurementUnitsForIngredientID",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-			helper.exampleValidIngredient.Name,
+			helper.exampleValidIngredient.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredient])(nil), errors.New("blah"))
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		newQueryParams := helper.req.URL.Query()
-		newQueryParams.Set(types.QueryKeySearch, helper.exampleValidIngredient.Name)
-		helper.req.URL.RawQuery = newQueryParams.Encode()
+		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)
 
-		helper.service.SearchValidIngredientsByPreparationAndIngredientNameHandler(helper.res, helper.req)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
+	})
+
+	T.Run("with error retrieving from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.req.URL.RawQuery = url.Values{
+			types.QueryKeySearch: []string{exampleQuery},
+			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"ValidMeasurementUnitsForIngredientID",
+			testutils.ContextMatcher,
+			helper.exampleValidIngredient.ID,
+			mock.IsType(&types.QueryFilter{}),
+		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+
+		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 }
 
-func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
+func TestValidMeasurementUnitsService_UpdateValidMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -669,7 +673,7 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -678,18 +682,18 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManagerMock.On(
-			"GetValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(helper.exampleValidIngredient, nil)
+			helper.exampleValidMeasurementUnit.ID,
+		).Return(helper.exampleValidMeasurementUnit, nil)
 
-		dbManager.ValidIngredientDataManagerMock.On(
-			"UpdateValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"UpdateValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient,
+			helper.exampleValidMeasurementUnit,
 		).Return(nil)
-		helper.service.validIngredientDataManager = dbManager
+		helper.service.validMeasurementUnitDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -699,12 +703,12 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateValidIngredientHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidIngredient)
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
@@ -716,7 +720,7 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.ValidIngredientUpdateRequestInput{}
+		exampleCreationInput := &types.ValidMeasurementUnitUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -724,10 +728,10 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateValidIngredientHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -739,10 +743,10 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateValidIngredientHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -759,22 +763,22 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateValidIngredientHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid ingredient", func(t *testing.T) {
+	T.Run("with no such valid measurement unit", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -782,32 +786,32 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetValidIngredient",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return((*types.ValidIngredient)(nil), sql.ErrNoRows)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+			helper.exampleValidMeasurementUnit.ID,
+		).Return((*types.ValidMeasurementUnit)(nil), sql.ErrNoRows)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.UpdateValidIngredientHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
-	T.Run("with error retrieving valid ingredient from database", func(t *testing.T) {
+	T.Run("with error retrieving valid measurement unit from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -815,23 +819,23 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetValidIngredient",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
-		helper.service.validIngredientDataManager = validIngredientDataManager
+			helper.exampleValidMeasurementUnit.ID,
+		).Return((*types.ValidMeasurementUnit)(nil), errors.New("blah"))
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.UpdateValidIngredientHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -840,7 +844,7 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -849,23 +853,23 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManagerMock.On(
-			"GetValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(helper.exampleValidIngredient, nil)
+			helper.exampleValidMeasurementUnit.ID,
+		).Return(helper.exampleValidMeasurementUnit, nil)
 
-		dbManager.ValidIngredientDataManagerMock.On(
-			"UpdateValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"UpdateValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient,
+			helper.exampleValidMeasurementUnit,
 		).Return(errors.New("blah"))
-		helper.service.validIngredientDataManager = dbManager
+		helper.service.validMeasurementUnitDataManager = dbManager
 
-		helper.service.UpdateValidIngredientHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -879,7 +883,7 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -888,18 +892,18 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManagerMock.On(
-			"GetValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(helper.exampleValidIngredient, nil)
+			helper.exampleValidMeasurementUnit.ID,
+		).Return(helper.exampleValidMeasurementUnit, nil)
 
-		dbManager.ValidIngredientDataManagerMock.On(
-			"UpdateValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"UpdateValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient,
+			helper.exampleValidMeasurementUnit,
 		).Return(nil)
-		helper.service.validIngredientDataManager = dbManager
+		helper.service.validMeasurementUnitDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -909,15 +913,19 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateValidIngredientHandler(helper.res, helper.req)
+		helper.service.UpdateValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
-func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
+func TestValidMeasurementUnitsService_ArchiveValidMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -926,18 +934,18 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManagerMock.On(
-			"ValidIngredientExists",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
+			helper.exampleValidMeasurementUnit.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientDataManagerMock.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"ArchiveValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
+			helper.exampleValidMeasurementUnit.ID,
 		).Return(nil)
-		helper.service.validIngredientDataManager = dbManager
+		helper.service.validMeasurementUnitDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -947,9 +955,13 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveValidIngredientHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -960,37 +972,37 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveValidIngredientHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid ingredient in the database", func(t *testing.T) {
+	T.Run("with no such valid measurement unit in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"ValidIngredientExists",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
+			helper.exampleValidMeasurementUnit.ID,
 		).Return(false, nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.ArchiveValidIngredientHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {
@@ -998,23 +1010,23 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"ValidIngredientExists",
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
+			helper.exampleValidMeasurementUnit.ID,
 		).Return(false, errors.New("blah"))
-		helper.service.validIngredientDataManager = validIngredientDataManager
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
-		helper.service.ArchiveValidIngredientHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -1023,23 +1035,23 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManagerMock.On(
-			"ValidIngredientExists",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
+			helper.exampleValidMeasurementUnit.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientDataManagerMock.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"ArchiveValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
+			helper.exampleValidMeasurementUnit.ID,
 		).Return(errors.New("blah"))
-		helper.service.validIngredientDataManager = dbManager
+		helper.service.validMeasurementUnitDataManager = dbManager
 
-		helper.service.ArchiveValidIngredientHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1053,18 +1065,18 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManagerMock.On(
-			"ValidIngredientExists",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
+			helper.exampleValidMeasurementUnit.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientDataManagerMock.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
+			"ArchiveValidMeasurementUnit",
 			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
+			helper.exampleValidMeasurementUnit.ID,
 		).Return(nil)
-		helper.service.validIngredientDataManager = dbManager
+		helper.service.validMeasurementUnitDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1074,98 +1086,14 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveValidIngredientHandler(helper.res, helper.req)
+		helper.service.ArchiveValidMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
-}
-
-func TestValidIngredientsService_RandomValidIngredientHandler(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetRandomValidIngredient",
-			testutils.ContextMatcher,
-		).Return(helper.exampleValidIngredient, nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
-
-		helper.service.RandomValidIngredientHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidIngredient)
+		assert.Empty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
-	})
-
-	T.Run("with error retrieving session context data", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		helper.service.RandomValidIngredientHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-	})
-
-	T.Run("with no such valid ingredient in the database", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetRandomValidIngredient",
-			testutils.ContextMatcher,
-		).Return((*types.ValidIngredient)(nil), sql.ErrNoRows)
-		helper.service.validIngredientDataManager = validIngredientDataManager
-
-		helper.service.RandomValidIngredientHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
-	})
-
-	T.Run("with error fetching from database", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManagerMock{}
-		validIngredientDataManager.On(
-			"GetRandomValidIngredient",
-			testutils.ContextMatcher,
-		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
-		helper.service.validIngredientDataManager = validIngredientDataManager
-
-		helper.service.RandomValidIngredientHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredient]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

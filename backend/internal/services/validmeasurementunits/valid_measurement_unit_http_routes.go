@@ -1,4 +1,4 @@
-package validingredients
+package validmeasurementunits
 
 import (
 	"database/sql"
@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -17,14 +18,14 @@ import (
 )
 
 const (
-	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient IDs with.
+	// ValidMeasurementUnitIDURIParamKey is a standard string that we'll use to refer to valid measurement unit IDs with.
+	ValidMeasurementUnitIDURIParamKey = "validMeasurementUnitID"
+	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid measurement unit IDs with.
 	ValidIngredientIDURIParamKey = "validIngredientID"
-	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
-	ValidPreparationIDURIParamKey = "validPreparationID"
 )
 
-// CreateValidIngredientHandler is our valid ingredient creation route.
-func (s *service) CreateValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidMeasurementUnitHandler is our valid measurement unit creation route.
+func (s *service) CreateValidMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -52,7 +53,7 @@ func (s *service) CreateValidIngredientHandler(res http.ResponseWriter, req *htt
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
-	providedInput := new(types.ValidIngredientCreationRequestInput)
+	providedInput := new(types.ValidMeasurementUnitCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -67,15 +68,15 @@ func (s *service) CreateValidIngredientHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
-	input := converters.ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(providedInput)
+	input := converters.ConvertValidMeasurementUnitCreationRequestInputToValidMeasurementUnitDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, input.ID)
 
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
-	validIngredient, err := s.validIngredientDataManager.CreateValidIngredient(ctx, input)
+	validMeasurementUnit, err := s.validMeasurementUnitDataManager.CreateValidMeasurementUnit(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid ingredient")
+		observability.AcknowledgeError(err, logger, span, "creating valid measurement unit")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -83,25 +84,25 @@ func (s *service) CreateValidIngredientHandler(res http.ResponseWriter, req *htt
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:       types.ValidIngredientCreatedServiceEventType,
-		ValidIngredient: validIngredient,
-		UserID:          sessionCtxData.Requester.UserID,
+		EventType:            types.ValidMeasurementUnitCreatedServiceEventType,
+		ValidMeasurementUnit: validMeasurementUnit,
+		UserID:               sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidIngredient]{
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
 		Details: responseDetails,
-		Data:    validIngredient,
+		Data:    validMeasurementUnit,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadValidIngredientHandler returns a GET handler that returns a valid ingredient.
-func (s *service) ReadValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidMeasurementUnitHandler returns a GET handler that returns a valid measurement unit.
+func (s *service) ReadValidMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -128,27 +129,25 @@ func (s *service) ReadValidIngredientHandler(res http.ResponseWriter, req *http.
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid ingredient ID.
-	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	// determine valid measurement unit ID.
+	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	// fetch valid ingredient from database.
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.validIngredientDataManager.GetValidIngredient(ctx, validIngredientID)
+	// fetch valid measurement unit from database.
+	x, err := s.validMeasurementUnitDataManager.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement unit")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
-	readTimer.Stop()
 
-	responseValue := &types.APIResponse[*types.ValidIngredient]{
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
 		Details: responseDetails,
 		Data:    x,
 	}
@@ -157,8 +156,8 @@ func (s *service) ReadValidIngredientHandler(res http.ResponseWriter, req *http.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListValidIngredientsHandler is our list route.
-func (s *service) ListValidIngredientsHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidMeasurementUnitsHandler is our list route.
+func (s *service) ListValidMeasurementUnitsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -189,31 +188,29 @@ func (s *service) ListValidIngredientsHandler(res http.ResponseWriter, req *http
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	validIngredients, err := s.validIngredientDataManager.GetValidIngredients(ctx, filter)
+	validMeasurementUnits, err := s.validMeasurementUnitDataManager.GetValidMeasurementUnits(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredients = &types.QueryFilteredResult[types.ValidIngredient]{Data: []*types.ValidIngredient{}}
+		validMeasurementUnits = &types.QueryFilteredResult[types.ValidMeasurementUnit]{Data: []*types.ValidMeasurementUnit{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredients")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement units")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
-	readTimer.Stop()
 
-	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
+	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
 		Details:    responseDetails,
-		Data:       validIngredients.Data,
-		Pagination: &validIngredients.Pagination,
+		Data:       validMeasurementUnits.Data,
+		Pagination: &validMeasurementUnits.Pagination,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchValidIngredientsHandler is our search route.
-func (s *service) SearchValidIngredientsHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidMeasurementUnitsHandler is our search route.
+func (s *service) SearchValidMeasurementUnitsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -236,87 +233,8 @@ func (s *service) SearchValidIngredientsHandler(res http.ResponseWriter, req *ht
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
-	// determine user ID.
-	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		logger.Error(err, "retrieving session context data")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
-		return
-	}
-	sessionContextTimer.Stop()
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
-
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	validIngredients := &types.QueryFilteredResult[types.ValidIngredient]{}
-	if useDB {
-		validIngredients, err = s.validIngredientDataManager.SearchForValidIngredients(ctx, query, filter)
-	} else {
-		var validIngredientSubsets []*types.ValidIngredientSearchSubset
-		validIngredientSubsets, err = s.searchIndex.Search(ctx, query)
-		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "searching for valid ingredients")
-			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-			return
-		}
-
-		ids := []string{}
-		for _, validIngredientSubset := range validIngredientSubsets {
-			ids = append(ids, validIngredientSubset.ID)
-		}
-
-		validIngredients.Data, err = s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, ids)
-	}
-
-	if errors.Is(err, sql.ErrNoRows) {
-		// in the event no rows exist, return an empty list.
-		validIngredients.Data = []*types.ValidIngredient{}
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid ingredients")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
-	readTimer.Stop()
-
-	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
-		Details:    responseDetails,
-		Data:       validIngredients.Data,
-		Pagination: &validIngredients.Pagination,
-	}
-
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
-}
-
-// SearchValidIngredientsByPreparationAndIngredientNameHandler is our valid ingredient measurement unit search route.
-func (s *service) SearchValidIngredientsByPreparationAndIngredientNameHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	timing := servertiming.FromContext(ctx)
 	tracing.AttachRequestToSpan(span, req)
-	logger := s.logger.WithRequest(req).WithSpan(span)
-
-	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
-	logger = filter.AttachToLogger(logger)
-
-	query := req.URL.Query().Get(types.QueryKeySearch)
-	tracing.AttachRequestToSpan(span, req)
-	logger = logger.WithValue(keys.SearchQueryKey, query)
-
-	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
-	}
-
-	validPreparationID := s.validPreparationIDFetcher(req)
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -333,25 +251,117 @@ func (s *service) SearchValidIngredientsByPreparationAndIngredientNameHandler(re
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredientsForPreparation(ctx, validPreparationID, query, filter)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
+	var validMeasurementUnits []*types.ValidMeasurementUnit
+	if useDB {
+		validMeasurementUnits, err = s.validMeasurementUnitDataManager.SearchForValidMeasurementUnits(ctx, query)
+	} else {
+		var validMeasurementUnitSubsets []*types.ValidMeasurementUnitSearchSubset
+		validMeasurementUnitSubsets, err = s.validMeasurementUnitSearchIndex.Search(ctx, query)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "searching for valid measurement units")
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+			return
+		}
+
+		ids := []string{}
+		for _, validMeasurementUnitSubset := range validMeasurementUnitSubsets {
+			ids = append(ids, validMeasurementUnitSubset.ID)
+		}
+
+		validMeasurementUnits, err = s.validMeasurementUnitDataManager.GetValidMeasurementUnitsWithIDs(ctx, ids)
+	}
+
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		validMeasurementUnits = []*types.ValidMeasurementUnit{}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid measurement units")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
-	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
+	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
 		Details:    responseDetails,
-		Data:       validIngredients.Data,
-		Pagination: &validIngredients.Pagination,
+		Data:       validMeasurementUnits,
+		Pagination: pointer.To(filter.ToPagination()),
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateValidIngredientHandler returns a handler that updates a valid ingredient.
-func (s *service) UpdateValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidMeasurementUnitsByIngredientIDHandler is our search route.
+func (s *service) SearchValidMeasurementUnitsByIngredientIDHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	tracing.AttachRequestToSpan(span, req)
+
+	query := req.URL.Query().Get(types.QueryKeySearch)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	logger = logger.WithValue(keys.SearchQueryKey, query)
+
+	filter := types.ExtractQueryFilterFromRequest(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
+	logger = filter.AttachToLogger(logger)
+
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
+	logger = logger.WithValue("using_database", useDB)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	// determine valid ingredient ID.
+	validIngredientID := s.validIngredientIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	validMeasurementUnits, err := s.validMeasurementUnitDataManager.ValidMeasurementUnitsForIngredientID(ctx, validIngredientID, filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		validMeasurementUnits = &types.QueryFilteredResult[types.ValidMeasurementUnit]{}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching valid measurement units for ingredient ID")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+
+	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
+		Details:    responseDetails,
+		Data:       validMeasurementUnits.Data,
+		Pagination: &validMeasurementUnits.Pagination,
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}
+
+// UpdateValidMeasurementUnitHandler returns a handler that updates a valid measurement unit.
+func (s *service) UpdateValidMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -379,7 +389,7 @@ func (s *service) UpdateValidIngredientHandler(res http.ResponseWriter, req *htt
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidIngredientUpdateRequestInput)
+	input := new(types.ValidMeasurementUnitUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -394,32 +404,30 @@ func (s *service) UpdateValidIngredientHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
-	// determine valid ingredient ID.
-	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	// determine valid measurement unit ID.
+	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	// fetch valid ingredient from database.
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	validIngredient, err := s.validIngredientDataManager.GetValidIngredient(ctx, validIngredientID)
+	// fetch valid measurement unit from database.
+	validMeasurementUnit, err := s.validMeasurementUnitDataManager.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement unit for update")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
-	readTimer.Stop()
 
-	// update the valid ingredient.
-	validIngredient.Update(input)
+	// update the valid measurement unit.
+	validMeasurementUnit.Update(input)
 
 	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
-	if err = s.validIngredientDataManager.UpdateValidIngredient(ctx, validIngredient); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid ingredient")
+	if err = s.validMeasurementUnitDataManager.UpdateValidMeasurementUnit(ctx, validMeasurementUnit); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid measurement unit")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -427,26 +435,26 @@ func (s *service) UpdateValidIngredientHandler(res http.ResponseWriter, req *htt
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:       types.ValidIngredientUpdatedServiceEventType,
-		ValidIngredient: validIngredient,
-		UserID:          sessionCtxData.Requester.UserID,
+		EventType:            types.ValidMeasurementUnitUpdatedServiceEventType,
+		ValidMeasurementUnit: validMeasurementUnit,
+		UserID:               sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidIngredient]{
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
 		Details: responseDetails,
-		Data:    validIngredient,
+		Data:    validMeasurementUnit,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveValidIngredientHandler returns a handler that archives a valid ingredient.
-func (s *service) ArchiveValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidMeasurementUnitHandler returns a handler that archives a valid measurement unit.
+func (s *service) ArchiveValidMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -473,15 +481,15 @@ func (s *service) ArchiveValidIngredientHandler(res http.ResponseWriter, req *ht
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid ingredient ID.
-	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	// determine valid measurement unit ID.
+	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.validIngredientDataManager.ValidIngredientExists(ctx, validIngredientID)
+	exists, err := s.validMeasurementUnitDataManager.ValidMeasurementUnitExists(ctx, validMeasurementUnitID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking valid ingredient existence")
+		observability.AcknowledgeError(err, logger, span, "checking valid measurement unit existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -493,8 +501,8 @@ func (s *service) ArchiveValidIngredientHandler(res http.ResponseWriter, req *ht
 	existenceTimer.Stop()
 
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	if err = s.validIngredientDataManager.ArchiveValidIngredient(ctx, validIngredientID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid ingredient")
+	if err = s.validMeasurementUnitDataManager.ArchiveValidMeasurementUnit(ctx, validMeasurementUnitID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid measurement unit")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -502,7 +510,7 @@ func (s *service) ArchiveValidIngredientHandler(res http.ResponseWriter, req *ht
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ValidIngredientArchivedServiceEventType,
+		EventType: types.ValidMeasurementUnitArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
@@ -510,60 +518,8 @@ func (s *service) ArchiveValidIngredientHandler(res http.ResponseWriter, req *ht
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidIngredient]{
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
 		Details: responseDetails,
-	}
-
-	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
-}
-
-// RandomValidIngredientHandler returns a GET handler that returns a random valid ingredient.
-func (s *service) RandomValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req).WithSpan(span)
-	tracing.AttachRequestToSpan(span, req)
-
-	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
-	}
-
-	// determine user ID.
-	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
-		return
-	}
-	sessionContextTimer.Stop()
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
-
-	// fetch valid ingredient from database.
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.validIngredientDataManager.GetRandomValidIngredient(ctx)
-	if errors.Is(err, sql.ErrNoRows) {
-		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
-	readTimer.Stop()
-
-	responseValue := &types.APIResponse[*types.ValidIngredient]{
-		Details: responseDetails,
-		Data:    x,
 	}
 
 	// encode our response and peace.

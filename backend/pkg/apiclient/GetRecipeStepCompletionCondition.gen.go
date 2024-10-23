@@ -18,6 +18,7 @@ func (c *Client) GetRecipeStepCompletionCondition(
 	recipeID string,
 	recipeStepID string,
 	recipeStepCompletionConditionID string,
+	reqMods ...RequestModifier,
 ) (*types.RecipeStepCompletionCondition, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -46,6 +47,10 @@ func (c *Client) GetRecipeStepCompletionCondition(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a RecipeStepCompletionCondition")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]

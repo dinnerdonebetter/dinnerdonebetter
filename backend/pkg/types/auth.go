@@ -124,8 +124,8 @@ type (
 		HouseholdID string `json:"householdID"`
 	}
 
-	// AuthService describes a structure capable of handling passwords and authorization requests.
-	AuthService interface {
+	// AuthDataService describes a structure capable of handling passwords and authorization requests.
+	AuthDataService interface {
 		StatusHandler(http.ResponseWriter, *http.Request)
 		BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *http.Request)
 

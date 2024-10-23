@@ -1,4 +1,4 @@
-package validinstruments
+package validpreparations
 
 import (
 	"bytes"
@@ -26,7 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
+func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -35,7 +35,7 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidPreparationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -44,12 +44,12 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"CreateValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"CreateValidPreparation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidInstrument, nil)
-		helper.service.validInstrumentDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidPreparationDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidPreparation, nil)
+		helper.service.validPreparationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -59,12 +59,12 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
+		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
@@ -81,10 +81,10 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -96,7 +96,7 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.ValidInstrumentCreationRequestInput{}
+		exampleCreationInput := &types.ValidPreparationCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -104,10 +104,10 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -119,7 +119,7 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidPreparationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -129,10 +129,10 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -144,7 +144,7 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidPreparationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -153,17 +153,17 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"CreateValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"CreateValidPreparation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
-		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
-		helper.service.validInstrumentDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidPreparationDatabaseCreationInput) bool { return true }),
+		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
+		helper.service.validPreparationDataManager = dbManager
 
-		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -177,7 +177,7 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidPreparationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -186,12 +186,12 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"CreateValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"CreateValidPreparation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidInstrument, nil)
-		helper.service.validInstrumentDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidPreparationDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidPreparation, nil)
+		helper.service.validPreparationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -201,15 +201,19 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
-func TestValidInstrumentsService_ReadValidInstrumentHandler(T *testing.T) {
+func TestValidPreparationsService_ReadValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -217,23 +221,23 @@ func TestValidInstrumentsService_ReadValidInstrumentHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetValidInstrument",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(helper.exampleValidInstrument, nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+			helper.exampleValidPreparation.ID,
+		).Return(helper.exampleValidPreparation, nil)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ReadValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
+		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -242,37 +246,37 @@ func TestValidInstrumentsService_ReadValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid instrument in the database", func(t *testing.T) {
+	T.Run("with no such valid preparation in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetValidInstrument",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return((*types.ValidInstrument)(nil), sql.ErrNoRows)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+			helper.exampleValidPreparation.ID,
+		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ReadValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -280,27 +284,27 @@ func TestValidInstrumentsService_ReadValidInstrumentHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetValidInstrument",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+			helper.exampleValidPreparation.ID,
+		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ReadValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 }
 
-func TestValidInstrumentsService_ListValidInstrumentsHandler(T *testing.T) {
+func TestValidPreparationsService_ListValidPreparationsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -308,26 +312,26 @@ func TestValidInstrumentsService_ListValidInstrumentsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentsList()
+		exampleValidPreparationList := fakes.BuildFakeValidPreparationsList()
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetValidInstruments",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetValidPreparations",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleValidInstrumentList, nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return(exampleValidPreparationList, nil)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidInstrument]
+		var actual *types.APIResponse[[]*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidInstrumentList.Data)
-		assert.Equal(t, *actual.Pagination, exampleValidInstrumentList.Pagination)
+		assert.Equal(t, actual.Data, exampleValidPreparationList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidPreparationList.Pagination)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -336,10 +340,10 @@ func TestValidInstrumentsService_ListValidInstrumentsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -350,56 +354,55 @@ func TestValidInstrumentsService_ListValidInstrumentsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetValidInstruments",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetValidPreparations",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidInstrument])(nil), sql.ErrNoRows)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return((*types.QueryFilteredResult[types.ValidPreparation])(nil), sql.ErrNoRows)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
-	T.Run("with error retrieving valid instruments from database", func(t *testing.T) {
+	T.Run("with error retrieving valid preparations from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetValidInstruments",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetValidPreparations",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidInstrument])(nil), errors.New("blah"))
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return((*types.QueryFilteredResult[types.ValidPreparation])(nil), errors.New("blah"))
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
+		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 }
 
-func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
+func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 	T.Parallel()
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidInstrumentList := fakes.BuildFakeValidInstrumentsList()
+	exampleValidPreparationList := fakes.BuildFakeValidPreparationsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -411,23 +414,23 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"SearchForValidInstruments",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"SearchForValidPreparations",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(exampleValidInstrumentList.Data, nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return(exampleValidPreparationList.Data, nil)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidInstrument]
+		var actual *types.APIResponse[[]*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidInstrumentList.Data)
+		assert.Equal(t, actual.Data, exampleValidPreparationList.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
 	T.Run("using external service", func(t *testing.T) {
@@ -442,33 +445,37 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		}.Encode()
 
 		expectedIDs := []string{}
-		validInstrumentSearchSubsets := make([]*types.ValidInstrumentSearchSubset, len(exampleValidInstrumentList.Data))
-		for i := range exampleValidInstrumentList.Data {
-			expectedIDs = append(expectedIDs, exampleValidInstrumentList.Data[i].ID)
-			validInstrumentSearchSubsets[i] = converters.ConvertValidInstrumentToValidInstrumentSearchSubset(exampleValidInstrumentList.Data[i])
+		validPreparationSearchSubsets := make([]*types.ValidPreparationSearchSubset, len(exampleValidPreparationList.Data))
+		for i := range exampleValidPreparationList.Data {
+			expectedIDs = append(expectedIDs, exampleValidPreparationList.Data[i].ID)
+			validPreparationSearchSubsets[i] = converters.ConvertValidPreparationToValidPreparationSearchSubset(exampleValidPreparationList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidInstrumentSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[types.ValidPreparationSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(validInstrumentSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		).Return(validPreparationSearchSubsets, nil)
+		helper.service.validPreparationsSearchIndex = searchIndex
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetValidInstrumentsWithIDs",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetValidPreparationsWithIDs",
 			testutils.ContextMatcher,
 			expectedIDs,
-		).Return(exampleValidInstrumentList.Data, nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return(exampleValidPreparationList.Data, nil)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidPreparation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidPreparationList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, searchIndex)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndex)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -477,10 +484,10 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -496,23 +503,23 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"SearchForValidInstruments",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"SearchForValidPreparations",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return([]*types.ValidInstrument{}, sql.ErrNoRows)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return([]*types.ValidPreparation{}, sql.ErrNoRows)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
+		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
 	T.Run("with error retrieving from database", func(t *testing.T) {
@@ -524,27 +531,27 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"SearchForValidInstruments",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"SearchForValidPreparations",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return([]*types.ValidInstrument{}, errors.New("blah"))
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return([]*types.ValidPreparation{}, errors.New("blah"))
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.SearchValidInstrumentsHandler(helper.res, helper.req)
+		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 }
 
-func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
+func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -553,7 +560,7 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -562,18 +569,18 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"GetValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"GetValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(helper.exampleValidInstrument, nil)
+			helper.exampleValidPreparation.ID,
+		).Return(helper.exampleValidPreparation, nil)
 
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"UpdateValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"UpdateValidPreparation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
+			mock.MatchedBy(func(*types.ValidPreparation) bool { return true }),
 		).Return(nil)
-		helper.service.validInstrumentDataManager = dbManager
+		helper.service.validPreparationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -583,12 +590,12 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
+		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
@@ -600,7 +607,7 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.ValidInstrumentUpdateRequestInput{}
+		exampleCreationInput := &types.ValidPreparationUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -608,10 +615,10 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -623,10 +630,10 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -643,22 +650,22 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid instrument", func(t *testing.T) {
+	T.Run("with no such valid preparation", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -666,32 +673,32 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetValidInstrument",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return((*types.ValidInstrument)(nil), sql.ErrNoRows)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+			helper.exampleValidPreparation.ID,
+		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
-	T.Run("with error retrieving valid instrument from database", func(t *testing.T) {
+	T.Run("with error retrieving valid preparation from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -699,32 +706,32 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetValidInstrument",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+			helper.exampleValidPreparation.ID,
+		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
+	T.Run("with problem writing to database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -733,23 +740,23 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"GetValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"GetValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(helper.exampleValidInstrument, nil)
+			helper.exampleValidPreparation.ID,
+		).Return(helper.exampleValidPreparation, nil)
 
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"UpdateValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"UpdateValidPreparation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
+			mock.MatchedBy(func(*types.ValidPreparation) bool { return true }),
 		).Return(errors.New("blah"))
-		helper.service.validInstrumentDataManager = dbManager
+		helper.service.validPreparationDataManager = dbManager
 
-		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -763,7 +770,7 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -772,18 +779,18 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"GetValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"GetValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(helper.exampleValidInstrument, nil)
+			helper.exampleValidPreparation.ID,
+		).Return(helper.exampleValidPreparation, nil)
 
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"UpdateValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"UpdateValidPreparation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
+			mock.MatchedBy(func(*types.ValidPreparation) bool { return true }),
 		).Return(nil)
-		helper.service.validInstrumentDataManager = dbManager
+		helper.service.validPreparationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -793,7 +800,7 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
+		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -801,7 +808,7 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 	})
 }
 
-func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
+func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -809,19 +816,19 @@ func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"ValidInstrumentExists",
+		dbManager := database.NewMockDatabase()
+		dbManager.ValidPreparationDataManagerMock.On(
+			"ValidPreparationExists",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
+			helper.exampleValidPreparation.ID,
 		).Return(true, nil)
 
-		validInstrumentDataManager.On(
-			"ArchiveValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
+			helper.exampleValidPreparation.ID,
 		).Return(nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		helper.service.validPreparationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -831,11 +838,14 @@ func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -844,37 +854,37 @@ func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid instrument in the database", func(t *testing.T) {
+	T.Run("with no such valid preparation in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"ValidInstrumentExists",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"ValidPreparationExists",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
+			helper.exampleValidPreparation.ID,
 		).Return(false, nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {
@@ -882,23 +892,23 @@ func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"ValidInstrumentExists",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"ValidPreparationExists",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
+			helper.exampleValidPreparation.ID,
 		).Return(false, errors.New("blah"))
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -906,29 +916,29 @@ func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"ValidInstrumentExists",
+		dbManager := database.NewMockDatabase()
+		dbManager.ValidPreparationDataManagerMock.On(
+			"ValidPreparationExists",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
+			helper.exampleValidPreparation.ID,
 		).Return(true, nil)
 
-		validInstrumentDataManager.On(
-			"ArchiveValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
+			helper.exampleValidPreparation.ID,
 		).Return(errors.New("blah"))
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		helper.service.validPreparationDataManager = dbManager
 
-		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, dbManager)
 	})
 
 	T.Run("with error publishing to message queue", func(t *testing.T) {
@@ -936,19 +946,19 @@ func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"ValidInstrumentExists",
+		dbManager := database.NewMockDatabase()
+		dbManager.ValidPreparationDataManagerMock.On(
+			"ValidPreparationExists",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
+			helper.exampleValidPreparation.ID,
 		).Return(true, nil)
 
-		validInstrumentDataManager.On(
-			"ArchiveValidInstrument",
+		dbManager.ValidPreparationDataManagerMock.On(
+			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
+			helper.exampleValidPreparation.ID,
 		).Return(nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		helper.service.validPreparationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -958,15 +968,18 @@ func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
+		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
-func TestValidInstrumentsService_RandomValidInstrumentHandler(T *testing.T) {
+func TestValidPreparationsService_RandomValidPreparationHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -974,22 +987,22 @@ func TestValidInstrumentsService_RandomValidInstrumentHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetRandomValidInstrument",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetRandomValidPreparation",
 			testutils.ContextMatcher,
-		).Return(helper.exampleValidInstrument, nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return(helper.exampleValidPreparation, nil)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.RandomValidInstrumentHandler(helper.res, helper.req)
+		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
+		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -998,36 +1011,36 @@ func TestValidInstrumentsService_RandomValidInstrumentHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.RandomValidInstrumentHandler(helper.res, helper.req)
+		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid instrument in the database", func(t *testing.T) {
+	T.Run("with no such valid preparation in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetRandomValidInstrument",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetRandomValidPreparation",
 			testutils.ContextMatcher,
-		).Return((*types.ValidInstrument)(nil), sql.ErrNoRows)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.RandomValidInstrumentHandler(helper.res, helper.req)
+		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -1035,21 +1048,21 @@ func TestValidInstrumentsService_RandomValidInstrumentHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"GetRandomValidInstrument",
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
+		validPreparationDataManager.On(
+			"GetRandomValidPreparation",
 			testutils.ContextMatcher,
-		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
+		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
+		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.RandomValidInstrumentHandler(helper.res, helper.req)
+		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidInstrument]
+		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 }

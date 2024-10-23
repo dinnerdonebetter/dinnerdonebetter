@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -13,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -26,15 +26,15 @@ var _ types.ValidIngredientStateDataService = (*service)(nil)
 type (
 	// service handles valid ingredient states.
 	service struct {
-		cfg                             *Config
-		logger                          logging.Logger
-		validIngredientStateDataManager types.ValidIngredientStateDataManager
-		validIngredientStateIDFetcher   func(*http.Request) string
-		sessionContextDataFetcher       func(*http.Request) (*types.SessionContextData, error)
-		dataChangesPublisher            messagequeue.Publisher
-		encoderDecoder                  encoding.ServerEncoderDecoder
-		tracer                          tracing.Tracer
-		searchIndex                     search.IndexSearcher[types.ValidIngredientStateSearchSubset]
+		cfg                              *Config
+		logger                           logging.Logger
+		validIngredientStateDataManager  types.ValidIngredientStateDataManager
+		validIngredientStateIDFetcher    func(*http.Request) string
+		sessionContextDataFetcher        func(*http.Request) (*types.SessionContextData, error)
+		dataChangesPublisher             messagequeue.Publisher
+		encoderDecoder                   encoding.ServerEncoderDecoder
+		tracer                           tracing.Tracer
+		validIngredientStatesSearchIndex search.IndexSearcher[types.ValidIngredientStateSearchSubset]
 	}
 )
 
@@ -61,15 +61,15 @@ func ProvideService(
 	}
 
 	svc := &service{
-		cfg:                             cfg,
-		logger:                          logging.EnsureLogger(logger).WithName(serviceName),
-		validIngredientStateIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientStateIDURIParamKey),
-		sessionContextDataFetcher:       authservice.FetchContextFromRequest,
-		validIngredientStateDataManager: validIngredientStateDataManager,
-		dataChangesPublisher:            dataChangesPublisher,
-		encoderDecoder:                  encoder,
-		tracer:                          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		searchIndex:                     searchIndex,
+		cfg:                              cfg,
+		logger:                           logging.EnsureLogger(logger).WithName(serviceName),
+		validIngredientStateIDFetcher:    routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientStateIDURIParamKey),
+		sessionContextDataFetcher:        authentication.FetchContextFromRequest,
+		validIngredientStateDataManager:  validIngredientStateDataManager,
+		dataChangesPublisher:             dataChangesPublisher,
+		encoderDecoder:                   encoder,
+		tracer:                           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		validIngredientStatesSearchIndex: searchIndex,
 	}
 
 	return svc, nil

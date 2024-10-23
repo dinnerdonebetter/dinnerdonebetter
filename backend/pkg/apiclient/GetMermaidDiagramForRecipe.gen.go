@@ -16,6 +16,7 @@ import (
 func (c *Client) GetMermaidDiagramForRecipe(
 	ctx context.Context,
 	recipeID string,
+	reqMods ...RequestModifier,
 ) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -32,6 +33,10 @@ func (c *Client) GetMermaidDiagramForRecipe(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return "", observability.PrepareAndLogError(err, logger, span, "building request to fetch a string")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[string]

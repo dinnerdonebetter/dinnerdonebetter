@@ -17,6 +17,7 @@ func (c *Client) CreateMealPlanTask(
 	ctx context.Context,
 	mealPlanID string,
 	input *types.MealPlanTaskCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.MealPlanTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -41,6 +42,10 @@ func (c *Client) CreateMealPlanTask(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a MealPlanTask")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.MealPlanTask]

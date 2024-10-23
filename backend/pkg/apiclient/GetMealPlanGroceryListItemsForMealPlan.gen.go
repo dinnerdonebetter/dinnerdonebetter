@@ -17,6 +17,7 @@ func (c *Client) GetMealPlanGroceryListItemsForMealPlan(
 	ctx context.Context,
 	mealPlanID string,
 	filter *types.QueryFilter,
+	reqMods ...RequestModifier,
 ) (*types.QueryFilteredResult[types.MealPlanGroceryListItem], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -41,6 +42,10 @@ func (c *Client) GetMealPlanGroceryListItemsForMealPlan(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of MealPlanGroceryListItem")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanGroceryListItem]

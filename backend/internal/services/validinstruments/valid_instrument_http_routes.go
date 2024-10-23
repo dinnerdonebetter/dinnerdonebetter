@@ -1,4 +1,4 @@
-package validmeasurementunits
+package validinstruments
 
 import (
 	"database/sql"
@@ -18,14 +18,12 @@ import (
 )
 
 const (
-	// ValidMeasurementUnitIDURIParamKey is a standard string that we'll use to refer to valid measurement unit IDs with.
-	ValidMeasurementUnitIDURIParamKey = "validMeasurementUnitID"
-	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid measurement unit IDs with.
-	ValidIngredientIDURIParamKey = "validIngredientID"
+	// ValidInstrumentIDURIParamKey is a standard string that we'll use to refer to valid instrument IDs with.
+	ValidInstrumentIDURIParamKey = "validInstrumentID"
 )
 
-// CreateValidMeasurementUnitHandler is our valid measurement unit creation route.
-func (s *service) CreateValidMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidInstrumentHandler is our valid instrument creation route.
+func (s *service) CreateValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -53,7 +51,7 @@ func (s *service) CreateValidMeasurementUnitHandler(res http.ResponseWriter, req
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
-	providedInput := new(types.ValidMeasurementUnitCreationRequestInput)
+	providedInput := new(types.ValidInstrumentCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -68,15 +66,15 @@ func (s *service) CreateValidMeasurementUnitHandler(res http.ResponseWriter, req
 		return
 	}
 
-	input := converters.ConvertValidMeasurementUnitCreationRequestInputToValidMeasurementUnitDatabaseCreationInput(providedInput)
+	input := converters.ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, input.ID)
 
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
-	validMeasurementUnit, err := s.validMeasurementUnitDataManager.CreateValidMeasurementUnit(ctx, input)
+	validInstrument, err := s.validInstrumentDataManager.CreateValidInstrument(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid measurement unit")
+		observability.AcknowledgeError(err, logger, span, "creating valid instrument")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -84,25 +82,25 @@ func (s *service) CreateValidMeasurementUnitHandler(res http.ResponseWriter, req
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:            types.ValidMeasurementUnitCreatedServiceEventType,
-		ValidMeasurementUnit: validMeasurementUnit,
-		UserID:               sessionCtxData.Requester.UserID,
+		EventType:       types.ValidInstrumentCreatedServiceEventType,
+		ValidInstrument: validInstrument,
+		UserID:          sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
+	responseValue := &types.APIResponse[*types.ValidInstrument]{
 		Details: responseDetails,
-		Data:    validMeasurementUnit,
+		Data:    validInstrument,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadValidMeasurementUnitHandler returns a GET handler that returns a valid measurement unit.
-func (s *service) ReadValidMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidInstrumentHandler returns a GET handler that returns a valid instrument.
+func (s *service) ReadValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -129,25 +127,27 @@ func (s *service) ReadValidMeasurementUnitHandler(res http.ResponseWriter, req *
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid measurement unit ID.
-	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	// determine valid instrument ID.
+	validInstrumentID := s.validInstrumentIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
+	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 
-	// fetch valid measurement unit from database.
-	x, err := s.validMeasurementUnitDataManager.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
+	// fetch valid instrument from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	x, err := s.validInstrumentDataManager.GetValidInstrument(ctx, validInstrumentID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement unit")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid instrument")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
-	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
+	responseValue := &types.APIResponse[*types.ValidInstrument]{
 		Details: responseDetails,
 		Data:    x,
 	}
@@ -156,8 +156,8 @@ func (s *service) ReadValidMeasurementUnitHandler(res http.ResponseWriter, req *
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListValidMeasurementUnitsHandler is our list route.
-func (s *service) ListValidMeasurementUnitsHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidInstrumentsHandler is our list route.
+func (s *service) ListValidInstrumentsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -188,29 +188,31 @@ func (s *service) ListValidMeasurementUnitsHandler(res http.ResponseWriter, req 
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	validMeasurementUnits, err := s.validMeasurementUnitDataManager.GetValidMeasurementUnits(ctx, filter)
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	validInstruments, err := s.validInstrumentDataManager.GetValidInstruments(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validMeasurementUnits = &types.QueryFilteredResult[types.ValidMeasurementUnit]{Data: []*types.ValidMeasurementUnit{}}
+		validInstruments = &types.QueryFilteredResult[types.ValidInstrument]{Data: []*types.ValidInstrument{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement units")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid instruments")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
-	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
+	responseValue := &types.APIResponse[[]*types.ValidInstrument]{
 		Details:    responseDetails,
-		Data:       validMeasurementUnits.Data,
-		Pagination: &validMeasurementUnits.Pagination,
+		Data:       validInstruments.Data,
+		Pagination: &validInstruments.Pagination,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchValidMeasurementUnitsHandler is our search route.
-func (s *service) SearchValidMeasurementUnitsHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidInstrumentsHandler is our search route.
+func (s *service) SearchValidInstrumentsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -233,58 +235,54 @@ func (s *service) SearchValidMeasurementUnitsHandler(res http.ResponseWriter, re
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
-	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachQueryFilterToSpan(span, filter)
-
 	// determine user ID.
-	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		logger.Error(err, "retrieving session context data")
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
-	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	var validMeasurementUnits []*types.ValidMeasurementUnit
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	var validInstruments []*types.ValidInstrument
 	if useDB {
-		validMeasurementUnits, err = s.validMeasurementUnitDataManager.SearchForValidMeasurementUnits(ctx, query)
+		validInstruments, err = s.validInstrumentDataManager.SearchForValidInstruments(ctx, query)
 	} else {
-		var validMeasurementUnitSubsets []*types.ValidMeasurementUnitSearchSubset
-		validMeasurementUnitSubsets, err = s.searchIndex.Search(ctx, query)
+		var validInstrumentSubsets []*types.ValidInstrumentSearchSubset
+		validInstrumentSubsets, err = s.validInstrumentSearchIndex.Search(ctx, query)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "searching for valid measurement units")
+			observability.AcknowledgeError(err, logger, span, "searching for valid instruments")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
 		ids := []string{}
-		for _, validMeasurementUnitSubset := range validMeasurementUnitSubsets {
-			ids = append(ids, validMeasurementUnitSubset.ID)
+		for _, validInstrumentSubset := range validInstrumentSubsets {
+			ids = append(ids, validInstrumentSubset.ID)
 		}
 
-		validMeasurementUnits, err = s.validMeasurementUnitDataManager.GetValidMeasurementUnitsWithIDs(ctx, ids)
+		validInstruments, err = s.validInstrumentDataManager.GetValidInstrumentsWithIDs(ctx, ids)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validMeasurementUnits = []*types.ValidMeasurementUnit{}
+		validInstruments = []*types.ValidInstrument{}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid measurement units")
+		observability.AcknowledgeError(err, logger, span, "searching for valid instruments")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
-	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
+	responseValue := &types.APIResponse[[]*types.ValidInstrument]{
 		Details:    responseDetails,
-		Data:       validMeasurementUnits,
+		Data:       validInstruments,
 		Pagination: pointer.To(filter.ToPagination()),
 	}
 
@@ -292,76 +290,8 @@ func (s *service) SearchValidMeasurementUnitsHandler(res http.ResponseWriter, re
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchValidMeasurementUnitsByIngredientIDHandler is our search route.
-func (s *service) SearchValidMeasurementUnitsByIngredientIDHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req).WithSpan(span)
-	tracing.AttachRequestToSpan(span, req)
-
-	query := req.URL.Query().Get(types.QueryKeySearch)
-	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	logger = logger.WithValue(keys.SearchQueryKey, query)
-
-	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachQueryFilterToSpan(span, filter)
-	logger = filter.AttachToLogger(logger)
-
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
-	logger = logger.WithValue("using_database", useDB)
-
-	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
-	}
-
-	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachQueryFilterToSpan(span, filter)
-
-	// determine valid ingredient ID.
-	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-
-	// determine user ID.
-	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
-		return
-	}
-	sessionContextTimer.Stop()
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
-
-	validMeasurementUnits, err := s.validMeasurementUnitDataManager.ValidMeasurementUnitsForIngredientID(ctx, validIngredientID, filter)
-	if errors.Is(err, sql.ErrNoRows) {
-		// in the event no rows exist, return an empty list.
-		validMeasurementUnits = &types.QueryFilteredResult[types.ValidMeasurementUnit]{}
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching valid measurement units for ingredient ID")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
-
-	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
-		Details:    responseDetails,
-		Data:       validMeasurementUnits.Data,
-		Pagination: &validMeasurementUnits.Pagination,
-	}
-
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
-}
-
-// UpdateValidMeasurementUnitHandler returns a handler that updates a valid measurement unit.
-func (s *service) UpdateValidMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidInstrumentHandler returns a handler that updates a valid instrument.
+func (s *service) UpdateValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -389,7 +319,7 @@ func (s *service) UpdateValidMeasurementUnitHandler(res http.ResponseWriter, req
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidMeasurementUnitUpdateRequestInput)
+	input := new(types.ValidInstrumentUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -404,30 +334,32 @@ func (s *service) UpdateValidMeasurementUnitHandler(res http.ResponseWriter, req
 		return
 	}
 
-	// determine valid measurement unit ID.
-	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	// determine valid instrument ID.
+	validInstrumentID := s.validInstrumentIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
+	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 
-	// fetch valid measurement unit from database.
-	validMeasurementUnit, err := s.validMeasurementUnitDataManager.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
+	// fetch valid instrument from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	validInstrument, err := s.validInstrumentDataManager.GetValidInstrument(ctx, validInstrumentID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement unit for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid instrument for update")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
-	// update the valid measurement unit.
-	validMeasurementUnit.Update(input)
+	// update the valid instrument.
+	validInstrument.Update(input)
 
 	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
-	if err = s.validMeasurementUnitDataManager.UpdateValidMeasurementUnit(ctx, validMeasurementUnit); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid measurement unit")
+	if err = s.validInstrumentDataManager.UpdateValidInstrument(ctx, validInstrument); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid instrument")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -435,26 +367,26 @@ func (s *service) UpdateValidMeasurementUnitHandler(res http.ResponseWriter, req
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:            types.ValidMeasurementUnitUpdatedServiceEventType,
-		ValidMeasurementUnit: validMeasurementUnit,
-		UserID:               sessionCtxData.Requester.UserID,
+		EventType:       types.ValidInstrumentUpdatedServiceEventType,
+		ValidInstrument: validInstrument,
+		UserID:          sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
+	responseValue := &types.APIResponse[*types.ValidInstrument]{
 		Details: responseDetails,
-		Data:    validMeasurementUnit,
+		Data:    validInstrument,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveValidMeasurementUnitHandler returns a handler that archives a valid measurement unit.
-func (s *service) ArchiveValidMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidInstrumentHandler returns a handler that archives a valid instrument.
+func (s *service) ArchiveValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -481,15 +413,15 @@ func (s *service) ArchiveValidMeasurementUnitHandler(res http.ResponseWriter, re
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid measurement unit ID.
-	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	// determine valid instrument ID.
+	validInstrumentID := s.validInstrumentIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
+	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.validMeasurementUnitDataManager.ValidMeasurementUnitExists(ctx, validMeasurementUnitID)
+	exists, err := s.validInstrumentDataManager.ValidInstrumentExists(ctx, validInstrumentID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking valid measurement unit existence")
+		observability.AcknowledgeError(err, logger, span, "checking valid instrument existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -501,8 +433,8 @@ func (s *service) ArchiveValidMeasurementUnitHandler(res http.ResponseWriter, re
 	existenceTimer.Stop()
 
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	if err = s.validMeasurementUnitDataManager.ArchiveValidMeasurementUnit(ctx, validMeasurementUnitID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid measurement unit")
+	if err = s.validInstrumentDataManager.ArchiveValidInstrument(ctx, validInstrumentID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving valid instrument")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -510,7 +442,7 @@ func (s *service) ArchiveValidMeasurementUnitHandler(res http.ResponseWriter, re
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ValidMeasurementUnitArchivedServiceEventType,
+		EventType: types.ValidInstrumentArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
@@ -518,8 +450,60 @@ func (s *service) ArchiveValidMeasurementUnitHandler(res http.ResponseWriter, re
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
+	responseValue := &types.APIResponse[*types.ValidInstrument]{
 		Details: responseDetails,
+	}
+
+	// let everybody go home.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}
+
+// RandomValidInstrumentHandler returns a GET handler that returns a valid instrument.
+func (s *service) RandomValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	tracing.AttachRequestToSpan(span, req)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	// fetch valid instrument from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	x, err := s.validInstrumentDataManager.GetRandomValidInstrument(ctx)
+	if errors.Is(err, sql.ErrNoRows) {
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving valid instrument")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	readTimer.Stop()
+
+	responseValue := &types.APIResponse[*types.ValidInstrument]{
+		Details: responseDetails,
+		Data:    x,
 	}
 
 	// encode our response and peace.

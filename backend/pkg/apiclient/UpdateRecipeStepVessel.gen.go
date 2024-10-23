@@ -19,6 +19,7 @@ func (c *Client) UpdateRecipeStepVessel(
 	recipeStepID string,
 	recipeStepVesselID string,
 	input *types.RecipeStepVesselUpdateRequestInput,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -47,6 +48,10 @@ func (c *Client) UpdateRecipeStepVessel(
 	req, err := c.buildDataRequest(ctx, http.MethodPut, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a RecipeStepVessel")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepVessel]

@@ -16,6 +16,7 @@ import (
 func (c *Client) GetValidInstrument(
 	ctx context.Context,
 	validInstrumentID string,
+	reqMods ...RequestModifier,
 ) (*types.ValidInstrument, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -32,6 +33,10 @@ func (c *Client) GetValidInstrument(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a ValidInstrument")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.ValidInstrument]

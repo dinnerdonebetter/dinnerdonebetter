@@ -88,7 +88,7 @@ func ProvideUsersService(
 		householdInvitationDataManager:     householdInvitationDataManager,
 		authenticator:                      authenticator,
 		userIDFetcher:                      routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		sessionContextDataFetcher:          authservice.FetchContextFromRequest,
+		sessionContextDataFetcher:          authentication.FetchContextFromRequest,
 		encoderDecoder:                     encoder,
 		authSettings:                       authSettings,
 		secretGenerator:                    secretGenerator,

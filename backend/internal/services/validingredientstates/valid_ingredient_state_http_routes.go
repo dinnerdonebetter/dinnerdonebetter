@@ -1,4 +1,4 @@
-package validvessels
+package validingredientstates
 
 import (
 	"database/sql"
@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	pointer "github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -18,12 +18,12 @@ import (
 )
 
 const (
-	// ValidVesselIDURIParamKey is a standard string that we'll use to refer to valid vessel IDs with.
-	ValidVesselIDURIParamKey = "validVesselID"
+	// ValidIngredientStateIDURIParamKey is a standard string that we'll use to refer to valid ingredient state IDs with.
+	ValidIngredientStateIDURIParamKey = "validIngredientStateID"
 )
 
-// CreateValidVesselHandler is our valid vessel creation route.
-func (s *service) CreateValidVesselHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidIngredientStateHandler is our valid ingredient state creation route.
+func (s *service) CreateValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -51,15 +51,13 @@ func (s *service) CreateValidVesselHandler(res http.ResponseWriter, req *http.Re
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
-	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
-	providedInput := new(types.ValidVesselCreationRequestInput)
+	providedInput := new(types.ValidIngredientStateCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
-	decodeTimer.Stop()
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
@@ -68,15 +66,15 @@ func (s *service) CreateValidVesselHandler(res http.ResponseWriter, req *http.Re
 		return
 	}
 
-	input := converters.ConvertValidVesselCreationRequestInputToValidVesselDatabaseCreationInput(providedInput)
+	input := converters.ConvertValidIngredientStateCreationRequestInputToValidIngredientStateDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, input.ID)
 
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
-	validVessel, err := s.validVesselDataManager.CreateValidVessel(ctx, input)
+	validIngredientState, err := s.validIngredientStateDataManager.CreateValidIngredientState(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid vessel")
+		observability.AcknowledgeError(err, logger, span, "creating valid ingredient states")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -84,25 +82,25 @@ func (s *service) CreateValidVesselHandler(res http.ResponseWriter, req *http.Re
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.ValidVesselCreatedServiceEventType,
-		ValidVessel: validVessel,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType:            types.ValidIngredientStateCreatedServiceEventType,
+		ValidIngredientState: validIngredientState,
+		UserID:               sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidVessel]{
+	responseValue := &types.APIResponse[*types.ValidIngredientState]{
 		Details: responseDetails,
-		Data:    validVessel,
+		Data:    validIngredientState,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadValidVesselHandler returns a GET handler that returns a valid vessel.
-func (s *service) ReadValidVesselHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidIngredientStateHandler returns a GET handler that returns a valid ingredient state.
+func (s *service) ReadValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -115,8 +113,8 @@ func (s *service) ReadValidVesselHandler(res http.ResponseWriter, req *http.Requ
 	}
 
 	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
@@ -129,27 +127,25 @@ func (s *service) ReadValidVesselHandler(res http.ResponseWriter, req *http.Requ
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid vessel ID.
-	validVesselID := s.validVesselIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
-	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
+	// determine valid ingredient state ID.
+	validIngredientStateID := s.validIngredientStateIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
+	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 
-	// fetch valid vessel from database.
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.validVesselDataManager.GetValidVessel(ctx, validVesselID)
+	// fetch valid ingredient state from database.
+	x, err := s.validIngredientStateDataManager.GetValidIngredientState(ctx, validIngredientStateID)
 	if errors.Is(err, sql.ErrNoRows) {
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrDataNotFound, responseDetails)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid vessel")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient state")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
-	readTimer.Stop()
 
-	responseValue := &types.APIResponse[*types.ValidVessel]{
+	responseValue := &types.APIResponse[*types.ValidIngredientState]{
 		Details: responseDetails,
 		Data:    x,
 	}
@@ -158,14 +154,14 @@ func (s *service) ReadValidVesselHandler(res http.ResponseWriter, req *http.Requ
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListValidVesselsHandler is our list route.
-func (s *service) ListValidVesselsHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidIngredientStatesHandler is our list route.
+func (s *service) ListValidIngredientStatesHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req).WithSpan(span)
 	filter := types.ExtractQueryFilterFromRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -190,54 +186,50 @@ func (s *service) ListValidVesselsHandler(res http.ResponseWriter, req *http.Req
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	validVessels, err := s.validVesselDataManager.GetValidVessels(ctx, filter)
+	validIngredientStates, err := s.validIngredientStateDataManager.GetValidIngredientStates(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validVessels = &types.QueryFilteredResult[types.ValidVessel]{Data: []*types.ValidVessel{}}
+		validIngredientStates = &types.QueryFilteredResult[types.ValidIngredientState]{Data: []*types.ValidIngredientState{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid vessels")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient states")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
-	readTimer.Stop()
 
-	responseValue := &types.APIResponse[[]*types.ValidVessel]{
+	responseValue := &types.APIResponse[[]*types.ValidIngredientState]{
 		Details:    responseDetails,
-		Pagination: &validVessels.Pagination,
-		Data:       validVessels.Data,
+		Data:       validIngredientStates.Data,
+		Pagination: &validIngredientStates.Pagination,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchValidVesselsHandler is our search route.
-func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidIngredientStatesHandler is our search route.
+func (s *service) SearchValidIngredientStatesHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req).WithSpan(span)
-
-	filter := types.ExtractQueryFilterFromRequest(req)
-	logger = filter.AttachToLogger(logger)
-	tracing.AttachQueryFilterToSpan(span, filter)
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
 
 	query := req.URL.Query().Get(types.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
-	logger = logger.WithValue("using_database", useDB)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	logger := s.logger.WithRequest(req).WithSpan(span).
+		WithValue(keys.SearchQueryKey, query).
+		WithValue("using_database", useDB)
+	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
 	// determine user ID.
-	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		logger.Error(err, "retrieving session context data")
@@ -245,50 +237,44 @@ func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.R
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
-	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	var validVessels []*types.ValidVessel
+	var validIngredientStates []*types.ValidIngredientState
 	if useDB {
-		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-		validVessels, err = s.validVesselDataManager.SearchForValidVessels(ctx, query)
-		readTimer.Stop()
+		validIngredientStates, err = s.validIngredientStateDataManager.SearchForValidIngredientStates(ctx, query)
 	} else {
-		var validVesselSubsets []*types.ValidVesselSearchSubset
-		validVesselSubsets, err = s.searchIndex.Search(ctx, query)
+		var validIngredientStateSubsets []*types.ValidIngredientStateSearchSubset
+		validIngredientStateSubsets, err = s.validIngredientStatesSearchIndex.Search(ctx, query)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "searching for valid vessels")
+			observability.AcknowledgeError(err, logger, span, "searching for valid ingredient states")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
 		ids := []string{}
-		for _, validVesselSubset := range validVesselSubsets {
-			ids = append(ids, validVesselSubset.ID)
+		for _, validIngredientStateSubset := range validIngredientStateSubsets {
+			ids = append(ids, validIngredientStateSubset.ID)
 		}
 
-		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-		validVessels, err = s.validVesselDataManager.GetValidVesselsWithIDs(ctx, ids)
-		readTimer.Stop()
+		validIngredientStates, err = s.validIngredientStateDataManager.GetValidIngredientStatesWithIDs(ctx, ids)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validVessels = []*types.ValidVessel{}
+		validIngredientStates = []*types.ValidIngredientState{}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid vessels")
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient states")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
-	responseValue := &types.APIResponse[[]*types.ValidVessel]{
+	responseValue := &types.APIResponse[[]*types.ValidIngredientState]{
 		Details:    responseDetails,
-		Data:       validVessels,
+		Data:       validIngredientStates,
 		Pagination: pointer.To(filter.ToPagination()),
 	}
 
@@ -296,8 +282,8 @@ func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.R
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateValidVesselHandler returns a handler that updates a valid vessel.
-func (s *service) UpdateValidVesselHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidIngredientStateHandler returns a handler that updates a valid ingredient state.
+func (s *service) UpdateValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -325,15 +311,13 @@ func (s *service) UpdateValidVesselHandler(res http.ResponseWriter, req *http.Re
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
-	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
-	input := new(types.ValidVesselUpdateRequestInput)
+	input := new(types.ValidIngredientStateUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
-	decodeTimer.Stop()
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")
@@ -342,32 +326,30 @@ func (s *service) UpdateValidVesselHandler(res http.ResponseWriter, req *http.Re
 		return
 	}
 
-	// determine valid vessel ID.
-	validVesselID := s.validVesselIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
-	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
+	// determine valid ingredient state ID.
+	validIngredientStateID := s.validIngredientStateIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
+	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 
-	// fetch valid vessel from database.
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	validVessel, err := s.validVesselDataManager.GetValidVessel(ctx, validVesselID)
+	// fetch valid ingredient state from database.
+	validIngredientState, err := s.validIngredientStateDataManager.GetValidIngredientState(ctx, validIngredientStateID)
 	if errors.Is(err, sql.ErrNoRows) {
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrDataNotFound, responseDetails)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid vessel for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient state for update")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
-	readTimer.Stop()
 
-	// update the valid vessel.
-	validVessel.Update(input)
+	// update the valid ingredient state.
+	validIngredientState.Update(input)
 
 	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
-	if err = s.validVesselDataManager.UpdateValidVessel(ctx, validVessel); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid vessel")
+	if err = s.validIngredientStateDataManager.UpdateValidIngredientState(ctx, validIngredientState); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid ingredient states")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -375,26 +357,26 @@ func (s *service) UpdateValidVesselHandler(res http.ResponseWriter, req *http.Re
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.ValidVesselUpdatedServiceEventType,
-		ValidVessel: validVessel,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType:            types.ValidIngredientStateUpdatedServiceEventType,
+		ValidIngredientState: validIngredientState,
+		UserID:               sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidVessel]{
+	responseValue := &types.APIResponse[*types.ValidIngredientState]{
 		Details: responseDetails,
-		Data:    validVessel,
+		Data:    validIngredientState,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveValidVesselHandler returns a handler that archives a valid vessel.
-func (s *service) ArchiveValidVesselHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidIngredientStateHandler returns a handler that archives a valid ingredient state.
+func (s *service) ArchiveValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -421,28 +403,28 @@ func (s *service) ArchiveValidVesselHandler(res http.ResponseWriter, req *http.R
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid vessel ID.
-	validVesselID := s.validVesselIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
-	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
+	// determine valid ingredient state ID.
+	validIngredientStateID := s.validIngredientStateIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
+	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 
-	existenceTimer := timing.NewMetric("database").WithDesc("check existence").Start()
-	exists, err := s.validVesselDataManager.ValidVesselExists(ctx, validVesselID)
+	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
+	exists, err := s.validIngredientStateDataManager.ValidIngredientStateExists(ctx, validIngredientStateID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking valid vessel existence")
+		observability.AcknowledgeError(err, logger, span, "checking valid ingredient state existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(err, sql.ErrNoRows) {
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrDataNotFound, responseDetails)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 	existenceTimer.Stop()
 
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	if err = s.validVesselDataManager.ArchiveValidVessel(ctx, validVesselID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid vessel")
+	if err = s.validIngredientStateDataManager.ArchiveValidIngredientState(ctx, validIngredientStateID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient states")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -450,7 +432,7 @@ func (s *service) ArchiveValidVesselHandler(res http.ResponseWriter, req *http.R
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ValidVesselArchivedServiceEventType,
+		EventType: types.ValidIngredientStateArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
@@ -458,62 +440,10 @@ func (s *service) ArchiveValidVesselHandler(res http.ResponseWriter, req *http.R
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidVessel]{
+	responseValue := &types.APIResponse[*types.ValidIngredientState]{
 		Details: responseDetails,
 	}
 
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
-}
-
-// RandomValidVesselHandler returns a GET handler that returns a valid vessel.
-func (s *service) RandomValidVesselHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req).WithSpan(span)
-	tracing.AttachRequestToSpan(span, req)
-
-	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
-	}
-
-	// determine user ID.
-	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
-		return
-	}
-	sessionContextTimer.Stop()
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
-
-	// fetch valid vessel from database.
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.validVesselDataManager.GetRandomValidVessel(ctx)
-	if errors.Is(err, sql.ErrNoRows) {
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrDataNotFound, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid vessel")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
-	readTimer.Stop()
-
-	responseValue := &types.APIResponse[*types.ValidVessel]{
-		Details: responseDetails,
-		Data:    x,
-	}
-
-	// encode our response and peace.
+	// let everybody go home.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }

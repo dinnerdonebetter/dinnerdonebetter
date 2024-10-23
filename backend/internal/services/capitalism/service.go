@@ -13,7 +13,7 @@ const (
 	serviceName string = "capitalism_service"
 )
 
-var _ types.CapitalismService = (*service)(nil)
+var _ types.CapitalismDataService = (*service)(nil)
 
 type (
 	// service handles valid instruments.
@@ -30,7 +30,7 @@ func ProvideService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	paymentManager capitalism.PaymentManager,
-) types.CapitalismService {
+) types.CapitalismDataService {
 	svc := &service{
 		logger:         logging.EnsureLogger(logger).WithName(serviceName),
 		paymentManager: paymentManager,

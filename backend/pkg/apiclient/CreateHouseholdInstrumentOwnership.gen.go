@@ -13,6 +13,7 @@ import (
 func (c *Client) CreateHouseholdInstrumentOwnership(
 	ctx context.Context,
 	input *types.HouseholdInstrumentOwnershipCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.HouseholdInstrumentOwnership, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -31,6 +32,10 @@ func (c *Client) CreateHouseholdInstrumentOwnership(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a HouseholdInstrumentOwnership")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]

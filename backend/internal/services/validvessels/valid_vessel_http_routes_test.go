@@ -1,4 +1,4 @@
-package validpreparations
+package validvessels
 
 import (
 	"bytes"
@@ -26,7 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
+func TestValidVesselsService_CreateValidVesselHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -35,7 +35,7 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidPreparationCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidVesselCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -44,12 +44,12 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManagerMock.On(
-			"CreateValidPreparation",
+		dbManager.ValidVesselDataManagerMock.On(
+			"CreateValidVessel",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidPreparationDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidPreparation, nil)
-		helper.service.validPreparationDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidVesselDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidVessel, nil)
+		helper.service.validVesselDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -59,12 +59,12 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
+		helper.service.CreateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.Equal(t, actual.Data, helper.exampleValidVessel)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
@@ -81,10 +81,10 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
+		helper.service.CreateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -96,7 +96,7 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.ValidPreparationCreationRequestInput{}
+		exampleCreationInput := &types.ValidVesselCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -104,12 +104,12 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
+		helper.service.CreateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
@@ -119,7 +119,7 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidPreparationCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidVesselCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -129,10 +129,10 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
+		helper.service.CreateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -144,7 +144,7 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidPreparationCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidVesselCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -153,19 +153,19 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManagerMock.On(
-			"CreateValidPreparation",
+		dbManager.ValidVesselDataManagerMock.On(
+			"CreateValidVessel",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidPreparationDatabaseCreationInput) bool { return true }),
-		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
-		helper.service.validPreparationDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidVesselDatabaseCreationInput) bool { return true }),
+		).Return((*types.ValidVessel)(nil), errors.New("blah"))
+		helper.service.validVesselDataManager = dbManager
 
-		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
+		helper.service.CreateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
@@ -177,7 +177,7 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidPreparationCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidVesselCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -186,12 +186,12 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManagerMock.On(
-			"CreateValidPreparation",
+		dbManager.ValidVesselDataManagerMock.On(
+			"CreateValidVessel",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidPreparationDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidPreparation, nil)
-		helper.service.validPreparationDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidVesselDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidVessel, nil)
+		helper.service.validVesselDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -201,19 +201,19 @@ func TestValidPreparationsService_CreateValidPreparationHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateValidPreparationHandler(helper.res, helper.req)
+		helper.service.CreateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.Equal(t, actual.Data, helper.exampleValidVessel)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
-func TestValidPreparationsService_ReadValidPreparationHandler(T *testing.T) {
+func TestValidVesselsService_ReadValidVesselHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -221,23 +221,23 @@ func TestValidPreparationsService_ReadValidPreparationHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetValidPreparation",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(helper.exampleValidPreparation, nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+			helper.exampleValidVessel.ID,
+		).Return(helper.exampleValidVessel, nil)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
+		helper.service.ReadValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.Equal(t, actual.Data, helper.exampleValidVessel)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -246,37 +246,37 @@ func TestValidPreparationsService_ReadValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
+		helper.service.ReadValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid preparation in the database", func(t *testing.T) {
+	T.Run("with no such valid vessel in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetValidPreparation",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+			helper.exampleValidVessel.ID,
+		).Return((*types.ValidVessel)(nil), sql.ErrNoRows)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
+		helper.service.ReadValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -284,27 +284,27 @@ func TestValidPreparationsService_ReadValidPreparationHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetValidPreparation",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
-		helper.service.validPreparationDataManager = validPreparationDataManager
+			helper.exampleValidVessel.ID,
+		).Return((*types.ValidVessel)(nil), errors.New("blah"))
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.ReadValidPreparationHandler(helper.res, helper.req)
+		helper.service.ReadValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 }
 
-func TestValidPreparationsService_ListValidPreparationsHandler(T *testing.T) {
+func TestValidVesselsService_ListValidVesselsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -312,26 +312,26 @@ func TestValidPreparationsService_ListValidPreparationsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidPreparationList := fakes.BuildFakeValidPreparationsList()
+		exampleValidVesselList := fakes.BuildFakeValidVesselsList()
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetValidPreparations",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetValidVessels",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleValidPreparationList, nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return(exampleValidVesselList, nil)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
+		helper.service.ListValidVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidPreparation]
+		var actual *types.APIResponse[[]*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidPreparationList.Data)
-		assert.Equal(t, *actual.Pagination, exampleValidPreparationList.Pagination)
+		assert.Equal(t, actual.Data, exampleValidVesselList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidVesselList.Pagination)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -340,12 +340,12 @@ func TestValidPreparationsService_ListValidPreparationsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
+		helper.service.ListValidVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
@@ -354,55 +354,55 @@ func TestValidPreparationsService_ListValidPreparationsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetValidPreparations",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetValidVessels",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidPreparation])(nil), sql.ErrNoRows)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return((*types.QueryFilteredResult[types.ValidVessel])(nil), sql.ErrNoRows)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
+		helper.service.ListValidVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[[]*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
-	T.Run("with error retrieving valid preparations from database", func(t *testing.T) {
+	T.Run("with error retrieving valid vessels from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetValidPreparations",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetValidVessels",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidPreparation])(nil), errors.New("blah"))
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return((*types.QueryFilteredResult[types.ValidVessel])(nil), errors.New("blah"))
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.ListValidPreparationsHandler(helper.res, helper.req)
+		helper.service.ListValidVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 }
 
-func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
+func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 	T.Parallel()
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
-	exampleValidPreparationList := fakes.BuildFakeValidPreparationsList()
+	exampleValidVesselList := fakes.BuildFakeValidVesselsList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -414,23 +414,23 @@ func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"SearchForValidPreparations",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"SearchForValidVessels",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(exampleValidPreparationList.Data, nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return(exampleValidVesselList.Data, nil)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
+		helper.service.SearchValidVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidPreparation]
+		var actual *types.APIResponse[[]*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidPreparationList.Data)
+		assert.Equal(t, actual.Data, exampleValidVesselList.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("using external service", func(t *testing.T) {
@@ -445,37 +445,37 @@ func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 		}.Encode()
 
 		expectedIDs := []string{}
-		validPreparationSearchSubsets := make([]*types.ValidPreparationSearchSubset, len(exampleValidPreparationList.Data))
-		for i := range exampleValidPreparationList.Data {
-			expectedIDs = append(expectedIDs, exampleValidPreparationList.Data[i].ID)
-			validPreparationSearchSubsets[i] = converters.ConvertValidPreparationToValidPreparationSearchSubset(exampleValidPreparationList.Data[i])
+		validVesselSearchSubsets := make([]*types.ValidVesselSearchSubset, len(exampleValidVesselList.Data))
+		for i := range exampleValidVesselList.Data {
+			expectedIDs = append(expectedIDs, exampleValidVesselList.Data[i].ID)
+			validVesselSearchSubsets[i] = converters.ConvertValidVesselToValidVesselSearchSubset(exampleValidVesselList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidPreparationSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[types.ValidVesselSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(validPreparationSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		).Return(validVesselSearchSubsets, nil)
+		helper.service.validVesselsSearchIndex = searchIndex
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetValidPreparationsWithIDs",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetValidVesselsWithIDs",
 			testutils.ContextMatcher,
 			expectedIDs,
-		).Return(exampleValidPreparationList.Data, nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return(exampleValidVesselList.Data, nil)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
+		helper.service.SearchValidVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.ValidPreparation]
+		var actual *types.APIResponse[[]*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleValidPreparationList.Data)
+		assert.Equal(t, actual.Data, exampleValidVesselList.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndex)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager, searchIndex)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -484,12 +484,12 @@ func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
+		helper.service.SearchValidVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
@@ -503,23 +503,22 @@ func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"SearchForValidPreparations",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"SearchForValidVessels",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return([]*types.ValidPreparation{}, sql.ErrNoRows)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return([]*types.ValidVessel{}, sql.ErrNoRows)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
+		helper.service.SearchValidVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[[]*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("with error retrieving from database", func(t *testing.T) {
@@ -531,27 +530,27 @@ func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"SearchForValidPreparations",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"SearchForValidVessels",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return([]*types.ValidPreparation{}, errors.New("blah"))
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return([]*types.ValidVessel{}, errors.New("blah"))
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.SearchValidPreparationsHandler(helper.res, helper.req)
+		helper.service.SearchValidVesselsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 }
 
-func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
+func TestValidVesselsService_UpdateValidVesselHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -560,7 +559,7 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidVesselUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -569,18 +568,18 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManagerMock.On(
-			"GetValidPreparation",
+		dbManager.ValidVesselDataManagerMock.On(
+			"GetValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(helper.exampleValidPreparation, nil)
+			helper.exampleValidVessel.ID,
+		).Return(helper.exampleValidVessel, nil)
 
-		dbManager.ValidPreparationDataManagerMock.On(
-			"UpdateValidPreparation",
+		dbManager.ValidVesselDataManagerMock.On(
+			"UpdateValidVessel",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidPreparation) bool { return true }),
+			mock.MatchedBy(func(*types.ValidVessel) bool { return true }),
 		).Return(nil)
-		helper.service.validPreparationDataManager = dbManager
+		helper.service.validVesselDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -590,12 +589,12 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
+		helper.service.UpdateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.Equal(t, actual.Data, helper.exampleValidVessel)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
@@ -607,7 +606,7 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.ValidPreparationUpdateRequestInput{}
+		exampleCreationInput := &types.ValidVesselUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -615,12 +614,12 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
+		helper.service.UpdateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
@@ -630,12 +629,12 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
+		helper.service.UpdateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
@@ -650,22 +649,22 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
+		helper.service.UpdateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid preparation", func(t *testing.T) {
+	T.Run("with no such valid vessel", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidVesselUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -673,32 +672,32 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetValidPreparation",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+			helper.exampleValidVessel.ID,
+		).Return((*types.ValidVessel)(nil), sql.ErrNoRows)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
+		helper.service.UpdateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
-	T.Run("with error retrieving valid preparation from database", func(t *testing.T) {
+	T.Run("with error retrieving valid vessel from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidVesselUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -706,32 +705,32 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetValidPreparation",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
-		helper.service.validPreparationDataManager = validPreparationDataManager
+			helper.exampleValidVessel.ID,
+		).Return((*types.ValidVessel)(nil), errors.New("blah"))
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
+		helper.service.UpdateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
-	T.Run("with problem writing to database", func(t *testing.T) {
+	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidVesselUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -740,25 +739,25 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManagerMock.On(
-			"GetValidPreparation",
+		dbManager.ValidVesselDataManagerMock.On(
+			"GetValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(helper.exampleValidPreparation, nil)
+			helper.exampleValidVessel.ID,
+		).Return(helper.exampleValidVessel, nil)
 
-		dbManager.ValidPreparationDataManagerMock.On(
-			"UpdateValidPreparation",
+		dbManager.ValidVesselDataManagerMock.On(
+			"UpdateValidVessel",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidPreparation) bool { return true }),
+			mock.MatchedBy(func(*types.ValidVessel) bool { return true }),
 		).Return(errors.New("blah"))
-		helper.service.validPreparationDataManager = dbManager
+		helper.service.validVesselDataManager = dbManager
 
-		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
+		helper.service.UpdateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
@@ -770,7 +769,7 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidVesselUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -779,18 +778,18 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManagerMock.On(
-			"GetValidPreparation",
+		dbManager.ValidVesselDataManagerMock.On(
+			"GetValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(helper.exampleValidPreparation, nil)
+			helper.exampleValidVessel.ID,
+		).Return(helper.exampleValidVessel, nil)
 
-		dbManager.ValidPreparationDataManagerMock.On(
-			"UpdateValidPreparation",
+		dbManager.ValidVesselDataManagerMock.On(
+			"UpdateValidVessel",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidPreparation) bool { return true }),
+			mock.MatchedBy(func(*types.ValidVessel) bool { return true }),
 		).Return(nil)
-		helper.service.validPreparationDataManager = dbManager
+		helper.service.validVesselDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -800,15 +799,19 @@ func TestValidPreparationsService_UpdateValidPreparationHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateValidPreparationHandler(helper.res, helper.req)
+		helper.service.UpdateValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
-func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
+func TestValidVesselsService_ArchiveValidVesselHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -816,19 +819,19 @@ func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManagerMock.On(
-			"ValidPreparationExists",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"ValidVesselExists",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidVessel.ID,
 		).Return(true, nil)
 
-		dbManager.ValidPreparationDataManagerMock.On(
-			"ArchiveValidPreparation",
+		validVesselDataManager.On(
+			"ArchiveValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidVessel.ID,
 		).Return(nil)
-		helper.service.validPreparationDataManager = dbManager
+		helper.service.validVesselDataManager = validVesselDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -838,14 +841,14 @@ func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
+		helper.service.ArchiveValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[[]*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -854,37 +857,37 @@ func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
+		helper.service.ArchiveValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid preparation in the database", func(t *testing.T) {
+	T.Run("with no such valid vessel in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"ValidPreparationExists",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"ValidVesselExists",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidVessel.ID,
 		).Return(false, nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
+		helper.service.ArchiveValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {
@@ -892,23 +895,23 @@ func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"ValidPreparationExists",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"ValidVesselExists",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidVessel.ID,
 		).Return(false, errors.New("blah"))
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
+		helper.service.ArchiveValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -916,29 +919,29 @@ func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManagerMock.On(
-			"ValidPreparationExists",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"ValidVesselExists",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidVessel.ID,
 		).Return(true, nil)
 
-		dbManager.ValidPreparationDataManagerMock.On(
-			"ArchiveValidPreparation",
+		validVesselDataManager.On(
+			"ArchiveValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidVessel.ID,
 		).Return(errors.New("blah"))
-		helper.service.validPreparationDataManager = dbManager
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
+		helper.service.ArchiveValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, dbManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("with error publishing to message queue", func(t *testing.T) {
@@ -946,19 +949,19 @@ func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManagerMock.On(
-			"ValidPreparationExists",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"ValidVesselExists",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidVessel.ID,
 		).Return(true, nil)
 
-		dbManager.ValidPreparationDataManagerMock.On(
-			"ArchiveValidPreparation",
+		validVesselDataManager.On(
+			"ArchiveValidVessel",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidVessel.ID,
 		).Return(nil)
-		helper.service.validPreparationDataManager = dbManager
+		helper.service.validVesselDataManager = validVesselDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -968,18 +971,18 @@ func TestValidPreparationsService_ArchiveValidPreparationHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveValidPreparationHandler(helper.res, helper.req)
+		helper.service.ArchiveValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[[]*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager, dataChangesPublisher)
 	})
 }
 
-func TestValidPreparationsService_RandomValidPreparationHandler(T *testing.T) {
+func TestValidVesselsService_RandomValidVesselHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -987,22 +990,22 @@ func TestValidPreparationsService_RandomValidPreparationHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetRandomValidPreparation",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetRandomValidVessel",
 			testutils.ContextMatcher,
-		).Return(helper.exampleValidPreparation, nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return(helper.exampleValidVessel, nil)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
+		helper.service.RandomValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.Equal(t, actual.Data, helper.exampleValidVessel)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1011,36 +1014,36 @@ func TestValidPreparationsService_RandomValidPreparationHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
+		helper.service.RandomValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such valid preparation in the database", func(t *testing.T) {
+	T.Run("with no such valid vessel in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetRandomValidPreparation",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetRandomValidVessel",
 			testutils.ContextMatcher,
-		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return((*types.ValidVessel)(nil), sql.ErrNoRows)
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
+		helper.service.RandomValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -1048,21 +1051,21 @@ func TestValidPreparationsService_RandomValidPreparationHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
-		validPreparationDataManager.On(
-			"GetRandomValidPreparation",
+		validVesselDataManager := &mocktypes.ValidVesselDataManagerMock{}
+		validVesselDataManager.On(
+			"GetRandomValidVessel",
 			testutils.ContextMatcher,
-		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
-		helper.service.validPreparationDataManager = validPreparationDataManager
+		).Return((*types.ValidVessel)(nil), errors.New("blah"))
+		helper.service.validVesselDataManager = validVesselDataManager
 
-		helper.service.RandomValidPreparationHandler(helper.res, helper.req)
+		helper.service.RandomValidVesselHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidPreparation]
+		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
+		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
 }

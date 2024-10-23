@@ -13,6 +13,7 @@ import (
 func (c *Client) RequestEmailVerificationEmail(
 	ctx context.Context,
 
+	reqMods ...RequestModifier,
 ) (*types.User, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -23,6 +24,10 @@ func (c *Client) RequestEmailVerificationEmail(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a User")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.User]

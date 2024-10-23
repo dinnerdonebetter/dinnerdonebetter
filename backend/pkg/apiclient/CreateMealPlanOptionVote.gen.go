@@ -18,6 +18,7 @@ func (c *Client) CreateMealPlanOptionVote(
 	mealPlanID string,
 	mealPlanEventID string,
 	input *types.MealPlanOptionVoteCreationRequestInput,
+	reqMods ...RequestModifier,
 ) ([]*types.MealPlanOptionVote, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -48,6 +49,10 @@ func (c *Client) CreateMealPlanOptionVote(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a MealPlanOptionVote")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[[]*types.MealPlanOptionVote]

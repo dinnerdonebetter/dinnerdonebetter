@@ -16,6 +16,7 @@ import (
 func (c *Client) ArchiveValidMeasurementUnit(
 	ctx context.Context,
 	validMeasurementUnitID string,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -32,6 +33,10 @@ func (c *Client) ArchiveValidMeasurementUnit(
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, http.NoBody)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a ValidMeasurementUnit")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnit]

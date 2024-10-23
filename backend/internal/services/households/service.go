@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -57,7 +57,7 @@ func ProvideService(
 		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(HouseholdIDURIParamKey),
 		userIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
+		sessionContextDataFetcher:      authentication.FetchContextFromRequest,
 		householdDataManager:           householdDataManager,
 		householdMembershipDataManager: householdMembershipDataManager,
 		encoderDecoder:                 encoder,

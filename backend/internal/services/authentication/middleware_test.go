@@ -13,7 +13,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
@@ -356,34 +355,5 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockHandler)
-	})
-}
-
-func TestFetchContextFromRequest(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.WithValue(context.Background(), types.SessionContextDataKey, &types.SessionContextData{})
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", http.NoBody)
-		require.NoError(t, err)
-		require.NotNil(t, req)
-
-		actual, err := FetchContextFromRequest(req)
-		require.NoError(t, err)
-		require.NotNil(t, actual)
-	})
-
-	T.Run("missing data", func(t *testing.T) {
-		t.Parallel()
-
-		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "/", http.NoBody)
-		require.NoError(t, err)
-		require.NotNil(t, req)
-
-		actual, err := FetchContextFromRequest(req)
-		require.Error(t, err)
-		require.Nil(t, actual)
 	})
 }

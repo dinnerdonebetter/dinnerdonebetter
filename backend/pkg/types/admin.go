@@ -8,8 +8,8 @@ import (
 )
 
 type (
-	// AdminService describes a structure capable of serving traffic related to users.
-	AdminService interface {
+	// AdminDataService describes a structure capable of serving traffic related to users.
+	AdminDataService interface {
 		UserAccountStatusChangeHandler(http.ResponseWriter, *http.Request)
 	}
 

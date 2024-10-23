@@ -17,6 +17,7 @@ func (c *Client) SetDefaultHousehold(
 	ctx context.Context,
 	householdID string,
 
+	reqMods ...RequestModifier,
 ) (*types.Household, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -33,6 +34,10 @@ func (c *Client) SetDefaultHousehold(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a Household")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.Household]

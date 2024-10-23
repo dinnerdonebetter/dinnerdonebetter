@@ -13,6 +13,7 @@ import (
 func (c *Client) CreateMeal(
 	ctx context.Context,
 	input *types.MealCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.Meal, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -31,6 +32,10 @@ func (c *Client) CreateMeal(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a Meal")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.Meal]

@@ -18,6 +18,7 @@ func (c *Client) GetRecipeStepIngredient(
 	recipeID string,
 	recipeStepID string,
 	recipeStepIngredientID string,
+	reqMods ...RequestModifier,
 ) (*types.RecipeStepIngredient, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -46,6 +47,10 @@ func (c *Client) GetRecipeStepIngredient(
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a RecipeStepIngredient")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.RecipeStepIngredient]

@@ -16,6 +16,7 @@ import (
 func (c *Client) ArchiveValidIngredientStateIngredient(
 	ctx context.Context,
 	validIngredientStateIngredientID string,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -32,6 +33,10 @@ func (c *Client) ArchiveValidIngredientStateIngredient(
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, http.NoBody)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a ValidIngredientStateIngredient")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]

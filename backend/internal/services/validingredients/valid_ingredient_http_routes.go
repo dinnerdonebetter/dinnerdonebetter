@@ -1,4 +1,4 @@
-package validinstruments
+package validingredients
 
 import (
 	"database/sql"
@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -18,12 +17,14 @@ import (
 )
 
 const (
-	// ValidInstrumentIDURIParamKey is a standard string that we'll use to refer to valid instrument IDs with.
-	ValidInstrumentIDURIParamKey = "validInstrumentID"
+	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient IDs with.
+	ValidIngredientIDURIParamKey = "validIngredientID"
+	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
+	ValidPreparationIDURIParamKey = "validPreparationID"
 )
 
-// CreateValidInstrumentHandler is our valid instrument creation route.
-func (s *service) CreateValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidIngredientHandler is our valid ingredient creation route.
+func (s *service) CreateValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -51,7 +52,7 @@ func (s *service) CreateValidInstrumentHandler(res http.ResponseWriter, req *htt
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
-	providedInput := new(types.ValidInstrumentCreationRequestInput)
+	providedInput := new(types.ValidIngredientCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -66,15 +67,15 @@ func (s *service) CreateValidInstrumentHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
-	input := converters.ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreationInput(providedInput)
+	input := converters.ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, input.ID)
 
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
-	validInstrument, err := s.validInstrumentDataManager.CreateValidInstrument(ctx, input)
+	validIngredient, err := s.validIngredientDataManager.CreateValidIngredient(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid instrument")
+		observability.AcknowledgeError(err, logger, span, "creating valid ingredient")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -82,8 +83,8 @@ func (s *service) CreateValidInstrumentHandler(res http.ResponseWriter, req *htt
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:       types.ValidInstrumentCreatedServiceEventType,
-		ValidInstrument: validInstrument,
+		EventType:       types.ValidIngredientCreatedServiceEventType,
+		ValidIngredient: validIngredient,
 		UserID:          sessionCtxData.Requester.UserID,
 	}
 
@@ -91,16 +92,16 @@ func (s *service) CreateValidInstrumentHandler(res http.ResponseWriter, req *htt
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidInstrument]{
+	responseValue := &types.APIResponse[*types.ValidIngredient]{
 		Details: responseDetails,
-		Data:    validInstrument,
+		Data:    validIngredient,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadValidInstrumentHandler returns a GET handler that returns a valid instrument.
-func (s *service) ReadValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidIngredientHandler returns a GET handler that returns a valid ingredient.
+func (s *service) ReadValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -127,27 +128,27 @@ func (s *service) ReadValidInstrumentHandler(res http.ResponseWriter, req *http.
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid instrument ID.
-	validInstrumentID := s.validInstrumentIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
+	// determine valid ingredient ID.
+	validIngredientID := s.validIngredientIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
-	// fetch valid instrument from database.
+	// fetch valid ingredient from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.validInstrumentDataManager.GetValidInstrument(ctx, validInstrumentID)
+	x, err := s.validIngredientDataManager.GetValidIngredient(ctx, validIngredientID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid instrument")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 	readTimer.Stop()
 
-	responseValue := &types.APIResponse[*types.ValidInstrument]{
+	responseValue := &types.APIResponse[*types.ValidIngredient]{
 		Details: responseDetails,
 		Data:    x,
 	}
@@ -156,8 +157,8 @@ func (s *service) ReadValidInstrumentHandler(res http.ResponseWriter, req *http.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListValidInstrumentsHandler is our list route.
-func (s *service) ListValidInstrumentsHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidIngredientsHandler is our list route.
+func (s *service) ListValidIngredientsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -189,30 +190,30 @@ func (s *service) ListValidInstrumentsHandler(res http.ResponseWriter, req *http
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	validInstruments, err := s.validInstrumentDataManager.GetValidInstruments(ctx, filter)
+	validIngredients, err := s.validIngredientDataManager.GetValidIngredients(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validInstruments = &types.QueryFilteredResult[types.ValidInstrument]{Data: []*types.ValidInstrument{}}
+		validIngredients = &types.QueryFilteredResult[types.ValidIngredient]{Data: []*types.ValidIngredient{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid instruments")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredients")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 	readTimer.Stop()
 
-	responseValue := &types.APIResponse[[]*types.ValidInstrument]{
+	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
 		Details:    responseDetails,
-		Data:       validInstruments.Data,
-		Pagination: &validInstruments.Pagination,
+		Data:       validIngredients.Data,
+		Pagination: &validIngredients.Pagination,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchValidInstrumentsHandler is our search route.
-func (s *service) SearchValidInstrumentsHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidIngredientsHandler is our search route.
+func (s *service) SearchValidIngredientsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -236,6 +237,7 @@ func (s *service) SearchValidInstrumentsHandler(res http.ResponseWriter, req *ht
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		logger.Error(err, "retrieving session context data")
@@ -243,55 +245,113 @@ func (s *service) SearchValidInstrumentsHandler(res http.ResponseWriter, req *ht
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	var validInstruments []*types.ValidInstrument
+	validIngredients := &types.QueryFilteredResult[types.ValidIngredient]{}
 	if useDB {
-		validInstruments, err = s.validInstrumentDataManager.SearchForValidInstruments(ctx, query)
+		validIngredients, err = s.validIngredientDataManager.SearchForValidIngredients(ctx, query, filter)
 	} else {
-		var validInstrumentSubsets []*types.ValidInstrumentSearchSubset
-		validInstrumentSubsets, err = s.searchIndex.Search(ctx, query)
+		var validIngredientSubsets []*types.ValidIngredientSearchSubset
+		validIngredientSubsets, err = s.validIngredientSearchIndex.Search(ctx, query)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "searching for valid instruments")
+			observability.AcknowledgeError(err, logger, span, "searching for valid ingredients")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
 		ids := []string{}
-		for _, validInstrumentSubset := range validInstrumentSubsets {
-			ids = append(ids, validInstrumentSubset.ID)
+		for _, validIngredientSubset := range validIngredientSubsets {
+			ids = append(ids, validIngredientSubset.ID)
 		}
 
-		validInstruments, err = s.validInstrumentDataManager.GetValidInstrumentsWithIDs(ctx, ids)
+		validIngredients.Data, err = s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, ids)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validInstruments = []*types.ValidInstrument{}
+		validIngredients.Data = []*types.ValidIngredient{}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid instruments")
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredients")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 	readTimer.Stop()
 
-	responseValue := &types.APIResponse[[]*types.ValidInstrument]{
+	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
 		Details:    responseDetails,
-		Data:       validInstruments,
-		Pagination: pointer.To(filter.ToPagination()),
+		Data:       validIngredients.Data,
+		Pagination: &validIngredients.Pagination,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateValidInstrumentHandler returns a handler that updates a valid instrument.
-func (s *service) UpdateValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidIngredientsByPreparationAndIngredientNameHandler is our valid ingredient measurement unit search route.
+func (s *service) SearchValidIngredientsByPreparationAndIngredientNameHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	tracing.AttachRequestToSpan(span, req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+
+	filter := types.ExtractQueryFilterFromRequest(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
+	logger = filter.AttachToLogger(logger)
+
+	query := req.URL.Query().Get(types.QueryKeySearch)
+	tracing.AttachRequestToSpan(span, req)
+	logger = logger.WithValue(keys.SearchQueryKey, query)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	validPreparationID := s.validPreparationIDFetcher(req)
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredientsForPreparation(ctx, validPreparationID, query, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+
+	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
+		Details:    responseDetails,
+		Data:       validIngredients.Data,
+		Pagination: &validIngredients.Pagination,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
+}
+
+// UpdateValidIngredientHandler returns a handler that updates a valid ingredient.
+func (s *service) UpdateValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -319,7 +379,7 @@ func (s *service) UpdateValidInstrumentHandler(res http.ResponseWriter, req *htt
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidInstrumentUpdateRequestInput)
+	input := new(types.ValidIngredientUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -334,32 +394,32 @@ func (s *service) UpdateValidInstrumentHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
-	// determine valid instrument ID.
-	validInstrumentID := s.validInstrumentIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
+	// determine valid ingredient ID.
+	validIngredientID := s.validIngredientIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
-	// fetch valid instrument from database.
+	// fetch valid ingredient from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	validInstrument, err := s.validInstrumentDataManager.GetValidInstrument(ctx, validInstrumentID)
+	validIngredient, err := s.validIngredientDataManager.GetValidIngredient(ctx, validIngredientID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid instrument for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient for update")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 	readTimer.Stop()
 
-	// update the valid instrument.
-	validInstrument.Update(input)
+	// update the valid ingredient.
+	validIngredient.Update(input)
 
 	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
-	if err = s.validInstrumentDataManager.UpdateValidInstrument(ctx, validInstrument); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid instrument")
+	if err = s.validIngredientDataManager.UpdateValidIngredient(ctx, validIngredient); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid ingredient")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -367,8 +427,8 @@ func (s *service) UpdateValidInstrumentHandler(res http.ResponseWriter, req *htt
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:       types.ValidInstrumentUpdatedServiceEventType,
-		ValidInstrument: validInstrument,
+		EventType:       types.ValidIngredientUpdatedServiceEventType,
+		ValidIngredient: validIngredient,
 		UserID:          sessionCtxData.Requester.UserID,
 	}
 
@@ -376,17 +436,17 @@ func (s *service) UpdateValidInstrumentHandler(res http.ResponseWriter, req *htt
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidInstrument]{
+	responseValue := &types.APIResponse[*types.ValidIngredient]{
 		Details: responseDetails,
-		Data:    validInstrument,
+		Data:    validIngredient,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveValidInstrumentHandler returns a handler that archives a valid instrument.
-func (s *service) ArchiveValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidIngredientHandler returns a handler that archives a valid ingredient.
+func (s *service) ArchiveValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -413,15 +473,15 @@ func (s *service) ArchiveValidInstrumentHandler(res http.ResponseWriter, req *ht
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid instrument ID.
-	validInstrumentID := s.validInstrumentIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
+	// determine valid ingredient ID.
+	validIngredientID := s.validIngredientIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.validInstrumentDataManager.ValidInstrumentExists(ctx, validInstrumentID)
+	exists, err := s.validIngredientDataManager.ValidIngredientExists(ctx, validIngredientID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking valid instrument existence")
+		observability.AcknowledgeError(err, logger, span, "checking valid ingredient existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -433,8 +493,8 @@ func (s *service) ArchiveValidInstrumentHandler(res http.ResponseWriter, req *ht
 	existenceTimer.Stop()
 
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	if err = s.validInstrumentDataManager.ArchiveValidInstrument(ctx, validInstrumentID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid instrument")
+	if err = s.validIngredientDataManager.ArchiveValidIngredient(ctx, validIngredientID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid ingredient")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -442,7 +502,7 @@ func (s *service) ArchiveValidInstrumentHandler(res http.ResponseWriter, req *ht
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ValidInstrumentArchivedServiceEventType,
+		EventType: types.ValidIngredientArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
@@ -450,7 +510,7 @@ func (s *service) ArchiveValidInstrumentHandler(res http.ResponseWriter, req *ht
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidInstrument]{
+	responseValue := &types.APIResponse[*types.ValidIngredient]{
 		Details: responseDetails,
 	}
 
@@ -458,8 +518,8 @@ func (s *service) ArchiveValidInstrumentHandler(res http.ResponseWriter, req *ht
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// RandomValidInstrumentHandler returns a GET handler that returns a valid instrument.
-func (s *service) RandomValidInstrumentHandler(res http.ResponseWriter, req *http.Request) {
+// RandomValidIngredientHandler returns a GET handler that returns a random valid ingredient.
+func (s *service) RandomValidIngredientHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -486,22 +546,22 @@ func (s *service) RandomValidInstrumentHandler(res http.ResponseWriter, req *htt
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// fetch valid instrument from database.
+	// fetch valid ingredient from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.validInstrumentDataManager.GetRandomValidInstrument(ctx)
+	x, err := s.validIngredientDataManager.GetRandomValidIngredient(ctx)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid instrument")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 	readTimer.Stop()
 
-	responseValue := &types.APIResponse[*types.ValidInstrument]{
+	responseValue := &types.APIResponse[*types.ValidIngredient]{
 		Details: responseDetails,
 		Data:    x,
 	}

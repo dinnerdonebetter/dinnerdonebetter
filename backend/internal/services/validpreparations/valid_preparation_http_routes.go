@@ -1,4 +1,4 @@
-package validingredientstates
+package validpreparations
 
 import (
 	"database/sql"
@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
-	pointer "github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -18,12 +18,12 @@ import (
 )
 
 const (
-	// ValidIngredientStateIDURIParamKey is a standard string that we'll use to refer to valid ingredient state IDs with.
-	ValidIngredientStateIDURIParamKey = "validIngredientStateID"
+	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
+	ValidPreparationIDURIParamKey = "validPreparationID"
 )
 
-// CreateValidIngredientStateHandler is our valid ingredient state creation route.
-func (s *service) CreateValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
+// CreateValidPreparationHandler is our valid preparation creation route.
+func (s *service) CreateValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -51,7 +51,7 @@ func (s *service) CreateValidIngredientStateHandler(res http.ResponseWriter, req
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
-	providedInput := new(types.ValidIngredientStateCreationRequestInput)
+	providedInput := new(types.ValidPreparationCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -66,15 +66,15 @@ func (s *service) CreateValidIngredientStateHandler(res http.ResponseWriter, req
 		return
 	}
 
-	input := converters.ConvertValidIngredientStateCreationRequestInputToValidIngredientStateDatabaseCreationInput(providedInput)
+	input := converters.ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, input.ID)
 
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
-	validIngredientState, err := s.validIngredientStateDataManager.CreateValidIngredientState(ctx, input)
+	validPreparation, err := s.validPreparationDataManager.CreateValidPreparation(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid ingredient states")
+		observability.AcknowledgeError(err, logger, span, "creating valid preparations")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -82,25 +82,25 @@ func (s *service) CreateValidIngredientStateHandler(res http.ResponseWriter, req
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:            types.ValidIngredientStateCreatedServiceEventType,
-		ValidIngredientState: validIngredientState,
-		UserID:               sessionCtxData.Requester.UserID,
+		EventType:        types.ValidPreparationCreatedServiceEventType,
+		ValidPreparation: validPreparation,
+		UserID:           sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidIngredientState]{
+	responseValue := &types.APIResponse[*types.ValidPreparation]{
 		Details: responseDetails,
-		Data:    validIngredientState,
+		Data:    validPreparation,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadValidIngredientStateHandler returns a GET handler that returns a valid ingredient state.
-func (s *service) ReadValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
+// ReadValidPreparationHandler returns a GET handler that returns a valid preparation.
+func (s *service) ReadValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -127,25 +127,27 @@ func (s *service) ReadValidIngredientStateHandler(res http.ResponseWriter, req *
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid ingredient state ID.
-	validIngredientStateID := s.validIngredientStateIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
-	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
+	// determine valid preparation ID.
+	validPreparationID := s.validPreparationIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 
-	// fetch valid ingredient state from database.
-	x, err := s.validIngredientStateDataManager.GetValidIngredientState(ctx, validIngredientStateID)
+	// fetch valid preparation from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	x, err := s.validPreparationDataManager.GetValidPreparation(ctx, validPreparationID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient state")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
-	responseValue := &types.APIResponse[*types.ValidIngredientState]{
+	responseValue := &types.APIResponse[*types.ValidPreparation]{
 		Details: responseDetails,
 		Data:    x,
 	}
@@ -154,8 +156,8 @@ func (s *service) ReadValidIngredientStateHandler(res http.ResponseWriter, req *
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ListValidIngredientStatesHandler is our list route.
-func (s *service) ListValidIngredientStatesHandler(res http.ResponseWriter, req *http.Request) {
+// ListValidPreparationsHandler is our list route.
+func (s *service) ListValidPreparationsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -186,44 +188,48 @@ func (s *service) ListValidIngredientStatesHandler(res http.ResponseWriter, req 
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	validIngredientStates, err := s.validIngredientStateDataManager.GetValidIngredientStates(ctx, filter)
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	validPreparations, err := s.validPreparationDataManager.GetValidPreparations(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredientStates = &types.QueryFilteredResult[types.ValidIngredientState]{Data: []*types.ValidIngredientState{}}
+		validPreparations = &types.QueryFilteredResult[types.ValidPreparation]{Data: []*types.ValidPreparation{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient states")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid preparations")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
-	responseValue := &types.APIResponse[[]*types.ValidIngredientState]{
+	responseValue := &types.APIResponse[[]*types.ValidPreparation]{
 		Details:    responseDetails,
-		Data:       validIngredientStates.Data,
-		Pagination: &validIngredientStates.Pagination,
+		Data:       validPreparations.Data,
+		Pagination: &validPreparations.Pagination,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// SearchValidIngredientStatesHandler is our search route.
-func (s *service) SearchValidIngredientStatesHandler(res http.ResponseWriter, req *http.Request) {
+// SearchValidPreparationsHandler is our search route.
+func (s *service) SearchValidPreparationsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	tracing.AttachRequestToSpan(span, req)
 
 	query := req.URL.Query().Get(types.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	logger = logger.WithValue(keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
-
-	logger := s.logger.WithRequest(req).WithSpan(span).
-		WithValue(keys.SearchQueryKey, query).
-		WithValue("using_database", useDB)
 	logger = filter.AttachToLogger(logger)
+
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
+	logger = logger.WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
@@ -241,40 +247,42 @@ func (s *service) SearchValidIngredientStatesHandler(res http.ResponseWriter, re
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	var validIngredientStates []*types.ValidIngredientState
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	var validPreparations []*types.ValidPreparation
 	if useDB {
-		validIngredientStates, err = s.validIngredientStateDataManager.SearchForValidIngredientStates(ctx, query)
+		validPreparations, err = s.validPreparationDataManager.SearchForValidPreparations(ctx, query)
 	} else {
-		var validIngredientStateSubsets []*types.ValidIngredientStateSearchSubset
-		validIngredientStateSubsets, err = s.searchIndex.Search(ctx, query)
+		var validPreparationSubsets []*types.ValidPreparationSearchSubset
+		validPreparationSubsets, err = s.validPreparationsSearchIndex.Search(ctx, query)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "searching for valid ingredient states")
+			observability.AcknowledgeError(err, logger, span, "searching for valid preparations")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
 		ids := []string{}
-		for _, validIngredientStateSubset := range validIngredientStateSubsets {
-			ids = append(ids, validIngredientStateSubset.ID)
+		for _, validPreparationSubset := range validPreparationSubsets {
+			ids = append(ids, validPreparationSubset.ID)
 		}
 
-		validIngredientStates, err = s.validIngredientStateDataManager.GetValidIngredientStatesWithIDs(ctx, ids)
+		validPreparations, err = s.validPreparationDataManager.GetValidPreparationsWithIDs(ctx, ids)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredientStates = []*types.ValidIngredientState{}
+		validPreparations = []*types.ValidPreparation{}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient states")
+		observability.AcknowledgeError(err, logger, span, "searching for valid preparations")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
-	responseValue := &types.APIResponse[[]*types.ValidIngredientState]{
+	responseValue := &types.APIResponse[[]*types.ValidPreparation]{
 		Details:    responseDetails,
-		Data:       validIngredientStates,
+		Data:       validPreparations,
 		Pagination: pointer.To(filter.ToPagination()),
 	}
 
@@ -282,8 +290,8 @@ func (s *service) SearchValidIngredientStatesHandler(res http.ResponseWriter, re
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// UpdateValidIngredientStateHandler returns a handler that updates a valid ingredient state.
-func (s *service) UpdateValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateValidPreparationHandler returns a handler that updates a valid preparation.
+func (s *service) UpdateValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -311,7 +319,7 @@ func (s *service) UpdateValidIngredientStateHandler(res http.ResponseWriter, req
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidIngredientStateUpdateRequestInput)
+	input := new(types.ValidPreparationUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -326,30 +334,32 @@ func (s *service) UpdateValidIngredientStateHandler(res http.ResponseWriter, req
 		return
 	}
 
-	// determine valid ingredient state ID.
-	validIngredientStateID := s.validIngredientStateIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
-	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
+	// determine valid preparation ID.
+	validPreparationID := s.validPreparationIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 
-	// fetch valid ingredient state from database.
-	validIngredientState, err := s.validIngredientStateDataManager.GetValidIngredientState(ctx, validIngredientStateID)
+	// fetch valid preparation from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	validPreparation, err := s.validPreparationDataManager.GetValidPreparation(ctx, validPreparationID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient state for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation for update")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
-	// update the valid ingredient state.
-	validIngredientState.Update(input)
+	// update the valid preparation.
+	validPreparation.Update(input)
 
 	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
-	if err = s.validIngredientStateDataManager.UpdateValidIngredientState(ctx, validIngredientState); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid ingredient states")
+	if err = s.validPreparationDataManager.UpdateValidPreparation(ctx, validPreparation); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid preparations")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -357,26 +367,26 @@ func (s *service) UpdateValidIngredientStateHandler(res http.ResponseWriter, req
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:            types.ValidIngredientStateUpdatedServiceEventType,
-		ValidIngredientState: validIngredientState,
-		UserID:               sessionCtxData.Requester.UserID,
+		EventType:        types.ValidPreparationUpdatedServiceEventType,
+		ValidPreparation: validPreparation,
+		UserID:           sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidIngredientState]{
+	responseValue := &types.APIResponse[*types.ValidPreparation]{
 		Details: responseDetails,
-		Data:    validIngredientState,
+		Data:    validPreparation,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveValidIngredientStateHandler returns a handler that archives a valid ingredient state.
-func (s *service) ArchiveValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveValidPreparationHandler returns a handler that archives a valid preparation.
+func (s *service) ArchiveValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -403,15 +413,15 @@ func (s *service) ArchiveValidIngredientStateHandler(res http.ResponseWriter, re
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine valid ingredient state ID.
-	validIngredientStateID := s.validIngredientStateIDFetcher(req)
-	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
-	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
+	// determine valid preparation ID.
+	validPreparationID := s.validPreparationIDFetcher(req)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.validIngredientStateDataManager.ValidIngredientStateExists(ctx, validIngredientStateID)
+	exists, err := s.validPreparationDataManager.ValidPreparationExists(ctx, validPreparationID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking valid ingredient state existence")
+		observability.AcknowledgeError(err, logger, span, "checking valid preparation existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -423,8 +433,8 @@ func (s *service) ArchiveValidIngredientStateHandler(res http.ResponseWriter, re
 	existenceTimer.Stop()
 
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	if err = s.validIngredientStateDataManager.ArchiveValidIngredientState(ctx, validIngredientStateID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient states")
+	if err = s.validPreparationDataManager.ArchiveValidPreparation(ctx, validPreparationID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving valid preparations")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -432,7 +442,7 @@ func (s *service) ArchiveValidIngredientStateHandler(res http.ResponseWriter, re
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ValidIngredientStateArchivedServiceEventType,
+		EventType: types.ValidPreparationArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
@@ -440,10 +450,62 @@ func (s *service) ArchiveValidIngredientStateHandler(res http.ResponseWriter, re
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.ValidIngredientState]{
+	responseValue := &types.APIResponse[*types.ValidPreparation]{
 		Details: responseDetails,
 	}
 
-	// let everybody go home.
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}
+
+// RandomValidPreparationHandler returns a GET handler that returns a valid preparation.
+func (s *service) RandomValidPreparationHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	tracing.AttachRequestToSpan(span, req)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	// fetch valid preparation from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	x, err := s.validPreparationDataManager.GetRandomValidPreparation(ctx)
+	if errors.Is(err, sql.ErrNoRows) {
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	readTimer.Stop()
+
+	responseValue := &types.APIResponse[*types.ValidPreparation]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
+	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }

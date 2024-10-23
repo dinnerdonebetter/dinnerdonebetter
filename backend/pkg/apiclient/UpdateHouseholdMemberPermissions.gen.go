@@ -18,6 +18,7 @@ func (c *Client) UpdateHouseholdMemberPermissions(
 	householdID string,
 	userID string,
 	input *types.ModifyUserPermissionsInput,
+	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -40,6 +41,10 @@ func (c *Client) UpdateHouseholdMemberPermissions(
 	req, err := c.buildDataRequest(ctx, http.MethodPatch, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a UserPermissionsResponse")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.UserPermissionsResponse]

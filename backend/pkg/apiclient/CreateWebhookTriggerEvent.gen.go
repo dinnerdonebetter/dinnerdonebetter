@@ -17,6 +17,7 @@ func (c *Client) CreateWebhookTriggerEvent(
 	ctx context.Context,
 	webhookID string,
 	input *types.WebhookTriggerEventCreationRequestInput,
+	reqMods ...RequestModifier,
 ) (*types.WebhookTriggerEvent, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -41,6 +42,10 @@ func (c *Client) CreateWebhookTriggerEvent(
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a WebhookTriggerEvent")
+	}
+
+	for _, mod := range reqMods {
+		mod(req)
 	}
 
 	var apiResponse *types.APIResponse[*types.WebhookTriggerEvent]

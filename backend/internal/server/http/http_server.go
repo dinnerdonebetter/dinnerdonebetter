@@ -34,12 +34,12 @@ type (
 
 	// server is our API http server.
 	server struct {
-		authService                            types.AuthService
+		authService                            types.AuthDataService
 		validVesselsService                    types.ValidVesselDataService
 		householdsService                      types.HouseholdDataService
 		householdInvitationsService            types.HouseholdInvitationDataService
 		usersService                           types.UserDataService
-		adminService                           types.AdminService
+		adminService                           types.AdminDataService
 		webhooksService                        types.WebhookDataService
 		validInstrumentsService                types.ValidInstrumentDataService
 		validIngredientsService                types.ValidIngredientDataService
@@ -97,7 +97,7 @@ func ProvideHTTPServer(
 	logger logging.Logger,
 	router routing.Router,
 	tracerProvider tracing.TracerProvider,
-	authService types.AuthService,
+	authService types.AuthDataService,
 	usersService types.UserDataService,
 	householdsService types.HouseholdDataService,
 	householdInvitationsService types.HouseholdInvitationDataService,
@@ -128,7 +128,7 @@ func ProvideHTTPServer(
 	validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService,
 	recipeStepVesselsService types.RecipeStepVesselDataService,
 	webhooksService types.WebhookDataService,
-	adminService types.AdminService,
+	adminService types.AdminDataService,
 	serviceSettingDataService types.ServiceSettingDataService,
 	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
 	userIngredientPreferencesService types.UserIngredientPreferenceDataService,
