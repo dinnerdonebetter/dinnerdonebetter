@@ -12,6 +12,7 @@ import { buildServerSideClient } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 
 declare interface OAuth2ClientPageProps {
+  pageErrors: string[];
   pageLoadOAuth2Client: OAuth2Client;
 }
 
@@ -44,7 +45,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   span.end();
   return {
-    props: { pageLoadOAuth2Client },
+    props: {
+      pageErrors: [],
+      pageLoadOAuth2Client,
+    },
   };
 };
 

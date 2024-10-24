@@ -14,6 +14,7 @@ import { buildServerSideClient } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 
 declare interface ServiceSettingPageProps {
+  pageErrors: string[];
   pageLoadServiceSetting: ServiceSetting;
 }
 
@@ -46,7 +47,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
   span.end();
   return {
-    props: { pageLoadServiceSetting },
+    props: {
+      pageErrors: [],
+      pageLoadServiceSetting,
+    },
   };
 };
 

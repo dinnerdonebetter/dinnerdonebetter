@@ -15,6 +15,7 @@ import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
 declare interface ValidVesselsPageProps {
+  pageErrors: string[];
   pageLoadValidVessels: QueryFilteredResult<ValidVessel>;
 }
 
@@ -36,7 +37,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidVessels(qf)
     .then((res: QueryFilteredResult<ValidVessel>) => {
       span.addEvent('valid vessels retrieved');
-      props = { props: { pageLoadValidVessels: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageErrors: [],
+          pageLoadValidVessels: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

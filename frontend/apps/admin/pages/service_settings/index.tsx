@@ -15,6 +15,7 @@ import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
 declare interface ServiceSettingsPageProps {
+  pageErrors: string[];
   pageLoadServiceSettings: QueryFilteredResult<ServiceSetting>;
 }
 
@@ -36,7 +37,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getServiceSettings(qf)
     .then((res: QueryFilteredResult<ServiceSetting>) => {
       span.addEvent('service settings retrieved');
-      props = { props: { pageLoadServiceSettings: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageErrors: [],
+          pageLoadServiceSettings: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

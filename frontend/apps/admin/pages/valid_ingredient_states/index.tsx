@@ -15,6 +15,7 @@ import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
 declare interface ValidIngredientStatesPageProps {
+  pageErrors: string[];
   pageLoadValidIngredientStates: QueryFilteredResult<ValidIngredientState>;
 }
 
@@ -36,7 +37,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredientStates(qf)
     .then((res: QueryFilteredResult<ValidIngredientState>) => {
       span.addEvent('valid ingredientStates retrieved');
-      props = { props: { pageLoadValidIngredientStates: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageErrors: [],
+          pageLoadValidIngredientStates: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

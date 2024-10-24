@@ -14,6 +14,7 @@ import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
 declare interface OAuth2ClientsPageProps {
+  pageErrors: string[];
   pageLoadOAuth2Clients: QueryFilteredResult<OAuth2Client>;
 }
 
@@ -35,7 +36,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getOAuth2Clients(qf)
     .then((res: QueryFilteredResult<OAuth2Client>) => {
       span.addEvent('oauth2 clients retrieved');
-      props = { props: { pageLoadOAuth2Clients: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageErrors: [],
+          pageLoadOAuth2Clients: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

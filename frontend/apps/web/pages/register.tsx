@@ -27,6 +27,7 @@ const registrationFormSchema = z.object({
 });
 
 declare interface RegistrationPageProps {
+  pageErrors: string[];
   invitationToken?: string;
   invitationID?: string;
 }
@@ -48,6 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   let props: GetServerSidePropsResult<RegistrationPageProps> = {
     props: {
+      pageErrors: [],
       invitationID: context.query['i']?.toString() || '',
       invitationToken: context.query['t']?.toString() || '',
     },

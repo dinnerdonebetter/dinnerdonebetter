@@ -15,6 +15,7 @@ import { serverSideAnalytics } from '../../src/analytics';
 import { extractUserInfoFromCookie } from '../../src/auth';
 
 declare interface MealPlansPageProps {
+  pageErrors: string[];
   userID: string;
   mealPlans: MealPlan[];
 }
@@ -64,7 +65,13 @@ export const getServerSideProps: GetServerSideProps = async (
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return { props: { userID: userSessionData?.userID, mealPlans: mealPlans } };
+  return {
+    props: {
+      pageErrors: [],
+      userID: userSessionData?.userID,
+      mealPlans: mealPlans,
+    },
+  };
 };
 
 const dateFormat = 'h aa M/d/yy';

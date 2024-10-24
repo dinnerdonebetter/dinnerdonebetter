@@ -22,7 +22,9 @@ const loginFormSchema = z.object({
   totpToken: z.string().trim().optional().or(z.string().trim().regex(/\d{6}/, 'token must be 6 digits')),
 });
 
-declare interface LoginPageProps {}
+declare interface LoginPageProps {
+  pageErrors: string[];
+}
 
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext,
@@ -53,7 +55,11 @@ export const getServerSideProps: GetServerSideProps = async (
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return { props: {} };
+  return {
+    props: {
+      pageErrors: [],
+    },
+  };
 };
 
 export default function Login(_props: LoginPageProps): JSX.Element {

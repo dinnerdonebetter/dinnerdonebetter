@@ -12,6 +12,7 @@ import { serverSideAnalytics } from '../../../src/analytics';
 import { extractUserInfoFromCookie } from '../../../src/auth';
 
 declare interface RecipePageProps {
+  pageErrors: string[];
   recipe: Recipe;
 }
 
@@ -43,7 +44,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getRecipe(recipeID.toString())
     .then((result: APIResponse<Recipe>) => {
       span.addEvent(`recipe retrieved`);
-      props = { props: { recipe: result.data } };
+      props = {
+        props: {
+          pageErrors: [],
+          recipe: result.data,
+        },
+      };
     })
     .catch((error: AxiosError) => {
       if (error.response?.status === 404) {

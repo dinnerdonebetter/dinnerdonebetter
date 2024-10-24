@@ -15,6 +15,7 @@ import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
 declare interface ValidPreparationsPageProps {
+  pageErrors: string[];
   pageLoadValidPreparations: QueryFilteredResult<ValidPreparation>;
 }
 
@@ -36,7 +37,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidPreparations(qf)
     .then((res: QueryFilteredResult<ValidPreparation>) => {
       span.addEvent('valid preparations retrieved');
-      props = { props: { pageLoadValidPreparations: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageErrors: [],
+          pageLoadValidPreparations: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

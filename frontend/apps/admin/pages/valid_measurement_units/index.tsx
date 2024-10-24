@@ -15,6 +15,7 @@ import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
 declare interface ValidMeasurementUnitsPageProps {
+  pageErrors: string[];
   pageLoadValidMeasurementUnits: QueryFilteredResult<ValidMeasurementUnit>;
 }
 
@@ -36,7 +37,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidMeasurementUnits(qf)
     .then((res: QueryFilteredResult<ValidMeasurementUnit>) => {
       span.addEvent('valid measurement units retrieved');
-      props = { props: { pageLoadValidMeasurementUnits: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageErrors: [],
+          pageLoadValidMeasurementUnits: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');
