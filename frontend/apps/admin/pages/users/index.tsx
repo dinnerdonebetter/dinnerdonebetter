@@ -14,6 +14,7 @@ import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
 declare interface UsersPageProps {
+  pageErrors: string[];
   pageLoadUsers: QueryFilteredResult<User>;
 }
 
@@ -35,7 +36,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getUsers(qf)
     .then((res: QueryFilteredResult<User>) => {
       span.addEvent('users retrieved');
-      props = { props: { pageLoadUsers: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageErrors: [],
+          pageLoadUsers: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

@@ -50,6 +50,7 @@ import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
 
 declare interface ValidIngredientPageProps {
+  pageErrors: string[];
   pageLoadMeasurementUnits: QueryFilteredResult<ValidIngredientMeasurementUnit>;
   pageLoadIngredientPreparations: QueryFilteredResult<ValidIngredientPreparation>;
   pageLoadValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient>;
@@ -129,6 +130,7 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
+      pageErrors: [],
       pageLoadValidIngredient: JSON.parse(JSON.stringify(pageLoadValidIngredient)),
       pageLoadMeasurementUnits: JSON.parse(JSON.stringify(pageLoadMeasurementUnits)),
       pageLoadIngredientPreparations: JSON.parse(JSON.stringify(pageLoadIngredientPreparations)),

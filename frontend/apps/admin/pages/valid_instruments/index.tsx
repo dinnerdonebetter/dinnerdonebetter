@@ -15,6 +15,7 @@ import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
 declare interface ValidInstrumentsPageProps {
+  pageErrors: string[];
   pageLoadValidInstruments: QueryFilteredResult<ValidInstrument>;
 }
 
@@ -36,7 +37,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidInstruments(qf)
     .then((res: QueryFilteredResult<ValidInstrument>) => {
       span.addEvent('valid instruments retrieved');
-      props = { props: { pageLoadValidInstruments: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageErrors: [],
+          pageLoadValidInstruments: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

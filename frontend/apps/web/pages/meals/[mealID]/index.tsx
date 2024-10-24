@@ -17,6 +17,7 @@ import { RecipeInstrumentListComponent } from '../../../src/components';
 import { RecipeIngredientListComponent } from '../../../src/components/IngredientList';
 
 declare interface MealPageProps {
+  pageErrors: string[];
   meal: Meal;
 }
 
@@ -48,7 +49,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .getMeal(mealID.toString())
     .then((result: APIResponse<Meal>) => {
       span.addEvent(`recipe retrieved`);
-      props = { props: { meal: result.data } };
+      props = {
+        props: {
+          pageErrors: [],
+          meal: result.data,
+        },
+      };
     })
     .catch((error: AxiosError) => {
       if (error.response?.status === 404) {

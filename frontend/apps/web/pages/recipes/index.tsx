@@ -15,6 +15,7 @@ import { extractUserInfoFromCookie } from '../../src/auth';
 import { serverSideAnalytics } from '../../src/analytics';
 
 declare interface RecipesPageProps {
+  pageErrors: string[];
   recipes: Recipe[];
 }
 
@@ -58,7 +59,12 @@ export const getServerSideProps: GetServerSideProps = async (
     .then((res: QueryFilteredResult<Recipe>) => {
       span.addEvent('recipes retrieved');
       const recipes = res.data;
-      props = { props: { recipes } };
+      props = {
+        props: {
+          pageErrors: [],
+          recipes,
+        },
+      };
     })
     .catch((error: AxiosError) => {
       span.addEvent('error occurred');

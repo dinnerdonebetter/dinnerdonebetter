@@ -77,6 +77,7 @@ export function AppLayout(props: AppLayoutProps) {
 
         <Grid.Col span="auto">
           <Center>
+            <></>
             {/*
              <Image
               src={logo}

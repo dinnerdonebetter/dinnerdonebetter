@@ -47,6 +47,7 @@ import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
 
 declare interface ValidMeasurementUnitPageProps {
+  pageErrors: string[];
   pageLoadValidMeasurementUnit: ValidMeasurementUnit;
   pageLoadIngredientsForMeasurementUnit: QueryFilteredResult<ValidIngredientMeasurementUnit>;
   pageLoadMeasurementUnitConversionsFromUnit: ValidMeasurementUnitConversion[];
@@ -126,6 +127,7 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
+      pageErrors: [],
       pageLoadValidMeasurementUnit,
       pageLoadIngredientsForMeasurementUnit,
       pageLoadMeasurementUnitConversionsFromUnit,

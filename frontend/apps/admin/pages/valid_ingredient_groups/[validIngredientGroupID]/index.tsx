@@ -15,6 +15,7 @@ import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
 
 declare interface ValidIngredientGroupPageProps {
+  pageErrors: string[];
   pageLoadValidIngredientGroup: ValidIngredientGroup;
 }
 
@@ -48,6 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
+      pageErrors: [],
       pageLoadValidIngredientGroup,
     },
   };

@@ -44,6 +44,7 @@ import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
 
 declare interface ValidIngredientStatePageProps {
+  pageErrors: string[];
   pageLoadValidIngredientState: ValidIngredientState;
   pageLoadValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient>;
 }
@@ -92,6 +93,7 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
+      pageErrors: [],
       pageLoadValidIngredientState: JSON.parse(JSON.stringify(pageLoadValidIngredientState)),
       pageLoadValidIngredientStates: JSON.parse(JSON.stringify(pageLoadValidIngredientStates)),
     },
