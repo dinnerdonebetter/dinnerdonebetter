@@ -314,16 +314,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/accept`, input)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -336,16 +336,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<JWTResponse>>(`/users/login/jwt/admin`, input)
         .then((res: AxiosResponse<APIResponse<JWTResponse>>) => {
           if (res.data.error && res.data.error.message.toLowerCase() != 'totp required') {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res);
           }
         })
         .catch((error: AxiosError<APIResponse<JWTResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -358,16 +358,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<UserStatusResponse>>(`/api/v1/admin/users/status`, input)
         .then((res: AxiosResponse<APIResponse<UserStatusResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserStatusResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -380,16 +380,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<UserDataCollectionResponse>>(`/api/v1/data_privacy/disclose`)
         .then((res: AxiosResponse<APIResponse<UserDataCollectionResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserDataCollectionResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -402,16 +402,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<Household>>(`/api/v1/households/${householdID}`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Household>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -428,16 +428,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -450,16 +450,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<Meal>>(`/api/v1/meals/${mealID}`)
         .then((res: AxiosResponse<APIResponse<Meal>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Meal>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -472,16 +472,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`)
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlan>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -494,16 +494,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanEvent>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -521,16 +521,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanGroceryListItem>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -549,16 +549,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanOption>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -578,16 +578,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOptionVote>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanOptionVote>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -600,16 +600,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`)
         .then((res: AxiosResponse<APIResponse<OAuth2Client>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<OAuth2Client>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -622,16 +622,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Recipe>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -644,16 +644,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipePrepTask>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -666,16 +666,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeRating>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -688,16 +688,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStep>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -716,16 +716,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepCompletionCondition>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -744,16 +744,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -772,16 +772,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -800,16 +800,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepProduct>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -828,16 +828,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -850,16 +850,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`)
         .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ServiceSetting>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -876,16 +876,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ServiceSettingConfiguration>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ServiceSettingConfiguration>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -898,16 +898,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<User>>(`/api/v1/users/${userID}`)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -924,16 +924,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<UserIngredientPreference>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserIngredientPreference>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -946,16 +946,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<HouseholdUserMembership>>(`/api/v1/households/${householdID}/members/${userID}`)
         .then((res: AxiosResponse<APIResponse<HouseholdUserMembership>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdUserMembership>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -968,16 +968,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -990,16 +990,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientGroup>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1016,16 +1016,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1042,16 +1042,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientPreparation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1064,16 +1064,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientState>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1090,16 +1090,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientStateIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1112,16 +1112,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1134,16 +1134,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidMeasurementUnit>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1160,16 +1160,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1182,16 +1182,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1208,16 +1208,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparationInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1230,16 +1230,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels/${validPreparationVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparationVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1252,16 +1252,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1274,16 +1274,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`)
         .then((res: AxiosResponse<APIResponse<Webhook>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Webhook>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1301,16 +1301,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<WebhookTriggerEvent>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<WebhookTriggerEvent>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1326,16 +1326,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/cancel`, input)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1348,16 +1348,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<UserPermissionsResponse>>(`/api/v1/users/permissions/check`, input)
         .then((res: AxiosResponse<APIResponse<UserPermissionsResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserPermissionsResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1370,16 +1370,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}/clone`)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Recipe>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1392,16 +1392,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<Household>>(`/api/v1/households`, input)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Household>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1416,16 +1416,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<HouseholdInstrumentOwnership>>(`/api/v1/households/instruments`, input)
         .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1441,16 +1441,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<HouseholdInvitation>>(`/api/v1/households/${householdID}/invite`, input)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1463,16 +1463,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<Meal>>(`/api/v1/meals`, input)
         .then((res: AxiosResponse<APIResponse<Meal>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Meal>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1485,16 +1485,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<MealPlan>>(`/api/v1/meal_plans`, input)
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlan>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1510,16 +1510,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanEvent>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1535,16 +1535,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<MealPlanGroceryListItem>>(`/api/v1/meal_plans/${mealPlanID}/grocery_list_items`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanGroceryListItem>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1561,16 +1561,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<MealPlanOption>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanOption>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1590,16 +1590,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<MealPlanOptionVote>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Array<MealPlanOptionVote>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1615,16 +1615,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanTask>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1639,16 +1639,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<OAuth2ClientCreationResponse>>(`/api/v1/oauth2_clients`, input)
         .then((res: AxiosResponse<APIResponse<OAuth2ClientCreationResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<OAuth2ClientCreationResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1661,16 +1661,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<Recipe>>(`/api/v1/recipes`, input)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Recipe>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1686,16 +1686,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks`, input)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipePrepTask>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1711,16 +1711,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings`, input)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeRating>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1733,16 +1733,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStep>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1762,16 +1762,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepCompletionCondition>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1788,16 +1788,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<RecipeStepIngredient>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1814,16 +1814,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<RecipeStepInstrument>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1840,16 +1840,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<RecipeStepProduct>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepProduct>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1866,16 +1866,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<RecipeStepVessel>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1888,16 +1888,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ServiceSetting>>(`/api/v1/settings`, input)
         .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ServiceSetting>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1912,16 +1912,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ServiceSettingConfiguration>>(`/api/v1/settings/configurations`, input)
         .then((res: AxiosResponse<APIResponse<ServiceSettingConfiguration>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ServiceSettingConfiguration>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1934,16 +1934,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<UserCreationResponse>>(`/users`, input)
         .then((res: AxiosResponse<APIResponse<UserCreationResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserCreationResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1958,16 +1958,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<Array<UserIngredientPreference>>>(`/api/v1/user_ingredient_preferences`, input)
         .then((res: AxiosResponse<APIResponse<Array<UserIngredientPreference>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Array<UserIngredientPreference>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -1980,16 +1980,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<UserNotification>>(`/api/v1/user_notifications`, input)
         .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserNotification>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2002,16 +2002,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2026,16 +2026,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientGroup>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2050,16 +2050,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidIngredientMeasurementUnit>>(`/api/v1/valid_ingredient_measurement_units`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2074,16 +2074,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidIngredientPreparation>>(`/api/v1/valid_ingredient_preparations`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientPreparation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2098,16 +2098,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientState>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2122,16 +2122,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidIngredientStateIngredient>>(`/api/v1/valid_ingredient_state_ingredients`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientStateIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2144,16 +2144,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments`, input)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2168,16 +2168,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units`, input)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidMeasurementUnit>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2192,16 +2192,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidMeasurementUnitConversion>>(`/api/v1/valid_measurement_conversions`, input)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2214,16 +2214,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations`, input)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2238,16 +2238,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidPreparationInstrument>>(`/api/v1/valid_preparation_instruments`, input)
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparationInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2262,16 +2262,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels`, input)
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparationVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2284,16 +2284,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<ValidVessel>>(`/api/v1/valid_vessels`, input)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2306,16 +2306,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<Webhook>>(`/api/v1/webhooks`, input)
         .then((res: AxiosResponse<APIResponse<Webhook>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Webhook>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2331,16 +2331,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<WebhookTriggerEvent>>(`/api/v1/webhooks/${webhookID}/trigger_events`, input)
         .then((res: AxiosResponse<APIResponse<WebhookTriggerEvent>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<WebhookTriggerEvent>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2353,16 +2353,16 @@ export class DinnerDoneBetterAPIClient {
         .delete<APIResponse<DataDeletionResponse>>(`/api/v1/data_privacy/destroy`)
         .then((res: AxiosResponse<APIResponse<DataDeletionResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<DataDeletionResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2375,16 +2375,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<UserDataCollection>>(`/api/v1/data_privacy/reports/${userDataAggregationReportID}`)
         .then((res: AxiosResponse<APIResponse<UserDataCollection>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserDataCollection>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2397,16 +2397,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<FinalizeMealPlansResponse>>(`/api/v1/meal_plans/${mealPlanID}/finalize`)
         .then((res: AxiosResponse<APIResponse<FinalizeMealPlansResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<FinalizeMealPlansResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2419,16 +2419,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<Household>>(`/api/v1/households/current`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Household>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2445,7 +2445,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<AuditLogEntry>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<AuditLogEntry>({
@@ -2459,9 +2459,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<AuditLogEntry>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2478,7 +2478,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<AuditLogEntry>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<AuditLogEntry>({
@@ -2492,9 +2492,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<AuditLogEntry>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2507,16 +2507,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<AuditLogEntry>>(`/api/v1/audit_log_entries/${auditLogEntryID}`)
         .then((res: AxiosResponse<APIResponse<AuditLogEntry>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<AuditLogEntry>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2529,16 +2529,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<UserStatusResponse>>(`/auth/status`)
         .then((res: AxiosResponse<APIResponse<UserStatusResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserStatusResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2551,16 +2551,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<Household>>(`/api/v1/households/${householdID}`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Household>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2577,16 +2577,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2603,7 +2603,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<HouseholdInstrumentOwnership>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<HouseholdInstrumentOwnership>({
@@ -2617,9 +2617,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<HouseholdInstrumentOwnership>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2632,16 +2632,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}`)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2657,16 +2657,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<HouseholdInvitation>>(`/api/v1/households/${householdID}/invitations/${householdInvitationID}`)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2681,7 +2681,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<Household>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<Household>({
@@ -2695,9 +2695,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<Household>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2710,16 +2710,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<Meal>>(`/api/v1/meals/${mealID}`)
         .then((res: AxiosResponse<APIResponse<Meal>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Meal>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2732,16 +2732,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`)
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlan>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2754,16 +2754,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanEvent>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2781,7 +2781,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<MealPlanEvent>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<MealPlanEvent>({
@@ -2795,9 +2795,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<MealPlanEvent>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2815,16 +2815,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanGroceryListItem>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2842,7 +2842,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<MealPlanGroceryListItem>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<MealPlanGroceryListItem>({
@@ -2856,9 +2856,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<MealPlanGroceryListItem>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2877,16 +2877,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanOption>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2906,16 +2906,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOptionVote>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanOptionVote>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2938,7 +2938,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<MealPlanOptionVote>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<MealPlanOptionVote>({
@@ -2952,9 +2952,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<MealPlanOptionVote>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -2973,7 +2973,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<MealPlanOption>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<MealPlanOption>({
@@ -2987,9 +2987,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<MealPlanOption>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3002,16 +3002,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`)
         .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanTask>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3029,7 +3029,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<MealPlanTask>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<MealPlanTask>({
@@ -3043,9 +3043,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<MealPlanTask>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3060,7 +3060,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<MealPlan>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<MealPlan>({
@@ -3074,9 +3074,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<MealPlan>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3091,7 +3091,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<Meal>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<Meal>({
@@ -3105,9 +3105,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<Meal>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3120,16 +3120,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<string>>(`/api/v1/recipes/${recipeID}/mermaid`)
         .then((res: AxiosResponse<APIResponse<string>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<string>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3142,16 +3142,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`)
         .then((res: AxiosResponse<APIResponse<OAuth2Client>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<OAuth2Client>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3166,7 +3166,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<OAuth2Client>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<OAuth2Client>({
@@ -3180,9 +3180,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<OAuth2Client>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3195,16 +3195,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/random`)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3217,16 +3217,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/random`)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3239,16 +3239,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/random`)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3261,16 +3261,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/random`)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3287,7 +3287,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<HouseholdInvitation>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<HouseholdInvitation>({
@@ -3301,9 +3301,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<HouseholdInvitation>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3316,16 +3316,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Recipe>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3338,16 +3338,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<RecipePrepTaskStep>>(`/api/v1/recipes/${recipeID}/prep_steps`)
         .then((res: AxiosResponse<APIResponse<RecipePrepTaskStep>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipePrepTaskStep>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3360,16 +3360,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipePrepTask>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3387,7 +3387,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<RecipePrepTask>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<RecipePrepTask>({
@@ -3401,9 +3401,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<RecipePrepTask>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3416,16 +3416,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeRating>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3443,7 +3443,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<RecipeRating>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<RecipeRating>({
@@ -3457,9 +3457,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<RecipeRating>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3472,16 +3472,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStep>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3500,16 +3500,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepCompletionCondition>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3531,7 +3531,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepCompletionCondition>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<RecipeStepCompletionCondition>({
@@ -3545,9 +3545,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<RecipeStepCompletionCondition>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3566,16 +3566,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3597,7 +3597,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepIngredient>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<RecipeStepIngredient>({
@@ -3611,9 +3611,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<RecipeStepIngredient>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3632,16 +3632,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3663,7 +3663,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepInstrument>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<RecipeStepInstrument>({
@@ -3677,9 +3677,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<RecipeStepInstrument>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3698,16 +3698,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepProduct>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3726,7 +3726,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepProduct>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<RecipeStepProduct>({
@@ -3740,9 +3740,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<RecipeStepProduct>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3761,16 +3761,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3789,7 +3789,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<RecipeStepVessel>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<RecipeStepVessel>({
@@ -3803,9 +3803,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<RecipeStepVessel>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3823,7 +3823,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<RecipeStep>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<RecipeStep>({
@@ -3837,9 +3837,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<RecipeStep>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3854,7 +3854,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<Recipe>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<Recipe>({
@@ -3868,9 +3868,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<Recipe>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3883,16 +3883,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<User>>(`/api/v1/users/self`)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3909,7 +3909,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<HouseholdInvitation>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<HouseholdInvitation>({
@@ -3923,9 +3923,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<HouseholdInvitation>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3938,16 +3938,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`)
         .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ServiceSetting>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -3968,7 +3968,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ServiceSettingConfiguration>({
@@ -3982,9 +3982,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ServiceSettingConfiguration>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4001,7 +4001,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ServiceSettingConfiguration>({
@@ -4015,9 +4015,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ServiceSettingConfiguration>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4034,7 +4034,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ServiceSettingConfiguration>({
@@ -4048,9 +4048,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ServiceSettingConfiguration>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4065,7 +4065,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ServiceSetting>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ServiceSetting>({
@@ -4079,9 +4079,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ServiceSetting>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4094,16 +4094,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<User>>(`/api/v1/users/${userID}`)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4120,7 +4120,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<UserIngredientPreference>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<UserIngredientPreference>({
@@ -4134,9 +4134,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<UserIngredientPreference>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4149,16 +4149,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<UserNotification>>(`/api/v1/user_notifications/${userNotificationID}`)
         .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserNotification>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4175,7 +4175,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<UserNotification>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<UserNotification>({
@@ -4189,9 +4189,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<UserNotification>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4206,7 +4206,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<User>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<User>({
@@ -4220,9 +4220,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<User>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4235,16 +4235,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4257,16 +4257,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientGroup>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4283,7 +4283,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientGroup>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientGroup>({
@@ -4297,9 +4297,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientGroup>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4316,16 +4316,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4342,7 +4342,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientMeasurementUnit>({
@@ -4356,9 +4356,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4379,7 +4379,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientMeasurementUnit>({
@@ -4393,9 +4393,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4416,7 +4416,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientMeasurementUnit>({
@@ -4430,9 +4430,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientMeasurementUnit>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4449,16 +4449,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientPreparation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4475,7 +4475,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientPreparation>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientPreparation>({
@@ -4489,9 +4489,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientPreparation>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4512,7 +4512,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientPreparation>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientPreparation>({
@@ -4526,9 +4526,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientPreparation>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4549,7 +4549,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientPreparation>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientPreparation>({
@@ -4563,9 +4563,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientPreparation>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4578,16 +4578,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientState>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4604,16 +4604,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientStateIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4630,7 +4630,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientStateIngredient>({
@@ -4644,9 +4644,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4667,7 +4667,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientStateIngredient>({
@@ -4681,9 +4681,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4704,7 +4704,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientStateIngredient>({
@@ -4718,9 +4718,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientStateIngredient>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4737,7 +4737,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientState>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientState>({
@@ -4751,9 +4751,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientState>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4770,7 +4770,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredient>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredient>({
@@ -4784,9 +4784,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredient>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4799,16 +4799,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4825,7 +4825,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidInstrument>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidInstrument>({
@@ -4839,9 +4839,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidInstrument>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4854,16 +4854,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidMeasurementUnit>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4880,16 +4880,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4910,7 +4910,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidMeasurementUnitConversion>({
@@ -4924,9 +4924,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4947,7 +4947,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidMeasurementUnitConversion>({
@@ -4961,9 +4961,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnitConversion>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -4980,7 +4980,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnit>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidMeasurementUnit>({
@@ -4994,9 +4994,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnit>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5009,16 +5009,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5035,16 +5035,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparationInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5061,7 +5061,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationInstrument>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidPreparationInstrument>({
@@ -5075,9 +5075,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidPreparationInstrument>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5098,7 +5098,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationInstrument>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidPreparationInstrument>({
@@ -5112,9 +5112,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidPreparationInstrument>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5135,7 +5135,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationInstrument>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidPreparationInstrument>({
@@ -5149,9 +5149,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidPreparationInstrument>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5164,16 +5164,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels/${validPreparationVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparationVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5190,7 +5190,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationVessel>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidPreparationVessel>({
@@ -5204,9 +5204,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidPreparationVessel>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5227,7 +5227,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationVessel>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidPreparationVessel>({
@@ -5241,9 +5241,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidPreparationVessel>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5264,7 +5264,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparationVessel>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidPreparationVessel>({
@@ -5278,9 +5278,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidPreparationVessel>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5297,7 +5297,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparation>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidPreparation>({
@@ -5311,9 +5311,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidPreparation>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5326,16 +5326,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5350,7 +5350,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidVessel>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidVessel>({
@@ -5364,9 +5364,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidVessel>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5379,16 +5379,16 @@ export class DinnerDoneBetterAPIClient {
         .get<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`)
         .then((res: AxiosResponse<APIResponse<Webhook>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Webhook>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5403,7 +5403,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<Webhook>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<Webhook>({
@@ -5417,9 +5417,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<Webhook>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5432,16 +5432,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<JWTResponse>>(`/users/login/jwt`, input)
         .then((res: AxiosResponse<APIResponse<JWTResponse>>) => {
           if (res.data.error && res.data.error.message.toLowerCase() != 'totp required') {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res);
           }
         })
         .catch((error: AxiosError<APIResponse<JWTResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5454,16 +5454,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<User>>(`/users/password/reset/redeem`, input)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5476,16 +5476,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<TOTPSecretRefreshResponse>>(`/api/v1/users/totp_secret/new`, input)
         .then((res: AxiosResponse<APIResponse<TOTPSecretRefreshResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<TOTPSecretRefreshResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5501,16 +5501,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/reject`, input)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5523,16 +5523,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<User>>(`/api/v1/users/email_address_verification`)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5547,16 +5547,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<PasswordResetToken>>(`/users/password/reset`, input)
         .then((res: AxiosResponse<APIResponse<PasswordResetToken>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<PasswordResetToken>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5569,16 +5569,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<User>>(`/users/username/reminder`, input)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5591,16 +5591,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<FinalizeMealPlansResponse>>(`/api/v1/workers/finalize_meal_plans`, input)
         .then((res: AxiosResponse<APIResponse<FinalizeMealPlansResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<FinalizeMealPlansResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5615,16 +5615,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<InitializeMealPlanGroceryListResponse>>(`/api/v1/workers/meal_plan_grocery_list_init`, input)
         .then((res: AxiosResponse<APIResponse<InitializeMealPlanGroceryListResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<InitializeMealPlanGroceryListResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5639,16 +5639,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<CreateMealPlanTasksResponse>>(`/api/v1/workers/meal_plan_tasks`, input)
         .then((res: AxiosResponse<APIResponse<CreateMealPlanTasksResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<CreateMealPlanTasksResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5663,7 +5663,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<Meal>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<Meal>({
@@ -5677,9 +5677,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<Meal>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5694,7 +5694,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<Recipe>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<Recipe>({
@@ -5708,9 +5708,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<Recipe>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5728,7 +5728,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ServiceSetting>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ServiceSetting>({
@@ -5742,9 +5742,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ServiceSetting>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5759,7 +5759,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<User>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<User>({
@@ -5773,9 +5773,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<User>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5793,7 +5793,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientGroup>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientGroup>({
@@ -5807,9 +5807,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientGroup>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5827,7 +5827,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredientState>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredientState>({
@@ -5841,9 +5841,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredientState>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5861,7 +5861,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredient>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredient>({
@@ -5875,9 +5875,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredient>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5895,7 +5895,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidInstrument>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidInstrument>({
@@ -5909,9 +5909,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidInstrument>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5929,7 +5929,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnit>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidMeasurementUnit>({
@@ -5943,9 +5943,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnit>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5963,7 +5963,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidPreparation>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidPreparation>({
@@ -5977,9 +5977,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidPreparation>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -5997,7 +5997,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidVessel>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidVessel>({
@@ -6011,9 +6011,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidVessel>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6032,7 +6032,7 @@ export class DinnerDoneBetterAPIClient {
         })
         .then((res: AxiosResponse<APIResponse<Array<ValidIngredient>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidIngredient>({
@@ -6046,9 +6046,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidIngredient>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6070,7 +6070,7 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<Array<ValidMeasurementUnit>>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(
               new QueryFilteredResult<ValidMeasurementUnit>({
@@ -6084,9 +6084,9 @@ export class DinnerDoneBetterAPIClient {
         })
         .catch((error: AxiosError<APIResponse<Array<ValidMeasurementUnit>>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6099,16 +6099,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<Household>>(`/api/v1/households/${householdID}/default`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Household>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6124,16 +6124,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<Household>>(`/api/v1/households/${householdID}/transfer`, input)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Household>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6146,16 +6146,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<Household>>(`/api/v1/households/${householdID}`, input)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Household>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6174,16 +6174,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6203,16 +6203,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<UserPermissionsResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserPermissionsResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6225,16 +6225,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, input)
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlan>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6251,16 +6251,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanEvent>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6280,16 +6280,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanGroceryListItem>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6310,16 +6310,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanOption>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6341,16 +6341,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<MealPlanOptionVote>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanOptionVote>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6367,16 +6367,16 @@ export class DinnerDoneBetterAPIClient {
         .patch<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<MealPlanTask>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6389,16 +6389,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<PasswordResetResponse>>(`/api/v1/users/password/new`, input)
         .then((res: AxiosResponse<APIResponse<PasswordResetResponse>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res);
           }
         })
         .catch((error: AxiosError<APIResponse<PasswordResetResponse>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6411,16 +6411,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, input)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<Recipe>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6437,16 +6437,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`, input)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipePrepTask>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6463,16 +6463,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`, input)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeRating>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6489,16 +6489,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStep>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6519,16 +6519,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepCompletionCondition>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepCompletionCondition>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6549,16 +6549,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6579,16 +6579,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6609,16 +6609,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepProduct>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6639,16 +6639,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<RecipeStepVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6667,16 +6667,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ServiceSettingConfiguration>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ServiceSettingConfiguration>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6689,16 +6689,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<User>>(`/api/v1/users/details`, input)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6711,16 +6711,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<User>>(`/api/v1/users/email_address`, input)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6739,16 +6739,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<UserIngredientPreference>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserIngredientPreference>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6764,16 +6764,16 @@ export class DinnerDoneBetterAPIClient {
         .patch<APIResponse<UserNotification>>(`/api/v1/user_notifications/${userNotificationID}`, input)
         .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<UserNotification>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6786,16 +6786,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<User>>(`/api/v1/users/username`, input)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6811,16 +6811,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6836,16 +6836,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientGroup>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6864,16 +6864,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientMeasurementUnit>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6892,16 +6892,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientPreparation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientPreparation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6917,16 +6917,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientState>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6945,16 +6945,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidIngredientStateIngredient>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidIngredientStateIngredient>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6970,16 +6970,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -6995,16 +6995,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidMeasurementUnit>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -7023,16 +7023,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidMeasurementUnitConversion>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -7048,16 +7048,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparation>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -7076,16 +7076,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparationInstrument>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -7104,16 +7104,16 @@ export class DinnerDoneBetterAPIClient {
         )
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidPreparationVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -7129,16 +7129,16 @@ export class DinnerDoneBetterAPIClient {
         .put<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<ValidVessel>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -7151,16 +7151,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<User>>(`/api/v1/users/avatar/upload`, input)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -7173,16 +7173,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<User>>(`/users/email_address/verify`, input)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
@@ -7195,16 +7195,16 @@ export class DinnerDoneBetterAPIClient {
         .post<APIResponse<User>>(`/users/totp_secret/verify`, input)
         .then((res: AxiosResponse<APIResponse<User>>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
         .catch((error: AxiosError<APIResponse<User>>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-            reject(error);
+            reject({ message: error?.message || 'unknown error' });
           }
         });
     });
