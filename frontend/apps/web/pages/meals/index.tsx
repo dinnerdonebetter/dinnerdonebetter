@@ -7,7 +7,7 @@ import { Meal, QueryFilteredResult, QueryFilter } from '@dinnerdonebetter/models
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
 import { serverSideTracer } from '../../src/tracer';
-import { buildServerSideClient } from '../../src/client';
+import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideAnalytics } from '../../src/analytics';
 import { extractUserInfoFromCookie } from '../../src/auth';
@@ -45,7 +45,17 @@ export const getServerSideProps: GetServerSideProps = async (
   }
   extractCookieTimer.end();
 
-  const apiClient = buildServerSideClient(context).withSpan(span);
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const fetchMealsTimer = timing.addEvent('fetch meals');
   await apiClient
