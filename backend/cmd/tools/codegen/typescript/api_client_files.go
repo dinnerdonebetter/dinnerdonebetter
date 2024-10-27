@@ -528,7 +528,7 @@ func (f *APIClientFunction) RenderTest() (string, error) {
 					mock.on{{ upperFirst .Method  }}(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply({{ .DefaultStatusCode }}, exampleResponse);
 			   
 			    expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }})).rejects.toEqual(expectedError.error);
-			   })
+			   }) 
 
 			   it("should raise service errors appropriately when trying to {{ testDescription .Description }}", () => {
 					{{ range .Params }}let {{ .Name }} = {{ fakeFor .Name .Type }};

@@ -42,12 +42,11 @@ import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-t
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
-import { buildServerSideClient } from '../../../src/client';
+import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
 
 declare interface ValidMeasurementUnitPageProps {
-  pageErrors: string[];
   pageLoadValidMeasurementUnit: ValidMeasurementUnit;
   pageLoadIngredientsForMeasurementUnit: QueryFilteredResult<ValidIngredientMeasurementUnit>;
   pageLoadMeasurementUnitConversionsFromUnit: ValidMeasurementUnitConversion[];
@@ -59,7 +58,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<ValidMeasurementUnitPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('ValidMeasurementUnitPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const { validMeasurementUnitID } = context.query;
   if (!validMeasurementUnitID) {
@@ -127,7 +137,6 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
-      pageErrors: [],
       pageLoadValidMeasurementUnit,
       pageLoadIngredientsForMeasurementUnit,
       pageLoadMeasurementUnitConversionsFromUnit,

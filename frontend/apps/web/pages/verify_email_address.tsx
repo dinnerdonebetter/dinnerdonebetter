@@ -7,9 +7,7 @@ import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-t
 import { buildCookielessServerSideClient } from '@dinnerdonebetter/api-client';
 import { serverSideTracer } from '../src/tracer';
 
-declare interface VerifyEmailAddressPageProps {
-  pageErrors: string[];
-}
+declare interface VerifyEmailAddressPageProps {}
 
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext,

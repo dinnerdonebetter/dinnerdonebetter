@@ -55,7 +55,6 @@ import { serverSideAnalytics } from '../../../src/analytics';
 import { extractUserInfoFromCookie } from '../../../src/auth';
 
 declare interface MealPlanPageProps {
-  pageErrors: string[];
   mealPlan: MealPlan;
   userID: string;
   household: Household;
@@ -173,7 +172,6 @@ export const getServerSideProps: GetServerSideProps = async (
 
   return {
     props: {
-      pageErrors: [],
       mealPlan: mealPlan!,
       household: household!,
       userID: userSessionData?.userID || '',

@@ -11,7 +11,6 @@ import { AppLayout } from '../src/layouts';
 import { serverSideTracer } from '../src/tracer';
 
 declare interface ResetPasswordPageProps {
-  pageErrors: string[];
   token: string;
 }
 
@@ -23,7 +22,6 @@ export const getServerSideProps: GetServerSideProps = async (
   const token = context.query['t']?.toString() || '';
   let props: GetServerSidePropsResult<ResetPasswordPageProps> = {
     props: {
-      pageErrors: [],
       token: token,
     },
   };

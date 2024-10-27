@@ -13,7 +13,6 @@ import { serverSideAnalytics } from '../../src/analytics';
 import { extractUserInfoFromCookie } from '../../src/auth';
 
 declare interface MealsPageProps {
-  pageErrors: string[];
   meals: Meal[];
 }
 
@@ -55,7 +54,6 @@ export const getServerSideProps: GetServerSideProps = async (
       span.addEvent('meals retrieved');
       props = {
         props: {
-          pageErrors: [],
           meals: result.data,
         },
       };

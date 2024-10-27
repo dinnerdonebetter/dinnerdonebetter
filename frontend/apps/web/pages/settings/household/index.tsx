@@ -50,7 +50,6 @@ import { serverSideAnalytics } from '../../../src/analytics';
 import { extractUserInfoFromCookie } from '../../../src/auth';
 
 declare interface HouseholdSettingsPageProps {
-  pageErrors: string[];
   household: Household;
   user: User;
   invitations: HouseholdInvitation[];
@@ -159,7 +158,6 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
-      pageErrors: [],
       user,
       household,
       invitations: invitations.data,

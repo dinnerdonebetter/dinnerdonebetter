@@ -10,12 +10,11 @@ import { QueryFilter, QueryFilteredResult, ValidIngredientState } from '@dinnerd
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildServerSideClient } from '../../src/client';
+import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 
 declare interface ValidIngredientStatesPageProps {
-  pageErrors: string[];
   pageLoadValidIngredientStates: QueryFilteredResult<ValidIngredientState>;
 }
 
@@ -24,7 +23,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<ValidIngredientStatesPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('ValidIngredientStatesPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   // TODO: parse context.query as QueryFilter.
   let props!: GetServerSidePropsResult<ValidIngredientStatesPageProps>;
@@ -39,7 +49,6 @@ export const getServerSideProps: GetServerSideProps = async (
       span.addEvent('valid ingredientStates retrieved');
       props = {
         props: {
-          pageErrors: [],
           pageLoadValidIngredientStates: JSON.parse(JSON.stringify(res)),
         },
       };

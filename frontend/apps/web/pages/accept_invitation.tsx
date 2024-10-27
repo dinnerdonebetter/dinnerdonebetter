@@ -11,7 +11,6 @@ import { serverSideTracer } from '../src/tracer';
 import { extractUserInfoFromCookie } from '../src/auth';
 
 declare interface AcceptInvitationPageProps {
-  pageErrors: string[];
   invitationToken: string;
   invitationID: string;
 }
@@ -27,7 +26,6 @@ export const getServerSideProps: GetServerSideProps = async (
 
   let props: GetServerSidePropsResult<AcceptInvitationPageProps> = {
     props: {
-      pageErrors: [],
       invitationID: invitationID,
       invitationToken: invitationToken,
     },

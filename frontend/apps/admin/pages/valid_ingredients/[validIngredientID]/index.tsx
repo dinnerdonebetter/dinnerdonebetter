@@ -28,6 +28,7 @@ import { IconTrash } from '@tabler/icons';
 
 import {
   APIResponse,
+  IAPIError,
   QueryFilteredResult,
   ValidIngredient,
   ValidIngredientMeasurementUnit,
@@ -45,16 +46,15 @@ import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-t
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
-import { buildServerSideClient } from '../../../src/client';
+import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
 
 declare interface ValidIngredientPageProps {
-  pageErrors: string[];
-  pageLoadMeasurementUnits: QueryFilteredResult<ValidIngredientMeasurementUnit>;
-  pageLoadIngredientPreparations: QueryFilteredResult<ValidIngredientPreparation>;
-  pageLoadValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient>;
-  pageLoadValidIngredient: ValidIngredient;
+  pageLoadMeasurementUnits: { error?: IAPIError; data?: QueryFilteredResult<ValidIngredientMeasurementUnit> };
+  pageLoadIngredientPreparations: { error?: IAPIError; data?: QueryFilteredResult<ValidIngredientPreparation> };
+  pageLoadValidIngredientStates: { error?: IAPIError; data?: QueryFilteredResult<ValidIngredientStateIngredient> };
+  pageLoadValidIngredient: { error?: IAPIError; data?: ValidIngredient };
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -62,7 +62,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<ValidIngredientPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('ValidIngredientPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const { validIngredientID } = context.query;
   if (!validIngredientID) {
@@ -74,7 +85,10 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredient(validIngredientID.toString())
     .then((result: APIResponse<ValidIngredient>) => {
       span.addEvent('valid ingredient retrieved');
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      return { error };
     })
     .finally(() => {
       fetchValidIngredientTimer.end();
@@ -85,7 +99,10 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredientMeasurementUnitsByIngredient(validIngredientID.toString())
     .then((res: QueryFilteredResult<ValidIngredientMeasurementUnit>) => {
       span.addEvent('valid ingredient measurement units retrieved');
-      return res;
+      return { data: res };
+    })
+    .catch((error: IAPIError) => {
+      return { error };
     })
     .finally(() => {
       fetchMeasurementUnitsTimer.end();
@@ -96,7 +113,10 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredientPreparationsByIngredient(validIngredientID.toString())
     .then((res: QueryFilteredResult<ValidIngredientPreparation>) => {
       span.addEvent('valid ingredient preparations retrieved');
-      return res;
+      return { data: res };
+    })
+    .catch((error: IAPIError) => {
+      return { error };
     })
     .finally(() => {
       fetchIngredientPreparationsTimer.end();
@@ -107,7 +127,10 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredientStateIngredientsByIngredient(validIngredientID.toString())
     .then((res: QueryFilteredResult<ValidIngredientStateIngredient>) => {
       span.addEvent('valid ingredient states retrieved');
-      return res;
+      return { data: res };
+    })
+    .catch((error: IAPIError) => {
+      return { error };
     })
     .finally(() => {
       fetchValidIngredientStatesTimer.end();
@@ -130,7 +153,6 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
-      pageErrors: [],
       pageLoadValidIngredient: JSON.parse(JSON.stringify(pageLoadValidIngredient)),
       pageLoadMeasurementUnits: JSON.parse(JSON.stringify(pageLoadMeasurementUnits)),
       pageLoadIngredientPreparations: JSON.parse(JSON.stringify(pageLoadIngredientPreparations)),
@@ -156,8 +178,15 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
   } = props;
 
   const apiClient = buildLocalClient();
-  const [validIngredient, setValidIngredient] = useState<ValidIngredient>(pageLoadValidIngredient);
-  const [originalValidIngredient, setOriginalValidIngredient] = useState<ValidIngredient>(pageLoadValidIngredient);
+  const [validIngredient, setValidIngredient] = useState<ValidIngredient>(new ValidIngredient());
+  if (pageLoadValidIngredient.data) {
+    setValidIngredient(pageLoadValidIngredient.data);
+  }
+
+  const [originalValidIngredient, setOriginalValidIngredient] = useState<ValidIngredient>(new ValidIngredient());
+  if (pageLoadValidIngredient.data) {
+    setOriginalValidIngredient(pageLoadValidIngredient.data);
+  }
 
   const [newMeasurementUnitForIngredientInput, setNewMeasurementUnitForIngredientInput] =
     useState<ValidIngredientMeasurementUnitCreationRequestInput>(
@@ -167,8 +196,13 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       }),
     );
   const [measurementUnitQuery, setMeasurementUnitQuery] = useState('');
-  const [measurementUnitsForIngredient, setMeasurementUnitsForIngredient] =
-    useState<QueryFilteredResult<ValidIngredientMeasurementUnit>>(pageLoadMeasurementUnits);
+  const [measurementUnitsForIngredient, setMeasurementUnitsForIngredient] = useState<
+    QueryFilteredResult<ValidIngredientMeasurementUnit>
+  >(new QueryFilteredResult<ValidIngredientMeasurementUnit>());
+  if (pageLoadMeasurementUnits.data) {
+    setMeasurementUnitsForIngredient(pageLoadMeasurementUnits.data);
+  }
+
   const [suggestedMeasurementUnits, setSuggestedMeasurementUnits] = useState<ValidMeasurementUnit[]>([]);
 
   useEffect(() => {
@@ -201,8 +235,13 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       }),
     );
   const [preparationQuery, setPreparationQuery] = useState('');
-  const [preparationsForIngredient, setPreparationsForIngredient] =
-    useState<QueryFilteredResult<ValidIngredientPreparation>>(pageLoadIngredientPreparations);
+  const [preparationsForIngredient, setPreparationsForIngredient] = useState<
+    QueryFilteredResult<ValidIngredientPreparation>
+  >(new QueryFilteredResult<ValidIngredientPreparation>());
+  if (pageLoadIngredientPreparations.data) {
+    setPreparationsForIngredient(pageLoadIngredientPreparations.data);
+  }
+
   const [suggestedPreparations, setSuggestedPreparations] = useState<Array<ValidPreparation>>([
     new ValidPreparation({ name: 'blah' }),
   ]);
@@ -237,8 +276,13 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       }),
     );
   const [ingredientStateQuery, setIngredientStateQuery] = useState('');
-  const [ingredientStatesForIngredient, setIngredientStatesForIngredient] =
-    useState<QueryFilteredResult<ValidIngredientStateIngredient>>(pageLoadValidIngredientStates);
+  const [ingredientStatesForIngredient, setIngredientStatesForIngredient] = useState<
+    QueryFilteredResult<ValidIngredientStateIngredient>
+  >(new QueryFilteredResult<ValidIngredientStateIngredient>());
+  if (pageLoadValidIngredientStates.data) {
+    setIngredientStatesForIngredient(pageLoadValidIngredientStates.data);
+  }
+
   const [suggestedIngredientStates, setSuggestedIngredientStates] = useState<ValidIngredientState[]>([]);
 
   useEffect(() => {
@@ -850,7 +894,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
             <Title order={4}>States</Title>
           </Center>
 
-          {ingredientStatesForIngredient.data && ingredientStatesForIngredient.data.length !== 0 && (
+          {(ingredientStatesForIngredient.data && ingredientStatesForIngredient.data.length !== 0 && (
             <>
               <Table mt="xl" withColumnBorders>
                 <thead>
@@ -919,6 +963,8 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                 }}
               />
             </>
+          )) || (
+            <>{`Error fetching ingredient states for ingredient: ${pageLoadValidIngredientStates.error?.message || 'unknown error'}`}</>
           )}
 
           <Grid>
