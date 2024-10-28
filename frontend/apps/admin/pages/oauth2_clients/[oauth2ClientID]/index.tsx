@@ -72,17 +72,17 @@ function OAuth2ClientPage(props: OAuth2ClientPageProps) {
   return (
     <AppLayout title="Valid Preparation">
       <Container size="sm">
-        <TextInput label="Name" value={oauth2Client.name} />
-        <TextInput label="Description" value={oauth2Client.description} />
-        <TextInput label="Client ID" value={oauth2Client.clientID} />
-        <TextInput label="Client Secret" value={oauth2Client.clientSecret} />
+        <TextInput label="Name" value={oauth2Client.name} onChange={() => {}} />
+        <TextInput label="Description" value={oauth2Client.description} onChange={() => {}} />
+        <TextInput label="Client ID" value={oauth2Client.clientID} onChange={() => {}} />
+        <TextInput label="Client Secret" value={oauth2Client.clientSecret} onChange={() => {}} />
 
         <Divider my="xl" />
 
         <Group position="center">
           <Button
             type="submit"
-            color="red"
+            color="tomato"
             fullWidth
             onClick={() => {
               if (confirm('Are you sure you want to delete this OAuth2 client?')) {

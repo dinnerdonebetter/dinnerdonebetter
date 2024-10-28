@@ -310,6 +310,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdInvitationID.trim() === '') {
+        throw new Error('householdInvitationID is required');
+      }
+
       self.client
         .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/accept`, input)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
@@ -398,6 +402,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveHousehold(householdID: string): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdID.trim() === '') {
+        throw new Error('householdID is required');
+      }
+
       self.client
         .delete<APIResponse<Household>>(`/api/v1/households/${householdID}`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
@@ -422,6 +430,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdInstrumentOwnershipID.trim() === '') {
+        throw new Error('householdInstrumentOwnershipID is required');
+      }
+
       self.client
         .delete<APIResponse<HouseholdInstrumentOwnership>>(
           `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
@@ -446,6 +458,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveMeal(mealID: string): Promise<APIResponse<Meal>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealID.trim() === '') {
+        throw new Error('mealID is required');
+      }
+
       self.client
         .delete<APIResponse<Meal>>(`/api/v1/meals/${mealID}`)
         .then((res: AxiosResponse<APIResponse<Meal>>) => {
@@ -468,6 +484,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveMealPlan(mealPlanID: string): Promise<APIResponse<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .delete<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`)
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
@@ -490,6 +510,14 @@ export class DinnerDoneBetterAPIClient {
   async archiveMealPlanEvent(mealPlanID: string, mealPlanEventID: string): Promise<APIResponse<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
       self.client
         .delete<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
@@ -515,6 +543,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanGroceryListItemID.trim() === '') {
+        throw new Error('mealPlanGroceryListItemID is required');
+      }
+
       self.client
         .delete<APIResponse<MealPlanGroceryListItem>>(
           `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
@@ -543,6 +579,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
+      if (mealPlanOptionID.trim() === '') {
+        throw new Error('mealPlanOptionID is required');
+      }
+
       self.client
         .delete<APIResponse<MealPlanOption>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
@@ -572,6 +620,22 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOptionVote>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
+      if (mealPlanOptionID.trim() === '') {
+        throw new Error('mealPlanOptionID is required');
+      }
+
+      if (mealPlanOptionVoteID.trim() === '') {
+        throw new Error('mealPlanOptionVoteID is required');
+      }
+
       self.client
         .delete<APIResponse<MealPlanOptionVote>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
@@ -596,6 +660,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveOAuth2Client(oauth2ClientID: string): Promise<APIResponse<OAuth2Client>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (oauth2ClientID.trim() === '') {
+        throw new Error('oauth2ClientID is required');
+      }
+
       self.client
         .delete<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`)
         .then((res: AxiosResponse<APIResponse<OAuth2Client>>) => {
@@ -618,6 +686,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveRecipe(recipeID: string): Promise<APIResponse<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .delete<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
@@ -640,6 +712,14 @@ export class DinnerDoneBetterAPIClient {
   async archiveRecipePrepTask(recipeID: string, recipePrepTaskID: string): Promise<APIResponse<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipePrepTaskID.trim() === '') {
+        throw new Error('recipePrepTaskID is required');
+      }
+
       self.client
         .delete<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
@@ -662,6 +742,14 @@ export class DinnerDoneBetterAPIClient {
   async archiveRecipeRating(recipeID: string, recipeRatingID: string): Promise<APIResponse<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeRatingID.trim() === '') {
+        throw new Error('recipeRatingID is required');
+      }
+
       self.client
         .delete<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
@@ -684,6 +772,14 @@ export class DinnerDoneBetterAPIClient {
   async archiveRecipeStep(recipeID: string, recipeStepID: string): Promise<APIResponse<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .delete<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
@@ -710,6 +806,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepCompletionConditionID.trim() === '') {
+        throw new Error('recipeStepCompletionConditionID is required');
+      }
+
       self.client
         .delete<APIResponse<RecipeStepCompletionCondition>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
@@ -738,6 +846,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepIngredientID.trim() === '') {
+        throw new Error('recipeStepIngredientID is required');
+      }
+
       self.client
         .delete<APIResponse<RecipeStepIngredient>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
@@ -766,6 +886,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepInstrumentID.trim() === '') {
+        throw new Error('recipeStepInstrumentID is required');
+      }
+
       self.client
         .delete<APIResponse<RecipeStepInstrument>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
@@ -794,6 +926,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepProductID.trim() === '') {
+        throw new Error('recipeStepProductID is required');
+      }
+
       self.client
         .delete<APIResponse<RecipeStepProduct>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
@@ -822,6 +966,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepVesselID.trim() === '') {
+        throw new Error('recipeStepVesselID is required');
+      }
+
       self.client
         .delete<APIResponse<RecipeStepVessel>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
@@ -846,6 +1002,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveServiceSetting(serviceSettingID: string): Promise<APIResponse<ServiceSetting>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (serviceSettingID.trim() === '') {
+        throw new Error('serviceSettingID is required');
+      }
+
       self.client
         .delete<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`)
         .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
@@ -870,6 +1030,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (serviceSettingConfigurationID.trim() === '') {
+        throw new Error('serviceSettingConfigurationID is required');
+      }
+
       self.client
         .delete<APIResponse<ServiceSettingConfiguration>>(
           `/api/v1/settings/configurations/${serviceSettingConfigurationID}`,
@@ -894,6 +1058,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveUser(userID: string): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (userID.trim() === '') {
+        throw new Error('userID is required');
+      }
+
       self.client
         .delete<APIResponse<User>>(`/api/v1/users/${userID}`)
         .then((res: AxiosResponse<APIResponse<User>>) => {
@@ -918,6 +1086,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<UserIngredientPreference>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (userIngredientPreferenceID.trim() === '') {
+        throw new Error('userIngredientPreferenceID is required');
+      }
+
       self.client
         .delete<APIResponse<UserIngredientPreference>>(
           `/api/v1/user_ingredient_preferences/${userIngredientPreferenceID}`,
@@ -942,6 +1114,14 @@ export class DinnerDoneBetterAPIClient {
   async archiveUserMembership(householdID: string, userID: string): Promise<APIResponse<HouseholdUserMembership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdID.trim() === '') {
+        throw new Error('householdID is required');
+      }
+
+      if (userID.trim() === '') {
+        throw new Error('userID is required');
+      }
+
       self.client
         .delete<APIResponse<HouseholdUserMembership>>(`/api/v1/households/${householdID}/members/${userID}`)
         .then((res: AxiosResponse<APIResponse<HouseholdUserMembership>>) => {
@@ -964,6 +1144,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveValidIngredient(validIngredientID: string): Promise<APIResponse<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientID.trim() === '') {
+        throw new Error('validIngredientID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
@@ -986,6 +1170,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveValidIngredientGroup(validIngredientGroupID: string): Promise<APIResponse<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientGroupID.trim() === '') {
+        throw new Error('validIngredientGroupID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
@@ -1010,6 +1198,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientMeasurementUnitID.trim() === '') {
+        throw new Error('validIngredientMeasurementUnitID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidIngredientMeasurementUnit>>(
           `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
@@ -1036,6 +1228,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientPreparationID.trim() === '') {
+        throw new Error('validIngredientPreparationID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidIngredientPreparation>>(
           `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
@@ -1060,6 +1256,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveValidIngredientState(validIngredientStateID: string): Promise<APIResponse<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientStateID.trim() === '') {
+        throw new Error('validIngredientStateID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
@@ -1084,6 +1284,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientStateIngredientID.trim() === '') {
+        throw new Error('validIngredientStateIngredientID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidIngredientStateIngredient>>(
           `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
@@ -1108,6 +1312,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveValidInstrument(validInstrumentID: string): Promise<APIResponse<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validInstrumentID.trim() === '') {
+        throw new Error('validInstrumentID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
@@ -1130,6 +1338,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveValidMeasurementUnit(validMeasurementUnitID: string): Promise<APIResponse<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validMeasurementUnitID.trim() === '') {
+        throw new Error('validMeasurementUnitID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
@@ -1154,6 +1366,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validMeasurementUnitConversionID.trim() === '') {
+        throw new Error('validMeasurementUnitConversionID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidMeasurementUnitConversion>>(
           `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
@@ -1178,6 +1394,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveValidPreparation(validPreparationID: string): Promise<APIResponse<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationID.trim() === '') {
+        throw new Error('validPreparationID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
@@ -1202,6 +1422,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationVesselID.trim() === '') {
+        throw new Error('validPreparationVesselID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidPreparationInstrument>>(
           `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
@@ -1226,6 +1450,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveValidPreparationVessel(validPreparationVesselID: string): Promise<APIResponse<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationVesselID.trim() === '') {
+        throw new Error('validPreparationVesselID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels/${validPreparationVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
@@ -1248,6 +1476,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveValidVessel(validVesselID: string): Promise<APIResponse<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validVesselID.trim() === '') {
+        throw new Error('validVesselID is required');
+      }
+
       self.client
         .delete<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
@@ -1270,6 +1502,10 @@ export class DinnerDoneBetterAPIClient {
   async archiveWebhook(webhookID: string): Promise<APIResponse<Webhook>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (webhookID.trim() === '') {
+        throw new Error('webhookID is required');
+      }
+
       self.client
         .delete<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`)
         .then((res: AxiosResponse<APIResponse<Webhook>>) => {
@@ -1295,6 +1531,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<WebhookTriggerEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (webhookID.trim() === '') {
+        throw new Error('webhookID is required');
+      }
+
+      if (webhookTriggerEventID.trim() === '') {
+        throw new Error('webhookTriggerEventID is required');
+      }
+
       self.client
         .delete<APIResponse<WebhookTriggerEvent>>(
           `/api/v1/webhooks/${webhookID}/trigger_events/${webhookTriggerEventID}`,
@@ -1322,6 +1566,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdInvitationID.trim() === '') {
+        throw new Error('householdInvitationID is required');
+      }
+
       self.client
         .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/cancel`, input)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
@@ -1366,6 +1614,10 @@ export class DinnerDoneBetterAPIClient {
   async cloneRecipe(recipeID: string): Promise<APIResponse<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .post<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}/clone`)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
@@ -1437,6 +1689,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdID.trim() === '') {
+        throw new Error('householdID is required');
+      }
+
       self.client
         .post<APIResponse<HouseholdInvitation>>(`/api/v1/households/${householdID}/invite`, input)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
@@ -1506,6 +1762,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .post<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
@@ -1531,6 +1791,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .post<APIResponse<MealPlanGroceryListItem>>(`/api/v1/meal_plans/${mealPlanID}/grocery_list_items`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanGroceryListItem>>) => {
@@ -1557,6 +1821,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
       self.client
         .post<APIResponse<MealPlanOption>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanOption>>) => {
@@ -1583,6 +1855,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<Array<MealPlanOptionVote>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
       self.client
         .post<APIResponse<Array<MealPlanOptionVote>>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/vote`,
@@ -1611,6 +1891,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .post<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
@@ -1682,6 +1966,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .post<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks`, input)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
@@ -1707,6 +1995,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .post<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings`, input)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
@@ -1729,6 +2021,10 @@ export class DinnerDoneBetterAPIClient {
   async createRecipeStep(recipeID: string, input: RecipeStepCreationRequestInput): Promise<APIResponse<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .post<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
@@ -1755,6 +2051,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .post<APIResponse<RecipeStepCompletionCondition>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions`,
@@ -1784,6 +2088,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .post<APIResponse<RecipeStepIngredient>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStepIngredient>>) => {
@@ -1810,6 +2122,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .post<APIResponse<RecipeStepInstrument>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStepInstrument>>) => {
@@ -1836,6 +2156,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .post<APIResponse<RecipeStepProduct>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStepProduct>>) => {
@@ -1862,6 +2190,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .post<APIResponse<RecipeStepVessel>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStepVessel>>) => {
@@ -2327,6 +2663,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<WebhookTriggerEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (webhookID.trim() === '') {
+        throw new Error('webhookID is required');
+      }
+
       self.client
         .post<APIResponse<WebhookTriggerEvent>>(`/api/v1/webhooks/${webhookID}/trigger_events`, input)
         .then((res: AxiosResponse<APIResponse<WebhookTriggerEvent>>) => {
@@ -2371,6 +2711,10 @@ export class DinnerDoneBetterAPIClient {
   async fetchUserDataReport(userDataAggregationReportID: string): Promise<APIResponse<UserDataCollection>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (userDataAggregationReportID.trim() === '') {
+        throw new Error('userDataAggregationReportID is required');
+      }
+
       self.client
         .get<APIResponse<UserDataCollection>>(`/api/v1/data_privacy/reports/${userDataAggregationReportID}`)
         .then((res: AxiosResponse<APIResponse<UserDataCollection>>) => {
@@ -2393,6 +2737,10 @@ export class DinnerDoneBetterAPIClient {
   async finalizeMealPlan(mealPlanID: string): Promise<APIResponse<FinalizeMealPlansResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .post<APIResponse<FinalizeMealPlansResponse>>(`/api/v1/meal_plans/${mealPlanID}/finalize`)
         .then((res: AxiosResponse<APIResponse<FinalizeMealPlansResponse>>) => {
@@ -2503,6 +2851,10 @@ export class DinnerDoneBetterAPIClient {
   async getAuditLogEntryByID(auditLogEntryID: string): Promise<APIResponse<AuditLogEntry>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (auditLogEntryID.trim() === '') {
+        throw new Error('auditLogEntryID is required');
+      }
+
       self.client
         .get<APIResponse<AuditLogEntry>>(`/api/v1/audit_log_entries/${auditLogEntryID}`)
         .then((res: AxiosResponse<APIResponse<AuditLogEntry>>) => {
@@ -2547,6 +2899,10 @@ export class DinnerDoneBetterAPIClient {
   async getHousehold(householdID: string): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdID.trim() === '') {
+        throw new Error('householdID is required');
+      }
+
       self.client
         .get<APIResponse<Household>>(`/api/v1/households/${householdID}`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
@@ -2571,6 +2927,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdInstrumentOwnershipID.trim() === '') {
+        throw new Error('householdInstrumentOwnershipID is required');
+      }
+
       self.client
         .get<APIResponse<HouseholdInstrumentOwnership>>(
           `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
@@ -2628,6 +2988,10 @@ export class DinnerDoneBetterAPIClient {
   async getHouseholdInvitation(householdInvitationID: string): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdInvitationID.trim() === '') {
+        throw new Error('householdInvitationID is required');
+      }
+
       self.client
         .get<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}`)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
@@ -2653,6 +3017,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdID.trim() === '') {
+        throw new Error('householdID is required');
+      }
+
+      if (householdInvitationID.trim() === '') {
+        throw new Error('householdInvitationID is required');
+      }
+
       self.client
         .get<APIResponse<HouseholdInvitation>>(`/api/v1/households/${householdID}/invitations/${householdInvitationID}`)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
@@ -2706,6 +3078,10 @@ export class DinnerDoneBetterAPIClient {
   async getMeal(mealID: string): Promise<APIResponse<Meal>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealID.trim() === '') {
+        throw new Error('mealID is required');
+      }
+
       self.client
         .get<APIResponse<Meal>>(`/api/v1/meals/${mealID}`)
         .then((res: AxiosResponse<APIResponse<Meal>>) => {
@@ -2728,6 +3104,10 @@ export class DinnerDoneBetterAPIClient {
   async getMealPlan(mealPlanID: string): Promise<APIResponse<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .get<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`)
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
@@ -2750,6 +3130,14 @@ export class DinnerDoneBetterAPIClient {
   async getMealPlanEvent(mealPlanID: string, mealPlanEventID: string): Promise<APIResponse<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
       self.client
         .get<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
@@ -2775,6 +3163,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .get<APIResponse<Array<MealPlanEvent>>>(`/api/v1/meal_plans/${mealPlanID}/events`, {
           params: filter.asRecord(),
@@ -2809,6 +3201,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanGroceryListItemID.trim() === '') {
+        throw new Error('mealPlanGroceryListItemID is required');
+      }
+
       self.client
         .get<APIResponse<MealPlanGroceryListItem>>(
           `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
@@ -2836,6 +3236,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .get<APIResponse<Array<MealPlanGroceryListItem>>>(`/api/v1/meal_plans/${mealPlanID}/grocery_list_items`, {
           params: filter.asRecord(),
@@ -2871,6 +3275,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
+      if (mealPlanOptionID.trim() === '') {
+        throw new Error('mealPlanOptionID is required');
+      }
+
       self.client
         .get<APIResponse<MealPlanOption>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
@@ -2900,6 +3316,22 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOptionVote>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
+      if (mealPlanOptionID.trim() === '') {
+        throw new Error('mealPlanOptionID is required');
+      }
+
+      if (mealPlanOptionVoteID.trim() === '') {
+        throw new Error('mealPlanOptionVoteID is required');
+      }
+
       self.client
         .get<APIResponse<MealPlanOptionVote>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
@@ -2929,6 +3361,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanOptionVote>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
+      if (mealPlanOptionID.trim() === '') {
+        throw new Error('mealPlanOptionID is required');
+      }
+
       self.client
         .get<APIResponse<Array<MealPlanOptionVote>>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes`,
@@ -2967,6 +3411,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
       self.client
         .get<APIResponse<Array<MealPlanOption>>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options`, {
           params: filter.asRecord(),
@@ -2998,6 +3450,14 @@ export class DinnerDoneBetterAPIClient {
   async getMealPlanTask(mealPlanID: string, mealPlanTaskID: string): Promise<APIResponse<MealPlanTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanTaskID.trim() === '') {
+        throw new Error('mealPlanTaskID is required');
+      }
+
       self.client
         .get<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`)
         .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
@@ -3023,6 +3483,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<MealPlanTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .get<APIResponse<Array<MealPlanTask>>>(`/api/v1/meal_plans/${mealPlanID}/tasks`, {
           params: filter.asRecord(),
@@ -3116,6 +3580,10 @@ export class DinnerDoneBetterAPIClient {
   async getMermaidDiagramForRecipe(recipeID: string): Promise<APIResponse<string>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .get<APIResponse<string>>(`/api/v1/recipes/${recipeID}/mermaid`)
         .then((res: AxiosResponse<APIResponse<string>>) => {
@@ -3138,6 +3606,10 @@ export class DinnerDoneBetterAPIClient {
   async getOAuth2Client(oauth2ClientID: string): Promise<APIResponse<OAuth2Client>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (oauth2ClientID.trim() === '') {
+        throw new Error('oauth2ClientID is required');
+      }
+
       self.client
         .get<APIResponse<OAuth2Client>>(`/api/v1/oauth2_clients/${oauth2ClientID}`)
         .then((res: AxiosResponse<APIResponse<OAuth2Client>>) => {
@@ -3312,6 +3784,10 @@ export class DinnerDoneBetterAPIClient {
   async getRecipe(recipeID: string): Promise<APIResponse<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .get<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
@@ -3334,6 +3810,10 @@ export class DinnerDoneBetterAPIClient {
   async getRecipeMealPlanTasks(recipeID: string): Promise<APIResponse<RecipePrepTaskStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .get<APIResponse<RecipePrepTaskStep>>(`/api/v1/recipes/${recipeID}/prep_steps`)
         .then((res: AxiosResponse<APIResponse<RecipePrepTaskStep>>) => {
@@ -3356,6 +3836,14 @@ export class DinnerDoneBetterAPIClient {
   async getRecipePrepTask(recipeID: string, recipePrepTaskID: string): Promise<APIResponse<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipePrepTaskID.trim() === '') {
+        throw new Error('recipePrepTaskID is required');
+      }
+
       self.client
         .get<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
@@ -3381,6 +3869,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .get<APIResponse<Array<RecipePrepTask>>>(`/api/v1/recipes/${recipeID}/prep_tasks`, {
           params: filter.asRecord(),
@@ -3412,6 +3904,14 @@ export class DinnerDoneBetterAPIClient {
   async getRecipeRating(recipeID: string, recipeRatingID: string): Promise<APIResponse<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeRatingID.trim() === '') {
+        throw new Error('recipeRatingID is required');
+      }
+
       self.client
         .get<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
@@ -3437,6 +3937,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .get<APIResponse<Array<RecipeRating>>>(`/api/v1/recipes/${recipeID}/ratings`, {
           params: filter.asRecord(),
@@ -3468,6 +3972,14 @@ export class DinnerDoneBetterAPIClient {
   async getRecipeStep(recipeID: string, recipeStepID: string): Promise<APIResponse<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .get<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
@@ -3494,6 +4006,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepCompletionConditionID.trim() === '') {
+        throw new Error('recipeStepCompletionConditionID is required');
+      }
+
       self.client
         .get<APIResponse<RecipeStepCompletionCondition>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
@@ -3522,6 +4046,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .get<APIResponse<Array<RecipeStepCompletionCondition>>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions`,
@@ -3560,6 +4092,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepIngredientID.trim() === '') {
+        throw new Error('recipeStepIngredientID is required');
+      }
+
       self.client
         .get<APIResponse<RecipeStepIngredient>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
@@ -3588,6 +4132,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .get<APIResponse<Array<RecipeStepIngredient>>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients`,
@@ -3626,6 +4178,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepInstrumentID.trim() === '') {
+        throw new Error('recipeStepInstrumentID is required');
+      }
+
       self.client
         .get<APIResponse<RecipeStepInstrument>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
@@ -3654,6 +4218,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .get<APIResponse<Array<RecipeStepInstrument>>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments`,
@@ -3692,6 +4264,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepProductID.trim() === '') {
+        throw new Error('recipeStepProductID is required');
+      }
+
       self.client
         .get<APIResponse<RecipeStepProduct>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
@@ -3720,6 +4304,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .get<APIResponse<Array<RecipeStepProduct>>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products`, {
           params: filter.asRecord(),
@@ -3755,6 +4347,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepVesselID.trim() === '') {
+        throw new Error('recipeStepVesselID is required');
+      }
+
       self.client
         .get<APIResponse<RecipeStepVessel>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
@@ -3783,6 +4387,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .get<APIResponse<Array<RecipeStepVessel>>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels`, {
           params: filter.asRecord(),
@@ -3817,6 +4429,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .get<APIResponse<Array<RecipeStep>>>(`/api/v1/recipes/${recipeID}/steps`, {
           params: filter.asRecord(),
@@ -3934,6 +4550,10 @@ export class DinnerDoneBetterAPIClient {
   async getServiceSetting(serviceSettingID: string): Promise<APIResponse<ServiceSetting>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (serviceSettingID.trim() === '') {
+        throw new Error('serviceSettingID is required');
+      }
+
       self.client
         .get<APIResponse<ServiceSetting>>(`/api/v1/settings/${serviceSettingID}`)
         .then((res: AxiosResponse<APIResponse<ServiceSetting>>) => {
@@ -3959,6 +4579,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (serviceSettingConfigurationName.trim() === '') {
+        throw new Error('serviceSettingConfigurationName is required');
+      }
+
       self.client
         .get<APIResponse<Array<ServiceSettingConfiguration>>>(
           `/api/v1/settings/configurations/user/${serviceSettingConfigurationName}`,
@@ -4090,6 +4714,10 @@ export class DinnerDoneBetterAPIClient {
   async getUser(userID: string): Promise<APIResponse<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (userID.trim() === '') {
+        throw new Error('userID is required');
+      }
+
       self.client
         .get<APIResponse<User>>(`/api/v1/users/${userID}`)
         .then((res: AxiosResponse<APIResponse<User>>) => {
@@ -4145,6 +4773,10 @@ export class DinnerDoneBetterAPIClient {
   async getUserNotification(userNotificationID: string): Promise<APIResponse<UserNotification>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (userNotificationID.trim() === '') {
+        throw new Error('userNotificationID is required');
+      }
+
       self.client
         .get<APIResponse<UserNotification>>(`/api/v1/user_notifications/${userNotificationID}`)
         .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
@@ -4231,6 +4863,10 @@ export class DinnerDoneBetterAPIClient {
   async getValidIngredient(validIngredientID: string): Promise<APIResponse<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientID.trim() === '') {
+        throw new Error('validIngredientID is required');
+      }
+
       self.client
         .get<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
@@ -4253,6 +4889,10 @@ export class DinnerDoneBetterAPIClient {
   async getValidIngredientGroup(validIngredientGroupID: string): Promise<APIResponse<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientGroupID.trim() === '') {
+        throw new Error('validIngredientGroupID is required');
+      }
+
       self.client
         .get<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
@@ -4310,6 +4950,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientMeasurementUnitID.trim() === '') {
+        throw new Error('validIngredientMeasurementUnitID is required');
+      }
+
       self.client
         .get<APIResponse<ValidIngredientMeasurementUnit>>(
           `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
@@ -4370,6 +5014,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientID.trim() === '') {
+        throw new Error('validIngredientID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
           `/api/v1/valid_ingredient_measurement_units/by_ingredient/${validIngredientID}`,
@@ -4407,6 +5055,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validMeasurementUnitID.trim() === '') {
+        throw new Error('validMeasurementUnitID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredientMeasurementUnit>>>(
           `/api/v1/valid_ingredient_measurement_units/by_measurement_unit/${validMeasurementUnitID}`,
@@ -4443,6 +5095,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientPreparationID.trim() === '') {
+        throw new Error('validIngredientPreparationID is required');
+      }
+
       self.client
         .get<APIResponse<ValidIngredientPreparation>>(
           `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
@@ -4503,6 +5159,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientID.trim() === '') {
+        throw new Error('validIngredientID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredientPreparation>>>(
           `/api/v1/valid_ingredient_preparations/by_ingredient/${validIngredientID}`,
@@ -4540,6 +5200,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationID.trim() === '') {
+        throw new Error('validPreparationID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredientPreparation>>>(
           `/api/v1/valid_ingredient_preparations/by_preparation/${validPreparationID}`,
@@ -4574,6 +5238,10 @@ export class DinnerDoneBetterAPIClient {
   async getValidIngredientState(validIngredientStateID: string): Promise<APIResponse<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientStateID.trim() === '') {
+        throw new Error('validIngredientStateID is required');
+      }
+
       self.client
         .get<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`)
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
@@ -4598,6 +5266,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientStateIngredientID.trim() === '') {
+        throw new Error('validIngredientStateIngredientID is required');
+      }
+
       self.client
         .get<APIResponse<ValidIngredientStateIngredient>>(
           `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
@@ -4658,6 +5330,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientID.trim() === '') {
+        throw new Error('validIngredientID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredientStateIngredient>>>(
           `/api/v1/valid_ingredient_state_ingredients/by_ingredient/${validIngredientID}`,
@@ -4695,6 +5371,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientStateID.trim() === '') {
+        throw new Error('validIngredientStateID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredientStateIngredient>>>(
           `/api/v1/valid_ingredient_state_ingredients/by_ingredient_state/${validIngredientStateID}`,
@@ -4795,6 +5475,10 @@ export class DinnerDoneBetterAPIClient {
   async getValidInstrument(validInstrumentID: string): Promise<APIResponse<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validInstrumentID.trim() === '') {
+        throw new Error('validInstrumentID is required');
+      }
+
       self.client
         .get<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
@@ -4850,6 +5534,10 @@ export class DinnerDoneBetterAPIClient {
   async getValidMeasurementUnit(validMeasurementUnitID: string): Promise<APIResponse<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validMeasurementUnitID.trim() === '') {
+        throw new Error('validMeasurementUnitID is required');
+      }
+
       self.client
         .get<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
@@ -4874,6 +5562,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validMeasurementUnitConversionID.trim() === '') {
+        throw new Error('validMeasurementUnitConversionID is required');
+      }
+
       self.client
         .get<APIResponse<ValidMeasurementUnitConversion>>(
           `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
@@ -4901,6 +5593,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validMeasurementUnitID.trim() === '') {
+        throw new Error('validMeasurementUnitID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidMeasurementUnitConversion>>>(
           `/api/v1/valid_measurement_conversions/from_unit/${validMeasurementUnitID}`,
@@ -4938,6 +5634,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validMeasurementUnitID.trim() === '') {
+        throw new Error('validMeasurementUnitID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidMeasurementUnitConversion>>>(
           `/api/v1/valid_measurement_conversions/to_unit/${validMeasurementUnitID}`,
@@ -5005,6 +5705,10 @@ export class DinnerDoneBetterAPIClient {
   async getValidPreparation(validPreparationID: string): Promise<APIResponse<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationID.trim() === '') {
+        throw new Error('validPreparationID is required');
+      }
+
       self.client
         .get<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
@@ -5029,6 +5733,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationVesselID.trim() === '') {
+        throw new Error('validPreparationVesselID is required');
+      }
+
       self.client
         .get<APIResponse<ValidPreparationInstrument>>(
           `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
@@ -5089,6 +5797,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validInstrumentID.trim() === '') {
+        throw new Error('validInstrumentID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidPreparationInstrument>>>(
           `/api/v1/valid_preparation_instruments/by_instrument/${validInstrumentID}`,
@@ -5126,6 +5838,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationID.trim() === '') {
+        throw new Error('validPreparationID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidPreparationInstrument>>>(
           `/api/v1/valid_preparation_instruments/by_preparation/${validPreparationID}`,
@@ -5160,6 +5876,10 @@ export class DinnerDoneBetterAPIClient {
   async getValidPreparationVessel(validPreparationVesselID: string): Promise<APIResponse<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationVesselID.trim() === '') {
+        throw new Error('validPreparationVesselID is required');
+      }
+
       self.client
         .get<APIResponse<ValidPreparationVessel>>(`/api/v1/valid_preparation_vessels/${validPreparationVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidPreparationVessel>>) => {
@@ -5218,6 +5938,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationID.trim() === '') {
+        throw new Error('validPreparationID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidPreparationVessel>>>(
           `/api/v1/valid_preparation_vessels/by_preparation/${validPreparationID}`,
@@ -5255,6 +5979,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (ValidVesselID.trim() === '') {
+        throw new Error('ValidVesselID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidPreparationVessel>>>(
           `/api/v1/valid_preparation_vessels/by_vessel/${ValidVesselID}`,
@@ -5322,6 +6050,10 @@ export class DinnerDoneBetterAPIClient {
   async getValidVessel(validVesselID: string): Promise<APIResponse<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validVesselID.trim() === '') {
+        throw new Error('validVesselID is required');
+      }
+
       self.client
         .get<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {
@@ -5375,6 +6107,10 @@ export class DinnerDoneBetterAPIClient {
   async getWebhook(webhookID: string): Promise<APIResponse<Webhook>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (webhookID.trim() === '') {
+        throw new Error('webhookID is required');
+      }
+
       self.client
         .get<APIResponse<Webhook>>(`/api/v1/webhooks/${webhookID}`)
         .then((res: AxiosResponse<APIResponse<Webhook>>) => {
@@ -5497,6 +6233,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdInvitationID.trim() === '') {
+        throw new Error('householdInvitationID is required');
+      }
+
       self.client
         .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/reject`, input)
         .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
@@ -5657,6 +6397,10 @@ export class DinnerDoneBetterAPIClient {
   async searchForMeals(q: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Meal>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<Meal>>>(`/api/v1/meals/search`, {
           params: filter.asRecord(),
@@ -5688,6 +6432,10 @@ export class DinnerDoneBetterAPIClient {
   async searchForRecipes(q: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<Recipe>>>(`/api/v1/recipes/search`, {
           params: filter.asRecord(),
@@ -5722,6 +6470,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ServiceSetting>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<ServiceSetting>>>(`/api/v1/settings/search`, {
           params: filter.asRecord(),
@@ -5753,6 +6505,10 @@ export class DinnerDoneBetterAPIClient {
   async searchForUsers(q: string, filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<User>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<User>>>(`/api/v1/users/search`, {
           params: filter.asRecord(),
@@ -5787,6 +6543,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredientGroup>>>(`/api/v1/valid_ingredient_groups/search`, {
           params: filter.asRecord(),
@@ -5821,6 +6581,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredientState>>>(`/api/v1/valid_ingredient_states/search`, {
           params: filter.asRecord(),
@@ -5855,6 +6619,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredient>>>(`/api/v1/valid_ingredients/search`, {
           params: filter.asRecord(),
@@ -5889,6 +6657,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidInstrument>>>(`/api/v1/valid_instruments/search`, {
           params: filter.asRecord(),
@@ -5923,6 +6695,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidMeasurementUnit>>>(`/api/v1/valid_measurement_units/search`, {
           params: filter.asRecord(),
@@ -5957,6 +6733,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidPreparation>>>(`/api/v1/valid_preparations/search`, {
           params: filter.asRecord(),
@@ -5991,6 +6771,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidVessel>>>(`/api/v1/valid_vessels/search`, {
           params: filter.asRecord(),
@@ -6026,6 +6810,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
+      if (validPreparationID.trim() === '') {
+        throw new Error('validPreparationID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidIngredient>>>(`/api/v1/valid_ingredients/by_preparation/${validPreparationID}`, {
           params: filter.asRecord(),
@@ -6061,6 +6853,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<QueryFilteredResult<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (q.trim() === '') {
+        throw new Error('q is required');
+      }
+
+      if (validIngredientID.trim() === '') {
+        throw new Error('validIngredientID is required');
+      }
+
       self.client
         .get<APIResponse<Array<ValidMeasurementUnit>>>(
           `/api/v1/valid_measurement_units/by_ingredient/${validIngredientID}`,
@@ -6095,6 +6895,10 @@ export class DinnerDoneBetterAPIClient {
   async setDefaultHousehold(householdID: string): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdID.trim() === '') {
+        throw new Error('householdID is required');
+      }
+
       self.client
         .post<APIResponse<Household>>(`/api/v1/households/${householdID}/default`)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
@@ -6120,6 +6924,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdID.trim() === '') {
+        throw new Error('householdID is required');
+      }
+
       self.client
         .post<APIResponse<Household>>(`/api/v1/households/${householdID}/transfer`, input)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
@@ -6142,6 +6950,10 @@ export class DinnerDoneBetterAPIClient {
   async updateHousehold(householdID: string, input: HouseholdUpdateRequestInput): Promise<APIResponse<Household>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdID.trim() === '') {
+        throw new Error('householdID is required');
+      }
+
       self.client
         .put<APIResponse<Household>>(`/api/v1/households/${householdID}`, input)
         .then((res: AxiosResponse<APIResponse<Household>>) => {
@@ -6167,6 +6979,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdInstrumentOwnershipID.trim() === '') {
+        throw new Error('householdInstrumentOwnershipID is required');
+      }
+
       self.client
         .put<APIResponse<HouseholdInstrumentOwnership>>(
           `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
@@ -6196,6 +7012,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<UserPermissionsResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (householdID.trim() === '') {
+        throw new Error('householdID is required');
+      }
+
+      if (userID.trim() === '') {
+        throw new Error('userID is required');
+      }
+
       self.client
         .patch<APIResponse<UserPermissionsResponse>>(
           `/api/v1/households/${householdID}/members/${userID}/permissions`,
@@ -6221,6 +7045,10 @@ export class DinnerDoneBetterAPIClient {
   async updateMealPlan(mealPlanID: string, input: MealPlanUpdateRequestInput): Promise<APIResponse<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
       self.client
         .put<APIResponse<MealPlan>>(`/api/v1/meal_plans/${mealPlanID}`, input)
         .then((res: AxiosResponse<APIResponse<MealPlan>>) => {
@@ -6247,6 +7075,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanEvent>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
       self.client
         .put<APIResponse<MealPlanEvent>>(`/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanEvent>>) => {
@@ -6273,6 +7109,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanGroceryListItem>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanGroceryListItemID.trim() === '') {
+        throw new Error('mealPlanGroceryListItemID is required');
+      }
+
       self.client
         .put<APIResponse<MealPlanGroceryListItem>>(
           `/api/v1/meal_plans/${mealPlanID}/grocery_list_items/${mealPlanGroceryListItemID}`,
@@ -6303,6 +7147,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOption>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
+      if (mealPlanOptionID.trim() === '') {
+        throw new Error('mealPlanOptionID is required');
+      }
+
       self.client
         .put<APIResponse<MealPlanOption>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}`,
@@ -6334,6 +7190,22 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanOptionVote>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanEventID.trim() === '') {
+        throw new Error('mealPlanEventID is required');
+      }
+
+      if (mealPlanOptionID.trim() === '') {
+        throw new Error('mealPlanOptionID is required');
+      }
+
+      if (mealPlanOptionVoteID.trim() === '') {
+        throw new Error('mealPlanOptionVoteID is required');
+      }
+
       self.client
         .put<APIResponse<MealPlanOptionVote>>(
           `/api/v1/meal_plans/${mealPlanID}/events/${mealPlanEventID}/options/${mealPlanOptionID}/votes/${mealPlanOptionVoteID}`,
@@ -6363,6 +7235,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<MealPlanTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (mealPlanID.trim() === '') {
+        throw new Error('mealPlanID is required');
+      }
+
+      if (mealPlanTaskID.trim() === '') {
+        throw new Error('mealPlanTaskID is required');
+      }
+
       self.client
         .patch<APIResponse<MealPlanTask>>(`/api/v1/meal_plans/${mealPlanID}/tasks/${mealPlanTaskID}`, input)
         .then((res: AxiosResponse<APIResponse<MealPlanTask>>) => {
@@ -6407,6 +7287,10 @@ export class DinnerDoneBetterAPIClient {
   async updateRecipe(recipeID: string, input: RecipeUpdateRequestInput): Promise<APIResponse<Recipe>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
       self.client
         .put<APIResponse<Recipe>>(`/api/v1/recipes/${recipeID}`, input)
         .then((res: AxiosResponse<APIResponse<Recipe>>) => {
@@ -6433,6 +7317,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipePrepTask>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipePrepTaskID.trim() === '') {
+        throw new Error('recipePrepTaskID is required');
+      }
+
       self.client
         .put<APIResponse<RecipePrepTask>>(`/api/v1/recipes/${recipeID}/prep_tasks/${recipePrepTaskID}`, input)
         .then((res: AxiosResponse<APIResponse<RecipePrepTask>>) => {
@@ -6459,6 +7351,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeRating>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeRatingID.trim() === '') {
+        throw new Error('recipeRatingID is required');
+      }
+
       self.client
         .put<APIResponse<RecipeRating>>(`/api/v1/recipes/${recipeID}/ratings/${recipeRatingID}`, input)
         .then((res: AxiosResponse<APIResponse<RecipeRating>>) => {
@@ -6485,6 +7385,14 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStep>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
       self.client
         .put<APIResponse<RecipeStep>>(`/api/v1/recipes/${recipeID}/steps/${recipeStepID}`, input)
         .then((res: AxiosResponse<APIResponse<RecipeStep>>) => {
@@ -6512,6 +7420,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepCompletionCondition>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepCompletionConditionID.trim() === '') {
+        throw new Error('recipeStepCompletionConditionID is required');
+      }
+
       self.client
         .put<APIResponse<RecipeStepCompletionCondition>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/completion_conditions/${recipeStepCompletionConditionID}`,
@@ -6542,6 +7462,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepIngredientID.trim() === '') {
+        throw new Error('recipeStepIngredientID is required');
+      }
+
       self.client
         .put<APIResponse<RecipeStepIngredient>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/ingredients/${recipeStepIngredientID}`,
@@ -6572,6 +7504,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepInstrumentID.trim() === '') {
+        throw new Error('recipeStepInstrumentID is required');
+      }
+
       self.client
         .put<APIResponse<RecipeStepInstrument>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/instruments/${recipeStepInstrumentID}`,
@@ -6602,6 +7546,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepProduct>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepProductID.trim() === '') {
+        throw new Error('recipeStepProductID is required');
+      }
+
       self.client
         .put<APIResponse<RecipeStepProduct>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/products/${recipeStepProductID}`,
@@ -6632,6 +7588,18 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<RecipeStepVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (recipeID.trim() === '') {
+        throw new Error('recipeID is required');
+      }
+
+      if (recipeStepID.trim() === '') {
+        throw new Error('recipeStepID is required');
+      }
+
+      if (recipeStepVesselID.trim() === '') {
+        throw new Error('recipeStepVesselID is required');
+      }
+
       self.client
         .put<APIResponse<RecipeStepVessel>>(
           `/api/v1/recipes/${recipeID}/steps/${recipeStepID}/vessels/${recipeStepVesselID}`,
@@ -6660,6 +7628,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (serviceSettingConfigurationID.trim() === '') {
+        throw new Error('serviceSettingConfigurationID is required');
+      }
+
       self.client
         .put<APIResponse<ServiceSettingConfiguration>>(
           `/api/v1/settings/configurations/${serviceSettingConfigurationID}`,
@@ -6732,6 +7704,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<UserIngredientPreference>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (userIngredientPreferenceID.trim() === '') {
+        throw new Error('userIngredientPreferenceID is required');
+      }
+
       self.client
         .put<APIResponse<UserIngredientPreference>>(
           `/api/v1/user_ingredient_preferences/${userIngredientPreferenceID}`,
@@ -6760,6 +7736,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<UserNotification>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (userNotificationID.trim() === '') {
+        throw new Error('userNotificationID is required');
+      }
+
       self.client
         .patch<APIResponse<UserNotification>>(`/api/v1/user_notifications/${userNotificationID}`, input)
         .then((res: AxiosResponse<APIResponse<UserNotification>>) => {
@@ -6807,6 +7787,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientID.trim() === '') {
+        throw new Error('validIngredientID is required');
+      }
+
       self.client
         .put<APIResponse<ValidIngredient>>(`/api/v1/valid_ingredients/${validIngredientID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredient>>) => {
@@ -6832,6 +7816,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientGroup>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientGroupID.trim() === '') {
+        throw new Error('validIngredientGroupID is required');
+      }
+
       self.client
         .put<APIResponse<ValidIngredientGroup>>(`/api/v1/valid_ingredient_groups/${validIngredientGroupID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredientGroup>>) => {
@@ -6857,6 +7845,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientMeasurementUnitID.trim() === '') {
+        throw new Error('validIngredientMeasurementUnitID is required');
+      }
+
       self.client
         .put<APIResponse<ValidIngredientMeasurementUnit>>(
           `/api/v1/valid_ingredient_measurement_units/${validIngredientMeasurementUnitID}`,
@@ -6885,6 +7877,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientPreparationID.trim() === '') {
+        throw new Error('validIngredientPreparationID is required');
+      }
+
       self.client
         .put<APIResponse<ValidIngredientPreparation>>(
           `/api/v1/valid_ingredient_preparations/${validIngredientPreparationID}`,
@@ -6913,6 +7909,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientState>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientStateID.trim() === '') {
+        throw new Error('validIngredientStateID is required');
+      }
+
       self.client
         .put<APIResponse<ValidIngredientState>>(`/api/v1/valid_ingredient_states/${validIngredientStateID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidIngredientState>>) => {
@@ -6938,6 +7938,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidIngredientStateIngredient>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validIngredientStateIngredientID.trim() === '') {
+        throw new Error('validIngredientStateIngredientID is required');
+      }
+
       self.client
         .put<APIResponse<ValidIngredientStateIngredient>>(
           `/api/v1/valid_ingredient_state_ingredients/${validIngredientStateIngredientID}`,
@@ -6966,6 +7970,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validInstrumentID.trim() === '') {
+        throw new Error('validInstrumentID is required');
+      }
+
       self.client
         .put<APIResponse<ValidInstrument>>(`/api/v1/valid_instruments/${validInstrumentID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidInstrument>>) => {
@@ -6991,6 +7999,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnit>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validMeasurementUnitID.trim() === '') {
+        throw new Error('validMeasurementUnitID is required');
+      }
+
       self.client
         .put<APIResponse<ValidMeasurementUnit>>(`/api/v1/valid_measurement_units/${validMeasurementUnitID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidMeasurementUnit>>) => {
@@ -7016,6 +8028,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidMeasurementUnitConversion>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validMeasurementUnitConversionID.trim() === '') {
+        throw new Error('validMeasurementUnitConversionID is required');
+      }
+
       self.client
         .put<APIResponse<ValidMeasurementUnitConversion>>(
           `/api/v1/valid_measurement_conversions/${validMeasurementUnitConversionID}`,
@@ -7044,6 +8060,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationID.trim() === '') {
+        throw new Error('validPreparationID is required');
+      }
+
       self.client
         .put<APIResponse<ValidPreparation>>(`/api/v1/valid_preparations/${validPreparationID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidPreparation>>) => {
@@ -7069,6 +8089,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationVesselID.trim() === '') {
+        throw new Error('validPreparationVesselID is required');
+      }
+
       self.client
         .put<APIResponse<ValidPreparationInstrument>>(
           `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
@@ -7097,6 +8121,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validPreparationVesselID.trim() === '') {
+        throw new Error('validPreparationVesselID is required');
+      }
+
       self.client
         .put<APIResponse<ValidPreparationVessel>>(
           `/api/v1/valid_preparation_vessels/${validPreparationVesselID}`,
@@ -7125,6 +8153,10 @@ export class DinnerDoneBetterAPIClient {
   ): Promise<APIResponse<ValidVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      if (validVesselID.trim() === '') {
+        throw new Error('validVesselID is required');
+      }
+
       self.client
         .put<APIResponse<ValidVessel>>(`/api/v1/valid_vessels/${validVesselID}`, input)
         .then((res: AxiosResponse<APIResponse<ValidVessel>>) => {

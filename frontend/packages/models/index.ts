@@ -180,5 +180,6 @@ export * from './WebhookTriggerEvent.gen';
 export * from './WebhookTriggerEventCreationRequestInput.gen';
 export * from './enums.gen';
 export * from './APIResponse.gen';
+export * from './error_or.gen';
 export * from './number_range.gen';
 export * from './query_filter.gen';

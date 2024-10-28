@@ -43,6 +43,17 @@ export class APIResponse<T> {
 `,
 	},
 	{
+		Name: "error_or",
+		Content: GeneratedDisclaimer + `
+
+import { IAPIError } from './APIError.gen';
+
+export interface EitherErrorOr<T> {
+  error?: IAPIError;
+  data?: T;
+};`,
+	},
+	{
 		Name: "number_range",
 		Content: GeneratedDisclaimer + `
 
