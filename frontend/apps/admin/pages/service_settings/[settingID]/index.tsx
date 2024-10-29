@@ -5,16 +5,17 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
 
-import { APIResponse, ServiceSetting } from '@dinnerdonebetter/models';
+import { APIResponse, EitherErrorOr, IAPIError, ServiceSetting } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
+import { errorOrDefault } from '../../../src/utils';
 
 declare interface ServiceSettingPageProps {
-  pageLoadServiceSetting: ServiceSetting;
+  pageLoadServiceSetting: EitherErrorOr<ServiceSetting>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -47,6 +48,10 @@ export const getServerSideProps: GetServerSideProps = async (
       span.addEvent('service setting retrieved');
       return result.data;
     })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred');
+      return { error };
+    })
     .finally(() => {
       fetchServiceSettingTimer.end();
     });
@@ -58,7 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
-      pageLoadServiceSetting,
+      pageLoadServiceSetting: JSON.parse(JSON.stringify(pageLoadServiceSetting)),
     },
   };
 };
@@ -73,7 +78,9 @@ function ServiceSettingPage(props: ServiceSettingPageProps) {
   const apiClient = buildLocalClient();
   const { pageLoadServiceSetting } = props;
 
-  const [serviceSetting] = useState<ServiceSetting>(pageLoadServiceSetting);
+  const ogServiceSetting: ServiceSetting = errorOrDefault(pageLoadServiceSetting, new ServiceSetting());
+  const [serviceSettingError] = useState<IAPIError | undefined>(pageLoadServiceSetting.error);
+  const [serviceSetting] = useState<ServiceSetting>(ogServiceSetting);
 
   const updateForm = useForm({
     initialValues: serviceSetting,
@@ -83,40 +90,43 @@ function ServiceSettingPage(props: ServiceSettingPageProps) {
   return (
     <AppLayout title="Service Setting">
       <Container size="sm">
-        <form>
-          <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
-          <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
+        {serviceSettingError && <div>{serviceSettingError.message}</div>}
+        {!serviceSettingError && (
+          <form>
+            <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
+            <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
 
-          <Select
-            label="Type"
-            required
-            onChange={async (item: string) => {
-              updateForm.setFieldValue('type', item);
-            }}
-            {...updateForm.getInputProps('type')}
-            data={['user', 'household', 'membership']}
-          />
-
-          <TextInput label="Default Value" placeholder="thing" {...updateForm.getInputProps('defaultValue')} />
-          <TextInput label="Enumeration" placeholder="thing" {...updateForm.getInputProps('enumeration')} />
-
-          <Group position="center">
-            <Button
-              type="submit"
-              color="red"
-              fullWidth
-              onClick={() => {
-                if (confirm('Are you sure you want to delete this service setting?')) {
-                  apiClient.archiveServiceSetting(serviceSetting.id).then(() => {
-                    router.push('/service_settings');
-                  });
-                }
+            <Select
+              label="Type"
+              required
+              onChange={async (item: string) => {
+                updateForm.setFieldValue('type', item);
               }}
-            >
-              Delete
-            </Button>
-          </Group>
-        </form>
+              {...updateForm.getInputProps('type')}
+              data={['user', 'household', 'membership']}
+            />
+
+            <TextInput label="Default Value" placeholder="thing" {...updateForm.getInputProps('defaultValue')} />
+            <TextInput label="Enumeration" placeholder="thing" {...updateForm.getInputProps('enumeration')} />
+
+            <Group position="center">
+              <Button
+                type="submit"
+                color="red"
+                fullWidth
+                onClick={() => {
+                  if (confirm('Are you sure you want to delete this service setting?')) {
+                    apiClient.archiveServiceSetting(serviceSetting.id).then(() => {
+                      router.push('/service_settings');
+                    });
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            </Group>
+          </form>
+        )}
 
         <Space h="xl" />
         <Divider />

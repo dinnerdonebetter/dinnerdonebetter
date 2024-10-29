@@ -5,16 +5,17 @@ import { formatRelative } from 'date-fns';
 import router from 'next/router';
 import { useState, useEffect } from 'react';
 
-import { QueryFilter, OAuth2Client, QueryFilteredResult } from '@dinnerdonebetter/models';
+import { QueryFilter, OAuth2Client, QueryFilteredResult, EitherErrorOr, IAPIError } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
+import { errorOrDefault } from '../../src/utils';
 
 declare interface OAuth2ClientsPageProps {
-  pageLoadOAuth2Clients: QueryFilteredResult<OAuth2Client>;
+  pageLoadOAuth2Clients: EitherErrorOr<QueryFilteredResult<OAuth2Client>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -52,16 +53,9 @@ export const getServerSideProps: GetServerSideProps = async (
         },
       };
     })
-    .catch((error: AxiosError) => {
+    .catch((error: IAPIError) => {
       span.addEvent('error occurred');
-      if (error.response?.status === 401) {
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-      }
+      return { error };
     })
     .finally(() => {
       fetchOAuth2ClientsTimer.end();
@@ -76,7 +70,12 @@ export const getServerSideProps: GetServerSideProps = async (
 function OAuth2ClientsPage(props: OAuth2ClientsPageProps) {
   let { pageLoadOAuth2Clients } = props;
 
-  const [oauth2Clients, setOAuth2Clients] = useState<QueryFilteredResult<OAuth2Client>>(pageLoadOAuth2Clients);
+  const ogOAuth2Clients: QueryFilteredResult<OAuth2Client> = errorOrDefault(
+    pageLoadOAuth2Clients,
+    new QueryFilteredResult<OAuth2Client>(),
+  );
+  const [oauth2ClientsError, _setOAuth2ClientsError] = useState<IAPIError | undefined>(pageLoadOAuth2Clients.error);
+  const [oauth2Clients, setOAuth2Clients] = useState<QueryFilteredResult<OAuth2Client>>(ogOAuth2Clients);
 
   useEffect(() => {
     const apiClient = buildLocalClient();
@@ -124,24 +123,29 @@ function OAuth2ClientsPage(props: OAuth2ClientsPageProps) {
           </Grid.Col>
         </Grid>
 
-        <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
+        {oauth2ClientsError && <div>{oauth2ClientsError.message}</div>}
+        {!oauth2ClientsError && oauth2Clients.data.length !== 0 && (
+          <>
+            <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Created At</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </Table>
 
-        <Pagination
-          position="center"
-          page={oauth2Clients.page}
-          total={Math.ceil(oauth2Clients.totalCount / oauth2Clients.limit)}
-          onChange={(value: number) => {
-            setOAuth2Clients({ ...oauth2Clients, page: value });
-          }}
-        />
+            <Pagination
+              position="center"
+              page={oauth2Clients.page}
+              total={Math.ceil(oauth2Clients.totalCount / oauth2Clients.limit)}
+              onChange={(value: number) => {
+                setOAuth2Clients({ ...oauth2Clients, page: value });
+              }}
+            />
+          </>
+        )}
       </Stack>
     </AppLayout>
   );

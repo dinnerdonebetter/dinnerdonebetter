@@ -17,7 +17,6 @@ import {
   Grid,
   Table,
   Center,
-  ThemeIcon,
   Pagination,
 } from '@mantine/core';
 import { AxiosError } from 'axios';
@@ -51,6 +50,7 @@ import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
+import { errorOrDefault } from '../../../src/utils';
 
 declare interface ValidIngredientPageProps {
   pageLoadMeasurementUnits: EitherErrorOr<QueryFilteredResult<ValidIngredientMeasurementUnit>>;
@@ -90,6 +90,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { data: result.data };
     })
     .catch((error: IAPIError) => {
+      span.addEvent('error occurred');
       return { error };
     })
     .finally(() => {
@@ -104,6 +105,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { data: res };
     })
     .catch((error: IAPIError) => {
+      span.addEvent('error occurred');
       return { error };
     })
     .finally(() => {
@@ -118,6 +120,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { data: res };
     })
     .catch((error: IAPIError) => {
+      span.addEvent('error occurred');
       return { error };
     })
     .finally(() => {
@@ -132,6 +135,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { data: res };
     })
     .catch((error: IAPIError) => {
+      span.addEvent('error occurred');
       return { error };
     })
     .finally(() => {
@@ -179,11 +183,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     pageLoadValidIngredientStates,
   } = props;
 
-  const ogValidIngredient: ValidIngredient = pageLoadValidIngredient.error
-    ? new ValidIngredient()
-    : pageLoadValidIngredient.data
-      ? pageLoadValidIngredient.data
-      : new ValidIngredient();
+  const ogValidIngredient: ValidIngredient = errorOrDefault(pageLoadValidIngredient, new ValidIngredient());
 
   const apiClient = buildLocalClient();
   const [validIngredient, setValidIngredient] = useState<ValidIngredient>(ogValidIngredient);
@@ -201,12 +201,10 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     );
   const [measurementUnitQuery, setMeasurementUnitQuery] = useState('');
 
-  const ogValidIngredientMeasurementUnits: QueryFilteredResult<ValidIngredientMeasurementUnit> =
-    pageLoadMeasurementUnits.error
-      ? new QueryFilteredResult<ValidIngredientMeasurementUnit>()
-      : pageLoadMeasurementUnits.data
-        ? pageLoadMeasurementUnits.data
-        : new QueryFilteredResult<ValidIngredientMeasurementUnit>();
+  const ogValidIngredientMeasurementUnits: QueryFilteredResult<ValidIngredientMeasurementUnit> = errorOrDefault(
+    pageLoadMeasurementUnits,
+    new QueryFilteredResult<ValidIngredientMeasurementUnit>(),
+  );
 
   const [measurementUnitsForIngredient, setMeasurementUnitsForIngredient] = useState<
     QueryFilteredResult<ValidIngredientMeasurementUnit>
@@ -247,12 +245,10 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     );
   const [preparationQuery, setPreparationQuery] = useState('');
 
-  const ogValidIngredientPreparations: QueryFilteredResult<ValidIngredientPreparation> =
-    pageLoadIngredientPreparations.error
-      ? new QueryFilteredResult<ValidIngredientPreparation>()
-      : pageLoadIngredientPreparations.data
-        ? pageLoadIngredientPreparations.data
-        : new QueryFilteredResult<ValidIngredientPreparation>();
+  const ogValidIngredientPreparations: QueryFilteredResult<ValidIngredientPreparation> = errorOrDefault(
+    pageLoadIngredientPreparations,
+    new QueryFilteredResult<ValidIngredientPreparation>(),
+  );
 
   const [preparationsForIngredient, setPreparationsForIngredient] =
     useState<QueryFilteredResult<ValidIngredientPreparation>>(ogValidIngredientPreparations);
@@ -295,12 +291,10 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     );
   const [ingredientStateQuery, setIngredientStateQuery] = useState('');
 
-  const ogValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient> =
-    pageLoadValidIngredientStates.error
-      ? new QueryFilteredResult<ValidIngredientStateIngredient>()
-      : pageLoadValidIngredientStates.data
-        ? pageLoadValidIngredientStates.data
-        : new QueryFilteredResult<ValidIngredientStateIngredient>();
+  const ogValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient> = errorOrDefault(
+    pageLoadValidIngredientStates,
+    new QueryFilteredResult<ValidIngredientStateIngredient>(),
+  );
 
   const [ingredientStatesForIngredientError, _setIngredientStatesForIngredientError] = useState<IAPIError | undefined>(
     pageLoadValidIngredientStates.error,

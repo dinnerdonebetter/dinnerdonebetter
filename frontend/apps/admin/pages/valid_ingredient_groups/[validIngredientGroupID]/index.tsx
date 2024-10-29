@@ -1,11 +1,17 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
-import { TextInput, Button, Group, Container } from '@mantine/core';
+import { TextInput, Button, Group, Container, Text } from '@mantine/core';
 import { z } from 'zod';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-import { APIResponse, ValidIngredientGroup, ValidIngredientGroupUpdateRequestInput } from '@dinnerdonebetter/models';
+import {
+  APIResponse,
+  EitherErrorOr,
+  IAPIError,
+  ValidIngredientGroup,
+  ValidIngredientGroupUpdateRequestInput,
+} from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
@@ -13,9 +19,10 @@ import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
+import { errorOrDefault } from '../../../src/utils';
 
 declare interface ValidIngredientGroupPageProps {
-  pageLoadValidIngredientGroup: ValidIngredientGroup;
+  pageLoadValidIngredientGroup: EitherErrorOr<ValidIngredientGroup>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -48,6 +55,10 @@ export const getServerSideProps: GetServerSideProps = async (
       span.addEvent('valid ingredient group retrieved');
       return result.data;
     })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred');
+      return { error };
+    })
     .finally(() => {
       fetchValidIngredientGroupsTimer.end();
     });
@@ -59,7 +70,7 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
-      pageLoadValidIngredientGroup,
+      pageLoadValidIngredientGroup: JSON.parse(JSON.stringify(pageLoadValidIngredientGroup)),
     },
   };
 };
@@ -76,9 +87,16 @@ function ValidIngredientGroupPage(props: ValidIngredientGroupPageProps) {
   const { pageLoadValidIngredientGroup } = props;
 
   const apiClient = buildLocalClient();
-  const [validIngredientGroup, setValidIngredientGroup] = useState<ValidIngredientGroup>(pageLoadValidIngredientGroup);
+
+  const ogValidIngredientGroup: ValidIngredientGroup = errorOrDefault(
+    pageLoadValidIngredientGroup,
+    new ValidIngredientGroup(),
+  );
+  const [validIngredientGroupError] = useState<IAPIError | undefined>(pageLoadValidIngredientGroup.error);
+
+  const [validIngredientGroup, setValidIngredientGroup] = useState<ValidIngredientGroup>(ogValidIngredientGroup);
   const [originalValidIngredientGroup, setOriginalValidIngredientGroup] =
-    useState<ValidIngredientGroup>(pageLoadValidIngredientGroup);
+    useState<ValidIngredientGroup>(ogValidIngredientGroup);
 
   const updateForm = useForm({
     initialValues: validIngredientGroup,
@@ -121,35 +139,40 @@ function ValidIngredientGroupPage(props: ValidIngredientGroupPageProps) {
   return (
     <AppLayout title="valid ingredient group">
       <Container size="sm">
-        <form onSubmit={updateForm.onSubmit(submit)}>
-          <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
-          <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
-          <TextInput
-            label="Description"
-            placeholder="stuff about things"
-            {...updateForm.getInputProps('description')}
-          />
+        {validIngredientGroupError && <Text color="tomato"> {validIngredientGroupError.message} </Text>}
+        {!validIngredientGroupError && validIngredientGroup.id !== '' && (
+          <>
+            <form onSubmit={updateForm.onSubmit(submit)}>
+              <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
+              <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
+              <TextInput
+                label="Description"
+                placeholder="stuff about things"
+                {...updateForm.getInputProps('description')}
+              />
 
-          <Group position="center">
-            <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
-              Submit
-            </Button>
-            <Button
-              type="submit"
-              color="red"
-              fullWidth
-              onClick={() => {
-                if (confirm('Are you sure you want to delete this valid ingredient group?')) {
-                  apiClient.archiveValidIngredientGroup(validIngredientGroup.id).then(() => {
-                    router.push('/valid_ingredient_groups');
-                  });
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </Group>
-        </form>
+              <Group position="center">
+                <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
+                  Submit
+                </Button>
+                <Button
+                  type="submit"
+                  color="red"
+                  fullWidth
+                  onClick={() => {
+                    if (confirm('Are you sure you want to delete this valid ingredient group?')) {
+                      apiClient.archiveValidIngredientGroup(validIngredientGroup.id).then(() => {
+                        router.push('/valid_ingredient_groups');
+                      });
+                    }
+                  }}
+                >
+                  Delete
+                </Button>
+              </Group>
+            </form>
+          </>
+        )}
       </Container>
     </AppLayout>
   );

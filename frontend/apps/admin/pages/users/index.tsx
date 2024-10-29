@@ -5,16 +5,17 @@ import { formatRelative } from 'date-fns';
 import { IconSearch } from '@tabler/icons';
 import { useState, useEffect } from 'react';
 
-import { QueryFilter, QueryFilteredResult, User } from '@dinnerdonebetter/models';
+import { EitherErrorOr, IAPIError, QueryFilter, QueryFilteredResult, User } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
+import { errorOrDefault } from '../../src/utils';
 
 declare interface UsersPageProps {
-  pageLoadUsers: QueryFilteredResult<User>;
+  pageLoadUsers: EitherErrorOr<QueryFilteredResult<User>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -52,16 +53,9 @@ export const getServerSideProps: GetServerSideProps = async (
         },
       };
     })
-    .catch((error: AxiosError) => {
+    .catch((error: IAPIError) => {
       span.addEvent('error occurred');
-      if (error.response?.status === 401) {
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-      }
+      return { error };
     })
     .finally(() => {
       fetchUsersTimer.end();
@@ -76,7 +70,9 @@ export const getServerSideProps: GetServerSideProps = async (
 function UsersPage(props: UsersPageProps) {
   let { pageLoadUsers } = props;
 
-  const [users, setUsers] = useState<QueryFilteredResult<User>>(pageLoadUsers);
+  const ogUsers = errorOrDefault(pageLoadUsers, new QueryFilteredResult<User>());
+  const [usersError] = useState<IAPIError | undefined>(pageLoadUsers.error);
+  const [users, setUsers] = useState<QueryFilteredResult<User>>(ogUsers);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -146,27 +142,32 @@ function UsersPage(props: UsersPageProps) {
           </Grid.Col>
         </Grid>
 
-        <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Username</th>
-              <th>Created At</th>
-              <th>Last Updated At</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
+        {usersError && <div>{usersError.message}</div>}
+        {!usersError && users.data.length > 0 && (
+          <>
+            <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Created At</th>
+                  <th>Last Updated At</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </Table>
 
-        <Pagination
-          disabled={search.trim().length > 0}
-          position="center"
-          page={users.page}
-          total={Math.ceil(users.totalCount / users.limit)}
-          onChange={(value: number) => {
-            setUsers({ ...users, page: value });
-          }}
-        />
+            <Pagination
+              disabled={search.trim().length > 0}
+              position="center"
+              page={users.page}
+              total={Math.ceil(users.totalCount / users.limit)}
+              onChange={(value: number) => {
+                setUsers({ ...users, page: value });
+              }}
+            />
+          </>
+        )}
       </Stack>
     </AppLayout>
   );
