@@ -19,7 +19,6 @@ import { buildLocalClient } from '@dinnerdonebetter/api-client';
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
-import { error } from 'console';
 import { errorOrDefault } from '../../src/utils';
 
 declare interface ValidIngredientStatesPageProps {

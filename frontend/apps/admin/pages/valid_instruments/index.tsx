@@ -1,21 +1,22 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { Button, Grid, Pagination, Stack, Table, TextInput } from '@mantine/core';
+import { Button, Grid, Pagination, Stack, Table, Text, TextInput } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import router from 'next/router';
 import { IconSearch } from '@tabler/icons';
 import { useState, useEffect } from 'react';
 
-import { QueryFilter, ValidInstrument, QueryFilteredResult } from '@dinnerdonebetter/models';
+import { QueryFilter, ValidInstrument, QueryFilteredResult, EitherErrorOr, IAPIError } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
+import { errorOrDefault } from '../../src/utils';
 
 declare interface ValidInstrumentsPageProps {
-  pageLoadValidInstruments: QueryFilteredResult<ValidInstrument>;
+  pageLoadValidInstruments: EitherErrorOr<QueryFilteredResult<ValidInstrument>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -53,16 +54,9 @@ export const getServerSideProps: GetServerSideProps = async (
         },
       };
     })
-    .catch((error: AxiosError) => {
+    .catch((error: IAPIError) => {
       span.addEvent('error occurred');
-      if (error.response?.status === 401) {
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-      }
+      return { error };
     })
     .finally(() => {
       fetchValidVesselTimer.end();
@@ -77,8 +71,9 @@ export const getServerSideProps: GetServerSideProps = async (
 function ValidInstrumentsPage(props: ValidInstrumentsPageProps) {
   let { pageLoadValidInstruments } = props;
 
-  const [validInstruments, setValidInstruments] =
-    useState<QueryFilteredResult<ValidInstrument>>(pageLoadValidInstruments);
+  const ogValidInstruments = errorOrDefault(pageLoadValidInstruments, new QueryFilteredResult<ValidInstrument>());
+  const [validInstrumentsError] = useState<IAPIError | undefined>(pageLoadValidInstruments.error);
+  const [validInstruments, setValidInstruments] = useState<QueryFilteredResult<ValidInstrument>>(ogValidInstruments);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -162,28 +157,34 @@ function ValidInstrumentsPage(props: ValidInstrumentsPageProps) {
           </Grid.Col>
         </Grid>
 
-        <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Slug</th>
-              <th>Created At</th>
-              <th>Last Updated At</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
+        {validInstrumentsError && <Text color="tomato"> {validInstrumentsError.message} </Text>}
 
-        <Pagination
-          disabled={search.trim().length > 0}
-          position="center"
-          page={validInstruments.page}
-          total={Math.ceil(validInstruments.totalCount / validInstruments.limit)}
-          onChange={(value: number) => {
-            setValidInstruments({ ...validInstruments, page: value });
-          }}
-        />
+        {!validInstrumentsError && validInstruments.data && (
+          <>
+            <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Slug</th>
+                  <th>Created At</th>
+                  <th>Last Updated At</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </Table>
+
+            <Pagination
+              disabled={search.trim().length > 0}
+              position="center"
+              page={validInstruments.page}
+              total={Math.ceil(validInstruments.totalCount / validInstruments.limit)}
+              onChange={(value: number) => {
+                setValidInstruments({ ...validInstruments, page: value });
+              }}
+            />
+          </>
+        )}
       </Stack>
     </AppLayout>
   );
