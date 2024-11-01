@@ -52,10 +52,12 @@ export const buildLocalClient = (): DinnerDoneBetterAPIClient => {
 export default DinnerDoneBetterAPIClient;
 `
 
-	jestConfigFile = `export default {
+	jestConfigFile = `const config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
 };
+
+export default config;
 `
 )
 
