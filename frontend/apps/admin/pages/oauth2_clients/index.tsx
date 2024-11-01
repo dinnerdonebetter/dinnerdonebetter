@@ -3,16 +3,16 @@ import { Button, Grid, Pagination, Stack, Table } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import router from 'next/router';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { QueryFilter, OAuth2Client, QueryFilteredResult, EitherErrorOr, IAPIError } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { EitherErrorOr, IAPIError, OAuth2Client, QueryFilter, QueryFilteredResult } from '@dinnerdonebetter/models';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
-import { errorOrDefault } from '../../src/utils';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface OAuth2ClientsPageProps {
   pageLoadOAuth2Clients: EitherErrorOr<QueryFilteredResult<OAuth2Client>>;
@@ -54,7 +54,7 @@ export const getServerSideProps: GetServerSideProps = async (
       };
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -70,11 +70,11 @@ export const getServerSideProps: GetServerSideProps = async (
 function OAuth2ClientsPage(props: OAuth2ClientsPageProps) {
   let { pageLoadOAuth2Clients } = props;
 
-  const ogOAuth2Clients: QueryFilteredResult<OAuth2Client> = errorOrDefault(
+  const ogOAuth2Clients: QueryFilteredResult<OAuth2Client> = valueOrDefault(
     pageLoadOAuth2Clients,
     new QueryFilteredResult<OAuth2Client>(),
   );
-  const [oauth2ClientsError, _setOAuth2ClientsError] = useState<IAPIError | undefined>(pageLoadOAuth2Clients.error);
+  const [oauth2ClientsError] = useState<IAPIError | undefined>(pageLoadOAuth2Clients.error);
   const [oauth2Clients, setOAuth2Clients] = useState<QueryFilteredResult<OAuth2Client>>(ogOAuth2Clients);
 
   useEffect(() => {

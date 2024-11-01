@@ -8,7 +8,7 @@ import { buildBrowserSideClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../src/layouts';
 import { serverSideTracer } from '../src/tracer';
-import { extractUserInfoFromCookie } from '../src/auth';
+import { userSessionDetailsOrRedirect } from '../src/auth';
 
 declare interface AcceptInvitationPageProps {
   invitationToken: string;
@@ -32,9 +32,15 @@ export const getServerSideProps: GetServerSideProps = async (
   };
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (!userSessionData?.userID) {
-    console.log('returning props');
     return {
       redirect: {
         destination: `/register?i=${invitationID}&t=${invitationToken}`,
@@ -42,7 +48,6 @@ export const getServerSideProps: GetServerSideProps = async (
       },
     };
   }
-  extractCookieTimer.end();
 
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 

@@ -1,27 +1,27 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
 import {
-  TextInput,
-  Button,
-  Group,
-  Container,
-  Switch,
-  NumberInput,
-  Title,
-  Text,
-  Space,
-  Autocomplete,
-  Divider,
-  AutocompleteItem,
   ActionIcon,
-  Grid,
-  Table,
+  Autocomplete,
+  AutocompleteItem,
+  Button,
   Center,
+  Container,
+  Divider,
+  Grid,
+  Group,
+  NumberInput,
   Pagination,
+  Space,
+  Switch,
+  Table,
+  Text,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { z } from 'zod';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { IconTrash } from '@tabler/icons';
@@ -43,14 +43,14 @@ import {
   ValidMeasurementUnit,
   ValidPreparation,
 } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
-import { errorOrDefault } from '../../../src/utils';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ValidIngredientPageProps {
   pageLoadMeasurementUnits: EitherErrorOr<QueryFilteredResult<ValidIngredientMeasurementUnit>>;
@@ -90,7 +90,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { data: result.data };
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -105,7 +105,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { data: res };
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -120,7 +120,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { data: res };
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -135,7 +135,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { data: res };
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -183,13 +183,11 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     pageLoadValidIngredientStates,
   } = props;
 
-  const ogValidIngredient: ValidIngredient = errorOrDefault(pageLoadValidIngredient, new ValidIngredient());
+  const ogValidIngredient: ValidIngredient = valueOrDefault(pageLoadValidIngredient, new ValidIngredient());
 
   const apiClient = buildLocalClient();
   const [validIngredient, setValidIngredient] = useState<ValidIngredient>(ogValidIngredient);
-  const [validIngredientError, _setValidIngredientError] = useState<IAPIError | undefined>(
-    pageLoadValidIngredient.error,
-  );
+  const [validIngredientError] = useState<IAPIError | undefined>(pageLoadValidIngredient.error);
   const [originalValidIngredient, setOriginalValidIngredient] = useState<ValidIngredient>(ogValidIngredient);
 
   const [newMeasurementUnitForIngredientInput, setNewMeasurementUnitForIngredientInput] =
@@ -201,7 +199,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     );
   const [measurementUnitQuery, setMeasurementUnitQuery] = useState('');
 
-  const ogValidIngredientMeasurementUnits: QueryFilteredResult<ValidIngredientMeasurementUnit> = errorOrDefault(
+  const ogValidIngredientMeasurementUnits: QueryFilteredResult<ValidIngredientMeasurementUnit> = valueOrDefault(
     pageLoadMeasurementUnits,
     new QueryFilteredResult<ValidIngredientMeasurementUnit>(),
   );
@@ -209,9 +207,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
   const [measurementUnitsForIngredient, setMeasurementUnitsForIngredient] = useState<
     QueryFilteredResult<ValidIngredientMeasurementUnit>
   >(ogValidIngredientMeasurementUnits);
-  const [measurementUnitsForIngredientError, _setMeasurementUnitsForIngredientError] = useState<IAPIError | undefined>(
-    pageLoadMeasurementUnits.error,
-  );
+  const [measurementUnitsForIngredientError] = useState<IAPIError | undefined>(pageLoadMeasurementUnits.error);
   const [suggestedMeasurementUnits, setSuggestedMeasurementUnits] = useState<ValidMeasurementUnit[]>([]);
 
   useEffect(() => {
@@ -245,7 +241,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     );
   const [preparationQuery, setPreparationQuery] = useState('');
 
-  const ogValidIngredientPreparations: QueryFilteredResult<ValidIngredientPreparation> = errorOrDefault(
+  const ogValidIngredientPreparations: QueryFilteredResult<ValidIngredientPreparation> = valueOrDefault(
     pageLoadIngredientPreparations,
     new QueryFilteredResult<ValidIngredientPreparation>(),
   );
@@ -253,9 +249,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
   const [preparationsForIngredient, setPreparationsForIngredient] =
     useState<QueryFilteredResult<ValidIngredientPreparation>>(ogValidIngredientPreparations);
 
-  const [preparationsForIngredientError, _setPreparationsForIngredientError] = useState<IAPIError | undefined>(
-    pageLoadIngredientPreparations.error,
-  );
+  const [preparationsForIngredientError] = useState<IAPIError | undefined>(pageLoadIngredientPreparations.error);
   const [suggestedPreparations, setSuggestedPreparations] = useState<Array<ValidPreparation>>([
     new ValidPreparation({ name: 'blah' }),
   ]);
@@ -291,14 +285,12 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     );
   const [ingredientStateQuery, setIngredientStateQuery] = useState('');
 
-  const ogValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient> = errorOrDefault(
+  const ogValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient> = valueOrDefault(
     pageLoadValidIngredientStates,
     new QueryFilteredResult<ValidIngredientStateIngredient>(),
   );
 
-  const [ingredientStatesForIngredientError, _setIngredientStatesForIngredientError] = useState<IAPIError | undefined>(
-    pageLoadValidIngredientStates.error,
-  );
+  const [ingredientStatesForIngredientError] = useState<IAPIError | undefined>(pageLoadValidIngredientStates.error);
   const [ingredientStatesForIngredient, setIngredientStatesForIngredient] =
     useState<QueryFilteredResult<ValidIngredientStateIngredient>>(ogValidIngredientStates);
   const [suggestedIngredientStates, setSuggestedIngredientStates] = useState<ValidIngredientState[]>([]);

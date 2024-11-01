@@ -1,7 +1,8 @@
-import { AxiosError } from 'axios';
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import { Text } from '@mantine/core';
+import { useState } from 'react';
 
-import { APIResponse, Recipe } from '@dinnerdonebetter/models';
+import { APIResponse, EitherErrorOr, IAPIError, Recipe } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
 import { buildServerSideClientOrRedirect } from '../../../src/client';
@@ -9,10 +10,11 @@ import { AppLayout } from '../../../src/layouts';
 import { RecipeComponent } from '../../../src/components';
 import { serverSideTracer } from '../../../src/tracer';
 import { serverSideAnalytics } from '../../../src/analytics';
-import { extractUserInfoFromCookie } from '../../../src/auth';
+import { userSessionDetailsOrRedirect } from '../../../src/auth';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface RecipePageProps {
-  recipe: Recipe;
+  recipe: EitherErrorOr<Recipe>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -39,14 +41,20 @@ export const getServerSideProps: GetServerSideProps = async (
   }
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (userSessionData?.userID) {
     serverSideAnalytics.page(userSessionData.userID, 'RECIPE_PAGE', context, {
       recipeID,
       householdID: userSessionData.householdID,
     });
   }
-  extractCookieTimer.end();
 
   const fetchRecipeTimer = timing.addEvent('fetch recipe');
   let props!: GetServerSidePropsResult<RecipePageProps>;
@@ -54,21 +62,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getRecipe(recipeID.toString())
     .then((result: APIResponse<Recipe>) => {
       span.addEvent(`recipe retrieved`);
-      props = {
-        props: {
-          recipe: result.data,
-        },
-      };
+      return { data: result.data };
     })
-    .catch((error: AxiosError) => {
-      if (error.response?.status === 404) {
-        props = {
-          redirect: {
-            destination: '/recipes',
-            permanent: false,
-          },
-        };
-      }
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchRecipeTimer.end();
@@ -80,10 +78,17 @@ export const getServerSideProps: GetServerSideProps = async (
   return props;
 };
 
-function RecipePage({ recipe }: RecipePageProps) {
+function RecipePage(props: RecipePageProps) {
+  const pageLoadRecipe = props.recipe;
+  const ogRecipe = valueOrDefault(pageLoadRecipe, new Recipe());
+  const [recipe] = useState<Recipe>(ogRecipe);
+  const [recipeError] = useState<IAPIError | undefined>(pageLoadRecipe.error);
+
   return (
     <AppLayout title={recipe.name} titlePosition="left" userLoggedIn>
-      <RecipeComponent recipe={recipe} />
+      {recipeError && <Text color="tomato">{recipeError.message}</Text>}
+
+      {!recipeError && <RecipeComponent recipe={recipe} />}
     </AppLayout>
   );
 }

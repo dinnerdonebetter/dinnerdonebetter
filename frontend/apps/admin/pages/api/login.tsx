@@ -1,4 +1,4 @@
-import { buildLoginRoute, cookieEncoderBuilder, UserSessionDetails } from '@dinnerdonebetter/next-routes';
+import { UserSessionDetails, buildLoginRoute, cookieEncoderBuilder } from '@dinnerdonebetter/next-routes';
 import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
 import { encryptorDecryptor } from '../../src/encryption';

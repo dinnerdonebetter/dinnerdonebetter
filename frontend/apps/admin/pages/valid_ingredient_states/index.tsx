@@ -4,7 +4,7 @@ import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import router from 'next/router';
 import { IconSearch } from '@tabler/icons';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   EitherErrorOr,
@@ -13,13 +13,13 @@ import {
   QueryFilteredResult,
   ValidIngredientState,
 } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
-import { errorOrDefault } from '../../src/utils';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface ValidIngredientStatesPageProps {
   pageLoadValidIngredientStates: EitherErrorOr<QueryFilteredResult<ValidIngredientState>>;
@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (
       };
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -77,7 +77,7 @@ export const getServerSideProps: GetServerSideProps = async (
 function ValidIngredientStatesPage(props: ValidIngredientStatesPageProps) {
   let { pageLoadValidIngredientStates } = props;
 
-  const ogValidINgredientStates = errorOrDefault(
+  const ogValidINgredientStates = valueOrDefault(
     pageLoadValidIngredientStates,
     new QueryFilteredResult<ValidIngredientState>(),
   );

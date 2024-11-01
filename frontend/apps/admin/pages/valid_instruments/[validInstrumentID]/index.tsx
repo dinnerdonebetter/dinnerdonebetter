@@ -1,21 +1,21 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
 import {
-  TextInput,
-  Button,
-  Group,
-  Container,
-  Switch,
-  Text,
   ActionIcon,
   Autocomplete,
   AutocompleteItem,
+  Button,
   Center,
+  Container,
   Divider,
   Grid,
+  Group,
   Pagination,
   Space,
+  Switch,
   Table,
+  Text,
+  TextInput,
   ThemeIcon,
   Title,
 } from '@mantine/core';
@@ -27,24 +27,24 @@ import { useRouter } from 'next/router';
 import { IconTrash } from '@tabler/icons';
 
 import {
+  APIResponse,
+  EitherErrorOr,
+  IAPIError,
+  QueryFilteredResult,
   ValidInstrument,
   ValidInstrumentUpdateRequestInput,
   ValidPreparation,
   ValidPreparationInstrument,
   ValidPreparationInstrumentCreationRequestInput,
-  QueryFilteredResult,
-  APIResponse,
-  EitherErrorOr,
-  IAPIError,
 } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
-import { errorOrDefault } from '../../../src/utils';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ValidInstrumentPageProps {
   pageLoadValidInstrument: EitherErrorOr<ValidInstrument>;
@@ -82,7 +82,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return result;
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -96,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return res;
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -131,7 +131,7 @@ function ValidInstrumentPage(props: ValidInstrumentPageProps) {
   const apiClient = buildLocalClient();
   const { pageLoadValidInstrument, pageLoadPreparationInstruments } = props;
 
-  const ogValidIngredient = errorOrDefault(pageLoadValidInstrument, new ValidInstrument());
+  const ogValidIngredient = valueOrDefault(pageLoadValidInstrument, new ValidInstrument());
   const [validInstrumentError] = useState<IAPIError | undefined>(pageLoadValidInstrument.error);
   const [validInstrument, setValidInstrument] = useState<ValidInstrument>(ogValidIngredient);
   const [originalValidInstrument, setOriginalValidInstrument] = useState<ValidInstrument>(ogValidIngredient);
@@ -144,7 +144,7 @@ function ValidInstrumentPage(props: ValidInstrumentPageProps) {
     );
   const [preparationQuery, setPreparationQuery] = useState('');
 
-  const ogPreparationsForInstrument = errorOrDefault(
+  const ogPreparationsForInstrument = valueOrDefault(
     pageLoadPreparationInstruments,
     new QueryFilteredResult<ValidPreparationInstrument>(),
   );

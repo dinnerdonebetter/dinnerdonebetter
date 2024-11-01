@@ -4,16 +4,16 @@ import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import router from 'next/router';
 import { IconSearch } from '@tabler/icons';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { QueryFilter, ServiceSetting, QueryFilteredResult, EitherErrorOr, IAPIError } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { EitherErrorOr, IAPIError, QueryFilter, QueryFilteredResult, ServiceSetting } from '@dinnerdonebetter/models';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
-import { errorOrDefault } from '../../src/utils';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface ServiceSettingsPageProps {
   pageLoadServiceSettings: EitherErrorOr<QueryFilteredResult<ServiceSetting>>;
@@ -55,7 +55,7 @@ export const getServerSideProps: GetServerSideProps = async (
       };
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -71,7 +71,7 @@ export const getServerSideProps: GetServerSideProps = async (
 function ServiceSettingsPage(props: ServiceSettingsPageProps) {
   let { pageLoadServiceSettings } = props;
 
-  const ogServiceSettings: QueryFilteredResult<ServiceSetting> = errorOrDefault(
+  const ogServiceSettings: QueryFilteredResult<ServiceSetting> = valueOrDefault(
     pageLoadServiceSettings,
     new QueryFilteredResult<ServiceSetting>(),
   );

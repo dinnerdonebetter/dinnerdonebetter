@@ -7,14 +7,14 @@ import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 import { webappCookieName } from '../constants';
 import { encryptorDecryptor } from '../encryption';
 
-interface redirectProps {
+export interface RedirectProps {
   destination: string;
   permanent: boolean;
 }
 
 interface clientOrRedirect {
   client?: DinnerDoneBetterAPIClient;
-  redirect?: redirectProps;
+  redirect?: RedirectProps;
 }
 
 export const buildServerSideClientOrRedirect = (context: GetServerSidePropsContext): clientOrRedirect => {

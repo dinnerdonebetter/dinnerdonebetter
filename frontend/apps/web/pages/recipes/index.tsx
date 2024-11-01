@@ -1,32 +1,28 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { Container, Grid, List, Space, TextInput } from '@mantine/core';
-import { AxiosError } from 'axios';
+import { Container, Grid, List, Space, Text, TextInput } from '@mantine/core';
 import Link from 'next/link';
+import { useState } from 'react';
 import { IconSearch } from '@tabler/icons';
 
-import { QueryFilter, Recipe, QueryFilteredResult } from '@dinnerdonebetter/models';
-import { buildServerSideLogger } from '@dinnerdonebetter/logger';
+import { QueryFilter, Recipe, QueryFilteredResult, IAPIError, EitherErrorOr } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
-import { extractUserInfoFromCookie } from '../../src/auth';
+import { userSessionDetailsOrRedirect } from '../../src/auth';
 import { serverSideAnalytics } from '../../src/analytics';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface RecipesPageProps {
-  recipes: Recipe[];
+  recipes: EitherErrorOr<QueryFilteredResult<Recipe>>;
 }
-
-const logger = buildServerSideLogger('RecipesPage');
 
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext,
 ): Promise<GetServerSidePropsResult<RecipesPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('RecipesPage.getServerSideProps');
-  const spanContext = span.spanContext();
-  const spanLogDetails = { spanID: spanContext.spanId, traceID: spanContext.traceId };
 
   const qf = QueryFilter.deriveFromGetServerSidePropsContext(context.query);
   qf.attachToSpan(span);
@@ -34,21 +30,28 @@ export const getServerSideProps: GetServerSideProps = async (
   let props!: GetServerSidePropsResult<RecipesPageProps>;
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (userSessionData?.userID) {
+    const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'RECIPES_PAGE', context, {
       householdID: userSessionData.householdID,
     });
+    analyticsTimer.end();
   } else {
-    props = {
+    return {
       redirect: {
         destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
         permanent: false,
       },
     };
-    return props;
   }
-  extractCookieTimer.end();
 
   const clientOrRedirect = buildServerSideClientOrRedirect(context);
   if (clientOrRedirect.redirect) {
@@ -67,24 +70,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getRecipes(qf)
     .then((res: QueryFilteredResult<Recipe>) => {
       span.addEvent('recipes retrieved');
-      const recipes = res.data;
-      props = {
-        props: {
-          recipes,
-        },
-      };
+      return { data: res.data };
     })
-    .catch((error: AxiosError) => {
-      span.addEvent('error occurred');
-      if (error.response?.status === 401) {
-        logger.error('unauthorized access to recipes page', spanLogDetails);
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-      }
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchRecipesTimer.end();
@@ -97,7 +87,11 @@ export const getServerSideProps: GetServerSideProps = async (
 };
 
 function RecipesPage(props: RecipesPageProps) {
-  const { recipes } = props;
+  const pageLoadRecipes = props.recipes;
+
+  const ogRecipes = valueOrDefault(pageLoadRecipes, new QueryFilteredResult<Recipe>());
+  const [recipesError] = useState<IAPIError | undefined>(pageLoadRecipes.error);
+  const [recipes] = useState<Recipe[]>(ogRecipes.data);
 
   const recipeItems = (recipes || []).map((recipe: Recipe) => (
     <List.Item key={recipe.id}>
@@ -121,7 +115,9 @@ function RecipesPage(props: RecipesPageProps) {
 
         <Space my="xl" />
 
-        <List>{recipeItems}</List>
+        {recipesError && <Text color="tomato">{recipesError.message}</Text>}
+
+        {!recipesError && <List>{recipeItems}</List>}
       </Container>
     </AppLayout>
   );

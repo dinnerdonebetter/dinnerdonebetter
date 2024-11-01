@@ -1,16 +1,16 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { TextInput, Button, Group, Container, Divider, Text } from '@mantine/core';
+import { Button, Container, Divider, Group, Text, TextInput } from '@mantine/core';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
 import { APIResponse, EitherErrorOr, IAPIError, OAuth2Client } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
-import { errorOrDefault } from '../../../src/utils';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface OAuth2ClientPageProps {
   pageLoadOAuth2Client: EitherErrorOr<OAuth2Client>;
@@ -47,7 +47,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return result.data;
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -72,10 +72,10 @@ function OAuth2ClientPage(props: OAuth2ClientPageProps) {
   const apiClient = buildLocalClient();
   const { pageLoadOAuth2Client } = props;
 
-  const ogOAuth2Client: OAuth2Client = errorOrDefault(pageLoadOAuth2Client, new OAuth2Client());
+  const ogOAuth2Client: OAuth2Client = valueOrDefault(pageLoadOAuth2Client, new OAuth2Client());
 
-  const [oauth2ClientError, _setOAuth2ClientError] = useState<IAPIError | undefined>(pageLoadOAuth2Client.error);
-  const [oauth2Client, _setOAuth2Client] = useState<OAuth2Client>(ogOAuth2Client);
+  const [oauth2ClientError] = useState<IAPIError | undefined>(pageLoadOAuth2Client.error);
+  const [oauth2Client] = useState<OAuth2Client>(ogOAuth2Client);
 
   return (
     <AppLayout title="Valid Preparation">

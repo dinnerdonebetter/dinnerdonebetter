@@ -1,10 +1,16 @@
-import { AxiosError } from 'axios';
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import Link from 'next/link';
-import { Container, Divider, Grid, List, NumberInput, Space, Title } from '@mantine/core';
+import { Container, Divider, Grid, List, NumberInput, Space, Text, Title } from '@mantine/core';
 import { ReactNode, useState } from 'react';
 
-import { ALL_MEAL_COMPONENT_TYPE, APIResponse, Meal, MealComponent } from '@dinnerdonebetter/models';
+import {
+  ALL_MEAL_COMPONENT_TYPE,
+  APIResponse,
+  EitherErrorOr,
+  IAPIError,
+  Meal,
+  MealComponent,
+} from '@dinnerdonebetter/models';
 import { determineAllIngredientsForRecipes, determineAllInstrumentsForRecipes } from '@dinnerdonebetter/utils';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
@@ -12,12 +18,13 @@ import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { AppLayout } from '../../../src/layouts';
 import { serverSideTracer } from '../../../src/tracer';
 import { serverSideAnalytics } from '../../../src/analytics';
-import { extractUserInfoFromCookie } from '../../../src/auth';
+import { userSessionDetailsOrRedirect } from '../../../src/auth';
 import { RecipeInstrumentListComponent } from '../../../src/components';
 import { RecipeIngredientListComponent } from '../../../src/components/IngredientList';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface MealPageProps {
-  meal: Meal;
+  meal: EitherErrorOr<Meal>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -44,45 +51,49 @@ export const getServerSideProps: GetServerSideProps = async (
   }
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (userSessionData?.userID) {
+    const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'MEAL_PAGE', context, {
       mealID,
       householdID: userSessionData.householdID,
     });
+    analyticsTimer.end();
   }
-  extractCookieTimer.end();
 
   const fetchRecipeTimer = timing.addEvent('fetch meal');
-  let props!: GetServerSidePropsResult<MealPageProps>;
-  await apiClient
+  const mealPromise = apiClient
     .getMeal(mealID.toString())
     .then((result: APIResponse<Meal>) => {
       span.addEvent(`recipe retrieved`);
-      props = {
-        props: {
-          meal: result.data,
-        },
-      };
+      return { data: result.data };
     })
-    .catch((error: AxiosError) => {
-      if (error.response?.status === 404) {
-        props = {
-          redirect: {
-            destination: '/meals',
-            permanent: false,
-          },
-        };
-      }
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchRecipeTimer.end();
     });
 
+  const retrievedData = await Promise.all([mealPromise]);
+  const [meal] = retrievedData;
+
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return props;
+  return {
+    props: {
+      meal,
+    },
+  };
 };
 
 // https://stackoverflow.com/a/14872766
@@ -106,64 +117,77 @@ const formatRecipeList = (meal: Meal): ReactNode => {
   });
 };
 
-function MealPage({ meal }: MealPageProps) {
+function MealPage(props: MealPageProps) {
+  const ogMeal = valueOrDefault(props.meal, new Meal());
+  const [mealError] = useState<IAPIError | undefined>(props.meal.error);
+  const [meal] = useState(ogMeal);
+
   const [mealScale, setMealScale] = useState(1.0);
 
   return (
     <AppLayout title={meal.name} userLoggedIn>
       <Container size="xs">
-        <Title order={3}>{meal.name}</Title>
+        {mealError && <Text color="tomato">{mealError.message}</Text>}
 
-        <NumberInput
-          mt="sm"
-          mb="lg"
-          value={mealScale}
-          precision={2}
-          step={0.25}
-          removeTrailingZeros={true}
-          description={`this meal normally yields about ${meal.estimatedPortions.min} ${
-            meal.estimatedPortions.min === 1 ? 'portion' : 'portions'
-          }${
-            mealScale === 1.0
-              ? ''
-              : `, but is now set up to yield ${meal.estimatedPortions.min * mealScale}  ${
-                  meal.estimatedPortions.min === 1 ? 'portion' : 'portions'
-                }`
-          }`}
-          onChange={(value: number | undefined) => {
-            if (!value) return;
+        {!mealError && meal.id !== '' && (
+          <>
+            <Title order={3}>{meal.name}</Title>
 
-            setMealScale(value);
-          }}
-        />
+            <NumberInput
+              mt="sm"
+              mb="lg"
+              value={mealScale}
+              precision={2}
+              step={0.25}
+              removeTrailingZeros={true}
+              description={`this meal normally yields about ${meal.estimatedPortions.min} ${
+                meal.estimatedPortions.min === 1 ? 'portion' : 'portions'
+              }${
+                mealScale === 1.0
+                  ? ''
+                  : `, but is now set up to yield ${meal.estimatedPortions.min * mealScale}  ${
+                      meal.estimatedPortions.min === 1 ? 'portion' : 'portions'
+                    }`
+              }`}
+              onChange={(value: number | undefined) => {
+                if (!value) return;
 
-        <Divider label="recipes" labelPosition="center" mb="xs" />
+                setMealScale(value);
+              }}
+            />
 
-        <Grid grow gutter="md">
-          <List mt="sm">{formatRecipeList(meal)}</List>
-        </Grid>
+            <Divider label="recipes" labelPosition="center" mb="xs" />
 
-        <Divider label="resources" labelPosition="center" mb="md" />
+            <Grid grow gutter="md">
+              <List mt="sm">{formatRecipeList(meal)}</List>
+            </Grid>
 
-        <Grid>
-          <Grid.Col span={6}>
-            <Title order={6}>Tools:</Title>
-            {determineAllInstrumentsForRecipes((meal.components || []).map((x) => x.recipe)).length > 0 && (
-              <RecipeInstrumentListComponent recipes={(meal.components || []).map((x) => x.recipe)} />
-            )}
-          </Grid.Col>
+            <Divider label="resources" labelPosition="center" mb="md" />
 
-          <Grid.Col span={6}>
-            <Title order={6}>Ingredients:</Title>
-            {determineAllIngredientsForRecipes(
-              (meal.components || []).map((x) => {
-                return { scale: mealScale, recipe: x.recipe };
-              }),
-            ).length > 0 && (
-              <RecipeIngredientListComponent recipes={(meal.components || []).map((x) => x.recipe)} scale={mealScale} />
-            )}
-          </Grid.Col>
-        </Grid>
+            <Grid>
+              <Grid.Col span={6}>
+                <Title order={6}>Tools:</Title>
+                {determineAllInstrumentsForRecipes((meal.components || []).map((x) => x.recipe)).length > 0 && (
+                  <RecipeInstrumentListComponent recipes={(meal.components || []).map((x) => x.recipe)} />
+                )}
+              </Grid.Col>
+
+              <Grid.Col span={6}>
+                <Title order={6}>Ingredients:</Title>
+                {determineAllIngredientsForRecipes(
+                  (meal.components || []).map((x) => {
+                    return { scale: mealScale, recipe: x.recipe };
+                  }),
+                ).length > 0 && (
+                  <RecipeIngredientListComponent
+                    recipes={(meal.components || []).map((x) => x.recipe)}
+                    scale={mealScale}
+                  />
+                )}
+              </Grid.Col>
+            </Grid>
+          </>
+        )}
       </Container>
       <Space h="xl" my="xl" />
     </AppLayout>

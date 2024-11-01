@@ -1,0 +1,4 @@
+RUNNER = yarn run
+
+%:
+	@$(RUNNER) $@

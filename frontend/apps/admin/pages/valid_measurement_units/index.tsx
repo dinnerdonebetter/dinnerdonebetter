@@ -1,21 +1,28 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { Button, Grid, Pagination, Stack, Table, TextInput } from '@mantine/core';
+import { Button, Grid, Pagination, Stack, Table, Text, TextInput } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import router from 'next/router';
 import { IconSearch } from '@tabler/icons';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { QueryFilter, ValidMeasurementUnit, QueryFilteredResult } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import {
+  EitherErrorOr,
+  IAPIError,
+  QueryFilter,
+  QueryFilteredResult,
+  ValidMeasurementUnit,
+} from '@dinnerdonebetter/models';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface ValidMeasurementUnitsPageProps {
-  pageLoadValidMeasurementUnits: QueryFilteredResult<ValidMeasurementUnit>;
+  pageLoadValidMeasurementUnits: EitherErrorOr<QueryFilteredResult<ValidMeasurementUnit>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -53,16 +60,9 @@ export const getServerSideProps: GetServerSideProps = async (
         },
       };
     })
-    .catch((error: AxiosError) => {
-      span.addEvent('error occurred');
-      if (error.response?.status === 401) {
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-      }
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchValidVesselTimer.end();
@@ -77,8 +77,13 @@ export const getServerSideProps: GetServerSideProps = async (
 function ValidMeasurementUnitsPage(props: ValidMeasurementUnitsPageProps) {
   let { pageLoadValidMeasurementUnits } = props;
 
+  const ogValidMeasurementUnits = valueOrDefault(
+    pageLoadValidMeasurementUnits,
+    new QueryFilteredResult<ValidMeasurementUnit>(),
+  );
+  const [validMeasurementUnitsError] = useState<IAPIError | undefined>(pageLoadValidMeasurementUnits.error);
   const [validMeasurementUnits, setValidMeasurementUnits] =
-    useState<QueryFilteredResult<ValidMeasurementUnit>>(pageLoadValidMeasurementUnits);
+    useState<QueryFilteredResult<ValidMeasurementUnit>>(ogValidMeasurementUnits);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -162,28 +167,34 @@ function ValidMeasurementUnitsPage(props: ValidMeasurementUnitsPageProps) {
           </Grid.Col>
         </Grid>
 
-        <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Plural Name</th>
-              <th>Slug</th>
-              <th>Created At</th>
-              <th>Last Updated At</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
+        {validMeasurementUnitsError && <Text color="tomato"> {validMeasurementUnitsError.message} </Text>}
 
-        <Pagination
-          disabled={search.trim().length > 0}
-          position="center"
-          page={validMeasurementUnits.page}
-          total={Math.ceil(validMeasurementUnits.totalCount / validMeasurementUnits.limit)}
-          onChange={(value: number) => {
-            setValidMeasurementUnits({ ...validMeasurementUnits, page: value });
-          }}
-        />
+        {!validMeasurementUnitsError && validMeasurementUnits.data && (
+          <>
+            <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Plural Name</th>
+                  <th>Slug</th>
+                  <th>Created At</th>
+                  <th>Last Updated At</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </Table>
+
+            <Pagination
+              disabled={search.trim().length > 0}
+              position="center"
+              page={validMeasurementUnits.page}
+              total={Math.ceil(validMeasurementUnits.totalCount / validMeasurementUnits.limit)}
+              onChange={(value: number) => {
+                setValidMeasurementUnits({ ...validMeasurementUnits, page: value });
+              }}
+            />
+          </>
+        )}
       </Stack>
     </AppLayout>
   );

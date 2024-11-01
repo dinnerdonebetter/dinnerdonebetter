@@ -1,5 +1,5 @@
 import { buildServerSideLogger } from '@dinnerdonebetter/logger';
-import { buildLogoutRoute, UserSessionDetails } from '@dinnerdonebetter/next-routes';
+import { UserSessionDetails, buildLogoutRoute } from '@dinnerdonebetter/next-routes';
 import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
 import { webappCookieName } from '../../src/constants';

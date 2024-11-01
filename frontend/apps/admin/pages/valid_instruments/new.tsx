@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useForm, zodResolver } from '@mantine/form';
-import { TextInput, Button, Group, Container, Switch } from '@mantine/core';
+import { Button, Container, Group, Switch, TextInput } from '@mantine/core';
 import { z } from 'zod';
 
 import { APIResponse, ValidInstrument, ValidInstrumentCreationRequestInput } from '@dinnerdonebetter/models';

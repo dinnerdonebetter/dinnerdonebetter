@@ -2,14 +2,14 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useForm, zodResolver } from '@mantine/form';
 import {
-  TextInput,
-  Button,
-  Group,
-  Container,
-  Switch,
-  NumberInput,
   Autocomplete,
   AutocompleteItem,
+  Button,
+  Container,
+  Group,
+  NumberInput,
+  Switch,
+  TextInput,
 } from '@mantine/core';
 import { z } from 'zod';
 import { AxiosError } from 'axios';

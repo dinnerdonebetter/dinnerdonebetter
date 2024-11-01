@@ -1,24 +1,25 @@
 import { AxiosError } from 'axios';
 import { useForm, zodResolver } from '@mantine/form';
 import {
-  TextInput,
-  Button,
-  Group,
-  Container,
-  Switch,
-  Autocomplete,
-  Divider,
-  Space,
-  Title,
   ActionIcon,
-  Text,
+  Alert,
+  Autocomplete,
   AutocompleteItem,
+  Button,
   Center,
+  Container,
+  Divider,
   Grid,
-  Pagination,
-  Table,
-  ThemeIcon,
+  Group,
   NumberInput,
+  Pagination,
+  Space,
+  Switch,
+  Table,
+  Text,
+  TextInput,
+  ThemeIcon,
+  Title,
 } from '@mantine/core';
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import Link from 'next/link';
@@ -28,29 +29,32 @@ import { IconTrash } from '@tabler/icons';
 import { z } from 'zod';
 
 import {
+  APIResponse,
+  EitherErrorOr,
+  IAPIError,
+  QueryFilteredResult,
   ValidIngredient,
   ValidIngredientMeasurementUnit,
-  ValidMeasurementUnit,
-  ValidMeasurementUnitUpdateRequestInput,
   ValidIngredientMeasurementUnitCreationRequestInput,
+  ValidMeasurementUnit,
   ValidMeasurementUnitConversion,
   ValidMeasurementUnitConversionCreationRequestInput,
-  QueryFilteredResult,
-  APIResponse,
+  ValidMeasurementUnitUpdateRequestInput,
 } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ValidMeasurementUnitPageProps {
-  pageLoadValidMeasurementUnit: ValidMeasurementUnit;
-  pageLoadIngredientsForMeasurementUnit: QueryFilteredResult<ValidIngredientMeasurementUnit>;
-  pageLoadMeasurementUnitConversionsFromUnit: ValidMeasurementUnitConversion[];
-  pageLoadMeasurementUnitConversionsToUnit: ValidMeasurementUnitConversion[];
+  pageLoadValidMeasurementUnit: EitherErrorOr<ValidMeasurementUnit>;
+  pageLoadIngredientsForMeasurementUnit: EitherErrorOr<QueryFilteredResult<ValidIngredientMeasurementUnit>>;
+  pageLoadMeasurementUnitConversionsFromUnit: EitherErrorOr<ValidMeasurementUnitConversion[]>;
+  pageLoadMeasurementUnitConversionsToUnit: EitherErrorOr<ValidMeasurementUnitConversion[]>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -83,6 +87,10 @@ export const getServerSideProps: GetServerSideProps = async (
       span.addEvent('valid measurement unit retrieved');
       return result.data;
     })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
+    })
     .finally(() => {
       fetchValidMeasurementUnitTimer.end();
     });
@@ -93,6 +101,10 @@ export const getServerSideProps: GetServerSideProps = async (
     .then((res: QueryFilteredResult<ValidIngredientMeasurementUnit>) => {
       span.addEvent('valid ingredient measurement units retrieved');
       return res;
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchIngredientsForMeasurementUnitTimer.end();
@@ -105,6 +117,10 @@ export const getServerSideProps: GetServerSideProps = async (
       span.addEvent('valid ingredient measurement units retrieved');
       return res.data;
     })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
+    })
     .finally(() => {
       fetchMeasurementUnitConversionsFromUnitTimer.end();
     });
@@ -115,6 +131,10 @@ export const getServerSideProps: GetServerSideProps = async (
     .then((res: QueryFilteredResult<ValidMeasurementUnitConversion>) => {
       span.addEvent('valid ingredient measurement units retrieved');
       return res.data;
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMeasurementUnitConversionsToUnitTimer.end();
@@ -137,10 +157,12 @@ export const getServerSideProps: GetServerSideProps = async (
   span.end();
   return {
     props: {
-      pageLoadValidMeasurementUnit,
-      pageLoadIngredientsForMeasurementUnit,
-      pageLoadMeasurementUnitConversionsFromUnit,
-      pageLoadMeasurementUnitConversionsToUnit,
+      pageLoadValidMeasurementUnit: JSON.parse(JSON.stringify(pageLoadValidMeasurementUnit)),
+      pageLoadIngredientsForMeasurementUnit: JSON.parse(JSON.stringify(pageLoadIngredientsForMeasurementUnit)),
+      pageLoadMeasurementUnitConversionsFromUnit: JSON.parse(
+        JSON.stringify(pageLoadMeasurementUnitConversionsFromUnit),
+      ),
+      pageLoadMeasurementUnitConversionsToUnit: JSON.parse(JSON.stringify(pageLoadMeasurementUnitConversionsToUnit)),
     },
   };
 };
@@ -162,9 +184,11 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
     pageLoadMeasurementUnitConversionsToUnit,
   } = props;
 
-  const [validMeasurementUnit, setValidMeasurementUnit] = useState<ValidMeasurementUnit>(pageLoadValidMeasurementUnit);
+  const ogValidMeasurementUnit = valueOrDefault(pageLoadValidMeasurementUnit, new ValidMeasurementUnit());
+  const [validMeasurementUnit, setValidMeasurementUnit] = useState<ValidMeasurementUnit>(ogValidMeasurementUnit);
   const [originalValidMeasurementUnit, setOriginalValidMeasurementUnit] =
-    useState<ValidMeasurementUnit>(pageLoadValidMeasurementUnit);
+    useState<ValidMeasurementUnit>(ogValidMeasurementUnit);
+  const [validMeasurementUnitError] = useState<IAPIError | undefined>(pageLoadValidMeasurementUnit.error);
 
   const [newIngredientForMeasurementUnitInput, setNewIngredientForMeasurementUnitInput] =
     useState<ValidIngredientMeasurementUnitCreationRequestInput>(
@@ -174,9 +198,16 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
       }),
     );
   const [ingredientQuery, setIngredientQuery] = useState('');
-  const [ingredientsForMeasurementUnit, setIngredientsForMeasurementUnit] = useState<
-    QueryFilteredResult<ValidIngredientMeasurementUnit>
-  >(pageLoadIngredientsForMeasurementUnit);
+
+  const ogValidIngredient = valueOrDefault(
+    pageLoadIngredientsForMeasurementUnit,
+    new QueryFilteredResult<ValidIngredientMeasurementUnit>(),
+  );
+  const [ingredientsForMeasurementUnitError] = useState<IAPIError | undefined>(
+    pageLoadIngredientsForMeasurementUnit.error,
+  );
+  const [ingredientsForMeasurementUnit, setIngredientsForMeasurementUnit] =
+    useState<QueryFilteredResult<ValidIngredientMeasurementUnit>>(ogValidIngredient);
   const [suggestedIngredients, setSuggestedIngredients] = useState<ValidIngredient[]>([]);
 
   useEffect(() => {
@@ -210,8 +241,16 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
       }),
     );
   const [conversionFromUnitQuery, setConversionFromUnitQuery] = useState('');
-  const [measurementUnitsToConvertFrom, setMeasurementUnitsToConvertFrom] = useState<ValidMeasurementUnitConversion[]>(
+
+  const ogMeasurementUnitConversionsFrom = valueOrDefault(
     pageLoadMeasurementUnitConversionsFromUnit,
+    new Array<ValidMeasurementUnitConversion>(),
+  );
+  const [measurementUnitsToConvertFromError] = useState<IAPIError | undefined>(
+    pageLoadMeasurementUnitConversionsFromUnit.error,
+  );
+  const [measurementUnitsToConvertFrom, setMeasurementUnitsToConvertFrom] = useState<ValidMeasurementUnitConversion[]>(
+    ogMeasurementUnitConversionsFrom,
   );
   const [suggestedMeasurementUnitsToConvertFrom, setSuggestedMeasurementUnitsToConvertFrom] = useState<
     ValidMeasurementUnit[]
@@ -250,9 +289,16 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
       }),
     );
   const [conversionToUnitQuery, setConversionToUnitQuery] = useState('');
-  const [measurementUnitsToConvertTo, setMeasurementUnitsToConvertTo] = useState<ValidMeasurementUnitConversion[]>(
+
+  const ogMeasurementUnitConversionsTo = valueOrDefault(
     pageLoadMeasurementUnitConversionsToUnit,
+    new Array<ValidMeasurementUnitConversion>(),
   );
+  const [measurementUnitsToConvertToError] = useState<IAPIError | undefined>(
+    pageLoadMeasurementUnitConversionsToUnit.error,
+  );
+  const [measurementUnitsToConvertTo, setMeasurementUnitsToConvertTo] =
+    useState<ValidMeasurementUnitConversion[]>(ogMeasurementUnitConversionsTo);
   const [suggestedMeasurementUnitsToConvertTo, setSuggestedMeasurementUnitsToConvertTo] = useState<
     ValidMeasurementUnit[]
   >([]);
@@ -391,51 +437,59 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
   return (
     <AppLayout title="Valid Measurement Unit">
       <Container size="sm">
-        <form onSubmit={updateForm.onSubmit(submit)}>
-          <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
-          <TextInput label="Plural Name" placeholder="things" {...updateForm.getInputProps('pluralName')} />
-          <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
-          <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
+        {validMeasurementUnitError && <Alert color="tomato">{validMeasurementUnitError.message}</Alert>}
 
-          <Switch
-            checked={updateForm.values.volumetric}
-            label="Volumetric"
-            {...updateForm.getInputProps('volumetric')}
-          />
-          <Switch checked={updateForm.values.universal} label="Universal" {...updateForm.getInputProps('universal')} />
-          <Switch
-            checked={updateForm.values.metric}
-            disabled={updateForm.values.imperial}
-            label="Metric"
-            {...updateForm.getInputProps('metric')}
-          />
-          <Switch
-            checked={updateForm.values.imperial}
-            disabled={updateForm.values.metric}
-            label="Imperial"
-            {...updateForm.getInputProps('imperial')}
-          />
+        {!validMeasurementUnitError && (
+          <form onSubmit={updateForm.onSubmit(submit)}>
+            <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
+            <TextInput label="Plural Name" placeholder="things" {...updateForm.getInputProps('pluralName')} />
+            <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
+            <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
 
-          <Group position="center">
-            <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
-              Submit
-            </Button>
-            <Button
-              type="submit"
-              color="red"
-              fullWidth
-              onClick={() => {
-                if (confirm('Are you sure you want to delete this valid measurement unit?')) {
-                  apiClient.archiveValidMeasurementUnit(validMeasurementUnit.id).then(() => {
-                    router.push('/valid_measurement_units');
-                  });
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </Group>
-        </form>
+            <Switch
+              checked={updateForm.values.volumetric}
+              label="Volumetric"
+              {...updateForm.getInputProps('volumetric')}
+            />
+            <Switch
+              checked={updateForm.values.universal}
+              label="Universal"
+              {...updateForm.getInputProps('universal')}
+            />
+            <Switch
+              checked={updateForm.values.metric}
+              disabled={updateForm.values.imperial}
+              label="Metric"
+              {...updateForm.getInputProps('metric')}
+            />
+            <Switch
+              checked={updateForm.values.imperial}
+              disabled={updateForm.values.metric}
+              label="Imperial"
+              {...updateForm.getInputProps('imperial')}
+            />
+
+            <Group position="center">
+              <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
+                Submit
+              </Button>
+              <Button
+                type="submit"
+                color="tomato"
+                fullWidth
+                onClick={() => {
+                  if (confirm('Are you sure you want to delete this valid measurement unit?')) {
+                    apiClient.archiveValidMeasurementUnit(validMeasurementUnit.id).then(() => {
+                      router.push('/valid_measurement_units');
+                    });
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            </Group>
+          </form>
+        )}
 
         {!validMeasurementUnit.universal && (
           <>
@@ -453,93 +507,100 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
               <Center>
                 <Title order={4}>Ingredients</Title>
               </Center>
-
-              {ingredientsForMeasurementUnit.data && (ingredientsForMeasurementUnit.data || []).length !== 0 && (
-                <>
-                  <Table mt="xl" withColumnBorders>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Min Qty</th>
-                        <th>Max Qty</th>
-                        <th>Notes</th>
-                        <th>
-                          <Center>
-                            <ThemeIcon variant="outline" color="gray">
-                              <IconTrash size="sm" color="gray" />
-                            </ThemeIcon>
-                          </Center>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(ingredientsForMeasurementUnit.data || []).map(
-                        (validIngredientMeasurementUnit: ValidIngredientMeasurementUnit) => {
-                          return (
-                            <tr key={validIngredientMeasurementUnit.id}>
-                              <td>
-                                <Link href={`/valid_ingredients/${validIngredientMeasurementUnit.ingredient.id}`}>
-                                  {validIngredientMeasurementUnit.ingredient.name}
-                                </Link>
-                              </td>
-                              <td>
-                                <Text>{validIngredientMeasurementUnit.allowableQuantity.min}</Text>
-                              </td>
-                              <td>
-                                <Text>{validIngredientMeasurementUnit.allowableQuantity.max}</Text>
-                              </td>
-                              <td>
-                                <Text>{validIngredientMeasurementUnit.notes}</Text>
-                              </td>
-                              <td>
-                                <Center>
-                                  <ActionIcon
-                                    variant="outline"
-                                    aria-label="remove valid ingredient measurement unit"
-                                    onClick={async () => {
-                                      await apiClient
-                                        .archiveValidIngredientMeasurementUnit(validIngredientMeasurementUnit.id)
-                                        .then(() => {
-                                          setIngredientsForMeasurementUnit({
-                                            ...ingredientsForMeasurementUnit,
-                                            data: ingredientsForMeasurementUnit.data.filter(
-                                              (x: ValidIngredientMeasurementUnit) =>
-                                                x.id !== validIngredientMeasurementUnit.id,
-                                            ),
-                                          });
-                                        })
-                                        .catch((error) => {
-                                          console.error(error);
-                                        });
-                                    }}
-                                  >
-                                    <IconTrash size="md" color="tomato" />
-                                  </ActionIcon>
-                                </Center>
-                              </td>
-                            </tr>
-                          );
-                        },
-                      )}
-                    </tbody>
-                  </Table>
-
-                  <Space h="xs" />
-
-                  <Pagination
-                    disabled={
-                      Math.ceil(ingredientsForMeasurementUnit.totalCount / ingredientsForMeasurementUnit.limit) <=
-                      ingredientsForMeasurementUnit.page
-                    }
-                    position="center"
-                    page={ingredientsForMeasurementUnit.page}
-                    total={Math.ceil(ingredientsForMeasurementUnit.totalCount / ingredientsForMeasurementUnit.limit)}
-                    onChange={(value: number) => {
-                      setIngredientsForMeasurementUnit({ ...ingredientsForMeasurementUnit, page: value });
-                    }}
-                  />
-                </>
+              {ingredientsForMeasurementUnitError && (
+                <Text color="tomato">
+                  Error fetching ingredients for measurement unit: {ingredientsForMeasurementUnitError.message}
+                </Text>
               )}
+
+              {!ingredientsForMeasurementUnitError &&
+                ingredientsForMeasurementUnit.data &&
+                (ingredientsForMeasurementUnit.data || []).length !== 0 && (
+                  <>
+                    <Table mt="xl" withColumnBorders>
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Min Qty</th>
+                          <th>Max Qty</th>
+                          <th>Notes</th>
+                          <th>
+                            <Center>
+                              <ThemeIcon variant="outline" color="gray">
+                                <IconTrash size="sm" color="gray" />
+                              </ThemeIcon>
+                            </Center>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(ingredientsForMeasurementUnit.data || []).map(
+                          (validIngredientMeasurementUnit: ValidIngredientMeasurementUnit) => {
+                            return (
+                              <tr key={validIngredientMeasurementUnit.id}>
+                                <td>
+                                  <Link href={`/valid_ingredients/${validIngredientMeasurementUnit.ingredient.id}`}>
+                                    {validIngredientMeasurementUnit.ingredient.name}
+                                  </Link>
+                                </td>
+                                <td>
+                                  <Text>{validIngredientMeasurementUnit.allowableQuantity.min}</Text>
+                                </td>
+                                <td>
+                                  <Text>{validIngredientMeasurementUnit.allowableQuantity.max}</Text>
+                                </td>
+                                <td>
+                                  <Text>{validIngredientMeasurementUnit.notes}</Text>
+                                </td>
+                                <td>
+                                  <Center>
+                                    <ActionIcon
+                                      variant="outline"
+                                      aria-label="remove valid ingredient measurement unit"
+                                      onClick={async () => {
+                                        await apiClient
+                                          .archiveValidIngredientMeasurementUnit(validIngredientMeasurementUnit.id)
+                                          .then(() => {
+                                            setIngredientsForMeasurementUnit({
+                                              ...ingredientsForMeasurementUnit,
+                                              data: ingredientsForMeasurementUnit.data.filter(
+                                                (x: ValidIngredientMeasurementUnit) =>
+                                                  x.id !== validIngredientMeasurementUnit.id,
+                                              ),
+                                            });
+                                          })
+                                          .catch((error) => {
+                                            console.error(error);
+                                          });
+                                      }}
+                                    >
+                                      <IconTrash size="md" color="tomato" />
+                                    </ActionIcon>
+                                  </Center>
+                                </td>
+                              </tr>
+                            );
+                          },
+                        )}
+                      </tbody>
+                    </Table>
+
+                    <Space h="xs" />
+
+                    <Pagination
+                      disabled={
+                        Math.ceil(ingredientsForMeasurementUnit.totalCount / ingredientsForMeasurementUnit.limit) <=
+                        ingredientsForMeasurementUnit.page
+                      }
+                      position="center"
+                      page={ingredientsForMeasurementUnit.page}
+                      total={Math.ceil(ingredientsForMeasurementUnit.totalCount / ingredientsForMeasurementUnit.limit)}
+                      onChange={(value: number) => {
+                        setIngredientsForMeasurementUnit({ ...ingredientsForMeasurementUnit, page: value });
+                      }}
+                    />
+                  </>
+                )}
 
               <Grid>
                 <Grid.Col span="auto">
@@ -670,88 +731,96 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
             <Title order={4}>Conversions From</Title>
           </Center>
 
-          {measurementUnitsToConvertFrom && (measurementUnitsToConvertFrom || []).length !== 0 && (
-            <>
-              <Table mt="xl" withColumnBorders>
-                <thead>
-                  <tr>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Modifier</th>
-                    <th>Only For Ingredient</th>
-                    <th>Notes</th>
-                    <th>
-                      <Center>
-                        <ThemeIcon variant="outline" color="gray">
-                          <IconTrash size="sm" color="gray" />
-                        </ThemeIcon>
-                      </Center>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(measurementUnitsToConvertFrom || []).map(
-                    (validMeasurementUnitConversion: ValidMeasurementUnitConversion) => {
-                      return (
-                        <tr key={validMeasurementUnitConversion.id}>
-                          <td>
-                            <Link href={`/valid_measurement_units/${validMeasurementUnitConversion.from.id}`}>
-                              {validMeasurementUnitConversion.from.pluralName}
-                            </Link>
-                          </td>
-                          <td>
-                            <Link href={`/valid_measurement_units/${validMeasurementUnitConversion.to.id}`}>
-                              {validMeasurementUnitConversion.to.pluralName}
-                            </Link>
-                          </td>
-                          <td>
-                            <Text>{validMeasurementUnitConversion.modifier}</Text>
-                          </td>
-                          <td>
-                            {(validMeasurementUnitConversion.onlyForIngredient && (
-                              <Link href={`/valid_ingredients/${validMeasurementUnitConversion.onlyForIngredient.id}`}>
+          {measurementUnitsToConvertFromError && (
+            <Text color="tomato">Error fetching conversion units: {measurementUnitsToConvertFromError.message}</Text>
+          )}
+
+          {!measurementUnitsToConvertFromError &&
+            measurementUnitsToConvertFrom &&
+            (measurementUnitsToConvertFrom || []).length !== 0 && (
+              <>
+                <Table mt="xl" withColumnBorders>
+                  <thead>
+                    <tr>
+                      <th>From</th>
+                      <th>To</th>
+                      <th>Modifier</th>
+                      <th>Only For Ingredient</th>
+                      <th>Notes</th>
+                      <th>
+                        <Center>
+                          <ThemeIcon variant="outline" color="gray">
+                            <IconTrash size="sm" color="gray" />
+                          </ThemeIcon>
+                        </Center>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(measurementUnitsToConvertFrom || []).map(
+                      (validMeasurementUnitConversion: ValidMeasurementUnitConversion) => {
+                        return (
+                          <tr key={validMeasurementUnitConversion.id}>
+                            <td>
+                              <Link href={`/valid_measurement_units/${validMeasurementUnitConversion.from.id}`}>
+                                {validMeasurementUnitConversion.from.pluralName}
+                              </Link>
+                            </td>
+                            <td>
+                              <Link href={`/valid_measurement_units/${validMeasurementUnitConversion.to.id}`}>
                                 {validMeasurementUnitConversion.to.pluralName}
                               </Link>
-                            )) || <Text> - </Text>}
-                          </td>
-                          <td>
-                            <Text>{validMeasurementUnitConversion.notes}</Text>
-                          </td>
-                          <td>
-                            <Center>
-                              <ActionIcon
-                                variant="outline"
-                                aria-label="remove valid ingredient measurement unit"
-                                onClick={async () => {
-                                  await apiClient
-                                    .archiveValidMeasurementUnitConversion(validMeasurementUnitConversion.id)
-                                    .then(() => {
-                                      setMeasurementUnitsToConvertFrom([
-                                        ...measurementUnitsToConvertFrom.filter(
-                                          (x: ValidMeasurementUnitConversion) =>
-                                            x.id !== validMeasurementUnitConversion.id,
-                                        ),
-                                      ]);
-                                    })
-                                    .catch((error) => {
-                                      console.error(error);
-                                    });
-                                }}
-                              >
-                                <IconTrash size="md" color="tomato" />
-                              </ActionIcon>
-                            </Center>
-                          </td>
-                        </tr>
-                      );
-                    },
-                  )}
-                </tbody>
-              </Table>
+                            </td>
+                            <td>
+                              <Text>{validMeasurementUnitConversion.modifier}</Text>
+                            </td>
+                            <td>
+                              {(validMeasurementUnitConversion.onlyForIngredient && (
+                                <Link
+                                  href={`/valid_ingredients/${validMeasurementUnitConversion.onlyForIngredient.id}`}
+                                >
+                                  {validMeasurementUnitConversion.to.pluralName}
+                                </Link>
+                              )) || <Text> - </Text>}
+                            </td>
+                            <td>
+                              <Text>{validMeasurementUnitConversion.notes}</Text>
+                            </td>
+                            <td>
+                              <Center>
+                                <ActionIcon
+                                  variant="outline"
+                                  aria-label="remove valid ingredient measurement unit"
+                                  onClick={async () => {
+                                    await apiClient
+                                      .archiveValidMeasurementUnitConversion(validMeasurementUnitConversion.id)
+                                      .then(() => {
+                                        setMeasurementUnitsToConvertFrom([
+                                          ...measurementUnitsToConvertFrom.filter(
+                                            (x: ValidMeasurementUnitConversion) =>
+                                              x.id !== validMeasurementUnitConversion.id,
+                                          ),
+                                        ]);
+                                      })
+                                      .catch((error) => {
+                                        console.error(error);
+                                      });
+                                  }}
+                                >
+                                  <IconTrash size="md" color="tomato" />
+                                </ActionIcon>
+                              </Center>
+                            </td>
+                          </tr>
+                        );
+                      },
+                    )}
+                  </tbody>
+                </Table>
 
-              <Space h="xs" />
+                <Space h="xs" />
 
-              {/*
+                {/*
               <Pagination
                 disabled={
                   Math.ceil(measurementUnitsToConvertFrom.totalCount / measurementUnitsToConvertFrom.limit) <=
@@ -765,8 +834,8 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                 }}
               />
               */}
-            </>
-          )}
+              </>
+            )}
 
           <Grid>
             <Grid.Col span="auto">
@@ -902,88 +971,96 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
             <Title order={4}>Conversions To</Title>
           </Center>
 
-          {measurementUnitsToConvertTo && (measurementUnitsToConvertTo || []).length !== 0 && (
-            <>
-              <Table mt="xl" withColumnBorders>
-                <thead>
-                  <tr>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Modifier</th>
-                    <th>Only for Ingredient</th>
-                    <th>Notes</th>
-                    <th>
-                      <Center>
-                        <ThemeIcon variant="outline" color="gray">
-                          <IconTrash size="sm" color="gray" />
-                        </ThemeIcon>
-                      </Center>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(measurementUnitsToConvertTo || []).map(
-                    (validMeasurementUnitConversion: ValidMeasurementUnitConversion) => {
-                      return (
-                        <tr key={validMeasurementUnitConversion.id}>
-                          <td>
-                            <Link href={`/valid_measurement_units/${validMeasurementUnitConversion.from.id}`}>
-                              {validMeasurementUnitConversion.from.pluralName}
-                            </Link>
-                          </td>
-                          <td>
-                            <Link href={`/valid_measurement_units/${validMeasurementUnitConversion.to.id}`}>
-                              {validMeasurementUnitConversion.to.pluralName}
-                            </Link>
-                          </td>
-                          <td>
-                            <Text>{validMeasurementUnitConversion.modifier}</Text>
-                          </td>
-                          <td>
-                            {(validMeasurementUnitConversion.onlyForIngredient && (
-                              <Link href={`/valid_ingredients/${validMeasurementUnitConversion.onlyForIngredient.id}`}>
+          {measurementUnitsToConvertToError && (
+            <Text color="tomato">Error fetching conversion units: {measurementUnitsToConvertToError.message}</Text>
+          )}
+
+          {!measurementUnitsToConvertToError &&
+            measurementUnitsToConvertTo &&
+            (measurementUnitsToConvertTo || []).length !== 0 && (
+              <>
+                <Table mt="xl" withColumnBorders>
+                  <thead>
+                    <tr>
+                      <th>From</th>
+                      <th>To</th>
+                      <th>Modifier</th>
+                      <th>Only for Ingredient</th>
+                      <th>Notes</th>
+                      <th>
+                        <Center>
+                          <ThemeIcon variant="outline" color="gray">
+                            <IconTrash size="sm" color="gray" />
+                          </ThemeIcon>
+                        </Center>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(measurementUnitsToConvertTo || []).map(
+                      (validMeasurementUnitConversion: ValidMeasurementUnitConversion) => {
+                        return (
+                          <tr key={validMeasurementUnitConversion.id}>
+                            <td>
+                              <Link href={`/valid_measurement_units/${validMeasurementUnitConversion.from.id}`}>
+                                {validMeasurementUnitConversion.from.pluralName}
+                              </Link>
+                            </td>
+                            <td>
+                              <Link href={`/valid_measurement_units/${validMeasurementUnitConversion.to.id}`}>
                                 {validMeasurementUnitConversion.to.pluralName}
                               </Link>
-                            )) || <Text> - </Text>}
-                          </td>
-                          <td>
-                            <Text>{validMeasurementUnitConversion.notes}</Text>
-                          </td>
-                          <td>
-                            <Center>
-                              <ActionIcon
-                                variant="outline"
-                                aria-label="remove valid ingredient measurement unit"
-                                onClick={async () => {
-                                  await apiClient
-                                    .archiveValidMeasurementUnitConversion(validMeasurementUnitConversion.id)
-                                    .then(() => {
-                                      setMeasurementUnitsToConvertTo([
-                                        ...measurementUnitsToConvertTo.filter(
-                                          (x: ValidMeasurementUnitConversion) =>
-                                            x.id !== validMeasurementUnitConversion.id,
-                                        ),
-                                      ]);
-                                    })
-                                    .catch((error) => {
-                                      console.error(error);
-                                    });
-                                }}
-                              >
-                                <IconTrash size="md" color="tomato" />
-                              </ActionIcon>
-                            </Center>
-                          </td>
-                        </tr>
-                      );
-                    },
-                  )}
-                </tbody>
-              </Table>
+                            </td>
+                            <td>
+                              <Text>{validMeasurementUnitConversion.modifier}</Text>
+                            </td>
+                            <td>
+                              {(validMeasurementUnitConversion.onlyForIngredient && (
+                                <Link
+                                  href={`/valid_ingredients/${validMeasurementUnitConversion.onlyForIngredient.id}`}
+                                >
+                                  {validMeasurementUnitConversion.to.pluralName}
+                                </Link>
+                              )) || <Text> - </Text>}
+                            </td>
+                            <td>
+                              <Text>{validMeasurementUnitConversion.notes}</Text>
+                            </td>
+                            <td>
+                              <Center>
+                                <ActionIcon
+                                  variant="outline"
+                                  aria-label="remove valid ingredient measurement unit"
+                                  onClick={async () => {
+                                    await apiClient
+                                      .archiveValidMeasurementUnitConversion(validMeasurementUnitConversion.id)
+                                      .then(() => {
+                                        setMeasurementUnitsToConvertTo([
+                                          ...measurementUnitsToConvertTo.filter(
+                                            (x: ValidMeasurementUnitConversion) =>
+                                              x.id !== validMeasurementUnitConversion.id,
+                                          ),
+                                        ]);
+                                      })
+                                      .catch((error) => {
+                                        console.error(error);
+                                      });
+                                  }}
+                                >
+                                  <IconTrash size="md" color="tomato" />
+                                </ActionIcon>
+                              </Center>
+                            </td>
+                          </tr>
+                        );
+                      },
+                    )}
+                  </tbody>
+                </Table>
 
-              <Space h="xs" />
+                <Space h="xs" />
 
-              {/*
+                {/*
               <Pagination
                 disabled={
                   Math.ceil(measurementUnitsToConvertTo.totalCount / measurementUnitsToConvertTo.limit) <=
@@ -997,8 +1074,8 @@ function ValidMeasurementUnitPage(props: ValidMeasurementUnitPageProps) {
                 }}
               />
               */}
-            </>
-          )}
+              </>
+            )}
 
           <Grid>
             <Grid.Col span="auto">

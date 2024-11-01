@@ -3,16 +3,16 @@ import { Grid, Pagination, Stack, Table, TextInput } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import { IconSearch } from '@tabler/icons';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { EitherErrorOr, IAPIError, QueryFilter, QueryFilteredResult, User } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
-import { errorOrDefault } from '../../src/utils';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface UsersPageProps {
   pageLoadUsers: EitherErrorOr<QueryFilteredResult<User>>;
@@ -54,7 +54,7 @@ export const getServerSideProps: GetServerSideProps = async (
       };
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -70,7 +70,7 @@ export const getServerSideProps: GetServerSideProps = async (
 function UsersPage(props: UsersPageProps) {
   let { pageLoadUsers } = props;
 
-  const ogUsers = errorOrDefault(pageLoadUsers, new QueryFilteredResult<User>());
+  const ogUsers = valueOrDefault(pageLoadUsers, new QueryFilteredResult<User>());
   const [usersError] = useState<IAPIError | undefined>(pageLoadUsers.error);
   const [users, setUsers] = useState<QueryFilteredResult<User>>(ogUsers);
   const [search, setSearch] = useState('');

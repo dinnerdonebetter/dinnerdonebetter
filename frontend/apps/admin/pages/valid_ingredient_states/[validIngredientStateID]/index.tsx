@@ -1,23 +1,23 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
 import {
-  TextInput,
-  Button,
-  Group,
-  Container,
-  Select,
-  Autocomplete,
-  Divider,
-  Text,
-  Space,
-  Title,
-  ThemeIcon,
   ActionIcon,
+  Autocomplete,
   AutocompleteItem,
+  Button,
   Center,
+  Container,
+  Divider,
   Grid,
+  Group,
   Pagination,
+  Select,
+  Space,
   Table,
+  Text,
+  TextInput,
+  ThemeIcon,
+  Title,
 } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
@@ -27,24 +27,24 @@ import { IconTrash } from '@tabler/icons';
 import { z } from 'zod';
 
 import {
+  APIResponse,
+  EitherErrorOr,
+  IAPIError,
+  QueryFilteredResult,
   ValidIngredient,
   ValidIngredientState,
   ValidIngredientStateIngredient,
   ValidIngredientStateIngredientCreationRequestInput,
-  QueryFilteredResult,
   ValidIngredientStateUpdateRequestInput,
-  APIResponse,
-  EitherErrorOr,
-  IAPIError,
 } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
-import { errorOrDefault } from '../../../src/utils';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ValidIngredientStatePageProps {
   pageLoadValidIngredientState: EitherErrorOr<ValidIngredientState>;
@@ -135,7 +135,7 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
   const apiClient = buildLocalClient();
   const { pageLoadValidIngredientState, pageLoadValidIngredientStates } = props;
 
-  const ogValidIngredientState: ValidIngredientState = errorOrDefault(
+  const ogValidIngredientState: ValidIngredientState = valueOrDefault(
     pageLoadValidIngredientState,
     new ValidIngredientState(),
   );
@@ -152,7 +152,7 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
     );
   const [ingredientQuery, setIngredientQuery] = useState('');
 
-  const ogIngredientsForIngredientState: QueryFilteredResult<ValidIngredientStateIngredient> = errorOrDefault(
+  const ogIngredientsForIngredientState: QueryFilteredResult<ValidIngredientStateIngredient> = valueOrDefault(
     pageLoadValidIngredientStates,
     new QueryFilteredResult<ValidIngredientStateIngredient>(),
   );

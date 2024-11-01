@@ -1,9 +1,12 @@
-import { AxiosError } from 'axios';
+import { Text } from '@mantine/core';
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import { useState } from 'react';
 
 import {
   APIResponse,
+  EitherErrorOr,
   Household,
+  IAPIError,
   MealPlan,
   MealPlanGroceryListItem,
   MealPlanTask,
@@ -17,15 +20,16 @@ import { AppLayout } from '../../../../../src/layouts';
 import { RecipeComponent } from '../../../../../src/components';
 import { serverSideTracer } from '../../../../../src/tracer';
 import { serverSideAnalytics } from '../../../../../src/analytics';
-import { extractUserInfoFromCookie } from '../../../../../src/auth';
+import { userSessionDetailsOrRedirect } from '../../../../../src/auth';
+import { valueOrDefault } from '../../../../../src/utils';
 
 declare interface MealPlanRecipePageProps {
-  recipe: Recipe;
-  mealPlan: MealPlan;
+  recipe: EitherErrorOr<Recipe>;
+  mealPlan: EitherErrorOr<MealPlan>;
   userID: string;
-  household: Household;
-  groceryList: MealPlanGroceryListItem[];
-  tasks: MealPlanTask[];
+  household: EitherErrorOr<Household>;
+  groceryList: EitherErrorOr<MealPlanGroceryListItem[]>;
+  tasks: EitherErrorOr<MealPlanTask[]>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -58,21 +62,33 @@ export const getServerSideProps: GetServerSideProps = async (
   const recipeID = recipeIDParam.toString();
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (userSessionData?.userID) {
+    const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'RECIPE_PAGE', context, {
       recipeID,
       householdID: userSessionData.householdID,
     });
+    analyticsTimer.end();
   }
-  extractCookieTimer.end();
 
   const fetchMealPlanTimer = timing.addEvent('fetch meal plan');
   const mealPlanPromise = apiClient
     .getMealPlan(mealPlanID)
     .then((result: APIResponse<MealPlan>) => {
       span.addEvent(`meal plan retrieved`);
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMealPlanTimer.end();
@@ -83,7 +99,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getActiveHousehold()
     .then((result: APIResponse<Household>) => {
       span.addEvent(`household retrieved`);
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchHouseholdTimer.end();
@@ -94,7 +114,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getMealPlanTasks(mealPlanID)
     .then((result: QueryFilteredResult<MealPlanTask>) => {
       span.addEvent('meal plan grocery list items retrieved');
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMealPlanTasksTimer.end();
@@ -105,7 +129,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getMealPlanGroceryListItemsForMealPlan(mealPlanID)
     .then((result: QueryFilteredResult<MealPlanGroceryListItem>) => {
       span.addEvent('meal plan grocery list items retrieved');
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMealPlanGroceryListItemsTimer.end();
@@ -116,47 +144,23 @@ export const getServerSideProps: GetServerSideProps = async (
     .getRecipe(recipeID.toString())
     .then((result: APIResponse<Recipe>) => {
       span.addEvent(`recipe retrieved`);
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchRecipeTimer.end();
     });
 
-  let notFound = false;
-  let notAuthorized = false;
   const retrievedData = await Promise.all([
     mealPlanPromise,
     householdPromise,
     groceryListPromise,
     tasksPromise,
     recipePromise,
-  ]).catch((error: AxiosError) => {
-    if (error.response?.status === 404) {
-      notFound = true;
-    } else if (error.response?.status === 401) {
-      notAuthorized = true;
-    } else {
-      console.error(`${error.response?.status} ${error.response?.config?.url}}`);
-    }
-  });
-
-  if (notFound || !retrievedData) {
-    return {
-      redirect: {
-        destination: '/meal_plans',
-        permanent: false,
-      },
-    };
-  }
-
-  if (notAuthorized) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
+  ]);
 
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
@@ -175,10 +179,17 @@ export const getServerSideProps: GetServerSideProps = async (
   };
 };
 
-export default function MealPlanRecipePage({ recipe }: MealPlanRecipePageProps) {
+export default function MealPlanRecipePage(props: MealPlanRecipePageProps) {
+  const pageLoadRecipe = props.recipe;
+
+  const ogRecipe = valueOrDefault(pageLoadRecipe, new Recipe());
+  const [recipe] = useState<Recipe>(ogRecipe);
+  const [recipeError] = useState<IAPIError | undefined>(pageLoadRecipe.error);
+
   return (
     <AppLayout title={recipe.name} userLoggedIn>
-      <RecipeComponent recipe={recipe} />
+      {recipeError && <Text color="tomato">Error loading recipe: {recipeError.message}</Text>}
+      {!recipeError && <RecipeComponent recipe={recipe} />}
     </AppLayout>
   );
 }

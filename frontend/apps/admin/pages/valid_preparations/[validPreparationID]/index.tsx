@@ -1,24 +1,24 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
 import {
-  TextInput,
-  Button,
-  Group,
-  Container,
-  Switch,
-  NumberInput,
-  Autocomplete,
-  Divider,
-  Space,
-  Title,
   ActionIcon,
+  Autocomplete,
   AutocompleteItem,
+  Button,
   Center,
+  Container,
+  Divider,
   Grid,
+  Group,
+  NumberInput,
   Pagination,
+  Space,
+  Switch,
   Table,
   Text,
+  TextInput,
   ThemeIcon,
+  Title,
 } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
@@ -28,29 +28,32 @@ import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import {
+  APIResponse,
+  EitherErrorOr,
+  IAPIError,
+  QueryFilteredResult,
   ValidIngredient,
   ValidIngredientPreparation,
-  ValidPreparation,
-  QueryFilteredResult,
-  ValidPreparationInstrument,
-  ValidPreparationUpdateRequestInput,
   ValidIngredientPreparationCreationRequestInput,
-  ValidPreparationInstrumentCreationRequestInput,
   ValidInstrument,
-  APIResponse,
+  ValidPreparation,
+  ValidPreparationInstrument,
+  ValidPreparationInstrumentCreationRequestInput,
+  ValidPreparationUpdateRequestInput,
 } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ValidPreparationPageProps {
-  pageLoadValidPreparation: ValidPreparation;
-  pageLoadValidPreparationInstruments: QueryFilteredResult<ValidPreparationInstrument>;
-  pageLoadValidIngredientPreparations: QueryFilteredResult<ValidIngredientPreparation>;
+  pageLoadValidPreparation: EitherErrorOr<ValidPreparation>;
+  pageLoadValidPreparationInstruments: EitherErrorOr<QueryFilteredResult<ValidPreparationInstrument>>;
+  pageLoadValidIngredientPreparations: EitherErrorOr<QueryFilteredResult<ValidIngredientPreparation>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -83,6 +86,10 @@ export const getServerSideProps: GetServerSideProps = async (
       span.addEvent('valid preparation retrieved');
       return result;
     })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
+    })
     .finally(() => {
       fetchValidPreparationTimer.end();
     });
@@ -94,6 +101,10 @@ export const getServerSideProps: GetServerSideProps = async (
       span.addEvent('valid preparation retrieved');
       return result;
     })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
+    })
     .finally(() => {
       fetchValidPreparationInstrumentsTimer.end();
     });
@@ -104,6 +115,10 @@ export const getServerSideProps: GetServerSideProps = async (
     .then((result: QueryFilteredResult<ValidIngredientPreparation>) => {
       span.addEvent('valid preparation retrieved');
       return result;
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchValidIngredientPreparationsTimer.end();
@@ -140,8 +155,10 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
   const apiClient = buildLocalClient();
   const { pageLoadValidPreparation, pageLoadValidPreparationInstruments, pageLoadValidIngredientPreparations } = props;
 
-  const [validPreparation, setValidPreparation] = useState<ValidPreparation>(pageLoadValidPreparation);
-  const [originalValidPreparation, setOriginalValidPreparation] = useState<ValidPreparation>(pageLoadValidPreparation);
+  const ogValidPreparation = valueOrDefault(pageLoadValidPreparation, new ValidPreparation());
+  const [validPreparationError] = useState<IAPIError | undefined>(pageLoadValidPreparation.error);
+  const [validPreparation, setValidPreparation] = useState<ValidPreparation>(ogValidPreparation);
+  const [originalValidPreparation, setOriginalValidPreparation] = useState<ValidPreparation>(ogValidPreparation);
 
   const [newIngredientForPreparationInput, setNewIngredientForPreparationInput] =
     useState<ValidIngredientPreparationCreationRequestInput>(
@@ -150,9 +167,15 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
       }),
     );
   const [ingredientQuery, setIngredientQuery] = useState('');
-  const [ingredientsForPreparation, setIngredientsForPreparation] = useState<
-    QueryFilteredResult<ValidIngredientPreparation>
-  >(pageLoadValidIngredientPreparations);
+
+  const ogValidIngredientPreparations = valueOrDefault(
+    pageLoadValidIngredientPreparations,
+    new QueryFilteredResult<ValidIngredientPreparation>(),
+  );
+
+  const [ingredientsForPreparationError] = useState<IAPIError | undefined>(pageLoadValidIngredientPreparations.error);
+  const [ingredientsForPreparation, setIngredientsForPreparation] =
+    useState<QueryFilteredResult<ValidIngredientPreparation>>(ogValidIngredientPreparations);
   const [suggestedIngredients, setSuggestedIngredients] = useState<ValidIngredient[]>([]);
 
   useEffect(() => {
@@ -185,9 +208,15 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
       }),
     );
   const [instrumentQuery, setInstrumentQuery] = useState('');
-  const [instrumentsForPreparation, setInstrumentsForPreparation] = useState<
-    QueryFilteredResult<ValidPreparationInstrument>
-  >(pageLoadValidPreparationInstruments);
+
+  const ogValidPreparationInstruments = valueOrDefault(
+    pageLoadValidPreparationInstruments,
+    new QueryFilteredResult<ValidPreparationInstrument>(),
+  );
+
+  const [instrumentsForPreparationError] = useState<IAPIError | undefined>(pageLoadValidPreparationInstruments.error);
+  const [instrumentsForPreparation, setInstrumentsForPreparation] =
+    useState<QueryFilteredResult<ValidPreparationInstrument>>(ogValidPreparationInstruments);
   const [suggestedInstruments, setSuggestedInstruments] = useState<ValidInstrument[]>([]);
 
   useEffect(() => {
@@ -281,71 +310,75 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
   return (
     <AppLayout title="Valid Preparation">
       <Container size="sm">
-        <form onSubmit={updateForm.onSubmit(submit)}>
-          <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
-          <TextInput label="Past Tense" placeholder="thinged" {...updateForm.getInputProps('pastTense')} />
-          <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
-          <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
+        {validPreparationError && <Text color="tomato"> {validPreparationError.message} </Text>}
 
-          <Switch
-            checked={updateForm.values.yieldsNothing}
-            label="Yields Nothing"
-            {...updateForm.getInputProps('yieldsNothing')}
-          />
-          <Switch
-            checked={updateForm.values.restrictToIngredients}
-            label="Restrict To Ingredients"
-            {...updateForm.getInputProps('restrictToIngredients')}
-          />
-          <Switch
-            checked={updateForm.values.temperatureRequired}
-            label="Temperature Required"
-            {...updateForm.getInputProps('temperatureRequired')}
-          />
-          <Switch
-            checked={updateForm.values.timeEstimateRequired}
-            label="Time Estimate Required"
-            {...updateForm.getInputProps('timeEstimateRequired')}
-          />
+        {!validPreparationError && (
+          <form onSubmit={updateForm.onSubmit(submit)}>
+            <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
+            <TextInput label="Past Tense" placeholder="thinged" {...updateForm.getInputProps('pastTense')} />
+            <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
+            <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
 
-          <NumberInput label="Minimum Ingredient Count" {...updateForm.getInputProps('ingredientCount.min')} />
-          <NumberInput label="Maximum Ingredient Count" {...updateForm.getInputProps('ingredientCount.max')} />
-          <NumberInput label="Minimum Instrument Count" {...updateForm.getInputProps('instrumentCount.min')} />
-          <NumberInput label="Maximum Instrument Count" {...updateForm.getInputProps('instrumentCount.max')} />
+            <Switch
+              checked={updateForm.values.yieldsNothing}
+              label="Yields Nothing"
+              {...updateForm.getInputProps('yieldsNothing')}
+            />
+            <Switch
+              checked={updateForm.values.restrictToIngredients}
+              label="Restrict To Ingredients"
+              {...updateForm.getInputProps('restrictToIngredients')}
+            />
+            <Switch
+              checked={updateForm.values.temperatureRequired}
+              label="Temperature Required"
+              {...updateForm.getInputProps('temperatureRequired')}
+            />
+            <Switch
+              checked={updateForm.values.timeEstimateRequired}
+              label="Time Estimate Required"
+              {...updateForm.getInputProps('timeEstimateRequired')}
+            />
 
-          <Switch
-            checked={updateForm.values.consumesVessel}
-            label="Consumes Vessel"
-            {...updateForm.getInputProps('consumesVessel')}
-          />
-          <Switch
-            checked={updateForm.values.onlyForVessels}
-            label="Only For Vessels"
-            {...updateForm.getInputProps('onlyForVessels')}
-          />
-          <NumberInput label="Minimum Vessel Count" {...updateForm.getInputProps('vesselCount.min')} />
-          <NumberInput label="Maximum Vessel Count" {...updateForm.getInputProps('vesselCount.max')} />
+            <NumberInput label="Minimum Ingredient Count" {...updateForm.getInputProps('ingredientCount.min')} />
+            <NumberInput label="Maximum Ingredient Count" {...updateForm.getInputProps('ingredientCount.max')} />
+            <NumberInput label="Minimum Instrument Count" {...updateForm.getInputProps('instrumentCount.min')} />
+            <NumberInput label="Maximum Instrument Count" {...updateForm.getInputProps('instrumentCount.max')} />
 
-          <Group position="center">
-            <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
-              Submit
-            </Button>
-            <Button
-              type="submit"
-              color="red"
-              fullWidth
-              onClick={() => {
-                if (confirm('Are you sure you want to delete this valid preparation?')) {
-                  apiClient.archiveValidPreparation(validPreparation.id).then(() => {
-                    router.push('/valid_preparations');
-                  });
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </Group>
-        </form>
+            <Switch
+              checked={updateForm.values.consumesVessel}
+              label="Consumes Vessel"
+              {...updateForm.getInputProps('consumesVessel')}
+            />
+            <Switch
+              checked={updateForm.values.onlyForVessels}
+              label="Only For Vessels"
+              {...updateForm.getInputProps('onlyForVessels')}
+            />
+            <NumberInput label="Minimum Vessel Count" {...updateForm.getInputProps('vesselCount.min')} />
+            <NumberInput label="Maximum Vessel Count" {...updateForm.getInputProps('vesselCount.max')} />
+
+            <Group position="center">
+              <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
+                Submit
+              </Button>
+              <Button
+                type="submit"
+                color="red"
+                fullWidth
+                onClick={() => {
+                  if (confirm('Are you sure you want to delete this valid preparation?')) {
+                    apiClient.archiveValidPreparation(validPreparation.id).then(() => {
+                      router.push('/valid_preparations');
+                    });
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            </Group>
+          </form>
+        )}
 
         {/*
 
@@ -362,83 +395,88 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
             <Title order={4}>Instruments</Title>
           </Center>
 
-          {instrumentsForPreparation.data && (instrumentsForPreparation.data || []).length !== 0 && (
-            <>
-              <Table mt="xl" withColumnBorders>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Notes</th>
-                    <th>
-                      <Center>
-                        <ThemeIcon variant="outline" color="gray">
-                          <IconTrash size="sm" color="gray" />
-                        </ThemeIcon>
-                      </Center>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(instrumentsForPreparation.data || []).map(
-                    (validInstrumentsForPreparation: ValidPreparationInstrument) => {
-                      return (
-                        <tr key={validInstrumentsForPreparation.id}>
-                          <td>
-                            <Link href={`/valid_instruments/${validInstrumentsForPreparation.instrument.id}`}>
-                              {validInstrumentsForPreparation.instrument.name}
-                            </Link>
-                          </td>
-                          <td>
-                            <Text>{validInstrumentsForPreparation.notes}</Text>
-                          </td>
-                          <td>
-                            <Center>
-                              <ActionIcon
-                                variant="outline"
-                                aria-label="remove valid instrument measurement unit"
-                                onClick={async () => {
-                                  await apiClient
-                                    .archiveValidPreparationInstrument(validInstrumentsForPreparation.id)
-                                    .then(() => {
-                                      setInstrumentsForPreparation({
-                                        ...instrumentsForPreparation,
-                                        data: instrumentsForPreparation.data.filter(
-                                          (x: ValidPreparationInstrument) => x.id !== validInstrumentsForPreparation.id,
-                                        ),
+          {instrumentsForPreparationError && <Text color="tomato"> {instrumentsForPreparationError.message} </Text>}
+
+          {!instrumentsForPreparationError &&
+            instrumentsForPreparation.data &&
+            (instrumentsForPreparation.data || []).length !== 0 && (
+              <>
+                <Table mt="xl" withColumnBorders>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Notes</th>
+                      <th>
+                        <Center>
+                          <ThemeIcon variant="outline" color="gray">
+                            <IconTrash size="sm" color="gray" />
+                          </ThemeIcon>
+                        </Center>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(instrumentsForPreparation.data || []).map(
+                      (validInstrumentsForPreparation: ValidPreparationInstrument) => {
+                        return (
+                          <tr key={validInstrumentsForPreparation.id}>
+                            <td>
+                              <Link href={`/valid_instruments/${validInstrumentsForPreparation.instrument.id}`}>
+                                {validInstrumentsForPreparation.instrument.name}
+                              </Link>
+                            </td>
+                            <td>
+                              <Text>{validInstrumentsForPreparation.notes}</Text>
+                            </td>
+                            <td>
+                              <Center>
+                                <ActionIcon
+                                  variant="outline"
+                                  aria-label="remove valid instrument measurement unit"
+                                  onClick={async () => {
+                                    await apiClient
+                                      .archiveValidPreparationInstrument(validInstrumentsForPreparation.id)
+                                      .then(() => {
+                                        setInstrumentsForPreparation({
+                                          ...instrumentsForPreparation,
+                                          data: instrumentsForPreparation.data.filter(
+                                            (x: ValidPreparationInstrument) =>
+                                              x.id !== validInstrumentsForPreparation.id,
+                                          ),
+                                        });
+                                      })
+                                      .catch((error) => {
+                                        console.error(error);
                                       });
-                                    })
-                                    .catch((error) => {
-                                      console.error(error);
-                                    });
-                                }}
-                              >
-                                <IconTrash size="md" color="tomato" />
-                              </ActionIcon>
-                            </Center>
-                          </td>
-                        </tr>
-                      );
-                    },
-                  )}
-                </tbody>
-              </Table>
+                                  }}
+                                >
+                                  <IconTrash size="md" color="tomato" />
+                                </ActionIcon>
+                              </Center>
+                            </td>
+                          </tr>
+                        );
+                      },
+                    )}
+                  </tbody>
+                </Table>
 
-              <Space h="xs" />
+                <Space h="xs" />
 
-              <Pagination
-                disabled={
-                  Math.ceil(instrumentsForPreparation.totalCount / instrumentsForPreparation.limit) <=
-                  instrumentsForPreparation.page
-                }
-                position="center"
-                page={instrumentsForPreparation.page}
-                total={Math.ceil(instrumentsForPreparation.totalCount / instrumentsForPreparation.limit)}
-                onChange={(value: number) => {
-                  setInstrumentsForPreparation({ ...instrumentsForPreparation, page: value });
-                }}
-              />
-            </>
-          )}
+                <Pagination
+                  disabled={
+                    Math.ceil(instrumentsForPreparation.totalCount / instrumentsForPreparation.limit) <=
+                    instrumentsForPreparation.page
+                  }
+                  position="center"
+                  page={instrumentsForPreparation.page}
+                  total={Math.ceil(instrumentsForPreparation.totalCount / instrumentsForPreparation.limit)}
+                  onChange={(value: number) => {
+                    setInstrumentsForPreparation({ ...instrumentsForPreparation, page: value });
+                  }}
+                />
+              </>
+            )}
 
           <Grid>
             <Grid.Col span="auto">
@@ -534,83 +572,88 @@ function ValidPreparationPage(props: ValidPreparationPageProps) {
             <Title order={4}>Ingredients</Title>
           </Center>
 
-          {ingredientsForPreparation.data && (ingredientsForPreparation.data || []).length !== 0 && (
-            <>
-              <Table mt="xl" withColumnBorders>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Notes</th>
-                    <th>
-                      <Center>
-                        <ThemeIcon variant="outline" color="gray">
-                          <IconTrash size="sm" color="gray" />
-                        </ThemeIcon>
-                      </Center>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(ingredientsForPreparation.data || []).map(
-                    (validIngredientsForPreparation: ValidIngredientPreparation) => {
-                      return (
-                        <tr key={validIngredientsForPreparation.id}>
-                          <td>
-                            <Link href={`/valid_ingredients/${validIngredientsForPreparation.ingredient.id}`}>
-                              {validIngredientsForPreparation.ingredient.name}
-                            </Link>
-                          </td>
-                          <td>
-                            <Text>{validIngredientsForPreparation.notes}</Text>
-                          </td>
-                          <td>
-                            <Center>
-                              <ActionIcon
-                                variant="outline"
-                                aria-label="remove valid ingredient measurement unit"
-                                onClick={async () => {
-                                  await apiClient
-                                    .archiveValidIngredientPreparation(validIngredientsForPreparation.id)
-                                    .then(() => {
-                                      setIngredientsForPreparation({
-                                        ...ingredientsForPreparation,
-                                        data: ingredientsForPreparation.data.filter(
-                                          (x: ValidIngredientPreparation) => x.id !== validIngredientsForPreparation.id,
-                                        ),
+          {ingredientsForPreparationError && <Text color="tomato"> {ingredientsForPreparationError.message} </Text>}
+
+          {!ingredientsForPreparationError &&
+            ingredientsForPreparation.data &&
+            (ingredientsForPreparation.data || []).length !== 0 && (
+              <>
+                <Table mt="xl" withColumnBorders>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Notes</th>
+                      <th>
+                        <Center>
+                          <ThemeIcon variant="outline" color="gray">
+                            <IconTrash size="sm" color="gray" />
+                          </ThemeIcon>
+                        </Center>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(ingredientsForPreparation.data || []).map(
+                      (validIngredientsForPreparation: ValidIngredientPreparation) => {
+                        return (
+                          <tr key={validIngredientsForPreparation.id}>
+                            <td>
+                              <Link href={`/valid_ingredients/${validIngredientsForPreparation.ingredient.id}`}>
+                                {validIngredientsForPreparation.ingredient.name}
+                              </Link>
+                            </td>
+                            <td>
+                              <Text>{validIngredientsForPreparation.notes}</Text>
+                            </td>
+                            <td>
+                              <Center>
+                                <ActionIcon
+                                  variant="outline"
+                                  aria-label="remove valid ingredient measurement unit"
+                                  onClick={async () => {
+                                    await apiClient
+                                      .archiveValidIngredientPreparation(validIngredientsForPreparation.id)
+                                      .then(() => {
+                                        setIngredientsForPreparation({
+                                          ...ingredientsForPreparation,
+                                          data: ingredientsForPreparation.data.filter(
+                                            (x: ValidIngredientPreparation) =>
+                                              x.id !== validIngredientsForPreparation.id,
+                                          ),
+                                        });
+                                      })
+                                      .catch((error) => {
+                                        console.error(error);
                                       });
-                                    })
-                                    .catch((error) => {
-                                      console.error(error);
-                                    });
-                                }}
-                              >
-                                <IconTrash size="md" color="tomato" />
-                              </ActionIcon>
-                            </Center>
-                          </td>
-                        </tr>
-                      );
-                    },
-                  )}
-                </tbody>
-              </Table>
+                                  }}
+                                >
+                                  <IconTrash size="md" color="tomato" />
+                                </ActionIcon>
+                              </Center>
+                            </td>
+                          </tr>
+                        );
+                      },
+                    )}
+                  </tbody>
+                </Table>
 
-              <Space h="xs" />
+                <Space h="xs" />
 
-              <Pagination
-                disabled={
-                  Math.ceil(ingredientsForPreparation.totalCount / ingredientsForPreparation.limit) <=
-                  ingredientsForPreparation.page
-                }
-                position="center"
-                page={ingredientsForPreparation.page}
-                total={Math.ceil(ingredientsForPreparation.totalCount / ingredientsForPreparation.limit)}
-                onChange={(value: number) => {
-                  setIngredientsForPreparation({ ...ingredientsForPreparation, page: value });
-                }}
-              />
-            </>
-          )}
+                <Pagination
+                  disabled={
+                    Math.ceil(ingredientsForPreparation.totalCount / ingredientsForPreparation.limit) <=
+                    ingredientsForPreparation.page
+                  }
+                  position="center"
+                  page={ingredientsForPreparation.page}
+                  total={Math.ceil(ingredientsForPreparation.totalCount / ingredientsForPreparation.limit)}
+                  onChange={(value: number) => {
+                    setIngredientsForPreparation({ ...ingredientsForPreparation, page: value });
+                  }}
+                />
+              </>
+            )}
 
           <Grid>
             <Grid.Col span="auto">

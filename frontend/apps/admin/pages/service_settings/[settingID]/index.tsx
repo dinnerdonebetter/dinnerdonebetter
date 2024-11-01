@@ -1,18 +1,18 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
-import { TextInput, Button, Group, Container, Divider, Space, Select } from '@mantine/core';
+import { Button, Container, Divider, Group, Select, Space, TextInput } from '@mantine/core';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import { APIResponse, EitherErrorOr, IAPIError, ServiceSetting } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
-import { errorOrDefault } from '../../../src/utils';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ServiceSettingPageProps {
   pageLoadServiceSetting: EitherErrorOr<ServiceSetting>;
@@ -49,7 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return result.data;
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -78,7 +78,7 @@ function ServiceSettingPage(props: ServiceSettingPageProps) {
   const apiClient = buildLocalClient();
   const { pageLoadServiceSetting } = props;
 
-  const ogServiceSetting: ServiceSetting = errorOrDefault(pageLoadServiceSetting, new ServiceSetting());
+  const ogServiceSetting: ServiceSetting = valueOrDefault(pageLoadServiceSetting, new ServiceSetting());
   const [serviceSettingError] = useState<IAPIError | undefined>(pageLoadServiceSetting.error);
   const [serviceSetting] = useState<ServiceSetting>(ogServiceSetting);
 

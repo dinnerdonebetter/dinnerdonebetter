@@ -1,6 +1,6 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
-import { TextInput, Button, Group, Container, Text } from '@mantine/core';
+import { Button, Container, Group, Text, TextInput } from '@mantine/core';
 import { z } from 'zod';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
@@ -12,14 +12,14 @@ import {
   ValidIngredientGroup,
   ValidIngredientGroupUpdateRequestInput,
 } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
 import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
-import { errorOrDefault } from '../../../src/utils';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ValidIngredientGroupPageProps {
   pageLoadValidIngredientGroup: EitherErrorOr<ValidIngredientGroup>;
@@ -56,7 +56,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return result.data;
     })
     .catch((error: IAPIError) => {
-      span.addEvent('error occurred');
+      span.addEvent('error occurred', { error: error.message });
       return { error };
     })
     .finally(() => {
@@ -88,7 +88,7 @@ function ValidIngredientGroupPage(props: ValidIngredientGroupPageProps) {
 
   const apiClient = buildLocalClient();
 
-  const ogValidIngredientGroup: ValidIngredientGroup = errorOrDefault(
+  const ogValidIngredientGroup: ValidIngredientGroup = valueOrDefault(
     pageLoadValidIngredientGroup,
     new ValidIngredientGroup(),
   );
