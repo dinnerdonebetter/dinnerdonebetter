@@ -1,19 +1,21 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Button, Center, Container, List } from '@mantine/core';
+import { Button, Center, Container, List, Text } from '@mantine/core';
+import { useState } from 'react';
 
-import { Meal, QueryFilteredResult, QueryFilter } from '@dinnerdonebetter/models';
+import { Meal, QueryFilteredResult, QueryFilter, EitherErrorOr, IAPIError, MealPlan } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
 import { serverSideTracer } from '../../src/tracer';
-import { buildServerSideClient } from '../../src/client';
+import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideAnalytics } from '../../src/analytics';
-import { extractUserInfoFromCookie } from '../../src/auth';
+import { userSessionDetailsOrRedirect } from '../../src/auth';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface MealsPageProps {
-  meals: Meal[];
+  meals: EitherErrorOr<Meal[]>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -28,45 +30,52 @@ export const getServerSideProps: GetServerSideProps = async (
   let props!: GetServerSidePropsResult<MealsPageProps>;
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (userSessionData?.userID) {
+    const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'MEALS_PAGE', context, {
       query: context.query,
       householdID: userSessionData.householdID,
     });
+    analyticsTimer.end();
   } else {
-    props = {
+    return {
       redirect: {
         destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
         permanent: false,
       },
     };
-    return props;
   }
-  extractCookieTimer.end();
 
-  const apiClient = buildServerSideClient(context).withSpan(span);
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const fetchMealsTimer = timing.addEvent('fetch meals');
   await apiClient
     .getMeals(qf)
     .then((result: QueryFilteredResult<Meal>) => {
       span.addEvent('meals retrieved');
-      props = { props: { meals: result.data } };
+      return { data: result.data };
     })
-    .catch((error) => {
-      span.addEvent('error retrieving meals');
-      if (error.response?.status === 401) {
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-        return;
-      }
-
-      throw error;
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMealsTimer.end();
@@ -80,7 +89,11 @@ export const getServerSideProps: GetServerSideProps = async (
 
 function MealsPage(props: MealsPageProps) {
   const router = useRouter();
-  const { meals } = props;
+
+  const pageLoadMeals = props.meals;
+  const ogMeals = valueOrDefault(pageLoadMeals, new Array<MealPlan>());
+  const [mealsError] = useState<IAPIError | undefined>(pageLoadMeals.error);
+  const [meals] = useState<Meal[]>(ogMeals);
 
   const mealItems = (meals || []).map((meal: Meal) => (
     <List.Item key={meal.id}>
@@ -101,7 +114,10 @@ function MealsPage(props: MealsPageProps) {
             New Meal
           </Button>
         </Center>
-        <List>{mealItems}</List>
+
+        {mealsError && <Text color="tomato">{mealsError.message}</Text>}
+
+        {!mealsError && <List>{mealItems}</List>}
       </Container>
     </AppLayout>
   );

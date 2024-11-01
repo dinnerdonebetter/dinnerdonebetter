@@ -1,5 +1,5 @@
 import { buildServerSideLogger } from '@dinnerdonebetter/logger';
-import { buildAPIProxyRoute, UserSessionDetails } from '@dinnerdonebetter/next-routes';
+import { UserSessionDetails, buildAPIProxyRoute } from '@dinnerdonebetter/next-routes';
 import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
 import { serverSideTracer } from '../../../src/tracer';

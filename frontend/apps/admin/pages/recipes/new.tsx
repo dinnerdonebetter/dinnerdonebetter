@@ -1,24 +1,24 @@
 import {
   ActionIcon,
-  Button,
-  Card,
-  Divider,
-  Grid,
-  Text,
-  Stack,
-  Textarea,
-  TextInput,
   Autocomplete,
   AutocompleteItem,
-  SelectItem,
+  Box,
+  Button,
+  Card,
+  Center,
+  Collapse,
+  Divider,
+  Grid,
   NumberInput,
   Select,
-  Switch,
+  SelectItem,
   Space,
-  Collapse,
-  Box,
+  Stack,
+  Switch,
+  Text,
+  TextInput,
+  Textarea,
   Title,
-  Center,
 } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
@@ -27,39 +27,39 @@ import { FormEvent, useReducer, useState } from 'react';
 import { z } from 'zod';
 
 import {
+  APIResponse,
+  QueryFilteredResult,
   Recipe,
+  RecipeCreationRequestInput,
+  RecipeStepCompletionConditionCreationRequestInput,
+  RecipeStepCreationRequestInput,
   RecipeStepIngredient,
+  RecipeStepIngredientCreationRequestInput,
   RecipeStepInstrument,
+  RecipeStepInstrumentCreationRequestInput,
+  RecipeStepProductCreationRequestInput,
+  RecipeStepVessel,
+  RecipeStepVesselCreationRequestInput,
   ValidIngredient,
   ValidIngredientState,
   ValidMeasurementUnit,
   ValidPreparation,
   ValidPreparationInstrument,
   ValidRecipeStepProductType,
-  QueryFilteredResult,
-  RecipeStepCreationRequestInput,
-  RecipeStepInstrumentCreationRequestInput,
-  RecipeStepIngredientCreationRequestInput,
-  RecipeStepCompletionConditionCreationRequestInput,
-  RecipeStepProductCreationRequestInput,
-  RecipeCreationRequestInput,
-  RecipeStepVesselCreationRequestInput,
-  RecipeStepVessel,
   ValidVessel,
-  APIResponse,
 } from '@dinnerdonebetter/models';
 import {
-  determineAvailableRecipeStepProducts,
-  determineAvailableRecipeStepVessels,
-  determinePreparedInstrumentOptions,
   RecipeStepInstrumentSuggestion,
   RecipeStepProductSuggestion,
   RecipeStepVesselSuggestion,
+  determineAvailableRecipeStepProducts,
+  determineAvailableRecipeStepVessels,
+  determinePreparedInstrumentOptions,
 } from '@dinnerdonebetter/utils';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../..//src/layouts';
-import { useRecipeCreationReducer, RecipeCreationPageState } from '../../src/reducers';
+import { RecipeCreationPageState, useRecipeCreationReducer } from '../../src/reducers';
 
 const validRecipeStepProductTypes = ['ingredient', 'instrument', 'vessel'];
 

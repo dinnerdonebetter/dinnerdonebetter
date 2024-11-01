@@ -38,21 +38,24 @@ import {
   TOTPSecretRefreshInput,
   APIResponse,
   PasswordResetResponse,
+  EitherErrorOr,
+  IAPIError,
 } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildServerSideClient } from '../../../src/client';
+import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { AppLayout } from '../../../src/layouts';
 import { serverSideTracer } from '../../../src/tracer';
 import { serverSideAnalytics } from '../../../src/analytics';
-import { extractUserInfoFromCookie } from '../../../src/auth';
+import { userSessionDetailsOrRedirect } from '../../../src/auth';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface HouseholdSettingsPageProps {
-  user: User;
-  invitations: HouseholdInvitation[];
-  allSettings: ServiceSetting[];
-  configuredSettings: ServiceSettingConfiguration[];
+  user: EitherErrorOr<User>;
+  invitations: EitherErrorOr<QueryFilteredResult<HouseholdInvitation>>;
+  allSettings: EitherErrorOr<QueryFilteredResult<ServiceSetting>>;
+  configuredSettings: EitherErrorOr<QueryFilteredResult<ServiceSettingConfiguration>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -60,23 +63,46 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<HouseholdSettingsPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('UserSettingsPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (userSessionData?.userID) {
+    const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'USER_SETTINGS_PAGE', context, {
       householdID: userSessionData.householdID,
     });
+    analyticsTimer.end();
   }
-  extractCookieTimer.end();
 
   const fetchUserTimer = timing.addEvent('fetch user');
   const userPromise = apiClient
     .getSelf()
     .then((result: APIResponse<User>) => {
       span.addEvent('user info retrieved');
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchUserTimer.end();
@@ -87,7 +113,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getReceivedHouseholdInvitations()
     .then((result: QueryFilteredResult<HouseholdInvitation>) => {
       span.addEvent('invitations retrieved');
-      return result;
+      return { data: result };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchInvitationsTimer.end();
@@ -98,7 +128,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getServiceSettings()
     .then((result: QueryFilteredResult<ServiceSetting>) => {
       span.addEvent('service settings retrieved');
-      return result;
+      return { data: result };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchSettingsTimer.end();
@@ -109,7 +143,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getServiceSettingConfigurationsForUser()
     .then((result: QueryFilteredResult<ServiceSettingConfiguration>) => {
       span.addEvent('service setting configurationss retrieved');
-      return result;
+      return { data: result };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchSettingConfigurationsForUserTimer.end();
@@ -128,9 +166,9 @@ export const getServerSideProps: GetServerSideProps = async (
   return {
     props: {
       user,
-      invitations: invitations.data,
-      configuredSettings: rawUserSettings.data || [],
-      allSettings: allSettings.data || [],
+      invitations: invitations,
+      configuredSettings: rawUserSettings,
+      allSettings: allSettings,
     },
   };
 };
@@ -147,19 +185,31 @@ const formatDate = (x: string | undefined): string => {
   return x ? formatRelative(new Date(x), new Date()) : 'never';
 };
 
-export default function UserSettingsPage({
-  user,
-  invitations,
-  allSettings,
-  configuredSettings,
-}: HouseholdSettingsPageProps): JSX.Element {
+export default function UserSettingsPage(props: HouseholdSettingsPageProps): JSX.Element {
   const apiClient = buildLocalClient();
+
+  const pageLoadInvitations = valueOrDefault(props.invitations, new QueryFilteredResult<HouseholdInvitation>());
+  const pageLoadUser = valueOrDefault(props.user, new User());
+  const pageLoadAllSettings = valueOrDefault(props.allSettings, new QueryFilteredResult<ServiceSetting>());
+  const pageLoadConfiguredSettings = valueOrDefault(
+    props.configuredSettings,
+    new QueryFilteredResult<ServiceSettingConfiguration>(),
+  );
+
+  const [invitations] = useState<QueryFilteredResult<HouseholdInvitation>>(pageLoadInvitations);
+  const [invitationsError] = useState<IAPIError | undefined>(props.invitations.error);
+  const [user] = useState<User>(pageLoadUser);
+  const [userError] = useState<IAPIError | undefined>(props.user.error);
+  const [allSettings] = useState<QueryFilteredResult<ServiceSetting>>(pageLoadAllSettings);
+  const [allSettingsError] = useState<IAPIError | undefined>(props.allSettings.error);
+  const [configuredSettings] = useState<QueryFilteredResult<ServiceSettingConfiguration>>(pageLoadConfiguredSettings);
+  const [configuredSettingsError] = useState<IAPIError | undefined>(props.configuredSettings.error);
 
   const [verificationRequested, setVerificationRequested] = useState(false);
   const [needsTOTPToUpdatePassword, setNeedsTOTPToUpdatePassword] = useState(false);
   const [avatarUploadError, setAvatarUploadError] = useState<string>('');
 
-  const pendingInvites = (invitations || []).map((invite: HouseholdInvitation) => {
+  const pendingInvites = (invitations.data || []).map((invite: HouseholdInvitation) => {
     return (
       <List.Item key={invite.id}>
         {invite.toEmail} - {invite.status}
@@ -167,8 +217,8 @@ export default function UserSettingsPage({
     );
   });
 
-  const availableSettings = allSettings.filter((setting: ServiceSetting) => {
-    return !configuredSettings.find((userSetting: ServiceSettingConfiguration) => {
+  const availableSettings = allSettings.data.filter((setting: ServiceSetting) => {
+    return !configuredSettings.data.find((userSetting: ServiceSettingConfiguration) => {
       return userSetting.serviceSetting.id === setting.id;
     });
   });
@@ -303,280 +353,304 @@ export default function UserSettingsPage({
           <Center>User Settings</Center>
         </Title>
 
-        <Stack>
-          <Grid>
-            <Grid.Col span={6}>
-              <form onSubmit={changePasswordForm.onSubmit(changePassword)}>
-                <Title order={5}>Details</Title>
-                <Divider />
-                <TextInput label="Username" {...updateDetailsForm.getInputProps('username')} />
-                <TextInput
-                  rightSection={
-                    user.emailAddressVerifiedAt ? <IconCheck color="green" size={14} /> : <IconQuestionMark size={14} />
-                  }
-                  label="Email Address"
-                  {...updateDetailsForm.getInputProps('emailAddress')}
-                />
-                <Grid>
-                  <Grid.Col span={6}>
-                    <TextInput label="First Name" {...updateDetailsForm.getInputProps('firstName')} />
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <TextInput label="Last Name" {...updateDetailsForm.getInputProps('lastName')} />
-                  </Grid.Col>
-                </Grid>
-                <Center>
-                  <Button mt="xl" type="submit" disabled={updateDetailsForm.values.username === user.username}>
-                    Update
-                  </Button>
-                </Center>
-              </form>
-            </Grid.Col>
-            <Grid.Col span={6}>
-              <Title order={5}>Upload Avatar</Title>
-              <Divider mb="md" />
-              <Dropzone
-                onDrop={async (files: File[]) => {
-                  const newAvatarData = await toBase64(files[0]);
-                  await apiClient
-                    .uploadUserAvatar(new AvatarUpdateInput({ base64EncodedData: newAvatarData }))
-                    .then(() => {
-                      setUploadedAvatar(newAvatarData);
-                    });
-                }}
-                onReject={(rejections: FileRejection[]) =>
-                  setAvatarUploadError((rejections || []).map((r) => r.errors.toString()).join(', '))
-                }
-                maxFiles={1}
-                multiple={false}
-                maxSize={3 * 1024 ** 2}
-                accept={[MIME_TYPES.png, MIME_TYPES.jpeg, MIME_TYPES.svg, MIME_TYPES.gif]}
-              >
-                <Group position="center" spacing="xl" style={{ minHeight: 220, pointerEvents: 'none' }}>
-                  <Dropzone.Accept>
-                    <IconUpload size={50} stroke={1.5} />
-                  </Dropzone.Accept>
-                  <Dropzone.Reject>
-                    <IconX size={50} stroke={1.5} />
-                  </Dropzone.Reject>
-                  <Dropzone.Idle>
-                    {(uploadedAvatar.length > 0 && (
-                      <Center>
-                        <Image
-                          alt="avatar"
-                          radius={100}
-                          width="90%"
-                          src={uploadedAvatar}
-                          imageProps={{ onLoad: () => URL.revokeObjectURL(uploadedAvatar) }}
-                        />
-                      </Center>
-                    )) || <IconPhoto size={50} stroke={1.5} />}
-                  </Dropzone.Idle>
+        {userError && <Text color="tomato">{userError.message}</Text>}
 
-                  <Center>
-                    <Text size="xs" inline>
-                      Drag an image here or click to select file
-                    </Text>
-                  </Center>
-                </Group>
-              </Dropzone>
-              {avatarUploadError && (
-                <Alert icon={<IconAlertCircle size={16} />} color="red">
-                  {avatarUploadError}
-                </Alert>
-              )}
-            </Grid.Col>
-          </Grid>
-
-          <Divider label="Security" labelPosition="center" />
-
-          <Grid>
-            <Grid.Col span={6}>
-              <Title order={5}>2FA</Title>
-
-              <Divider />
-
-              {(user.twoFactorSecretVerifiedAt && (
-                <>
-                  <Text size="sm" mt="md">
-                    If you&apos;d like to disable 2FA, enter your password and a valid TOTP token below:
-                  </Text>
-
-                  <form>
-                    <TextInput
-                      label="Current Password"
-                      type="password"
-                      {...newTwoFactorSecretForm.getInputProps('currentPassword')}
-                    />
-                    <TextInput label="TOTP Token" type="text" {...newTwoFactorSecretForm.getInputProps('totpToken')} />
-
-                    <Grid>
-                      <Grid.Col span="content">
-                        <Button
-                          color="red"
-                          type="submit"
-                          disabled={
-                            newTwoFactorSecretForm.values.currentPassword === '' ||
-                            newTwoFactorSecretForm.values.totpToken === ''
-                          }
-                          onClick={deactivateTwoFactor}
-                          mt="xs"
-                        >
-                          Deactivate
-                        </Button>
-                      </Grid.Col>
-                      <Grid.Col span="auto">
-                        <Text size="sm" mt="md">
-                          (activated since {formatDate(user.twoFactorSecretVerifiedAt)})
-                        </Text>
-                      </Grid.Col>
-                    </Grid>
-                  </form>
-                </>
-              )) || (
-                <Text size="sm" mt="md">
-                  Not Verified
-                </Text>
-              )}
-            </Grid.Col>
-
-            <Grid.Col span={6}>
-              <form onSubmit={changePasswordForm.onSubmit(changePassword)}>
-                <Title order={5}>Change Password</Title>
-                <Divider />
-                <TextInput
-                  label="Current Password"
-                  type="password"
-                  {...changePasswordForm.getInputProps('currentPassword')}
-                />
-                <TextInput label="New Password" type="password" {...changePasswordForm.getInputProps('newPassword')} />
-                <TextInput
-                  label="Confirm New Password"
-                  type="password"
-                  {...changePasswordForm.getInputProps('newPasswordConfirmation')}
-                />
-                {needsTOTPToUpdatePassword && <TextInput label="TOTP Token" type="password" />}
-                <Center>
-                  <Button
-                    mt="xl"
-                    type="submit"
-                    disabled={
-                      changePasswordForm.values.currentPassword === '' ||
-                      changePasswordForm.values.newPasswordConfirmation === '' ||
-                      (needsTOTPToUpdatePassword && changePasswordForm.values.totpToken === '')
+        {!userError && (
+          <Stack>
+            <Grid>
+              <Grid.Col span={6}>
+                <form onSubmit={changePasswordForm.onSubmit(changePassword)}>
+                  <Title order={5}>Details</Title>
+                  <Divider />
+                  <TextInput label="Username" {...updateDetailsForm.getInputProps('username')} />
+                  <TextInput
+                    rightSection={
+                      user.emailAddressVerifiedAt ? (
+                        <IconCheck color="green" size={14} />
+                      ) : (
+                        <IconQuestionMark size={14} />
+                      )
                     }
-                  >
-                    Change Password
-                  </Button>
-                </Center>
-              </form>
-            </Grid.Col>
-          </Grid>
-
-          {!user.emailAddressVerifiedAt && (
-            <Center>
-              <Button disabled={verificationRequested} onClick={requestVerificationEmail}>
-                Verify my Email
-              </Button>
-            </Center>
-          )}
-
-          {configuredSettings.length > 0 && (
-            <Paper shadow="xs" p="md">
-              <Text size="md">Configured Settings</Text>
-              <Table mt="md" striped highlightOnHover withBorder withColumnBorders>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Configured Value</th>
-                    <th>Default Value</th>
-                    <th>Possible Values</th>
-                    <th>Created At</th>
-                    <th>Last Updated At</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {configuredSettings.map((settingConfig: ServiceSettingConfiguration) => (
-                    <tr key={settingConfig.id} style={{ cursor: 'pointer' }}>
-                      <td>{settingConfig.serviceSetting.name}</td>
-                      <td>
-                        {(settingConfig.serviceSetting.enumeration.length > 0 && (
-                          <Select
-                            onChange={async (item: string) => {
-                              console.log(item);
-                            }}
-                            value={settingConfig.value}
-                            data={settingConfig.serviceSetting.enumeration}
+                    label="Email Address"
+                    {...updateDetailsForm.getInputProps('emailAddress')}
+                  />
+                  <Grid>
+                    <Grid.Col span={6}>
+                      <TextInput label="First Name" {...updateDetailsForm.getInputProps('firstName')} />
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <TextInput label="Last Name" {...updateDetailsForm.getInputProps('lastName')} />
+                    </Grid.Col>
+                  </Grid>
+                  <Center>
+                    <Button mt="xl" type="submit" disabled={updateDetailsForm.values.username === user.username}>
+                      Update
+                    </Button>
+                  </Center>
+                </form>
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <Title order={5}>Upload Avatar</Title>
+                <Divider mb="md" />
+                <Dropzone
+                  onDrop={async (files: File[]) => {
+                    const newAvatarData = await toBase64(files[0]);
+                    await apiClient
+                      .uploadUserAvatar(new AvatarUpdateInput({ base64EncodedData: newAvatarData }))
+                      .then(() => {
+                        setUploadedAvatar(newAvatarData);
+                      });
+                  }}
+                  onReject={(rejections: FileRejection[]) =>
+                    setAvatarUploadError((rejections || []).map((r) => r.errors.toString()).join(', '))
+                  }
+                  maxFiles={1}
+                  multiple={false}
+                  maxSize={3 * 1024 ** 2}
+                  accept={[MIME_TYPES.png, MIME_TYPES.jpeg, MIME_TYPES.svg, MIME_TYPES.gif]}
+                >
+                  <Group position="center" spacing="xl" style={{ minHeight: 220, pointerEvents: 'none' }}>
+                    <Dropzone.Accept>
+                      <IconUpload size={50} stroke={1.5} />
+                    </Dropzone.Accept>
+                    <Dropzone.Reject>
+                      <IconX size={50} stroke={1.5} />
+                    </Dropzone.Reject>
+                    <Dropzone.Idle>
+                      {(uploadedAvatar.length > 0 && (
+                        <Center>
+                          <Image
+                            alt="avatar"
+                            radius={100}
+                            width="90%"
+                            src={uploadedAvatar}
+                            imageProps={{ onLoad: () => URL.revokeObjectURL(uploadedAvatar) }}
                           />
-                        )) || <TextInput label="Value" value={settingConfig.value} />}
-                      </td>
-                      <td>{settingConfig.serviceSetting.defaultValue}</td>
-                      <td>{settingConfig.serviceSetting.enumeration.join(', ')}</td>
-                      <td>{formatDate(settingConfig.createdAt)}</td>
-                      <td>{formatDate(settingConfig.lastUpdatedAt)}</td>
-                      <td>
-                        <Button disabled={true}>Save</Button>
-                      </td>
+                        </Center>
+                      )) || <IconPhoto size={50} stroke={1.5} />}
+                    </Dropzone.Idle>
+
+                    <Center>
+                      <Text size="xs" inline>
+                        Drag an image here or click to select file
+                      </Text>
+                    </Center>
+                  </Group>
+                </Dropzone>
+                {avatarUploadError && (
+                  <Alert icon={<IconAlertCircle size={16} />} color="red">
+                    {avatarUploadError}
+                  </Alert>
+                )}
+              </Grid.Col>
+            </Grid>
+
+            <Divider label="Security" labelPosition="center" />
+
+            <Grid>
+              <Grid.Col span={6}>
+                <Title order={5}>2FA</Title>
+
+                <Divider />
+
+                {(user.twoFactorSecretVerifiedAt && (
+                  <>
+                    <Text size="sm" mt="md">
+                      If you&apos;d like to disable 2FA, enter your password and a valid TOTP token below:
+                    </Text>
+
+                    <form>
+                      <TextInput
+                        label="Current Password"
+                        type="password"
+                        {...newTwoFactorSecretForm.getInputProps('currentPassword')}
+                      />
+                      <TextInput
+                        label="TOTP Token"
+                        type="text"
+                        {...newTwoFactorSecretForm.getInputProps('totpToken')}
+                      />
+
+                      <Grid>
+                        <Grid.Col span="content">
+                          <Button
+                            color="red"
+                            type="submit"
+                            disabled={
+                              newTwoFactorSecretForm.values.currentPassword === '' ||
+                              newTwoFactorSecretForm.values.totpToken === ''
+                            }
+                            onClick={deactivateTwoFactor}
+                            mt="xs"
+                          >
+                            Deactivate
+                          </Button>
+                        </Grid.Col>
+                        <Grid.Col span="auto">
+                          <Text size="sm" mt="md">
+                            (activated since {formatDate(user.twoFactorSecretVerifiedAt)})
+                          </Text>
+                        </Grid.Col>
+                      </Grid>
+                    </form>
+                  </>
+                )) || (
+                  <Text size="sm" mt="md">
+                    Not Verified
+                  </Text>
+                )}
+              </Grid.Col>
+
+              <Grid.Col span={6}>
+                <form onSubmit={changePasswordForm.onSubmit(changePassword)}>
+                  <Title order={5}>Change Password</Title>
+                  <Divider />
+                  <TextInput
+                    label="Current Password"
+                    type="password"
+                    {...changePasswordForm.getInputProps('currentPassword')}
+                  />
+                  <TextInput
+                    label="New Password"
+                    type="password"
+                    {...changePasswordForm.getInputProps('newPassword')}
+                  />
+                  <TextInput
+                    label="Confirm New Password"
+                    type="password"
+                    {...changePasswordForm.getInputProps('newPasswordConfirmation')}
+                  />
+                  {needsTOTPToUpdatePassword && <TextInput label="TOTP Token" type="password" />}
+                  <Center>
+                    <Button
+                      mt="xl"
+                      type="submit"
+                      disabled={
+                        changePasswordForm.values.currentPassword === '' ||
+                        changePasswordForm.values.newPasswordConfirmation === '' ||
+                        (needsTOTPToUpdatePassword && changePasswordForm.values.totpToken === '')
+                      }
+                    >
+                      Change Password
+                    </Button>
+                  </Center>
+                </form>
+              </Grid.Col>
+            </Grid>
+
+            {!user.emailAddressVerifiedAt && (
+              <Center>
+                <Button disabled={verificationRequested} onClick={requestVerificationEmail}>
+                  Verify my Email
+                </Button>
+              </Center>
+            )}
+
+            {configuredSettingsError && <Text color="tomato">{configuredSettingsError.message}</Text>}
+
+            {!configuredSettingsError && configuredSettings.data.length > 0 && (
+              <Paper shadow="xs" p="md">
+                <Text size="md">Configured Settings</Text>
+                <Table mt="md" striped highlightOnHover withBorder withColumnBorders>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Configured Value</th>
+                      <th>Default Value</th>
+                      <th>Possible Values</th>
+                      <th>Created At</th>
+                      <th>Last Updated At</th>
+                      <th></th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Paper>
-          )}
+                  </thead>
+                  <tbody>
+                    {configuredSettings.data.map((settingConfig: ServiceSettingConfiguration) => (
+                      <tr key={settingConfig.id} style={{ cursor: 'pointer' }}>
+                        <td>{settingConfig.serviceSetting.name}</td>
+                        <td>
+                          {(settingConfig.serviceSetting.enumeration.length > 0 && (
+                            <Select
+                              onChange={async (item: string) => {
+                                console.log(item);
+                              }}
+                              value={settingConfig.value}
+                              data={settingConfig.serviceSetting.enumeration}
+                            />
+                          )) || <TextInput label="Value" value={settingConfig.value} />}
+                        </td>
+                        <td>{settingConfig.serviceSetting.defaultValue}</td>
+                        <td>{settingConfig.serviceSetting.enumeration.join(', ')}</td>
+                        <td>{formatDate(settingConfig.createdAt)}</td>
+                        <td>{formatDate(settingConfig.lastUpdatedAt)}</td>
+                        <td>
+                          <Button disabled={true}>Save</Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </Paper>
+            )}
 
-          {(availableSettings.length > 0 || configuredSettings.length > 0) && <Divider my="xl" />}
+            {allSettingsError && <Text color="tomato">{allSettingsError.message}</Text>}
 
-          {availableSettings.length > 0 && (
-            <Paper shadow="xs" p="xs">
-              <Text size="md">Available Settings</Text>
+            {!allSettingsError && (availableSettings.length > 0 || configuredSettings.data.length > 0) && (
+              <Divider my="xl" />
+            )}
 
-              <Table mt="md" striped highlightOnHover withBorder withColumnBorders>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Value</th>
-                    <th>Default Value</th>
-                    <th>Possible Values</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {availableSettings.map((serviceSetting: ServiceSetting) => (
-                    <tr key={serviceSetting.id} style={{ cursor: 'pointer' }}>
-                      <td>{serviceSetting.name}</td>
-                      <td>{serviceSetting.description}</td>
-                      <td>
-                        {(serviceSetting.enumeration.length > 0 && (
-                          <Select
-                            onChange={async (item: string) => {
-                              console.log(item);
-                            }}
-                            value={''}
-                            data={serviceSetting.enumeration}
-                          />
-                        )) || <TextInput value={''} />}
-                      </td>
-                      <td>{serviceSetting.defaultValue}</td>
-                      <td>{serviceSetting.enumeration.join(', ')}</td>
-                      <td>
-                        <Button disabled={true}>Assign</Button>
-                      </td>
+            {!allSettingsError && availableSettings.length > 0 && (
+              <Paper shadow="xs" p="xs">
+                <Text size="md">Available Settings</Text>
+
+                <Table mt="md" striped highlightOnHover withBorder withColumnBorders>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Value</th>
+                      <th>Default Value</th>
+                      <th>Possible Values</th>
+                      <th></th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Paper>
-          )}
+                  </thead>
+                  <tbody>
+                    {availableSettings.map((serviceSetting: ServiceSetting) => (
+                      <tr key={serviceSetting.id} style={{ cursor: 'pointer' }}>
+                        <td>{serviceSetting.name}</td>
+                        <td>{serviceSetting.description}</td>
+                        <td>
+                          {(serviceSetting.enumeration.length > 0 && (
+                            <Select
+                              onChange={async (item: string) => {
+                                console.log(item);
+                              }}
+                              value={''}
+                              data={serviceSetting.enumeration}
+                            />
+                          )) || <TextInput value={''} />}
+                        </td>
+                        <td>{serviceSetting.defaultValue}</td>
+                        <td>{serviceSetting.enumeration.join(', ')}</td>
+                        <td>
+                          <Button disabled={true}>Assign</Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </Paper>
+            )}
 
-          {pendingInvites.length > 0 && (
-            <>
-              <List>{pendingInvites}</List>
-              <Divider my="lg" />
-            </>
-          )}
-        </Stack>
+            {invitationsError && <Text color="tomato">{invitationsError.message}</Text>}
+
+            {!invitationsError && pendingInvites.length > 0 && (
+              <>
+                <List>{pendingInvites}</List>
+                <Divider my="lg" />
+              </>
+            )}
+          </Stack>
+        )}
       </Container>
     </AppLayout>
   );

@@ -9,8 +9,8 @@ import {
   Grid,
   Group,
   Header,
-  Navbar,
   NavLink,
+  Navbar,
   Space,
   Text,
   useMantineColorScheme,
@@ -77,6 +77,7 @@ export function AppLayout(props: AppLayoutProps) {
 
         <Grid.Col span="auto">
           <Center>
+            <></>
             {/*
              <Image
               src={logo}

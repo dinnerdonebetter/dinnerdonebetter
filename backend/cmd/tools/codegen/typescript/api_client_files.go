@@ -345,12 +345,18 @@ func (f *APIClientFunction) Render() (string, error) {
 ): Promise< QueryFilteredResult< {{ .ResponseType.TypeName }} > > {
   let self = this;
   return new Promise(async function (resolve, reject) {
+  {{ range .Params }}if ({{ .Name }}.trim() === '') {
+        throw new Error('{{ .Name }} is required');
+      }
+
+{{ end -}}
+
     self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `, {
       params: filter.asRecord(),
     })
  		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
 		  if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
 			resolve(new QueryFilteredResult<{{ .ResponseType.TypeName }}>({
 			  data: res.data.data,
@@ -362,9 +368,9 @@ func (f *APIClientFunction) Render() (string, error) {
         })
         .catch((error: AxiosError<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-		    reject(error);
+		    reject({message: error?.message || 'unknown error'});
 		  }
         });
   });
@@ -376,19 +382,25 @@ func (f *APIClientFunction) Render() (string, error) {
 	{{ end -}}): Promise<  {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }} {{ .ResponseType.TypeName }} >  {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}  {
   let self = this;
   return new Promise(async function (resolve, reject) {
+  {{ range .Params }}if ({{ .Name }}.trim() === '') {
+        throw new Error('{{ .Name }} is required');
+      }
+
+{{ end -}}
+
     self.client.{{ lowercase .Method }}< {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `)
  		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
           if (res.data.error) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
 			  resolve(res.data);
 		  }
         })
         .catch((error: AxiosError<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-		    reject(error);
+		    reject({message: error?.message || 'unknown error'});
 		  }
         });
   });
@@ -402,19 +414,24 @@ func (f *APIClientFunction) Render() (string, error) {
 ): Promise< {{ if .ReturnRawResponse }} AxiosResponse< {{ end }} {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}  {{ .ResponseType.TypeName }} > {{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }}  {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}{{ if .ReturnRawResponse }} > {{ end }} {
   let self = this;
   return new Promise(async function (resolve, reject) {
+  {{ range .Params }}if ({{ .Name }}.trim() === '') {
+        throw new Error('{{ .Name }} is required');
+      }
+
+{{ end -}}
     self.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }})
  		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
           if (res.data.error{{ if or (eq .Name "loginForJWT") (eq .Name "adminLoginForJWT") }} && res.data.error.message.toLowerCase() != "totp required" {{ end }}) {
-            reject(new Error(res.data.error.message));
+            reject(res.data.error);
           } else {
 	    	resolve(res{{ if not .ReturnRawResponse }}.data{{ end }});
  		  }
         })
         .catch((error: AxiosError<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
           if (error?.response?.data?.error) {
-            reject(new Error(error?.response?.data?.error?.message || 'unknown error'));
+            reject(error?.response?.data?.error);
           } else {
-		    reject(error);
+		    reject({message: error?.message || 'unknown error'});
 		  }
         });
 	  });
@@ -479,20 +496,22 @@ func (f *APIClientFunction) RenderTest() (string, error) {
 					{{ range .Params }}let {{ .Name }} = {{ fakeFor .Name .Type }};
 					{{ end }}
 			   
-			      const exampleResponse = new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}(buildObligatoryError('{{ .Name }} user error'));
+	              const expectedError = buildObligatoryError('{{ .Name }} user error');
+			      const exampleResponse = new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}(expectedError);
 			      mock.on{{ upperFirst .Method  }}(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply({{ .DefaultStatusCode }}, exampleResponse);
 			   
-			      expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }})).rejects.toEqual(new Error(exampleResponse.error?.message));
+			      expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }})).rejects.toEqual(expectedError.error);
 			   });
 
 			   it("should raise service errors appropriately when trying to {{ testDescription .Description }}", () => {
 					{{ range .Params }}let {{ .Name }} = {{ fakeFor .Name .Type }};
 					{{ end }}
 			   
-			      const exampleResponse = new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}(buildObligatoryError('{{ .Name }} service error'));
+                  const expectedError = buildObligatoryError('{{ .Name }} service error');
+			  	  const exampleResponse = new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}(expectedError);
 			      mock.on{{ upperFirst .Method  }}(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply(500, exampleResponse);
 			   
-			      expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }})).rejects.toEqual(new Error(exampleResponse.error?.message));
+			      expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }})).rejects.toEqual(expectedError.error);
 			   });
 			`
 		} else {
@@ -521,20 +540,22 @@ func (f *APIClientFunction) RenderTest() (string, error) {
 					{{ range .Params }}let {{ .Name }} = {{ fakeFor .Name .Type }};
 		 		{{ end }}
 			   
-			      const exampleResponse = {{ if not (isNative .ResponseType.TypeName) }}new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {{ if not (isNative .ResponseType.TypeName) }}(buildObligatoryError('{{ .Name }}')){{ end }}{{ else }}buildObligatoryError('{{ .Name }} user error'){{ end }};
+			      const expectedError = buildObligatoryError('{{ .Name }} user error');
+			  	  const exampleResponse = {{ if not (isNative .ResponseType.TypeName) }}new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {{ if not (isNative .ResponseType.TypeName) }}(expectedError){{ end }}{{ else }}(expectedError){{ end }};
 					mock.on{{ upperFirst .Method  }}(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply({{ .DefaultStatusCode }}, exampleResponse);
 			   
-			    expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }})).rejects.toEqual(new Error(exampleResponse.error?.message));
-			   })
+			    expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }})).rejects.toEqual(expectedError.error);
+			   }) 
 
 			   it("should raise service errors appropriately when trying to {{ testDescription .Description }}", () => {
 					{{ range .Params }}let {{ .Name }} = {{ fakeFor .Name .Type }};
 		 		{{ end }}
 			   
-			      const exampleResponse = {{ if not (isNative .ResponseType.TypeName) }}new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {{ if not (isNative .ResponseType.TypeName) }}(buildObligatoryError('{{ .Name }}')){{ end }}{{ else }}buildObligatoryError('{{ .Name }} service error'){{ end }};
+			      const expectedError = buildObligatoryError('{{ .Name }} service error');
+			  	  const exampleResponse = {{ if not (isNative .ResponseType.TypeName) }}new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {{ if not (isNative .ResponseType.TypeName) }}(expectedError){{ end }}{{ else }}(expectedError){{ end }};
 					mock.on{{ upperFirst .Method  }}(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply(500, exampleResponse);
 			   
-			    expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }})).rejects.toEqual(new Error(exampleResponse.error?.message));
+			    expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }})).rejects.toEqual(expectedError.error);
 			   })
 			`
 		}
@@ -569,10 +590,11 @@ func (f *APIClientFunction) RenderTest() (string, error) {
 			   
     				{{ if ne .InputType.Type "" }}const exampleInput = new {{ .InputType.Type }}();{{ end }}
 			   
-			      const exampleResponse = {{ if not (isNative .ResponseType.TypeName) }}new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {{ if not (isNative .ResponseType.TypeName) }}(buildObligatoryError('{{ .Name }} user error')){{ end }}{{ else }} {{ defaultValue .ResponseType.TypeName }}{{ end }};
+			     const expectedError = buildObligatoryError('{{ .Name }} user error');
+			  	   const exampleResponse = {{ if not (isNative .ResponseType.TypeName) }}new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {{ if not (isNative .ResponseType.TypeName) }}(expectedError){{ end }}{{ else }} {{ defaultValue .ResponseType.TypeName }}{{ end }};
 			      mock.on{{ upperFirst .Method  }}(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply({{ .DefaultStatusCode }}, exampleResponse);
 			   
-			      expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }}{{ if ne .InputType.Type "" }}exampleInput{{ end }})).rejects.toEqual(new Error(exampleResponse.error?.message));
+			      expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }}{{ if ne .InputType.Type "" }}exampleInput{{ end }})).rejects.toEqual(expectedError.error);
 			   })
 
 			   it("should appropriately raise service errors when they occur during {{ testDescription .Description }}", () => {
@@ -581,10 +603,11 @@ func (f *APIClientFunction) RenderTest() (string, error) {
 			   
     				{{ if ne .InputType.Type "" }}const exampleInput = new {{ .InputType.Type }}();{{ end }}
 			   
-			      const exampleResponse = {{ if not (isNative .ResponseType.TypeName) }}new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {{ if not (isNative .ResponseType.TypeName) }}(buildObligatoryError('{{ .Name }} service error')){{ end }}{{ else }} {{ defaultValue .ResponseType.TypeName }}{{ end }};
+			    const expectedError = buildObligatoryError('{{ .Name }} service error');
+			  	   const exampleResponse = {{ if not (isNative .ResponseType.TypeName) }}new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} {{ if not (isNative .ResponseType.TypeName) }}(expectedError){{ end }}{{ else }} {{ defaultValue .ResponseType.TypeName }}{{ end }};
 			      mock.on{{ upperFirst .Method  }}(` + "`" + `${baseURL}{{ .PathTemplate }}` + "`" + `).reply(500, exampleResponse);
 			   
-			      expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }}{{ if ne .InputType.Type "" }}exampleInput{{ end }})).rejects.toEqual(new Error(exampleResponse.error?.message));
+			      expect(client.{{ .Name }}({{ range .Params }}{{ .Name }},{{ end }}{{ if ne .InputType.Type "" }}exampleInput{{ end }})).rejects.toEqual(expectedError.error);
 			   })
 			`
 	}

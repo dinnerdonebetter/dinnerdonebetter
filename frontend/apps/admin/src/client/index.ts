@@ -7,7 +7,17 @@ import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 import { webappCookieName } from '../constants';
 import { encryptorDecryptor } from '../encryption';
 
-export const buildServerSideClient = (context: GetServerSidePropsContext): DinnerDoneBetterAPIClient => {
+interface redirectProps {
+  destination: string;
+  permanent: boolean;
+}
+
+interface clientOrRedirect {
+  client?: DinnerDoneBetterAPIClient;
+  redirect?: redirectProps;
+}
+
+export const buildServerSideClientOrRedirect = (context: GetServerSidePropsContext): clientOrRedirect => {
   const apiEndpoint = process.env.NEXT_API_ENDPOINT;
   if (!apiEndpoint) {
     throw new Error('no API endpoint set');
@@ -15,7 +25,7 @@ export const buildServerSideClient = (context: GetServerSidePropsContext): Dinne
 
   let encryptedCookieData = context.req.cookies[webappCookieName];
   if (!encryptedCookieData) {
-    throw new Error('no cookie data found');
+    return { redirect: { destination: '/login', permanent: false } };
   }
 
   const userSessionDetails = (encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>).decrypt(
@@ -27,5 +37,5 @@ export const buildServerSideClient = (context: GetServerSidePropsContext): Dinne
     throw new Error('no token found');
   }
 
-  return new DinnerDoneBetterAPIClient(apiEndpoint, accessToken);
+  return { client: new DinnerDoneBetterAPIClient(apiEndpoint, accessToken) };
 };

@@ -3,18 +3,19 @@ import { Grid, Pagination, Stack, Table, TextInput } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import { IconSearch } from '@tabler/icons';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { QueryFilter, QueryFilteredResult, User } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { EitherErrorOr, IAPIError, QueryFilter, QueryFilteredResult, User } from '@dinnerdonebetter/models';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildServerSideClient } from '../../src/client';
+import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface UsersPageProps {
-  pageLoadUsers: QueryFilteredResult<User>;
+  pageLoadUsers: EitherErrorOr<QueryFilteredResult<User>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -22,7 +23,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<UsersPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('UsersPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   // TODO: parse context.query as QueryFilter.
   let props!: GetServerSidePropsResult<UsersPageProps>;
@@ -35,18 +47,15 @@ export const getServerSideProps: GetServerSideProps = async (
     .getUsers(qf)
     .then((res: QueryFilteredResult<User>) => {
       span.addEvent('users retrieved');
-      props = { props: { pageLoadUsers: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageLoadUsers: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
-    .catch((error: AxiosError) => {
-      span.addEvent('error occurred');
-      if (error.response?.status === 401) {
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-      }
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchUsersTimer.end();
@@ -61,7 +70,9 @@ export const getServerSideProps: GetServerSideProps = async (
 function UsersPage(props: UsersPageProps) {
   let { pageLoadUsers } = props;
 
-  const [users, setUsers] = useState<QueryFilteredResult<User>>(pageLoadUsers);
+  const ogUsers = valueOrDefault(pageLoadUsers, new QueryFilteredResult<User>());
+  const [usersError] = useState<IAPIError | undefined>(pageLoadUsers.error);
+  const [users, setUsers] = useState<QueryFilteredResult<User>>(ogUsers);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -131,27 +142,32 @@ function UsersPage(props: UsersPageProps) {
           </Grid.Col>
         </Grid>
 
-        <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Username</th>
-              <th>Created At</th>
-              <th>Last Updated At</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
+        {usersError && <div>{usersError.message}</div>}
+        {!usersError && users.data.length > 0 && (
+          <>
+            <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Created At</th>
+                  <th>Last Updated At</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </Table>
 
-        <Pagination
-          disabled={search.trim().length > 0}
-          position="center"
-          page={users.page}
-          total={Math.ceil(users.totalCount / users.limit)}
-          onChange={(value: number) => {
-            setUsers({ ...users, page: value });
-          }}
-        />
+            <Pagination
+              disabled={search.trim().length > 0}
+              position="center"
+              page={users.page}
+              total={Math.ceil(users.totalCount / users.limit)}
+              onChange={(value: number) => {
+                setUsers({ ...users, page: value });
+              }}
+            />
+          </>
+        )}
       </Stack>
     </AppLayout>
   );

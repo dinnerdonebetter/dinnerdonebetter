@@ -8,6 +8,7 @@
     "dev": "NEXT_API_ENDPOINT='https://api.dinnerdonebetter.dev' NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID=6eb7b3ec8a11a26026689984940a41a6 NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET=07244c9b84f51d9cd69bfbff8747be9f NEXT_COOKIE_ENCRYPTION_KEY='ZOTGz4KEhZFSM6udeESOX5JVqhtEdHdS' NEXT_BASE64_COOKIE_ENCRYPT_IV='S2IwVXVvMW9hSEl4WjQ0ak1NYW50QndMTzJBWDJFV2o=' next dev -p 9000",
     "build": "next build",
     "lint": "next lint",
+    "fix": "eslint --fix .",
     "test:local": "cross-env TARGET_ADDRESS=http://localhost:9000 npx playwright test"
   },
   "dependencies": {

@@ -1,21 +1,22 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { Button, Grid, Pagination, Stack, Table, TextInput } from '@mantine/core';
+import { Button, Grid, Pagination, Stack, Table, Text, TextInput } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import router from 'next/router';
 import { IconSearch } from '@tabler/icons';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { QueryFilter, QueryFilteredResult, ValidIngredient } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { EitherErrorOr, IAPIError, QueryFilter, QueryFilteredResult, ValidIngredient } from '@dinnerdonebetter/models';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildServerSideClient } from '../../src/client';
+import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface ValidIngredientsPageProps {
-  pageLoadValidIngredients: QueryFilteredResult<ValidIngredient>;
+  pageLoadValidIngredients: EitherErrorOr<QueryFilteredResult<ValidIngredient>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -23,7 +24,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<ValidIngredientsPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('ValidIngredientsPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   // TODO: parse context.query as QueryFilter.
   let props!: GetServerSidePropsResult<ValidIngredientsPageProps>;
@@ -37,22 +49,15 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredients(qf)
     .then((res: QueryFilteredResult<ValidIngredient>) => {
       span.addEvent('valid ingredients retrieved');
-      props = { props: { pageLoadValidIngredients: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageLoadValidIngredients: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
-    .catch((error: AxiosError) => {
-      console.error(`getting valid ingredients`, error.status);
-      span.addEvent('error occurred');
-      if (error.status === 401) {
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-      }
-    })
-    .catch((error) => {
-      console.error('error occurred', error);
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchValidIngredientsTimer.end();
@@ -67,8 +72,9 @@ export const getServerSideProps: GetServerSideProps = async (
 function ValidIngredientsPage(props: ValidIngredientsPageProps) {
   let { pageLoadValidIngredients } = props;
 
-  const [validIngredients, setValidIngredients] =
-    useState<QueryFilteredResult<ValidIngredient>>(pageLoadValidIngredients);
+  const ogValidIngredient = valueOrDefault(pageLoadValidIngredients, new QueryFilteredResult<ValidIngredient>());
+  const [validIngredientsError] = useState<IAPIError | undefined>(pageLoadValidIngredients.error);
+  const [validIngredients, setValidIngredients] = useState<QueryFilteredResult<ValidIngredient>>(ogValidIngredient);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -156,28 +162,33 @@ function ValidIngredientsPage(props: ValidIngredientsPageProps) {
           </Grid.Col>
         </Grid>
 
-        <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Slug</th>
-              <th>Created At</th>
-              <th>Last Updated At</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
+        {validIngredientsError && <Text color="tomato">{validIngredientsError.message}</Text>}
+        {!validIngredientsError && validIngredients.data && (
+          <>
+            <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Slug</th>
+                  <th>Created At</th>
+                  <th>Last Updated At</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </Table>
 
-        <Pagination
-          disabled={search.trim().length > 0}
-          position="center"
-          page={validIngredients.page}
-          total={Math.ceil(validIngredients.totalCount / validIngredients.limit)}
-          onChange={(value: number) => {
-            setCurrentPage(value);
-          }}
-        />
+            <Pagination
+              disabled={search.trim().length > 0}
+              position="center"
+              page={validIngredients.page}
+              total={Math.ceil(validIngredients.totalCount / validIngredients.limit)}
+              onChange={(value: number) => {
+                setCurrentPage(value);
+              }}
+            />
+          </>
+        )}
       </Stack>
     </AppLayout>
   );

@@ -30,6 +30,7 @@ import { z } from 'zod';
 
 import {
   APIResponse,
+  EitherErrorOr,
   Household,
   HouseholdInvitation,
   HouseholdInvitationCreationRequestInput,
@@ -43,17 +44,18 @@ import {
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildServerSideClient } from '../../../src/client';
+import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { AppLayout } from '../../../src/layouts';
 import { serverSideTracer } from '../../../src/tracer';
 import { serverSideAnalytics } from '../../../src/analytics';
-import { extractUserInfoFromCookie } from '../../../src/auth';
+import { userSessionDetailsOrRedirect } from '../../../src/auth';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface HouseholdSettingsPageProps {
-  household: Household;
-  user: User;
-  invitations: HouseholdInvitation[];
-  householdSettings: ServiceSettingConfiguration[];
+  household: EitherErrorOr<Household>;
+  user: EitherErrorOr<User>;
+  invitations: EitherErrorOr<QueryFilteredResult<HouseholdInvitation>>;
+  householdSettings: EitherErrorOr<QueryFilteredResult<ServiceSettingConfiguration>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -61,23 +63,46 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<HouseholdSettingsPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('HouseholdSettingsPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (userSessionData?.userID) {
+    const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'HOUSEHOLD_SETTINGS_PAGE', context, {
       householdID: userSessionData.householdID,
     });
+    analyticsTimer.end();
   }
-  extractCookieTimer.end();
 
   const fetchUserTimer = timing.addEvent('fetch user');
   const userPromise = apiClient
     .getSelf()
     .then((result: APIResponse<User>) => {
       span.addEvent('user retrieved');
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchUserTimer.end();
@@ -88,7 +113,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getActiveHousehold()
     .then((result: APIResponse<Household>) => {
       span.addEvent('household retrieved');
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchHouseholdTimer.end();
@@ -99,7 +128,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getSentHouseholdInvitations()
     .then((result: QueryFilteredResult<HouseholdInvitation>) => {
       span.addEvent('invitations retrieved');
-      return result;
+      return { data: result };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchInvitationsTimer.end();
@@ -110,46 +143,22 @@ export const getServerSideProps: GetServerSideProps = async (
     .getServiceSettingConfigurationsForHousehold()
     .then((result: QueryFilteredResult<ServiceSettingConfiguration>) => {
       span.addEvent('service settings retrieved');
-      return result;
+      return { data: result };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchSettingConfigurationsForHouseholdTimer.end();
     });
 
-  let notFound = false;
-  let notAuthorized = false;
   const retrievedData = await Promise.all([
     userPromise,
     householdPromise,
     invitationsPromise,
     rawHouseholdSettingsPromise,
-  ]).catch((error: AxiosError) => {
-    if (error.response?.status === 404) {
-      notFound = true;
-    } else if (error.response?.status === 401) {
-      notAuthorized = true;
-    } else {
-      console.error(`${error.response?.status} ${error.response?.config?.url}}`);
-    }
-  });
-
-  if (notFound || !retrievedData) {
-    return {
-      redirect: {
-        destination: '/meal_plans',
-        permanent: false,
-      },
-    };
-  }
-
-  if (notAuthorized) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
+  ]);
 
   const [user, household, invitations, rawHouseholdSettings] = retrievedData;
 
@@ -157,7 +166,12 @@ export const getServerSideProps: GetServerSideProps = async (
 
   span.end();
   return {
-    props: { user, household, invitations: invitations.data, householdSettings: rawHouseholdSettings.data || [] },
+    props: {
+      user,
+      household,
+      invitations: invitations,
+      householdSettings: rawHouseholdSettings,
+    },
   };
 };
 
@@ -238,9 +252,18 @@ const exampleNames: { first: string; last: string }[] = [
 ];
 
 export default function HouseholdSettingsPage(props: HouseholdSettingsPageProps): JSX.Element {
-  const { user, invitations } = props;
+  const ogHousehold = valueOrDefault(props.household, new Household());
+  const [householdError] = useState<IAPIError | undefined>(props.household.error);
+  const [household, setHousehold] = useState<Household>(ogHousehold);
 
-  const [household, setHousehold] = useState<Household>(props.household);
+  const ogUser = valueOrDefault(props.user, new User());
+  const [userError] = useState<IAPIError | undefined>(props.user.error);
+  const [user] = useState<User>(ogUser);
+
+  const ogInvitations = valueOrDefault(props.invitations, new QueryFilteredResult<HouseholdInvitation>());
+  const [invitationsError] = useState<IAPIError | undefined>(props.invitations.error);
+  const [invitations] = useState<QueryFilteredResult<HouseholdInvitation>>(ogInvitations);
+
   const [invitationSubmissionError, setInvitationSubmissionError] = useState('');
   const [userIsHouseholdAdmin] = useState(
     user.emailAddressVerifiedAt &&
@@ -248,7 +271,7 @@ export default function HouseholdSettingsPage(props: HouseholdSettingsPageProps)
         'household_admin',
   );
 
-  const outboundPendingInvites = (invitations || []).map((invite: HouseholdInvitation) => {
+  const outboundPendingInvites = (invitations.data || []).map((invite: HouseholdInvitation) => {
     return (
       <List.Item key={invite.id}>
         {invite.toEmail} - {invite.status}
@@ -353,7 +376,9 @@ export default function HouseholdSettingsPage(props: HouseholdSettingsPageProps)
           <Title order={2}>Household Settings</Title>
         </Center>
 
-        {(household.members || []).length > 0 && (
+        {householdError && <Text color="tomato">{householdError.message}</Text>}
+
+        {!householdError && (household.members || []).length > 0 && (
           <>
             <Divider my="lg" label="Members" labelPosition="center" />
             <SimpleGrid cols={1}>
@@ -419,95 +444,101 @@ export default function HouseholdSettingsPage(props: HouseholdSettingsPageProps)
         )}
 
         <Divider my="lg" label="Information" labelPosition="center" />
-        <Box my="xl">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              updateHousehold();
-            }}
-          >
-            <Stack>
-              <Alert icon={<IconAlertCircle size={16} />} color="blue">
-                We don&apos;t require you to fill this info out to use the service, but future experiments involving
-                features like grocery delivery may require this information.
-              </Alert>
+        {!householdError && (
+          <Box my="xl">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateHousehold();
+              }}
+            >
+              <Stack>
+                <Alert icon={<IconAlertCircle size={16} />} color="blue">
+                  We don&apos;t require you to fill this info out to use the service, but future experiments involving
+                  features like grocery delivery may require this information.
+                </Alert>
 
-              <TextInput
-                label="Name"
-                placeholder=""
-                disabled={!userIsHouseholdAdmin}
-                {...householdUpdateForm.getInputProps('name')}
-              />
-              <Grid>
-                <Grid.Col span={7}>
-                  <TextInput
-                    label="Address Line 1"
-                    placeholder=""
-                    disabled={!userIsHouseholdAdmin}
-                    {...householdUpdateForm.getInputProps('addressLine1')}
-                  />
-                </Grid.Col>
-                <Grid.Col span={5}>
-                  <TextInput
-                    label="Address Line 2"
-                    placeholder=""
-                    disabled={!userIsHouseholdAdmin}
-                    {...householdUpdateForm.getInputProps('addressLine2')}
-                  />
-                </Grid.Col>
-              </Grid>
-              <Grid>
-                <Grid.Col span={7}>
-                  <TextInput
-                    label="City"
-                    placeholder=""
-                    disabled={!userIsHouseholdAdmin}
-                    {...householdUpdateForm.getInputProps('city')}
-                  />
-                </Grid.Col>
-                <Grid.Col span={2}>
-                  <Select
-                    label="State"
-                    searchable
-                    placeholder=""
-                    disabled={!userIsHouseholdAdmin}
-                    value={householdUpdateForm.getInputProps('state').value}
-                    data={allStates.map((state) => {
-                      return { value: state, label: state };
-                    })}
-                    onChange={(e) => {
-                      householdUpdateForm.getInputProps('state').onChange(e);
-                    }}
-                  />
-                </Grid.Col>
-                <Grid.Col span={3}>
-                  <TextInput
-                    label="Zip Code"
-                    placeholder=""
-                    disabled={!userIsHouseholdAdmin}
-                    {...householdUpdateForm.getInputProps('zipCode')}
-                  />
-                </Grid.Col>
-              </Grid>
-              <Button
-                type="submit"
-                disabled={!householdUpdateForm.isValid() || !user.emailAddressVerifiedAt || !householdDataHasChanged()}
-                fullWidth
-              >
-                Update
-              </Button>
-            </Stack>
-          </form>
-        </Box>
+                <TextInput
+                  label="Name"
+                  placeholder=""
+                  disabled={!userIsHouseholdAdmin}
+                  {...householdUpdateForm.getInputProps('name')}
+                />
+                <Grid>
+                  <Grid.Col span={7}>
+                    <TextInput
+                      label="Address Line 1"
+                      placeholder=""
+                      disabled={!userIsHouseholdAdmin}
+                      {...householdUpdateForm.getInputProps('addressLine1')}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={5}>
+                    <TextInput
+                      label="Address Line 2"
+                      placeholder=""
+                      disabled={!userIsHouseholdAdmin}
+                      {...householdUpdateForm.getInputProps('addressLine2')}
+                    />
+                  </Grid.Col>
+                </Grid>
+                <Grid>
+                  <Grid.Col span={7}>
+                    <TextInput
+                      label="City"
+                      placeholder=""
+                      disabled={!userIsHouseholdAdmin}
+                      {...householdUpdateForm.getInputProps('city')}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={2}>
+                    <Select
+                      label="State"
+                      searchable
+                      placeholder=""
+                      disabled={!userIsHouseholdAdmin}
+                      value={householdUpdateForm.getInputProps('state').value}
+                      data={allStates.map((state) => {
+                        return { value: state, label: state };
+                      })}
+                      onChange={(e) => {
+                        householdUpdateForm.getInputProps('state').onChange(e);
+                      }}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={3}>
+                    <TextInput
+                      label="Zip Code"
+                      placeholder=""
+                      disabled={!userIsHouseholdAdmin}
+                      {...householdUpdateForm.getInputProps('zipCode')}
+                    />
+                  </Grid.Col>
+                </Grid>
+                <Button
+                  type="submit"
+                  disabled={
+                    !householdUpdateForm.isValid() || !user.emailAddressVerifiedAt || !householdDataHasChanged()
+                  }
+                  fullWidth
+                >
+                  Update
+                </Button>
+              </Stack>
+            </form>
+          </Box>
+        )}
 
-        {outboundPendingInvites.length > 0 && (
+        {invitationsError && <Text color="tomato">{invitationsError.message}</Text>}
+
+        {!invitationsError && outboundPendingInvites.length > 0 && (
           <>
             <Divider my="lg" label="Awaiting Invites" labelPosition="center" />
             <List>{outboundPendingInvites}</List>
           </>
         )}
 
-        {invitationSubmissionError && (
+        {!invitationsError && invitationSubmissionError && (
           <>
             <Space h="md" />
             <Alert title="Oh no!" color="tomato">
@@ -518,48 +549,52 @@ export default function HouseholdSettingsPage(props: HouseholdSettingsPageProps)
 
         <Divider my="lg" label="Send Invite" labelPosition="center" />
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            submitInvite();
-          }}
-        >
-          <Grid>
-            <Grid.Col md={12} lg="auto">
-              <TextInput
-                label="Email Address"
-                disabled={!user.emailAddressVerifiedAt}
-                placeholder="neato_person@fake.email"
-                {...inviteForm.getInputProps('emailAddress')}
-              />
-            </Grid.Col>
-            <Grid.Col md={12} lg="auto">
-              <TextInput
-                label="Name"
-                placeholder={exampleNames[Math.floor(Math.random() * exampleNames.length)].first}
-                disabled={!user.emailAddressVerifiedAt}
-                {...inviteForm.getInputProps('toName')}
-              />
-            </Grid.Col>
-          </Grid>
-          <Grid>
-            <Grid.Col md={12} lg="auto">
-              <Textarea
-                label="Note"
-                disabled={!user.emailAddressVerifiedAt}
-                placeholder="Join my household on Dinner Done Better!"
-                {...inviteForm.getInputProps('note')}
-              />
-            </Grid.Col>
-          </Grid>
-          <Grid>
-            <Grid.Col md={12} lg={12}>
-              <Button type="submit" disabled={!inviteForm.isValid() || !user.emailAddressVerifiedAt} fullWidth>
-                Send Invite
-              </Button>
-            </Grid.Col>
-          </Grid>
-        </form>
+        {userError && <Text color="tomato">{userError.message}</Text>}
+
+        {!userError && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitInvite();
+            }}
+          >
+            <Grid>
+              <Grid.Col md={12} lg="auto">
+                <TextInput
+                  label="Email Address"
+                  disabled={!user.emailAddressVerifiedAt}
+                  placeholder="neato_person@fake.email"
+                  {...inviteForm.getInputProps('emailAddress')}
+                />
+              </Grid.Col>
+              <Grid.Col md={12} lg="auto">
+                <TextInput
+                  label="Name"
+                  placeholder={exampleNames[Math.floor(Math.random() * exampleNames.length)].first}
+                  disabled={!user.emailAddressVerifiedAt}
+                  {...inviteForm.getInputProps('toName')}
+                />
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col md={12} lg="auto">
+                <Textarea
+                  label="Note"
+                  disabled={!user.emailAddressVerifiedAt}
+                  placeholder="Join my household on Dinner Done Better!"
+                  {...inviteForm.getInputProps('note')}
+                />
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col md={12} lg={12}>
+                <Button type="submit" disabled={!inviteForm.isValid() || !user.emailAddressVerifiedAt} fullWidth>
+                  Send Invite
+                </Button>
+              </Grid.Col>
+            </Grid>
+          </form>
+        )}
       </Container>
     </AppLayout>
   );

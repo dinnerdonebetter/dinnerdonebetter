@@ -47,9 +47,18 @@ export function processWebappCookieHeader(result: AxiosResponse, userID: string,
   return [modifiedAPICookie, webappCookie];
 }
 
-export const extractUserInfoFromCookie = (cookies: NextApiRequestCookies): UserSessionDetails | undefined => {
-  return parseUserSessionDetailsFromCookie(
+export interface RedirectProps {
+  destination: string;
+  permanent: boolean;
+}
+
+export const userSessionDetailsOrRedirect = (
+  cookies: NextApiRequestCookies,
+): { details?: UserSessionDetails; redirect?: RedirectProps } => {
+  const details = parseUserSessionDetailsFromCookie(
     cookies[webappCookieName] || '',
     encryptorDecryptor as EncryptorDecryptor<UserSessionDetails>,
   );
+
+  return details ? { details } : { redirect: { destination: '/login', permanent: false } };
 };

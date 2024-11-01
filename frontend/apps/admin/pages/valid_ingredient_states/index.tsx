@@ -4,18 +4,25 @@ import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import router from 'next/router';
 import { IconSearch } from '@tabler/icons';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { QueryFilter, QueryFilteredResult, ValidIngredientState } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import {
+  EitherErrorOr,
+  IAPIError,
+  QueryFilter,
+  QueryFilteredResult,
+  ValidIngredientState,
+} from '@dinnerdonebetter/models';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildServerSideClient } from '../../src/client';
+import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface ValidIngredientStatesPageProps {
-  pageLoadValidIngredientStates: QueryFilteredResult<ValidIngredientState>;
+  pageLoadValidIngredientStates: EitherErrorOr<QueryFilteredResult<ValidIngredientState>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -23,7 +30,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<ValidIngredientStatesPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('ValidIngredientStatesPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   // TODO: parse context.query as QueryFilter.
   let props!: GetServerSidePropsResult<ValidIngredientStatesPageProps>;
@@ -36,18 +54,15 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredientStates(qf)
     .then((res: QueryFilteredResult<ValidIngredientState>) => {
       span.addEvent('valid ingredientStates retrieved');
-      props = { props: { pageLoadValidIngredientStates: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageLoadValidIngredientStates: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
-    .catch((error: AxiosError) => {
-      span.addEvent('error occurred');
-      if (error.response?.status === 401) {
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-      }
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchValidIngredientStatesTimer.end();
@@ -62,8 +77,13 @@ export const getServerSideProps: GetServerSideProps = async (
 function ValidIngredientStatesPage(props: ValidIngredientStatesPageProps) {
   let { pageLoadValidIngredientStates } = props;
 
+  const ogValidINgredientStates = valueOrDefault(
+    pageLoadValidIngredientStates,
+    new QueryFilteredResult<ValidIngredientState>(),
+  );
+  const [validIngredientStatesError] = useState<IAPIError | undefined>(pageLoadValidIngredientStates.error);
   const [validIngredientStates, setValidIngredientStates] =
-    useState<QueryFilteredResult<ValidIngredientState>>(pageLoadValidIngredientStates);
+    useState<QueryFilteredResult<ValidIngredientState>>(ogValidINgredientStates);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -148,29 +168,34 @@ function ValidIngredientStatesPage(props: ValidIngredientStatesPageProps) {
           </Grid.Col>
         </Grid>
 
-        <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Past Tense</th>
-              <th>Slug</th>
-              <th>Created At</th>
-              <th>Last Updated At</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
+        {validIngredientStatesError && <p>{validIngredientStatesError.message}</p>}
+        {!validIngredientStatesError && validIngredientStates.data && (
+          <>
+            <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Past Tense</th>
+                  <th>Slug</th>
+                  <th>Created At</th>
+                  <th>Last Updated At</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </Table>
 
-        <Pagination
-          disabled={search.trim().length > 0}
-          position="center"
-          page={validIngredientStates.page}
-          total={Math.ceil(validIngredientStates.totalCount / validIngredientStates.limit)}
-          onChange={(value: number) => {
-            setValidIngredientStates({ ...validIngredientStates, page: value });
-          }}
-        />
+            <Pagination
+              disabled={search.trim().length > 0}
+              position="center"
+              page={validIngredientStates.page}
+              total={Math.ceil(validIngredientStates.totalCount / validIngredientStates.limit)}
+              onChange={(value: number) => {
+                setValidIngredientStates({ ...validIngredientStates, page: value });
+              }}
+            />
+          </>
+        )}
       </Stack>
     </AppLayout>
   );

@@ -4,19 +4,20 @@ import { Button, Center, Container, Table } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-import { MealPlan, QueryFilter } from '@dinnerdonebetter/models';
+import { EitherErrorOr, IAPIError, MealPlan, QueryFilter, QueryFilteredResult } from '@dinnerdonebetter/models';
 import { getEarliestEvent, getLatestEvent } from '@dinnerdonebetter/utils';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 
-import { buildServerSideClient } from '../../src/client';
+import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
 import { serverSideAnalytics } from '../../src/analytics';
-import { extractUserInfoFromCookie } from '../../src/auth';
+import { userSessionDetailsOrRedirect } from '../../src/auth';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface MealPlansPageProps {
   userID: string;
-  mealPlans: MealPlan[];
+  mealPlans: EitherErrorOr<QueryFilteredResult<MealPlan>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -28,34 +29,52 @@ export const getServerSideProps: GetServerSideProps = async (
   const qf = QueryFilter.deriveFromGetServerSidePropsContext(context.query);
   qf.attachToSpan(span);
 
-  let props!: GetServerSidePropsResult<MealPlansPageProps>;
-
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
-  console.log('userSessionData', userSessionData);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (userSessionData?.userID) {
+    const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'MEAL_PLANS_PAGE', context, {
       householdID: userSessionData.householdID,
     });
+    analyticsTimer.end();
   } else {
-    props = {
+    return {
       redirect: {
         destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
         permanent: false,
       },
     };
-    return props;
   }
-  extractCookieTimer.end();
 
-  const apiClient = buildServerSideClient(context).withSpan(span);
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const fetchMealPlansTimer = timing.addEvent('fetch meal plans');
-  const { data: mealPlans } = await apiClient
+  const mealPlans = await apiClient
     .getMealPlansForHousehold(qf)
     .then((result) => {
       span.addEvent('meal plan list retrieved');
-      return result;
+      return { data: result };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMealPlansTimer.end();
@@ -64,7 +83,12 @@ export const getServerSideProps: GetServerSideProps = async (
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return { props: { userID: userSessionData?.userID, mealPlans: mealPlans } };
+  return {
+    props: {
+      userID: userSessionData?.userID,
+      mealPlans: mealPlans,
+    },
+  };
 };
 
 const dateFormat = 'h aa M/d/yy';
@@ -72,8 +96,9 @@ const dateFormat = 'h aa M/d/yy';
 function MealPlansPage(props: MealPlansPageProps) {
   const router = useRouter();
 
-  const { mealPlans: pageLoadMealPlans } = props;
-  const [mealPlans, updateMealPlans] = useState(pageLoadMealPlans);
+  const pageLoadMealPlans = props.mealPlans;
+  const ogMealPlans = valueOrDefault(pageLoadMealPlans, new QueryFilteredResult<MealPlan>());
+  const [mealPlans, updateMealPlans] = useState(ogMealPlans.data);
 
   return (
     <AppLayout title="Meal Plans" userLoggedIn>

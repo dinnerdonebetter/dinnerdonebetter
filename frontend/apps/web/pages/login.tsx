@@ -12,7 +12,7 @@ import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-t
 
 import { AppLayout } from '../src/layouts';
 import { serverSideAnalytics } from '../src/analytics';
-import { extractUserInfoFromCookie } from '../src/auth';
+import { userSessionDetailsOrRedirect } from '../src/auth';
 import { serverSideTracer } from '../src/tracer';
 import { webappCookieName } from '../src/constants';
 
@@ -31,13 +31,21 @@ export const getServerSideProps: GetServerSideProps = async (
   const span = serverSideTracer.startSpan('LoginPageProps.getServerSideProps');
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-
   if (context.req.cookies[webappCookieName]) {
-    const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+    const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+    if (sessionDetails.redirect) {
+      span.end();
+      return { redirect: sessionDetails.redirect };
+    }
+    const userSessionData = sessionDetails.details;
+    extractCookieTimer.end();
+
     if (userSessionData?.userID) {
+      const analyticsTimer = timing.addEvent('analytics');
       serverSideAnalytics.page(userSessionData.userID, 'LOGIN_PAGE', context, {
         householdID: userSessionData.householdID,
       });
+      analyticsTimer.end();
 
       span.end();
       return {
@@ -53,7 +61,9 @@ export const getServerSideProps: GetServerSideProps = async (
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
   span.end();
-  return { props: {} };
+  return {
+    props: {},
+  };
 };
 
 export default function Login(_props: LoginPageProps): JSX.Element {

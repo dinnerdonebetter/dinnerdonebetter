@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { format, formatDuration, subSeconds, intervalToDuration } from 'date-fns';
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import {
@@ -22,13 +21,15 @@ import {
 } from '@mantine/core';
 import Link from 'next/link';
 import router from 'next/router';
-import { Reducer, useReducer } from 'react';
+import { Reducer, useReducer, useState } from 'react';
 import { IconCheck, IconCircleX, IconThumbUp, IconTrash } from '@tabler/icons';
 
 import {
   APIResponse,
+  EitherErrorOr,
   Household,
   HouseholdUserMembershipWithUser,
+  IAPIError,
   MealComponent,
   MealPlan,
   MealPlanEvent,
@@ -48,18 +49,19 @@ import { getEarliestEvent, getLatestEvent } from '@dinnerdonebetter/utils';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildServerSideClient } from '../../../src/client';
+import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { AppLayout } from '../../../src/layouts';
 import { serverSideTracer } from '../../../src/tracer';
 import { serverSideAnalytics } from '../../../src/analytics';
-import { extractUserInfoFromCookie } from '../../../src/auth';
+import { userSessionDetailsOrRedirect } from '../../../src/auth';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface MealPlanPageProps {
-  mealPlan: MealPlan;
+  mealPlan: EitherErrorOr<MealPlan>;
   userID: string;
-  household: Household;
-  groceryList: MealPlanGroceryListItem[];
-  tasks: MealPlanTask[];
+  household: EitherErrorOr<Household>;
+  groceryList: EitherErrorOr<MealPlanGroceryListItem[]>;
+  tasks: EitherErrorOr<MealPlanTask[]>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -67,7 +69,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<MealPlanPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('MealPlanPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const { mealPlanID: mealPlanIDParam } = context.query;
   if (!mealPlanIDParam) {
@@ -77,23 +90,35 @@ export const getServerSideProps: GetServerSideProps = async (
   const mealPlanID = mealPlanIDParam.toString();
 
   const extractCookieTimer = timing.addEvent('extract cookie');
-  const userSessionData = extractUserInfoFromCookie(context.req.cookies);
+  const sessionDetails = userSessionDetailsOrRedirect(context.req.cookies);
+  if (sessionDetails.redirect) {
+    span.end();
+    return { redirect: sessionDetails.redirect };
+  }
+  const userSessionData = sessionDetails.details;
+  extractCookieTimer.end();
+
   if (userSessionData?.userID) {
+    const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'MEAL_PLAN_PAGE', context, {
       mealPlanID,
       householdID: userSessionData.householdID,
     });
+    analyticsTimer.end();
   } else {
     console.log(`no user session data found for ${context.req.url}`);
   }
-  extractCookieTimer.end();
 
   const fetchMealPlanTimer = timing.addEvent('fetch meal plan');
   const mealPlanPromise = apiClient
     .getMealPlan(mealPlanID)
     .then((result: APIResponse<MealPlan>) => {
       span.addEvent(`meal plan retrieved`);
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMealPlanTimer.end();
@@ -104,7 +129,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getActiveHousehold()
     .then((result: APIResponse<Household>) => {
       span.addEvent(`household retrieved`);
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchHouseholdTimer.end();
@@ -115,7 +144,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getMealPlanTasks(mealPlanID)
     .then((result: QueryFilteredResult<MealPlanTask>) => {
       span.addEvent('meal plan grocery list items retrieved');
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMealPlanTasksTimer.end();
@@ -126,43 +159,17 @@ export const getServerSideProps: GetServerSideProps = async (
     .getMealPlanGroceryListItemsForMealPlan(mealPlanID)
     .then((result: QueryFilteredResult<MealPlanGroceryListItem>) => {
       span.addEvent('meal plan grocery list items retrieved');
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMealPlanGroceryListItemsTimer.end();
     });
 
-  let notFound = false;
-  let notAuthorized = false;
-  const retrievedData = await Promise.all([mealPlanPromise, householdPromise, groceryListPromise, tasksPromise]).catch(
-    (error: AxiosError) => {
-      if (error.response?.status === 404) {
-        notFound = true;
-      } else if (error.response?.status === 401) {
-        notAuthorized = true;
-      } else {
-        console.error(`${error.response?.status} ${error.response?.config?.url}}`);
-      }
-    },
-  );
-
-  if (notFound || !retrievedData) {
-    return {
-      redirect: {
-        destination: '/meal_plans',
-        permanent: false,
-      },
-    };
-  }
-
-  if (notAuthorized) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
+  const retrievedData = await Promise.all([mealPlanPromise, householdPromise, groceryListPromise, tasksPromise]);
 
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
@@ -362,8 +369,27 @@ const getUserFromHouseholdByID = (
   return household.members.find((member: HouseholdUserMembershipWithUser) => member.belongsToUser?.id === userID);
 };
 
-function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealPlanPageProps) {
+function MealPlanPage(props: MealPlanPageProps) {
   const apiClient = buildLocalClient();
+
+  const pageLoadMealPlan = props.mealPlan;
+  const userID = props.userID;
+  const pageLoadHousehold = props.household;
+  const pageLoadGroceryList = props.groceryList;
+  const pageLoadTasks = props.tasks;
+
+  const mealPlan = valueOrDefault(pageLoadMealPlan, new MealPlan());
+  const [mealPlanError] = useState<IAPIError | undefined>(pageLoadMealPlan.error);
+
+  const household = valueOrDefault(pageLoadHousehold, new MealPlan());
+  const [householdError] = useState<IAPIError | undefined>(pageLoadHousehold.error);
+
+  const groceryList = valueOrDefault(pageLoadGroceryList, new MealPlan());
+  const [groceryListError] = useState<IAPIError | undefined>(pageLoadGroceryList.error);
+
+  const tasks = valueOrDefault(pageLoadTasks, new MealPlan());
+  const [tasksError] = useState<IAPIError | undefined>(pageLoadTasks.error);
+
   const [pageState, dispatchPageEvent] = useReducer(
     useMealPlanReducer,
     new MealPlanPageState(mealPlan, groceryList, tasks),
@@ -424,43 +450,45 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                                   </Link>
                                 </Grid.Col>
                                 <Grid.Col span="auto">
-                                  <Box sx={{ float: 'right' }}>
-                                    {(option.votes || []).map((vote: MealPlanOptionVote) => {
-                                      const userWhoVoted = getUserFromHouseholdByID(
-                                        household,
-                                        vote.byUser,
-                                      )?.belongsToUser;
-                                      return (
-                                        <Tooltip
-                                          label={`${
-                                            userWhoVoted?.firstName || userWhoVoted?.username || 'UNKNOWN'
-                                          } ranked this choice #${vote.rank + 1}`}
-                                          withArrow
-                                          withinPortal
-                                        >
-                                          <Indicator
-                                            mr="xs"
-                                            offset={4}
-                                            inline
-                                            color={
-                                              (vote.rank === 0 && 'yellow') ||
-                                              (vote.rank === 1 && 'gray') ||
-                                              (vote.rank === 2 && '#CD7F32') ||
-                                              'blue'
-                                            }
+                                  {!householdError && (
+                                    <Box sx={{ float: 'right' }}>
+                                      {(option.votes || []).map((vote: MealPlanOptionVote) => {
+                                        const userWhoVoted = getUserFromHouseholdByID(
+                                          household,
+                                          vote.byUser,
+                                        )?.belongsToUser;
+                                        return (
+                                          <Tooltip
+                                            label={`${
+                                              userWhoVoted?.firstName || userWhoVoted?.username || 'UNKNOWN'
+                                            } ranked this choice #${vote.rank + 1}`}
+                                            withArrow
+                                            withinPortal
                                           >
-                                            <Avatar
-                                              radius="xl"
-                                              src={userWhoVoted?.avatar || null}
-                                              alt={`${
-                                                userWhoVoted?.firstName || userWhoVoted?.username || 'UNKNOWN'
-                                              }'s avatar`}
-                                            />
-                                          </Indicator>
-                                        </Tooltip>
-                                      );
-                                    })}
-                                  </Box>
+                                            <Indicator
+                                              mr="xs"
+                                              offset={4}
+                                              inline
+                                              color={
+                                                (vote.rank === 0 && 'yellow') ||
+                                                (vote.rank === 1 && 'gray') ||
+                                                (vote.rank === 2 && '#CD7F32') ||
+                                                'blue'
+                                              }
+                                            >
+                                              <Avatar
+                                                radius="xl"
+                                                src={userWhoVoted?.avatar || null}
+                                                alt={`${
+                                                  userWhoVoted?.firstName || userWhoVoted?.username || 'UNKNOWN'
+                                                }'s avatar`}
+                                              />
+                                            </Indicator>
+                                          </Tooltip>
+                                        );
+                                      })}
+                                    </Box>
+                                  )}
                                 </Grid.Col>
                               </Grid>
                             </Card>
@@ -470,7 +498,9 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
                     );
                   })}
 
-                {getMissingVotersForMealPlanEvent(event, household, userID).length > 0 && (
+                {householdError && <Text color="tomato">{householdError.message}</Text>}
+
+                {!householdError && getMissingVotersForMealPlanEvent(event, household, userID).length > 0 && (
                   <Grid justify="center" align="center">
                     <Grid.Col span="auto">
                       <small>{`(awaiting votes from ${new Intl.ListFormat('en').format(
@@ -483,188 +513,201 @@ function MealPlanPage({ mealPlan, userID, household, groceryList, tasks }: MealP
             );
           })}
 
+          {mealPlanError && <Text color="tomato">{mealPlanError.message}</Text>}
+
           <Grid>
             <Grid.Col span={12} md={7}>
-              {(getChosenMealPlanEvents(pageState.mealPlan) || []).length > 0 && (
+              {!mealPlanError && (getChosenMealPlanEvents(pageState.mealPlan) || []).length > 0 && (
                 <>
                   <Divider label="tasks" labelPosition="center" />
-                  <List icon={<></>}>
-                    {(getChosenMealPlanEvents(pageState.mealPlan) || []).map(
-                      (event: MealPlanEvent, eventIndex: number) => {
-                        return (
-                          <div key={eventIndex}>
-                            <List.Item>
-                              For{' '}
-                              <Link
-                                href={`/meals/${
-                                  (event.options || []).find((opt: MealPlanOption) => opt.chosen)!.meal.id
-                                }`}
-                              >
-                                &nbsp;{event.mealName}&nbsp;
-                              </Link>{' '}
-                              at {format(new Date(event.startsAt), "h aa 'on' M/d/yy")}:&nbsp;
-                            </List.Item>
-                            <List icon={<></>} withPadding>
-                              {getRecipesForMealPlanOptions(
-                                (event.options || []).filter((opt: MealPlanOption) => opt.chosen),
-                              ).map((recipe: Recipe, recipeIndex: number) => {
-                                return (
-                                  <div key={recipeIndex}>
-                                    <List.Item>
-                                      {'For'}&nbsp;
-                                      <Link href={`/meal_plans/${mealPlan.id}/recipe/${recipe.id}`}>{recipe.name}</Link>
-                                      :&nbsp;
-                                    </List.Item>
 
-                                    <List icon={<></>} withPadding>
-                                      {getMealPlanTasksForRecipe(pageState.tasks, recipe.id).map(
-                                        (mealPlanTask: MealPlanTask, taskIndex: number) => {
-                                          return (
-                                            <Box key={taskIndex}>
-                                              <List.Item>
-                                                <Grid grow>
-                                                  <Grid.Col span="content">
-                                                    <Tooltip label="Mark as done">
-                                                      <ActionIcon
-                                                        disabled={!['unfinished'].includes(mealPlanTask.status)}
-                                                        onClick={() => {
-                                                          apiClient
-                                                            .updateMealPlanTaskStatus(
-                                                              mealPlan.id,
-                                                              mealPlanTask.id,
-                                                              new MealPlanTaskStatusChangeRequestInput({
-                                                                status: 'finished',
-                                                              }),
-                                                            )
-                                                            .then((res: APIResponse<MealPlanTask>) => {
-                                                              dispatchPageEvent({
-                                                                type: 'UPDATE_MEAL_PLAN_TASK',
-                                                                newTask: res.data,
+                  {tasksError && <Text color="red">{tasksError.message}</Text>}
+
+                  {!tasksError && !mealPlanError && (
+                    <List icon={<></>}>
+                      {(getChosenMealPlanEvents(pageState.mealPlan) || []).map(
+                        (event: MealPlanEvent, eventIndex: number) => {
+                          return (
+                            <div key={eventIndex}>
+                              <List.Item>
+                                For{' '}
+                                <Link
+                                  href={`/meals/${
+                                    (event.options || []).find((opt: MealPlanOption) => opt.chosen)!.meal.id
+                                  }`}
+                                >
+                                  &nbsp;{event.mealName}&nbsp;
+                                </Link>{' '}
+                                at {format(new Date(event.startsAt), "h aa 'on' M/d/yy")}:&nbsp;
+                              </List.Item>
+                              <List icon={<></>} withPadding>
+                                {getRecipesForMealPlanOptions(
+                                  (event.options || []).filter((opt: MealPlanOption) => opt.chosen),
+                                ).map((recipe: Recipe, recipeIndex: number) => {
+                                  return (
+                                    <div key={recipeIndex}>
+                                      <List.Item>
+                                        {'For'}&nbsp;
+                                        <Link href={`/meal_plans/${mealPlan.id}/recipe/${recipe.id}`}>
+                                          {recipe.name}
+                                        </Link>
+                                        :&nbsp;
+                                      </List.Item>
+
+                                      <List icon={<></>} withPadding>
+                                        {getMealPlanTasksForRecipe(pageState.tasks, recipe.id).map(
+                                          (mealPlanTask: MealPlanTask, taskIndex: number) => {
+                                            return (
+                                              <Box key={taskIndex}>
+                                                <List.Item>
+                                                  <Grid grow>
+                                                    <Grid.Col span="content">
+                                                      <Tooltip label="Mark as done">
+                                                        <ActionIcon
+                                                          disabled={!['unfinished'].includes(mealPlanTask.status)}
+                                                          onClick={() => {
+                                                            apiClient
+                                                              .updateMealPlanTaskStatus(
+                                                                mealPlan.id,
+                                                                mealPlanTask.id,
+                                                                new MealPlanTaskStatusChangeRequestInput({
+                                                                  status: 'finished',
+                                                                }),
+                                                              )
+                                                              .then((res: APIResponse<MealPlanTask>) => {
+                                                                dispatchPageEvent({
+                                                                  type: 'UPDATE_MEAL_PLAN_TASK',
+                                                                  newTask: res.data,
+                                                                });
                                                               });
-                                                            });
-                                                        }}
-                                                      >
-                                                        <IconCheck />
-                                                      </ActionIcon>
-                                                    </Tooltip>
-                                                  </Grid.Col>
-                                                  <Grid.Col span="content">
-                                                    <Tooltip label="Cancel">
-                                                      <ActionIcon
-                                                        disabled={!['unfinished'].includes(mealPlanTask.status)}
-                                                        onClick={() => {
-                                                          apiClient
-                                                            .updateMealPlanTaskStatus(
-                                                              mealPlan.id,
-                                                              mealPlanTask.id,
-                                                              new MealPlanTaskStatusChangeRequestInput({
-                                                                status: 'canceled',
-                                                              }),
-                                                            )
-                                                            .then((res: APIResponse<MealPlanTask>) => {
-                                                              dispatchPageEvent({
-                                                                type: 'UPDATE_MEAL_PLAN_TASK',
-                                                                newTask: res.data,
+                                                          }}
+                                                        >
+                                                          <IconCheck />
+                                                        </ActionIcon>
+                                                      </Tooltip>
+                                                    </Grid.Col>
+                                                    <Grid.Col span="content">
+                                                      <Tooltip label="Cancel">
+                                                        <ActionIcon
+                                                          disabled={!['unfinished'].includes(mealPlanTask.status)}
+                                                          onClick={() => {
+                                                            apiClient
+                                                              .updateMealPlanTaskStatus(
+                                                                mealPlan.id,
+                                                                mealPlanTask.id,
+                                                                new MealPlanTaskStatusChangeRequestInput({
+                                                                  status: 'canceled',
+                                                                }),
+                                                              )
+                                                              .then((res: APIResponse<MealPlanTask>) => {
+                                                                dispatchPageEvent({
+                                                                  type: 'UPDATE_MEAL_PLAN_TASK',
+                                                                  newTask: res.data,
+                                                                });
                                                               });
-                                                            });
-                                                        }}
+                                                          }}
+                                                        >
+                                                          <IconCircleX />
+                                                        </ActionIcon>
+                                                      </Tooltip>
+                                                    </Grid.Col>
+                                                    <Grid.Col span="content">
+                                                      <Text
+                                                        strikethrough={['ignored', 'finished'].includes(
+                                                          mealPlanTask.status,
+                                                        )}
                                                       >
-                                                        <IconCircleX />
-                                                      </ActionIcon>
-                                                    </Tooltip>
-                                                  </Grid.Col>
-                                                  <Grid.Col span="content">
-                                                    <Text
-                                                      strikethrough={['ignored', 'finished'].includes(
-                                                        mealPlanTask.status,
-                                                      )}
-                                                    >
-                                                      {`Between ${formatDuration(
-                                                        intervalToDuration({
-                                                          start: subSeconds(
-                                                            new Date(event.startsAt),
-                                                            mealPlanTask.recipePrepTask.timeBufferBeforeRecipeInSeconds
-                                                              .max || 0,
-                                                          ),
-                                                          end: new Date(event.startsAt),
-                                                        }),
-                                                      )} before and `}
-                                                      {mealPlanTask.recipePrepTask.timeBufferBeforeRecipeInSeconds
-                                                        .min === 0
-                                                        ? `time of ${event.mealName} prep, ${mealPlanTask.recipePrepTask.name}`
-                                                        : format(
-                                                            subSeconds(
+                                                        {`Between ${formatDuration(
+                                                          intervalToDuration({
+                                                            start: subSeconds(
                                                               new Date(event.startsAt),
                                                               mealPlanTask.recipePrepTask
-                                                                .timeBufferBeforeRecipeInSeconds.min,
+                                                                .timeBufferBeforeRecipeInSeconds.max || 0,
                                                             ),
-                                                            "h aa 'on' M/d/yy",
-                                                          )}
-                                                      <Text size="xs">
-                                                        (store {mealPlanTask.recipePrepTask.storageType})
-                                                        <Badge ml="xs" size="sm" color="orange">
-                                                          Optional
-                                                        </Badge>
-                                                      </Text>
-                                                    </Text>
-                                                  </Grid.Col>
-                                                </Grid>
-                                              </List.Item>
-                                              {!['ignored', 'finished'].includes(mealPlanTask.status) && (
-                                                <List icon={<></>} withPadding mx="lg" mb="lg">
-                                                  {mealPlanTask.recipePrepTask.recipeSteps.map(
-                                                    (prepTaskStep: RecipePrepTaskStep, prepTaskStepIndex: number) => {
-                                                      const relevantRecipe = findRecipeInMealPlan(
-                                                        pageState.mealPlan,
-                                                        mealPlanTask.recipePrepTask.belongsToRecipe,
-                                                      )!;
-                                                      const relevantRecipeStep = relevantRecipe.steps.find(
-                                                        (step: RecipeStep) =>
-                                                          step.id === prepTaskStep.belongsToRecipeStep,
-                                                      )!;
-
-                                                      return (
-                                                        <List.Item key={prepTaskStepIndex} my="-sm">
-                                                          <Text
-                                                            strikethrough={['ignored', 'finished'].includes(
-                                                              mealPlanTask.status,
-                                                            )}
-                                                          >
-                                                            Step #{relevantRecipe.steps.indexOf(relevantRecipeStep) + 1}{' '}
-                                                            ({relevantRecipeStep.preparation.name}{' '}
-                                                            {new Intl.ListFormat('en').format(
-                                                              relevantRecipeStep.ingredients.map(
-                                                                (ingredient: RecipeStepIngredient) =>
-                                                                  ingredient.ingredient?.pluralName || ingredient.name,
+                                                            end: new Date(event.startsAt),
+                                                          }),
+                                                        )} before and `}
+                                                        {mealPlanTask.recipePrepTask.timeBufferBeforeRecipeInSeconds
+                                                          .min === 0
+                                                          ? `time of ${event.mealName} prep, ${mealPlanTask.recipePrepTask.name}`
+                                                          : format(
+                                                              subSeconds(
+                                                                new Date(event.startsAt),
+                                                                mealPlanTask.recipePrepTask
+                                                                  .timeBufferBeforeRecipeInSeconds.min,
                                                               ),
+                                                              "h aa 'on' M/d/yy",
                                                             )}
-                                                            )
-                                                          </Text>
-                                                        </List.Item>
-                                                      );
-                                                    },
-                                                  )}
-                                                </List>
-                                              )}
-                                            </Box>
-                                          );
-                                        },
-                                      )}
-                                    </List>
-                                  </div>
-                                );
-                              })}
-                            </List>
-                          </div>
-                        );
-                      },
-                    )}
-                  </List>
+                                                        <Text size="xs">
+                                                          (store {mealPlanTask.recipePrepTask.storageType})
+                                                          <Badge ml="xs" size="sm" color="orange">
+                                                            Optional
+                                                          </Badge>
+                                                        </Text>
+                                                      </Text>
+                                                    </Grid.Col>
+                                                  </Grid>
+                                                </List.Item>
+                                                {!['ignored', 'finished'].includes(mealPlanTask.status) && (
+                                                  <List icon={<></>} withPadding mx="lg" mb="lg">
+                                                    {mealPlanTask.recipePrepTask.recipeSteps.map(
+                                                      (prepTaskStep: RecipePrepTaskStep, prepTaskStepIndex: number) => {
+                                                        const relevantRecipe = findRecipeInMealPlan(
+                                                          pageState.mealPlan,
+                                                          mealPlanTask.recipePrepTask.belongsToRecipe,
+                                                        )!;
+                                                        const relevantRecipeStep = relevantRecipe.steps.find(
+                                                          (step: RecipeStep) =>
+                                                            step.id === prepTaskStep.belongsToRecipeStep,
+                                                        )!;
+
+                                                        return (
+                                                          <List.Item key={prepTaskStepIndex} my="-sm">
+                                                            <Text
+                                                              strikethrough={['ignored', 'finished'].includes(
+                                                                mealPlanTask.status,
+                                                              )}
+                                                            >
+                                                              Step #
+                                                              {relevantRecipe.steps.indexOf(relevantRecipeStep) + 1} (
+                                                              {relevantRecipeStep.preparation.name}{' '}
+                                                              {new Intl.ListFormat('en').format(
+                                                                relevantRecipeStep.ingredients.map(
+                                                                  (ingredient: RecipeStepIngredient) =>
+                                                                    ingredient.ingredient?.pluralName ||
+                                                                    ingredient.name,
+                                                                ),
+                                                              )}
+                                                              )
+                                                            </Text>
+                                                          </List.Item>
+                                                        );
+                                                      },
+                                                    )}
+                                                  </List>
+                                                )}
+                                              </Box>
+                                            );
+                                          },
+                                        )}
+                                      </List>
+                                    </div>
+                                  );
+                                })}
+                              </List>
+                            </div>
+                          );
+                        },
+                      )}
+                    </List>
+                  )}
                 </>
               )}
             </Grid.Col>
             <Grid.Col span={12} md={5}>
-              {(pageState.groceryList || []).length > 0 && (
+              {groceryListError && <Text color="tomato">{groceryListError.message}</Text>}
+
+              {!groceryListError && (pageState.groceryList || []).length > 0 && (
                 <>
                   <Divider label="grocery list" labelPosition="center" />
 

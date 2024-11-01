@@ -1,23 +1,23 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
 import {
-  TextInput,
-  Button,
-  Group,
-  Container,
-  Select,
-  Autocomplete,
-  Divider,
-  Text,
-  Space,
-  Title,
-  ThemeIcon,
   ActionIcon,
+  Autocomplete,
   AutocompleteItem,
+  Button,
   Center,
+  Container,
+  Divider,
   Grid,
+  Group,
   Pagination,
+  Select,
+  Space,
   Table,
+  Text,
+  TextInput,
+  ThemeIcon,
+  Title,
 } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
@@ -27,25 +27,28 @@ import { IconTrash } from '@tabler/icons';
 import { z } from 'zod';
 
 import {
+  APIResponse,
+  EitherErrorOr,
+  IAPIError,
+  QueryFilteredResult,
   ValidIngredient,
   ValidIngredientState,
   ValidIngredientStateIngredient,
   ValidIngredientStateIngredientCreationRequestInput,
-  QueryFilteredResult,
   ValidIngredientStateUpdateRequestInput,
-  APIResponse,
 } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
-import { buildServerSideClient } from '../../../src/client';
+import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ValidIngredientStatePageProps {
-  pageLoadValidIngredientState: ValidIngredientState;
-  pageLoadValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient>;
+  pageLoadValidIngredientState: EitherErrorOr<ValidIngredientState>;
+  pageLoadValidIngredientStates: EitherErrorOr<QueryFilteredResult<ValidIngredientStateIngredient>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -53,7 +56,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<ValidIngredientStatePageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('ValidIngredientStatePage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const { validIngredientStateID } = context.query;
   if (!validIngredientStateID) {
@@ -121,9 +135,14 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
   const apiClient = buildLocalClient();
   const { pageLoadValidIngredientState, pageLoadValidIngredientStates } = props;
 
-  const [validIngredientState, setValidIngredientState] = useState<ValidIngredientState>(pageLoadValidIngredientState);
+  const ogValidIngredientState: ValidIngredientState = valueOrDefault(
+    pageLoadValidIngredientState,
+    new ValidIngredientState(),
+  );
+  const [validIngredientStateError] = useState<IAPIError | undefined>(pageLoadValidIngredientState.error);
+  const [validIngredientState, setValidIngredientState] = useState<ValidIngredientState>(ogValidIngredientState);
   const [originalValidIngredientState, setOriginalValidIngredientState] =
-    useState<ValidIngredientState>(pageLoadValidIngredientState);
+    useState<ValidIngredientState>(ogValidIngredientState);
 
   const [newIngredientForIngredientStateInput, setNewIngredientForIngredientStateInput] =
     useState<ValidIngredientStateIngredientCreationRequestInput>(
@@ -132,8 +151,16 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
       }),
     );
   const [ingredientQuery, setIngredientQuery] = useState('');
-  const [ingredientsForIngredientState, setIngredientsForIngredientState] =
-    useState<QueryFilteredResult<ValidIngredientStateIngredient>>(pageLoadValidIngredientStates);
+
+  const ogIngredientsForIngredientState: QueryFilteredResult<ValidIngredientStateIngredient> = valueOrDefault(
+    pageLoadValidIngredientStates,
+    new QueryFilteredResult<ValidIngredientStateIngredient>(),
+  );
+  const [ingredientsForIngredientStateError] = useState<IAPIError | undefined>(pageLoadValidIngredientStates.error);
+  const [ingredientsForIngredientState, setIngredientsForIngredientState] = useState<
+    QueryFilteredResult<ValidIngredientStateIngredient>
+  >(ogIngredientsForIngredientState);
+
   const [suggestedIngredients, setSuggestedIngredients] = useState<ValidIngredient[]>([]);
 
   useEffect(() => {
@@ -208,50 +235,56 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
   return (
     <AppLayout title="Valid Ingredient State">
       <Container size="sm">
-        <form onSubmit={updateForm.onSubmit(submit)}>
-          <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
-          <TextInput label="Past Tense" placeholder="things" {...updateForm.getInputProps('pastTense')} />
-          <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
-          <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
+        {validIngredientStateError && <Text color="tomato">{validIngredientStateError.message}</Text>}
 
-          <Select
-            label="Component Type"
-            placeholder="Type"
-            value={updateForm.values.attributeType}
-            data={[
-              { value: 'texture', label: 'texture' },
-              { value: 'consistency', label: 'consistency' },
-              { value: 'temperature', label: 'temperature' },
-              { value: 'color', label: 'color' },
-              { value: 'appearance', label: 'appearance' },
-              { value: 'odor', label: 'odor' },
-              { value: 'taste', label: 'taste' },
-              { value: 'sound', label: 'sound' },
-              { value: 'other', label: 'other' },
-            ]}
-            {...updateForm.getInputProps('attributeType')}
-          />
+        {!validIngredientStateError && validIngredientState.id !== '' && (
+          <>
+            <form onSubmit={updateForm.onSubmit(submit)}>
+              <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
+              <TextInput label="Past Tense" placeholder="things" {...updateForm.getInputProps('pastTense')} />
+              <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
+              <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
 
-          <Group position="center">
-            <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
-              Submit
-            </Button>
-            <Button
-              type="submit"
-              color="red"
-              fullWidth
-              onClick={() => {
-                if (confirm('Are you sure you want to delete this valid ingredient state?')) {
-                  apiClient.archiveValidIngredientState(validIngredientState.id).then(() => {
-                    router.push('/valid_ingredient_states');
-                  });
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </Group>
-        </form>
+              <Select
+                label="Component Type"
+                placeholder="Type"
+                value={updateForm.values.attributeType}
+                data={[
+                  { value: 'texture', label: 'texture' },
+                  { value: 'consistency', label: 'consistency' },
+                  { value: 'temperature', label: 'temperature' },
+                  { value: 'color', label: 'color' },
+                  { value: 'appearance', label: 'appearance' },
+                  { value: 'odor', label: 'odor' },
+                  { value: 'taste', label: 'taste' },
+                  { value: 'sound', label: 'sound' },
+                  { value: 'other', label: 'other' },
+                ]}
+                {...updateForm.getInputProps('attributeType')}
+              />
+
+              <Group position="center">
+                <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
+                  Submit
+                </Button>
+                <Button
+                  type="submit"
+                  color="red"
+                  fullWidth
+                  onClick={() => {
+                    if (confirm('Are you sure you want to delete this valid ingredient state?')) {
+                      apiClient.archiveValidIngredientState(validIngredientState.id).then(() => {
+                        router.push('/valid_ingredient_states');
+                      });
+                    }
+                  }}
+                >
+                  Delete
+                </Button>
+              </Group>
+            </form>
+          </>
+        )}
 
         {/*
 
@@ -267,6 +300,10 @@ function ValidIngredientStatePage(props: ValidIngredientStatePageProps) {
           <Center>
             <Title order={4}>Ingredients</Title>
           </Center>
+
+          {ingredientsForIngredientStateError && (
+            <Text color="tomato">{ingredientsForIngredientStateError.message}</Text>
+          )}
 
           {ingredientsForIngredientState.data && (ingredientsForIngredientState.data || []).length !== 0 && (
             <>

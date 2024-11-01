@@ -1,21 +1,22 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
-import { TextInput, Button, Group, Container, Switch } from '@mantine/core';
+import { Button, Container, Group, Switch, Text, TextInput } from '@mantine/core';
 import { z } from 'zod';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-import { APIResponse, ValidVessel, ValidVesselUpdateRequestInput } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { APIResponse, EitherErrorOr, ValidVessel, ValidVesselUpdateRequestInput } from '@dinnerdonebetter/models';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
-import { buildServerSideClient } from '../../../src/client';
+import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ValidVesselPageProps {
-  pageLoadValidVessel: ValidVessel;
+  pageLoadValidVessel: EitherErrorOr<ValidVessel>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -23,7 +24,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<ValidVesselPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('ValidVesselPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const { validVesselID } = context.query;
   if (!validVesselID) {
@@ -65,8 +77,10 @@ function ValidVesselPage(props: ValidVesselPageProps) {
   const apiClient = buildLocalClient();
   const { pageLoadValidVessel } = props;
 
-  const [validVessel, setValidVessel] = useState<ValidVessel>(pageLoadValidVessel);
-  const [originalValidVessel, setOriginalValidVessel] = useState<ValidVessel>(pageLoadValidVessel);
+  const ogValidVessel = valueOrDefault(pageLoadValidVessel, new ValidVessel());
+  const [validVesselError] = useState(pageLoadValidVessel.error);
+  const [validVessel, setValidVessel] = useState<ValidVessel>(ogValidVessel);
+  const [originalValidVessel, setOriginalValidVessel] = useState<ValidVessel>(ogValidVessel);
 
   const updateForm = useForm({
     initialValues: validVessel,
@@ -119,44 +133,50 @@ function ValidVesselPage(props: ValidVesselPageProps) {
   return (
     <AppLayout title="Valid Vessel">
       <Container size="sm">
-        <form onSubmit={updateForm.onSubmit(submit)}>
-          <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
-          <TextInput label="Plural Name" placeholder="things" {...updateForm.getInputProps('pluralName')} />
-          <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
-          <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
+        {validVesselError && <Text color="tomato"> {validVesselError.message} </Text>}
 
-          <Switch
-            checked={updateForm.values.displayInSummaryLists}
-            label="Display in summary lists"
-            {...updateForm.getInputProps('displayInSummaryLists')}
-          />
+        {!validVesselError && validVessel.id !== '' && (
+          <>
+            <form onSubmit={updateForm.onSubmit(submit)}>
+              <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
+              <TextInput label="Plural Name" placeholder="things" {...updateForm.getInputProps('pluralName')} />
+              <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
+              <TextInput label="Description" placeholder="thing" {...updateForm.getInputProps('description')} />
 
-          <Switch
-            checked={updateForm.values.includeInGeneratedInstructions}
-            label="Include in generated instructions"
-            {...updateForm.getInputProps('includeInGeneratedInstructions')}
-          />
+              <Switch
+                checked={updateForm.values.displayInSummaryLists}
+                label="Display in summary lists"
+                {...updateForm.getInputProps('displayInSummaryLists')}
+              />
 
-          <Group position="center">
-            <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
-              Submit
-            </Button>
-            <Button
-              type="submit"
-              color="red"
-              fullWidth
-              onClick={() => {
-                if (confirm('Are you sure you want to delete this valid vessel?')) {
-                  apiClient.archiveValidVessel(validVessel.id).then(() => {
-                    router.push('/valid_vessels');
-                  });
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </Group>
-        </form>
+              <Switch
+                checked={updateForm.values.includeInGeneratedInstructions}
+                label="Include in generated instructions"
+                {...updateForm.getInputProps('includeInGeneratedInstructions')}
+              />
+
+              <Group position="center">
+                <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
+                  Submit
+                </Button>
+                <Button
+                  type="submit"
+                  color="red"
+                  fullWidth
+                  onClick={() => {
+                    if (confirm('Are you sure you want to delete this valid vessel?')) {
+                      apiClient.archiveValidVessel(validVessel.id).then(() => {
+                        router.push('/valid_vessels');
+                      });
+                    }
+                  }}
+                >
+                  Delete
+                </Button>
+              </Group>
+            </form>
+          </>
+        )}
       </Container>
     </AppLayout>
   );

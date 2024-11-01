@@ -4,18 +4,19 @@ import { AxiosError } from 'axios';
 import { formatRelative } from 'date-fns';
 import router from 'next/router';
 import { IconSearch } from '@tabler/icons';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { QueryFilter, ServiceSetting, QueryFilteredResult } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { EitherErrorOr, IAPIError, QueryFilter, QueryFilteredResult, ServiceSetting } from '@dinnerdonebetter/models';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
-import { buildServerSideClient } from '../../src/client';
+import { buildServerSideClientOrRedirect } from '../../src/client';
 import { AppLayout } from '../../src/layouts';
 import { serverSideTracer } from '../../src/tracer';
+import { valueOrDefault } from '../../src/utils';
 
 declare interface ServiceSettingsPageProps {
-  pageLoadServiceSettings: QueryFilteredResult<ServiceSetting>;
+  pageLoadServiceSettings: EitherErrorOr<QueryFilteredResult<ServiceSetting>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -23,7 +24,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<ServiceSettingsPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('ServiceSettingsPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   // TODO: parse context.query as QueryFilter.
   let props!: GetServerSidePropsResult<ServiceSettingsPageProps>;
@@ -36,18 +48,15 @@ export const getServerSideProps: GetServerSideProps = async (
     .getServiceSettings(qf)
     .then((res: QueryFilteredResult<ServiceSetting>) => {
       span.addEvent('service settings retrieved');
-      props = { props: { pageLoadServiceSettings: JSON.parse(JSON.stringify(res)) } };
+      props = {
+        props: {
+          pageLoadServiceSettings: JSON.parse(JSON.stringify(res)),
+        },
+      };
     })
-    .catch((error: AxiosError) => {
-      span.addEvent('error occurred');
-      if (error.response?.status === 401) {
-        props = {
-          redirect: {
-            destination: `/login?dest=${encodeURIComponent(context.resolvedUrl)}`,
-            permanent: false,
-          },
-        };
-      }
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchServiceSettingsTimer.end();
@@ -62,7 +71,12 @@ export const getServerSideProps: GetServerSideProps = async (
 function ServiceSettingsPage(props: ServiceSettingsPageProps) {
   let { pageLoadServiceSettings } = props;
 
-  const [serviceSettings, setServiceSettings] = useState<QueryFilteredResult<ServiceSetting>>(pageLoadServiceSettings);
+  const ogServiceSettings: QueryFilteredResult<ServiceSetting> = valueOrDefault(
+    pageLoadServiceSettings,
+    new QueryFilteredResult<ServiceSetting>(),
+  );
+  const [serviceSettingsError] = useState(pageLoadServiceSettings.error);
+  const [serviceSettings, setServiceSettings] = useState<QueryFilteredResult<ServiceSetting>>(ogServiceSettings);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -140,26 +154,31 @@ function ServiceSettingsPage(props: ServiceSettingsPageProps) {
           </Grid.Col>
         </Grid>
 
-        <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Created At</th>
-              <th>Last Updated At</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
+        {serviceSettingsError && <div>{serviceSettingsError.message}</div>}
+        {!serviceSettingsError && serviceSettings.data.length > 0 && (
+          <>
+            <Table mt="xl" striped highlightOnHover withBorder withColumnBorders>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Created At</th>
+                  <th>Last Updated At</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </Table>
 
-        <Pagination
-          disabled={search.trim().length > 0}
-          position="center"
-          page={serviceSettings.page}
-          total={Math.ceil(serviceSettings.totalCount / serviceSettings.limit)}
-          onChange={(value: number) => {
-            setServiceSettings({ ...serviceSettings, page: value });
-          }}
-        />
+            <Pagination
+              disabled={search.trim().length > 0}
+              position="center"
+              page={serviceSettings.page}
+              total={Math.ceil(serviceSettings.totalCount / serviceSettings.limit)}
+              onChange={(value: number) => {
+                setServiceSettings({ ...serviceSettings, page: value });
+              }}
+            />
+          </>
+        )}
       </Stack>
     </AppLayout>
   );

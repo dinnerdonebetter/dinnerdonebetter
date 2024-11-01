@@ -95,6 +95,7 @@ export function AppLayout(
 
         <Grid.Col span="auto">
           <Center>
+            <></>
             {/*
             <Image
               src={logo}

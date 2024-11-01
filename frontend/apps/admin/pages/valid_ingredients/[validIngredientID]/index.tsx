@@ -1,33 +1,35 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useForm, zodResolver } from '@mantine/form';
 import {
-  TextInput,
-  Button,
-  Group,
-  Container,
-  Switch,
-  NumberInput,
-  Title,
-  Space,
-  Autocomplete,
-  Divider,
-  AutocompleteItem,
   ActionIcon,
-  Grid,
-  Table,
+  Autocomplete,
+  AutocompleteItem,
+  Button,
   Center,
-  ThemeIcon,
+  Container,
+  Divider,
+  Grid,
+  Group,
+  NumberInput,
   Pagination,
+  Space,
+  Switch,
+  Table,
+  Text,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { AxiosError } from 'axios';
 import { z } from 'zod';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { IconTrash } from '@tabler/icons';
 
 import {
   APIResponse,
+  EitherErrorOr,
+  IAPIError,
   QueryFilteredResult,
   ValidIngredient,
   ValidIngredientMeasurementUnit,
@@ -41,19 +43,20 @@ import {
   ValidMeasurementUnit,
   ValidPreparation,
 } from '@dinnerdonebetter/models';
-import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
+import { ServerTiming, ServerTimingHeaderName } from '@dinnerdonebetter/server-timing';
 import { buildLocalClient } from '@dinnerdonebetter/api-client';
 
 import { AppLayout } from '../../../src/layouts';
-import { buildServerSideClient } from '../../../src/client';
+import { buildServerSideClientOrRedirect } from '../../../src/client';
 import { serverSideTracer } from '../../../src/tracer';
 import { inputSlug } from '../../../src/schemas';
+import { valueOrDefault } from '../../../src/utils';
 
 declare interface ValidIngredientPageProps {
-  pageLoadMeasurementUnits: QueryFilteredResult<ValidIngredientMeasurementUnit>;
-  pageLoadIngredientPreparations: QueryFilteredResult<ValidIngredientPreparation>;
-  pageLoadValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient>;
-  pageLoadValidIngredient: ValidIngredient;
+  pageLoadMeasurementUnits: EitherErrorOr<QueryFilteredResult<ValidIngredientMeasurementUnit>>;
+  pageLoadIngredientPreparations: EitherErrorOr<QueryFilteredResult<ValidIngredientPreparation>>;
+  pageLoadValidIngredientStates: EitherErrorOr<QueryFilteredResult<ValidIngredientStateIngredient>>;
+  pageLoadValidIngredient: EitherErrorOr<ValidIngredient>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -61,7 +64,18 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<ValidIngredientPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('ValidIngredientPage.getServerSideProps');
-  const apiClient = buildServerSideClient(context).withSpan(span);
+
+  const clientOrRedirect = buildServerSideClientOrRedirect(context);
+  if (clientOrRedirect.redirect) {
+    span.end();
+    return { redirect: clientOrRedirect.redirect };
+  }
+
+  if (!clientOrRedirect.client) {
+    // this should never occur if the above state is false
+    throw new Error('no client returned');
+  }
+  const apiClient = clientOrRedirect.client.withSpan(span);
 
   const { validIngredientID } = context.query;
   if (!validIngredientID) {
@@ -73,7 +87,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredient(validIngredientID.toString())
     .then((result: APIResponse<ValidIngredient>) => {
       span.addEvent('valid ingredient retrieved');
-      return result.data;
+      return { data: result.data };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchValidIngredientTimer.end();
@@ -84,7 +102,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredientMeasurementUnitsByIngredient(validIngredientID.toString())
     .then((res: QueryFilteredResult<ValidIngredientMeasurementUnit>) => {
       span.addEvent('valid ingredient measurement units retrieved');
-      return res;
+      return { data: res };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchMeasurementUnitsTimer.end();
@@ -95,7 +117,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredientPreparationsByIngredient(validIngredientID.toString())
     .then((res: QueryFilteredResult<ValidIngredientPreparation>) => {
       span.addEvent('valid ingredient preparations retrieved');
-      return res;
+      return { data: res };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchIngredientPreparationsTimer.end();
@@ -106,7 +132,11 @@ export const getServerSideProps: GetServerSideProps = async (
     .getValidIngredientStateIngredientsByIngredient(validIngredientID.toString())
     .then((res: QueryFilteredResult<ValidIngredientStateIngredient>) => {
       span.addEvent('valid ingredient states retrieved');
-      return res;
+      return { data: res };
+    })
+    .catch((error: IAPIError) => {
+      span.addEvent('error occurred', { error: error.message });
+      return { error };
     })
     .finally(() => {
       fetchValidIngredientStatesTimer.end();
@@ -153,9 +183,12 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
     pageLoadValidIngredientStates,
   } = props;
 
+  const ogValidIngredient: ValidIngredient = valueOrDefault(pageLoadValidIngredient, new ValidIngredient());
+
   const apiClient = buildLocalClient();
-  const [validIngredient, setValidIngredient] = useState<ValidIngredient>(pageLoadValidIngredient);
-  const [originalValidIngredient, setOriginalValidIngredient] = useState<ValidIngredient>(pageLoadValidIngredient);
+  const [validIngredient, setValidIngredient] = useState<ValidIngredient>(ogValidIngredient);
+  const [validIngredientError] = useState<IAPIError | undefined>(pageLoadValidIngredient.error);
+  const [originalValidIngredient, setOriginalValidIngredient] = useState<ValidIngredient>(ogValidIngredient);
 
   const [newMeasurementUnitForIngredientInput, setNewMeasurementUnitForIngredientInput] =
     useState<ValidIngredientMeasurementUnitCreationRequestInput>(
@@ -165,8 +198,16 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       }),
     );
   const [measurementUnitQuery, setMeasurementUnitQuery] = useState('');
-  const [measurementUnitsForIngredient, setMeasurementUnitsForIngredient] =
-    useState<QueryFilteredResult<ValidIngredientMeasurementUnit>>(pageLoadMeasurementUnits);
+
+  const ogValidIngredientMeasurementUnits: QueryFilteredResult<ValidIngredientMeasurementUnit> = valueOrDefault(
+    pageLoadMeasurementUnits,
+    new QueryFilteredResult<ValidIngredientMeasurementUnit>(),
+  );
+
+  const [measurementUnitsForIngredient, setMeasurementUnitsForIngredient] = useState<
+    QueryFilteredResult<ValidIngredientMeasurementUnit>
+  >(ogValidIngredientMeasurementUnits);
+  const [measurementUnitsForIngredientError] = useState<IAPIError | undefined>(pageLoadMeasurementUnits.error);
   const [suggestedMeasurementUnits, setSuggestedMeasurementUnits] = useState<ValidMeasurementUnit[]>([]);
 
   useEffect(() => {
@@ -199,8 +240,16 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       }),
     );
   const [preparationQuery, setPreparationQuery] = useState('');
+
+  const ogValidIngredientPreparations: QueryFilteredResult<ValidIngredientPreparation> = valueOrDefault(
+    pageLoadIngredientPreparations,
+    new QueryFilteredResult<ValidIngredientPreparation>(),
+  );
+
   const [preparationsForIngredient, setPreparationsForIngredient] =
-    useState<QueryFilteredResult<ValidIngredientPreparation>>(pageLoadIngredientPreparations);
+    useState<QueryFilteredResult<ValidIngredientPreparation>>(ogValidIngredientPreparations);
+
+  const [preparationsForIngredientError] = useState<IAPIError | undefined>(pageLoadIngredientPreparations.error);
   const [suggestedPreparations, setSuggestedPreparations] = useState<Array<ValidPreparation>>([
     new ValidPreparation({ name: 'blah' }),
   ]);
@@ -235,8 +284,15 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
       }),
     );
   const [ingredientStateQuery, setIngredientStateQuery] = useState('');
+
+  const ogValidIngredientStates: QueryFilteredResult<ValidIngredientStateIngredient> = valueOrDefault(
+    pageLoadValidIngredientStates,
+    new QueryFilteredResult<ValidIngredientStateIngredient>(),
+  );
+
+  const [ingredientStatesForIngredientError] = useState<IAPIError | undefined>(pageLoadValidIngredientStates.error);
   const [ingredientStatesForIngredient, setIngredientStatesForIngredient] =
-    useState<QueryFilteredResult<ValidIngredientStateIngredient>>(pageLoadValidIngredientStates);
+    useState<QueryFilteredResult<ValidIngredientStateIngredient>>(ogValidIngredientStates);
   const [suggestedIngredientStates, setSuggestedIngredientStates] = useState<ValidIngredientState[]>([]);
 
   useEffect(() => {
@@ -344,111 +400,123 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
   return (
     <AppLayout title="Valid Ingredient">
       <Container size="sm">
-        <form onSubmit={updateForm.onSubmit(submit)}>
-          <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
-          <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
-          <TextInput label="Plural Name" placeholder="things" {...updateForm.getInputProps('pluralName')} />
-          <TextInput
-            label="Description"
-            placeholder="stuff about things"
-            {...updateForm.getInputProps('description')}
-          />
-          <TextInput label="Warning" placeholder="warning" {...updateForm.getInputProps('warning')} />
-          <NumberInput label="Min Storage Temp (C°)" {...updateForm.getInputProps('storageTemperatureInCelsius.min')} />
-          <NumberInput label="Max Storage Temp (C°)" {...updateForm.getInputProps('storageTemperatureInCelsius.max')} />
+        {validIngredientError && (
+          <Text color="tomato">Error fetching valid ingredient: {validIngredientError.message}</Text>
+        )}
 
-          <Switch
-            checked={updateForm.values.containsDairy}
-            label="Contains Dairy"
-            {...updateForm.getInputProps('containsDairy')}
-          />
-          <Switch
-            checked={updateForm.values.containsPeanut}
-            label="Contains Peanut"
-            {...updateForm.getInputProps('containsPeanut')}
-          />
-          <Switch
-            checked={updateForm.values.containsTreeNut}
-            label="Contains Tree Nut"
-            {...updateForm.getInputProps('containsTreeNut')}
-          />
-          <Switch
-            checked={updateForm.values.containsEgg}
-            label="Contains Egg"
-            {...updateForm.getInputProps('containsEgg')}
-          />
-          <Switch
-            checked={updateForm.values.containsWheat}
-            label="Contains Wheat"
-            {...updateForm.getInputProps('containsWheat')}
-          />
-          <Switch
-            checked={updateForm.values.containsShellfish}
-            label="Contains Shellfish"
-            {...updateForm.getInputProps('containsShellfish')}
-          />
-          <Switch
-            checked={updateForm.values.containsSesame}
-            label="Contains Sesame"
-            {...updateForm.getInputProps('containsSesame')}
-          />
-          <Switch
-            checked={updateForm.values.containsFish}
-            label="Contains Fish"
-            {...updateForm.getInputProps('containsFish')}
-          />
-          <Switch
-            checked={updateForm.values.containsGluten}
-            label="Contains Gluten"
-            {...updateForm.getInputProps('containsGluten')}
-          />
-          <Switch
-            checked={updateForm.values.containsSoy}
-            label="Contains Soy"
-            {...updateForm.getInputProps('containsSoy')}
-          />
-          <Switch
-            checked={updateForm.values.containsAlcohol}
-            label="Contains Alcohol"
-            {...updateForm.getInputProps('containsAlcohol')}
-          />
-          <Switch
-            checked={updateForm.values.animalFlesh}
-            label="Animal Flesh"
-            {...updateForm.getInputProps('animalFlesh')}
-          />
-          <Switch
-            checked={updateForm.values.animalDerived}
-            label="Animal Derived"
-            {...updateForm.getInputProps('animalDerived')}
-          />
-          <Switch checked={updateForm.values.isLiquid} label="Liquid" {...updateForm.getInputProps('isLiquid')} />
-          <Switch
-            checked={updateForm.values.restrictToPreparations}
-            label="Restrict To Preparations"
-            {...updateForm.getInputProps('restrictToPreparations')}
-          />
+        {!validIngredientError && (
+          <form onSubmit={updateForm.onSubmit(submit)}>
+            <TextInput label="Name" placeholder="thing" {...updateForm.getInputProps('name')} />
+            <TextInput label="Slug" placeholder="thing" {...updateForm.getInputProps('slug')} />
+            <TextInput label="Plural Name" placeholder="things" {...updateForm.getInputProps('pluralName')} />
+            <TextInput
+              label="Description"
+              placeholder="stuff about things"
+              {...updateForm.getInputProps('description')}
+            />
+            <TextInput label="Warning" placeholder="warning" {...updateForm.getInputProps('warning')} />
+            <NumberInput
+              label="Min Storage Temp (C°)"
+              {...updateForm.getInputProps('storageTemperatureInCelsius.min')}
+            />
+            <NumberInput
+              label="Max Storage Temp (C°)"
+              {...updateForm.getInputProps('storageTemperatureInCelsius.max')}
+            />
 
-          <Group position="center">
-            <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
-              Submit
-            </Button>
-            <Button
-              type="submit"
-              color="red"
-              fullWidth
-              onClick={() => {
-                if (confirm('Are you sure you want to delete this valid ingredient?')) {
-                  apiClient.archiveValidIngredient(validIngredient.id).then(() => {
-                    router.push('/valid_ingredients');
-                  });
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </Group>
-        </form>
+            <Switch
+              checked={updateForm.values.containsDairy}
+              label="Contains Dairy"
+              {...updateForm.getInputProps('containsDairy')}
+            />
+            <Switch
+              checked={updateForm.values.containsPeanut}
+              label="Contains Peanut"
+              {...updateForm.getInputProps('containsPeanut')}
+            />
+            <Switch
+              checked={updateForm.values.containsTreeNut}
+              label="Contains Tree Nut"
+              {...updateForm.getInputProps('containsTreeNut')}
+            />
+            <Switch
+              checked={updateForm.values.containsEgg}
+              label="Contains Egg"
+              {...updateForm.getInputProps('containsEgg')}
+            />
+            <Switch
+              checked={updateForm.values.containsWheat}
+              label="Contains Wheat"
+              {...updateForm.getInputProps('containsWheat')}
+            />
+            <Switch
+              checked={updateForm.values.containsShellfish}
+              label="Contains Shellfish"
+              {...updateForm.getInputProps('containsShellfish')}
+            />
+            <Switch
+              checked={updateForm.values.containsSesame}
+              label="Contains Sesame"
+              {...updateForm.getInputProps('containsSesame')}
+            />
+            <Switch
+              checked={updateForm.values.containsFish}
+              label="Contains Fish"
+              {...updateForm.getInputProps('containsFish')}
+            />
+            <Switch
+              checked={updateForm.values.containsGluten}
+              label="Contains Gluten"
+              {...updateForm.getInputProps('containsGluten')}
+            />
+            <Switch
+              checked={updateForm.values.containsSoy}
+              label="Contains Soy"
+              {...updateForm.getInputProps('containsSoy')}
+            />
+            <Switch
+              checked={updateForm.values.containsAlcohol}
+              label="Contains Alcohol"
+              {...updateForm.getInputProps('containsAlcohol')}
+            />
+            <Switch
+              checked={updateForm.values.animalFlesh}
+              label="Animal Flesh"
+              {...updateForm.getInputProps('animalFlesh')}
+            />
+            <Switch
+              checked={updateForm.values.animalDerived}
+              label="Animal Derived"
+              {...updateForm.getInputProps('animalDerived')}
+            />
+            <Switch checked={updateForm.values.isLiquid} label="Liquid" {...updateForm.getInputProps('isLiquid')} />
+            <Switch
+              checked={updateForm.values.restrictToPreparations}
+              label="Restrict To Preparations"
+              {...updateForm.getInputProps('restrictToPreparations')}
+            />
+
+            <Group position="center">
+              <Button type="submit" mt="sm" fullWidth disabled={!dataHasChanged()}>
+                Submit
+              </Button>
+              <Button
+                type="submit"
+                color="red"
+                fullWidth
+                onClick={() => {
+                  if (confirm('Are you sure you want to delete this valid ingredient?')) {
+                    apiClient.archiveValidIngredient(validIngredient.id).then(() => {
+                      router.push('/valid_ingredients');
+                    });
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            </Group>
+          </form>
+        )}
 
         {/*
 
@@ -465,89 +533,89 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
             <Title order={4}>Measurement Units</Title>
           </Center>
 
-          {measurementUnitsForIngredient.data && measurementUnitsForIngredient.data.length !== 0 && (
-            <>
-              <Table mt="xl" withColumnBorders>
-                <thead>
-                  <tr>
-                    <th>Min Allowed</th>
-                    <th>Max Allowed</th>
-                    <th>
-                      <Center>
-                        <ThemeIcon variant="outline" color="gray">
-                          <IconTrash size="sm" color="gray" />
-                        </ThemeIcon>
-                      </Center>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {measurementUnitsForIngredient.data.map((measurementUnit: ValidIngredientMeasurementUnit) => {
-                    return (
-                      <tr key={measurementUnit.id}>
-                        <td>
-                          {measurementUnit.allowableQuantity.min}{' '}
-                          <Link href={`/valid_measurement_units/${measurementUnit.id}`}>
-                            {measurementUnit.allowableQuantity.min === 1
-                              ? measurementUnit.measurementUnit.name
-                              : measurementUnit.measurementUnit.pluralName}
-                          </Link>
-                        </td>
-                        <td>
-                          {measurementUnit.allowableQuantity.max}{' '}
-                          <Link href={`/valid_measurement_units/${measurementUnit.id}`}>
-                            {measurementUnit.allowableQuantity.min === 1
-                              ? measurementUnit.measurementUnit.name
-                              : measurementUnit.measurementUnit.pluralName}
-                          </Link>
-                        </td>
-                        <td>
-                          <Center>
-                            <ActionIcon
-                              variant="outline"
-                              aria-label="remove valid ingredient measurement unit"
-                              onClick={async () => {
-                                await apiClient
-                                  .archiveValidIngredientMeasurementUnit(measurementUnit.id)
-                                  .then(() => {
-                                    setMeasurementUnitsForIngredient({
-                                      ...measurementUnitsForIngredient,
-                                      data: measurementUnitsForIngredient.data.filter(
-                                        (x: ValidIngredientMeasurementUnit) => x.id !== measurementUnit.id,
-                                      ),
-                                    });
-                                  })
-                                  .catch((error) => {
-                                    console.error(error);
-                                  });
-                              }}
-                            >
-                              <IconTrash size="md" color="tomato" />
-                            </ActionIcon>
-                          </Center>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-
-              <Space h="xs" />
-
-              <Pagination
-                disabled={
-                  Math.ceil(measurementUnitsForIngredient.totalCount / measurementUnitsForIngredient.limit) <=
-                  measurementUnitsForIngredient.page
-                }
-                position="center"
-                page={measurementUnitsForIngredient.page}
-                total={Math.ceil(measurementUnitsForIngredient.totalCount / measurementUnitsForIngredient.limit)}
-                onChange={(value: number) => {
-                  setMeasurementUnitsForIngredient({ ...measurementUnitsForIngredient, page: value });
-                }}
-              />
-            </>
+          {measurementUnitsForIngredientError && (
+            <Text color="tomato">Error fetching measurement units: {measurementUnitsForIngredientError.message}</Text>
           )}
+
+          {!measurementUnitsForIngredientError &&
+            measurementUnitsForIngredient.data &&
+            measurementUnitsForIngredient.data.length !== 0 && (
+              <>
+                <Table mt="xl" withColumnBorders>
+                  <thead>
+                    <tr>
+                      <th>Min Allowed</th>
+                      <th>Max Allowed</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {measurementUnitsForIngredient.data.map((measurementUnit: ValidIngredientMeasurementUnit) => {
+                      return (
+                        <tr key={measurementUnit.id}>
+                          <td>
+                            {measurementUnit.allowableQuantity.min}{' '}
+                            <Link href={`/valid_measurement_units/${measurementUnit.id}`}>
+                              {measurementUnit.allowableQuantity.min === 1
+                                ? measurementUnit.measurementUnit.name
+                                : measurementUnit.measurementUnit.pluralName}
+                            </Link>
+                          </td>
+                          <td>
+                            {measurementUnit.allowableQuantity.max}{' '}
+                            <Link href={`/valid_measurement_units/${measurementUnit.id}`}>
+                              {measurementUnit.allowableQuantity.min === 1
+                                ? measurementUnit.measurementUnit.name
+                                : measurementUnit.measurementUnit.pluralName}
+                            </Link>
+                          </td>
+                          <td>
+                            <Center>
+                              <ActionIcon
+                                variant="outline"
+                                aria-label="remove valid ingredient measurement unit"
+                                onClick={async () => {
+                                  await apiClient
+                                    .archiveValidIngredientMeasurementUnit(measurementUnit.id)
+                                    .then(() => {
+                                      setMeasurementUnitsForIngredient({
+                                        ...measurementUnitsForIngredient,
+                                        data: measurementUnitsForIngredient.data.filter(
+                                          (x: ValidIngredientMeasurementUnit) => x.id !== measurementUnit.id,
+                                        ),
+                                      });
+                                    })
+                                    .catch((error) => {
+                                      console.error(error);
+                                    });
+                                }}
+                              >
+                                <IconTrash size="md" color="tomato" />
+                              </ActionIcon>
+                            </Center>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+
+                <Space h="xs" />
+
+                <Pagination
+                  disabled={
+                    Math.ceil(measurementUnitsForIngredient.totalCount / measurementUnitsForIngredient.limit) <=
+                    measurementUnitsForIngredient.page
+                  }
+                  position="center"
+                  page={measurementUnitsForIngredient.page}
+                  total={Math.ceil(measurementUnitsForIngredient.totalCount / measurementUnitsForIngredient.limit)}
+                  onChange={(value: number) => {
+                    setMeasurementUnitsForIngredient({ ...measurementUnitsForIngredient, page: value });
+                  }}
+                />
+              </>
+            )}
 
           <Grid>
             <Grid.Col span="auto">
@@ -681,6 +749,10 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
             <Title order={4}>Preparations</Title>
           </Center>
 
+          {preparationsForIngredientError && (
+            <Text color="tomato">Error fetching preparations: {preparationsForIngredientError.message}</Text>
+          )}
+
           {(preparationsForIngredient.data || []).length !== 0 && (
             <>
               <Table mt="xl" withColumnBorders>
@@ -688,13 +760,7 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
                   <tr>
                     <th>Name</th>
                     <th>Notes</th>
-                    <th>
-                      <Center>
-                        <ThemeIcon variant="outline" color="gray">
-                          <IconTrash size="sm" color="gray" />
-                        </ThemeIcon>
-                      </Center>
-                    </th>
+                    <th />
                   </tr>
                 </thead>
                 <tbody>
@@ -848,19 +914,17 @@ function ValidIngredientPage(props: ValidIngredientPageProps) {
             <Title order={4}>States</Title>
           </Center>
 
+          {ingredientStatesForIngredientError && (
+            <Text color="tomato">Error fetching ingredient states: {ingredientStatesForIngredientError.message}</Text>
+          )}
+
           {ingredientStatesForIngredient.data && ingredientStatesForIngredient.data.length !== 0 && (
             <>
               <Table mt="xl" withColumnBorders>
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>
-                      <Center>
-                        <ThemeIcon variant="outline" color="gray">
-                          <IconTrash size="sm" color="gray" />
-                        </ThemeIcon>
-                      </Center>
-                    </th>
+                    <th />
                   </tr>
                 </thead>
                 <tbody>
