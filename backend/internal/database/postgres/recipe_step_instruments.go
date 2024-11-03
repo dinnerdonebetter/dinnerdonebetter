@@ -155,15 +155,15 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 	}
 
 	results, err := q.generatedQuerier.GetRecipeStepInstruments(ctx, q.db, &generated.GetRecipeStepInstrumentsParams{
-		RecipeStepID:  recipeStepID,
-		RecipeID:      recipeID,
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
-		// TODO: IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		RecipeStepID:    recipeStepID,
+		RecipeID:        recipeID,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step instruments list retrieval")
