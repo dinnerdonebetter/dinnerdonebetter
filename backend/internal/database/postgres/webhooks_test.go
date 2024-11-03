@@ -103,8 +103,6 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, createdEvent)
 
-	// postgres://11592681253805648476:67484650835218629511@localhost:32905/67484650835218629511?
-
 	createdWebhooks[0].Events = append(createdWebhooks[0].Events, createdEvent)
 
 	// delete
