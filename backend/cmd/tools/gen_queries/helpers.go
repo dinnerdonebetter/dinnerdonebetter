@@ -123,6 +123,12 @@ func buildFilterConditions(tableName string, withUpdateColumn, withArchivedAtCol
 		allConditions += fmt.Sprintf("\n\tAND %s", condition)
 	}
 
+	joinStmnt := ""
+	if len(joins) > 0 {
+		joinStmnt = fmt.Sprintf("\n\t\tJOIN %s", strings.Join(joins, "\n\tJOIN "))
+	}
+	_ = joinStmnt // TODO: use this?
+
 	rv := strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
 	AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s%s`,
 		tableName,
