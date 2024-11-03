@@ -124,7 +124,8 @@ SELECT
 		SELECT COUNT(meal_plans.id)
 		FROM meal_plans
 		WHERE meal_plans.archived_at IS NULL
-			AND meal_plans.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND
+			meal_plans.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND meal_plans.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				meal_plans.last_updated_at IS NULL
@@ -134,6 +135,7 @@ SELECT
 				meal_plans.last_updated_at IS NULL
 				OR meal_plans.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plans.archived_at = NULL)
 			AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household)
 	) AS filtered_count,
 	(
@@ -154,6 +156,7 @@ WHERE meal_plans.archived_at IS NULL
 		meal_plans.last_updated_at IS NULL
 		OR meal_plans.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plans.archived_at = NULL)
 	AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);

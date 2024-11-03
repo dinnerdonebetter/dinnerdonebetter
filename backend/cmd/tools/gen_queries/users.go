@@ -316,13 +316,15 @@ WHERE %s.%s IS NULL
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", usersTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(usersTableName, true, true),
-					buildTotalCountSelect(usersTableName, true),
+					buildFilterCountSelect(usersTableName, true, true, []string{}),
+					buildTotalCountSelect(usersTableName, true, []string{}),
 					usersTableName,
 					usersTableName, archivedAtColumn,
 					buildFilterConditions(
 						usersTableName,
 						true,
+						true,
+						nil,
 					),
 					offsetLimitAddendum,
 				)),

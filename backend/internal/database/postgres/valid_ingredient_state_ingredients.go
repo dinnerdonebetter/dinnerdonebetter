@@ -136,12 +136,13 @@ func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientStateIngredients(ctx, q.db, &generated.GetValidIngredientStateIngredientsParams{
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient state ingredients list retrieval query")
@@ -247,6 +248,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 		UpdatedAfter:         database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:          database.NullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:           database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived:      database.NullBoolFromBoolPointer(filter.IncludeArchived),
 		ValidIngredientState: ingredientStateID,
 	})
 	if err != nil {
@@ -353,6 +355,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 		ValidIngredient: ingredientID,
 	})
 	if err != nil {

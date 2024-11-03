@@ -81,7 +81,8 @@ SELECT
 		SELECT COUNT(valid_preparations.id)
 		FROM valid_preparations
 		WHERE valid_preparations.archived_at IS NULL
-			AND valid_preparations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND
+			valid_preparations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND valid_preparations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				valid_preparations.last_updated_at IS NULL
@@ -91,6 +92,7 @@ SELECT
 				valid_preparations.last_updated_at IS NULL
 				OR valid_preparations.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_preparations.archived_at = NULL)
 	) AS filtered_count,
 	(
 		SELECT COUNT(valid_preparations.id)
@@ -110,6 +112,7 @@ WHERE
 		valid_preparations.last_updated_at IS NULL
 		OR valid_preparations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_preparations.archived_at = NULL)
 GROUP BY valid_preparations.id
 ORDER BY valid_preparations.id
 LIMIT sqlc.narg(query_limit)

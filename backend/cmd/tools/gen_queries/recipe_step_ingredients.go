@@ -159,28 +159,8 @@ WHERE
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-			JOIN %s ON %s.%s = %s.%s
-			JOIN %s ON %s.%s = %s.%s
-		WHERE
-			%s.%s IS NULL
-			AND %s.%s = sqlc.arg(%s)
-			AND %s.%s = sqlc.arg(%s)
-			AND %s.%s = sqlc.arg(%s)
-			AND %s.%s = sqlc.arg(%s)
-			%s
-	) as filtered_count,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-			JOIN %s ON %s.%s = %s.%s
-			JOIN %s ON %s.%s = %s.%s
-		WHERE %s.%s IS NULL
-			AND %s.%s = sqlc.arg(%s)
-			AND %s.%s = sqlc.arg(%s)
-	) as total_count
+	%s,
+	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
@@ -195,26 +175,39 @@ WHERE
 	%s
 %s;`,
 					strings.Join(fullSelectColumn, ",\n\t"),
-					recipeStepIngredientsTableName, idColumn,
-					recipeStepIngredientsTableName,
-					recipeStepsTableName, recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
-					recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
-					recipeStepIngredientsTableName, archivedAtColumn,
-					recipesTableName, idColumn, recipeIDColumn,
-					recipeStepsTableName, idColumn, recipeStepIDColumn,
-					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
-					recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-					strings.Join(strings.Split(buildFilterConditions(recipeStepIngredientsTableName, true), "\n"), "\n\t\t"),
 
 					//
 
-					recipeStepIngredientsTableName, idColumn,
-					recipeStepIngredientsTableName,
-					recipeStepsTableName, recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
-					recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
-					recipeStepIngredientsTableName, archivedAtColumn,
-					recipesTableName, idColumn, recipeIDColumn,
-					recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
+					buildFilterCountSelect(
+						recipeStepIngredientsTableName,
+						true,
+						true,
+						[]string{
+							fmt.Sprintf("%s ON %s.%s = %s.%s", recipeStepsTableName, recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn),
+							fmt.Sprintf("%s ON %s.%s = %s.%s", recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn),
+						},
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipesTableName, idColumn, recipeIDColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeStepsTableName, idColumn, recipeStepIDColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepIDColumn),
+					),
+
+					//
+
+					buildTotalCountSelect(
+
+						recipeStepIngredientsTableName,
+						true,
+						[]string{
+							fmt.Sprintf("%s ON %s.%s = %s.%s", recipeStepsTableName, recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn),
+							fmt.Sprintf("%s ON %s.%s = %s.%s", recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn),
+						},
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipesTableName, idColumn, recipeIDColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeStepsTableName, idColumn, recipeStepIDColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepIDColumn),
+					),
+
 					//
 
 					recipeStepIngredientsTableName,
@@ -225,14 +218,12 @@ WHERE
 
 					//
 
-					//
-
 					recipeStepIngredientsTableName, archivedAtColumn,
 					recipesTableName, idColumn, recipeIDColumn,
 					recipeStepsTableName, idColumn, recipeStepIDColumn,
 					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
 					recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-					buildFilterConditions(recipeStepIngredientsTableName, true),
+					buildFilterConditions(recipeStepIngredientsTableName, true, false, nil),
 					offsetLimitAddendum,
 				)),
 			},

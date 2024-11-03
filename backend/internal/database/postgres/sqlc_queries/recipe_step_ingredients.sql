@@ -209,34 +209,37 @@ SELECT
 	(
 		SELECT COUNT(recipe_step_ingredients.id)
 		FROM recipe_step_ingredients
-			JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-			JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-		WHERE
-			recipe_step_ingredients.archived_at IS NULL
+		JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+	JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+		WHERE recipe_step_ingredients.archived_at IS NULL
+			AND
+			recipe_step_ingredients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_step_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_step_ingredients.last_updated_at IS NULL
+				OR recipe_step_ingredients.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_step_ingredients.last_updated_at IS NULL
+				OR recipe_step_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR recipe_step_ingredients.archived_at = NULL)
 			AND recipes.id = sqlc.arg(recipe_id)
 			AND recipe_steps.id = sqlc.arg(recipe_step_id)
 			AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
 			AND recipe_step_ingredients.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
-			AND recipe_step_ingredients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-			AND recipe_step_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
-			AND (
-				recipe_step_ingredients.last_updated_at IS NULL
-				OR recipe_step_ingredients.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
-			)
-			AND (
-				recipe_step_ingredients.last_updated_at IS NULL
-				OR recipe_step_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
-			)
-	) as filtered_count,
+	) AS filtered_count,
 	(
 		SELECT COUNT(recipe_step_ingredients.id)
 		FROM recipe_step_ingredients
-			JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-			JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+		JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+	JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
 		WHERE recipe_step_ingredients.archived_at IS NULL
 			AND recipes.id = sqlc.arg(recipe_id)
+			AND recipe_steps.id = sqlc.arg(recipe_step_id)
+			AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
 			AND recipe_step_ingredients.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
-	) as total_count
+	) AS total_count
 FROM recipe_step_ingredients
 	JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
 	JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id

@@ -140,14 +140,16 @@ ORDER BY %s.%s
 					strings.Join(applyToEach(validIngredientGroupsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validIngredientGroupsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(validIngredientGroupsTableName, true, true),
-					buildTotalCountSelect(validIngredientGroupsTableName, true),
+					buildFilterCountSelect(validIngredientGroupsTableName, true, true, []string{}),
+					buildTotalCountSelect(validIngredientGroupsTableName, true, []string{}),
 					validIngredientGroupsTableName,
 					validIngredientGroupsTableName,
 					archivedAtColumn,
 					buildFilterConditions(
 						validIngredientGroupsTableName,
 						true,
+						true,
+						nil,
 					),
 					validIngredientGroupsTableName, idColumn,
 					validIngredientGroupsTableName, idColumn,
@@ -218,8 +220,8 @@ ORDER BY %s.%s
 					strings.Join(applyToEach(validIngredientGroupsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validIngredientGroupsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(validIngredientGroupsTableName, true, true),
-					buildTotalCountSelect(validIngredientGroupsTableName, true),
+					buildFilterCountSelect(validIngredientGroupsTableName, true, true, []string{}),
+					buildTotalCountSelect(validIngredientGroupsTableName, true, []string{}),
 					validIngredientGroupsTableName,
 					validIngredientGroupsTableName,
 					archivedAtColumn,
@@ -227,6 +229,8 @@ ORDER BY %s.%s
 					buildFilterConditions(
 						validIngredientGroupsTableName,
 						true,
+						true,
+						nil,
 					),
 					validIngredientGroupsTableName,
 					idColumn,

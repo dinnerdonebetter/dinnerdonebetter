@@ -102,20 +102,16 @@ ORDER BY %s.%s
 					strings.Join(applyToEach(recipeRatingsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", recipeRatingsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(
-						recipeRatingsTableName,
-						true,
-						true,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn),
-					),
-					buildTotalCountSelect(recipeRatingsTableName, true,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn)),
+					buildFilterCountSelect(recipeRatingsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn)),
+					buildTotalCountSelect(recipeRatingsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn)),
 					recipeRatingsTableName,
 					recipeRatingsTableName, archivedAtColumn,
 					recipeRatingsTableName, recipeIDColumn, recipeIDColumn,
 					buildFilterConditions(
 						recipeRatingsTableName,
 						true,
+						true,
+						nil,
 						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn),
 					),
 					recipeRatingsTableName, idColumn,
@@ -143,23 +139,16 @@ ORDER BY %s.%s
 					strings.Join(applyToEach(recipeRatingsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", recipeRatingsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(
-						recipeRatingsTableName,
-						true,
-						true,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn),
-					),
-					buildTotalCountSelect(
-						recipeRatingsTableName,
-						true,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn),
-					),
+					buildFilterCountSelect(recipeRatingsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn)),
+					buildTotalCountSelect(recipeRatingsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn)),
 					recipeRatingsTableName,
 					recipeRatingsTableName, archivedAtColumn,
 					recipeRatingsTableName, byUserColumn, byUserColumn,
 					buildFilterConditions(
 						recipeRatingsTableName,
 						true,
+						true,
+						nil,
 						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn),
 					),
 					recipeRatingsTableName, idColumn,

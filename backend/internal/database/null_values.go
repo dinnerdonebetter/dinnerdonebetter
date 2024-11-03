@@ -80,6 +80,13 @@ func NullBoolFromBool(b bool) sql.NullBool {
 	return sql.NullBool{Bool: b, Valid: true}
 }
 
+func NullBoolFromBoolPointer(b *bool) sql.NullBool {
+	if b == nil {
+		return sql.NullBool{Valid: false}
+	}
+	return sql.NullBool{Bool: *b, Valid: true}
+}
+
 func BoolFromNullBool(b sql.NullBool) bool {
 	if b.Valid {
 		return b.Bool

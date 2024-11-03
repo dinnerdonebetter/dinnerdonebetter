@@ -171,13 +171,9 @@ WHERE
 	%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
-					buildFilterCountSelect(mealPlanOptionsTableName, true, true, "meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)"),
-					buildTotalCountSelect(mealPlanOptionsTableName, true),
-					buildFilterConditions(
-						mealPlanOptionsTableName,
-						true,
-						"meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)",
-					),
+					buildFilterCountSelect(mealPlanOptionsTableName, true, true, []string{}, "meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)"),
+					buildTotalCountSelect(mealPlanOptionsTableName, true, []string{}),
+					buildFilterConditions(mealPlanOptionsTableName, true, false, []string{}, "meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)"),
 					offsetLimitAddendum,
 				)),
 			},

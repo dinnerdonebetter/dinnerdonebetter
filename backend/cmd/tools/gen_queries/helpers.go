@@ -23,6 +23,8 @@ const (
 	belongsToHouseholdColumn = "belongs_to_household"
 	belongsToUserColumn      = "belongs_to_user"
 
+	includeArchivedArg = "include_archived"
+
 	currentTimeExpression = "NOW()"
 
 	offsetLimitAddendum = `LIMIT sqlc.narg(query_limit)
@@ -85,7 +87,7 @@ func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet int) []str
 	return output
 }
 
-func buildFilterConditions(tableName string, withUpdateColumn bool, conditions ...string) string {
+func buildFilterConditions(tableName string, withUpdateColumn, withArchivedAtColumn bool, joins []string, conditions ...string) string {
 	updateAddendum := ""
 	if withUpdateColumn {
 		updateAddendum = fmt.Sprintf("\n\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`
@@ -111,13 +113,24 @@ func buildFilterConditions(tableName string, withUpdateColumn bool, conditions .
 		))))
 	}
 
+	archivedAddendum := ""
+	if withArchivedAtColumn {
+		archivedAddendum = fmt.Sprintf("\n\t\t\tAND (NOT COALESCE(sqlc.narg(%s), false)::boolean OR %s.%s = NULL)", includeArchivedArg, tableName, archivedAtColumn)
+	}
+
 	allConditions := ""
 	for _, condition := range conditions {
 		allConditions += fmt.Sprintf("\n\tAND %s", condition)
 	}
 
+	joinStmnt := ""
+	if len(joins) > 0 {
+		joinStmnt = fmt.Sprintf("\n\t\tJOIN %s", strings.Join(joins, "\n\tJOIN "))
+	}
+	_ = joinStmnt // TODO: use this?
+
 	rv := strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
-	AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s`,
+	AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s%s`,
 		tableName,
 		createdAtColumn,
 		currentTimeExpression,
@@ -125,13 +138,14 @@ func buildFilterConditions(tableName string, withUpdateColumn bool, conditions .
 		createdAtColumn,
 		currentTimeExpression,
 		updateAddendum,
+		archivedAddendum,
 		allConditions,
 	)))
 
 	return rv
 }
 
-func buildFilterCountSelect(tableName string, withUpdateColumn, withArchivedAtColumn bool, conditions ...string) string {
+func buildFilterCountSelect(tableName string, withUpdateColumn, withArchivedAtColumn bool, joins []string, conditions ...string) string {
 	updateAddendum := ""
 	if withUpdateColumn {
 		updateAddendum = fmt.Sprintf("\n\t\t\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`
@@ -144,17 +158,16 @@ func buildFilterCountSelect(tableName string, withUpdateColumn, withArchivedAtCo
 				OR %s.%s < COALESCE(sqlc.narg(updated_after), (SELECT %s + '999 years'::INTERVAL))
 			)
 		`,
-			tableName,
-			lastUpdatedAtColumn,
-			tableName,
-			lastUpdatedAtColumn,
-			currentTimeExpression,
-			tableName,
-			lastUpdatedAtColumn,
-			tableName,
-			lastUpdatedAtColumn,
-			currentTimeExpression,
+			tableName, lastUpdatedAtColumn,
+			tableName, lastUpdatedAtColumn, currentTimeExpression,
+			tableName, lastUpdatedAtColumn,
+			tableName, lastUpdatedAtColumn, currentTimeExpression,
 		))))
+	}
+
+	archivedAddendum := ""
+	if withArchivedAtColumn {
+		archivedAddendum = fmt.Sprintf("\n\t\t\tAND (NOT COALESCE(sqlc.narg(%s), false)::boolean OR %s.%s = NULL)", includeArchivedArg, tableName, archivedAtColumn)
 	}
 
 	allConditions := ""
@@ -162,28 +175,33 @@ func buildFilterCountSelect(tableName string, withUpdateColumn, withArchivedAtCo
 		allConditions += fmt.Sprintf("\n\t\t\tAND %s", strings.TrimSpace(condition))
 	}
 
-	archivedAtAddendum := "WHERE"
+	archivedAtAddendum := "\n\t\tWHERE"
 	if withArchivedAtColumn {
-		archivedAtAddendum = fmt.Sprintf("WHERE %s.%s IS NULL\n\t\t\tAND", tableName, archivedAtColumn)
+		archivedAtAddendum = fmt.Sprintf("\n\t\tWHERE %s.%s IS NULL\n\t\t\tAND", tableName, archivedAtColumn)
+	}
+
+	joinStmnt := ""
+	if len(joins) > 0 {
+		joinStmnt = fmt.Sprintf("\n\t\tJOIN %s", strings.Join(joins, "\n\tJOIN "))
 	}
 
 	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
 		SELECT COUNT(%s.%s)
-		FROM %s
-		%s %s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
-			AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s
+		FROM %s%s%s 
+			%s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
+			AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s%s
 	) AS filtered_count`,
 		tableName, idColumn,
-		tableName,
-		archivedAtAddendum,
-		tableName, createdAtColumn, currentTimeExpression,
+		tableName, joinStmnt,
+		archivedAtAddendum, tableName, createdAtColumn, currentTimeExpression,
 		tableName, createdAtColumn, currentTimeExpression,
 		updateAddendum,
+		archivedAddendum,
 		allConditions,
 	)))
 }
 
-func buildTotalCountSelect(tableName string, withArchivedAtColumn bool, conditions ...string) string {
+func buildTotalCountSelect(tableName string, withArchivedAtColumn bool, joins []string, conditions ...string) string {
 	allConditons := ""
 	for i, condition := range conditions {
 		prefix := "AND "
@@ -198,13 +216,19 @@ func buildTotalCountSelect(tableName string, withArchivedAtColumn bool, conditio
 		archivedAtAddendum = fmt.Sprintf("WHERE %s.%s IS NULL", tableName, archivedAtColumn)
 	}
 
+	joinStmnt := ""
+	if len(joins) > 0 {
+		joinStmnt = fmt.Sprintf("\n\t\tJOIN %s", strings.Join(joins, "\n\tJOIN "))
+	}
+
 	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
 		SELECT COUNT(%s.%s)
-		FROM %s
+		FROM %s%s
 		%s%s
 	) AS total_count`,
 		tableName, idColumn,
 		tableName,
+		joinStmnt,
 		archivedAtAddendum,
 		allConditons,
 	)))

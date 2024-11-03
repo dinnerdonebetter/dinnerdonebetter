@@ -102,14 +102,16 @@ ORDER BY %s.%s
 					strings.Join(applyToEach(validIngredientStatesColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validIngredientStatesTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(validIngredientStatesTableName, true, true),
-					buildTotalCountSelect(validIngredientStatesTableName, true),
+					buildFilterCountSelect(validIngredientStatesTableName, true, true, []string{}),
+					buildTotalCountSelect(validIngredientStatesTableName, true, []string{}),
 					validIngredientStatesTableName,
 					validIngredientStatesTableName,
 					archivedAtColumn,
 					buildFilterConditions(
 						validIngredientStatesTableName,
 						true,
+						true,
+						nil,
 					),
 					validIngredientStatesTableName,
 					idColumn,

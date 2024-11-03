@@ -51,7 +51,8 @@ SELECT
 		SELECT COUNT(webhooks.id)
 		FROM webhooks
 		WHERE webhooks.archived_at IS NULL
-			AND webhooks.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND
+			webhooks.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND webhooks.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				webhooks.last_updated_at IS NULL
@@ -61,13 +62,14 @@ SELECT
 				webhooks.last_updated_at IS NULL
 				OR webhooks.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
-			AND webhooks.belongs_to_household = sqlc.arg(household_id)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR webhooks.archived_at = NULL)
+			AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
 	) AS filtered_count,
 	(
 		SELECT COUNT(webhooks.id)
 		FROM webhooks
 		WHERE webhooks.archived_at IS NULL
-			AND webhooks.belongs_to_household = sqlc.arg(household_id)
+			AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
 			AND webhook_trigger_events.archived_at IS NULL
 	) AS total_count
 FROM webhooks
@@ -83,7 +85,8 @@ WHERE webhooks.archived_at IS NULL
 		webhooks.last_updated_at IS NULL
 		OR webhooks.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	AND webhooks.belongs_to_household = sqlc.arg(household_id)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR webhooks.archived_at = NULL)
+	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
 	AND webhook_trigger_events.archived_at IS NULL
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);

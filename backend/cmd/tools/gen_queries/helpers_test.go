@@ -140,7 +140,7 @@ func Test_buildFilterConditions(T *testing.T) {
 
 		expected := `AND things.created_at > COALESCE(sqlc.narg(created_before), (SELECT  NOW() - '999 years'::INTERVAL))
 	AND things.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + '999 years'::INTERVAL))`
-		actual := buildFilterConditions("things", false)
+		actual := buildFilterConditions("things", false, false, nil)
 
 		assert.Equal(t, expected, actual)
 	})
@@ -159,7 +159,7 @@ func Test_buildFilterCountSelect(T *testing.T) {
 			AND things.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND things.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	) AS filtered_count`
-		actual := buildFilterCountSelect("things", false, true)
+		actual := buildFilterCountSelect("things", false, true, []string{})
 
 		assert.Equal(t, expected, actual)
 	})

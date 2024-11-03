@@ -132,13 +132,14 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	}
 
 	results, err := q.generatedQuerier.GetWebhooksForHousehold(ctx, q.db, &generated.GetWebhooksForHouseholdParams{
-		HouseholdID:   householdID,
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
+		BelongsToHousehold: householdID,
+		CreatedBefore:      database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:       database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:      database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:       database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:        database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:         database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived:    database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")

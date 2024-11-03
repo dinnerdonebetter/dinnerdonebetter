@@ -183,14 +183,7 @@ WHERE %s.%s IS NULL
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-		WHERE
-			%s.%s IS NULL
-			AND %s.%s = sqlc.arg(%s)
-			%s
-	) AS filtered_count,
+	%s,
 	%s
 FROM %s
 	LEFT JOIN %s ON %s.%s=%s.%s
@@ -207,12 +200,8 @@ WHERE
 	%s
 %s;`,
 					strings.Join(fullSelectColumn, ",\n\t"),
-					recipeStepInstrumentsTableName, idColumn,
-					recipeStepInstrumentsTableName,
-					recipeStepInstrumentsTableName, archivedAtColumn,
-					recipeStepInstrumentsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-					strings.Join(strings.Split(buildFilterConditions(recipeStepInstrumentsTableName, true), "\n"), "\n\t\t"),
-					buildTotalCountSelect(recipeStepInstrumentsTableName, true),
+					buildFilterCountSelect(recipeStepInstrumentsTableName, true, true, nil),
+					buildTotalCountSelect(recipeStepInstrumentsTableName, true, []string{}),
 					recipeStepInstrumentsTableName,
 					validInstrumentsTableName, recipeStepInstrumentsTableName, instrumentIDColumn, validInstrumentsTableName, idColumn,
 					recipeStepsTableName, recipeStepInstrumentsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
@@ -224,7 +213,7 @@ WHERE
 					recipeStepsTableName, idColumn, recipeStepIDColumn,
 					recipesTableName, archivedAtColumn,
 					recipesTableName, idColumn, recipeIDColumn,
-					buildFilterConditions(recipeStepInstrumentsTableName, true),
+					buildFilterConditions(recipeStepInstrumentsTableName, true, false, nil),
 					offsetLimitAddendum,
 				)),
 			},

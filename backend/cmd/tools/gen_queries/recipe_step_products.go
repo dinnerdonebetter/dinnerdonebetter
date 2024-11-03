@@ -154,14 +154,7 @@ WHERE %s.%s IS NULL
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-		WHERE
-			%s.%s IS NULL
-			AND %s.%s = sqlc.arg(%s)
-			%s
-	) AS filtered_count,
+	%s,
 	(
 		SELECT COUNT(%s.%s)
 		FROM %s
@@ -182,11 +175,7 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
-					recipeStepProductsTableName, idColumn,
-					recipeStepProductsTableName,
-					recipeStepProductsTableName, archivedAtColumn,
-					recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-					strings.Join(strings.Split(buildFilterConditions(recipeStepProductsTableName, true), "\n"), "\n\t\t"),
+					buildFilterCountSelect(recipeStepProductsTableName, true, true, nil),
 					recipeStepProductsTableName, idColumn,
 					recipeStepProductsTableName,
 					recipeStepProductsTableName, archivedAtColumn,
@@ -202,7 +191,7 @@ WHERE %s.%s IS NULL
 					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
 					recipesTableName, archivedAtColumn,
 					recipesTableName, idColumn, recipeIDColumn,
-					buildFilterConditions(recipeStepProductsTableName, true),
+					buildFilterConditions(recipeStepProductsTableName, true, true, nil),
 					offsetLimitAddendum,
 				)),
 			},
