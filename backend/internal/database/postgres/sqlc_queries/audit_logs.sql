@@ -43,7 +43,8 @@ SELECT
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
-		WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+		WHERE
+			audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND audit_log_entries.belongs_to_user = sqlc.arg(belongs_to_user)
 	) AS filtered_count,
@@ -73,7 +74,8 @@ SELECT
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
-		WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+		WHERE
+			audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND audit_log_entries.belongs_to_user = sqlc.arg(belongs_to_user)
 			AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
@@ -106,7 +108,8 @@ SELECT
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
-		WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+		WHERE
+			audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
 	) AS filtered_count,
@@ -136,7 +139,8 @@ SELECT
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
-		WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+		WHERE
+			audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
 			AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])

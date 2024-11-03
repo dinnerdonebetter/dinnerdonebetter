@@ -373,14 +373,15 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 	}
 
 	results, err := q.generatedQuerier.GetPendingInvitesFromUser(ctx, q.db, &generated.GetPendingInvitesFromUserParams{
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
-		Status:        generated.InvitationState(types.PendingHouseholdInvitationStatus),
-		FromUser:      userID,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		Status:          generated.InvitationState(types.PendingHouseholdInvitationStatus),
+		FromUser:        userID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation query")
@@ -469,14 +470,15 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 	}
 
 	results, err := q.generatedQuerier.GetPendingInvitesForUser(ctx, q.db, &generated.GetPendingInvitesForUserParams{
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
-		Status:        generated.InvitationState(types.PendingHouseholdInvitationStatus),
-		ToUser:        database.NullStringFromString(userID),
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		Status:          generated.InvitationState(types.PendingHouseholdInvitationStatus),
+		ToUser:          database.NullStringFromString(userID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation query")

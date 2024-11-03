@@ -242,7 +242,8 @@ SELECT
 		SELECT COUNT(users.id)
 		FROM users
 		WHERE users.archived_at IS NULL
-			AND users.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND
+			users.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND users.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				users.last_updated_at IS NULL
@@ -252,6 +253,7 @@ SELECT
 				users.last_updated_at IS NULL
 				OR users.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR users.archived_at = NULL)
 	) AS filtered_count,
 	(
 		SELECT COUNT(users.id)
@@ -270,6 +272,7 @@ WHERE users.archived_at IS NULL
 		users.last_updated_at IS NULL
 		OR users.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR users.archived_at = NULL)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 

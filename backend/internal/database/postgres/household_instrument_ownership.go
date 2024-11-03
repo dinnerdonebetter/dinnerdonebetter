@@ -123,13 +123,14 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	results, err := q.generatedQuerier.GetHouseholdInstrumentOwnerships(ctx, q.db, &generated.GetHouseholdInstrumentOwnershipsParams{
-		HouseholdID:   householdID,
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
+		HouseholdID:     householdID,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household instrument ownerships")

@@ -55,7 +55,8 @@ SELECT
 		SELECT COUNT(household_instrument_ownerships.id)
 		FROM household_instrument_ownerships
 		WHERE household_instrument_ownerships.archived_at IS NULL
-			AND household_instrument_ownerships.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND
+			household_instrument_ownerships.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND household_instrument_ownerships.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				household_instrument_ownerships.last_updated_at IS NULL
@@ -65,6 +66,7 @@ SELECT
 				household_instrument_ownerships.last_updated_at IS NULL
 				OR household_instrument_ownerships.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR household_instrument_ownerships.archived_at = NULL)
 			AND household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)
 	) AS filtered_count,
 	(
@@ -87,6 +89,7 @@ WHERE
 		household_instrument_ownerships.last_updated_at IS NULL
 		OR household_instrument_ownerships.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR household_instrument_ownerships.archived_at = NULL)
 	AND household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)
 GROUP BY
 	household_instrument_ownerships.id,

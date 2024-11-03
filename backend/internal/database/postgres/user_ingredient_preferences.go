@@ -152,13 +152,14 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 	}
 
 	results, err := q.generatedQuerier.GetUserIngredientPreferencesForUser(ctx, q.db, &generated.GetUserIngredientPreferencesForUserParams{
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
-		BelongsToUser: userID,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		BelongsToUser:   userID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing user ingredient preferences list retrieval query")

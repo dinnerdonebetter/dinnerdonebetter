@@ -157,6 +157,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 		UpdatedAfter:      database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:       database.NullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:        database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived:   database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
@@ -270,6 +271,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 		UpdatedAfter:           database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:            database.NullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:             database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived:        database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
@@ -370,12 +372,13 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnits(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsParams{
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")

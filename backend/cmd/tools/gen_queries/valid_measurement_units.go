@@ -104,14 +104,16 @@ ORDER BY %s.%s
 					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(validMeasurementUnitsTableName, true, true),
-					buildTotalCountSelect(validMeasurementUnitsTableName, true),
+					buildFilterCountSelect(validMeasurementUnitsTableName, true, true, []string{}),
+					buildTotalCountSelect(validMeasurementUnitsTableName, true, []string{}),
 					validMeasurementUnitsTableName,
 					validMeasurementUnitsTableName,
 					archivedAtColumn,
 					buildFilterConditions(
 						validMeasurementUnitsTableName,
 						true,
+						true,
+						nil,
 					),
 					validMeasurementUnitsTableName,
 					idColumn,
@@ -251,11 +253,11 @@ WHERE
 						}
 						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(validMeasurementUnitsTableName, true, true, ` (
+					buildFilterCountSelect(validMeasurementUnitsTableName, true, true, []string{}, ` (
 				valid_ingredient_measurement_units.valid_ingredient_id = sqlc.arg(valid_ingredient_id)
 				OR valid_measurement_units.universal = true
 			)`),
-					buildTotalCountSelect(validMeasurementUnitsTableName, true),
+					buildTotalCountSelect(validMeasurementUnitsTableName, true, []string{}),
 					validMeasurementUnitsTableName,
 					validIngredientMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
 					validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
@@ -264,7 +266,9 @@ WHERE
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientMeasurementUnitsTableName, archivedAtColumn,
-					buildFilterConditions(validMeasurementUnitsTableName, true),
+					buildFilterConditions(validMeasurementUnitsTableName, true,
+						false,
+						nil),
 					offsetLimitAddendum,
 				)),
 			},

@@ -133,14 +133,16 @@ ORDER BY %s.%s
 					strings.Join(applyToEach(mealPlanEventsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", mealPlanEventsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(mealPlanEventsTableName, true, true, "meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)"),
-					buildTotalCountSelect(mealPlanEventsTableName, true, "meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)"),
+					buildFilterCountSelect(mealPlanEventsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn)),
+					buildTotalCountSelect(mealPlanEventsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn)),
 					mealPlanEventsTableName,
 					mealPlanEventsTableName, archivedAtColumn,
 					buildFilterConditions(
 						mealPlanEventsTableName,
 						true,
-						"meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)",
+						true,
+						nil,
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn),
 					),
 					mealPlanEventsTableName, idColumn,
 					mealPlanEventsTableName, idColumn,

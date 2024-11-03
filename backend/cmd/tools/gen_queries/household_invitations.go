@@ -202,8 +202,8 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
-					buildFilterCountSelect(householdInvitationsTableName, true, true),
-					buildTotalCountSelect(householdInvitationsTableName, true),
+					buildFilterCountSelect(householdInvitationsTableName, true, true, []string{}),
+					buildTotalCountSelect(householdInvitationsTableName, true, []string{}),
 					householdInvitationsTableName,
 
 					householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
@@ -212,10 +212,7 @@ WHERE %s.%s IS NULL
 					householdInvitationsTableName, fromUserColumn, fromUserColumn,
 					householdInvitationsTableName, householdInvitationsStatusColumn, householdInvitationsStatusColumn,
 
-					buildFilterConditions(
-						householdInvitationsTableName,
-						true,
-					),
+					buildFilterConditions(householdInvitationsTableName, true, false, []string{}),
 					offsetLimitAddendum,
 				)),
 			},
@@ -237,8 +234,8 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
-					buildFilterCountSelect(householdInvitationsTableName, true, true),
-					buildTotalCountSelect(householdInvitationsTableName, true),
+					buildFilterCountSelect(householdInvitationsTableName, true, true, []string{}),
+					buildTotalCountSelect(householdInvitationsTableName, true, []string{}),
 					householdInvitationsTableName,
 					householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
 					usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
@@ -248,6 +245,8 @@ WHERE %s.%s IS NULL
 					buildFilterConditions(
 						householdInvitationsTableName,
 						true,
+						true,
+						nil,
 					),
 					offsetLimitAddendum,
 				)),

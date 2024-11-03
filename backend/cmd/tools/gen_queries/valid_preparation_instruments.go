@@ -102,29 +102,8 @@ func buildValidPreparationInstrumentsQueries(database string) []*Query {
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-			JOIN %s ON %s.%s = %s.%s
-			JOIN %s ON %s.%s = %s.%s
-		WHERE
-			%s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s = sqlc.arg(%s)
-			%s
-	) as filtered_count,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-			JOIN %s ON %s.%s = %s.%s
-			JOIN %s ON %s.%s = %s.%s
-		WHERE
-			%s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s IS NULL
-			AND %s.%s = sqlc.arg(%s)
-	) as total_count
+	%s,
+	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
@@ -141,26 +120,29 @@ GROUP BY
 ORDER BY %s.%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
-					validPreparationInstrumentsTableName, idColumn,
-					validPreparationInstrumentsTableName,
-					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
-					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
-					validPreparationInstrumentsTableName, archivedAtColumn,
-					validInstrumentsTableName, archivedAtColumn,
-					validPreparationsTableName, archivedAtColumn,
-					validPreparationInstrumentsTableName, validInstrumentIDColumn, idColumn, ///
-					buildFilterConditions(
+					buildFilterCountSelect(
 						validPreparationInstrumentsTableName,
 						true,
+						true,
+						[]string{
+							"valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id",
+							"valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id",
+						},
+						fmt.Sprintf("valid_instruments.archived_at IS NULL"),
+						fmt.Sprintf("valid_preparations.archived_at IS NULL"),
+						fmt.Sprintf("valid_preparation_instruments.valid_instrument_id = sqlc.arg(id)"),
 					),
-					validPreparationInstrumentsTableName, idColumn,
-					validPreparationInstrumentsTableName,
-					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
-					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
-					validPreparationInstrumentsTableName, archivedAtColumn,
-					validInstrumentsTableName, archivedAtColumn,
-					validPreparationsTableName, archivedAtColumn,
-					validPreparationInstrumentsTableName, validInstrumentIDColumn, idColumn, ///
+					buildTotalCountSelect(
+						validPreparationInstrumentsTableName,
+						true,
+						[]string{
+							"valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id",
+							"valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id",
+						},
+						fmt.Sprintf("valid_instruments.archived_at IS NULL"),
+						fmt.Sprintf("valid_preparations.archived_at IS NULL"),
+						fmt.Sprintf("valid_preparation_instruments.valid_instrument_id = sqlc.arg(id)"),
+					),
 					validPreparationInstrumentsTableName,
 					validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
 					validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
@@ -171,6 +153,8 @@ ORDER BY %s.%s
 					buildFilterConditions(
 						validPreparationInstrumentsTableName,
 						true,
+						true,
+						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationsTableName, idColumn,
@@ -236,6 +220,8 @@ ORDER BY %s.%s
 					buildFilterConditions(
 						validPreparationInstrumentsTableName,
 						true,
+						true,
+						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationInstrumentsTableName,
@@ -255,6 +241,8 @@ ORDER BY %s.%s
 					buildFilterConditions(
 						validPreparationInstrumentsTableName,
 						true,
+						true,
+						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationsTableName, idColumn,
@@ -316,6 +304,8 @@ ORDER BY %s.%s
 					buildFilterConditions(
 						validPreparationInstrumentsTableName,
 						true,
+						true,
+						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationInstrumentsTableName,
@@ -333,6 +323,8 @@ ORDER BY %s.%s
 					buildFilterConditions(
 						validPreparationInstrumentsTableName,
 						true,
+						true,
+						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationsTableName, idColumn,

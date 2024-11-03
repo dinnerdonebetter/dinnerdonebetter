@@ -126,7 +126,8 @@ SELECT
 		SELECT COUNT(valid_ingredients.id)
 		FROM valid_ingredients
 		WHERE valid_ingredients.archived_at IS NULL
-			AND valid_ingredients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND
+			valid_ingredients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND valid_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				valid_ingredients.last_updated_at IS NULL
@@ -136,6 +137,7 @@ SELECT
 				valid_ingredients.last_updated_at IS NULL
 				OR valid_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_ingredients.archived_at = NULL)
 	) AS filtered_count,
 	(
 		SELECT COUNT(valid_ingredients.id)
@@ -155,6 +157,7 @@ WHERE
 		valid_ingredients.last_updated_at IS NULL
 		OR valid_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_ingredients.archived_at = NULL)
 GROUP BY valid_ingredients.id
 ORDER BY valid_ingredients.id
 LIMIT sqlc.narg(query_limit)

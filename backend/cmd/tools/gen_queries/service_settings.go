@@ -94,13 +94,15 @@ WHERE %s.%s IS NULL
 					strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(serviceSettingsTableName, true, true),
-					buildTotalCountSelect(serviceSettingsTableName, true),
+					buildFilterCountSelect(serviceSettingsTableName, true, true, []string{}),
+					buildTotalCountSelect(serviceSettingsTableName, true, []string{}),
 					serviceSettingsTableName,
 					serviceSettingsTableName, archivedAtColumn,
 					buildFilterConditions(
 						serviceSettingsTableName,
 						true,
+						true,
+						nil,
 					),
 					offsetLimitAddendum,
 				)),

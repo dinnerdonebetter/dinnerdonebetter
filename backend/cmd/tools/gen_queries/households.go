@@ -154,12 +154,7 @@ WHERE %s.%s IS NULL
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-	(
-		SELECT COUNT(%s.%s)
-		FROM %s
-		WHERE %s.%s IS NULL
-			%s
-	) as filtered_count,
+	%s,
 	%s
 FROM %s
 WHERE %s.%s IS NULL
@@ -168,28 +163,11 @@ WHERE %s.%s IS NULL
 					strings.Join(applyToEach(householdsColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", householdsTableName, s)
 					}), ",\n\t"),
-					householdsTableName, idColumn,
+					buildFilterCountSelect(householdsTableName, true, true, nil),
+					buildTotalCountSelect(householdsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn)),
 					householdsTableName,
 					householdsTableName, archivedAtColumn,
-					strings.Join(applyToEach(strings.Split(buildFilterConditions(
-						householdsTableName,
-						true,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn),
-					), "\n"), func(i int, s string) string {
-						if i == 0 {
-							return fmt.Sprintf("\n\t\t\t%s", s)
-						}
-						return fmt.Sprintf("\n\t\t%s", s)
-					}), ""),
-					buildTotalCountSelect(householdsTableName, true,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn)),
-					householdsTableName,
-					householdsTableName, archivedAtColumn,
-					buildFilterConditions(
-						householdsTableName,
-						true,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn),
-					),
+					buildFilterConditions(householdsTableName, true, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn)),
 					offsetLimitAddendum,
 				)),
 			},

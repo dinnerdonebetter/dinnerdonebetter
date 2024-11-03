@@ -56,7 +56,8 @@ SELECT
 		SELECT COUNT(meal_plan_events.id)
 		FROM meal_plan_events
 		WHERE meal_plan_events.archived_at IS NULL
-			AND meal_plan_events.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND
+			meal_plan_events.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND meal_plan_events.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				meal_plan_events.last_updated_at IS NULL
@@ -66,6 +67,7 @@ SELECT
 				meal_plan_events.last_updated_at IS NULL
 				OR meal_plan_events.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plan_events.archived_at = NULL)
 			AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 	) AS filtered_count,
 	(
@@ -87,6 +89,7 @@ WHERE
 		meal_plan_events.last_updated_at IS NULL
 		OR meal_plan_events.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plan_events.archived_at = NULL)
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 GROUP BY meal_plan_events.id
 ORDER BY meal_plan_events.id

@@ -40,7 +40,8 @@ SELECT
 	(
 		SELECT COUNT(user_notifications.id)
 		FROM user_notifications
-		WHERE user_notifications.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+		WHERE
+			user_notifications.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND user_notifications.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				user_notifications.last_updated_at IS NULL

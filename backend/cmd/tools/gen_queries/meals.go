@@ -150,13 +150,15 @@ WHERE
 					strings.Join(applyToEach(mealsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", mealsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(mealsTableName, true, true),
-					buildTotalCountSelect(mealsTableName, true),
+					buildFilterCountSelect(mealsTableName, true, true, []string{}),
+					buildTotalCountSelect(mealsTableName, true, []string{}),
 					mealsTableName,
 					mealsTableName, archivedAtColumn,
 					buildFilterConditions(
 						mealsTableName,
 						true,
+						true,
+						nil,
 					),
 					offsetLimitAddendum,
 				)),
@@ -179,14 +181,16 @@ WHERE
 					strings.Join(applyToEach(mealsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", mealsTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(mealsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
-					buildTotalCountSelect(mealsTableName, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
+					buildFilterCountSelect(mealsTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
+					buildTotalCountSelect(mealsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
 					mealsTableName,
 					mealsTableName, archivedAtColumn,
 					mealsTableName, createdByUserColumn, createdByUserColumn,
 					buildFilterConditions(
 						mealsTableName,
 						true,
+						true,
+						nil,
 						fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn),
 					),
 					offsetLimitAddendum,
@@ -209,8 +213,8 @@ WHERE
 	%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
-					buildFilterCountSelect(mealsTableName, true, true),
-					buildTotalCountSelect(mealsTableName, true),
+					buildFilterCountSelect(mealsTableName, true, true, []string{}),
+					buildTotalCountSelect(mealsTableName, true, []string{}),
 					mealsTableName,
 					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
 					mealsTableName, archivedAtColumn,
@@ -218,6 +222,8 @@ WHERE
 					buildFilterConditions(
 						mealsTableName,
 						true,
+						true,
+						nil,
 					),
 					offsetLimitAddendum,
 				)),
