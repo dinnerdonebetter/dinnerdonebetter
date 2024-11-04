@@ -277,3 +277,12 @@ line_count: ensure_scc_installed
 proxy_dev_db:
 	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
 
+## EXPERIMENTAL KUBERNETES ZONE
+
+.PHONY: build_localdev_api_container
+build_localdev_api_container:
+	docker build --tag dinner-done-better-api-server:latest --file environments/local/server.Dockerfile .
+
+.PHONY: deploy_to_k8s
+deploy_to_k8s: build_localdev_api_container
+	kubectl apply -f environments/local/kubernetes/service.yaml
