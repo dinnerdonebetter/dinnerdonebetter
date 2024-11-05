@@ -284,5 +284,6 @@ build_localdev_api_container:
 	docker build --tag dinner-done-better-api-server:latest --file environments/local/server.Dockerfile .
 
 .PHONY: deploy_to_k8s
-deploy_to_k8s: build_localdev_api_container
-	kubectl apply -f environments/local/kubernetes/service.yaml
+deploy_to_k8s: # build_localdev_api_container
+	kubectl apply --filename environments/local/kubernetes/0_namespace.yaml --filename environments/local/kubernetes/postgres.yaml
+	# kubectl apply -f environments/local/kubernetes/service.yaml
