@@ -1,7 +1,8 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-secret
+  name: postgres-config
   namespace: localdev
   labels:
     app: postgres
@@ -10,10 +11,10 @@ data:
   POSTGRES_USER: "dbuser"
   POSTGRES_PASSWORD: "aHVudGVyMg=="  # "hunter2" in base64
 ---
-apiVersion: v1
 kind: PersistentVolume
+apiVersion: v1
 metadata:
-  name: postgres-volume
+  name: postgres-pv-volume
   namespace: localdev
   labels:
     type: local
@@ -21,16 +22,16 @@ metadata:
 spec:
   storageClassName: manual
   capacity:
-    storage: 10Gi
+    storage: 5Gi
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: /data/postgresql
+    path: "/mnt/data"
 ---
-apiVersion: v1
 kind: PersistentVolumeClaim
+apiVersion: v1
 metadata:
-  name: postgres-volume-claim
+  name: postgres-pv-claim
   namespace: localdev
   labels:
     app: postgres
@@ -40,7 +41,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -59,20 +60,20 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: 'postgres:15'
-          imagePullPolicy: IfNotPresent
+          image: postgres:15
+          imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432
           envFrom:
             - configMapRef:
-                name: postgres-secret
+                name: postgres-config
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
-              name: postgres_data
+              name: postgredb
       volumes:
-        - name: postgres_data
+        - name: postgredb
           persistentVolumeClaim:
-            claimName: postgres-volume-claim
+            claimName: postgres-pv-claim
 ---
 apiVersion: v1
 kind: Service
@@ -84,7 +85,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 5432
+   - port: 5432
   selector:
-    app: postgres
+   app: postgres
 ---
