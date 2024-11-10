@@ -24,20 +24,23 @@ import (
 )
 
 const (
-	dataChangesTopicAccessName           = "data_changes_topic_name"
-	googleCloudCloudSQLSocket            = "/cloudsql"
-	gcpConfigFilePathEnvVarKey           = "CONFIGURATION_FILEPATH"
-	gcpPortEnvVarKey                     = "PORT"
-	gcpDatabaseSocketDirEnvVarKey        = "DB_SOCKET_DIR"
-	gcpDataChangesTopicNameEnvVarKey     = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
-	gcpDatabaseUserEnvVarKey             = "DINNER_DONE_BETTER_DATABASE_USER"
-	gcpDatabaseNameEnvVarKey             = "DINNER_DONE_BETTER_DATABASE_NAME"
-	gcpDatabaseInstanceConnNameEnvVarKey = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
-	gcpAlgoliaAPIKeyEnvVarKey            = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
-	gcpAlgoliaAppIDEnvVarKey             = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
-	gcpGoogleSSOClientIDEnvVarKey        = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_ID"
-	gcpGoogleSSOClientSecretEnvVarKey    = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_SECRET"
-	gcpUserAggregatorTopicName           = "DINNER_DONE_BETTER_USER_AGGREGATOR_TOPIC_NAME"
+	dataChangesTopicAccessName            = "data_changes_topic_name"
+	googleCloudCloudSQLSocket             = "/cloudsql"
+	gcpConfigFilePathEnvVarKey            = "CONFIGURATION_FILEPATH"
+	gcpPortEnvVarKey                      = "PORT"
+	gcpDatabaseSocketDirEnvVarKey         = "DB_SOCKET_DIR"
+	gcpDataChangesTopicNameEnvVarKey      = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
+	gcpOutboundEmailsTopicNameEnvVarKey   = "DINNER_DONE_BETTER_OUTBOUND_EMAILS_TOPIC_NAME"
+	gcpSearchIndexingTopicNameEnvVarKey   = "DINNER_DONE_BETTER_SEARCH_INDEXING_TOPIC_NAME"
+	gcpWebhookExecutionTopicNameEnvVarKey = "DINNER_DONE_BETTER_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME"
+	gcpUserAggregatorTopicName            = "DINNER_DONE_BETTER_USER_AGGREGATOR_TOPIC_NAME"
+	gcpDatabaseUserEnvVarKey              = "DINNER_DONE_BETTER_DATABASE_USER"
+	gcpDatabaseNameEnvVarKey              = "DINNER_DONE_BETTER_DATABASE_NAME"
+	gcpDatabaseInstanceConnNameEnvVarKey  = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
+	gcpAlgoliaAPIKeyEnvVarKey             = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
+	gcpAlgoliaAppIDEnvVarKey              = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
+	gcpGoogleSSOClientIDEnvVarKey         = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_ID"
+	gcpGoogleSSOClientSecretEnvVarKey     = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_SECRET"
 	/* #nosec G101 */
 	gcpJWTSigningKeyEnvVarKey = "DINNER_DONE_BETTER_JWT_SIGNING_KEY"
 	/* #nosec G101 */
@@ -113,6 +116,14 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	}
 
 	dataChangesTopicName := os.Getenv(gcpDataChangesTopicNameEnvVarKey)
+
+	cfg.Queues = QueuesConfig{
+		DataChangesTopicName:              os.Getenv(gcpDataChangesTopicNameEnvVarKey),
+		OutboundEmailsTopicName:           os.Getenv(gcpOutboundEmailsTopicNameEnvVarKey),
+		SearchIndexRequestsTopicName:      os.Getenv(gcpSearchIndexingTopicNameEnvVarKey),
+		UserDataAggregationTopicName:      os.Getenv(gcpUserAggregatorTopicName),
+		WebhookExecutionRequestsTopicName: os.Getenv(gcpWebhookExecutionTopicNameEnvVarKey),
+	}
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}

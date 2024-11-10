@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Ensure queries and querier can be generated
         working-directory: backend
@@ -41,12 +41,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Ensure configs can be generated
         working-directory: backend
@@ -63,12 +63,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install wire
         run: go install github.com/google/wire/cmd/wire@latest
@@ -88,15 +88,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
 
       - run: npm install -g yarn
         working-directory: frontend
@@ -123,12 +123,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Ensure code can be generated
         working-directory: backend
@@ -145,7 +145,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Ensure openapi spec can be generated
         working-directory: backend
@@ -156,27 +156,27 @@ jobs:
 
 ### Shhhhhh...one day, my prince...
 
-#  openapi_client:
-#    timeout-minutes: 10
-#    strategy:
-#     matrix:
-#       go-version: [ '1.22.x' ]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Install Go
-#        uses: actions/setup-go@v4
-#        with:
-#          go-version: ${{ matrix.go-version }}
-#
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: install client generator
-#        run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0
-#
-#      - name: generate client
-#        working-directory: backend
-#        run: make openapi-client format
-#
-#      - name: Check for changes
-#        run: git diff --exit-code
+ openapi_client:
+   timeout-minutes: 10
+   strategy:
+    matrix:
+      go-version: [ '1.22.x' ]
+   runs-on: ubuntu-latest
+   steps:
+     - name: Install Go
+       uses: actions/setup-go@v5
+       with:
+         go-version: ${{ matrix.go-version }}
+
+     - name: Checkout code
+       uses: actions/checkout@v4
+
+     - name: install client generator
+       run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0
+
+     - name: generate client
+       working-directory: backend
+       run: make codegen-go format
+
+     - name: Check for changes
+       run: git diff --exit-code

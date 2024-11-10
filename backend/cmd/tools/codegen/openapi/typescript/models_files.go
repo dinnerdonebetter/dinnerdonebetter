@@ -7,7 +7,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/enums"
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/openapi/enums"
 
 	"github.com/swaggest/openapi-go/openapi31"
 )

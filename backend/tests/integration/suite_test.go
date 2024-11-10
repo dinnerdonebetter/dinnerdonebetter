@@ -2,14 +2,12 @@ package integration
 
 import (
 	"context"
-	"net/http"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -53,6 +51,7 @@ func (s *TestSuite) SetupTest() {
 	s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
 }
 
+/*
 var _ suite.TearDownAllSuite = (*TestSuite)(nil)
 
 func (s *TestSuite) TearDownSuite() {
@@ -62,7 +61,9 @@ func (s *TestSuite) TearDownSuite() {
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
 }
+*/
 
 func (s *TestSuite) runTest(name string, subtestBuilder func(*testClientWrapper) func()) {
+	s.T().Logf("\n\nrunning '%s'\n\n", name)
 	s.Run(name, subtestBuilder(&testClientWrapper{authType: oauth2AuthType, userClient: s.oauthedClient, adminClient: s.adminOAuthedClient, user: s.user}))
 }

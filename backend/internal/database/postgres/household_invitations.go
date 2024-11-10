@@ -655,14 +655,15 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, userID)
 
-	if err := q.generatedQuerier.AttachHouseholdInvitationsToUserID(ctx, querier, &generated.AttachHouseholdInvitationsToUserIDParams{
+	rowCount, err := q.generatedQuerier.AttachHouseholdInvitationsToUserID(ctx, querier, &generated.AttachHouseholdInvitationsToUserIDParams{
 		ToEmail: userEmail,
 		ToUser:  database.NullStringFromString(userID),
-	}); err != nil && !errors.Is(err, sql.ErrNoRows) {
+	})
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareAndLogError(err, logger, span, "attaching invitations to user")
 	}
 
-	logger.Info("invitations associated with user")
+	logger.WithValue("rows_affected", rowCount).Info("invitations associated with user")
 
 	return nil
 }

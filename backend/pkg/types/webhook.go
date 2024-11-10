@@ -93,6 +93,7 @@ type (
 	WebhookExecutionRequest struct {
 		_ struct{} `json:"-"`
 
+		RequestID    string `json:"id"`
 		Payload      any    `json:"payload"`
 		WebhookID    string `json:"webhookID"`
 		HouseholdID  string `json:"householdID"`

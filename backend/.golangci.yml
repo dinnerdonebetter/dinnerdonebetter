@@ -319,6 +319,10 @@ issues:
       linters:
         - bodyclose
 
+    - path: pkg/types/fakes
+      linters:
+        - gosec
+
     - path: tests/testutil/
       linters:
         - bodyclose
@@ -328,7 +332,7 @@ issues:
         - mnd
         - forcetypeassert
 
-    - path: cmd/tools/gen_queries
+    - path: cmd/tools/codegen/queries
       linters:
         - unused
 
@@ -372,32 +376,24 @@ issues:
       linters:
         - paralleltest
 
-    - path: cmd/tools/codegen/golang/statics
+    - path: cmd/tools/codegen/openapi/golang/statics
       linters:
         - unused
         - bodyclose
 
-    - path: cmd/tools/codegen/golang
+    - path: cmd/tools/codegen/openapi/golang
       linters:
         - gocritic
 
     ## BEGIN SPECIAL SNOWFLAKES
 
-    - path: cmd/gen_configs/main.go
+    - path: cmd/tools/codegen/configs/main.go
       linters:
         - gosec
-
-    - path: internal/email/sendgrid
-      linters:
-        - paralleltest
 
     - path: internal/featureflags/launchdarkly/mock_client.go
       linters:
         - gocritic
-
-    - path: internal/featureflags/posthog
-      linters:
-        - paralleltest
 
     ## END SPECIAL SNOWFLAKES
 
@@ -425,6 +421,14 @@ issues:
       linters:
         - gocritic
       text: "rangeValCopy: each iteration copies"
+
+    - path: internal/email/sendgrid
+      linters:
+        - paralleltest
+
+    - path: internal/featureflags/posthog
+      linters:
+        - paralleltest
 
   # Independently of option `exclude` we use default exclude patterns, it can be disabled by this option. To list all
   # excluded by default patterns execute `golangci-lint run --help`.

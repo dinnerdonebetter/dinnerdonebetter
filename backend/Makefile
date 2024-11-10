@@ -181,27 +181,24 @@ test: $(ARTIFACTS_DIR) vendor build
 
 .PHONY: configs
 configs:
-	go run $(THIS)/cmd/tools/gen_configs
+	go run $(THIS)/cmd/tools/codegen/configs
 
 .PHONY: queries
 queries:
-	go run $(THIS)/cmd/tools/gen_queries
+	go run $(THIS)/cmd/tools/codegen/queries
 
 .PHONY: codegen-ts
 codegen-ts:
-	go run $(THIS)/cmd/tools/codegen --typescript
+	go run $(THIS)/cmd/tools/codegen/openapi --typescript
 	@(cd ../frontend && $(MAKE) format)
 
 .PHONY: codegen-go
 codegen-go:
-	go run $(THIS)/cmd/tools/codegen --golang
+	go run $(THIS)/cmd/tools/codegen/openapi --golang
 	@$(MAKE) format_golang
 
 .PHONY: codegen
-codegen: # codegen-ts codegen-go
-	go run $(THIS)/cmd/tools/codegen --typescript --golang
-	@(cd ../frontend && $(MAKE) format)
-	@$(MAKE) format_golang
+codegen: codegen-ts codegen-go
 
 .PHONY: querier
 querier: queries queries_lint  ## TODO: Why is this target broken?
@@ -210,11 +207,11 @@ querier: queries queries_lint  ## TODO: Why is this target broken?
 
 .PHONY: sqlc_struct_check
 sqlc_struct_check:
-	go run $(THIS)/cmd/tools/sqlcstructchecker
+	go run $(THIS)/cmd/tools/sqlc_struct_checker
 
 .PHONY: openapi
 openapi:
-	go run $(THIS)/cmd/tools/gen_openapi
+	go run $(THIS)/cmd/tools/codegen/openapi_spec
 
 .PHONY: openapi-client
 openapi-client: ensure_oapi_codegen_installed
@@ -246,7 +243,7 @@ integration_tests_postgres:
 	--remove-orphans \
 	--renew-anon-volumes \
 	--always-recreate-deps \
-	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--exit-code-from coordination_server) \
+	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--exit-code-from tests) \
 	--attach api_server \
 	--attach tests
 
@@ -276,4 +273,3 @@ line_count: ensure_scc_installed
 .PHONY: proxy_dev_db
 proxy_dev_db:
 	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
-

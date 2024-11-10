@@ -15,8 +15,9 @@ type (
 	UserDataAggregationRequest struct {
 		_ struct{} `json:"-"`
 
-		ReportID string `json:"reportID"`
-		UserID   string `json:"userID"`
+		RequestID string `json:"id"`
+		ReportID  string `json:"reportID"`
+		UserID    string `json:"userID"`
 	}
 
 	// UserDataCollectionResponse represents the response to a UserDataAggregationRequest.

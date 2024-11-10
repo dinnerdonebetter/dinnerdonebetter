@@ -17,11 +17,12 @@ import (
 )
 
 type adminServiceHTTPRoutesTestHelper struct {
-	ctx              context.Context
-	service          *service
-	exampleUser      *types.User
-	exampleHousehold *types.Household
-	exampleInput     *types.UserAccountStatusUpdateInput
+	ctx                                      context.Context
+	service                                  *service
+	exampleUser                              *types.User
+	exampleHousehold                         *types.Household
+	exampleAccountStatusUpdateInput          *types.UserAccountStatusUpdateInput
+	exampleArbitraryQueueMessageRequestInput *types.ArbitraryQueueMessageRequestInput
 
 	req *http.Request
 	res *httptest.ResponseRecorder
@@ -56,7 +57,8 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
-	helper.exampleInput = fakes.BuildFakeUserAccountStatusUpdateInput()
+	helper.exampleAccountStatusUpdateInput = fakes.BuildFakeUserAccountStatusUpdateInput()
+	helper.exampleArbitraryQueueMessageRequestInput = fakes.BuildFakeArbitraryQueueMessageRequestInput()
 
 	var err error
 	helper.res = httptest.NewRecorder()

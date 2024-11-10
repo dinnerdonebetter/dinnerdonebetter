@@ -10,7 +10,8 @@ import (
 
 // Config configures the service.
 type Config struct {
-	_                            struct{}       `json:"-"`
+	_ struct{} `json:"-"`
+
 	UserDataAggregationTopicName string         `json:"userDataAggregationTopicName,omitempty" toml:"user_data_aggregation_topic_name,omitempty"`
 	DataChangesTopicName         string         `json:"dataChangesTopicName,omitempty"         toml:"data_changes_topic_name,omitempty"`
 	Uploads                      uploads.Config `json:"uploads"                                toml:"uploads,omitempty"`

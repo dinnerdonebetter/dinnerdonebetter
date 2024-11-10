@@ -7,4 +7,4 @@ COPY . .
 
 RUN go build -o /server github.com/dinnerdonebetter/backend/cmd/services/api/http
 
-ENTRYPOINT /server
+ENTRYPOINT ["/server"]

@@ -18,27 +18,27 @@ jobs:
         go-version: [ '1.22.x' ]
     steps:
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: authenticate with GCP
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
 
       # Setup gcloud CLI
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.5
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
@@ -94,15 +94,15 @@ jobs:
         container-filename: [ 'api_server' ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: authenticate with GCP
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
@@ -155,15 +155,15 @@ jobs:
           container-filename: 'meal_plan_task_creator'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: authenticate with GCP
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker ${{ matrix.configs.gcp-region }}-docker.pkg.dev

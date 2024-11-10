@@ -201,6 +201,7 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 }
 
 type IndexRequest struct {
+	RequestID string `json:"id"`
 	RowID     string `json:"rowID"`
 	IndexType string `json:"type"`
 	Delete    bool   `json:"delete"`

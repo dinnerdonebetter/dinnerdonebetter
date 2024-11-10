@@ -44,6 +44,7 @@ type (
 	DeliveryRequest struct {
 		_ struct{} `json:"-"`
 
+		RequestID              string                     `json:"id"`
 		TemplateParams         map[string]any             `json:"templateParams"`
 		Invitation             *types.HouseholdInvitation `json:"invitation,omitempty"`
 		PasswordResetToken     *types.PasswordResetToken  `json:"passwordResetToken,omitempty"`

@@ -47,6 +47,8 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	user, err := testutils.CreateServiceUser(ctx, urlToUse, input)
 	require.NoError(t, err)
 
+	t.Logf("created user %s", user.ID)
+
 	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
 

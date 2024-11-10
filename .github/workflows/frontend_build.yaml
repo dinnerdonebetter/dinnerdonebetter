@@ -21,7 +21,7 @@ jobs:
           - app: 'web'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: ${{ matrix.configs.app }} Container
         working-directory: frontend/
@@ -41,10 +41,10 @@ jobs:
             app: 'admin'
     name: ${{ matrix.configs.app }} on ${{ matrix.configs.node }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
 
       - run: npm install -g yarn
 

@@ -88,53 +88,17 @@ const (
 	testingEnv     = "testing"
 
 	// message provider topics.
-	dataChangesTopicName         = "data_changes"
-	userDataAggregationTopicName = "user_data_aggregation_requests"
+	dataChangesTopicName              = "data_changes"
+	outboundEmailsTopicName           = "outbound_emails"
+	searchIndexRequestsTopicName      = "search_index_requests"
+	userDataAggregationTopicName      = "user_data_aggregation_requests"
+	webhookExecutionRequestsTopicName = "webhook_execution_requests"
 
 	maxAttempts = 50
 
 	contentTypeJSON               = "application/json"
 	workerQueueAddress            = "worker_queue:6379"
 	localOAuth2TokenEncryptionKey = debugCookieHashKey
-)
-
-var (
-	localRoutingConfig = routing.Config{
-		Provider:               routing.ChiProvider,
-		EnableCORSForLocalhost: true,
-		SilenceRouteLogging:    false,
-	}
-
-	devRoutingConfig = routing.Config{
-		Provider:               routing.ChiProvider,
-		EnableCORSForLocalhost: true,
-		SilenceRouteLogging:    false,
-	}
-
-	devEnvLogConfig = logcfg.Config{
-		Level:    logging.DebugLevel,
-		Provider: logcfg.ProviderSlog,
-	}
-
-	localLogConfig = logcfg.Config{
-		Level:    logging.DebugLevel,
-		Provider: logcfg.ProviderSlog,
-	}
-
-	localServer = http.Config{
-		Debug:           true,
-		HTTPPort:        defaultPort,
-		StartupDeadline: time.Minute,
-	}
-
-	localTracingConfig = tracingcfg.Config{
-		Provider: tracingcfg.ProviderOtel,
-		Otel: &oteltracehttp.Config{
-			SpanCollectionProbability: 1,
-			CollectorEndpoint:         "http://tracing-server:14268/api/traces",
-			ServiceName:               "dinner_done_better_service",
-		},
-	}
 )
 
 func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConfig, indent, validate bool) error {
@@ -190,7 +154,11 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	}
 
 	cfg := &config.InstanceConfig{
-		Routing: devRoutingConfig,
+		Routing: routing.Config{
+			Provider:               routing.ChiProvider,
+			EnableCORSForLocalhost: true,
+			SilenceRouteLogging:    false,
+		},
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -225,7 +193,10 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			PingWaitPeriod:  time.Second,
 		},
 		Observability: observability.Config{
-			Logging: devEnvLogConfig,
+			Logging: logcfg.Config{
+				Level:    logging.DebugLevel,
+				Provider: logcfg.ProviderSlog,
+			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderCloudTrace,
 				CloudTrace: &cloudtrace.Config{
@@ -347,7 +318,18 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 
 func buildLocalDevConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
-		Routing: localRoutingConfig,
+		Routing: routing.Config{
+			Provider:               routing.ChiProvider,
+			EnableCORSForLocalhost: true,
+			SilenceRouteLogging:    false,
+		},
+		Queues: config.QueuesConfig{
+			DataChangesTopicName:              dataChangesTopicName,
+			OutboundEmailsTopicName:           outboundEmailsTopicName,
+			SearchIndexRequestsTopicName:      searchIndexRequestsTopicName,
+			UserDataAggregationTopicName:      userDataAggregationTopicName,
+			WebhookExecutionRequestsTopicName: webhookExecutionRequestsTopicName,
+		},
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -373,7 +355,11 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			Algolia:  &algolia.Config{},
 			Provider: searchcfg.AlgoliaProvider,
 		},
-		Server: localServer,
+		Server: http.Config{
+			Debug:           true,
+			HTTPPort:        defaultPort,
+			StartupDeadline: time.Minute,
+		},
 		Database: dbconfig.Config{
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
 			Debug:                    true,
@@ -384,8 +370,18 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			ConnectionDetails:        devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
-			Logging: localLogConfig,
-			Tracing: localTracingConfig,
+			Logging: logcfg.Config{
+				Level:    logging.DebugLevel,
+				Provider: logcfg.ProviderSlog,
+			},
+			Tracing: tracingcfg.Config{
+				Provider: tracingcfg.ProviderOtel,
+				Otel: &oteltracehttp.Config{
+					SpanCollectionProbability: 1,
+					CollectorEndpoint:         "http://tracing-server:14268/api/traces",
+					ServiceName:               "dinner_done_better_service",
+				},
+			},
 		},
 		Services: config.ServicesConfig{
 			AuditLogEntries: auditlogentriesservice.Config{},
@@ -602,10 +598,21 @@ func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
-		Routing: localRoutingConfig,
+		Routing: routing.Config{
+			Provider:               routing.ChiProvider,
+			EnableCORSForLocalhost: true,
+			SilenceRouteLogging:    false,
+		},
 		Meta: config.MetaSettings{
 			Debug:   false,
 			RunMode: testingEnv,
+		},
+		Queues: config.QueuesConfig{
+			DataChangesTopicName:              dataChangesTopicName,
+			OutboundEmailsTopicName:           outboundEmailsTopicName,
+			SearchIndexRequestsTopicName:      searchIndexRequestsTopicName,
+			UserDataAggregationTopicName:      userDataAggregationTopicName,
+			WebhookExecutionRequestsTopicName: webhookExecutionRequestsTopicName,
 		},
 		Events: msgconfig.Config{
 			Consumers: msgconfig.MessageQueueConfig{
@@ -643,7 +650,14 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				Level:    logging.InfoLevel,
 				Provider: logcfg.ProviderSlog,
 			},
-			Tracing: localTracingConfig,
+			Tracing: tracingcfg.Config{
+				Provider: tracingcfg.ProviderOtel,
+				Otel: &oteltracehttp.Config{
+					SpanCollectionProbability: 1,
+					CollectorEndpoint:         "http://tracing-server:14268/api/traces",
+					ServiceName:               "dinner_done_better_service",
+				},
+			},
 		},
 		Services: config.ServicesConfig{
 			AuditLogEntries: auditlogentriesservice.Config{},

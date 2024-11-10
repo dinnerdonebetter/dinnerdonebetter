@@ -13,6 +13,13 @@
 			"provider": "otel"
 		}
 	},
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
 	"email": {
 		"sendgrid": null,
 		"mailgun": null,

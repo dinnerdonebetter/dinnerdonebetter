@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const attachHouseholdInvitationsToUserID = `-- name: AttachHouseholdInvitationsToUserID :exec
+const attachHouseholdInvitationsToUserID = `-- name: AttachHouseholdInvitationsToUserID :execrows
 UPDATE household_invitations SET
 	to_user = $1,
 	last_updated_at = NOW()
@@ -24,9 +24,12 @@ type AttachHouseholdInvitationsToUserIDParams struct {
 	ToUser  sql.NullString
 }
 
-func (q *Queries) AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) error {
-	_, err := db.ExecContext(ctx, attachHouseholdInvitationsToUserID, arg.ToUser, arg.ToEmail)
-	return err
+func (q *Queries) AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) (int64, error) {
+	result, err := db.ExecContext(ctx, attachHouseholdInvitationsToUserID, arg.ToUser, arg.ToEmail)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkHouseholdInvitationExistence = `-- name: CheckHouseholdInvitationExistence :one

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     name: check
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # no imprecise versions
       - run: if [ $(grep `find . -name "package.json" | grep -ve "node_modules"` -e '"^' | wc -l) -ne 0 ]; then exit 1; fi

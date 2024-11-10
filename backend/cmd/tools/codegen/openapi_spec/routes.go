@@ -58,6 +58,13 @@ var routeInfoMap = map[string]routeDetails{
 		ResponseType: &types.UserStatusResponse{},
 		OAuth2Scopes: []string{serviceAdmin},
 	},
+	"POST /api/v1/admin/queues/test": {
+		ID:           "PublishArbitraryQueueMessage",
+		Description:  "Publishes an arbitrary message onto a queue",
+		InputType:    &types.ArbitraryQueueMessageRequestInput{},
+		ResponseType: &types.ArbitraryQueueMessageResponse{},
+		OAuth2Scopes: []string{serviceAdmin},
+	},
 	"GET /api/v1/audit_log_entries/for_household": {
 		ID:           "GetAuditLogEntriesForHousehold",
 		Description:  "Retrieves audit log entries for a household",

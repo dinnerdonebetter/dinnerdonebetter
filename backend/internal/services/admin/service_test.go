@@ -3,7 +3,9 @@ package admin
 import (
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
+	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -17,12 +19,21 @@ func buildTestService(t *testing.T) *service {
 
 	logger := logging.NewNoopLogger()
 
-	s := ProvideService(
+	s, err := ProvideService(
 		logger,
 		&mocktypes.AdminUserDataManagerMock{},
 		encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 		tracing.NewNoopTracerProvider(),
+		&config.QueuesConfig{
+			DataChangesTopicName:              "DataChangesTopicName",
+			OutboundEmailsTopicName:           "OutboundEmailsTopicName",
+			SearchIndexRequestsTopicName:      "SearchIndexRequestsTopicName",
+			UserDataAggregationTopicName:      "UserDataAggregationTopicName",
+			WebhookExecutionRequestsTopicName: "WebhookExecutionRequestsTopicName",
+		},
+		&mockpublishers.ProducerProvider{},
 	)
+	assert.NoError(t, err)
 
 	srv, ok := s.(*service)
 	require.True(t, ok)
@@ -38,12 +49,15 @@ func TestProvideAdminService(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		s := ProvideService(
+		s, err := ProvideService(
 			logger,
 			&mocktypes.AdminUserDataManagerMock{},
 			encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 			tracing.NewNoopTracerProvider(),
+			&config.QueuesConfig{},
+			&mockpublishers.ProducerProvider{},
 		)
+		assert.NoError(t, err)
 
 		assert.NotNil(t, s)
 	})

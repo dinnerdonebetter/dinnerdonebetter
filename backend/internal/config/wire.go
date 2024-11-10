@@ -18,6 +18,7 @@ var (
 			"Database",
 			"Meta",
 			"Events",
+			"Queues",
 			"Search",
 			"Server",
 			"Services",
