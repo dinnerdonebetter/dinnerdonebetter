@@ -24,7 +24,13 @@ func buildTestService(t *testing.T) *service {
 		&mocktypes.AdminUserDataManagerMock{},
 		encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 		tracing.NewNoopTracerProvider(),
-		&config.QueuesConfig{},
+		&config.QueuesConfig{
+			DataChangesTopicName:              "DataChangesTopicName",
+			OutboundEmailsTopicName:           "OutboundEmailsTopicName",
+			SearchIndexRequestsTopicName:      "SearchIndexRequestsTopicName",
+			UserDataAggregationTopicName:      "UserDataAggregationTopicName",
+			WebhookExecutionRequestsTopicName: "WebhookExecutionRequestsTopicName",
+		},
 		&mockpublishers.ProducerProvider{},
 	)
 	assert.NoError(t, err)

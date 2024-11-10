@@ -210,6 +210,8 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 	}
 	publisherTimer.Stop()
 
+	logger.WithValue("topic_name", topicName).WithValue("body", input.Body).Info("writing message to queue")
+
 	publishTimer := timing.NewMetric("instantiating publisher")
 	publishTimer.Start()
 	if err = publisher.Publish(ctx, s.encoderDecoder.MustEncodeJSON(ctx, dest)); err != nil {

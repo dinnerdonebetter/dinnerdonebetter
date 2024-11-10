@@ -462,10 +462,14 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			households, err := c.GetHouseholds(ctx, nil)
 			require.NoError(t, err)
 
+			logJSON(t, households)
+			t.Logf("householdID: %s", relevantHouseholdID)
+
 			var found bool
 			for _, household := range households.Data {
-				if !found {
-					found = household.ID == relevantHouseholdID
+				if household.ID == relevantHouseholdID {
+					found = true
+					break
 				}
 			}
 

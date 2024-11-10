@@ -32,7 +32,7 @@ type compressor struct {
 	algo algo
 }
 
-// NewCompressor returns a new Compressor
+// NewCompressor returns a new Compressor.
 func NewCompressor(a algo) (Compressor, error) {
 	switch a {
 	case algoZstd, algoS2:

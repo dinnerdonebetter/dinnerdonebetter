@@ -398,7 +398,7 @@ func TestAdminService_WriteArbitraryQueueMessageHandler(T *testing.T) {
 		mockPublisherProvider := &mockpublishers.ProducerProvider{}
 		mockPublisherProvider.On(
 			"ProvidePublisher",
-			helper.exampleArbitraryQueueMessageRequestInput.QueueName,
+			helper.service.queuesConfig.DataChangesTopicName,
 		).Return(mockPublisher, nil)
 		helper.service.publisherProvider = mockPublisherProvider
 
