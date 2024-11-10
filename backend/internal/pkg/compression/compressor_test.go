@@ -48,16 +48,12 @@ func Test_compressor_CompressBytes(T *testing.T) {
 
 		assert.Equal(t, expected, actual)
 	})
-}
 
-func Test_compressor_DecompressBytes(T *testing.T) {
-	T.Parallel()
-
-	T.Run("zstandard", func(t *testing.T) {
+	T.Run("s2", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		comp := &compressor{algo: algoZstd}
+		comp := &compressor{algo: algoS2}
 
 		dt, err := time.Parse(time.DateTime, time.DateTime)
 		require.NoError(t, err)
@@ -75,15 +71,56 @@ func Test_compressor_DecompressBytes(T *testing.T) {
 
 		encoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		compressed, err := comp.CompressBytes(encoder.MustEncodeJSON(context.Background(), x))
+		expected := "_wYAAFMyc1R3TwHyAACmH-pBeyJjcmVhdGVkQXQiOiIyMDA2LTAxLTAyVDE1OjA0OjA1WiIsImFyY2hpdmVkQXQiOm51bGwsImxhc3RVcGRhdGVkQXQiOm51bGwsIm5hbWUiOiJ0ZXN0aW5nIiwidXJsIjoiaHR0cHM6Ly93aGF0ZXZlci5nb3YiLCJtZXRob2QiOiJQT1NUIiwiaWQiOiJibGFoLWJsYWgtYmxhaCIsImJlbG9uZ3NUb0hvdXNlaG9sZCI6InNvbWV0aGluZyIsImNvbnRlbnRUeXBlIjoiYXBwbGljYXRpb24vanNvbiIsImV2ZW50cyI6W119Cg=="
+		compressed, err := comp.CompressBytes(encoder.MustEncodeJSON(ctx, x))
 		assert.NoError(t, err)
+		actual := base64.URLEncoding.EncodeToString(compressed)
 
-		decompressed, err := comp.DecompressBytes(compressed)
-		assert.NoError(t, err)
-
-		var y *types.Webhook
-		require.NoError(t, encoder.DecodeBytes(ctx, decompressed, &y))
-
-		assert.Equal(t, x, y)
+		assert.Equal(t, expected, actual)
 	})
+}
+
+func Test_compressor_DecompressBytes(T *testing.T) {
+	T.Parallel()
+
+	algorithms := []algo{
+		algoZstd,
+		algoS2,
+	}
+
+	for _, a := range algorithms {
+		T.Run("zstandard", func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+			comp := &compressor{algo: a}
+
+			dt, err := time.Parse(time.DateTime, time.DateTime)
+			require.NoError(t, err)
+
+			x := &types.Webhook{
+				CreatedAt:          dt,
+				Name:               "testing",
+				URL:                "https://whatever.gov",
+				Method:             http.MethodPost,
+				ID:                 "blah-blah-blah",
+				BelongsToHousehold: "something",
+				ContentType:        "application/json",
+				Events:             []*types.WebhookTriggerEvent{},
+			}
+
+			encoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+			compressed, err := comp.CompressBytes(encoder.MustEncodeJSON(ctx, x))
+			assert.NoError(t, err)
+
+			decompressed, err := comp.DecompressBytes(compressed)
+			assert.NoError(t, err)
+
+			var y *types.Webhook
+			require.NoError(t, encoder.DecodeBytes(ctx, decompressed, &y))
+
+			assert.Equal(t, x, y)
+		})
+	}
 }
