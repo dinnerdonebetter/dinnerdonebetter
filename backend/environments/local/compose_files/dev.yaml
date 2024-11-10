@@ -12,7 +12,7 @@ services:
   postgres:
       hostname: "pgdatabase"
       container_name: "database"
-      image: postgres:15
+      image: postgres:17
       environment:
           POSTGRES_DB: 'dinner-done-better'
           POSTGRES_PASSWORD: 'hunter2'
