@@ -157,17 +157,21 @@ WHERE %s.%s IS NULL
 	%s,
 	%s
 FROM %s
+JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
 	%s
 %s;`,
 					strings.Join(applyToEach(householdsColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s", householdsTableName, s)
 					}), ",\n\t"),
 					buildFilterCountSelect(householdsTableName, true, true, nil),
-					buildTotalCountSelect(householdsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn)),
+					buildTotalCountSelect(householdsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn)),
 					householdsTableName,
+					householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
 					householdsTableName, archivedAtColumn,
-					buildFilterConditions(householdsTableName, true, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdsTableName, belongsToUserColumn, belongsToUserColumn)),
+					householdUserMembershipsTableName, archivedAtColumn,
+					buildFilterConditions(householdsTableName, true, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn)),
 					offsetLimitAddendum,
 				)),
 			},

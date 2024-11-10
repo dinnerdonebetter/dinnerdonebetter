@@ -1,4 +1,4 @@
--- name: AttachHouseholdInvitationsToUserID :exec
+-- name: AttachHouseholdInvitationsToUserID :execrows
 UPDATE household_invitations SET
 	to_user = sqlc.arg(to_user),
 	last_updated_at = NOW()

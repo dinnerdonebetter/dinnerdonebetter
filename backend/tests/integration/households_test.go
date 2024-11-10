@@ -277,7 +277,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 }
 
 func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
-	s.runTest("should be possible to invite a userClient before they sign up", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite a user before they sign up", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -356,7 +356,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 }
 
 func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCancelling() {
-	s.runTest("should be possible to invite a userClient before they sign up and cancel before they can accept", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite a user before they sign up and cancel before they can accept", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -414,7 +414,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 }
 
 func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
-	s.runTest("should be possible to invite a userClient via referral link", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -461,9 +461,6 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 
 			households, err := c.GetHouseholds(ctx, nil)
 			require.NoError(t, err)
-
-			logJSON(t, households)
-			t.Logf("householdID: %s", relevantHouseholdID)
 
 			var found bool
 			for _, household := range households.Data {
@@ -801,7 +798,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 }
 
 func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRemovedFromLastHousehold() {
-	s.runTest("should be possible to invite a userClient via referral link", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

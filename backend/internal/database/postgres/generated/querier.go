@@ -54,7 +54,7 @@ type Querier interface {
 	ArchiveValidVessel(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) (int64, error)
 	ArchiveWebhookTriggerEvent(ctx context.Context, db DBTX, arg *ArchiveWebhookTriggerEventParams) (int64, error)
-	AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) error
+	AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) (int64, error)
 	ChangeMealPlanTaskStatus(ctx context.Context, db DBTX, arg *ChangeMealPlanTaskStatusParams) error
 	CheckHouseholdInstrumentOwnershipExistence(ctx context.Context, db DBTX, arg *CheckHouseholdInstrumentOwnershipExistenceParams) (bool, error)
 	CheckHouseholdInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error)

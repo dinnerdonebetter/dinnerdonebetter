@@ -64,7 +64,7 @@ func buildHouseholdInvitationsQueries(database string) []*Query {
 			{
 				Annotation: QueryAnnotation{
 					Name: "AttachHouseholdInvitationsToUserID",
-					Type: ExecType,
+					Type: ExecRowsType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),

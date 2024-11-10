@@ -372,10 +372,12 @@ SELECT
 		SELECT COUNT(households.id)
 		FROM households
 		WHERE households.archived_at IS NULL
-			AND households.belongs_to_user = $6
+			AND household_user_memberships.belongs_to_user = $6
 	) AS total_count
 FROM households
+JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 WHERE households.archived_at IS NULL
+	AND household_user_memberships.archived_at IS NULL
 	AND households.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND households.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -386,7 +388,7 @@ WHERE households.archived_at IS NULL
 		households.last_updated_at IS NULL
 		OR households.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	AND households.belongs_to_user = $6
+	AND household_user_memberships.belongs_to_user = $6
 LIMIT $8
 OFFSET $7
 `

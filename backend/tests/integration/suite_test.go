@@ -64,5 +64,6 @@ func (s *TestSuite) TearDownSuite() {
 */
 
 func (s *TestSuite) runTest(name string, subtestBuilder func(*testClientWrapper) func()) {
+	s.T().Logf("\n\nrunning '%s'\n\n", name)
 	s.Run(name, subtestBuilder(&testClientWrapper{authType: oauth2AuthType, userClient: s.oauthedClient, adminClient: s.adminOAuthedClient, user: s.user}))
 }
