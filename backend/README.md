@@ -1,5 +1,7 @@
 # Dinner Done Better API
 
+[![backend - deploy](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_deploy_dev.yaml/badge.svg)](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_deploy_dev.yaml) [![backend - integration tests](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_integration_tests.yaml/badge.svg)](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_integration_tests.yaml) [![backend - lint](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_lint.yaml/badge.svg)](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_lint.yaml) [![backend - unit tests](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_unit_tests.yaml/badge.svg)](https://github.com/dinnerdonebetter/dinnerdonebetter/actions/workflows/backend_unit_tests.yaml)
+
 ## dev dependencies
 
 The following tools are prerequisites for development work:
@@ -14,7 +16,6 @@ The following tools are prerequisites for development work:
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) for deploying/formatting
 - [cloud_sql_proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) for production database access
 - [fieldalignment](https://pkg.go.dev/golang.org/x/tools/go/analysis/passes/fieldalignment) (`go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest`)
-- [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) (`go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest`)
 
 ## dev setup
 
