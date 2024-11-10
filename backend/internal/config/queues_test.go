@@ -14,7 +14,7 @@ func TestQueueSettings_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		cfg := QueueSettings{}
+		cfg := QueuesConfig{}
 
 		assert.Error(t, cfg.ValidateWithContext(ctx))
 	})

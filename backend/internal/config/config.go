@@ -41,7 +41,7 @@ type (
 	InstanceConfig struct {
 		_             struct{}                  `json:"-"`
 		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
-		Queues        QueueSettings             `json:"queues"        toml:"queues,omitempty"`
+		Queues        QueuesConfig              `json:"queues"        toml:"queues,omitempty"`
 		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
 		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
 		Search        searchcfg.Config          `json:"search"        toml:"search,omitempty"`

@@ -1,5 +1,11 @@
 package enums
 
+import (
+	"fmt"
+
+	"github.com/dinnerdonebetter/backend/pkg/types"
+)
+
 type Enum struct {
 	Name,
 	ConstName,
@@ -34,6 +40,7 @@ var (
 		"ValidVessel.shape":                                      "ValidVesselShapeType",
 		"ValidVesselUpdateRequestInput.shape":                    "ValidVesselShapeType",
 		"ValidVesselCreationRequestInput.shape":                  "ValidVesselShapeType",
+		"ArbitraryQueueMessageRequestInput.queueName":            "MessageQueueName",
 	}
 
 	DefaultValues = map[string]string{
@@ -45,6 +52,7 @@ var (
 		"MealComponentType":                  "'unspecified'",
 		"MealPlanTaskStatus":                 "'unfinished'",
 		"ValidVesselShapeType":               "'other'",
+		"MessageQueueName":                   fmt.Sprintf("'%s'", types.QueueTypeDataChanges),
 	}
 
 	// AllEnums is every defined union in the app. This list is unfortunately important.
@@ -147,6 +155,12 @@ var (
 				"cube",
 				"other",
 			},
+		},
+		{
+			Comment:   "message queue names",
+			Name:      "MessageQueueName",
+			ConstName: "MESSAGE_QUEUE_NAME",
+			Values:    types.ValidQueueNames,
 		},
 	}
 )

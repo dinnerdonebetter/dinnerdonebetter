@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
@@ -13,7 +14,7 @@ import (
 )
 
 const (
-	serviceName = "auth_service"
+	serviceName = "admin_service"
 )
 
 type (
@@ -25,7 +26,7 @@ type (
 		publisherProvider         messagequeue.PublisherProvider
 		tracer                    tracing.Tracer
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		queuesConfig              config.QueueSettings
+		queuesConfig              config.QueuesConfig
 	}
 )
 
@@ -35,18 +36,22 @@ func ProvideService(
 	userDataManager types.AdminUserDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
-	queuesConfig config.QueueSettings,
+	queuesConfig *config.QueuesConfig,
 	publisherProvider messagequeue.PublisherProvider,
-) types.AdminDataService {
+) (types.AdminDataService, error) {
+	if queuesConfig == nil {
+		return nil, errors.New("nil queues config provided")
+	}
+
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		encoderDecoder:            encoder,
 		userDB:                    userDataManager,
-		queuesConfig:              queuesConfig,
+		queuesConfig:              *queuesConfig,
 		publisherProvider:         publisherProvider,
 		sessionContextDataFetcher: authentication.FetchContextFromRequest,
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
-	return svc
+	return svc, nil
 }

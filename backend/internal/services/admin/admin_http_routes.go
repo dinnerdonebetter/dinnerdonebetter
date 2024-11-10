@@ -94,7 +94,7 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 	res.WriteHeader(http.StatusAccepted)
 }
 
-// WriteArbitraryQueueMessageHandler publishes an arbitrary message to a given queue
+// WriteArbitraryQueueMessageHandler publishes an arbitrary message to a given queue.
 func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -128,12 +128,16 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 	}
 	validationTimer.Stop()
 
-	var dest any
+	var (
+		dest      any
+		topicName string
+	)
 
 	decodeTimer = timing.NewMetric("decoding message body")
 	decodeTimer.Start()
 	switch input.QueueName {
 	case "data_changes":
+		topicName = s.queuesConfig.DataChangesTopicName
 		dest = &types.DataChangeMessage{}
 		if err := s.encoderDecoder.DecodeBytes(ctx, []byte(input.Body), dest); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding message queue body")
@@ -141,8 +145,11 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
-		dest.(*types.DataChangeMessage).RequestID = identifiers.New()
+		if x, ok := dest.(*types.DataChangeMessage); ok {
+			x.RequestID = identifiers.New()
+		}
 	case "outbound_emails":
+		topicName = s.queuesConfig.OutboundEmailsTopicName
 		dest = &email.DeliveryRequest{}
 		if err := s.encoderDecoder.DecodeBytes(ctx, []byte(input.Body), dest); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding message queue body")
@@ -150,8 +157,11 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
-		dest.(*email.DeliveryRequest).RequestID = identifiers.New()
+		if x, ok := dest.(*email.DeliveryRequest); ok {
+			x.RequestID = identifiers.New()
+		}
 	case "search_index_requests":
+		topicName = s.queuesConfig.SearchIndexRequestsTopicName
 		dest = &indexing.IndexRequest{}
 		if err := s.encoderDecoder.DecodeBytes(ctx, []byte(input.Body), dest); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding message queue body")
@@ -159,8 +169,11 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
-		dest.(*indexing.IndexRequest).RequestID = identifiers.New()
+		if x, ok := dest.(*indexing.IndexRequest); ok {
+			x.RequestID = identifiers.New()
+		}
 	case "user_data_aggregator":
+		topicName = s.queuesConfig.UserDataAggregationTopicName
 		dest = &types.UserDataAggregationRequest{}
 		if err := s.encoderDecoder.DecodeBytes(ctx, []byte(input.Body), dest); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding message queue body")
@@ -168,8 +181,11 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
-		dest.(*types.UserDataAggregationRequest).RequestID = identifiers.New()
+		if x, ok := dest.(*types.UserDataAggregationRequest); ok {
+			x.RequestID = identifiers.New()
+		}
 	case "webhook_execution_requests":
+		topicName = s.queuesConfig.WebhookExecutionRequestsTopicName
 		dest = &types.WebhookExecutionRequest{}
 		if err := s.encoderDecoder.DecodeBytes(ctx, []byte(input.Body), dest); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding message queue body")
@@ -177,13 +193,15 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
-		dest.(*types.WebhookExecutionRequest).RequestID = identifiers.New()
+		if x, ok := dest.(*types.WebhookExecutionRequest); ok {
+			x.RequestID = identifiers.New()
+		}
 	}
 	decodeTimer.Stop()
 
 	publisherTimer := timing.NewMetric("instantiating publisher")
 	publisherTimer.Start()
-	publisher, err := s.publisherProvider.ProvidePublisher(input.QueueName)
+	publisher, err := s.publisherProvider.ProvidePublisher(topicName)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "instantiating message queue publisher")
 		errRes := types.NewAPIErrorResponse("instantiating message queue publisher", types.ErrDecodingRequestInput, responseDetails)

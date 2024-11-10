@@ -323,7 +323,7 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			EnableCORSForLocalhost: true,
 			SilenceRouteLogging:    false,
 		},
-		Queues: config.QueueSettings{
+		Queues: config.QueuesConfig{
 			DataChangesTopicName:              dataChangesTopicName,
 			OutboundEmailsTopicName:           outboundEmailsTopicName,
 			SearchIndexRequestsTopicName:      searchIndexRequestsTopicName,
@@ -607,7 +607,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			Debug:   false,
 			RunMode: testingEnv,
 		},
-		Queues: config.QueueSettings{
+		Queues: config.QueuesConfig{
 			DataChangesTopicName:              dataChangesTopicName,
 			OutboundEmailsTopicName:           outboundEmailsTopicName,
 			SearchIndexRequestsTopicName:      searchIndexRequestsTopicName,

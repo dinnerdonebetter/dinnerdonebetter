@@ -33,6 +33,7 @@ const (
 	gcpOutboundEmailsTopicNameEnvVarKey   = "DINNER_DONE_BETTER_OUTBOUND_EMAILS_TOPIC_NAME"
 	gcpSearchIndexingTopicNameEnvVarKey   = "DINNER_DONE_BETTER_SEARCH_INDEXING_TOPIC_NAME"
 	gcpWebhookExecutionTopicNameEnvVarKey = "DINNER_DONE_BETTER_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME"
+	gcpUserAggregatorTopicName            = "DINNER_DONE_BETTER_USER_AGGREGATOR_TOPIC_NAME"
 	gcpDatabaseUserEnvVarKey              = "DINNER_DONE_BETTER_DATABASE_USER"
 	gcpDatabaseNameEnvVarKey              = "DINNER_DONE_BETTER_DATABASE_NAME"
 	gcpDatabaseInstanceConnNameEnvVarKey  = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
@@ -40,7 +41,6 @@ const (
 	gcpAlgoliaAppIDEnvVarKey              = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
 	gcpGoogleSSOClientIDEnvVarKey         = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_ID"
 	gcpGoogleSSOClientSecretEnvVarKey     = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_SECRET"
-	gcpUserAggregatorTopicName            = "DINNER_DONE_BETTER_USER_AGGREGATOR_TOPIC_NAME"
 	/* #nosec G101 */
 	gcpJWTSigningKeyEnvVarKey = "DINNER_DONE_BETTER_JWT_SIGNING_KEY"
 	/* #nosec G101 */
@@ -117,7 +117,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 
 	dataChangesTopicName := os.Getenv(gcpDataChangesTopicNameEnvVarKey)
 
-	cfg.Queues = QueueSettings{
+	cfg.Queues = QueuesConfig{
 		DataChangesTopicName:              os.Getenv(gcpDataChangesTopicNameEnvVarKey),
 		OutboundEmailsTopicName:           os.Getenv(gcpOutboundEmailsTopicNameEnvVarKey),
 		SearchIndexRequestsTopicName:      os.Getenv(gcpSearchIndexingTopicNameEnvVarKey),

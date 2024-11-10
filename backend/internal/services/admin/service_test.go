@@ -19,14 +19,15 @@ func buildTestService(t *testing.T) *service {
 
 	logger := logging.NewNoopLogger()
 
-	s := ProvideService(
+	s, err := ProvideService(
 		logger,
 		&mocktypes.AdminUserDataManagerMock{},
 		encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 		tracing.NewNoopTracerProvider(),
-		config.QueueSettings{},
+		&config.QueuesConfig{},
 		&mockpublishers.ProducerProvider{},
 	)
+	assert.NoError(t, err)
 
 	srv, ok := s.(*service)
 	require.True(t, ok)
@@ -42,14 +43,15 @@ func TestProvideAdminService(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		s := ProvideService(
+		s, err := ProvideService(
 			logger,
 			&mocktypes.AdminUserDataManagerMock{},
 			encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 			tracing.NewNoopTracerProvider(),
-			config.QueueSettings{},
+			&config.QueuesConfig{},
 			&mockpublishers.ProducerProvider{},
 		)
+		assert.NoError(t, err)
 
 		assert.NotNil(t, s)
 	})

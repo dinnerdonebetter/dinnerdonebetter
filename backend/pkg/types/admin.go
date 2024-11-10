@@ -8,20 +8,20 @@ import (
 )
 
 const (
-	dataChangesQueueName              = "data_changes"
-	outboundEmailsQueueName           = "outbound_emails"
-	searchIndexRequestsQueueName      = "search_index_requests"
-	userDataAggregatorQueueName       = "user_data_aggregator"
-	webhookExecutionRequestsQueueName = "webhook_execution_requests"
+	QueueTypeDataChanges              = "data_changes"
+	QueueTypeOutboundEmails           = "outbound_emails"
+	QueueTypeSearchIndexRequests      = "search_index_requests"
+	QueueTypeUserDataAggregator       = "user_data_aggregator"
+	QueueTypeWebhookExecutionRequests = "webhook_execution_requests"
 )
 
 var (
 	ValidQueueNames = []string{
-		dataChangesQueueName,
-		outboundEmailsQueueName,
-		searchIndexRequestsQueueName,
-		userDataAggregatorQueueName,
-		webhookExecutionRequestsQueueName,
+		QueueTypeDataChanges,
+		QueueTypeOutboundEmails,
+		QueueTypeSearchIndexRequests,
+		QueueTypeUserDataAggregator,
+		QueueTypeWebhookExecutionRequests,
 	}
 )
 
@@ -77,11 +77,11 @@ var _ validation.ValidatableWithContext = (*ArbitraryQueueMessageRequestInput)(n
 func (i *ArbitraryQueueMessageRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.QueueName, validation.In(
-			dataChangesQueueName,
-			outboundEmailsQueueName,
-			searchIndexRequestsQueueName,
-			userDataAggregatorQueueName,
-			webhookExecutionRequestsQueueName,
+			QueueTypeDataChanges,
+			QueueTypeOutboundEmails,
+			QueueTypeSearchIndexRequests,
+			QueueTypeUserDataAggregator,
+			QueueTypeWebhookExecutionRequests,
 		)),
 		validation.Field(&i.Body, validation.Required),
 	)

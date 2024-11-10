@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 
@@ -22,22 +23,22 @@ func fetchMigration(name string) string {
 // BuildMigrationFunc returns a sync.Once compatible function closure that will migrate a postgres database.
 func (q *Querier) migrationFunc() {
 	q.logger.Info("migrating database")
+
 	infoChan := make(chan darwin.MigrationInfo)
 	go func() {
-		for {
-			select {
-			case x := <-infoChan:
-				q.logger.WithValues(map[string]any{
-					"version": x.Migration.Version,
-					"status":  x.Status.String(),
-				}).Info("migrating database")
-			}
+		for x := range infoChan {
+			q.logger.WithValues(map[string]any{
+				"version": x.Migration.Version,
+				"status":  x.Status.String(),
+			}).Info("migrating database")
 		}
 	}()
 
+	startTime := time.Now()
 	if err := darwin.New(darwin.NewGenericDriver(q.db, darwin.PostgresDialect{}), migrations, infoChan).Migrate(); err != nil {
 		panic(fmt.Errorf("running migration: %w", err))
 	}
+	q.logger.WithValue("elapsed", time.Since(startTime).Milliseconds()).Info("migration completed")
 }
 
 // Migrate is a simple wrapper around the core querier Migrate call.
@@ -48,8 +49,6 @@ func (q *Querier) Migrate(ctx context.Context) error {
 	if q.config == nil {
 		return ErrNilInputProvided
 	}
-
-	q.logger.Info("migrating db")
 
 	if !q.IsReady(ctx) {
 		return database.ErrDatabaseNotReady

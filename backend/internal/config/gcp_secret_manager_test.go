@@ -134,7 +134,6 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 
 		require.NoError(t, os.Setenv(gcpConfigFilePathEnvVarKey, f.Name()))
 		require.NoError(t, os.Setenv(gcpPortEnvVarKey, "1234"))
-		require.NoError(t, os.Setenv(gcpDataChangesTopicNameEnvVarKey, "data_changes"))
 		require.NoError(t, os.Setenv(gcpDatabaseSocketDirEnvVarKey, "/example/blah"))
 		require.NoError(t, os.Setenv(gcpDatabaseUserEnvVarKey, "user"))
 		require.NoError(t, os.Setenv(gcpDatabaseUserPasswordEnvVarKey, "hunter2"))
@@ -148,6 +147,11 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		require.NoError(t, os.Setenv(gcpOauth2TokenEncryptionKeyEnvVarKey, "fake_oauth2_token_encryption_key"))
 		require.NoError(t, os.Setenv(gcpGoogleSSOClientIDEnvVarKey, "fake_google_sso_client_id"))
 		require.NoError(t, os.Setenv(gcpGoogleSSOClientSecretEnvVarKey, "fake_google_sso_client_secret"))
+
+		require.NoError(t, os.Setenv(gcpDataChangesTopicNameEnvVarKey, "data_changes"))
+		require.NoError(t, os.Setenv(gcpOutboundEmailsTopicNameEnvVarKey, "outbound_emails"))
+		require.NoError(t, os.Setenv(gcpSearchIndexingTopicNameEnvVarKey, "search_indexing"))
+		require.NoError(t, os.Setenv(gcpWebhookExecutionTopicNameEnvVarKey, "webhook_execution_requests"))
 		require.NoError(t, os.Setenv(gcpUserAggregatorTopicName, "data_aggregator"))
 
 		ctx := context.Background()
