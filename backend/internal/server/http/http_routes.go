@@ -126,6 +126,9 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			adminRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateUserStatusPermission)).
 				Post("/users/status", s.adminService.UserAccountStatusChangeHandler)
+			adminRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateUserStatusPermission)).
+				Post("/queues/test", s.adminService.UserAccountStatusChangeHandler)
 		})
 
 		// Workers

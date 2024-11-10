@@ -3,14 +3,17 @@ package admin
 import (
 	"bytes"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
+	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -20,7 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
+func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("banning users", func(t *testing.T) {
@@ -30,8 +33,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.BannedUserAccountStatus)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -42,8 +45,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,
-			helper.exampleInput.TargetUserID,
-			helper.exampleInput,
+			helper.exampleAccountStatusUpdateInput.TargetUserID,
+			helper.exampleAccountStatusUpdateInput,
 		).Return(nil)
 		helper.service.userDB = userDataManager
 
@@ -71,8 +74,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.BannedUserAccountStatus)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -91,8 +94,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = string(types.GoodStandingUserAccountStatus)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.GoodStandingUserAccountStatus)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -103,8 +106,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,
-			helper.exampleInput.TargetUserID,
-			helper.exampleInput,
+			helper.exampleAccountStatusUpdateInput.TargetUserID,
+			helper.exampleAccountStatusUpdateInput,
 		).Return(nil)
 		helper.service.userDB = userDataManager
 
@@ -121,7 +124,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.BannedUserAccountStatus)
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
 
@@ -159,8 +162,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput = &types.UserAccountStatusUpdateInput{}
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput = &types.UserAccountStatusUpdateInput{}
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -183,8 +186,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.BannedUserAccountStatus)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -213,8 +216,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = string(types.TerminatedUserAccountStatus)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.TerminatedUserAccountStatus)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -244,8 +247,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.BannedUserAccountStatus)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -264,8 +267,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.BannedUserAccountStatus)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -276,8 +279,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,
-			helper.exampleInput.TargetUserID,
-			helper.exampleInput,
+			helper.exampleAccountStatusUpdateInput.TargetUserID,
+			helper.exampleAccountStatusUpdateInput,
 		).Return(sql.ErrNoRows)
 		helper.service.userDB = userDataManager
 
@@ -295,8 +298,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.BannedUserAccountStatus)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -307,8 +310,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,
-			helper.exampleInput.TargetUserID,
-			helper.exampleInput,
+			helper.exampleAccountStatusUpdateInput.TargetUserID,
+			helper.exampleAccountStatusUpdateInput,
 		).Return(errors.New("blah"))
 		helper.service.userDB = userDataManager
 
@@ -330,8 +333,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.BannedUserAccountStatus)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleAccountStatusUpdateInput)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -342,8 +345,8 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,
-			helper.exampleInput.TargetUserID,
-			helper.exampleInput,
+			helper.exampleAccountStatusUpdateInput.TargetUserID,
+			helper.exampleAccountStatusUpdateInput,
 		).Return(nil)
 		helper.service.userDB = userDataManager
 
@@ -352,5 +355,57 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, userDataManager)
+	})
+}
+
+func TestAdminService_WriteArbitraryQueueMessageHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("data change message", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		helper.exampleArbitraryQueueMessageRequestInput.QueueName = "data_changes"
+		dataChangesRequest := &types.DataChangeMessage{
+			RequestID: identifiers.New(),
+			Context: map[string]any{
+				"testing": true,
+			},
+		}
+		helper.exampleArbitraryQueueMessageRequestInput.Body = string(helper.service.encoderDecoder.MustEncodeJSON(helper.ctx, dataChangesRequest))
+
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleArbitraryQueueMessageRequestInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockPublisher := &mockpublishers.Publisher{}
+		mockPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(x []byte) bool {
+				var y types.DataChangeMessage
+				err = json.Unmarshal(x, &y)
+				return err == nil
+			}),
+		).Return(nil)
+
+		mockPublisherProvider := &mockpublishers.ProducerProvider{}
+		mockPublisherProvider.On(
+			"ProvidePublisher",
+			helper.exampleArbitraryQueueMessageRequestInput.QueueName,
+		).Return(mockPublisher, nil)
+		helper.service.publisherProvider = mockPublisherProvider
+
+		helper.service.WriteArbitraryQueueMessageHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockPublisherProvider, mockPublisher)
 	})
 }

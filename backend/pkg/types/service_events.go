@@ -15,6 +15,7 @@ type (
 	DataChangeMessage struct {
 		_ struct{} `json:"-"`
 
+		RequestID                        string                          `json:"id"`
 		HouseholdInvitation              *HouseholdInvitation            `json:"householdInvitation,omitempty"`
 		ValidMeasurementUnitConversion   *ValidMeasurementUnitConversion `json:"validMeasurementUnitConversion,omitempty"`
 		ValidInstrument                  *ValidInstrument                `json:"validInstrument,omitempty"`

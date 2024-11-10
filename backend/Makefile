@@ -181,27 +181,24 @@ test: $(ARTIFACTS_DIR) vendor build
 
 .PHONY: configs
 configs:
-	go run $(THIS)/cmd/tools/gen_configs
+	go run $(THIS)/cmd/tools/codegen/configs
 
 .PHONY: queries
 queries:
-	go run $(THIS)/cmd/tools/gen_queries
+	go run $(THIS)/cmd/tools/codegen/queries
 
 .PHONY: codegen-ts
 codegen-ts:
-	go run $(THIS)/cmd/tools/codegen --typescript
+	go run $(THIS)/cmd/tools/codegen/openapi --typescript
 	@(cd ../frontend && $(MAKE) format)
 
 .PHONY: codegen-go
 codegen-go:
-	go run $(THIS)/cmd/tools/codegen --golang
+	go run $(THIS)/cmd/tools/codegen/openapi --golang
 	@$(MAKE) format_golang
 
 .PHONY: codegen
-codegen: # codegen-ts codegen-go
-	go run $(THIS)/cmd/tools/codegen --typescript --golang
-	@(cd ../frontend && $(MAKE) format)
-	@$(MAKE) format_golang
+codegen: codegen-ts codegen-go
 
 .PHONY: querier
 querier: queries queries_lint  ## TODO: Why is this target broken?
@@ -210,11 +207,11 @@ querier: queries queries_lint  ## TODO: Why is this target broken?
 
 .PHONY: sqlc_struct_check
 sqlc_struct_check:
-	go run $(THIS)/cmd/tools/sqlcstructchecker
+	go run $(THIS)/cmd/tools/sqlc_struct_checker
 
 .PHONY: openapi
 openapi:
-	go run $(THIS)/cmd/tools/gen_openapi
+	go run $(THIS)/cmd/tools/codegen/openapi_spec
 
 .PHONY: openapi-client
 openapi-client: ensure_oapi_codegen_installed
@@ -279,11 +276,42 @@ proxy_dev_db:
 
 ## EXPERIMENTAL KUBERNETES ZONE
 
+.PHONY: k9s
+k9s:
+	k9s --refresh=1
+
 .PHONY: build_localdev_api_container
 build_localdev_api_container:
 	docker build --tag dinner-done-better-api-server:latest --file environments/local/server.Dockerfile .
 
+.PHONY: destroy_k8s
+destroy_k8s:
+	kubectl delete namespace localdev
+
 .PHONY: deploy_to_k8s
-deploy_to_k8s: # build_localdev_api_container
-	kubectl apply --filename environments/local/kubernetes/0_namespace.yaml --filename environments/local/kubernetes/postgres.yaml
-	# kubectl apply -f environments/local/kubernetes/service.yaml
+deploy_to_k8s: build_localdev_api_container
+	kubectl apply \
+		--filename environments/local/kubernetes/0_namespace.yaml \
+		--filename environments/local/kubernetes/1_postgres.yaml
+	$(MAKE) wait_a_bit
+	kubectl apply --filename environments/local/kubernetes/2_service.yaml
+
+.PHONY: port_forward_db
+port_forward_db:
+	kubectl port-forward deployment/postgres 5434:5432 --namespace localdev
+
+.PHONY: postgres_test
+postgres_test:
+	kubectl run --namespace localdev -it --rm psql-client --image=postgres:15 -- psql -W -h postgres -U dbuser -d dinner-done-better
+
+.PHONY: wait_a_sec
+wait_a_sec:
+	sleep 1
+
+.PHONY: wait_a_bit
+wait_a_bit:
+	sleep 15
+
+.PHONY: wait_a_minute
+wait_a_minute:
+	sleep 60

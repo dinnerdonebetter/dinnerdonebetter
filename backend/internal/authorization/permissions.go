@@ -12,6 +12,8 @@ type (
 )
 
 const (
+	// PublishArbitraryQueueMessagesPermission is a service admin permission.
+	PublishArbitraryQueueMessagesPermission Permission = "admin.publish_queue_messages"
 	// UpdateUserStatusPermission is a service admin permission.
 	UpdateUserStatusPermission Permission = "update.user_status"
 	// ImpersonateUserPermission is a service admin permission.
@@ -415,6 +417,7 @@ func (p Permission) Match(perm gorbac.Permission) bool {
 var (
 	// ServiceAdminPermissions is every service admin permission.
 	ServiceAdminPermissions = []gorbac.Permission{
+		PublishArbitraryQueueMessagesPermission,
 		UpdateUserStatusPermission,
 		ReadUserPermission,
 		SearchUserPermission,
@@ -422,6 +425,16 @@ var (
 		ArchiveOAuth2ClientsPermission,
 		ArchiveServiceSettingsPermission,
 		CreateRecipesPermission,
+		CreateUserNotificationsPermission,
+		ImpersonateUserPermission,
+		// only admins can arbitrarily create these via the API, this is exclusively for integration test purposes.
+		CreateServiceSettingsPermission,
+		CreateMealPlanTasksPermission,
+		CreateMealPlanGroceryListItemsPermission,
+	}
+
+	// ServiceDataAdminPermissions is every service admin permission.
+	ServiceDataAdminPermissions = []gorbac.Permission{
 		CreateValidInstrumentsPermission,
 		UpdateValidInstrumentsPermission,
 		ArchiveValidInstrumentsPermission,
@@ -461,12 +474,6 @@ var (
 		CreateValidIngredientStatesPermission,
 		UpdateValidIngredientStatesPermission,
 		ArchiveValidIngredientStatesPermission,
-		CreateUserNotificationsPermission,
-		ImpersonateUserPermission,
-		// only admins can arbitrarily create these via the API, this is exclusively for integration test purposes.
-		CreateServiceSettingsPermission,
-		CreateMealPlanTasksPermission,
-		CreateMealPlanGroceryListItemsPermission,
 	}
 
 	// HouseholdAdminPermissions is every household admin permission.
@@ -606,6 +613,12 @@ func init() {
 	// assign service admin permissions.
 	for _, perm := range ServiceAdminPermissions {
 		must(serviceAdmin.Assign(perm))
+	}
+
+	// assign service data admin permissions.
+	for _, perm := range ServiceDataAdminPermissions {
+		must(serviceDataAdmin.Assign(perm))
+		must(serviceAdmin.Assign(perm)) // these aren't separate things yet
 	}
 
 	// assign household admin permissions.

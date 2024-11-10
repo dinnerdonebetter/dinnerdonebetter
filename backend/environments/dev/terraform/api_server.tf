@@ -204,8 +204,23 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
 
       env {
+        name  = "DINNER_DONE_BETTER_OUTBOUND_EMAILS_TOPIC_NAME"
+        value = google_pubsub_topic.outbound_emails_topic.name
+      }
+
+      env {
+        name  = "DINNER_DONE_BETTER_SEARCH_INDEXING_TOPIC_NAME"
+        value = google_pubsub_topic.search_index_requests_topic.name
+      }
+
+      env {
         name  = "DINNER_DONE_BETTER_USER_AGGREGATOR_TOPIC_NAME"
         value = google_pubsub_topic.user_data_aggregator_topic.name
+      }
+
+      env {
+        name  = "DINNER_DONE_BETTER_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME"
+        value = google_pubsub_topic.webhook_execution_requests_topic.name
       }
 
       env {

@@ -6,8 +6,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/golang"
-	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/typescript"
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/openapi/golang"
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/openapi/typescript"
 
 	"github.com/spf13/pflag"
 	"github.com/swaggest/openapi-go/openapi31"

@@ -41,6 +41,7 @@ type (
 	InstanceConfig struct {
 		_             struct{}                  `json:"-"`
 		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
+		Queues        QueueSettings             `json:"queues"        toml:"queues,omitempty"`
 		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
 		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
 		Search        searchcfg.Config          `json:"search"        toml:"search,omitempty"`
@@ -76,6 +77,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 	validators := map[string]func(context.Context) error{
 		"Routing":       cfg.Routing.ValidateWithContext,
 		"Meta":          cfg.Meta.ValidateWithContext,
+		"Queues":        cfg.Queues.ValidateWithContext,
 		"Encoding":      cfg.Encoding.ValidateWithContext,
 		"Analytics":     cfg.Analytics.ValidateWithContext,
 		"Observability": cfg.Observability.ValidateWithContext,

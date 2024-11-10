@@ -11,8 +11,9 @@ func init() {
 }
 
 const (
-	serviceAdminRoleName = "service_admin"
-	serviceUserRoleName  = "service_user"
+	serviceAdminRoleName     = "service_admin"
+	serviceDataAdminRoleName = "service_data_admin"
+	serviceUserRoleName      = "service_user"
 
 	invalidServiceRoleWarning = "INVALID_SERVICE_ROLE"
 
@@ -25,8 +26,9 @@ const (
 )
 
 var (
-	serviceUser  = gorbac.NewStdRole(serviceUserRoleName)
-	serviceAdmin = gorbac.NewStdRole(serviceAdminRoleName)
+	serviceUser      = gorbac.NewStdRole(serviceUserRoleName)
+	serviceAdmin     = gorbac.NewStdRole(serviceAdminRoleName)
+	serviceDataAdmin = gorbac.NewStdRole(serviceDataAdminRoleName)
 )
 
 type (

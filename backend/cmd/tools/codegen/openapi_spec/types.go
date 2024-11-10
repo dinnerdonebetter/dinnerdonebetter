@@ -9,7 +9,7 @@ import (
 	"go/token"
 	"strings"
 
-	main2 "github.com/dinnerdonebetter/backend/cmd/tools/codegen/enums"
+	main2 "github.com/dinnerdonebetter/backend/cmd/tools/codegen/openapi/enums"
 
 	"github.com/fatih/structtag"
 )

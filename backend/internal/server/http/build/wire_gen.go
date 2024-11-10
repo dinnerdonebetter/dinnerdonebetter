@@ -305,7 +305,8 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 		return nil, err
 	}
 	adminUserDataManager := database.ProvideAdminUserDataManager(dataManager)
-	adminDataService := admin.ProvideService(logger, adminUserDataManager, serverEncoderDecoder, tracerProvider)
+	queueSettings := cfg.Queues
+	adminDataService := admin.ProvideService(logger, adminUserDataManager, serverEncoderDecoder, tracerProvider, queueSettings, publisherProvider)
 	servicesettingsConfig := &servicesConfig.ServiceSettings
 	serviceSettingDataManager := database.ProvideServiceSettingDataManager(dataManager)
 	serviceSettingDataService, err := servicesettings.ProvideService(logger, servicesettingsConfig, serviceSettingDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)

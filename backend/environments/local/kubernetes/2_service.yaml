@@ -97,7 +97,7 @@ data:
     	},
     	"database": {
     		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
-    		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
+    		"connectionDetails": "postgres://dbuser:hunter2@postgres:5432/dinner-done-better?sslmode=disable",
     		"debug": true,
     		"logQueries": true,
     		"runMigrations": true,
@@ -348,6 +348,18 @@ spec:
           requests:
             memory: 256Mi
             cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: "/_meta_/live"
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: "/_meta_/ready"
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 3
       volumes:
         - name: "config"
           configMap:

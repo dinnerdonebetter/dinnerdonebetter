@@ -21,8 +21,21 @@ func fetchMigration(name string) string {
 
 // BuildMigrationFunc returns a sync.Once compatible function closure that will migrate a postgres database.
 func (q *Querier) migrationFunc() {
-	driver := darwin.NewGenericDriver(q.db, darwin.PostgresDialect{})
-	if err := darwin.New(driver, migrations, nil).Migrate(); err != nil {
+	q.logger.Info("migrating database")
+	infoChan := make(chan darwin.MigrationInfo)
+	go func() {
+		for {
+			select {
+			case x := <-infoChan:
+				q.logger.WithValues(map[string]any{
+					"version": x.Migration.Version,
+					"status":  x.Status.String(),
+				}).Info("migrating database")
+			}
+		}
+	}()
+
+	if err := darwin.New(darwin.NewGenericDriver(q.db, darwin.PostgresDialect{}), migrations, infoChan).Migrate(); err != nil {
 		panic(fmt.Errorf("running migration: %w", err))
 	}
 }
