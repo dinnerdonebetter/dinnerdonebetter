@@ -21,15 +21,15 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
-
+          go-version: '${{ matrix.go-version }}'
+      
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
       - name: Ensure queries and querier can be generated
         working-directory: backend
-        run: make queries sqlc_struct_check # querier
-
+        run: make queries sqlc_struct_check
+      
       - name: Check for changes
         run: git diff --exit-code
 
@@ -43,7 +43,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: '${{ matrix.go-version }}'
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -58,21 +58,21 @@ jobs:
   dependency_injection:
     timeout-minutes: 10
     strategy:
-     matrix:
-       go-version: [ '1.22.x' ]
+      matrix:
+        go-version: [ '1.22.x' ]
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: '${{ matrix.go-version }}'
 
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Install wire
         run: go install github.com/google/wire/cmd/wire@latest
-
+        
       - name: Ensure dependency injection code can be generated
         working-directory: backend
         run: make rewire format_golang
@@ -83,50 +83,50 @@ jobs:
   typescript-api-client:
     timeout-minutes: 10
     strategy:
-     matrix:
-       go-version: [ '1.22.x' ]
+      matrix:
+        go-version: [ '1.22.x' ]
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: '${{ matrix.go-version }}'
 
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup node
         uses: actions/setup-node@v4
-
+      
       - run: npm install -g yarn
         working-directory: frontend
-
+      
       - run: yarn install
         working-directory: frontend
-
+      
       - name: Ensure code can be generated
         working-directory: backend
         run: make codegen-ts
-
+      
       - name: format files
         working-directory: frontend
         run: make format
-
+      
       - name: Check for changes
         run: git diff --exit-code
-
+        
   golang-api-client:
     timeout-minutes: 10
     strategy:
-     matrix:
-       go-version: [ '1.22.x' ]
+      matrix:
+        go-version: [ '1.22.x' ]
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
-
+          go-version: '${{ matrix.go-version }}'
+          
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -140,8 +140,8 @@ jobs:
   openapi:
     timeout-minutes: 10
     strategy:
-     matrix:
-       go-version: [ '1.22.x' ]
+      matrix:
+        go-version: [ '1.22.x' ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -154,29 +154,29 @@ jobs:
       - name: Check for changes
         run: git diff --exit-code
 
-### Shhhhhh...one day, my prince...
+  openapi_client:
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        go-version: [ '1.22.x' ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '${{ matrix.go-version }}'
 
- openapi_client:
-   timeout-minutes: 10
-   strategy:
-    matrix:
-      go-version: [ '1.22.x' ]
-   runs-on: ubuntu-latest
-   steps:
-     - name: Install Go
-       uses: actions/setup-go@v5
-       with:
-         go-version: ${{ matrix.go-version }}
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-     - name: Checkout code
-       uses: actions/checkout@v4
+      - name: install client generator
+        run: >-
+          go install
+          github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0
 
-     - name: install client generator
-       run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0
-
-     - name: generate client
-       working-directory: backend
-       run: make codegen-go format
-
-     - name: Check for changes
-       run: git diff --exit-code
+      - name: generate client
+        working-directory: backend
+        run: make codegen-go format
+        
+      - name: Check for changes
+        run: git diff --exit-code
