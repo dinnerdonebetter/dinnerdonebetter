@@ -243,7 +243,7 @@ integration_tests_postgres:
 	--remove-orphans \
 	--renew-anon-volumes \
 	--always-recreate-deps \
-	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--exit-code-from coordination_server) \
+	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--exit-code-from tests) \
 	--attach api_server \
 	--attach tests
 

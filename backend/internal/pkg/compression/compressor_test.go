@@ -23,7 +23,8 @@ func Test_compressor_CompressBytes(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		comp := &compressor{algo: algoZstd}
+		comp, err := NewCompressor(algoZstd)
+		require.NoError(t, err)
 
 		dt, err := time.Parse(time.DateTime, time.DateTime)
 		require.NoError(t, err)
@@ -53,7 +54,8 @@ func Test_compressor_CompressBytes(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		comp := &compressor{algo: algoS2}
+		comp, err := NewCompressor(algoS2)
+		require.NoError(t, err)
 
 		dt, err := time.Parse(time.DateTime, time.DateTime)
 		require.NoError(t, err)
@@ -93,7 +95,8 @@ func Test_compressor_DecompressBytes(T *testing.T) {
 			t.Parallel()
 
 			ctx := context.Background()
-			comp := &compressor{algo: a}
+			comp, err := NewCompressor(a)
+			require.NoError(t, err)
 
 			dt, err := time.Parse(time.DateTime, time.DateTime)
 			require.NoError(t, err)

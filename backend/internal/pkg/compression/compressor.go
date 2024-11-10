@@ -2,6 +2,7 @@ package compression
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 
@@ -12,6 +13,10 @@ import (
 const (
 	algoZstd algo = "zstd"
 	algoS2   algo = "s2"
+)
+
+var (
+	ErrInvalidAlgorithm = errors.New("invalid compression algorithm")
 )
 
 type (
@@ -25,6 +30,16 @@ type (
 
 type compressor struct {
 	algo algo
+}
+
+// NewCompressor returns a new Compressor
+func NewCompressor(a algo) (Compressor, error) {
+	switch a {
+	case algoZstd, algoS2:
+		return &compressor{algo: a}, nil
+	default:
+		return nil, ErrInvalidAlgorithm
+	}
 }
 
 func (c *compressor) CompressBytes(in []byte) ([]byte, error) {
