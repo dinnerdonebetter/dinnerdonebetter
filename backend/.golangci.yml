@@ -20,7 +20,7 @@ output:
   # print lines of code with issue, default is true
   print-issued-lines: true
 
-  # print linter name in the end of issue text, default is true
+  # print linter name in the end of issue textsearch, default is true
   print-linter-name: true
 
 # all available settings of specific linters: https://golangci-lint.run/usage/linters/#linters-configuration
@@ -125,8 +125,8 @@ linters-settings:
     generated-is-used: true
   unparam:
     # Inspect exported functions, default is false. Set to true if no external program/library imports your code.
-    # XXX: if you enable this setting, unparam will report a lot of false-positives in text editors:
-    # if it's called for subdir of a project it can't find external interfaces. All text editor integrations
+    # XXX: if you enable this setting, unparam will report a lot of false-positives in textsearch editors:
+    # if it's called for subdir of a project it can't find external interfaces. All textsearch editor integrations
     # with golangci-lint call it on a directory with the changed file.
     check-exported: false
   nakedret:
@@ -292,7 +292,7 @@ issues:
     - cmd/playground
     - tests/integration
 
-  # Excluding configuration per-path, per-linter, per-text and per-source
+  # Excluding configuration per-path, per-linter, per-textsearch and per-source
   exclude-rules:
     # Exclude some linters from running on tests files.
     - path: _test\.go
@@ -399,7 +399,7 @@ issues:
 
     # Exclude known linters from partially hard-vendored code, which is impossible to exclude via "nolint" comments.
     # - path: internal/hmac/
-    #   text: "weak cryptographic primitive"
+    #   textsearch: "weak cryptographic primitive"
     #   linters:
     #     - gosec
 
@@ -438,7 +438,7 @@ issues:
   # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
   max-issues-per-linter: 0
 
-  # Maximum count of issues with the same text. Set to 0 to disable. Default is 3.
+  # Maximum count of issues with the same textsearch. Set to 0 to disable. Default is 3.
   max-same-issues: 0
 
   # Show only new issues: if there are unstaged changes or untracked files, only those changes are analyzed, else only

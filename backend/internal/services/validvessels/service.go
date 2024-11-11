@@ -12,8 +12,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	"github.com/dinnerdonebetter/backend/internal/search"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
+	"github.com/dinnerdonebetter/backend/internal/search/text"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -34,7 +34,7 @@ type (
 		dataChangesPublisher      messagequeue.Publisher
 		encoderDecoder            encoding.ServerEncoderDecoder
 		tracer                    tracing.Tracer
-		validVesselsSearchIndex   search.IndexSearcher[types.ValidVesselSearchSubset]
+		validVesselsSearchIndex   textsearch.IndexSearcher[types.ValidVesselSearchSubset]
 	}
 )
 
@@ -55,7 +55,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
-	searchIndex, err := searchcfg.ProvideIndex[types.ValidVesselSearchSubset](ctx, logger, tracerProvider, searchConfig, search.IndexTypeValidVessels)
+	searchIndex, err := searchcfg.ProvideIndex[types.ValidVesselSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeValidVessels)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing valid vessel index manager")
 	}

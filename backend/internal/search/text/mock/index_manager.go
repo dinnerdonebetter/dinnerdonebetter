@@ -3,14 +3,14 @@ package mocksearch
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/search"
+	"github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
 )
 
 var (
-	_ search.Index[types.UserSearchSubset] = (*IndexManager[types.UserSearchSubset])(nil)
+	_ textsearch.Index[types.UserSearchSubset] = (*IndexManager[types.UserSearchSubset])(nil)
 )
 
 // IndexManager is a mock IndexManager.

@@ -14,8 +14,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	"github.com/dinnerdonebetter/backend/internal/search"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
+	"github.com/dinnerdonebetter/backend/internal/search/text"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
@@ -39,7 +39,7 @@ type (
 		imageUploadProcessor      images.MediaUploadProcessor
 		encoderDecoder            encoding.ServerEncoderDecoder
 		dataChangesPublisher      messagequeue.Publisher
-		searchIndex               search.IndexSearcher[types.RecipeSearchSubset]
+		searchIndex               textsearch.IndexSearcher[types.RecipeSearchSubset]
 		uploadManager             uploads.UploadManager
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		recipeIDFetcher           func(*http.Request) string
@@ -78,7 +78,7 @@ func ProvideService(
 		return nil, fmt.Errorf("initializing recipe service upload manager: %w", err)
 	}
 
-	searchIndex, err := searchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, search.IndexTypeRecipes)
+	searchIndex, err := searchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeRecipes)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing recipe index manager")
 	}
