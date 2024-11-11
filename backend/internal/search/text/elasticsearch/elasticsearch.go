@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
-	"github.com/dinnerdonebetter/backend/internal/search"
+	"github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/elastic/go-elasticsearch/v8"
@@ -19,11 +19,11 @@ import (
 )
 
 var (
-	_ search.Index[types.UserSearchSubset] = (*indexManager[types.UserSearchSubset])(nil)
+	_ textsearch.Index[types.UserSearchSubset] = (*indexManager[types.UserSearchSubset])(nil)
 )
 
 type (
-	indexManager[T search.Searchable] struct {
+	indexManager[T textsearch.Searchable] struct {
 		logger                logging.Logger
 		tracer                tracing.Tracer
 		circuitBreaker        circuitbreaking.CircuitBreaker
@@ -53,7 +53,7 @@ func provideElasticsearchClient(cfg *Config) (*elasticsearch.Client, error) {
 	return c, nil
 }
 
-func ProvideIndexManager[T search.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, indexName string, circuitBreaker circuitbreaking.CircuitBreaker) (search.Index[T], error) {
+func ProvideIndexManager[T textsearch.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, indexName string, circuitBreaker circuitbreaking.CircuitBreaker) (textsearch.Index[T], error) {
 	c, err := provideElasticsearchClient(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("initializing search client: %w", err)

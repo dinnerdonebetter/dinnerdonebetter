@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/search/indexing"
+	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	servertiming "github.com/mitchellh/go-server-timing"

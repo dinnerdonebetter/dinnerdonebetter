@@ -12,8 +12,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	"github.com/dinnerdonebetter/backend/internal/search"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
+	"github.com/dinnerdonebetter/backend/internal/search/text"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -34,7 +34,7 @@ type (
 		dataChangesPublisher             messagequeue.Publisher
 		encoderDecoder                   encoding.ServerEncoderDecoder
 		tracer                           tracing.Tracer
-		validIngredientStatesSearchIndex search.IndexSearcher[types.ValidIngredientStateSearchSubset]
+		validIngredientStatesSearchIndex textsearch.IndexSearcher[types.ValidIngredientStateSearchSubset]
 	}
 )
 
@@ -55,7 +55,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
-	searchIndex, err := searchcfg.ProvideIndex[types.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, searchConfig, search.IndexTypeValidIngredientStates)
+	searchIndex, err := searchcfg.ProvideIndex[types.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeValidIngredientStates)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing valid ingredient state index manager")
 	}

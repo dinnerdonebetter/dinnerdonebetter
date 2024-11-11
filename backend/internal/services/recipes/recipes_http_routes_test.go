@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
-	mocksearch "github.com/dinnerdonebetter/backend/internal/search/mock"
+	"github.com/dinnerdonebetter/backend/internal/search/text/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
