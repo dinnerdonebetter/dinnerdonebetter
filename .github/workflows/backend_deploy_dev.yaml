@@ -11,7 +11,7 @@ on: # [pull_request]
 name: backend - deploy
 jobs:
   infrastructure:
-    timeout-minutes: 35
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     strategy:
       matrix:

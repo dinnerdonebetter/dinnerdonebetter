@@ -8,8 +8,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
-	algolia2 "github.com/dinnerdonebetter/backend/internal/search/text/algolia"
-	elasticsearch2 "github.com/dinnerdonebetter/backend/internal/search/text/elasticsearch"
+	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
+	"github.com/dinnerdonebetter/backend/internal/search/text/elasticsearch"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -23,9 +23,10 @@ const (
 
 // Config contains settings regarding search indices.
 type Config struct {
-	_                    struct{}                `json:"-"`
-	Algolia              *algolia2.Config        `json:"algolia"              toml:"algolia,omitempty"`
-	Elasticsearch        *elasticsearch2.Config  `json:"elasticsearch"        toml:"elasticsearch,omitempty"`
+	_ struct{} `json:"-"`
+
+	Algolia              *algolia.Config         `json:"algolia"              toml:"algolia,omitempty"`
+	Elasticsearch        *elasticsearch.Config   `json:"elasticsearch"        toml:"elasticsearch,omitempty"`
 	CircuitBreakerConfig *circuitbreaking.Config `json:"circuitBreakerConfig" toml:"circuit_breaker_config"`
 	Provider             string                  `json:"provider"             toml:"provider,omitempty"`
 }
@@ -47,9 +48,9 @@ func ProvideIndex[T textsearch.Searchable](ctx context.Context, logger logging.L
 
 	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case ElasticsearchProvider:
-		return elasticsearch2.ProvideIndexManager[T](ctx, logger, tracerProvider, cfg.Elasticsearch, indexName, circuitBreaker)
+		return elasticsearch.ProvideIndexManager[T](ctx, logger, tracerProvider, cfg.Elasticsearch, indexName, circuitBreaker)
 	case AlgoliaProvider:
-		return algolia2.ProvideIndexManager[T](ctx, logger, tracerProvider, cfg.Algolia, indexName, circuitBreaker)
+		return algolia.ProvideIndexManager[T](ctx, logger, tracerProvider, cfg.Algolia, indexName, circuitBreaker)
 	default:
 		return &textsearch.NoopIndexManager[T]{}, nil
 	}
