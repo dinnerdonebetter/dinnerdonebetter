@@ -1,4 +1,4 @@
-package search
+package textsearch
 
 import (
 	"context"

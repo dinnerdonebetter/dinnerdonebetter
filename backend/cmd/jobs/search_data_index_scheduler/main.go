@@ -18,8 +18,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/search"
-	"github.com/dinnerdonebetter/backend/internal/search/indexing"
+	"github.com/dinnerdonebetter/backend/internal/search/text"
+	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
 
 	"github.com/hashicorp/go-multierror"
 	"go.opentelemetry.io/otel"
@@ -88,23 +88,23 @@ func doTheThing() error {
 
 	var actionFunc func(context.Context) ([]string, error)
 	switch chosenIndex {
-	case search.IndexTypeValidPreparations:
+	case textsearch.IndexTypeValidPreparations:
 		actionFunc = dataManager.GetValidPreparationIDsThatNeedSearchIndexing
-	case search.IndexTypeRecipes:
+	case textsearch.IndexTypeRecipes:
 		actionFunc = dataManager.GetRecipeIDsThatNeedSearchIndexing
-	case search.IndexTypeMeals:
+	case textsearch.IndexTypeMeals:
 		actionFunc = dataManager.GetMealIDsThatNeedSearchIndexing
-	case search.IndexTypeValidIngredients:
+	case textsearch.IndexTypeValidIngredients:
 		actionFunc = dataManager.GetValidIngredientIDsThatNeedSearchIndexing
-	case search.IndexTypeValidInstruments:
+	case textsearch.IndexTypeValidInstruments:
 		actionFunc = dataManager.GetValidInstrumentIDsThatNeedSearchIndexing
-	case search.IndexTypeValidMeasurementUnits:
+	case textsearch.IndexTypeValidMeasurementUnits:
 		actionFunc = dataManager.GetValidMeasurementUnitIDsThatNeedSearchIndexing
-	case search.IndexTypeValidIngredientStates:
+	case textsearch.IndexTypeValidIngredientStates:
 		actionFunc = dataManager.GetValidIngredientStateIDsThatNeedSearchIndexing
-	case search.IndexTypeValidVessels:
+	case textsearch.IndexTypeValidVessels:
 		actionFunc = dataManager.GetValidVesselIDsThatNeedSearchIndexing
-	case search.IndexTypeUsers:
+	case textsearch.IndexTypeUsers:
 		actionFunc = dataManager.GetUserIDsThatNeedSearchIndexing
 	default:
 		logger.Info("unhandled index type chosen, exiting")

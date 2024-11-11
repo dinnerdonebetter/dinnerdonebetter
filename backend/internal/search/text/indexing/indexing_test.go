@@ -8,8 +8,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
-	"github.com/dinnerdonebetter/backend/internal/search"
-	"github.com/dinnerdonebetter/backend/internal/search/config"
+	"github.com/dinnerdonebetter/backend/internal/search/text"
+	"github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -34,7 +34,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleUser.ID,
-			IndexType: search.IndexTypeUsers,
+			IndexType: textsearch.IndexTypeUsers,
 			Delete:    false,
 		}
 
@@ -57,7 +57,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleUser.ID,
-			IndexType: search.IndexTypeUsers,
+			IndexType: textsearch.IndexTypeUsers,
 			Delete:    true,
 		}
 
@@ -80,7 +80,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleRecipe.ID,
-			IndexType: search.IndexTypeRecipes,
+			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    false,
 		}
 
@@ -103,7 +103,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleMeal.ID,
-			IndexType: search.IndexTypeMeals,
+			IndexType: textsearch.IndexTypeMeals,
 			Delete:    false,
 		}
 
@@ -126,7 +126,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleValidVessel.ID,
-			IndexType: search.IndexTypeValidVessels,
+			IndexType: textsearch.IndexTypeValidVessels,
 			Delete:    false,
 		}
 
@@ -149,7 +149,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleValidIngredient.ID,
-			IndexType: search.IndexTypeValidIngredients,
+			IndexType: textsearch.IndexTypeValidIngredients,
 			Delete:    false,
 		}
 
@@ -172,7 +172,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleValidInstrument.ID,
-			IndexType: search.IndexTypeValidInstruments,
+			IndexType: textsearch.IndexTypeValidInstruments,
 			Delete:    false,
 		}
 
@@ -195,7 +195,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleValidPreparation.ID,
-			IndexType: search.IndexTypeValidPreparations,
+			IndexType: textsearch.IndexTypeValidPreparations,
 			Delete:    false,
 		}
 
@@ -218,7 +218,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleValidMeasurementUnit.ID,
-			IndexType: search.IndexTypeValidMeasurementUnits,
+			IndexType: textsearch.IndexTypeValidMeasurementUnits,
 			Delete:    false,
 		}
 
@@ -241,7 +241,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &IndexRequest{
 			RowID:     exampleValidIngredientState.ID,
-			IndexType: search.IndexTypeValidIngredientStates,
+			IndexType: textsearch.IndexTypeValidIngredientStates,
 			Delete:    false,
 		}
 

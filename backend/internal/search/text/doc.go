@@ -1,4 +1,4 @@
 /*
 Package search defines an interface for a search index management structure
 */
-package search
+package textsearch

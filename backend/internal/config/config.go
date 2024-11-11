@@ -15,7 +15,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 
 	"github.com/hashicorp/go-multierror"

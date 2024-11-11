@@ -15,8 +15,8 @@ import (
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
-	"github.com/dinnerdonebetter/backend/internal/search/algolia"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
+	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
