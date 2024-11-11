@@ -273,3 +273,40 @@ line_count: ensure_scc_installed
 .PHONY: proxy_dev_db
 proxy_dev_db:
 	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
+
+
+### EXPERIMENTAL KUBERNETES ZONE
+
+LOCAL_DEV_NAMESPACE := localdev
+
+.PHONY: k9s
+k9s:
+	k9s --refresh 1
+
+.PHONY: skbuild
+skbuild:
+	skaffold build --build-concurrency 0
+
+.PHONY: skrun
+skrun:
+	skaffold run --profile $(LOCAL_DEV_NAMESPACE)
+
+.PHONY: skdelete
+skdelete:
+	skaffold delete
+
+.PHONY: helm_clean
+helm_clean:
+	rm -f $(ARTIFACTS_DIR)/api-server-0.0.1.tgz
+
+.PHONY: helm_install
+helm_install:
+	helm install --create-namespace --namespace=$(LOCAL_DEV_NAMESPACE) --values=environments/local/helm/charts/api-server/values/localdev.yaml dinnerdonebetter environments/local/helm/charts/api-server
+
+.PHONY: nuke_k8s
+nuke_k8s:
+	kubectl delete namespace $(LOCAL_DEV_NAMESPACE)
+
+.PHONY: proxy_k8s_db
+proxy_k8s_db:
+	kubectl port-forward --namespace localdev svc/postgres-postgresql 5434:5432

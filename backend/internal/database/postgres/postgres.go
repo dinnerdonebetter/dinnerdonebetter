@@ -80,13 +80,13 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 	}
 
 	if cfg.RunMigrations {
-		c.logger.Debug("migrating querier")
+		c.logger.Info("migrating querier")
 
 		if err = c.Migrate(ctx); err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "migrating database")
 		}
 
-		c.logger.Debug("querier migrated!")
+		c.logger.Info("querier migrated!")
 	}
 
 	return c, nil
@@ -121,7 +121,7 @@ func (q *Querier) IsReady(ctx context.Context) (ready bool) {
 	for !ready {
 		err := q.db.PingContext(ctx)
 		if err != nil {
-			logger.WithValue("attempt_count", attemptCount).Debug("ping failed, waiting for db")
+			logger.WithValue("attempt_count", attemptCount).Info("ping failed, waiting for db")
 			time.Sleep(q.config.PingWaitPeriod)
 
 			attemptCount++
