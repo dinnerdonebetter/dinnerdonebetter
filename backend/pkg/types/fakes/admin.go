@@ -31,3 +31,9 @@ func BuildFakeArbitraryQueueMessageRequestInput() *types.ArbitraryQueueMessageRe
 		Body:      "{}",
 	}
 }
+
+func BuildFakeArbitraryQueueMessageResponse() *types.ArbitraryQueueMessageResponse {
+	return &types.ArbitraryQueueMessageResponse{
+		Success: true,
+	}
+}
