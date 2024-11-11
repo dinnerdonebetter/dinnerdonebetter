@@ -7,6 +7,8 @@ import {
   IAPIError,
   ResponseDetails,
   APIResponse,
+  ArbitraryQueueMessageRequestInput,
+  ArbitraryQueueMessageResponse,
   AuditLogEntry,
   AvatarUpdateInput,
   CreateMealPlanTasksRequest,
@@ -745,6 +747,45 @@ describe('basic', () => {
     mock.onPost(`${baseURL}/users/username/reminder`).reply(500, exampleResponse);
 
     expect(client.requestUsernameReminder(exampleInput)).rejects.toEqual(expectedError.error);
+  });
+
+  it('should Publishes an arbitrary message onto a queue', () => {
+    const exampleInput = new ArbitraryQueueMessageRequestInput();
+
+    const exampleResponse = new APIResponse<ArbitraryQueueMessageResponse>();
+    mock.onPost(`${baseURL}/api/v1/admin/queues/test`).reply(201, exampleResponse);
+
+    client
+      .publishArbitraryQueueMessage(exampleInput)
+      .then((response: APIResponse<ArbitraryQueueMessageResponse>) => {
+        expect(response).toEqual(exampleResponse);
+      })
+      .then(() => {
+        expect(mock.history.post.length).toBe(1);
+        expect(mock.history.post[0].data).toBe(JSON.stringify(exampleInput));
+        expect(mock.history.post[0].headers).toHaveProperty('Authorization');
+        expect((mock.history.post[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
+      });
+  });
+
+  it('should appropriately raise errors when they occur during Publishes an arbitrary message onto a queue', () => {
+    const exampleInput = new ArbitraryQueueMessageRequestInput();
+
+    const expectedError = buildObligatoryError('publishArbitraryQueueMessage user error');
+    const exampleResponse = new APIResponse<ArbitraryQueueMessageResponse>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/admin/queues/test`).reply(201, exampleResponse);
+
+    expect(client.publishArbitraryQueueMessage(exampleInput)).rejects.toEqual(expectedError.error);
+  });
+
+  it('should appropriately raise service errors when they occur during Publishes an arbitrary message onto a queue', () => {
+    const exampleInput = new ArbitraryQueueMessageRequestInput();
+
+    const expectedError = buildObligatoryError('publishArbitraryQueueMessage service error');
+    const exampleResponse = new APIResponse<ArbitraryQueueMessageResponse>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/admin/queues/test`).reply(500, exampleResponse);
+
+    expect(client.publishArbitraryQueueMessage(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it("should Reads a user's data report from storage", () => {

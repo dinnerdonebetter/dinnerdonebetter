@@ -2,6 +2,8 @@
 
 export * from './APIError.gen';
 export * from './APIResponseWithError.gen';
+export * from './ArbitraryQueueMessageRequestInput.gen';
+export * from './ArbitraryQueueMessageResponse.gen';
 export * from './AuditLogEntry.gen';
 export * from './AvatarUpdateInput.gen';
 export * from './ChangeLog.gen';

@@ -18,6 +18,16 @@ export const ALL_MEAL_PLAN_TASK_STATUS: string[] = ['unfinished', 'postponed', '
 type MealPlanTaskStatusTuple = typeof ALL_MEAL_PLAN_TASK_STATUS;
 export type MealPlanTaskStatus = MealPlanTaskStatusTuple[number];
 
+export const ALL_MESSAGE_QUEUE_NAME: string[] = [
+  'data_changes',
+  'outbound_emails',
+  'search_index_requests',
+  'user_data_aggregator',
+  'webhook_execution_requests',
+];
+type MessageQueueNameTuple = typeof ALL_MESSAGE_QUEUE_NAME;
+export type MessageQueueName = MessageQueueNameTuple[number];
+
 export const ALL_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPE: string[] = [
   'texture',
   'consistency',

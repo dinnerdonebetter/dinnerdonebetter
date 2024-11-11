@@ -33,7 +33,7 @@ port_forward_db:
 
 .PHONY: postgres_test
 postgres_test:
-	kubectl run --namespace localdev -it --rm psql-client --image=postgres:15 -- psql -W -h postgres -U dbuser -d dinner-done-better
+	kubectl run --namespace localdev -it --rm psql-client --image=postgres:17 -- psql -W -h postgres -U dbuser -d dinner-done-better
 
 .PHONY: wait_a_sec
 wait_a_sec:

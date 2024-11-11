@@ -13,6 +13,8 @@ import { Span } from '@opentelemetry/api';
 import { buildServerSideLogger, LoggerType } from '@dinnerdonebetter/logger';
 import {
   APIResponse,
+  ArbitraryQueueMessageRequestInput,
+  ArbitraryQueueMessageResponse,
   AuditLogEntry,
   AvatarUpdateInput,
   CreateMealPlanTasksRequest,
@@ -6174,6 +6176,30 @@ export class DinnerDoneBetterAPIClient {
           }
         })
         .catch((error: AxiosError<APIResponse<JWTResponse>>) => {
+          if (error?.response?.data?.error) {
+            reject(error?.response?.data?.error);
+          } else {
+            reject({ message: error?.message || 'unknown error' });
+          }
+        });
+    });
+  }
+
+  async publishArbitraryQueueMessage(
+    input: ArbitraryQueueMessageRequestInput,
+  ): Promise<APIResponse<ArbitraryQueueMessageResponse>> {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      self.client
+        .post<APIResponse<ArbitraryQueueMessageResponse>>(`/api/v1/admin/queues/test`, input)
+        .then((res: AxiosResponse<APIResponse<ArbitraryQueueMessageResponse>>) => {
+          if (res.data.error) {
+            reject(res.data.error);
+          } else {
+            resolve(res.data);
+          }
+        })
+        .catch((error: AxiosError<APIResponse<ArbitraryQueueMessageResponse>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {

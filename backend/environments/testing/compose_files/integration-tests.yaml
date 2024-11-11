@@ -13,7 +13,7 @@ services:
             driver: none
         container_name: postgres
         hostname: pgdatabase
-        image: postgres:15
+        image: postgres:17
         environment:
             POSTGRES_DB: 'dinner-done-better'
             POSTGRES_PASSWORD: 'hunter2'

@@ -22,6 +22,73 @@ paths:
           description: The service is ready to handle requests
       tags:
       - meta
+  /api/v1/admin/queues/test:
+    post:
+      description: Publishes an arbitrary message onto a queue
+      operationId: PublishArbitraryQueueMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArbitraryQueueMessageRequestInput'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ArbitraryQueueMessageRequestInput'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/ArbitraryQueueMessageResponse'
+                      type: object
+                  type: object
+            application/xml:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/APIResponse'
+                - properties:
+                    data:
+                      $ref: '#/components/schemas/ArbitraryQueueMessageResponse'
+                      type: object
+                  type: object
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/APIResponseWithError'
+          description: ""
+      security:
+      - oauth2:
+        - service_admin
+      tags:
+      - admin
   /api/v1/admin/users/status:
     post:
       description: Updates a user's account status
@@ -21223,6 +21290,18 @@ components:
         error:
           $ref: '#/components/schemas/APIError'
       type: object
+    ArbitraryQueueMessageRequestInput:
+      properties:
+        body:
+          type: string
+        queueName:
+          $ref: '#/components/schemas/MessageQueueName'
+      type: object
+    ArbitraryQueueMessageResponse:
+      properties:
+        success:
+          type: boolean
+      type: object
     AuditLogEntry:
       properties:
         belongsToHousehold:
@@ -22204,6 +22283,14 @@ components:
           - format: date-time
             type: string
       type: object
+    MessageQueueName:
+      enum:
+      - data_changes
+      - outbound_emails
+      - search_index_requests
+      - user_data_aggregator
+      - webhook_execution_requests
+      type: string
     ModifyUserPermissionsInput:
       properties:
         newRole:
@@ -23883,6 +23970,8 @@ components:
       type: object
     UserDataAggregationRequest:
       properties:
+        id:
+          type: string
         reportID:
           type: string
         userID:

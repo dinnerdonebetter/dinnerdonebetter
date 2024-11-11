@@ -192,6 +192,7 @@ export * from './GetValidVessels';
 export * from './GetWebhook';
 export * from './GetWebhooks';
 export * from './LoginForJWT';
+export * from './PublishArbitraryQueueMessage';
 export * from './RedeemPasswordResetToken';
 export * from './RefreshTOTPSecret';
 export * from './RejectHouseholdInvitation';

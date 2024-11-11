@@ -127,7 +127,7 @@ func splitReverseConcat(input string) string {
 }
 
 const (
-	defaultImage = "postgres:15"
+	defaultImage = "postgres:17"
 )
 
 func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *postgres.PostgresContainer) {
