@@ -250,13 +250,17 @@ func (g *recipeAnalyzer) renderGraph(ctx context.Context, recipe *types.Recipe) 
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
-	gv := graphviz.New()
+	gv, err := graphviz.New(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	pg, err := graphviz.ParseBytes([]byte(g.RenderGraphvizDiagramForRecipe(ctx, recipe)))
 	if err != nil {
 		return nil, err
 	}
 
-	img, err := gv.RenderImage(pg)
+	img, err := gv.RenderImage(ctx, pg)
 	if err != nil {
 		return nil, err
 	}

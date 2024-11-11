@@ -11,22 +11,30 @@ TESTABLE_PACKAGE_LIST  := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock
 ENVIRONMENTS_DIR       := environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-CLOUD_JOBS             := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler email_prober
-CLOUD_FUNCTIONS        := data_changes outbound_emailer search_indexer webhook_executor user_data_aggregator
+CLOUD_JOBS             := meal_plan_finalizer \
+						  meal_plan_grocery_list_initializer \
+						  meal_plan_task_creator \
+						  search_data_index_scheduler \
+						  email_prober
+CLOUD_FUNCTIONS        := data_changes \
+						  outbound_emailer \
+						  search_indexer \
+						  webhook_executor \
+						  user_data_aggregator
 WIRE_TARGETS           := server/http/build
 CONTAINER_RUNNER       := docker
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
 LINTER_IMAGE           := golangci/golangci-lint:v1.61.0
 LINTER                 := $(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):$(PWD) \
-		--workdir=$(PWD) \
-		$(LINTER_IMAGE) golangci-lint
+						  --volume $(PWD):$(PWD) \
+						  --workdir=$(PWD) \
+						  $(LINTER_IMAGE) golangci-lint
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 SQL_GENERATOR          := $(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE)
+						  --volume $(PWD):/src \
+						  --workdir /src \
+						  --user $(MYSELF):$(MY_GROUP) \
+						  $(SQL_GENERATOR_IMAGE)
 
 ## non-PHONY folders/files
 
