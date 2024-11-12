@@ -35,8 +35,6 @@ require (
 	github.com/Masterminds/squirrel v1.5.4 // indirect
 	github.com/PuerkitoBio/goquery v1.9.2 // indirect
 	github.com/alexedwards/argon2id v1.0.0 // indirect
-	github.com/alexedwards/scs/postgresstore v0.0.0-20240316134038-7e11d57e8885 // indirect
-	github.com/alexedwards/scs/v2 v2.8.0 // indirect
 	github.com/algolia/algoliasearch-client-go/v3 v3.31.2 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect

@@ -25,20 +25,20 @@ profiles:
             main: ./cmd/services/api/http
             fromImage: golang:1.22-bullseye
 
-#        - image: ddb_job_db_cleaner
-#          context: .
-#          ko:
-#            dir: .
-#            env:
-#              - CGO_ENABLED=1
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/db_cleaner
-#            fromImage: gcr.io/distroless/static:nonroot
-#
+        - image: dinner-done-better-db-cleaner
+          context: .
+          ko:
+            dir: .
+            env:
+              - CGO_ENABLED=1
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/db_cleaner
+            fromImage: gcr.io/distroless/static:nonroot
+
 #        - image: ddb_job_email_prober
 #          context: .
 #          ko:
@@ -127,18 +127,38 @@ profiles:
                     username: dbuser
                     password: hunter2
                     database: dinner-done-better
-          - name: redis
-            namespace: localdev
-            createNamespace: true
-            remoteChart: oci://registry-1.docker.io/bitnamicharts/redis
-            version: 20.2.1
-            overrides:
-              architecture: standalone
 
-          - name: dinnerdonebetter
-            namespace: localdev
-            createNamespace: true
-            chartPath: environments/local/helm/charts/api-server
+#          - name: redis
+#            namespace: localdev
+#            createNamespace: true
+#            remoteChart: oci://registry-1.docker.io/bitnamicharts/redis
+#            version: 20.2.1
+#            overrides:
+#              architecture: standalone
+
+#          - name: grafana
+#            namespace: localdev
+#            createNamespace: true
+#            remoteChart: oci://registry-1.docker.io/bitnamicharts/grafana
+#            version: 11.3.26
+#
+#          - name: jaeger
+#            namespace: localdev
+#            createNamespace: true
+#            remoteChart: oci://registry-1.docker.io/bitnamicharts/jaeger
+#            version: 3.0.6
+
+#          - name: dinnerdonebetter
+#            namespace: localdev
+#            createNamespace: true
+#            chartPath: environments/local/helm/charts/api-server
+      kubectl: {}
+
+    manifests:
+      kustomize:
+        paths:
+          - deploy/kustomize/environments/localdev
+      output: ./environments/local/generated/kubernetes.yaml
 
     portForward:
       - resourceType: Service
@@ -147,5 +167,12 @@ profiles:
         port: 5423
         localPort: 5434
         address: 127.0.0.1
+
+#      - resourceType: Service
+#        namespace: localdev
+#        resourceName: postgres-postgresql
+#        port: 5423
+#        localPort: 5434
+#        address: 127.0.0.1
 
   - name: dev

@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dinnerdonebetter-dinner-done-better
+  namespace: localdev
+spec:
+  rules:
+  - host: api-server.k8s
+    http:
+      paths:
+      - backend:
+          service:
+            name: dinnerdonebetter-dinner-done-better
+            port:
+              number: 8000
+        path: /
+        pathType: ImplementationSpecific
+---

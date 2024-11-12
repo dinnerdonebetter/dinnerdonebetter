@@ -7,6 +7,28 @@ image:
   pullPolicy: IfNotPresent
   tag: ""
 
+jobs:
+  db_cleaner:
+    image:
+      repository: dinner-done-better-db-cleaner
+      tag: latest
+      imagePullPolicy: IfNotPresent
+    schedule: "* * * * *"
+    failedJobsHistoryLimit: 1
+    successfulJobsHistoryLimit: 3
+    concurrencyPolicy: Forbid
+    restartPolicy: OnFailure
+    volumes:
+      - name: "config"
+        configMap:
+          name: "dinner-done-better-config"
+
+    volumeMounts:
+      - name: "config"
+        mountPath: "/etc/service-config.json"
+        subPath: "config.json"
+
+
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 nameOverride: "dinner-done-better"
@@ -96,7 +118,7 @@ deployment:
 volumes:
   - name: "config"
     configMap:
-      name: "dinnerdonebetter-dinner-done-better-config"
+      name: "dinner-done-better-config"
 
 volumeMounts:
   - name: "config"

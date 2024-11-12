@@ -7,8 +7,6 @@ import (
 	"io"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/alexedwards/scs/v2"
 )
 
 var (
@@ -58,7 +56,6 @@ type (
 		Close()
 		Migrate(ctx context.Context) error
 		IsReady(ctx context.Context) (ready bool)
-		ProvideSessionStore() scs.Store
 
 		types.MealPlanTaskDataManager
 		types.AdminUserDataManager

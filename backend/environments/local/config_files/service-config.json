@@ -71,7 +71,7 @@
 			"redis": {
 				"username": "",
 				"queueAddress": [
-					"worker_queue:6379"
+					"redis-master.localdev.svc.cluster.local:6379"
 				]
 			}
 		},
@@ -84,7 +84,7 @@
 			"redis": {
 				"username": "",
 				"queueAddress": [
-					"worker_queue:6379"
+					"redis-master.localdev.svc.cluster.local:6379"
 				]
 			}
 		}

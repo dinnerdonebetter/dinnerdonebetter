@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dinner-done-better-deployment
+  namespace: localdev
+  labels:
+    app: dinner-done-better
+spec:
+  selector:
+    matchLabels:
+      app: dinner-done-better
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better
+    spec:
+      containers:
+      - name: dinner-done-better
+        image: dinner-done-better-api-server:latest
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: "CONFIGURATION_FILEPATH"
+            value: "/etc/service-config.json"
+        volumeMounts:
+        - name: "config"
+          mountPath: "/etc/service-config.json"
+          subPath: "config.json"
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: "/_meta_/live"
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: "/_meta_/ready"
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 3
+      volumes:
+        - name: "config"
+          configMap:
+            name: "config"
+---

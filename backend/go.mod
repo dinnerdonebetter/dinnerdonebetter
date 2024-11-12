@@ -13,8 +13,6 @@ require (
 	github.com/KimMachineGun/automemlimit v0.6.1
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/alexedwards/argon2id v1.0.0
-	github.com/alexedwards/scs/postgresstore v0.0.0-20240316134038-7e11d57e8885
-	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/algolia/algoliasearch-client-go/v3 v3.31.2
 	github.com/aws/aws-sdk-go v1.54.19
 	github.com/boombuler/barcode v1.0.2

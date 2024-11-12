@@ -288,20 +288,28 @@ skbuild:
 	skaffold build --build-concurrency 0
 
 .PHONY: skrun
-skrun:
-	skaffold run --profile $(LOCAL_DEV_NAMESPACE)
+skrun: skrender
+	skaffold run --profile $(LOCAL_DEV_NAMESPACE) --port-forward
 
 .PHONY: skdelete
 skdelete:
-	skaffold delete
+	skaffold delete --profile $(LOCAL_DEV_NAMESPACE)
+
+.PHONY: skrender
+skrender:
+	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output environments/local/generated/kubernetes.yaml
 
 .PHONY: helm_clean
 helm_clean:
 	rm -f $(ARTIFACTS_DIR)/api-server-0.0.1.tgz
 
+.PHONY: helm_package
+helm_package:
+	helm package environments/local/helm/charts/api-server
+
 .PHONY: helm_install
 helm_install:
-	helm install --create-namespace --namespace=$(LOCAL_DEV_NAMESPACE) --values=environments/local/helm/charts/api-server/values/localdev.yaml dinnerdonebetter environments/local/helm/charts/api-server
+	helm install --create-namespace --namespace=$(LOCAL_DEV_NAMESPACE) dinnerdonebetter environments/local/helm/charts/api-server
 
 .PHONY: nuke_k8s
 nuke_k8s:

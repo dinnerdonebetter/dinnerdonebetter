@@ -20,8 +20,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/alexedwards/scs/postgresstore"
-	"github.com/alexedwards/scs/v2"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -61,7 +59,7 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 
 	db.SetMaxIdleConns(5)
 	db.SetMaxOpenConns(7)
-	db.SetConnMaxLifetime(1800 * time.Second)
+	db.SetConnMaxLifetime(30 * time.Minute)
 
 	encDec, err := salsa20.NewEncryptorDecryptor(tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))
 	if err != nil {
@@ -82,11 +80,12 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 	if cfg.RunMigrations {
 		c.logger.Info("migrating querier")
 
+		start := time.Now()
 		if err = c.Migrate(ctx); err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "migrating database")
 		}
 
-		c.logger.Info("querier migrated!")
+		c.logger.WithValue("elapsed", time.Since(start).Milliseconds()).Info("querier migrated!")
 	}
 
 	return c, nil
@@ -104,23 +103,16 @@ func (q *Querier) Close() {
 	}
 }
 
-// ProvideSessionStore provides the scs Store for Postgres.
-func (q *Querier) ProvideSessionStore() scs.Store {
-	return postgresstore.New(q.db)
-}
-
-// IsReady is a simple wrapper around the core querier IsReady call.
+// IsReady returns whether the database is ready for the querier.
 func (q *Querier) IsReady(ctx context.Context) (ready bool) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	attemptCount := 0
-
 	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails)
 
-	for !ready {
-		err := q.db.PingContext(ctx)
-		if err != nil {
+	attemptCount := 0
+	for {
+		if err := q.db.PingContext(ctx); err != nil {
 			logger.WithValue("attempt_count", attemptCount).Info("ping failed, waiting for db")
 			time.Sleep(q.config.PingWaitPeriod)
 
@@ -130,7 +122,7 @@ func (q *Querier) IsReady(ctx context.Context) (ready bool) {
 			}
 		} else {
 			ready = true
-			return ready
+			return true
 		}
 	}
 

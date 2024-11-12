@@ -1,0 +1,15 @@
+# See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
+resources:
+  - ../../base
+  - ../../components/api_server
+
+# See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
+patches:
+  - path: api-service-configmap-patch.yaml
+    target:
+      kind: ConfigMap
+      name: dinner-done-better-config
