@@ -26,7 +26,8 @@ type (
 
 	// Config represents our passwords configuration.
 	Config struct {
-		_                     struct{}      `json:"-"`
+		_ struct{} `json:"-"`
+
 		SSO                   SSOConfigs    `json:"sso,omitempty"                   toml:"sso,omitempty"`
 		DataChangesTopicName  string        `json:"dataChanges,omitempty"           toml:"data_changes,omitempty"`
 		JWTAudience           string        `json:"jwtAudience,omitempty"           toml:"jwt_audience,omitempty"`

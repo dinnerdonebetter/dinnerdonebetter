@@ -38,7 +38,8 @@ func init() {
 type (
 	// MealPlanGroceryListItem represents a meal plan grocery list item.
 	MealPlanGroceryListItem struct {
-		_                        struct{}                    `json:"-"`
+		_ struct{} `json:"-"`
+
 		CreatedAt                time.Time                   `json:"createdAt"`
 		QuantityPurchased        *float32                    `json:"quantityPurchased"`
 		PurchasePrice            *float32                    `json:"purchasePrice"`

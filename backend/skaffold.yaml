@@ -11,7 +11,7 @@ profiles:
       tagPolicy:
         sha256: {}
       artifacts:
-        - image: dinner-done-better-api-server
+        - image: dinner-done-better-service-api
           context: .
           ko:
             dir: .
@@ -25,7 +25,7 @@ profiles:
             main: ./cmd/services/api/http
             fromImage: golang:1.22-bullseye
 
-        - image: dinner-done-better-db-cleaner
+        - image: dinner-done-better-job-db-cleaner
           context: .
           ko:
             dir: .
@@ -39,7 +39,7 @@ profiles:
             main: ./cmd/jobs/db_cleaner
             fromImage: gcr.io/distroless/static:nonroot
 
-#        - image: ddb_job_email_prober
+#        - image: dinner-done-better-job-email-prober
 #          context: .
 #          ko:
 #            dir: .
@@ -53,7 +53,7 @@ profiles:
 #            main: ./cmd/jobs/email_prober
 #            fromImage: gcr.io/distroless/static:nonroot
 #
-#        - image: ddb_job_meal_plan_finalizer
+#        - image: dinner-done-better-job-meal-plan-finalizer
 #          context: .
 #          ko:
 #            dir: .
@@ -67,7 +67,7 @@ profiles:
 #            main: ./cmd/jobs/meal_plan_finalizer
 #            fromImage: gcr.io/distroless/static:nonroot
 #
-#        - image: ddb_job_meal_plan_grocery_list_initializer
+#        - image: dinner-done-better-job-meal-plan-grocery-list-initializer
 #          context: .
 #          ko:
 #            dir: .
@@ -81,7 +81,7 @@ profiles:
 #            main: ./cmd/jobs/meal_plan_grocery_list_initializer
 #            fromImage: gcr.io/distroless/static:nonroot
 #
-#        - image: ddb_job_meal_plan_task_creator
+#        - image: dinner-done-better-job-meal-plan-task-creator
 #          context: .
 #          ko:
 #            dir: .
@@ -95,7 +95,7 @@ profiles:
 #            main: ./cmd/jobs/meal_plan_task_creator
 #            fromImage: gcr.io/distroless/static:nonroot
 #
-#        - image: ddb_job_search_data_index_scheduler
+#        - image: dinner-done-better-job-search-data-index-scheduler
 #          context: .
 #          ko:
 #            dir: .
@@ -111,22 +111,28 @@ profiles:
 
         # TODO: cmd/functions
 
+    manifests:
+      kustomize:
+        paths:
+          - deploy/kustomize/environments/localdev
+      output: ./environments/local/generated/kubernetes.yaml
+
     deploy:
       kubeContext: docker-desktop
       helm:
         releases:
-          - name: postgres
-            namespace: localdev
-            createNamespace: true
-            remoteChart: oci://registry-1.docker.io/bitnamicharts/postgresql
-            version: 16.1.2
-            overrides:
-              global:
-                postgresql:
-                  auth:
-                    username: dbuser
-                    password: hunter2
-                    database: dinner-done-better
+#          - name: postgres
+#            namespace: localdev
+#            createNamespace: true
+#            remoteChart: oci://registry-1.docker.io/bitnamicharts/postgresql
+#            version: 16.1.2
+#            overrides:
+#              global:
+#                postgresql:
+#                  auth:
+#                    username: dbuser
+#                    password: hunter2
+#                    database: dinner-done-better
 
 #          - name: redis
 #            namespace: localdev
@@ -154,25 +160,19 @@ profiles:
 #            chartPath: environments/local/helm/charts/api-server
       kubectl: {}
 
-    manifests:
-      kustomize:
-        paths:
-          - deploy/kustomize/environments/localdev
-      output: ./environments/local/generated/kubernetes.yaml
-
     portForward:
       - resourceType: Service
         namespace: localdev
         resourceName: postgres-postgresql
-        port: 5423
+        port: 5432
         localPort: 5434
         address: 127.0.0.1
 
-#      - resourceType: Service
-#        namespace: localdev
-#        resourceName: postgres-postgresql
-#        port: 5423
-#        localPort: 5434
-#        address: 127.0.0.1
+      # - resourceType: Service
+      #   namespace: localdev
+      #   resourceName: dinner-done-better
+      #   port: 8000
+      #   localPort: 8008
+      #   address: 127.0.0.1
 
   - name: dev

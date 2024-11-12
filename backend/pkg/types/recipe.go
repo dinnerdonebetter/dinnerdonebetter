@@ -57,7 +57,8 @@ type (
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
-		_                   struct{}                                          `json:"-"`
+		_ struct{} `json:"-"`
+
 		InspiredByRecipeID  *string                                           `json:"inspiredByRecipeID"`
 		Name                string                                            `json:"name"`
 		Source              string                                            `json:"source"`

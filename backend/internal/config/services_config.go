@@ -54,7 +54,8 @@ import (
 type (
 	// ServicesConfig collects the various service configurations.
 	ServicesConfig struct {
-		_                               struct{}                                      `json:"-"`
+		_ struct{} `json:"-"`
+
 		AuditLogEntries                 auditlogentriesservice.Config                 `json:"auditLogEntries,omitempty"                 toml:"audit_log_entries,omitempty"`
 		MealPlanGroceryListItems        mealplangrocerylistitems.Config               `json:"mealPlanGroceryListItems,omitempty"        toml:"meal_plan_grocery_list_items,omitempty"`
 		ValidInstrumentMeasurementUnits validingredientmeasurementunitsservice.Config `json:"validInstrumentMeasurementUnits,omitempty" toml:"valid_ingredient_measurement_units,omitempty"`

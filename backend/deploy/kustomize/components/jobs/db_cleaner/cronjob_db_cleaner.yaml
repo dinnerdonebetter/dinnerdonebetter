@@ -1,0 +1,25 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dinner-done-better-cronjob-db-cleaner
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: db-cleaner
+            image: dinner-done-better-job-db-cleaner
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: "config"
+              mountPath: "/etc/service-config.json"
+              subPath: "config.json"
+          restartPolicy: OnFailure
+          volumes:
+            - name: "config"
+              configMap:
+                name: "dinner-done-better-db-cleaner-config"
+---

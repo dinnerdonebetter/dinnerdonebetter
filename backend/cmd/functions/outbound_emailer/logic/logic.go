@@ -31,7 +31,7 @@ func HandleSendEmailRequest(ctx context.Context, logger logging.Logger, tracerPr
 		return observability.PrepareAndLogError(err, logger, nil, "setting up customer data collector")
 	}
 
-	envCfg := email.GetConfigForEnvironment(os.Getenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"))
+	envCfg := email.GetConfigForEnvironment(os.Getenv(config.ServiceEnvironmentEnvVarKey))
 	if envCfg == nil {
 		return observability.PrepareAndLogError(email.ErrMissingEnvCfg, logger, nil, "getting environment config")
 	}

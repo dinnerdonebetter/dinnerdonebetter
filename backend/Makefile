@@ -113,8 +113,10 @@ format: format_golang terraformat
 
 .PHONY: format_golang
 format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
-	@until fieldalignment -fix ./...; do true; done > /dev/null
-	@until tagalign -fix -sort -order "json,toml,yaml" ./...; do true; done > /dev/null
+	@# this line is supposed to replace (_\s+struct\{\}\s+`json\:"-"`)\n(\t+\w) with $1\n\n$2 but doesn't seem to work for reasons I don't have time to care about.
+	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do sed -E -i ':a;N;$!ba;s/(_\s+struct\{\}\s+`json\:"-"`)\n(\s+\w)/\1\n\n\2/g' $$file; done
+	until fieldalignment -fix ./...; do true; done > /dev/null
+	until tagalign -fix -sort -order "json,toml,yaml,mapstructure" ./...; do true; done > /dev/null
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
@@ -287,29 +289,17 @@ k9s:
 skbuild:
 	skaffold build --build-concurrency 0
 
-.PHONY: skrun
-skrun: skrender
-	skaffold run --profile $(LOCAL_DEV_NAMESPACE) --port-forward
-
-.PHONY: skdelete
-skdelete:
-	skaffold delete --profile $(LOCAL_DEV_NAMESPACE)
-
 .PHONY: skrender
 skrender:
+	rm -f environments/local/generated/kubernetes.yaml
+	$(MAKE) environments/local/generated/kubernetes.yaml
+
+.PHONY: skrun
+skrun: environments/local/generated/kubernetes.yaml
+	skaffold run --profile $(LOCAL_DEV_NAMESPACE) # --port-forward
+
+environments/local/generated/kubernetes.yaml:
 	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output environments/local/generated/kubernetes.yaml
-
-.PHONY: helm_clean
-helm_clean:
-	rm -f $(ARTIFACTS_DIR)/api-server-0.0.1.tgz
-
-.PHONY: helm_package
-helm_package:
-	helm package environments/local/helm/charts/api-server
-
-.PHONY: helm_install
-helm_install:
-	helm install --create-namespace --namespace=$(LOCAL_DEV_NAMESPACE) dinnerdonebetter environments/local/helm/charts/api-server
 
 .PHONY: nuke_k8s
 nuke_k8s:
@@ -318,3 +308,7 @@ nuke_k8s:
 .PHONY: proxy_k8s_db
 proxy_k8s_db:
 	kubectl port-forward --namespace localdev svc/postgres-postgresql 5434:5432
+
+.PHONY: proxy_k8s_api_server
+proxy_k8s_api_server:
+	kubectl port-forward --namespace localdev svc/dinner-done-better 8008:8000

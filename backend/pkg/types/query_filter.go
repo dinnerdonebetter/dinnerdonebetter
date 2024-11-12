@@ -44,7 +44,8 @@ const (
 
 // QueryFilter represents all the filters a User could apply to a list query.
 type QueryFilter struct {
-	_               struct{}   `json:"-"`
+	_ struct{} `json:"-"`
+
 	SortBy          *string    `json:"sortBy,omitempty"`
 	Page            *uint16    `json:"page,omitempty"`
 	CreatedAfter    *time.Time `json:"createdBefore,omitempty"`

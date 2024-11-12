@@ -19,7 +19,6 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
@@ -63,7 +62,7 @@ var (
 
 // HandleDataChangeMessage handles a data change message.
 func HandleDataChangeMessage(ctx context.Context, tracerProvider tracing.TracerProvider, cfg *config.InstanceConfig, changeMessage *types.DataChangeMessage) error {
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
+	logger := cfg.Observability.Logging.ProvideLogger()
 
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("data_changes_job"))
 

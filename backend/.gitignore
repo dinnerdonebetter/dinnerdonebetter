@@ -46,3 +46,5 @@ cmd/playground/*.go
 
 artifacts/
 *.wasm
+
+environments/local/generated

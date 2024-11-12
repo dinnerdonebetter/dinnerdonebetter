@@ -24,9 +24,7 @@ import (
 )
 
 const (
-	dataChangesTopicAccessName            = "data_changes_topic_name"
 	googleCloudCloudSQLSocket             = "/cloudsql"
-	gcpConfigFilePathEnvVarKey            = "CONFIGURATION_FILEPATH"
 	gcpPortEnvVarKey                      = "PORT"
 	gcpDatabaseSocketDirEnvVarKey         = "DB_SOCKET_DIR"
 	gcpDataChangesTopicNameEnvVarKey      = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
@@ -80,7 +78,7 @@ func buildDatabaseURIFromGCPEnvVars() string {
 
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
-	configBytes, err := os.ReadFile(os.Getenv(gcpConfigFilePathEnvVarKey))
+	configBytes, err := os.ReadFile(os.Getenv(FilePathEnvVarKey))
 	if err != nil {
 		return nil, err
 	}

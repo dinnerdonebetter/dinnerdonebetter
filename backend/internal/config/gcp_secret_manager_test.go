@@ -132,7 +132,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 
 		require.NoError(t, json.NewEncoder(f).Encode(baseConfig))
 
-		require.NoError(t, os.Setenv(gcpConfigFilePathEnvVarKey, f.Name()))
+		require.NoError(t, os.Setenv(FilePathEnvVarKey, f.Name()))
 		require.NoError(t, os.Setenv(gcpPortEnvVarKey, "1234"))
 		require.NoError(t, os.Setenv(gcpDatabaseSocketDirEnvVarKey, "/example/blah"))
 		require.NoError(t, os.Setenv(gcpDatabaseUserEnvVarKey, "user"))
@@ -160,7 +160,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, cfg)
 
-		require.NoError(t, os.Unsetenv(gcpConfigFilePathEnvVarKey))
+		require.NoError(t, os.Unsetenv(FilePathEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpPortEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpDatabaseSocketDirEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpDatabaseUserEnvVarKey))

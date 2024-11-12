@@ -7,24 +7,15 @@ import (
 	"log/slog"
 	"os"
 	"strings"
-	"time"
 
+	"github.com/dinnerdonebetter/backend/cmd/functions/user_data_aggregator/logic"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/routing/chi"
-	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
-	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -48,41 +39,12 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 		return nil
 	}
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
-
-	envCfg := email.GetConfigForEnvironment(os.Getenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"))
-	if envCfg == nil {
-		return observability.PrepareAndLogError(email.ErrMissingEnvCfg, logger, nil, "getting environment config")
-	}
-
-	logger.Info("getting config")
-
 	cfg, err := config.GetUserDataAggregatorConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
 
-	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
-	if err != nil {
-		logger.Error(err, "initializing tracer")
-	}
-	otel.SetTracerProvider(tracerProvider)
-
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer_cloud_function"))
-	ctx, span := tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger.Info("connecting to database")
-
-	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
-	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
-	if err != nil {
-		cancel()
-		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
-	}
-
-	cancel()
-	defer dataManager.Close()
+	logger := cfg.Observability.Logging.ProvideLogger()
 
 	var msg MessagePublishedData
 	if err = e.DataAs(&msg); err != nil {
@@ -92,46 +54,11 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 	var userDataCollectionRequest *types.UserDataAggregationRequest
 	if err = json.Unmarshal(msg.Message.Data, &userDataCollectionRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
+		return observability.PrepareAndLogError(err, logger, nil, "unmarshalling data change message")
 	}
 
-	logger = logger.WithValue(keys.UserDataAggregationReportIDKey, userDataCollectionRequest.ReportID)
-	tracing.AttachToSpan(span, keys.UserDataAggregationReportIDKey, userDataCollectionRequest.ReportID)
-	logger.Info("loaded payload, aggregating data")
-
-	collection, err := dataManager.AggregateUserData(ctx, userDataCollectionRequest.UserID)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "collecting user data")
-	}
-	collection.ReportID = userDataCollectionRequest.ReportID
-
-	// TODO: save this in the cloud somewhere
-	logger.Info("compiled payload, saving")
-
-	storageConfig := &objectstorage.Config{
-		GCPConfig:         &objectstorage.GCPConfig{BucketName: "userdata.dinnerdonebetter.dev"},
-		BucketPrefix:      "",
-		BucketName:        "userdata.dinnerdonebetter.dev",
-		UploadFilenameKey: "",
-		Provider:          objectstorage.GCPCloudStorageProvider,
-	}
-
-	logger.Info("establishing upload manager")
-
-	uploadManager, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, storageConfig, chi.NewRouteParamManager())
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "creating upload manager")
-	}
-
-	collectionBytes, err := json.Marshal(collection)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "marshalling collection")
-	}
-
-	logger.Info("saving file")
-
-	if err = uploadManager.SaveFile(ctx, fmt.Sprintf("%s.json", userDataCollectionRequest.ReportID), collectionBytes); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "saving collection")
+	if err = logic.CollectAndSaveUserData(ctx, logger, cfg, userDataCollectionRequest); err != nil {
+		return observability.PrepareAndLogError(err, logger, nil, "collecting and saving user data")
 	}
 
 	return nil

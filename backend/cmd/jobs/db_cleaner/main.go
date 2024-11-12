@@ -12,8 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"go.opentelemetry.io/otel"
@@ -28,12 +26,12 @@ func doTheThing() error {
 		return nil
 	}
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
-
 	cfg, err := config.GetDBCleanerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
+
+	logger := cfg.Observability.Logging.ProvideLogger()
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {

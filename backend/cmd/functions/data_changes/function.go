@@ -11,8 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/cmd/functions/data_changes/logic"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
@@ -51,7 +49,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 		return fmt.Errorf("error getting config: %w", err)
 	}
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
+	logger := cfg.Observability.Logging.ProvideLogger()
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {

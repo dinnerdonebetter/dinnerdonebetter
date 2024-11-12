@@ -6,7 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
+	"log/slog"
+	"math/rand/v2"
 	"os"
 	"strings"
 	"time"
@@ -15,8 +16,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
@@ -29,10 +28,9 @@ import (
 func doTheThing() error {
 	ctx := context.Background()
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
-
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
-		logger.Info("CEASE_OPERATION is set to true, exiting")
+		slog.Info("CEASE_OPERATION is set to true, exiting")
+		return nil
 	}
 
 	cfg, err := config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx)
@@ -40,7 +38,7 @@ func doTheThing() error {
 		log.Fatal(fmt.Errorf("error getting config: %w", err))
 	}
 
-	logger = logger.WithValue("commit", cfg.Commit())
+	logger := cfg.Observability.Logging.ProvideLogger().WithValue("commit", cfg.Commit())
 
 	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if err != nil {
@@ -81,7 +79,7 @@ func doTheThing() error {
 
 	// figure out what records to join
 	//nolint:gosec // not important to use crypto/rand here
-	chosenIndex := indexing.AllIndexTypes[rand.Intn(len(indexing.AllIndexTypes))]
+	chosenIndex := indexing.AllIndexTypes[rand.IntN(len(indexing.AllIndexTypes))]
 
 	logger = logger.WithValue("chosen_index_type", chosenIndex)
 	logger.Info("index type chosen")

@@ -20,11 +20,6 @@ import (
 	_ "go.uber.org/automaxprocs"
 )
 
-const (
-	configFilepathEnvVar       = "CONFIGURATION_FILEPATH"
-	googleCloudIndicatorEnvVar = "RUNNING_IN_GCP"
-)
-
 func init() {
 	if _, err := memlimit.SetGoMemLimitWithOpts(
 		memlimit.WithRatio(0.9),
@@ -42,14 +37,14 @@ func init() {
 
 func getConfig(ctx context.Context) (*config.InstanceConfig, error) {
 	var cfg *config.InstanceConfig
-	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
+	if os.Getenv(config.RunningInGCPEnvVarKey) != "" {
 		c, err := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("fetching config from GCP: %w", err)
 		}
 
 		cfg = c
-	} else if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
+	} else if configFilepath := os.Getenv(config.FilePathEnvVarKey); configFilepath != "" {
 		configBytes, err := os.ReadFile(configFilepath)
 		if err != nil {
 			return nil, fmt.Errorf("reading local config file: %w", err)

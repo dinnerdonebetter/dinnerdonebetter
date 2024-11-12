@@ -109,7 +109,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 
 	log.Println("providing publisher provider")
 
-
 	publisherProvider, err := config4.ProvidePublisherProvider(ctx, logger, tracerProvider, config9)
 	if err != nil {
 		return nil, err

@@ -28,6 +28,13 @@ const (
 	TestingRunMode runMode = "testing"
 	// ProductionRunMode is the run mode for a production environment.
 	ProductionRunMode runMode = "production"
+
+	// ServiceEnvironmentEnvVarKey is the env var key we use to refer to the running environment.
+	ServiceEnvironmentEnvVarKey = "DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"
+	// RunningInGCPEnvVarKey is the env var key we use to indicate we're running in GCP.
+	RunningInGCPEnvVarKey = "RUNNING_IN_GCP"
+	// FilePathEnvVarKey is the env var key we use to indicate where the config file is located.
+	FilePathEnvVarKey = "CONFIGURATION_FILEPATH"
 )
 
 type (
@@ -39,7 +46,8 @@ type (
 
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
-		_             struct{}                  `json:"-"`
+		_ struct{} `json:"-"`
+
 		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
 		Queues        QueuesConfig              `json:"queues"        toml:"queues,omitempty"`
 		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
