@@ -121,26 +121,26 @@ profiles:
       kubeContext: docker-desktop
       helm:
         releases:
-#          - name: postgres
-#            namespace: localdev
-#            createNamespace: true
-#            remoteChart: oci://registry-1.docker.io/bitnamicharts/postgresql
-#            version: 16.1.2
-#            overrides:
-#              global:
-#                postgresql:
-#                  auth:
-#                    username: dbuser
-#                    password: hunter2
-#                    database: dinner-done-better
+          - name: postgres
+            namespace: localdev
+            createNamespace: true
+            remoteChart: oci://registry-1.docker.io/bitnamicharts/postgresql
+            version: 16.1.2
+            overrides:
+              global:
+                postgresql:
+                  auth:
+                    username: dbuser
+                    password: hunter2
+                    database: dinner-done-better
 
-#          - name: redis
-#            namespace: localdev
-#            createNamespace: true
-#            remoteChart: oci://registry-1.docker.io/bitnamicharts/redis
-#            version: 20.2.1
-#            overrides:
-#              architecture: standalone
+          - name: redis
+            namespace: localdev
+            createNamespace: true
+            remoteChart: oci://registry-1.docker.io/bitnamicharts/redis
+            version: 20.2.1
+            overrides:
+              architecture: standalone
 
 #          - name: grafana
 #            namespace: localdev

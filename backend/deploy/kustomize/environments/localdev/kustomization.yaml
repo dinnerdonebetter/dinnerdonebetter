@@ -4,12 +4,23 @@ kind: Kustomization
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
-  - ../../base
+  - namespace.yaml
   - ../../components/api_server
+  # - ../../components/jobs/db_cleaner
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
-patches:
-  - path: api-service-configmap-patch.yaml
-    target:
-      kind: ConfigMap
-      name: dinner-done-better-config
+patches: []
+
+commonLabels:
+  app.kubernetes.io/name: dinner-done-better
+
+configMapGenerator:
+  - name: dinner-done-better-service-api-config
+    namespace: localdev
+    files:
+      - config.json
+
+  - name: dinner-done-better-job-db-cleaner-config
+    namespace: localdev
+    files:
+      - config.json

@@ -292,10 +292,11 @@ skbuild:
 .PHONY: skrender
 skrender:
 	rm -f environments/local/generated/kubernetes.yaml
+	mkdir -p environments/local/generated/
 	$(MAKE) environments/local/generated/kubernetes.yaml
 
 .PHONY: skrun
-skrun: environments/local/generated/kubernetes.yaml
+skrun: skrender
 	skaffold run --profile $(LOCAL_DEV_NAMESPACE) # --port-forward
 
 environments/local/generated/kubernetes.yaml:
