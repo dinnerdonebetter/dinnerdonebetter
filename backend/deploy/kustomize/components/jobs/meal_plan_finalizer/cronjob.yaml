@@ -1,0 +1,31 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dinner-done-better-job-meal-plan-finalizer
+  namespace: localdev
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: meal-plan-finalizer
+            image: dinner-done-better-job-meal-plan-finalizer
+            imagePullPolicy: IfNotPresent
+            env:
+              - name: "CONFIGURATION_FILEPATH"
+                value: "/etc/service-config.json"
+              - name: "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
+                value: "data_changes"
+            volumeMounts:
+            - name: "config"
+              mountPath: "/etc/service-config.json"
+              subPath: "config.json"
+          restartPolicy: OnFailure
+          volumes:
+            - name: "config"
+              configMap:
+                name: "dinner-done-better-job-meal-plan-finalizer-config"
+---

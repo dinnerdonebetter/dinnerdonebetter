@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"os"
-	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/functions/search_indexer/logic"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -34,7 +32,7 @@ type PubSubMessage struct {
 
 // IndexDataForSearch handles a data change.
 func IndexDataForSearch(ctx context.Context, e event.Event) error {
-	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
@@ -43,6 +41,7 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
 
 	logger := cfg.Observability.Logging.ProvideLogger()
 

@@ -7,9 +7,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"math/rand/v2"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -17,6 +15,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
 
@@ -28,15 +27,16 @@ import (
 func doTheThing() error {
 	ctx := context.Background()
 
-	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
 
-	cfg, err := config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.FetchForApplication(ctx, config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager)
 	if err != nil {
-		log.Fatal(fmt.Errorf("error getting config: %w", err))
+		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
 
 	logger := cfg.Observability.Logging.ProvideLogger().WithValue("commit", cfg.Commit())
 
@@ -78,8 +78,8 @@ func doTheThing() error {
 	defer searchDataIndexPublisher.Stop()
 
 	// figure out what records to join
-	//nolint:gosec // not important to use crypto/rand here
-	chosenIndex := indexing.AllIndexTypes[rand.IntN(len(indexing.AllIndexTypes))]
+	//nolint:gosec // not going to use crypto/rand for this
+	chosenIndex := random.Element(indexing.AllIndexTypes)
 
 	logger = logger.WithValue("chosen_index_type", chosenIndex)
 	logger.Info("index type chosen")
@@ -138,7 +138,9 @@ func doTheThing() error {
 }
 
 func main() {
+	log.Println("doing the thing")
 	if err := doTheThing(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println("the thing is done")
 }

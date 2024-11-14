@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"os"
-	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/functions/outbound_emailer/logic"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -41,7 +39,7 @@ type PubSubMessage struct {
 
 // SendEmail handles sending an email.
 func SendEmail(ctx context.Context, e event.Event) error {
-	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
@@ -50,6 +48,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
 
 	logger := cfg.Observability.Logging.ProvideLogger()
 

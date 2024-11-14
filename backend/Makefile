@@ -113,10 +113,10 @@ format: format_golang terraformat
 
 .PHONY: format_golang
 format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
-	@# this line is supposed to replace (_\s+struct\{\}\s+`json\:"-"`)\n(\t+\w) with $1\n\n$2 but doesn't seem to work for reasons I don't have time to care about.
-	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do sed -E -i ':a;N;$!ba;s/(_\s+struct\{\}\s+`json\:"-"`)\n(\s+\w)/\1\n\n\2/g' $$file; done
 	until fieldalignment -fix ./...; do true; done > /dev/null
 	until tagalign -fix -sort -order "json,toml,yaml,mapstructure" ./...; do true; done > /dev/null
+	@# this line is supposed to replace (_\s+struct\{\}\s+`json\:"-"`)\n(\t+\w) with $1\n\n$2 but doesn't seem to work for reasons I don't have time to care about.
+	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do sed -E -i ':a;N;$!ba;s/(_\s+struct\{\}\s+`json\:"-"`)\n(\s+\w)/\1\n\n\2/g' $$file; done
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
@@ -304,7 +304,7 @@ environments/local/generated/kubernetes.yaml:
 
 .PHONY: nuke_k8s
 nuke_k8s:
-	kubectl delete namespace $(LOCAL_DEV_NAMESPACE)
+	kubectl delete namespace $(LOCAL_DEV_NAMESPACE) || true
 
 .PHONY: proxy_k8s_db
 proxy_k8s_db:

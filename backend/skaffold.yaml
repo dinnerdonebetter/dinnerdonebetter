@@ -37,79 +37,79 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/jobs/db_cleaner
-            fromImage: gcr.io/distroless/static:nonroot
+            fromImage: golang:1.22-bullseye
 
-#        - image: dinner-done-better-job-email-prober
-#          context: .
-#          ko:
-#            dir: .
-#            env:
-#              - CGO_ENABLED=1
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/email_prober
-#            fromImage: gcr.io/distroless/static:nonroot
-#
-#        - image: dinner-done-better-job-meal-plan-finalizer
-#          context: .
-#          ko:
-#            dir: .
-#            env:
-#              - CGO_ENABLED=1
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/meal_plan_finalizer
-#            fromImage: gcr.io/distroless/static:nonroot
-#
-#        - image: dinner-done-better-job-meal-plan-grocery-list-initializer
-#          context: .
-#          ko:
-#            dir: .
-#            env:
-#              - CGO_ENABLED=1
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/meal_plan_grocery_list_initializer
-#            fromImage: gcr.io/distroless/static:nonroot
-#
-#        - image: dinner-done-better-job-meal-plan-task-creator
-#          context: .
-#          ko:
-#            dir: .
-#            env:
-#              - CGO_ENABLED=1
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/meal_plan_task_creator
-#            fromImage: gcr.io/distroless/static:nonroot
-#
-#        - image: dinner-done-better-job-search-data-index-scheduler
-#          context: .
-#          ko:
-#            dir: .
-#            env:
-#              - CGO_ENABLED=1
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/search_data_index_scheduler
-#            fromImage: gcr.io/distroless/static:nonroot
+        - image: dinner-done-better-job-email-prober
+          context: .
+          ko:
+            dir: .
+            env:
+              - CGO_ENABLED=1
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/email_prober
+            fromImage: golang:1.22-bullseye
 
-        # TODO: cmd/functions
+        - image: dinner-done-better-job-meal-plan-finalizer
+          context: .
+          ko:
+            dir: .
+            env:
+              - CGO_ENABLED=1
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/meal_plan_finalizer
+            fromImage: golang:1.22-bullseye
+
+        - image: dinner-done-better-job-meal-plan-grocery-list-initializer
+          context: .
+          ko:
+            dir: .
+            env:
+              - CGO_ENABLED=1
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/meal_plan_grocery_list_initializer
+            fromImage: golang:1.22-bullseye
+
+        - image: dinner-done-better-job-meal-plan-task-creator
+          context: .
+          ko:
+            dir: .
+            env:
+              - CGO_ENABLED=1
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/meal_plan_task_creator
+            fromImage: golang:1.22-bullseye
+
+        - image: dinner-done-better-job-search-data-index-scheduler
+          context: .
+          ko:
+            dir: .
+            env:
+              - CGO_ENABLED=1
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/search_data_index_scheduler
+            fromImage: golang:1.22-bullseye
+
+    # NOTE: no cmd/functions here
 
     manifests:
       kustomize:

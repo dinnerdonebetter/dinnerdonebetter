@@ -1,11 +1,14 @@
 package config
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"runtime/debug"
+	"strings"
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
@@ -29,6 +32,8 @@ const (
 	// ProductionRunMode is the run mode for a production environment.
 	ProductionRunMode runMode = "production"
 
+	// CeaseOperationEnvVarKey is the env var key used to indicate a function or job should just quit early.
+	CeaseOperationEnvVarKey = "CEASE_OPERATION"
 	// ServiceEnvironmentEnvVarKey is the env var key we use to refer to the running environment.
 	ServiceEnvironmentEnvVarKey = "DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"
 	// RunningInGCPEnvVarKey is the env var key we use to indicate we're running in GCP.
@@ -121,4 +126,43 @@ func (cfg *InstanceConfig) Commit() string {
 	}
 
 	return ""
+}
+
+func ShouldCeaseOperation() bool {
+	return strings.TrimSpace(strings.ToLower(os.Getenv(CeaseOperationEnvVarKey))) == "true"
+}
+
+func RunningInCloud() bool {
+	return os.Getenv(RunningInGCPEnvVarKey) != ""
+}
+
+type cloudConfigFetcher func(context.Context) (*InstanceConfig, error)
+
+func FetchForApplication(ctx context.Context, cff cloudConfigFetcher) (*InstanceConfig, error) {
+	var cfg *InstanceConfig
+	if RunningInCloud() {
+		c, err := cff(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("fetching config from GCP: %w", err)
+		}
+
+		cfg = c
+	} else if configFilepath := os.Getenv(FilePathEnvVarKey); configFilepath != "" {
+		configBytes, err := os.ReadFile(configFilepath)
+		if err != nil {
+			return nil, fmt.Errorf("reading local config file: %w", err)
+		}
+
+		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+			return nil, fmt.Errorf("decoding config file contents: %w", err)
+		}
+	} else {
+		return nil, errors.New("not running in the cloud, and no config filepath provided")
+	}
+
+	if err := cfg.ValidateWithContext(ctx, true); err != nil {
+		return nil, fmt.Errorf("validating config: %w", err)
+	}
+
+	return cfg, nil
 }

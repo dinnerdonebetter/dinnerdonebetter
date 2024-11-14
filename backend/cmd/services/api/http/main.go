@@ -1,11 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -35,39 +31,10 @@ func init() {
 	}
 }
 
-func getConfig(ctx context.Context) (*config.InstanceConfig, error) {
-	var cfg *config.InstanceConfig
-	if os.Getenv(config.RunningInGCPEnvVarKey) != "" {
-		c, err := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("fetching config from GCP: %w", err)
-		}
-
-		cfg = c
-	} else if configFilepath := os.Getenv(config.FilePathEnvVarKey); configFilepath != "" {
-		configBytes, err := os.ReadFile(configFilepath)
-		if err != nil {
-			return nil, fmt.Errorf("reading local config file: %w", err)
-		}
-
-		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-			return nil, fmt.Errorf("decoding config file contents: %w", err)
-		}
-	} else {
-		return nil, errors.New("no config provided")
-	}
-
-	if err := cfg.ValidateWithContext(ctx, true); err != nil {
-		return nil, fmt.Errorf("validating config: %w", err)
-	}
-
-	return cfg, nil
-}
-
 func main() {
 	rootCtx := context.Background()
 
-	cfg, err := getConfig(rootCtx)
+	cfg, err := config.FetchForApplication(rootCtx, config.GetAPIServerConfigFromGoogleCloudRunEnvironment)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -6,7 +6,6 @@ import (
 	"log"
 	"log/slog"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -23,15 +22,16 @@ import (
 func doTheThing() error {
 	ctx := context.Background()
 
-	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
 
-	cfg, err := config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.FetchForApplication(ctx, config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
 
 	logger := cfg.Observability.Logging.ProvideLogger()
 
@@ -88,7 +88,9 @@ func doTheThing() error {
 }
 
 func main() {
+	log.Println("doing the thing")
 	if err := doTheThing(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println("the thing is done")
 }
