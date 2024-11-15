@@ -67,7 +67,7 @@ profiles:
             main: ./cmd/jobs/meal_plan_finalizer
             fromImage: golang:1.22-bullseye
 
-        - image: dinner-done-better-job-meal-plan-grocery-list-initializer
+        - image: dinner-done-better-job-meal-plan-grocery-list-init
           context: .
           ko:
             dir: .
@@ -142,22 +142,12 @@ profiles:
             overrides:
               architecture: standalone
 
-#          - name: grafana
-#            namespace: localdev
-#            createNamespace: true
-#            remoteChart: oci://registry-1.docker.io/bitnamicharts/grafana
-#            version: 11.3.26
-#
-#          - name: jaeger
-#            namespace: localdev
-#            createNamespace: true
-#            remoteChart: oci://registry-1.docker.io/bitnamicharts/jaeger
-#            version: 3.0.6
+          - name: grafana
+            namespace: localdev
+            createNamespace: true
+            remoteChart: oci://registry-1.docker.io/bitnamicharts/grafana
+            version: 11.3.26
 
-#          - name: dinnerdonebetter
-#            namespace: localdev
-#            createNamespace: true
-#            chartPath: environments/local/helm/charts/api-server
       kubectl: {}
 
     portForward:

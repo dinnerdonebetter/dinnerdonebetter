@@ -9,9 +9,9 @@ resources:
   - ../../components/jobs/db_cleaner
   - ../../components/jobs/email_prober
   - ../../components/jobs/meal_plan_finalizer
-#  - ../../components/jobs/meal_plan_grocery_list_initializer
-#  - ../../components/jobs/meal_plan_task_creator
-#  - ../../components/jobs/search_data_index_scheduler
+  - ../../components/jobs/meal_plan_grocery_list_initializer
+  - ../../components/jobs/meal_plan_task_creator
+  - ../../components/jobs/search_data_index_scheduler
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches: []

@@ -17,6 +17,8 @@ spec:
             env:
               - name: "CONFIGURATION_FILEPATH"
                 value: "/etc/service-config.json"
+              - name: "SEARCH_INDEXING_TOPIC_NAME"
+                value: "search_index_requests"
             volumeMounts:
             - name: "config"
               mountPath: "/etc/service-config.json"
