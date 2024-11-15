@@ -3,7 +3,6 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: dinner-done-better-cronjob-db-cleaner
-  namespace: localdev
 spec:
   # schedule: "* * 1,8,15,22 * *"
   schedule: "* * * * *"

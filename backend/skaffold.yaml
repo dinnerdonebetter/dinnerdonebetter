@@ -112,6 +112,10 @@ profiles:
     # NOTE: no cmd/functions here
 
     manifests:
+      # transform:
+      #   - name: set-namespace
+      #     configMap:
+      #       - "namespace:localdev"
       kustomize:
         paths:
           - deploy/kustomize/environments/localdev
@@ -148,7 +152,8 @@ profiles:
             remoteChart: oci://registry-1.docker.io/bitnamicharts/grafana
             version: 11.3.26
 
-      kubectl: {}
+      kubectl:
+        defaultNamespace: localdev
 
     portForward:
       - resourceType: Service
@@ -162,7 +167,7 @@ profiles:
       #   namespace: localdev
       #   resourceName: dinner-done-better
       #   port: 8000
-      #   localPort: 8008
+      #   localPort: 8001
       #   address: 127.0.0.1
 
   - name: dev

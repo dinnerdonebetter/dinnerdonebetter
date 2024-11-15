@@ -3,7 +3,6 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: dinner-done-better-job-search-data-index-scheduler
-  namespace: localdev
 spec:
   schedule: "* * * * *"
   jobTemplate:

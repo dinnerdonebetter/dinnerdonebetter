@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dinner-done-better-deployment
-  namespace: localdev
   labels:
     app: dinner-done-better
 spec:
@@ -18,7 +17,7 @@ spec:
     spec:
       containers:
       - name: dinner-done-better
-        image: dinner-done-better-api-server:latest
+        image: dinner-done-better-service-api
         imagePullPolicy: IfNotPresent
         env:
           - name: "CONFIGURATION_FILEPATH"
@@ -29,6 +28,7 @@ spec:
           subPath: "config.json"
         ports:
         - containerPort: 8000
+          name: http
         resources:
           requests:
             memory: 256Mi

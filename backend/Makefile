@@ -297,7 +297,7 @@ skrender:
 
 .PHONY: skrun
 skrun: skrender
-	skaffold run --profile $(LOCAL_DEV_NAMESPACE) # --port-forward
+	skaffold run --profile $(LOCAL_DEV_NAMESPACE) --port-forward
 
 environments/local/generated/kubernetes.yaml:
 	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output environments/local/generated/kubernetes.yaml

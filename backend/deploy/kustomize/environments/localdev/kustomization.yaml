@@ -55,3 +55,9 @@ configMapGenerator:
     files:
       - config.json
 
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    type: generated
+  annotations:
+    note: generated
