@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dinner-done-better-webapp-deployment
+  labels:
+    app: dinner-done-better-webapp
+spec:
+  selector:
+    matchLabels:
+      app: dinner-done-better-webapp
+      app.kubernetes.io/name: dinner-done-better-webapp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better-webapp
+        app.kubernetes.io/name: dinner-done-better-webapp
+    spec:
+      containers:
+      - name: dinner-done-better-webapp
+        image: dinner-done-better-webapp
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: "DISABLE_REGISTRATION"
+            value: "false"
+          - name: "NEXT_API_ENDPOINT"
+            value: "dinner-done-better.localdev.svc.cluster.local:8000"
+          - name: "NEXT_COOKIE_ENCRYPTION_KEY"
+            value: "ZOTGz4KEhZFSM6udeESOX5JVqhtEdHdS"
+          - name: "NEXT_BASE64_COOKIE_ENCRYPT_IV"
+            value: "S2IwVXVvMW9hSEl4WjQ0ak1NYW50QndMTzJBWDJFV2o="
+          - name: "NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID"
+            value: ""
+          - name: "NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET"
+            value: ""
+          - name: "REWRITE_COOKIE_SECURE"
+            value: "false"
+          - name: "REWRITE_COOKIE_HOST_FROM"
+            value: ""
+          - name: "REWRITE_COOKIE_HOST_TO"
+            value: ""
+          - name: "NEXT_PUBLIC_SEGMENT_API_TOKEN"
+            value: ""
+        ports:
+        - containerPort: 9000
+          name: http
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: "/api/_meta_/live"
+            port: 9000
+          initialDelaySeconds: 15
+          periodSeconds: 32
+        readinessProbe:
+          httpGet:
+            path: "/api/_meta_/ready"
+            port: 9000
+          initialDelaySeconds: 15
+          periodSeconds: 3
+---

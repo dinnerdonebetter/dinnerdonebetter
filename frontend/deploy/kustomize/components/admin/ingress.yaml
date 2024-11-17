@@ -1,0 +1,20 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dinner-done-better-admin-app-ingress
+  labels:
+    app.kubernetes.io/name: dinner-done-better-admin-app
+spec:
+  rules:
+  - host: admin-app-server.k8s
+    http:
+      paths:
+      - backend:
+          service:
+            name: dinner-done-better-admin-app-srv
+            port:
+              number: 9000
+        path: /
+        pathType: ImplementationSpecific
+---

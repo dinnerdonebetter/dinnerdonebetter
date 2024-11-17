@@ -11,8 +11,9 @@ profiles:
       tagPolicy:
         sha256: {}
       artifacts:
+          # backend artifacts
         - image: dinner-done-better-service-api
-          context: .
+          context: ./backend
           ko:
             dir: .
             env:
@@ -26,7 +27,7 @@ profiles:
             fromImage: golang:1.22-bullseye
 
         - image: dinner-done-better-job-db-cleaner
-          context: .
+          context: backend
           ko:
             dir: .
             env:
@@ -40,7 +41,7 @@ profiles:
             fromImage: golang:1.22-bullseye
 
         - image: dinner-done-better-job-email-prober
-          context: .
+          context: backend
           ko:
             dir: .
             env:
@@ -54,7 +55,7 @@ profiles:
             fromImage: golang:1.22-bullseye
 
         - image: dinner-done-better-job-meal-plan-finalizer
-          context: .
+          context: backend
           ko:
             dir: .
             env:
@@ -68,7 +69,7 @@ profiles:
             fromImage: golang:1.22-bullseye
 
         - image: dinner-done-better-job-meal-plan-grocery-list-init
-          context: .
+          context: backend
           ko:
             dir: .
             env:
@@ -82,7 +83,7 @@ profiles:
             fromImage: golang:1.22-bullseye
 
         - image: dinner-done-better-job-meal-plan-task-creator
-          context: .
+          context: backend
           ko:
             dir: .
             env:
@@ -96,7 +97,7 @@ profiles:
             fromImage: golang:1.22-bullseye
 
         - image: dinner-done-better-job-search-data-index-scheduler
-          context: .
+          context: backend
           ko:
             dir: .
             env:
@@ -109,17 +110,31 @@ profiles:
             main: ./cmd/jobs/search_data_index_scheduler
             fromImage: golang:1.22-bullseye
 
-    # NOTE: no cmd/functions here
+          # NOTE: no cmd/functions here
+
+          # frontend artifacts
+        - image: dinner-done-better-webapp
+          context: ./frontend
+          docker:
+            dockerfile: ./apps/web/Dockerfile
+
+        - image: dinner-done-better-admin-app
+          context: ./frontend
+          docker:
+            dockerfile: ./apps/admin/Dockerfile
+
+        - image: dinner-done-better-landing
+          context: ./frontend
+          docker:
+            dockerfile: ./apps/landing/Dockerfile
+
 
     manifests:
-      # transform:
-      #   - name: set-namespace
-      #     configMap:
-      #       - "namespace:localdev"
       kustomize:
         paths:
-          - deploy/kustomize/environments/localdev
-      output: ./environments/local/generated/kubernetes.yaml
+          - backend/deploy/kustomize/environments/localdev
+          - frontend/deploy/kustomize/environments/localdev
+      output: deploy/environments/local/generated/kubernetes.yaml
 
     deploy:
       kubeContext: docker-desktop
@@ -154,20 +169,5 @@ profiles:
 
       kubectl:
         defaultNamespace: localdev
-
-    portForward:
-      - resourceType: Service
-        namespace: localdev
-        resourceName: postgres-postgresql
-        port: 5432
-        localPort: 5434
-        address: 127.0.0.1
-
-      # - resourceType: Service
-      #   namespace: localdev
-      #   resourceName: dinner-done-better
-      #   port: 8000
-      #   localPort: 8001
-      #   address: 127.0.0.1
 
   - name: dev

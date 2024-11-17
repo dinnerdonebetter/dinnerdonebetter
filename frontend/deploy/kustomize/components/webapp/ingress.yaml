@@ -2,18 +2,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: dinner-done-better-api-server-ingress
-
+  name: dinner-done-better-webapp-ingress
+  labels:
+    app.kubernetes.io/name: dinner-done-better-webapp
 spec:
   rules:
-  - host: api-server.k8s
+  - host: webapp-server.k8s
     http:
       paths:
       - backend:
           service:
-            name: dinner-done-better-api-svc
+            name: dinner-done-better-webapp-srv
             port:
-              number: 8000
+              number: 9000
         path: /
         pathType: ImplementationSpecific
 ---

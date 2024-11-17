@@ -36,3 +36,53 @@ regit:
 	fi
 	cp -rf tempdir/.git .
 	rm -rf tempdir
+
+
+### EXPERIMENTAL KUBERNETES ZONE
+
+LOCAL_DEV_NAMESPACE := localdev
+
+.PHONY: k9s
+k9s:
+	k9s --refresh 1
+
+.PHONY: skbuild
+skbuild:
+	skaffold build --build-concurrency 0
+
+.PHONY: skrender
+skrender:
+	rm -f environments/local/generated/kubernetes.yaml
+	mkdir -p environments/local/generated/
+	$(MAKE) environments/local/generated/kubernetes.yaml
+
+.PHONY: skrun
+skrun: skrender
+	skaffold run --profile $(LOCAL_DEV_NAMESPACE) --port-forward
+
+environments/local/generated/kubernetes.yaml:
+	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output environments/local/generated/kubernetes.yaml
+
+.PHONY: nuke_k8s
+nuke_k8s:
+	kubectl delete namespace $(LOCAL_DEV_NAMESPACE) || true
+
+.PHONY: proxy_k8s_db
+proxy_k8s_db:
+	kubectl port-forward --namespace localdev svc/postgres-postgresql 5434:5432
+
+.PHONY: proxy_k8s_api_server
+proxy_k8s_api_server:
+	kubectl port-forward --namespace localdev svc/dinner-done-better-api-svc 8888:8000
+
+.PHONY: proxy_k8s_webapp_server
+proxy_k8s_webapp_server:
+	kubectl port-forward --namespace localdev svc/dinner-done-better-webapp-srv 9999:9000
+
+.PHONY: proxy_k8s_admin-app_server
+proxy_k8s_admin_server:
+	kubectl port-forward --namespace localdev svc/dinner-done-better-admin-app-srv 7777:7000
+
+.PHONY: proxy_k8s_landing_server
+proxy_k8s_landing_server:
+	kubectl port-forward --namespace localdev svc/dinner-done-better-landing-srv 60006:60000

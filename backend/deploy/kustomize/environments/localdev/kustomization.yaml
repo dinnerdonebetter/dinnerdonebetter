@@ -16,8 +16,9 @@ resources:
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches: []
 
-commonLabels:
-  app.kubernetes.io/name: dinner-done-better
+labels:
+  - pairs:
+      app.kubernetes.io/name: dinner-done-better-backend
 
 configMapGenerator:
   - name: dinner-done-better-service-api-config

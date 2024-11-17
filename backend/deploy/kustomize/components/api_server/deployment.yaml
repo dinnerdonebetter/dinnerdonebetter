@@ -2,21 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dinner-done-better-deployment
+  name: dinner-done-better-service-api-deployment
   labels:
-    app: dinner-done-better
+    app: dinner-done-better-backend
+    app.kubernetes.io/name: dinner-done-better-backend
 spec:
   selector:
     matchLabels:
-      app: dinner-done-better
+      app: dinner-done-better-backend
+      app.kubernetes.io/name: dinner-done-better-backend
   replicas: 1
   template:
     metadata:
       labels:
-        app: dinner-done-better
+        app: dinner-done-better-backend
+        app.kubernetes.io/name: dinner-done-better-backend
     spec:
       containers:
-      - name: dinner-done-better
+      - name: dinner-done-better-service-api
         image: dinner-done-better-service-api
         imagePullPolicy: IfNotPresent
         env:
