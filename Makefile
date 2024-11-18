@@ -53,15 +53,15 @@ skbuild:
 .PHONY: skrender
 skrender:
 	rm -f environments/local/generated/kubernetes.yaml
-	mkdir -p environments/local/generated/
-	$(MAKE) environments/local/generated/kubernetes.yaml
+	mkdir -p deploy/environments/local/generated/
+	$(MAKE) deploy/environments/local/generated/kubernetes.yaml
 
-.PHONY: skrun
-skrun: skrender
-	skaffold run --profile $(LOCAL_DEV_NAMESPACE) --port-forward
+.PHONY: run
+run: nuke_k8s skrender
+	skaffold run --build-concurrency 0 --profile $(LOCAL_DEV_NAMESPACE) --port-forward
 
-environments/local/generated/kubernetes.yaml:
-	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output environments/local/generated/kubernetes.yaml
+deploy/environments/local/generated/kubernetes.yaml:
+	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output deploy/environments/local/generated/kubernetes.yaml
 
 .PHONY: nuke_k8s
 nuke_k8s:

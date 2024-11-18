@@ -11,7 +11,7 @@ profiles:
       tagPolicy:
         sha256: {}
       artifacts:
-          # backend artifacts
+        # backend artifacts (ko)
         - image: dinner-done-better-service-api
           context: ./backend
           ko:
@@ -110,6 +110,42 @@ profiles:
             main: ./cmd/jobs/search_data_index_scheduler
             fromImage: golang:1.22-bullseye
 
+#        # backend artifacts (docker)
+#        - image: dinner-done-better-service-api
+#          context: backend
+#          docker:
+#            dockerfile: ./environments/local/dockerfiles/api_server.Dockerfile
+#
+#        - image: dinner-done-better-job-db-cleaner
+#          context: backend
+#          docker:
+#            dockerfile: ./environments/local/dockerfiles/db_cleaner.Dockerfile
+#
+#        - image: dinner-done-better-job-email-prober
+#          context: backend
+#          docker:
+#            dockerfile: ./environments/local/dockerfiles/email_prober.Dockerfile
+#
+#        - image: dinner-done-better-job-meal-plan-finalizer
+#          context: backend
+#          docker:
+#            dockerfile: ./environments/local/dockerfiles/meal_plan_finalizer.Dockerfile
+#
+#        - image: dinner-done-better-job-meal-plan-grocery-list-init
+#          context: backend
+#          docker:
+#            dockerfile: ./environments/local/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile
+#
+#        - image: dinner-done-better-job-meal-plan-task-creator
+#          context: backend
+#          docker:
+#            dockerfile: ./environments/local/dockerfiles/meal_plan_task_creator.Dockerfile
+#
+#        - image: dinner-done-better-job-search-data-index-scheduler
+#          context: backend
+#          docker:
+#            dockerfile: ./environments/local/dockerfiles/search_data_index_scheduler.Dockerfile
+
           # NOTE: no cmd/functions here
 
           # frontend artifacts
@@ -128,13 +164,12 @@ profiles:
           docker:
             dockerfile: ./apps/landing/Dockerfile
 
-
     manifests:
       kustomize:
         paths:
           - backend/deploy/kustomize/environments/localdev
           - frontend/deploy/kustomize/environments/localdev
-      output: deploy/environments/local/generated/kubernetes.yaml
+      output: ./deploy/environments/localdev/generated/kubernetes.yaml
 
     deploy:
       kubeContext: docker-desktop
@@ -169,5 +204,3 @@ profiles:
 
       kubectl:
         defaultNamespace: localdev
-
-  - name: dev

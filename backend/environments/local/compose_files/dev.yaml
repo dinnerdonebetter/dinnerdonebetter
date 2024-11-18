@@ -31,7 +31,7 @@ services:
     ports:
       - '8000:8000'
     build:
-      dockerfile: '../server.Dockerfile'
+      dockerfile: '../dockerfiles/api_server.Dockerfile'
     volumes:
       - source: '../config_files/service-config.json'
         target: '/etc/config'
