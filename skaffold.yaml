@@ -16,8 +16,6 @@ profiles:
           context: ./backend
           ko:
             dir: .
-            env:
-              - CGO_ENABLED=1
             flags:
               - -trimpath
             ldflags:
@@ -30,8 +28,6 @@ profiles:
           context: backend
           ko:
             dir: .
-            env:
-              - CGO_ENABLED=1
             flags:
               - -trimpath
             ldflags:
@@ -44,8 +40,6 @@ profiles:
           context: backend
           ko:
             dir: .
-            env:
-              - CGO_ENABLED=1
             flags:
               - -trimpath
             ldflags:
@@ -58,8 +52,6 @@ profiles:
           context: backend
           ko:
             dir: .
-            env:
-              - CGO_ENABLED=1
             flags:
               - -trimpath
             ldflags:
@@ -72,8 +64,6 @@ profiles:
           context: backend
           ko:
             dir: .
-            env:
-              - CGO_ENABLED=1
             flags:
               - -trimpath
             ldflags:
@@ -86,8 +76,6 @@ profiles:
           context: backend
           ko:
             dir: .
-            env:
-              - CGO_ENABLED=1
             flags:
               - -trimpath
             ldflags:
@@ -100,8 +88,6 @@ profiles:
           context: backend
           ko:
             dir: .
-            env:
-              - CGO_ENABLED=1
             flags:
               - -trimpath
             ldflags:

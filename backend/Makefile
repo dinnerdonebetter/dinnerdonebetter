@@ -5,6 +5,7 @@ GOPATH                 := $(GOPATH)
 ARTIFACTS_DIR          := artifacts
 COVERAGE_OUT           := $(ARTIFACTS_DIR)/coverage.out
 GO_FORMAT              := gofmt -s -w
+GO_TEST                := CGO_ENABLED=1 go test -shuffle=on -race -vet=all
 THIS                   := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST     := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST  := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)'`
@@ -18,15 +19,15 @@ CONTAINER_RUNNER       := docker
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
 LINTER_IMAGE           := golangci/golangci-lint:v1.61.0
 LINTER                 := $(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):$(PWD) \
-		--workdir=$(PWD) \
-		$(LINTER_IMAGE) golangci-lint
+							--volume $(PWD):$(PWD) \
+							--workdir=$(PWD) \
+							$(LINTER_IMAGE) golangci-lint
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 SQL_GENERATOR          := $(CONTAINER_RUNNER) run --rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE)
+							--volume $(PWD):/src \
+							--workdir /src \
+							--user $(MYSELF):$(MY_GROUP) \
+							$(SQL_GENERATOR_IMAGE)
 
 ## non-PHONY folders/files
 
@@ -101,7 +102,7 @@ revendor: clean_vendor vendor
 ## dependency injection
 
 .PHONY: rewire
-rewire:
+rewire: ensure_wire_installed
 	for tgt in $(WIRE_TARGETS); do \
 		rm -f $(THIS)/internal/$$tgt/wire_gen.go && wire gen $(THIS)/internal/$$tgt; \
 	done
@@ -113,10 +114,8 @@ format: format_golang terraformat
 
 .PHONY: format_golang
 format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
-	until fieldalignment -fix ./...; do true; done > /dev/null
-	until tagalign -fix -sort -order "json,toml,yaml,mapstructure" ./...; do true; done > /dev/null
-	@# this line is supposed to replace (_\s+struct\{\}\s+`json\:"-"`)\n(\t+\w) with $1\n\n$2 but doesn't seem to work for reasons I don't have time to care about.
-	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do sed -E -i ':a;N;$!ba;s/(_\s+struct\{\}\s+`json\:"-"`)\n(\s+\w)/\1\n\n\2/g' $$file; done
+	@until fieldalignment -fix ./...; do true; done > /dev/null
+	@until tagalign -fix -sort -order "json,toml,yaml" ./...; do true; done > /dev/null
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
@@ -168,7 +167,7 @@ clean_coverage:
 
 .PHONY: coverage
 coverage: clean_coverage $(ARTIFACTS_DIR)
-	@go test -coverprofile=$(COVERAGE_OUT) -shuffle=on -covermode=atomic -race $(TESTABLE_PACKAGE_LIST) > /dev/null
+	@$(GO_TEST) -coverprofile=$(COVERAGE_OUT) -covermode=atomic $(TESTABLE_PACKAGE_LIST) > /dev/null
 	@go tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
 
 .PHONY: build
@@ -177,7 +176,7 @@ build:
 
 .PHONY: test
 test: $(ARTIFACTS_DIR) vendor build
-	go test -cover -shuffle=on -race -vet=all -failfast $(TESTABLE_PACKAGE_LIST)
+	$(GO_TEST) -failfast $(TESTABLE_PACKAGE_LIST)
 
 ## Generated files
 

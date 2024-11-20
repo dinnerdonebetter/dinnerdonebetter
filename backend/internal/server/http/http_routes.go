@@ -833,9 +833,6 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 					Get(root, s.recipesService.ReadRecipeHandler)
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
-					Get("/dag", s.recipesService.RecipeDAGHandler)
-				singleRecipeRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 					Get("/mermaid", s.recipesService.RecipeMermaidHandler)
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
