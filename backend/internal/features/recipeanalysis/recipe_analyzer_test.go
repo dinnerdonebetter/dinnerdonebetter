@@ -2,8 +2,6 @@ package recipeanalysis
 
 import (
 	"context"
-	"image/png"
-	"os"
 	"testing"
 	"time"
 
@@ -14,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func newAnalyzerForTest(t *testing.T) *recipeAnalyzer {

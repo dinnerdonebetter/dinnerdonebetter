@@ -25,7 +25,6 @@ const (
 var skipOps = map[string]bool{
 	"CheckForLiveness":  true,
 	"CheckForReadiness": true,
-	"GetRecipeDAG":      true,
 }
 
 func GenerateClientFunctions(spec *openapi31.Spec) (map[string]*APIClientFunction, error) {

@@ -149,7 +149,6 @@ type (
 		ArchiveRecipeHandler(http.ResponseWriter, *http.Request)
 		RecipeEstimatedPrepStepsHandler(http.ResponseWriter, *http.Request)
 		RecipeImageUploadHandler(http.ResponseWriter, *http.Request)
-		RecipeDAGHandler(http.ResponseWriter, *http.Request)
 		RecipeMermaidHandler(http.ResponseWriter, *http.Request)
 		CloneRecipeHandler(http.ResponseWriter, *http.Request)
 	}

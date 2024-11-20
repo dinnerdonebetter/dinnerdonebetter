@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"image/png"
 	"net/http"
 	"strings"
 	"time"

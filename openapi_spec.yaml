@@ -6103,28 +6103,6 @@ paths:
         - household_member
       tags:
       - recipes
-  /api/v1/recipes/{recipeID}/dag:
-    get:
-      description: Fetches a RecipeDAG
-      operationId: GetRecipeDAG
-      parameters:
-      - in: path
-        name: recipeID
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            image/png:
-              schema:
-                format: binary
-          description: ""
-      security:
-      - oauth2:
-        - household_member
-      tags:
-      - recipes
   /api/v1/recipes/{recipeID}/mermaid:
     get:
       description: Fetches a MermaidDiagramForRecipe
