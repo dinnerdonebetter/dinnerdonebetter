@@ -8,8 +8,6 @@ package build
 
 import (
 	"context"
-	"log"
-
 	config6 "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -81,17 +79,11 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	configConfig := &observabilityConfig.Logging
 	logger := config2.ProvideLogger(configConfig)
 	config7 := &observabilityConfig.Tracing
-
-	log.Println("providing tracer provider")
-
 	tracerProvider, err := config3.ProvideTracerProvider(ctx, config7, logger)
 	if err != nil {
 		return nil, err
 	}
 	config8 := &cfg.Database
-
-	log.Println("providing database client")
-
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, config8)
 	if err != nil {
 		return nil, err
@@ -106,9 +98,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
 	config9 := &cfg.Events
-
-	log.Println("providing publisher provider")
-
 	publisherProvider, err := config4.ProvidePublisherProvider(ctx, logger, tracerProvider, config9)
 	if err != nil {
 		return nil, err
@@ -120,9 +109,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 		return nil, err
 	}
 	config11 := &cfg.Analytics
-
-	log.Println("providing event reporter")
-
 	eventReporter, err := config6.ProvideEventReporter(config11, logger, tracerProvider)
 	if err != nil {
 		return nil, err
@@ -389,9 +375,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	}
 	config13 := &servicesConfig.DataPrivacy
 	dataPrivacyDataManager := database.ProvideDataPrivacyDataManager(dataManager)
-
-	log.Println("providing worker service")
-
 	dataPrivacyService, err := workers2.ProvideService(ctx, logger, config13, dataPrivacyDataManager, serverEncoderDecoder, publisherProvider, tracerProvider, routeParamManager)
 	if err != nil {
 		return nil, err

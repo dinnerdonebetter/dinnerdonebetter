@@ -104,7 +104,7 @@ func (q *Querier) Close() {
 }
 
 // IsReady returns whether the database is ready for the querier.
-func (q *Querier) IsReady(ctx context.Context) (ready bool) {
+func (q *Querier) IsReady(ctx context.Context) bool {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -121,7 +121,6 @@ func (q *Querier) IsReady(ctx context.Context) (ready bool) {
 				break
 			}
 		} else {
-			ready = true
 			return true
 		}
 	}

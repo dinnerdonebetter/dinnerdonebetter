@@ -75,7 +75,7 @@ func ProvideService(
 
 	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
 	if err != nil {
-		return nil, fmt.Errorf("initializing recipe service upload manager: %w", err)
+		return nil, fmt.Errorf("initializing %s upload manager: %w", serviceName, err)
 	}
 
 	searchIndex, err := searchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeRecipes)

@@ -78,7 +78,6 @@ func doTheThing() error {
 	defer searchDataIndexPublisher.Stop()
 
 	// figure out what records to join
-	//nolint:gosec // not going to use crypto/rand for this
 	chosenIndex := random.Element(indexing.AllIndexTypes)
 
 	logger = logger.WithValue("chosen_index_type", chosenIndex)
