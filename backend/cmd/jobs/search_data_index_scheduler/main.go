@@ -44,6 +44,7 @@ func doTheThing() error {
 	if err != nil {
 		logger.Error(err, "initializing tracer")
 	}
+
 	otel.SetTracerProvider(tracerProvider)
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer_cloud_function"))
 

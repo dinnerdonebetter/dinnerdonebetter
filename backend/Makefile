@@ -214,12 +214,6 @@ sqlc_struct_check:
 openapi:
 	go run $(THIS)/cmd/tools/codegen/openapi_spec
 
-.PHONY: openapi-client
-openapi-client: ensure_oapi_codegen_installed
-	@sed -i 's/openapi: 3.1.0/openapi: 3.0.0/g' ../openapi_spec.yaml
-	oapi-codegen --config=oapi-codegen.yaml ../openapi_spec.yaml
-	@sed -i 's/openapi: 3.0.0/openapi: 3.1.0/g' ../openapi_spec.yaml
-
 ## Integration tests
 
 .PHONY: wipe_containers
