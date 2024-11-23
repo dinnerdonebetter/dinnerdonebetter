@@ -1,0 +1,3873 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: localdev
+---
+apiVersion: v1
+data:
+  config.json: |-
+    {
+    	"observability": {
+    		"logging": {
+    			"level": 0,
+    			"provider": "slog"
+    		},
+    		"tracing": {
+    			"otel": {
+    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    				"service_name": "dinner_done_better_service",
+    				"spanCollectionProbability": 1
+    			},
+    			"provider": "otel"
+    		}
+    	},
+    	"queues": {
+    		"dataChangesTopicName": "data_changes",
+    		"outboundEmailsTopicName": "outbound_emails",
+    		"searchIndexRequestsTopicName": "search_index_requests",
+    		"userDataAggregationTopicName": "user_data_aggregation_requests",
+    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+    	},
+    	"email": {
+    		"sendgrid": null,
+    		"mailgun": null,
+    		"mailjet": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"analytics": {
+    		"segment": null,
+    		"posthog": null,
+    		"rudderstack": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"search": {
+    		"algolia": {
+    			"appID": "",
+    			"writeAPIKey": "",
+    			"timeout": 0
+    		},
+    		"elasticsearch": null,
+    		"circuitBreakerConfig": null,
+    		"provider": "algolia"
+    	},
+    	"featureFlags": {
+    		"LaunchDarkly": null,
+    		"PostHog": null,
+    		"CircuitBreakingConfig": null,
+    		"Provider": ""
+    	},
+    	"encoding": {
+    		"contentType": "application/json"
+    	},
+    	"meta": {
+    		"runMode": "development",
+    		"debug": true
+    	},
+    	"routing": {
+    		"provider": "chi",
+    		"enableCORSForLocalhost": true
+    	},
+    	"events": {
+    		"consumers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		},
+    		"publishers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		}
+    	},
+    	"server": {
+    		"startupDeadline": 60000000000,
+    		"httpPort": 8000,
+    		"debug": true
+    	},
+    	"database": {
+    		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+    		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+    		"debug": true,
+    		"logQueries": true,
+    		"runMigrations": true,
+    		"maxPingAttempts": 50,
+    		"pingWaitPeriod": 1000000000
+    	},
+    	"services": {
+    		"auditLogEntries": {},
+    		"mealPlanGroceryListItems": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validInstrumentMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettingConfigurations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeRatings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validMeasurementUnitConversions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientGroups": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"householdInstrumentOwnerships": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipePrepTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepCompletionConditions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userIngredientPreferences": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"households": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlans": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientPreparations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepProducts": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientStateIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanEvents": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptionVotes": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"workers": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userNotifications": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"dataPrivacy": {
+    			"userDataAggregationTopicName": "user_data_aggregation_requests",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/tmp"
+    					},
+    					"bucketName": "userdata",
+    					"provider": "filesystem"
+    				},
+    				"debug": false
+    			}
+    		},
+    		"recipeSteps": {
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"users": {
+    			"dataChangesTopicName": "data_changes",
+    			"publicMediaURLPrefix": "",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "avatars",
+    					"uploadFilenameKey": "avatar",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"validInstruments": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"oauth2Clients": {
+    			"dataChangesTopicName": "data_changes",
+    			"creationEnabled": false
+    		},
+    		"webhooks": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validIngredients": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"meals": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validVessels": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"householdInvitations": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validPreparations": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validIngredientStates": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"recipes": {
+    			"dataChangesTopicName": "data_changes",
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			},
+    			"searchFromDatabase": false
+    		},
+    		"auth": {
+    			"sso": {
+    				"google": {
+    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
+    				}
+    			},
+    			"dataChanges": "data_changes",
+    			"jwtAudience": "localhost",
+    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+    			"oauth2": {
+    				"domain": "http://localhost:9000",
+    				"accessTokenLifespan": 3600000000000,
+    				"refreshTokenLifespan": 3600000000000,
+    				"debug": false
+    			},
+    			"jwtLifetime": 300000000000,
+    			"debug": true,
+    			"enableUserSignup": true,
+    			"minimumUsernameLength": 3,
+    			"minimumPasswordLength": 8
+    		}
+    	}
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    note: generated
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+    type: generated
+  name: dinner-done-better-job-db-cleaner-config
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  config.json: |-
+    {
+    	"observability": {
+    		"logging": {
+    			"level": 0,
+    			"provider": "slog"
+    		},
+    		"tracing": {
+    			"otel": {
+    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    				"service_name": "dinner_done_better_service",
+    				"spanCollectionProbability": 1
+    			},
+    			"provider": "otel"
+    		}
+    	},
+    	"queues": {
+    		"dataChangesTopicName": "data_changes",
+    		"outboundEmailsTopicName": "outbound_emails",
+    		"searchIndexRequestsTopicName": "search_index_requests",
+    		"userDataAggregationTopicName": "user_data_aggregation_requests",
+    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+    	},
+    	"email": {
+    		"sendgrid": null,
+    		"mailgun": null,
+    		"mailjet": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"analytics": {
+    		"segment": null,
+    		"posthog": null,
+    		"rudderstack": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"search": {
+    		"algolia": {
+    			"appID": "",
+    			"writeAPIKey": "",
+    			"timeout": 0
+    		},
+    		"elasticsearch": null,
+    		"circuitBreakerConfig": null,
+    		"provider": "algolia"
+    	},
+    	"featureFlags": {
+    		"LaunchDarkly": null,
+    		"PostHog": null,
+    		"CircuitBreakingConfig": null,
+    		"Provider": ""
+    	},
+    	"encoding": {
+    		"contentType": "application/json"
+    	},
+    	"meta": {
+    		"runMode": "development",
+    		"debug": true
+    	},
+    	"routing": {
+    		"provider": "chi",
+    		"enableCORSForLocalhost": true
+    	},
+    	"events": {
+    		"consumers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		},
+    		"publishers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		}
+    	},
+    	"server": {
+    		"startupDeadline": 60000000000,
+    		"httpPort": 8000,
+    		"debug": true
+    	},
+    	"database": {
+    		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+    		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+    		"debug": true,
+    		"logQueries": true,
+    		"runMigrations": true,
+    		"maxPingAttempts": 50,
+    		"pingWaitPeriod": 1000000000
+    	},
+    	"services": {
+    		"auditLogEntries": {},
+    		"mealPlanGroceryListItems": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validInstrumentMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettingConfigurations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeRatings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validMeasurementUnitConversions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientGroups": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"householdInstrumentOwnerships": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipePrepTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepCompletionConditions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userIngredientPreferences": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"households": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlans": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientPreparations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepProducts": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientStateIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanEvents": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptionVotes": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"workers": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userNotifications": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"dataPrivacy": {
+    			"userDataAggregationTopicName": "user_data_aggregation_requests",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/tmp"
+    					},
+    					"bucketName": "userdata",
+    					"provider": "filesystem"
+    				},
+    				"debug": false
+    			}
+    		},
+    		"recipeSteps": {
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"users": {
+    			"dataChangesTopicName": "data_changes",
+    			"publicMediaURLPrefix": "",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "avatars",
+    					"uploadFilenameKey": "avatar",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"validInstruments": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"oauth2Clients": {
+    			"dataChangesTopicName": "data_changes",
+    			"creationEnabled": false
+    		},
+    		"webhooks": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validIngredients": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"meals": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validVessels": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"householdInvitations": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validPreparations": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validIngredientStates": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"recipes": {
+    			"dataChangesTopicName": "data_changes",
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			},
+    			"searchFromDatabase": false
+    		},
+    		"auth": {
+    			"sso": {
+    				"google": {
+    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
+    				}
+    			},
+    			"dataChanges": "data_changes",
+    			"jwtAudience": "localhost",
+    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+    			"oauth2": {
+    				"domain": "http://localhost:9000",
+    				"accessTokenLifespan": 3600000000000,
+    				"refreshTokenLifespan": 3600000000000,
+    				"debug": false
+    			},
+    			"jwtLifetime": 300000000000,
+    			"debug": true,
+    			"enableUserSignup": true,
+    			"minimumUsernameLength": 3,
+    			"minimumPasswordLength": 8
+    		}
+    	}
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    note: generated
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+    type: generated
+  name: dinner-done-better-job-email-prober-config
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  config.json: |-
+    {
+    	"observability": {
+    		"logging": {
+    			"level": 0,
+    			"provider": "slog"
+    		},
+    		"tracing": {
+    			"otel": {
+    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    				"service_name": "dinner_done_better_service",
+    				"spanCollectionProbability": 1
+    			},
+    			"provider": "otel"
+    		}
+    	},
+    	"queues": {
+    		"dataChangesTopicName": "data_changes",
+    		"outboundEmailsTopicName": "outbound_emails",
+    		"searchIndexRequestsTopicName": "search_index_requests",
+    		"userDataAggregationTopicName": "user_data_aggregation_requests",
+    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+    	},
+    	"email": {
+    		"sendgrid": null,
+    		"mailgun": null,
+    		"mailjet": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"analytics": {
+    		"segment": null,
+    		"posthog": null,
+    		"rudderstack": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"search": {
+    		"algolia": {
+    			"appID": "",
+    			"writeAPIKey": "",
+    			"timeout": 0
+    		},
+    		"elasticsearch": null,
+    		"circuitBreakerConfig": null,
+    		"provider": "algolia"
+    	},
+    	"featureFlags": {
+    		"LaunchDarkly": null,
+    		"PostHog": null,
+    		"CircuitBreakingConfig": null,
+    		"Provider": ""
+    	},
+    	"encoding": {
+    		"contentType": "application/json"
+    	},
+    	"meta": {
+    		"runMode": "development",
+    		"debug": true
+    	},
+    	"routing": {
+    		"provider": "chi",
+    		"enableCORSForLocalhost": true
+    	},
+    	"events": {
+    		"consumers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		},
+    		"publishers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		}
+    	},
+    	"server": {
+    		"startupDeadline": 60000000000,
+    		"httpPort": 8000,
+    		"debug": true
+    	},
+    	"database": {
+    		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+    		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+    		"debug": true,
+    		"logQueries": true,
+    		"runMigrations": true,
+    		"maxPingAttempts": 50,
+    		"pingWaitPeriod": 1000000000
+    	},
+    	"services": {
+    		"auditLogEntries": {},
+    		"mealPlanGroceryListItems": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validInstrumentMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettingConfigurations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeRatings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validMeasurementUnitConversions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientGroups": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"householdInstrumentOwnerships": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipePrepTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepCompletionConditions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userIngredientPreferences": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"households": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlans": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientPreparations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepProducts": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientStateIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanEvents": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptionVotes": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"workers": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userNotifications": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"dataPrivacy": {
+    			"userDataAggregationTopicName": "user_data_aggregation_requests",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/tmp"
+    					},
+    					"bucketName": "userdata",
+    					"provider": "filesystem"
+    				},
+    				"debug": false
+    			}
+    		},
+    		"recipeSteps": {
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"users": {
+    			"dataChangesTopicName": "data_changes",
+    			"publicMediaURLPrefix": "",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "avatars",
+    					"uploadFilenameKey": "avatar",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"validInstruments": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"oauth2Clients": {
+    			"dataChangesTopicName": "data_changes",
+    			"creationEnabled": false
+    		},
+    		"webhooks": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validIngredients": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"meals": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validVessels": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"householdInvitations": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validPreparations": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validIngredientStates": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"recipes": {
+    			"dataChangesTopicName": "data_changes",
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			},
+    			"searchFromDatabase": false
+    		},
+    		"auth": {
+    			"sso": {
+    				"google": {
+    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
+    				}
+    			},
+    			"dataChanges": "data_changes",
+    			"jwtAudience": "localhost",
+    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+    			"oauth2": {
+    				"domain": "http://localhost:9000",
+    				"accessTokenLifespan": 3600000000000,
+    				"refreshTokenLifespan": 3600000000000,
+    				"debug": false
+    			},
+    			"jwtLifetime": 300000000000,
+    			"debug": true,
+    			"enableUserSignup": true,
+    			"minimumUsernameLength": 3,
+    			"minimumPasswordLength": 8
+    		}
+    	}
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    note: generated
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+    type: generated
+  name: dinner-done-better-job-meal-plan-finalizer-config
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  config.json: |-
+    {
+    	"observability": {
+    		"logging": {
+    			"level": 0,
+    			"provider": "slog"
+    		},
+    		"tracing": {
+    			"otel": {
+    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    				"service_name": "dinner_done_better_service",
+    				"spanCollectionProbability": 1
+    			},
+    			"provider": "otel"
+    		}
+    	},
+    	"queues": {
+    		"dataChangesTopicName": "data_changes",
+    		"outboundEmailsTopicName": "outbound_emails",
+    		"searchIndexRequestsTopicName": "search_index_requests",
+    		"userDataAggregationTopicName": "user_data_aggregation_requests",
+    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+    	},
+    	"email": {
+    		"sendgrid": null,
+    		"mailgun": null,
+    		"mailjet": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"analytics": {
+    		"segment": null,
+    		"posthog": null,
+    		"rudderstack": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"search": {
+    		"algolia": {
+    			"appID": "",
+    			"writeAPIKey": "",
+    			"timeout": 0
+    		},
+    		"elasticsearch": null,
+    		"circuitBreakerConfig": null,
+    		"provider": "algolia"
+    	},
+    	"featureFlags": {
+    		"LaunchDarkly": null,
+    		"PostHog": null,
+    		"CircuitBreakingConfig": null,
+    		"Provider": ""
+    	},
+    	"encoding": {
+    		"contentType": "application/json"
+    	},
+    	"meta": {
+    		"runMode": "development",
+    		"debug": true
+    	},
+    	"routing": {
+    		"provider": "chi",
+    		"enableCORSForLocalhost": true
+    	},
+    	"events": {
+    		"consumers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		},
+    		"publishers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		}
+    	},
+    	"server": {
+    		"startupDeadline": 60000000000,
+    		"httpPort": 8000,
+    		"debug": true
+    	},
+    	"database": {
+    		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+    		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+    		"debug": true,
+    		"logQueries": true,
+    		"runMigrations": true,
+    		"maxPingAttempts": 50,
+    		"pingWaitPeriod": 1000000000
+    	},
+    	"services": {
+    		"auditLogEntries": {},
+    		"mealPlanGroceryListItems": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validInstrumentMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettingConfigurations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeRatings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validMeasurementUnitConversions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientGroups": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"householdInstrumentOwnerships": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipePrepTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepCompletionConditions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userIngredientPreferences": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"households": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlans": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientPreparations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepProducts": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientStateIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanEvents": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptionVotes": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"workers": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userNotifications": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"dataPrivacy": {
+    			"userDataAggregationTopicName": "user_data_aggregation_requests",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/tmp"
+    					},
+    					"bucketName": "userdata",
+    					"provider": "filesystem"
+    				},
+    				"debug": false
+    			}
+    		},
+    		"recipeSteps": {
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"users": {
+    			"dataChangesTopicName": "data_changes",
+    			"publicMediaURLPrefix": "",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "avatars",
+    					"uploadFilenameKey": "avatar",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"validInstruments": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"oauth2Clients": {
+    			"dataChangesTopicName": "data_changes",
+    			"creationEnabled": false
+    		},
+    		"webhooks": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validIngredients": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"meals": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validVessels": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"householdInvitations": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validPreparations": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validIngredientStates": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"recipes": {
+    			"dataChangesTopicName": "data_changes",
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			},
+    			"searchFromDatabase": false
+    		},
+    		"auth": {
+    			"sso": {
+    				"google": {
+    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
+    				}
+    			},
+    			"dataChanges": "data_changes",
+    			"jwtAudience": "localhost",
+    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+    			"oauth2": {
+    				"domain": "http://localhost:9000",
+    				"accessTokenLifespan": 3600000000000,
+    				"refreshTokenLifespan": 3600000000000,
+    				"debug": false
+    			},
+    			"jwtLifetime": 300000000000,
+    			"debug": true,
+    			"enableUserSignup": true,
+    			"minimumUsernameLength": 3,
+    			"minimumPasswordLength": 8
+    		}
+    	}
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    note: generated
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+    type: generated
+  name: dinner-done-better-job-meal-plan-grocery-list-init-config
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  config.json: |-
+    {
+    	"observability": {
+    		"logging": {
+    			"level": 0,
+    			"provider": "slog"
+    		},
+    		"tracing": {
+    			"otel": {
+    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    				"service_name": "dinner_done_better_service",
+    				"spanCollectionProbability": 1
+    			},
+    			"provider": "otel"
+    		}
+    	},
+    	"queues": {
+    		"dataChangesTopicName": "data_changes",
+    		"outboundEmailsTopicName": "outbound_emails",
+    		"searchIndexRequestsTopicName": "search_index_requests",
+    		"userDataAggregationTopicName": "user_data_aggregation_requests",
+    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+    	},
+    	"email": {
+    		"sendgrid": null,
+    		"mailgun": null,
+    		"mailjet": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"analytics": {
+    		"segment": null,
+    		"posthog": null,
+    		"rudderstack": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"search": {
+    		"algolia": {
+    			"appID": "",
+    			"writeAPIKey": "",
+    			"timeout": 0
+    		},
+    		"elasticsearch": null,
+    		"circuitBreakerConfig": null,
+    		"provider": "algolia"
+    	},
+    	"featureFlags": {
+    		"LaunchDarkly": null,
+    		"PostHog": null,
+    		"CircuitBreakingConfig": null,
+    		"Provider": ""
+    	},
+    	"encoding": {
+    		"contentType": "application/json"
+    	},
+    	"meta": {
+    		"runMode": "development",
+    		"debug": true
+    	},
+    	"routing": {
+    		"provider": "chi",
+    		"enableCORSForLocalhost": true
+    	},
+    	"events": {
+    		"consumers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		},
+    		"publishers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		}
+    	},
+    	"server": {
+    		"startupDeadline": 60000000000,
+    		"httpPort": 8000,
+    		"debug": true
+    	},
+    	"database": {
+    		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+    		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+    		"debug": true,
+    		"logQueries": true,
+    		"runMigrations": true,
+    		"maxPingAttempts": 50,
+    		"pingWaitPeriod": 1000000000
+    	},
+    	"services": {
+    		"auditLogEntries": {},
+    		"mealPlanGroceryListItems": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validInstrumentMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettingConfigurations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeRatings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validMeasurementUnitConversions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientGroups": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"householdInstrumentOwnerships": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipePrepTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepCompletionConditions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userIngredientPreferences": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"households": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlans": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientPreparations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepProducts": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientStateIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanEvents": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptionVotes": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"workers": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userNotifications": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"dataPrivacy": {
+    			"userDataAggregationTopicName": "user_data_aggregation_requests",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/tmp"
+    					},
+    					"bucketName": "userdata",
+    					"provider": "filesystem"
+    				},
+    				"debug": false
+    			}
+    		},
+    		"recipeSteps": {
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"users": {
+    			"dataChangesTopicName": "data_changes",
+    			"publicMediaURLPrefix": "",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "avatars",
+    					"uploadFilenameKey": "avatar",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"validInstruments": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"oauth2Clients": {
+    			"dataChangesTopicName": "data_changes",
+    			"creationEnabled": false
+    		},
+    		"webhooks": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validIngredients": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"meals": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validVessels": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"householdInvitations": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validPreparations": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validIngredientStates": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"recipes": {
+    			"dataChangesTopicName": "data_changes",
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			},
+    			"searchFromDatabase": false
+    		},
+    		"auth": {
+    			"sso": {
+    				"google": {
+    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
+    				}
+    			},
+    			"dataChanges": "data_changes",
+    			"jwtAudience": "localhost",
+    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+    			"oauth2": {
+    				"domain": "http://localhost:9000",
+    				"accessTokenLifespan": 3600000000000,
+    				"refreshTokenLifespan": 3600000000000,
+    				"debug": false
+    			},
+    			"jwtLifetime": 300000000000,
+    			"debug": true,
+    			"enableUserSignup": true,
+    			"minimumUsernameLength": 3,
+    			"minimumPasswordLength": 8
+    		}
+    	}
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    note: generated
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+    type: generated
+  name: dinner-done-better-job-meal-plan-task-creator-config
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  config.json: |-
+    {
+    	"observability": {
+    		"logging": {
+    			"level": 0,
+    			"provider": "slog"
+    		},
+    		"tracing": {
+    			"otel": {
+    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    				"service_name": "dinner_done_better_service",
+    				"spanCollectionProbability": 1
+    			},
+    			"provider": "otel"
+    		}
+    	},
+    	"queues": {
+    		"dataChangesTopicName": "data_changes",
+    		"outboundEmailsTopicName": "outbound_emails",
+    		"searchIndexRequestsTopicName": "search_index_requests",
+    		"userDataAggregationTopicName": "user_data_aggregation_requests",
+    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+    	},
+    	"email": {
+    		"sendgrid": null,
+    		"mailgun": null,
+    		"mailjet": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"analytics": {
+    		"segment": null,
+    		"posthog": null,
+    		"rudderstack": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"search": {
+    		"algolia": {
+    			"appID": "",
+    			"writeAPIKey": "",
+    			"timeout": 0
+    		},
+    		"elasticsearch": null,
+    		"circuitBreakerConfig": null,
+    		"provider": "algolia"
+    	},
+    	"featureFlags": {
+    		"LaunchDarkly": null,
+    		"PostHog": null,
+    		"CircuitBreakingConfig": null,
+    		"Provider": ""
+    	},
+    	"encoding": {
+    		"contentType": "application/json"
+    	},
+    	"meta": {
+    		"runMode": "development",
+    		"debug": true
+    	},
+    	"routing": {
+    		"provider": "chi",
+    		"enableCORSForLocalhost": true
+    	},
+    	"events": {
+    		"consumers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		},
+    		"publishers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		}
+    	},
+    	"server": {
+    		"startupDeadline": 60000000000,
+    		"httpPort": 8000,
+    		"debug": true
+    	},
+    	"database": {
+    		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+    		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+    		"debug": true,
+    		"logQueries": true,
+    		"runMigrations": true,
+    		"maxPingAttempts": 50,
+    		"pingWaitPeriod": 1000000000
+    	},
+    	"services": {
+    		"auditLogEntries": {},
+    		"mealPlanGroceryListItems": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validInstrumentMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettingConfigurations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeRatings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validMeasurementUnitConversions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientGroups": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"householdInstrumentOwnerships": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipePrepTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepCompletionConditions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userIngredientPreferences": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"households": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlans": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientPreparations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepProducts": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientStateIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanEvents": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptionVotes": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"workers": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userNotifications": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"dataPrivacy": {
+    			"userDataAggregationTopicName": "user_data_aggregation_requests",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/tmp"
+    					},
+    					"bucketName": "userdata",
+    					"provider": "filesystem"
+    				},
+    				"debug": false
+    			}
+    		},
+    		"recipeSteps": {
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"users": {
+    			"dataChangesTopicName": "data_changes",
+    			"publicMediaURLPrefix": "",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "avatars",
+    					"uploadFilenameKey": "avatar",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"validInstruments": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"oauth2Clients": {
+    			"dataChangesTopicName": "data_changes",
+    			"creationEnabled": false
+    		},
+    		"webhooks": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validIngredients": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"meals": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validVessels": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"householdInvitations": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validPreparations": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validIngredientStates": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"recipes": {
+    			"dataChangesTopicName": "data_changes",
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			},
+    			"searchFromDatabase": false
+    		},
+    		"auth": {
+    			"sso": {
+    				"google": {
+    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
+    				}
+    			},
+    			"dataChanges": "data_changes",
+    			"jwtAudience": "localhost",
+    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+    			"oauth2": {
+    				"domain": "http://localhost:9000",
+    				"accessTokenLifespan": 3600000000000,
+    				"refreshTokenLifespan": 3600000000000,
+    				"debug": false
+    			},
+    			"jwtLifetime": 300000000000,
+    			"debug": true,
+    			"enableUserSignup": true,
+    			"minimumUsernameLength": 3,
+    			"minimumPasswordLength": 8
+    		}
+    	}
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    note: generated
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+    type: generated
+  name: dinner-done-better-job-search-data-index-scheduler-config
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  config.json: |-
+    {
+    	"observability": {
+    		"logging": {
+    			"level": 0,
+    			"provider": "slog"
+    		},
+    		"tracing": {
+    			"otel": {
+    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    				"service_name": "dinner_done_better_service",
+    				"spanCollectionProbability": 1
+    			},
+    			"provider": "otel"
+    		}
+    	},
+    	"queues": {
+    		"dataChangesTopicName": "data_changes",
+    		"outboundEmailsTopicName": "outbound_emails",
+    		"searchIndexRequestsTopicName": "search_index_requests",
+    		"userDataAggregationTopicName": "user_data_aggregation_requests",
+    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+    	},
+    	"email": {
+    		"sendgrid": null,
+    		"mailgun": null,
+    		"mailjet": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"analytics": {
+    		"segment": null,
+    		"posthog": null,
+    		"rudderstack": null,
+    		"circuitBreakerConfig": null,
+    		"provider": ""
+    	},
+    	"search": {
+    		"algolia": {
+    			"appID": "",
+    			"writeAPIKey": "",
+    			"timeout": 0
+    		},
+    		"elasticsearch": null,
+    		"circuitBreakerConfig": null,
+    		"provider": "algolia"
+    	},
+    	"featureFlags": {
+    		"LaunchDarkly": null,
+    		"PostHog": null,
+    		"CircuitBreakingConfig": null,
+    		"Provider": ""
+    	},
+    	"encoding": {
+    		"contentType": "application/json"
+    	},
+    	"meta": {
+    		"runMode": "development",
+    		"debug": true
+    	},
+    	"routing": {
+    		"provider": "chi",
+    		"enableCORSForLocalhost": true
+    	},
+    	"events": {
+    		"consumers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		},
+    		"publishers": {
+    			"provider": "redis",
+    			"sqs": {
+    				"messageQueueAddress": ""
+    			},
+    			"pubsub": {},
+    			"redis": {
+    				"username": "",
+    				"queueAddress": [
+    					"redis-master.localdev.svc.cluster.local:6379"
+    				]
+    			}
+    		}
+    	},
+    	"server": {
+    		"startupDeadline": 60000000000,
+    		"httpPort": 8000,
+    		"debug": true
+    	},
+    	"database": {
+    		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+    		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+    		"debug": true,
+    		"logQueries": true,
+    		"runMigrations": true,
+    		"maxPingAttempts": 50,
+    		"pingWaitPeriod": 1000000000
+    	},
+    	"services": {
+    		"auditLogEntries": {},
+    		"mealPlanGroceryListItems": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validInstrumentMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettingConfigurations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeRatings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validMeasurementUnitConversions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientGroups": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"serviceSettings": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"householdInstrumentOwnerships": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipePrepTasks": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepCompletionConditions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userIngredientPreferences": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"households": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlans": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationInstruments": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientPreparations": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepProducts": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validIngredientStateIngredients": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanEvents": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptionVotes": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"recipeStepVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"validPreparationVessels": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"workers": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"userNotifications": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"mealPlanOptions": {
+    			"dataChangesTopicName": "data_changes"
+    		},
+    		"dataPrivacy": {
+    			"userDataAggregationTopicName": "user_data_aggregation_requests",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/tmp"
+    					},
+    					"bucketName": "userdata",
+    					"provider": "filesystem"
+    				},
+    				"debug": false
+    			}
+    		},
+    		"recipeSteps": {
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"dataChangesTopicName": "data_changes",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"users": {
+    			"dataChangesTopicName": "data_changes",
+    			"publicMediaURLPrefix": "",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "avatars",
+    					"uploadFilenameKey": "avatar",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			}
+    		},
+    		"validInstruments": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validMeasurementUnits": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"oauth2Clients": {
+    			"dataChangesTopicName": "data_changes",
+    			"creationEnabled": false
+    		},
+    		"webhooks": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validIngredients": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"meals": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validVessels": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"householdInvitations": {
+    			"dataChangesTopicName": "data_changes",
+    			"debug": false
+    		},
+    		"validPreparations": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"validIngredientStates": {
+    			"dataChangesTopicName": "data_changes",
+    			"searchFromDatabase": false
+    		},
+    		"recipes": {
+    			"dataChangesTopicName": "data_changes",
+    			"mediaUploadPrefix": "https://example.website.lol",
+    			"uploads": {
+    				"storageConfig": {
+    					"filesystem": {
+    						"rootDirectory": "/uploads"
+    					},
+    					"bucketName": "recipe_media",
+    					"uploadFilenameKey": "recipe_media",
+    					"provider": "filesystem"
+    				},
+    				"debug": true
+    			},
+    			"searchFromDatabase": false
+    		},
+    		"auth": {
+    			"sso": {
+    				"google": {
+    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
+    				}
+    			},
+    			"dataChanges": "data_changes",
+    			"jwtAudience": "localhost",
+    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+    			"oauth2": {
+    				"domain": "http://localhost:9000",
+    				"accessTokenLifespan": 3600000000000,
+    				"refreshTokenLifespan": 3600000000000,
+    				"debug": false
+    			},
+    			"jwtLifetime": 300000000000,
+    			"debug": true,
+    			"enableUserSignup": true,
+    			"minimumUsernameLength": 3,
+    			"minimumPasswordLength": 8
+    		}
+    	}
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    note: generated
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+    type: generated
+  name: dinner-done-better-service-api-config
+  namespace: localdev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: dinner-done-better-backend
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: dinner-done-better-api-svc
+spec:
+  ports:
+    - name: http
+      port: 8000
+      protocol: TCP
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: dinner-done-better-backend
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dinner-done-better-backend
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: dinner-done-better-service-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dinner-done-better-backend
+      app.kubernetes.io/name: dinner-done-better-backend
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better-backend
+        app.kubernetes.io/name: dinner-done-better-backend
+    spec:
+      containers:
+        - env:
+            - name: CONFIGURATION_FILEPATH
+              value: /etc/service-config.json
+          image: dinner-done-better-service-api:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /_meta_/live
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 3
+          name: dinner-done-better-service-api
+          ports:
+            - containerPort: 8000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /_meta_/ready
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 3
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 256Mi
+          volumeMounts:
+            - mountPath: /etc/service-config.json
+              name: config
+              subPath: config.json
+      volumes:
+        - configMap:
+            name: dinner-done-better-service-api-config
+          name: config
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: dinner-done-better-cronjob-db-cleaner
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - env:
+                - name: CONFIGURATION_FILEPATH
+                  value: /etc/service-config.json
+              image: dinner-done-better-job-db-cleaner:latest
+              imagePullPolicy: IfNotPresent
+              name: db-cleaner
+              volumeMounts:
+                - mountPath: /etc/service-config.json
+                  name: config
+                  subPath: config.json
+          restartPolicy: OnFailure
+          volumes:
+            - configMap:
+                name: dinner-done-better-job-db-cleaner-config
+              name: config
+  schedule: '* * * * *'
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: dinner-done-better-job-email-prober
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - env:
+                - name: CONFIGURATION_FILEPATH
+                  value: /etc/service-config.json
+              image: dinner-done-better-job-email-prober:latest
+              imagePullPolicy: IfNotPresent
+              name: email-prober
+              volumeMounts:
+                - mountPath: /etc/service-config.json
+                  name: config
+                  subPath: config.json
+          restartPolicy: OnFailure
+          volumes:
+            - configMap:
+                name: dinner-done-better-job-email-prober-config
+              name: config
+  schedule: '* * * * *'
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: dinner-done-better-job-meal-plan-finalizer
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - env:
+                - name: CONFIGURATION_FILEPATH
+                  value: /etc/service-config.json
+                - name: DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME
+                  value: data_changes
+              image: dinner-done-better-job-meal-plan-finalizer:latest
+              imagePullPolicy: IfNotPresent
+              name: meal-plan-finalizer
+              volumeMounts:
+                - mountPath: /etc/service-config.json
+                  name: config
+                  subPath: config.json
+          restartPolicy: OnFailure
+          volumes:
+            - configMap:
+                name: dinner-done-better-job-meal-plan-finalizer-config
+              name: config
+  schedule: '* * * * *'
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: dinner-done-better-job-meal-plan-grocery-list-init
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - env:
+                - name: CONFIGURATION_FILEPATH
+                  value: /etc/service-config.json
+                - name: DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME
+                  value: data_changes
+              image: dinner-done-better-job-meal-plan-grocery-list-init:latest
+              imagePullPolicy: IfNotPresent
+              name: meal-plan-grocery-list-init
+              volumeMounts:
+                - mountPath: /etc/service-config.json
+                  name: config
+                  subPath: config.json
+          restartPolicy: OnFailure
+          volumes:
+            - configMap:
+                name: dinner-done-better-job-meal-plan-grocery-list-init-config
+              name: config
+  schedule: '* * * * *'
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: dinner-done-better-job-meal-plan-task-creator
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - env:
+                - name: CONFIGURATION_FILEPATH
+                  value: /etc/service-config.json
+                - name: DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME
+                  value: data_changes
+              image: dinner-done-better-job-meal-plan-task-creator:latest
+              imagePullPolicy: IfNotPresent
+              name: meal-plan-task-creator
+              volumeMounts:
+                - mountPath: /etc/service-config.json
+                  name: config
+                  subPath: config.json
+          restartPolicy: OnFailure
+          volumes:
+            - configMap:
+                name: dinner-done-better-job-meal-plan-task-creator-config
+              name: config
+  schedule: '* * * * *'
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: dinner-done-better-job-search-data-index-scheduler
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - env:
+                - name: CONFIGURATION_FILEPATH
+                  value: /etc/service-config.json
+                - name: SEARCH_INDEXING_TOPIC_NAME
+                  value: search_index_requests
+              image: dinner-done-better-job-search-data-index-scheduler:latest
+              imagePullPolicy: IfNotPresent
+              name: search-data-index-scheduler
+              volumeMounts:
+                - mountPath: /etc/service-config.json
+                  name: config
+                  subPath: config.json
+          restartPolicy: OnFailure
+          volumes:
+            - configMap:
+                name: dinner-done-better-job-search-data-index-scheduler-config
+              name: config
+  schedule: '* * * * *'
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: dinner-done-better-api-server-ingress
+spec:
+  rules:
+    - host: api-server.k8s
+      http:
+        paths:
+          - backend:
+              service:
+                name: dinner-done-better-api-svc
+                port:
+                  number: 8000
+            path: /
+            pathType: ImplementationSpecific
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: localdev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-admin-app
+  name: dinner-done-better-admin-app-srv
+spec:
+  ports:
+    - name: http
+      port: 7000
+      protocol: TCP
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: dinner-done-better-admin-app
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-landing-app
+  name: dinner-done-better-landing-srv
+spec:
+  ports:
+    - name: http
+      port: 10000
+      protocol: TCP
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: dinner-done-better-landing-app
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-webapp
+  name: dinner-done-better-webapp-srv
+spec:
+  ports:
+    - name: http
+      port: 9000
+      protocol: TCP
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: dinner-done-better-webapp
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dinner-done-better-admin-app
+    app.kubernetes.io/name: dinner-done-better-admin-app
+  name: dinner-done-better-admin-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dinner-done-better-admin-app
+      app.kubernetes.io/name: dinner-done-better-admin-app
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better-admin-app
+        app.kubernetes.io/name: dinner-done-better-admin-app
+    spec:
+      containers:
+        - env:
+            - name: DISABLE_REGISTRATION
+              value: "false"
+            - name: NEXT_API_ENDPOINT
+              value: dinner-done-better.localdev.svc.cluster.local:8000
+            - name: NEXT_COOKIE_ENCRYPTION_KEY
+              value: ZOTGz4KEhZFSM6udeESOX5JVqhtEdHdS
+            - name: NEXT_BASE64_COOKIE_ENCRYPT_IV
+              value: S2IwVXVvMW9hSEl4WjQ0ak1NYW50QndMTzJBWDJFV2o=
+            - name: NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID
+              value: ""
+            - name: NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET
+              value: ""
+            - name: REWRITE_COOKIE_SECURE
+              value: "false"
+            - name: REWRITE_COOKIE_HOST_FROM
+              value: ""
+            - name: REWRITE_COOKIE_HOST_TO
+              value: ""
+            - name: NEXT_PUBLIC_SEGMENT_API_TOKEN
+              value: ""
+          image: dinner-done-better-admin-app:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /api/_meta_/live
+              port: 7000
+            initialDelaySeconds: 15
+            periodSeconds: 32
+          name: dinner-done-better-admin-app
+          ports:
+            - containerPort: 7000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /api/_meta_/ready
+              port: 7000
+            initialDelaySeconds: 15
+            periodSeconds: 3
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dinner-done-better-landing
+    app.kubernetes.io/name: dinner-done-better-landing-app
+  name: dinner-done-better-landing-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dinner-done-better-landing
+      app.kubernetes.io/name: dinner-done-better-landing-app
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better-landing
+        app.kubernetes.io/name: dinner-done-better-landing-app
+    spec:
+      containers:
+        - env:
+            - name: NEXT_PUBLIC_SEGMENT_API_TOKEN
+              value: ""
+          image: dinner-done-better-landing:latest
+          imagePullPolicy: IfNotPresent
+          name: dinner-done-better-landing
+          ports:
+            - containerPort: 10000
+              name: http
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dinner-done-better-webapp
+  name: dinner-done-better-webapp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dinner-done-better-webapp
+      app.kubernetes.io/name: dinner-done-better-webapp
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better-webapp
+        app.kubernetes.io/name: dinner-done-better-webapp
+    spec:
+      containers:
+        - env:
+            - name: DISABLE_REGISTRATION
+              value: "false"
+            - name: NEXT_API_ENDPOINT
+              value: dinner-done-better.localdev.svc.cluster.local:8000
+            - name: NEXT_COOKIE_ENCRYPTION_KEY
+              value: ZOTGz4KEhZFSM6udeESOX5JVqhtEdHdS
+            - name: NEXT_BASE64_COOKIE_ENCRYPT_IV
+              value: S2IwVXVvMW9hSEl4WjQ0ak1NYW50QndMTzJBWDJFV2o=
+            - name: NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID
+              value: ""
+            - name: NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET
+              value: ""
+            - name: REWRITE_COOKIE_SECURE
+              value: "false"
+            - name: REWRITE_COOKIE_HOST_FROM
+              value: ""
+            - name: REWRITE_COOKIE_HOST_TO
+              value: ""
+            - name: NEXT_PUBLIC_SEGMENT_API_TOKEN
+              value: ""
+          image: dinner-done-better-webapp:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /api/_meta_/live
+              port: 9000
+            initialDelaySeconds: 15
+            periodSeconds: 32
+          name: dinner-done-better-webapp
+          ports:
+            - containerPort: 9000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /api/_meta_/ready
+              port: 9000
+            initialDelaySeconds: 15
+            periodSeconds: 3
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 256Mi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-admin-app
+  name: dinner-done-better-admin-app-ingress
+spec:
+  rules:
+    - host: admin-app-server.k8s
+      http:
+        paths:
+          - backend:
+              service:
+                name: dinner-done-better-admin-app-srv
+                port:
+                  number: 9000
+            path: /
+            pathType: ImplementationSpecific
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-landing-app
+  name: dinner-done-better-landing-ingress
+spec:
+  rules:
+    - host: landing-server.k8s
+      http:
+        paths:
+          - backend:
+              service:
+                name: dinner-done-better-landing-srv
+                port:
+                  number: 10000
+            path: /
+            pathType: ImplementationSpecific
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-webapp
+  name: dinner-done-better-webapp-ingress
+spec:
+  rules:
+    - host: webapp-server.k8s
+      http:
+        paths:
+          - backend:
+              service:
+                name: dinner-done-better-webapp-srv
+                port:
+                  number: 9000
+            path: /
+            pathType: ImplementationSpecific
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.0.0
+    helm.sh/chart: postgresql-16.1.2
+  name: postgres-postgresql
+  namespace: localdev
+spec:
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 5432
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: primary
+      app.kubernetes.io/instance: postgres
+      app.kubernetes.io/name: postgresql
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.0.0
+    helm.sh/chart: postgresql-16.1.2
+  name: postgres-postgresql
+  namespace: localdev
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: primary
+      app.kubernetes.io/instance: postgres
+      app.kubernetes.io/name: postgresql
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.0.0
+    helm.sh/chart: postgresql-16.1.2
+  name: postgres-postgresql
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  password: aHVudGVyMg==
+  postgres-password: MjlmZnZSa1dNQw==
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.0.0
+    helm.sh/chart: postgresql-16.1.2
+  name: postgres-postgresql
+  namespace: localdev
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: null
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.0.0
+    helm.sh/chart: postgresql-16.1.2
+  name: postgres-postgresql-hl
+  namespace: localdev
+spec:
+  clusterIP: None
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/name: postgresql
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.0.0
+    helm.sh/chart: postgresql-16.1.2
+  name: postgres-postgresql
+  namespace: localdev
+spec:
+  ports:
+    - name: tcp-postgresql
+      nodePort: null
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/name: postgresql
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.0.0
+    helm.sh/chart: postgresql-16.1.2
+  name: postgres-postgresql
+  namespace: localdev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: primary
+      app.kubernetes.io/instance: postgres
+      app.kubernetes.io/name: postgresql
+  serviceName: postgres-postgresql-hl
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: primary
+        app.kubernetes.io/instance: postgres
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: postgresql
+        app.kubernetes.io/version: 17.0.0
+        helm.sh/chart: postgresql-16.1.2
+      name: postgres-postgresql
+    spec:
+      affinity:
+        nodeAffinity: null
+        podAffinity: null
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/component: primary
+                    app.kubernetes.io/instance: postgres
+                    app.kubernetes.io/name: postgresql
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      automountServiceAccountToken: false
+      containers:
+        - env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: /bitnami/postgresql
+            - name: PGDATA
+              value: /bitnami/postgresql/data
+            - name: POSTGRES_USER
+              value: dbuser
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: postgres-postgresql
+            - name: POSTGRES_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgres-password
+                  name: postgres-postgresql
+            - name: POSTGRES_DATABASE
+              value: dinner-done-better
+            - name: POSTGRESQL_ENABLE_LDAP
+              value: "no"
+            - name: POSTGRESQL_ENABLE_TLS
+              value: "no"
+            - name: POSTGRESQL_LOG_HOSTNAME
+              value: "false"
+            - name: POSTGRESQL_LOG_CONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_LOG_DISCONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+              value: "off"
+            - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+              value: error
+            - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+              value: pgaudit
+          image: docker.io/bitnami/postgresql:17.0.0-debian-12-r11
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "dbuser" -d "dbname=dinner-done-better" -h 127.0.0.1 -p 5432
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: postgresql
+          ports:
+            - containerPort: 5432
+              name: tcp-postgresql
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                - |
+                  exec pg_isready -U "dbuser" -d "dbname=dinner-done-better" -h 127.0.0.1 -p 5432
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 2Gi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - mountPath: /tmp
+              name: empty-dir
+              subPath: tmp-dir
+            - mountPath: /opt/bitnami/postgresql/conf
+              name: empty-dir
+              subPath: app-conf-dir
+            - mountPath: /opt/bitnami/postgresql/tmp
+              name: empty-dir
+              subPath: app-tmp-dir
+            - mountPath: /dev/shm
+              name: dshm
+            - mountPath: /bitnami/postgresql
+              name: data
+      hostIPC: false
+      hostNetwork: false
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      serviceAccountName: postgres-postgresql
+      volumes:
+        - emptyDir: {}
+          name: empty-dir
+        - emptyDir:
+            medium: Memory
+          name: dshm
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 8Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis
+  namespace: localdev
+spec:
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 6379
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: redis
+      app.kubernetes.io/name: redis
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app.kubernetes.io/component: master
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis-master
+  namespace: localdev
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: master
+      app.kubernetes.io/instance: redis
+      app.kubernetes.io/name: redis
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis-master
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  redis-password: cDZMRE5MTzRlbA==
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis
+  namespace: localdev
+type: Opaque
+---
+apiVersion: v1
+data:
+  master.conf: |-
+    dir /data
+    # User-supplied master configuration:
+    rename-command FLUSHDB ""
+    rename-command FLUSHALL ""
+    # End of master configuration
+  redis.conf: |-
+    # User-supplied common configuration:
+    # Enable AOF https://redis.io/topics/persistence#append-only-file
+    appendonly yes
+    # Disable RDB persistence, AOF persistence already enabled.
+    save ""
+    # End of common configuration
+  replica.conf: |-
+    dir /data
+    # User-supplied replica configuration:
+    rename-command FLUSHDB ""
+    rename-command FLUSHALL ""
+    # End of replica configuration
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis-configuration
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  ping_liveness_local.sh: |-
+    #!/bin/bash
+
+    [[ -f $REDIS_PASSWORD_FILE ]] && export REDIS_PASSWORD="$(< "${REDIS_PASSWORD_FILE}")"
+    [[ -n "$REDIS_PASSWORD" ]] && export REDISCLI_AUTH="$REDIS_PASSWORD"
+    response=$(
+      timeout -s 15 $1 \
+      redis-cli \
+        -h localhost \
+        -p $REDIS_PORT \
+        ping
+    )
+    if [ "$?" -eq "124" ]; then
+      echo "Timed out"
+      exit 1
+    fi
+    responseFirstWord=$(echo $response | head -n1 | awk '{print $1;}')
+    if [ "$response" != "PONG" ] && [ "$responseFirstWord" != "LOADING" ] && [ "$responseFirstWord" != "MASTERDOWN" ]; then
+      echo "$response"
+      exit 1
+    fi
+  ping_liveness_local_and_master.sh: |-
+    script_dir="$(dirname "$0")"
+    exit_status=0
+    "$script_dir/ping_liveness_local.sh" $1 || exit_status=$?
+    "$script_dir/ping_liveness_master.sh" $1 || exit_status=$?
+    exit $exit_status
+  ping_liveness_master.sh: |-
+    #!/bin/bash
+
+    [[ -f $REDIS_MASTER_PASSWORD_FILE ]] && export REDIS_MASTER_PASSWORD="$(< "${REDIS_MASTER_PASSWORD_FILE}")"
+    [[ -n "$REDIS_MASTER_PASSWORD" ]] && export REDISCLI_AUTH="$REDIS_MASTER_PASSWORD"
+    response=$(
+      timeout -s 15 $1 \
+      redis-cli \
+        -h $REDIS_MASTER_HOST \
+        -p $REDIS_MASTER_PORT_NUMBER \
+        ping
+    )
+    if [ "$?" -eq "124" ]; then
+      echo "Timed out"
+      exit 1
+    fi
+    responseFirstWord=$(echo $response | head -n1 | awk '{print $1;}')
+    if [ "$response" != "PONG" ] && [ "$responseFirstWord" != "LOADING" ]; then
+      echo "$response"
+      exit 1
+    fi
+  ping_readiness_local.sh: |-
+    #!/bin/bash
+
+    [[ -f $REDIS_PASSWORD_FILE ]] && export REDIS_PASSWORD="$(< "${REDIS_PASSWORD_FILE}")"
+    [[ -n "$REDIS_PASSWORD" ]] && export REDISCLI_AUTH="$REDIS_PASSWORD"
+    response=$(
+      timeout -s 15 $1 \
+      redis-cli \
+        -h localhost \
+        -p $REDIS_PORT \
+        ping
+    )
+    if [ "$?" -eq "124" ]; then
+      echo "Timed out"
+      exit 1
+    fi
+    if [ "$response" != "PONG" ]; then
+      echo "$response"
+      exit 1
+    fi
+  ping_readiness_local_and_master.sh: |-
+    script_dir="$(dirname "$0")"
+    exit_status=0
+    "$script_dir/ping_readiness_local.sh" $1 || exit_status=$?
+    "$script_dir/ping_readiness_master.sh" $1 || exit_status=$?
+    exit $exit_status
+  ping_readiness_master.sh: |-
+    #!/bin/bash
+
+    [[ -f $REDIS_MASTER_PASSWORD_FILE ]] && export REDIS_MASTER_PASSWORD="$(< "${REDIS_MASTER_PASSWORD_FILE}")"
+    [[ -n "$REDIS_MASTER_PASSWORD" ]] && export REDISCLI_AUTH="$REDIS_MASTER_PASSWORD"
+    response=$(
+      timeout -s 15 $1 \
+      redis-cli \
+        -h $REDIS_MASTER_HOST \
+        -p $REDIS_MASTER_PORT_NUMBER \
+        ping
+    )
+    if [ "$?" -eq "124" ]; then
+      echo "Timed out"
+      exit 1
+    fi
+    if [ "$response" != "PONG" ]; then
+      echo "$response"
+      exit 1
+    fi
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis-health
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  start-master.sh: |
+    #!/bin/bash
+
+    [[ -f $REDIS_PASSWORD_FILE ]] && export REDIS_PASSWORD="$(< "${REDIS_PASSWORD_FILE}")"
+    if [[ -f /opt/bitnami/redis/mounted-etc/master.conf ]];then
+        cp /opt/bitnami/redis/mounted-etc/master.conf /opt/bitnami/redis/etc/master.conf
+    fi
+    if [[ -f /opt/bitnami/redis/mounted-etc/redis.conf ]];then
+        cp /opt/bitnami/redis/mounted-etc/redis.conf /opt/bitnami/redis/etc/redis.conf
+    fi
+    ARGS=("--port" "${REDIS_PORT}")
+    ARGS+=("--requirepass" "${REDIS_PASSWORD}")
+    ARGS+=("--masterauth" "${REDIS_PASSWORD}")
+    ARGS+=("--include" "/opt/bitnami/redis/etc/redis.conf")
+    ARGS+=("--include" "/opt/bitnami/redis/etc/master.conf")
+    exec redis-server "${ARGS[@]}"
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis-scripts
+  namespace: localdev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis-headless
+  namespace: localdev
+spec:
+  clusterIP: None
+  ports:
+    - name: tcp-redis
+      port: 6379
+      targetPort: redis
+  selector:
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/name: redis
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: master
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis-master
+  namespace: localdev
+spec:
+  internalTrafficPolicy: Cluster
+  ports:
+    - name: tcp-redis
+      nodePort: null
+      port: 6379
+      targetPort: redis
+  selector:
+    app.kubernetes.io/component: master
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/name: redis
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/component: master
+    app.kubernetes.io/instance: redis
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/version: 7.4.1
+    helm.sh/chart: redis-20.2.1
+  name: redis-master
+  namespace: localdev
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: master
+      app.kubernetes.io/instance: redis
+      app.kubernetes.io/name: redis
+  serviceName: redis-headless
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: 86bcc953bb473748a3d3dc60b7c11f34e60c93519234d4c37f42e22ada559d47
+        checksum/health: aff24913d801436ea469d8d374b2ddb3ec4c43ee7ab24663d5f8ff1a1b6991a9
+        checksum/scripts: 560c33ff34d845009b51830c332aa05fa211444d1877d3526d3599be7543aaa5
+        checksum/secret: 5b3e1a635f4ffddbe33fae45b67015e32326f1c06d4f46f0dd59e73e4d0b1f6e
+      labels:
+        app.kubernetes.io/component: master
+        app.kubernetes.io/instance: redis
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: redis
+        app.kubernetes.io/version: 7.4.1
+        helm.sh/chart: redis-20.2.1
+    spec:
+      affinity:
+        nodeAffinity: null
+        podAffinity: null
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/component: master
+                    app.kubernetes.io/instance: redis
+                    app.kubernetes.io/name: redis
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      automountServiceAccountToken: false
+      containers:
+        - args:
+            - -c
+            - /opt/bitnami/scripts/start-scripts/start-master.sh
+          command:
+            - /bin/bash
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: REDIS_REPLICATION_MODE
+              value: master
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "no"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: redis-password
+                  name: redis
+            - name: REDIS_TLS_ENABLED
+              value: "no"
+            - name: REDIS_PORT
+              value: "6379"
+          image: docker.io/bitnami/redis:7.4.1-debian-12-r0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - /health/ping_liveness_local.sh 5
+            failureThreshold: 5
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 6
+          name: redis
+          ports:
+            - containerPort: 6379
+              name: redis
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - /health/ping_readiness_local.sh 1
+            failureThreshold: 5
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 2
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 2Gi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - mountPath: /opt/bitnami/scripts/start-scripts
+              name: start-scripts
+            - mountPath: /health
+              name: health
+            - mountPath: /data
+              name: redis-data
+            - mountPath: /opt/bitnami/redis/mounted-etc
+              name: config
+            - mountPath: /opt/bitnami/redis/etc/
+              name: empty-dir
+              subPath: app-conf-dir
+            - mountPath: /tmp
+              name: empty-dir
+              subPath: tmp-dir
+      enableServiceLinks: true
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      serviceAccountName: redis-master
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            defaultMode: 493
+            name: redis-scripts
+          name: start-scripts
+        - configMap:
+            defaultMode: 493
+            name: redis-health
+          name: health
+        - configMap:
+            name: redis-configuration
+          name: config
+        - emptyDir: {}
+          name: empty-dir
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        labels:
+          app.kubernetes.io/component: master
+          app.kubernetes.io/instance: redis
+          app.kubernetes.io/name: redis
+        name: redis-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 8Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.0
+    helm.sh/chart: grafana-11.3.26
+  name: grafana
+  namespace: localdev
+spec:
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 3000
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: grafana
+      app.kubernetes.io/instance: grafana
+      app.kubernetes.io/name: grafana
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.0
+    helm.sh/chart: grafana-11.3.26
+  name: grafana
+  namespace: localdev
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: grafana
+      app.kubernetes.io/instance: grafana
+      app.kubernetes.io/name: grafana
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.0
+    helm.sh/chart: grafana-11.3.26
+  name: grafana
+  namespace: localdev
+secrets:
+  - name: grafana-admin
+---
+apiVersion: v1
+data:
+  GF_SECURITY_ADMIN_PASSWORD: cjZzNUFiQUplcg==
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.0
+    helm.sh/chart: grafana-11.3.26
+  name: grafana-admin
+  namespace: localdev
+type: Opaque
+---
+apiVersion: v1
+data:
+  GF_AUTH_LDAP_ALLOW_SIGN_UP: "false"
+  GF_AUTH_LDAP_CONFIG_FILE: /opt/bitnami/grafana/conf/ldap.toml
+  GF_AUTH_LDAP_ENABLED: "false"
+  GF_INSTALL_PLUGINS: ""
+  GF_PATHS_CONFIG: /opt/bitnami/grafana/conf/grafana.ini
+  GF_PATHS_DATA: /opt/bitnami/grafana/data
+  GF_PATHS_LOGS: /opt/bitnami/grafana/logs
+  GF_PATHS_PLUGINS: /opt/bitnami/grafana/data/plugins
+  GF_PATHS_PROVISIONING: /opt/bitnami/grafana/conf/provisioning
+  GF_SECURITY_ADMIN_USER: admin
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.0
+    helm.sh/chart: grafana-11.3.26
+  name: grafana-envvars
+  namespace: localdev
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.0
+    helm.sh/chart: grafana-11.3.26
+  name: grafana
+  namespace: localdev
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.0
+    helm.sh/chart: grafana-11.3.26
+  name: grafana
+  namespace: localdev
+spec:
+  ports:
+    - name: http
+      nodePort: null
+      port: 3000
+      protocol: TCP
+      targetPort: dashboard
+  selector:
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.0
+    helm.sh/chart: grafana-11.3.26
+  name: grafana
+  namespace: localdev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: grafana
+      app.kubernetes.io/instance: grafana
+      app.kubernetes.io/name: grafana
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        checksum/config: 039af31494614f5c7d90c4e9dda8e8ac5fc1eb6369bec6cb8ca838c4ad4373fa
+        checksum/dashboard-provider: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+        checksum/secret: b843c8b99aa263757256f392ee5761e912739ebe326f84c6219d707e4dfafac4
+      labels:
+        app.kubernetes.io/component: grafana
+        app.kubernetes.io/instance: grafana
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: grafana
+        app.kubernetes.io/version: 11.3.0
+        helm.sh/chart: grafana-11.3.26
+    spec:
+      affinity:
+        nodeAffinity: null
+        podAffinity: null
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/component: grafana
+                    app.kubernetes.io/instance: grafana
+                    app.kubernetes.io/name: grafana
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      automountServiceAccountToken: false
+      containers:
+        - env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: GF_SECURITY_ADMIN_PASSWORD
+                  name: grafana-admin
+          envFrom:
+            - configMapRef:
+                name: grafana-envvars
+          image: docker.io/bitnami/grafana:11.3.0-debian-12-r3
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: dashboard
+            timeoutSeconds: 5
+          name: grafana
+          ports:
+            - containerPort: 3000
+              name: dashboard
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /api/health
+              port: dashboard
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 2Gi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - mountPath: /tmp
+              name: empty-dir
+              subPath: tmp-dir
+            - mountPath: /opt/bitnami/grafana/conf
+              name: empty-dir
+              subPath: app-conf-dir
+            - mountPath: /opt/bitnami/grafana/tmp
+              name: empty-dir
+              subPath: app-tmp-dir
+            - mountPath: /bitnami/grafana
+              name: empty-dir
+              subPath: app-volume-dir
+            - mountPath: /opt/bitnami/grafana/data
+              name: data
+      enableServiceLinks: true
+      initContainers: null
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      serviceAccountName: grafana
+      volumes:
+        - emptyDir: {}
+          name: empty-dir
+        - name: data
+          persistentVolumeClaim:
+            claimName: grafana

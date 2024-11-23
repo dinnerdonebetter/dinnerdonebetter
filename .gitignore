@@ -46,4 +46,4 @@ cmd/playground/*.go
 artifacts/
 *.wasm
 
-deploy/environments/**/generated/*
+deploy/environments/**/generated.yaml

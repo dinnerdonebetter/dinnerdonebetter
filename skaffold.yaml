@@ -155,7 +155,7 @@ profiles:
         paths:
           - backend/deploy/kustomize/environments/localdev
           - frontend/deploy/kustomize/environments/localdev
-      output: ./deploy/environments/localdev/generated/kubernetes.yaml
+      output: ./deploy/environments/localdev/generated.yaml
 
     deploy:
       kubeContext: docker-desktop
