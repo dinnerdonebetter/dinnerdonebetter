@@ -80,6 +80,8 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
+        env:
+          GOSUMDB: "sum.golang.org"
         working-directory: backend/environments/dev/terraform
 
   deploy-api-server:
