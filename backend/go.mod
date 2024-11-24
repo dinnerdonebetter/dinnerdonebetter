@@ -1,8 +1,6 @@
 module github.com/dinnerdonebetter/backend
 
-go 1.22.0
-
-toolchain go1.22.0
+go 1.23.0
 
 require (
 	cloud.google.com/go/pubsub v1.40.0

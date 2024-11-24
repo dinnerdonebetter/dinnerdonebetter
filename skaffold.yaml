@@ -22,7 +22,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/services/api/http
-            fromImage: golang:1.22-bullseye
+            fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-db-cleaner
           context: backend
@@ -34,7 +34,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/jobs/db_cleaner
-            fromImage: golang:1.22-bullseye
+            fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-email-prober
           context: backend
@@ -46,7 +46,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/jobs/email_prober
-            fromImage: golang:1.22-bullseye
+            fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-meal-plan-finalizer
           context: backend
@@ -58,7 +58,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/jobs/meal_plan_finalizer
-            fromImage: golang:1.22-bullseye
+            fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-meal-plan-grocery-list-init
           context: backend
@@ -70,7 +70,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/jobs/meal_plan_grocery_list_initializer
-            fromImage: golang:1.22-bullseye
+            fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-meal-plan-task-creator
           context: backend
@@ -82,7 +82,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/jobs/meal_plan_task_creator
-            fromImage: golang:1.22-bullseye
+            fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-search-data-index-scheduler
           context: backend
@@ -94,7 +94,7 @@ profiles:
               - -s -w
               - -extldflags "-static"
             main: ./cmd/jobs/search_data_index_scheduler
-            fromImage: golang:1.22-bullseye
+            fromImage: golang:1.23-bullseye
 
 #        # backend artifacts (docker)
 #        - image: dinner-done-better-service-api
