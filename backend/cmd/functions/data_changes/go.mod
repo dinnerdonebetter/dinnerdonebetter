@@ -78,7 +78,6 @@ require (
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-chi/chi/v5 v5.1.0 // indirect
-	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-oauth2/oauth2/v4 v4.5.2 // indirect

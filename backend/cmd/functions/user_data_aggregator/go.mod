@@ -2,12 +2,15 @@ module github.com/dinnerdonebetter/backend/cmd/functions/user_data_aggregator
 
 go 1.23.0
 
+toolchain go1.23.3
+
 replace github.com/dinnerdonebetter/backend => ../../../
 
 require (
 	github.com/GoogleCloudPlatform/functions-framework-go v1.7.4
 	github.com/cloudevents/sdk-go/v2 v2.14.0
 	github.com/dinnerdonebetter/backend v0.0.0-00010101000000-000000000000
+	go.opentelemetry.io/otel v1.28.0
 	go.uber.org/automaxprocs v1.5.3
 )
 
@@ -173,7 +176,6 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.53.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.53.0 // indirect
-	go.opentelemetry.io/otel v1.28.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.28.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.28.0 // indirect
 	go.opentelemetry.io/otel/metric v1.28.0 // indirect

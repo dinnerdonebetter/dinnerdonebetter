@@ -5,15 +5,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"os"
+	"strings"
+	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/asyncfunc"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres"
+	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
+	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -32,18 +40,42 @@ type PubSubMessage struct {
 
 // IndexDataForSearch handles a data change.
 func IndexDataForSearch(ctx context.Context, e event.Event) error {
-	if config.ShouldCeaseOperation() {
+	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
+	}
+
+	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
+
+	envCfg := email.GetConfigForEnvironment(os.Getenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"))
+	if envCfg == nil {
+		return observability.PrepareAndLogError(email.ErrMissingEnvCfg, logger, nil, "getting environment config")
 	}
 
 	cfg, err := config.GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
-	cfg.Database.RunMigrations = false
 
-	logger := cfg.Observability.Logging.ProvideLogger()
+	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
+	if err != nil {
+		logger.Error(err, "initializing tracer")
+	}
+	otel.SetTracerProvider(tracerProvider)
+
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer_cloud_function"))
+	ctx, span := tracer.StartSpan(ctx)
+	defer span.End()
+
+	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
+	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
+	if err != nil {
+		cancel()
+		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
+	}
+
+	cancel()
+	defer dataManager.Close()
 
 	var msg MessagePublishedData
 	if err = e.DataAs(&msg); err != nil {
@@ -53,11 +85,12 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 	var searchIndexRequest *indexing.IndexRequest
 	if err = json.Unmarshal(msg.Message.Data, &searchIndexRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, nil, "unmarshaling data change message")
+		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
 	}
 
-	if err = asyncfunc.HandleIndexDataRequest(ctx, logger, cfg, searchIndexRequest); err != nil {
-		observability.AcknowledgeError(err, logger, nil, "handling index request")
+	// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
+	if err = indexing.HandleIndexRequest(ctx, logger, tracerProvider, &cfg.Search, dataManager, searchIndexRequest); err != nil {
+		observability.AcknowledgeError(err, logger, span, "handling index request")
 	}
 
 	return nil

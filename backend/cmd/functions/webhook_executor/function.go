@@ -1,19 +1,34 @@
 package webhookexecutor
 
 import (
+	"bytes"
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"log/slog"
+	"net/http"
+	"os"
+	"strings"
+	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/asyncfunc"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres"
+	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -32,18 +47,42 @@ type PubSubMessage struct {
 
 // ExecuteWebhook handles a data change.
 func ExecuteWebhook(ctx context.Context, e event.Event) error {
-	if config.ShouldCeaseOperation() {
+	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
+	}
+
+	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
+
+	envCfg := email.GetConfigForEnvironment(os.Getenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"))
+	if envCfg == nil {
+		return observability.PrepareAndLogError(email.ErrMissingEnvCfg, logger, nil, "getting environment config")
 	}
 
 	cfg, err := config.GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
-	cfg.Database.RunMigrations = false
 
-	logger := cfg.Observability.Logging.ProvideLogger()
+	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
+	if err != nil {
+		logger.Error(err, "initializing tracer")
+	}
+	otel.SetTracerProvider(tracerProvider)
+
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer_cloud_function"))
+	ctx, span := tracer.StartSpan(ctx)
+	defer span.End()
+
+	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
+	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
+	if err != nil {
+		cancel()
+		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
+	}
+
+	cancel()
+	defer dataManager.Close()
 
 	var msg MessagePublishedData
 	if err = e.DataAs(&msg); err != nil {
@@ -53,11 +92,63 @@ func ExecuteWebhook(ctx context.Context, e event.Event) error {
 	var webhookExecutionRequest *types.WebhookExecutionRequest
 	if err = json.Unmarshal(msg.Message.Data, &webhookExecutionRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, nil, "unmarshaling data change message")
+		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
 	}
 
-	if err = asyncfunc.SendWebhook(ctx, cfg, logger, webhookExecutionRequest); err != nil {
-		return observability.PrepareAndLogError(err, logger, nil, "unmarshaling data change message")
+	household, err := dataManager.GetHousehold(ctx, webhookExecutionRequest.HouseholdID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "getting household")
+	}
+	_ = household
+
+	webhook, err := dataManager.GetWebhook(ctx, webhookExecutionRequest.WebhookID, webhookExecutionRequest.HouseholdID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting webhook")
+		return nil
+	}
+
+	var payloadBody []byte
+	switch webhook.ContentType {
+	case "application/json":
+		payloadBody, err = json.Marshal(webhookExecutionRequest.Payload)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "marshalling webhook payload")
+		}
+	case "application/xml":
+		payloadBody, err = xml.Marshal(webhookExecutionRequest.Payload)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "marshalling webhook payload")
+		}
+	}
+
+	req, err := http.NewRequest(webhook.Method, webhook.URL, bytes.NewReader(payloadBody))
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "creating webhook request")
+	}
+
+	req.Header.Set("Content-Type", webhook.ContentType)
+
+	decryptedKey, err := hex.DecodeString(household.WebhookEncryptionKey)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "decoding webhook encryption key")
+	}
+
+	digest := hmac.New(sha256.New, decryptedKey)
+	digest.Write(payloadBody)
+	req.Header.Set("X-Dinner-Done-Better-Signature", hex.EncodeToString(digest.Sum(nil)))
+
+	res, err := otelhttp.DefaultClient.Do(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "executing webhook request")
+		return nil
+	}
+
+	logger = logger.WithResponse(res)
+	tracing.AttachResponseToSpan(span, res)
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		observability.AcknowledgeError(err, logger, span, "invalid response type")
+		return nil
 	}
 
 	return nil
