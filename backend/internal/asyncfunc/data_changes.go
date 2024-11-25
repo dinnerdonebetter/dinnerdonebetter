@@ -1,4 +1,4 @@
-package logic
+package asyncfunc
 
 import (
 	"context"
@@ -124,8 +124,8 @@ func HandleDataChangeMessage(ctx context.Context, tracerProvider tracing.TracerP
 
 	var wg sync.WaitGroup
 
+	wg.Add(3)
 	go func() {
-		wg.Add(1)
 		if changeMessage.HouseholdID != "" && !slices.Contains(nonWebhookEventTypes, changeMessage.EventType) {
 			var relevantWebhooks []*types.Webhook
 			relevantWebhooks, err = dataManager.GetWebhooksForHouseholdAndEvent(ctx, changeMessage.HouseholdID, changeMessage.EventType)
@@ -147,7 +147,6 @@ func HandleDataChangeMessage(ctx context.Context, tracerProvider tracing.TracerP
 	}()
 
 	go func() {
-		wg.Add(1)
 		if err = handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, webhookExecutionRequestPublisher, analyticsEventReporter, changeMessage); err != nil {
 			observability.AcknowledgeError(err, logger, span, "notifying customer(s)")
 		}
@@ -155,7 +154,6 @@ func HandleDataChangeMessage(ctx context.Context, tracerProvider tracing.TracerP
 	}()
 
 	go func() {
-		wg.Add(1)
 		if err = handleSearchIndexUpdates(ctx, logger, tracer, searchDataIndexPublisher, changeMessage); err != nil {
 			observability.AcknowledgeError(err, logger, span, "updating search index)")
 		}

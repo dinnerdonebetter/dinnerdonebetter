@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/dinnerdonebetter/backend/cmd/functions/search_indexer/logic"
+	"github.com/dinnerdonebetter/backend/internal/asyncfunc"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
@@ -53,10 +53,10 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 	var searchIndexRequest *indexing.IndexRequest
 	if err = json.Unmarshal(msg.Message.Data, &searchIndexRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, nil, "unmarshalling data change message")
+		return observability.PrepareAndLogError(err, logger, nil, "unmarshaling data change message")
 	}
 
-	if err = logic.HandleIndexDataRequest(ctx, logger, cfg, searchIndexRequest); err != nil {
+	if err = asyncfunc.HandleIndexDataRequest(ctx, logger, cfg, searchIndexRequest); err != nil {
 		observability.AcknowledgeError(err, logger, nil, "handling index request")
 	}
 

@@ -267,7 +267,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 
 	sess, err := provider.UnmarshalSession(value)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "unmarshalling session")
+		observability.AcknowledgeError(err, logger, span, "unmarshaling session")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to unmarshal session", http.StatusInternalServerError)
 		return
 	}

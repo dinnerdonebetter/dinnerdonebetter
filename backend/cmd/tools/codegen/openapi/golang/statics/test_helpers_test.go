@@ -23,7 +23,7 @@ import (
 
 const (
 	exampleURI       = "https://whatever.whocares.gov"
-	asciiControlChar = string(byte(127))
+	asciiControlChar = string(byte(2<<6 - 1))
 )
 
 // this file only ends in "_test" so that it can be excluded from the real codebase

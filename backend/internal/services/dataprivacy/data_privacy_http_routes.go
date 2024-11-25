@@ -178,7 +178,7 @@ func (s *service) ReadUserDataAggregationReportHandler(res http.ResponseWriter, 
 
 	var collection types.UserDataCollection
 	if err = json.Unmarshal(fileContents, &collection); err != nil {
-		observability.AcknowledgeError(err, logger, span, "unmarshalling report")
+		observability.AcknowledgeError(err, logger, span, "unmarshaling report")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return

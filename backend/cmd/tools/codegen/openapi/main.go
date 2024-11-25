@@ -34,7 +34,7 @@ func loadSpec(filepath string) (*openapi31.Spec, error) {
 
 	spec := &openapi31.Spec{}
 	if err = spec.UnmarshalYAML(specBytes); err != nil {
-		return nil, fmt.Errorf("unmarshalling spec: %w", err)
+		return nil, fmt.Errorf("unmarshaling spec: %w", err)
 	}
 
 	return spec, nil

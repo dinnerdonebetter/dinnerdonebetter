@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/dinnerdonebetter/backend/cmd/functions/outbound_emailer/logic"
+	"github.com/dinnerdonebetter/backend/internal/asyncfunc"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -66,8 +66,8 @@ func SendEmail(ctx context.Context, e event.Event) error {
 	var emailDeliveryRequest email.DeliveryRequest
 	if err = json.Unmarshal(msg.Message.Data, &emailDeliveryRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, nil, "unmarshalling delivery request message")
+		return observability.PrepareAndLogError(err, logger, nil, "unmarshaling delivery request message")
 	}
 
-	return logic.HandleSendEmailRequest(ctx, logger, tracerProvider, cfg, &emailDeliveryRequest)
+	return asyncfunc.HandleSendEmailRequest(ctx, logger, tracerProvider, cfg, &emailDeliveryRequest)
 }

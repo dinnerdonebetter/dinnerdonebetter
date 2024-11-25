@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/dinnerdonebetter/backend/cmd/functions/webhook_executor/logic"
+	"github.com/dinnerdonebetter/backend/internal/asyncfunc"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -53,11 +53,11 @@ func ExecuteWebhook(ctx context.Context, e event.Event) error {
 	var webhookExecutionRequest *types.WebhookExecutionRequest
 	if err = json.Unmarshal(msg.Message.Data, &webhookExecutionRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, nil, "unmarshalling data change message")
+		return observability.PrepareAndLogError(err, logger, nil, "unmarshaling data change message")
 	}
 
-	if err = logic.SendWebhook(ctx, cfg, logger, webhookExecutionRequest); err != nil {
-		return observability.PrepareAndLogError(err, logger, nil, "unmarshalling data change message")
+	if err = asyncfunc.SendWebhook(ctx, cfg, logger, webhookExecutionRequest); err != nil {
+		return observability.PrepareAndLogError(err, logger, nil, "unmarshaling data change message")
 	}
 
 	return nil

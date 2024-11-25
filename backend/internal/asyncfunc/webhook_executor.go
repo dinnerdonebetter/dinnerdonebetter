@@ -1,4 +1,4 @@
-package logic
+package asyncfunc
 
 import (
 	"bytes"
@@ -64,16 +64,16 @@ func SendWebhook(
 	case "application/json":
 		payloadBody, err = json.Marshal(webhookExecutionRequest.Payload)
 		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "marshalling webhook payload")
+			return observability.PrepareAndLogError(err, logger, span, "marshaling webhook payload")
 		}
 	case "application/xml":
 		payloadBody, err = xml.Marshal(webhookExecutionRequest.Payload)
 		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "marshalling webhook payload")
+			return observability.PrepareAndLogError(err, logger, span, "marshaling webhook payload")
 		}
 	}
 
-	req, err := http.NewRequest(webhook.Method, webhook.URL, bytes.NewReader(payloadBody))
+	req, err := http.NewRequestWithContext(ctx, webhook.Method, webhook.URL, bytes.NewReader(payloadBody))
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "creating webhook request")
 	}
@@ -94,11 +94,16 @@ func SendWebhook(
 		observability.AcknowledgeError(err, logger, span, "executing webhook request")
 		return nil
 	}
+	defer func() {
+		if err = res.Body.Close(); err != nil {
+			observability.AcknowledgeError(err, logger, span, "closing response body")
+		}
+	}()
 
 	logger = logger.WithResponse(res)
 	tracing.AttachResponseToSpan(span, res)
 
-	if res.StatusCode < 200 || res.StatusCode > 299 {
+	if res.StatusCode < http.StatusOK || res.StatusCode < http.StatusMultipleChoices {
 		observability.AcknowledgeError(err, logger, span, "invalid response type")
 		return nil
 	}

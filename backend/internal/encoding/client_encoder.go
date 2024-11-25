@@ -50,7 +50,7 @@ func (e *clientEncoder) Unmarshal(ctx context.Context, data []byte, v any) error
 	}
 
 	if err := unmarshalFunc(data, v); err != nil {
-		return observability.PrepareError(err, span, "unmarshalling JSON content")
+		return observability.PrepareError(err, span, "unmarshaling JSON content")
 	}
 
 	logger.Debug("unmarshalled")

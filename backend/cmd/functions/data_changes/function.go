@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/cmd/functions/data_changes/logic"
+	"github.com/dinnerdonebetter/backend/internal/asyncfunc"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -65,8 +65,8 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	var changeMessage *types.DataChangeMessage
 	if err = json.Unmarshal(msg.Message.Data, &changeMessage); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, nil, "unmarshalling data change message")
+		return observability.PrepareAndLogError(err, logger, nil, "unmarshaling data change message")
 	}
 
-	return logic.HandleDataChangeMessage(ctx, tracerProvider, cfg, changeMessage)
+	return asyncfunc.HandleDataChangeMessage(ctx, tracerProvider, cfg, changeMessage)
 }

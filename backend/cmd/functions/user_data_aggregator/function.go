@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/dinnerdonebetter/backend/cmd/functions/user_data_aggregator/logic"
+	"github.com/dinnerdonebetter/backend/internal/asyncfunc"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -53,10 +53,10 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 	var userDataCollectionRequest *types.UserDataAggregationRequest
 	if err = json.Unmarshal(msg.Message.Data, &userDataCollectionRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, nil, "unmarshalling data change message")
+		return observability.PrepareAndLogError(err, logger, nil, "unmarshaling data change message")
 	}
 
-	if err = logic.CollectAndSaveUserData(ctx, logger, cfg, userDataCollectionRequest); err != nil {
+	if err = asyncfunc.CollectAndSaveUserData(ctx, logger, cfg, userDataCollectionRequest); err != nil {
 		return observability.PrepareAndLogError(err, logger, nil, "collecting and saving user data")
 	}
 
