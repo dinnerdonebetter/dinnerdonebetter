@@ -19,6 +19,10 @@ const (
 	householdInvitationsExpiresAtColumn  = "expires_at"
 )
 
+func init() {
+	registerTableName(householdInvitationsTableName)
+}
+
 var householdInvitationsColumns = []string{
 	idColumn,
 	fromUserColumn,

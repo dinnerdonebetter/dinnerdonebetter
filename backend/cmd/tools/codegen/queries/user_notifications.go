@@ -10,11 +10,12 @@ import (
 const (
 	userNotificationsTableName      = "user_notifications"
 	contentColumn                   = "content"
-	statusColumn                    = "status"
-	userNotificationStatusUnread    = "unread"
-	userNotificationStatusRead      = "read"
 	userNotificationStatusDismissed = "dismissed"
 )
+
+func init() {
+	registerTableName(userNotificationsTableName)
+}
 
 var (
 	userNotificationsColumns = []string{

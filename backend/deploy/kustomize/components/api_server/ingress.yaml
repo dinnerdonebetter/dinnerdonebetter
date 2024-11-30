@@ -3,7 +3,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dinner-done-better-api-server-ingress
-
 spec:
   rules:
   - host: api-server.k8s

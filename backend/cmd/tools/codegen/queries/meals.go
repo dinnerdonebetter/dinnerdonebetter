@@ -13,6 +13,10 @@ const (
 	mealIDColumn = "meal_id"
 )
 
+func init() {
+	registerTableName(mealsTableName)
+}
+
 var mealsColumns = []string{
 	idColumn,
 	nameColumn,

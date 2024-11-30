@@ -11,6 +11,10 @@ const (
 	validPreparationVesselsTableName = "valid_preparation_vessels"
 )
 
+func init() {
+	registerTableName(validPreparationVesselsTableName)
+}
+
 var validPreparationVesselsColumns = []string{
 	idColumn,
 	notesColumn,

@@ -44,7 +44,7 @@ LOCAL_DEV_NAMESPACE := localdev
 
 .PHONY: k9s
 k9s:
-	k9s --refresh 1
+	k9s --refresh 1 --namespace $(LOCAL_DEV_NAMESPACE)
 
 .PHONY: skbuild
 skbuild:
@@ -56,9 +56,16 @@ skrender:
 	mkdir -p deploy/environments/local/generated/
 	$(MAKE) deploy/environments/local/generated/kubernetes.yaml
 
-.PHONY: run
-run: nuke_k8s skrender
-	skaffold run --build-concurrency 0 --profile $(LOCAL_DEV_NAMESPACE) --port-forward
+.PHONY: helm_deps
+helm_deps:
+	helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+	helm repo add grafana https://grafana.github.io/helm-charts
+	helm repo add prometheus https://prometheus-community.github.io/helm-charts
+	helm repo update
+
+.PHONY: dev
+dev: helm_deps nuke_k8s skrender
+	skaffold dev --build-concurrency 0 --profile $(LOCAL_DEV_NAMESPACE) --port-forward
 
 deploy/environments/local/generated/kubernetes.yaml:
 	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output deploy/environments/local/generated/kubernetes.yaml

@@ -11,6 +11,10 @@ const (
 	householdInstrumentOwnershipsTableName = "household_instrument_ownerships"
 )
 
+func init() {
+	registerTableName(householdInstrumentOwnershipsTableName)
+}
+
 var householdInstrumentOwnershipsColumns = []string{
 	idColumn,
 	notesColumn,

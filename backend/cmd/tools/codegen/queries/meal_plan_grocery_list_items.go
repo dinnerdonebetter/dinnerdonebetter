@@ -13,6 +13,10 @@ const (
 	mealPlanGroceryListItemIDColumn = "meal_plan_grocery_list_item_id"
 )
 
+func init() {
+	registerTableName(mealPlanGroceryListItemsTableName)
+}
+
 var mealPlanGroceryListItemsColumns = []string{
 	idColumn,
 	"belongs_to_meal_plan",

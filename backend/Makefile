@@ -245,7 +245,7 @@ integration_tests_postgres:
 ## Running
 
 .PHONY: dev
-dev: $(ARTIFACTS_DIR)
+dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
 	$(CONTAINER_RUNNER) compose \
 	--file $(ENVIRONMENTS_DIR)/local/compose_files/dev.yaml up \
 	--quiet-pull \

@@ -13,6 +13,10 @@ const (
 	eventTypeColumn    = "event_type"
 )
 
+func init() {
+	registerTableName(auditLogsTableName)
+}
+
 var (
 	auditLogsColumns = []string{
 		idColumn,

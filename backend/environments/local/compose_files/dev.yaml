@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   # worker_queue:
   #   logging:
@@ -36,6 +35,6 @@ services:
       - source: '../config_files/service-config.json'
         target: '/etc/config'
         type: 'bind'
-      - source: '../../'
+      - source: '../../../'
         target: '/go/src/github.com/dinnerdonebetter/backend'
         type: 'bind'

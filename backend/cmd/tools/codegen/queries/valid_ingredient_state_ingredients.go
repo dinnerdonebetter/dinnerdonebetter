@@ -14,6 +14,10 @@ const (
 	validIngredientColumn      = "valid_ingredient"
 )
 
+func init() {
+	registerTableName(validIngredientStateIngredientsTableName)
+}
+
 var validIngredientStateIngredientsColumns = []string{
 	idColumn,
 	notesColumn,

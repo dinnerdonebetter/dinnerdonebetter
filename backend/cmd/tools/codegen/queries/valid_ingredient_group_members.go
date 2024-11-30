@@ -10,6 +10,10 @@ const (
 	validIngredientGroupMemberValidIngredientColumn = "valid_ingredient"
 )
 
+func init() {
+	registerTableName(validIngredientGroupMembersTableName)
+}
+
 var validIngredientGroupMembersColumns = []string{
 	idColumn,
 	belongsToGroupColumn,

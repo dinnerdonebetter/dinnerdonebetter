@@ -14,6 +14,10 @@ const (
 	belongsToMealPlanOptionColumn = "belongs_to_meal_plan_option"
 )
 
+func init() {
+	registerTableName(mealPlanOptionVotesTableName)
+}
+
 var mealPlanOptionVotesColumns = []string{
 	idColumn,
 	"rank",

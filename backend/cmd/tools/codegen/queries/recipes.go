@@ -15,6 +15,10 @@ const (
 	lastValidatedAtColumn = "last_validated_at"
 )
 
+func init() {
+	registerTableName(recipesTableName)
+}
+
 var recipesColumns = []string{
 	idColumn,
 	nameColumn,

@@ -12,6 +12,10 @@ const (
 	byUserColumn           = "by_user"
 )
 
+func init() {
+	registerTableName(recipeRatingsTableName)
+}
+
 var recipeRatingsColumns = []string{
 	idColumn,
 	recipeIDColumn,

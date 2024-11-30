@@ -13,6 +13,10 @@ const (
 	recipeStepVesselIDColumn = "recipe_step_vessel_id"
 )
 
+func init() {
+	registerTableName(recipeStepVesselsTableName)
+}
+
 var recipeStepVesselsColumns = []string{
 	idColumn,
 	nameColumn,

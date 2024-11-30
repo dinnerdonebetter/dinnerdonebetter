@@ -15,6 +15,10 @@ const (
 	belongsToRecipeStepColumn = "belongs_to_recipe_step"
 )
 
+func init() {
+	registerTableName(recipeStepsTableName)
+}
+
 var recipeStepsColumns = []string{
 	idColumn,
 	indexColumn,

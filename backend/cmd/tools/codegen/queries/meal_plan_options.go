@@ -16,6 +16,10 @@ const (
 	mealPlanOptionsMealScaleColumn = "meal_scale"
 )
 
+func init() {
+	registerTableName(mealPlanOptionsTableName)
+}
+
 var mealPlanOptionsColumns = []string{
 	idColumn,
 	"assigned_cook",

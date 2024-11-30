@@ -34,6 +34,10 @@ const (
 	lastAcceptedPrivacyPolicyColumn     = "last_accepted_privacy_policy"
 )
 
+func init() {
+	registerTableName(usersTableName)
+}
+
 var usersColumns = []string{
 	idColumn,
 	usernameColumn,

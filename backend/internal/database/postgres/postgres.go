@@ -200,3 +200,8 @@ func fetchAllRows[T any](fetchFunc func(*types.QueryFilter) (*types.QueryFiltere
 
 	return allData, nil
 }
+
+// Destroy deletes all data in the database.
+func (q *Querier) Destroy(ctx context.Context) error {
+	return q.generatedQuerier.DestroyAllData(ctx, q.db)
+}
