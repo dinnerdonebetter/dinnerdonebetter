@@ -148,6 +148,41 @@ profiles:
             overrides:
               architecture: standalone
 
+          # metrics storage
+          - name: prometheus
+            namespace: localdev
+            createNamespace: true
+            # repo: https://prometheus-community.github.io/helm-charts
+            remoteChart: prometheus/prometheus
+            version: 26.0.0
+            overrides:
+              alertmanager:
+                enabled: false
+              kube-state-metrics:
+                enabled: false
+              prometheus-node-exporter:
+                enabled: false
+              prometheus-pushgateway:
+                enabled: false
+              server:
+                service:
+                  servicePort: 3001
+
+#          # tracing data storage
+#          - name: jaeger
+#            namespace: localdev
+#            createNamespace: true
+#            # repo: https://jaegertracing.github.io/helm-charts
+#            remoteChart: jaeger/jaeger
+#            version: 3.3.2
+#            overrides:
+#              provisionDataStore:
+#                cassandra: false
+#              allInOne:
+#                enabled: true
+#              storage:
+#                type: badger
+
           # o11y dashboard
           - name: grafana
             namespace: localdev
@@ -192,14 +227,14 @@ profiles:
                       isDefault: false
                       version: 1
                       editable: true
-#                    - name: Loki
-#                      type: loki
-#                      access: proxy
-#                      orgId: 1
-#                      url: http://loki-backend.localdev.svc.cluster.local:3200
-#                      isDefault: false
-#                      version: 1
-#                      editable: true
+                    - name: Loki
+                      type: loki
+                      access: proxy
+                      orgId: 1
+                      url: http://loki.localdev.svc.cluster.local:3100
+                      isDefault: false
+                      version: 1
+                      editable: true
                     - name: Tempo
                       type: tempo
                       access: proxy
@@ -216,93 +251,68 @@ profiles:
 #               custom-dashboard:
 #                 file: dashboards/custom-dashboard.json
 
-#          # log storage
-#          #  # to test: `kubectl exec --namespace=localdev -it grafana-7d6f6bff46-575gl -- curl http://loki-backend.localdev.svc.cluster.local:3200`
-#          - name: loki
-#            namespace: localdev
-#            createNamespace: true
-#            # repo: https://grafana.github.io/helm-charts
-#            remoteChart: grafana/loki
-#            version: 6.22.0
-#            overrides:
-#              loki:
-#                memcached:
-#                  results_cache:
-#                    enabled: false
-#                autoscaling:
-#                  enabled: false
-#                  minReplicas: 1
-#                  maxReplicas: 1
-#                deploymentMode: SingleBinary
-#                auth_enabled: false
-#                server:
-#                  http_listen_port: 3200
-#                commonConfig:
-#                  replication_factor: 1
-#                schemaConfig:
-#                  configs:
-#                    - from: "2024-04-01"
-#                      store: tsdb
-#                      object_store: filesystem
-#                      schema: v13
-#                      index:
-#                        prefix: loki_index_
-#                        period: 24h
-#                pattern_ingester:
-#                  enabled: true
-#                limits_config:
-#                  allow_structured_metadata: true
-#                  volume_enabled: true
-#                  retention_period: 24h
-#                compactor:
-#                  retention_enabled: true
-#                  delete_request_store: s3
-#                ruler:
-#                  enable_api: true
-#              minio:
-#                enabled: true
-#              singleBinary:
-#                replicas: 1
-#                autoscaling:
-#                  enabled: false
-#              backend:
-#                replicas: 0
-#                autoscaling:
-#                  enabled: false
-#              read:
-#                replicas: 0
-#                autoscaling:
-#                  enabled: false
-#              write:
-#                replicas: 0
-#                autoscaling:
-#                  enabled: false
-#              ingester:
-#                replicas: 0
-#                autoscaling:
-#                  enabled: false
-#              querier:
-#                replicas: 0
-#                autoscaling:
-#                  enabled: false
-#              queryFrontend:
-#                replicas: 0
-#                autoscaling:
-#                  enabled: false
-#              queryScheduler:
-#                replicas: 0
-#                autoscaling:
-#                  enabled: false
-#              distributor:
-#                replicas: 0
-#                autoscaling:
-#                  enabled: false
-#              compactor:
-#                replicas: 0
-#              indexGateway:
-#                replicas: 0
-#              bloomGateway:
-#                replicas: 0
+          # log storage
+          #  # to test: `kubectl exec --namespace=localdev -it grafana-7d6f6bff46-575gl -- curl http://loki-backend.localdev.svc.cluster.local:3200`
+          - name: loki
+            namespace: localdev
+            createNamespace: true
+            # repo: https://grafana.github.io/helm-charts
+            remoteChart: grafana/loki
+            version: 6.22.0
+            overrides:
+              loki:
+                auth_enabled: false
+                commonConfig:
+                  replication_factor: 3
+                schemaConfig:
+                  configs:
+                    - from: "2024-04-01"
+                      store: tsdb
+                      object_store: s3
+                      schema: v13
+                      index:
+                        prefix: loki_index_
+                        period: 24h
+                pattern_ingester:
+                  enabled: true
+                limits_config:
+                  allow_structured_metadata: true
+                  volume_enabled: true
+                  retention_period: 24h # 28 days retention
+                compactor:
+                  retention_enabled: true
+                  delete_request_store: s3
+                ruler:
+                  enable_api: true
+              minio:
+                enabled: true
+              deploymentMode: SingleBinary
+              singleBinary:
+                replicas: 1
+              backend:
+                replicas: 0
+              read:
+                replicas: 0
+              write:
+                replicas: 0
+              ingester:
+                replicas: 0
+              querier:
+                replicas: 0
+              queryFrontend:
+                replicas: 0
+              queryScheduler:
+                replicas: 0
+              distributor:
+                replicas: 0
+              compactor:
+                replicas: 0
+              indexGateway:
+                replicas: 0
+              bloomCompactor:
+                replicas: 0
+              bloomGateway:
+                replicas: 0
 
           # tracing data storage
           - name: tempo
@@ -311,29 +321,3 @@ profiles:
             # repo: https://grafana.github.io/helm-charts
             remoteChart: grafana/tempo
             version: 1.14.0
-            overrides:
-              service:
-                targetPort: 3200
-              tempo:
-                server:
-                  http_listen_port: 3200
-
-          # metrics storage
-          - name: prometheus
-            namespace: localdev
-            createNamespace: true
-            # repo: https://prometheus-community.github.io/helm-charts
-            remoteChart: prometheus/prometheus
-            version: 26.0.0
-            overrides:
-              alertmanager:
-                enabled: false
-              kube-state-metrics:
-                enabled: false
-              prometheus-node-exporter:
-                enabled: false
-              prometheus-pushgateway:
-                enabled: false
-              server:
-                service:
-                  servicePort: 3001
