@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
+	config2 "github.com/dinnerdonebetter/backend/internal/routing"
+
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -25,7 +27,6 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltracehttp"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
-	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
@@ -154,8 +155,8 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	}
 
 	cfg := &config.InstanceConfig{
-		Routing: routing.Config{
-			Provider:               routing.ChiProvider,
+		Routing: config2.Config{
+			Provider:               config2.ChiProvider,
 			EnableCORSForLocalhost: true,
 			SilenceRouteLogging:    false,
 		},
@@ -318,8 +319,8 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 
 func buildLocalDevConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
-		Routing: routing.Config{
-			Provider:               routing.ChiProvider,
+		Routing: config2.Config{
+			Provider:               config2.ChiProvider,
 			EnableCORSForLocalhost: true,
 			SilenceRouteLogging:    false,
 		},
@@ -598,8 +599,8 @@ func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
-		Routing: routing.Config{
-			Provider:               routing.ChiProvider,
+		Routing: config2.Config{
+			Provider:               config2.ChiProvider,
 			EnableCORSForLocalhost: true,
 			SilenceRouteLogging:    false,
 		},

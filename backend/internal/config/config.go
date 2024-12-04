@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	routecfg "github.com/dinnerdonebetter/backend/internal/routing"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -17,7 +18,6 @@ import (
 	featureflagsconfig "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/routing"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 
@@ -61,7 +61,7 @@ type (
 		FeatureFlags  featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
 		Encoding      encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
 		Meta          MetaSettings              `json:"meta"          toml:"meta,omitempty"`
-		Routing       routing.Config            `json:"routing"       toml:"routing,omitempty"`
+		Routing       routecfg.Config           `json:"routing"       toml:"routing,omitempty"`
 		Events        msgconfig.Config          `json:"events"        toml:"events,omitempty"`
 		Server        http.Config               `json:"server"        toml:"server,omitempty"`
 		Database      dbconfig.Config           `json:"database"      toml:"database,omitempty"`

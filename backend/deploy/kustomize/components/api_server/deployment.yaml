@@ -29,6 +29,8 @@ spec:
         - name: "config"
           mountPath: "/etc/service-config.json"
           subPath: "config.json"
+        - name: logs
+          mountPath: /var/log
         ports:
         - containerPort: 8000
           name: http
@@ -48,8 +50,21 @@ spec:
             port: 8000
           initialDelaySeconds: 15
           periodSeconds: 3
+      - name: opentelemetry-collector
+        image: otel/opentelemetry-collector-contrib:0.114.0
+        volumeMounts:
+          - name: logs
+            mountPath: /var/log
+          - name: opentelemetry-config
+            mountPath: /conf
       volumes:
         - name: "config"
           configMap:
             name: "dinner-done-better-service-api-config"
+        - name: logs
+          emptyDir:
+            sizeLimit: 500Mi
+        - name: opentelemetry-config
+          configMap:
+            name: opentelemetry-collector-config
 ---

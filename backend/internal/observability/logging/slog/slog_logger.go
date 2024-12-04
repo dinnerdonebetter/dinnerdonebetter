@@ -2,9 +2,12 @@ package slog
 
 import (
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
+
+	"gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -50,7 +53,17 @@ func NewSlogLogger(lvl logging.Level) logging.Logger {
 		},
 	}
 
-	return &slogLogger{logger: slog.New(slog.NewJSONHandler(os.Stdout, handlerOptions))}
+	outputWriter := io.MultiWriter(os.Stdout, &lumberjack.Logger{
+		Filename:   "/var/log/dinnerdonebetter/api_server.log",
+		MaxSize:    500, // megabytes
+		MaxBackups: 3,
+		MaxAge:     3, // days
+		Compress:   true,
+	})
+
+	return &slogLogger{
+		logger: slog.New(slog.NewJSONHandler(outputWriter, handlerOptions)),
+	}
 }
 
 // WithName is our obligatory contract fulfillment function.

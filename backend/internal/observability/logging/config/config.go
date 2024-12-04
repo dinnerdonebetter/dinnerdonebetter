@@ -30,14 +30,18 @@ type (
 
 // ProvideLogger builds a logger according to the provided config.
 func (cfg *Config) ProvideLogger() logging.Logger {
+	var logger logging.Logger
+
 	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case ProviderZerolog:
-		return zerolog.NewZerologLogger(cfg.Level)
+		logger = zerolog.NewZerologLogger(cfg.Level)
 	case ProviderZap:
-		return zap.NewZapLogger(cfg.Level)
+		logger = zap.NewZapLogger(cfg.Level)
 	case ProviderSlog:
-		return slog.NewSlogLogger(cfg.Level)
+		logger = slog.NewSlogLogger(cfg.Level)
 	default:
-		return logging.NewNoopLogger()
+		logger = logging.NewNoopLogger()
 	}
+
+	return logger
 }

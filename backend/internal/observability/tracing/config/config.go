@@ -31,18 +31,20 @@ type (
 )
 
 // ProvideTracerProvider provides an instrumentation handler.
-func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (traceProvider tracing.TracerProvider, err error) {
+func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (tracing.TracerProvider, error) {
 	logger := l.WithValue("tracing_provider", c.Provider)
 
 	p := strings.TrimSpace(strings.ToLower(c.Provider))
 
 	switch p {
 	case ProviderOtel:
+		logger.Info("configuring otel provider")
 		return oteltracehttp.SetupOtelHTTP(ctx, c.Otel)
 	case ProviderCloudTrace:
+		logger.Info("configuring cloud trace provider")
 		return cloudtrace.SetupCloudTrace(ctx, c.CloudTrace)
 	default:
-		logger.Debug("invalid tracing provider")
+		logger.Info("invalid tracing provider")
 		return tracing.NewNoopTracerProvider(), nil
 	}
 }
