@@ -10,7 +10,7 @@ import (
 
 const (
 	// LoggerNameKey is a key we can use to denote logger names across implementations.
-	LoggerNameKey = "_name_"
+	LoggerNameKey = "service_name"
 )
 
 type (

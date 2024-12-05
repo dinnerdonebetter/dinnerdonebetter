@@ -4,8 +4,8 @@ kind: CronJob
 metadata:
   name: dinner-done-better-job-email-prober
 spec:
-  # schedule: "0 4 * * *"
-  schedule: "* * * * *"
+  # schedule: "* * * * *"
+  schedule: "0 4 * * *"
   jobTemplate:
     spec:
       template:
@@ -21,9 +21,15 @@ spec:
             - name: "config"
               mountPath: "/etc/service-config.json"
               subPath: "config.json"
+            - name: logs
+              mountPath: /var/log/dinnerdonebetter
           restartPolicy: OnFailure
           volumes:
             - name: "config"
               configMap:
                 name: "dinner-done-better-job-email-prober-config"
+            # this volume is where we write logs to, and where we read logs from in the collector.
+            - name: logs
+              emptyDir:
+                sizeLimit: 500Mi
 ---

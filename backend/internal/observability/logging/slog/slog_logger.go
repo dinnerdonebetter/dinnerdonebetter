@@ -3,6 +3,7 @@ package slog
 import (
 	"fmt"
 	"io"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -53,8 +54,17 @@ func NewSlogLogger(lvl logging.Level) logging.Logger {
 		},
 	}
 
+	const logFilePath = "/var/log/dinnerdonebetter/api_server.log"
+	f, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Fatalf("Failed to create file: %v", err)
+	}
+	if err = f.Close(); err != nil {
+		log.Fatalf("Failed to close file: %v", err)
+	}
+
 	outputWriter := io.MultiWriter(os.Stdout, &lumberjack.Logger{
-		Filename:   "/var/log/dinnerdonebetter/api_server.log",
+		Filename:   logFilePath,
 		MaxSize:    500, // megabytes
 		MaxBackups: 3,
 		MaxAge:     3, // days

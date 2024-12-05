@@ -19,6 +19,7 @@ spec:
         app.kubernetes.io/name: dinner-done-better-backend
     spec:
       containers:
+      # this is the API server container
       - name: dinner-done-better-service-api
         image: dinner-done-better-service-api
         imagePullPolicy: IfNotPresent
@@ -30,7 +31,7 @@ spec:
           mountPath: "/etc/service-config.json"
           subPath: "config.json"
         - name: logs
-          mountPath: /var/log
+          mountPath: /var/log/dinnerdonebetter
         ports:
         - containerPort: 8000
           name: http
@@ -50,20 +51,29 @@ spec:
             port: 8000
           initialDelaySeconds: 15
           periodSeconds: 3
+      # This is the OpenTelemetry collector sidecar
       - name: opentelemetry-collector
-        image: otel/opentelemetry-collector-contrib:0.114.0
+        image: otel/opentelemetry-collector-contrib:0.115.1
+        command:
+          - "/otelcol-contrib"
+          - "--config"
+          - "/conf/config.yaml"
         volumeMounts:
           - name: logs
-            mountPath: /var/log
+            mountPath: /var/log/dinnerdonebetter
+            readOnly: true
           - name: opentelemetry-config
             mountPath: /conf
       volumes:
+        # this volume contains the configuration file for the API service
         - name: "config"
           configMap:
             name: "dinner-done-better-service-api-config"
+        # this volume is where we write logs to in the API, and where we read logs from in the collector.
         - name: logs
           emptyDir:
             sizeLimit: 500Mi
+        # this volume contains the configuration file for the OTel collector.
         - name: opentelemetry-config
           configMap:
             name: opentelemetry-collector-config

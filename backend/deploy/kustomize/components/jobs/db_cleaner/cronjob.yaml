@@ -4,8 +4,7 @@ kind: CronJob
 metadata:
   name: dinner-done-better-cronjob-db-cleaner
 spec:
-  # schedule: "* * 1,8,15,22 * *"
-  schedule: "* * * * *"
+  schedule: "* * 1,8,15,22 * *"
   jobTemplate:
     spec:
       template:
@@ -21,9 +20,15 @@ spec:
             - name: "config"
               mountPath: "/etc/service-config.json"
               subPath: "config.json"
+            - name: logs
+              mountPath: /var/log/dinnerdonebetter
           restartPolicy: OnFailure
           volumes:
             - name: "config"
               configMap:
                 name: "dinner-done-better-job-db-cleaner-config"
+            # this volume is where we write logs to, and where we read logs from in the collector.
+            - name: logs
+              emptyDir:
+                sizeLimit: 500Mi
 ---
