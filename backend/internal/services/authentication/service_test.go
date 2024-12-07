@@ -13,6 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/routing/mock"
@@ -54,6 +55,7 @@ func buildTestService(t *testing.T) *service {
 		&featureflags.NoopFeatureFlagManager{},
 		analytics.NewNoopEventReporter(),
 		rpm,
+		metrics.NewNoopMetricsProvider(),
 	)
 	require.NoError(t, err)
 
@@ -94,6 +96,7 @@ func TestProvideService(T *testing.T) {
 			&featureflags.NoopFeatureFlagManager{},
 			analytics.NewNoopEventReporter(),
 			rpm,
+			metrics.NewNoopMetricsProvider(),
 		)
 
 		assert.NotNil(t, s)

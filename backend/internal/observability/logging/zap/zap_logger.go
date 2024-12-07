@@ -84,7 +84,7 @@ func (l *zapLogger) Debug(input string) {
 }
 
 // Error satisfies our contract for the logging.Logger Error method.
-func (l *zapLogger) Error(err error, whatWasHappeningWhenErrorOccurred string) {
+func (l *zapLogger) Error(whatWasHappeningWhenErrorOccurred string, err error) {
 	if err != nil {
 		l.logger.Error(fmt.Sprintf("error %s: %s", whatWasHappeningWhenErrorOccurred, err.Error()))
 	}

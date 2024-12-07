@@ -3,7 +3,6 @@ package config
 import (
 	"context"
 	"encoding/json"
-	"github.com/dinnerdonebetter/backend/internal/routing"
 	"os"
 	"testing"
 	"time"
@@ -16,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
@@ -45,22 +45,9 @@ import (
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 
-	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
-	"github.com/googleapis/gax-go/v2"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
-
-type mockSecretVersionAccessor struct {
-	mock.Mock
-}
-
-func (m *mockSecretVersionAccessor) AccessSecretVersion(ctx context.Context, req *secretmanagerpb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.AccessSecretVersionResponse, error) {
-	args := m.Called(ctx, req, opts)
-
-	return args.Get(0).(*secretmanagerpb.AccessSecretVersionResponse), args.Error(1)
-}
 
 func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 	T.Parallel()
@@ -68,7 +55,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		baseConfig := &InstanceConfig{
+		baseConfig := &APIServiceConfig{
 			Observability: observability.Config{},
 			Email: emailconfig.Config{
 				Sendgrid: &sendgrid.Config{},
@@ -156,7 +143,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 
 		ctx := context.Background()
 
-		cfg, err := GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
+		cfg, err := GetAPIServiceConfigFromGoogleCloudRunEnvironment(ctx)
 		assert.NoError(t, err)
 		assert.NotNil(t, cfg)
 

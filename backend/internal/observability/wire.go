@@ -7,6 +7,7 @@ var (
 		wire.FieldsOf(
 			new(*Config),
 			"Logging",
+			"Metrics",
 			"Tracing",
 		),
 	)

@@ -99,7 +99,7 @@ func (q *Querier) DB() *sql.DB {
 // Close closes the database connection.
 func (q *Querier) Close() {
 	if err := q.db.Close(); err != nil {
-		q.logger.Error(err, "closing database connection")
+		q.logger.Error("closing database connection", err)
 	}
 }
 
@@ -145,12 +145,12 @@ func (q *Querier) checkRowsForErrorAndClose(ctx context.Context, rows database.R
 	defer span.End()
 
 	if err := rows.Err(); err != nil {
-		q.logger.Error(err, "row error")
+		q.logger.Error("row error", err)
 		return observability.PrepareAndLogError(err, q.logger, span, "row error")
 	}
 
 	if err := rows.Close(); err != nil {
-		q.logger.Error(err, "closing database rows")
+		q.logger.Error("closing database rows", err)
 		return observability.PrepareAndLogError(err, q.logger, span, "closing database rows")
 	}
 

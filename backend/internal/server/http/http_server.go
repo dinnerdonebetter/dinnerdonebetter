@@ -218,7 +218,7 @@ func (s *server) Shutdown(ctx context.Context) error {
 	s.dataManager.Close()
 
 	if err := s.tracerProvider.ForceFlush(ctx); err != nil {
-		s.logger.Error(err, "flushing traces")
+		s.logger.Error("flushing traces", err)
 	}
 
 	return s.httpServer.Shutdown(ctx)
@@ -236,7 +236,7 @@ func (s *server) Serve() {
 
 	http2ServerConf := &http2.Server{}
 	if err := http2.ConfigureServer(s.httpServer, http2ServerConf); err != nil {
-		s.logger.Error(err, "configuring HTTP2")
+		s.logger.Error("configuring HTTP2", err)
 		s.panicker.Panic(err)
 	}
 
@@ -251,7 +251,7 @@ func (s *server) Serve() {
 				os.Exit(0)
 			}
 
-			s.logger.Error(err, "shutting server down")
+			s.logger.Error("shutting server down", err)
 		}
 	} else {
 		// returns ErrServerClosed on graceful close.
@@ -262,7 +262,7 @@ func (s *server) Serve() {
 				os.Exit(0)
 			}
 
-			s.logger.Error(err, "shutting server down")
+			s.logger.Error("shutting server down", err)
 		}
 	}
 }

@@ -23,7 +23,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		cfg := &InstanceConfig{
+		cfg := &APIServiceConfig{
 			Server: http.Config{
 				HTTPPort:        1234,
 				Debug:           false,
@@ -59,7 +59,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 	T.Run("with error marshaling", func(t *testing.T) {
 		t.Parallel()
 
-		cfg := &InstanceConfig{}
+		cfg := &APIServiceConfig{}
 
 		f, err := os.CreateTemp("", "")
 		require.NoError(t, err)

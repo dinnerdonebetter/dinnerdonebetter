@@ -58,6 +58,11 @@ spec:
           - "/otelcol-contrib"
           - "--config"
           - "/conf/config.yaml"
+        ports:
+          - containerPort: 4317
+            name: otel1
+          - containerPort: 4318
+            name: otel2
         volumeMounts:
           - name: logs
             mountPath: /var/log/dinnerdonebetter

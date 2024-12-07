@@ -231,7 +231,7 @@ func (s *service) SearchValidIngredientGroupsHandler(res http.ResponseWriter, re
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		logger.Error(err, "retrieving session context data")
+		logger.Error("retrieving session context data", err)
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
@@ -292,14 +292,14 @@ func (s *service) UpdateValidIngredientGroupHandler(res http.ResponseWriter, req
 	// check for parsed input attached to session context data.
 	input := new(types.ValidIngredientGroupUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
-		logger.Error(err, "error encountered decoding request body")
+		logger.Error("error encountered decoding request body", err)
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.Error(err, "provided input was invalid")
+		logger.Error("provided input was invalid", err)
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return

@@ -84,7 +84,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 
 			responseCode := http.StatusOK
 			if err := s.dataManager.DB().PingContext(reqCtx); err != nil {
-				logger.Error(err, "database not responding to ping")
+				logger.Error("database not responding to ping", err)
 				responseCode = http.StatusInternalServerError
 			}
 

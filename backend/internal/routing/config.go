@@ -13,11 +13,11 @@ const (
 
 // Config configures our router.
 type Config struct {
-	_ struct{} `json:"-"`
-
-	Provider               string `json:"provider,omitempty"            toml:"provider,omitempty"`
-	EnableCORSForLocalhost bool   `json:"enableCORSForLocalhost"        toml:"enable_cors_for_localhost"`
-	SilenceRouteLogging    bool   `json:"silenceRouteLogging,omitempty" toml:"silence_route_logging,omitempty"`
+	_                      struct{} `json:"-"`
+	Provider               string   `json:"provider,omitempty"            toml:"provider,omitempty"`
+	ValidDomains           []string `json:"validDomains,omitempty"        toml:"valid_domains,omitempty"`
+	EnableCORSForLocalhost bool     `json:"enableCORSForLocalhost"        toml:"enable_cors_for_localhost"`
+	SilenceRouteLogging    bool     `json:"silenceRouteLogging,omitempty" toml:"silence_route_logging,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

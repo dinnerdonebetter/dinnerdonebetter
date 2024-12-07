@@ -28,7 +28,7 @@ func doTheThing() error {
 
 	ctx := context.Background()
 
-	cfg, err := config.FetchForApplication(ctx, config.GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager)
+	cfg, err := config.GenericFetchForApplication(ctx, config.GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
@@ -38,7 +38,7 @@ func doTheThing() error {
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
+		logger.Error("initializing tracer", initializeTracerErr)
 	}
 	otel.SetTracerProvider(tracerProvider)
 

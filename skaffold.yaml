@@ -148,35 +148,32 @@ profiles:
             overrides:
               architecture: standalone
 
-#          # metrics storage
-#          - name: prometheus
-#            namespace: localdev
-#            createNamespace: true
-#            # repo: https://prometheus-community.github.io/helm-charts
-#            remoteChart: prometheus/prometheus
-#            version: 26.0.0
-#            overrides:
-#              alertmanager:
-#                enabled: false
-#              kube-state-metrics:
-#                enabled: false
-#              prometheus-node-exporter:
-#                enabled: false
-#              prometheus-pushgateway:
-#                enabled: false
-#              server:
-#                service:
-#                  servicePort: 3001
-#              serverFiles:
-#                prometheus.yml:
-#                  rule_files:
-#                    - /etc/config/recording_rules.yml
-#                    - /etc/config/alerting_rules.yml
-#                    ## Below two files are DEPRECATED will be removed from this default values file
-#                    - /etc/config/rules
-#                    - /etc/config/alerts
-#
-#                  scrape_configs:
+          # metrics storage
+          - name: prometheus
+            namespace: localdev
+            createNamespace: true
+            # repo: https://prometheus-community.github.io/helm-charts
+            remoteChart: prometheus/prometheus
+            version: 26.0.0
+            overrides:
+              alertmanager:
+                enabled: false
+              kube-state-metrics:
+                enabled: false
+              prometheus-node-exporter:
+                enabled: false
+              prometheus-pushgateway:
+                enabled: false
+              server:
+                service:
+                  servicePort: 3001
+              serverFiles:
+                prometheus.yml:
+                  rule_files:
+                    - /etc/config/recording_rules.yml
+                    - /etc/config/alerting_rules.yml
+
+                  scrape_configs:
 #                    # A scrape configuration for running Prometheus on a Kubernetes cluster.
 #                    # This uses separate scrape configs for cluster components (i.e. API server, node)
 #                    # and services to allow each to use different authentication configs.
@@ -376,21 +373,6 @@ profiles:
 #                          action: replace
 #                          target_label: node
 
-#          # tracing data storage
-#          - name: jaeger
-#            namespace: localdev
-#            createNamespace: true
-#            # repo: https://jaegertracing.github.io/helm-charts
-#            remoteChart: jaeger/jaeger
-#            version: 3.3.2
-#            overrides:
-#              provisionDataStore:
-#                cassandra: false
-#              allInOne:
-#                enabled: true
-#              storage:
-#                type: badger
-
           # o11y dashboard
           - name: grafana
             namespace: localdev
@@ -492,9 +474,16 @@ profiles:
                   enable_api: true
               minio:
                 enabled: true
+              lokiCanary:
+                enabled: false
+              gateway:
+                enabled: false
               deploymentMode: SingleBinary
               singleBinary:
-                replicas: 1
+                replicas: 0
+                autoscaling:
+                  enabled: false
+                  maxReplicas: 1 # just in case
               backend:
                 replicas: 0
               read:
@@ -503,6 +492,12 @@ profiles:
                 replicas: 0
               ingester:
                 replicas: 0
+                zoneAwareReplication:
+                  enabled: false
+              ruler:
+                enabled: false
+              test:
+                enabled: false
               querier:
                 replicas: 0
               queryFrontend:
@@ -519,11 +514,43 @@ profiles:
                 replicas: 0
               bloomGateway:
                 replicas: 0
+              memcachedExporter:
+                enabled: false
+              resultsCache:
+                enabled: false
+              chunksCache:
+                enabled: false
 
-#          # tracing data storage
-#          - name: tempo
-#            namespace: localdev
-#            createNamespace: true
-#            # repo: https://grafana.github.io/helm-charts
-#            remoteChart: grafana/tempo
-#            version: 1.14.0
+          # tracing data storage
+          - name: tempo
+            namespace: localdev
+            createNamespace: true
+            # repo: https://grafana.github.io/helm-charts
+            remoteChart: grafana/tempo
+            version: 1.14.0
+
+    portForward:
+      - resourceType: Service
+        resourceName: dinner-done-better-admin-app-svc
+        namespace: localdev
+        port: 7000
+      - resourceType: Service
+        resourceName: dinner-done-better-api-svc
+        namespace: localdev
+        port: 8000
+      - resourceType: Service
+        resourceName: dinner-done-better-webapp-svc
+        namespace: localdev
+        port: 9000
+      - resourceType: Service
+        resourceName: dinner-done-better-landing-svc
+        namespace: localdev
+        port: 10000
+      - resourceType: Service
+        resourceName: postgres-postgresql
+        namespace: localdev
+        port: 5432
+      - resourceType: Service
+        resourceName: grafana
+        namespace: localdev
+        port: 3000

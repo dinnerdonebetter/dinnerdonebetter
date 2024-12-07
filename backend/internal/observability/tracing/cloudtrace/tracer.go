@@ -19,7 +19,7 @@ type errorHandler struct {
 }
 
 func (h errorHandler) Handle(err error) {
-	h.logger.Error(err, "tracer reported issue")
+	h.logger.Error("tracer reported issue", err)
 }
 
 func init() {

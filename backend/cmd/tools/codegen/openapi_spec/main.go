@@ -66,7 +66,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var cfg *config.InstanceConfig
+	var cfg *config.APIServiceConfig
 	if err = json.Unmarshal(rawCfg, &cfg); err != nil {
 		log.Fatal(err)
 	}
@@ -270,7 +270,7 @@ const (
 	dataChangesTopicName = "dataChangesTopicName"
 )
 
-func neutralizeConfig(cfg *config.InstanceConfig) {
+func neutralizeConfig(cfg *config.APIServiceConfig) {
 	if err := os.Setenv("GOOGLE_CLOUD_PROJECT_ID", "something"); err != nil {
 		panic(err)
 	}

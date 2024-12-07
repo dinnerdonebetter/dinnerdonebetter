@@ -66,7 +66,7 @@ helm_deps:
 
 .PHONY: dev
 dev: helm_deps nuke_k8s skrender
-	skaffold dev --build-concurrency 0 --profile $(LOCAL_DEV_NAMESPACE) --port-forward
+	skaffold dev --build-concurrency 0 --profile $(LOCAL_DEV_NAMESPACE) --port-forward --tail=false
 
 deploy/environments/local/generated/kubernetes.yaml:
 	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output deploy/environments/local/generated/kubernetes.yaml

@@ -34,7 +34,7 @@ func (u *Uploader) ReadFile(ctx context.Context, path string) ([]byte, error) {
 
 	defer func() {
 		if closeErr := r.Close(); closeErr != nil {
-			u.logger.Error(closeErr, "error closing file reader")
+			u.logger.Error("error closing file reader", closeErr)
 		}
 	}()
 
@@ -55,7 +55,7 @@ func (u *Uploader) ServeFiles(res http.ResponseWriter, req *http.Request) {
 
 	fileBytes, err := u.ReadFile(ctx, fileName)
 	if err != nil {
-		u.logger.Error(err, "trying to read uploaded file")
+		u.logger.Error("trying to read uploaded file", err)
 		res.WriteHeader(http.StatusNotFound)
 
 		return
@@ -66,6 +66,6 @@ func (u *Uploader) ServeFiles(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if _, copyErr := io.Copy(res, bytes.NewReader(fileBytes)); copyErr != nil {
-		u.logger.Error(copyErr, "copying file bytes to response")
+		u.logger.Error("copying file bytes to response", copyErr)
 	}
 }

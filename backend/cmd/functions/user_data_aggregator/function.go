@@ -64,7 +64,7 @@ func AggregateUserData(ctx context.Context, e event.Event) error {
 
 	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if err != nil {
-		logger.Error(err, "initializing tracer")
+		logger.Error("initializing tracer", err)
 	}
 	otel.SetTracerProvider(tracerProvider)
 

@@ -1,4 +1,4 @@
-package oteltracehttp
+package otel
 
 import (
 	"context"

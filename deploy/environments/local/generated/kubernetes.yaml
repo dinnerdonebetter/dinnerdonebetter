@@ -20,7 +20,7 @@ data:
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
-    			"provider": "otel"
+    			"provider": "otelgrpc"
     		}
     	},
     	"queues": {
@@ -344,7 +344,7 @@ data:
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
-    			"provider": "otel"
+    			"provider": "otelgrpc"
     		}
     	},
     	"queues": {
@@ -668,7 +668,7 @@ data:
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
-    			"provider": "otel"
+    			"provider": "otelgrpc"
     		}
     	},
     	"queues": {
@@ -992,7 +992,7 @@ data:
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
-    			"provider": "otel"
+    			"provider": "otelgrpc"
     		}
     	},
     	"queues": {
@@ -1316,7 +1316,7 @@ data:
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
-    			"provider": "otel"
+    			"provider": "otelgrpc"
     		}
     	},
     	"queues": {
@@ -1640,7 +1640,7 @@ data:
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
-    			"provider": "otel"
+    			"provider": "otelgrpc"
     		}
     	},
     	"queues": {
@@ -1964,7 +1964,7 @@ data:
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
-    			"provider": "otel"
+    			"provider": "otelgrpc"
     		}
     	},
     	"queues": {
@@ -2555,7 +2555,7 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/name: dinner-done-better-admin-app
-  name: dinner-done-better-admin-app-srv
+  name: dinner-done-better-admin-app-svc
 spec:
   ports:
     - name: http
@@ -2571,7 +2571,7 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/name: dinner-done-better-landing-app
-  name: dinner-done-better-landing-srv
+  name: dinner-done-better-landing-svc
 spec:
   ports:
     - name: http
@@ -2587,7 +2587,7 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/name: dinner-done-better-webapp
-  name: dinner-done-better-webapp-srv
+  name: dinner-done-better-webapp-svc
 spec:
   ports:
     - name: http
@@ -2772,7 +2772,7 @@ spec:
         paths:
           - backend:
               service:
-                name: dinner-done-better-admin-app-srv
+                name: dinner-done-better-admin-app-svc
                 port:
                   number: 9000
             path: /
@@ -2791,7 +2791,7 @@ spec:
         paths:
           - backend:
               service:
-                name: dinner-done-better-landing-srv
+                name: dinner-done-better-landing-svc
                 port:
                   number: 10000
             path: /
@@ -2810,7 +2810,7 @@ spec:
         paths:
           - backend:
               service:
-                name: dinner-done-better-webapp-srv
+                name: dinner-done-better-webapp-svc
                 port:
                   number: 9000
             path: /

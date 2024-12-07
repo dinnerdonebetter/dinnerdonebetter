@@ -32,17 +32,17 @@ func doTheThing() error {
 		return nil
 	}
 
-	cfg, err := config.FetchForApplication(ctx, config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager)
+	cfg, err := config.GenericFetchForApplication(ctx, config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
 	cfg.Database.RunMigrations = false
 
-	logger := cfg.Observability.Logging.ProvideLogger().WithValue("commit", cfg.Commit())
+	logger := cfg.Observability.Logging.ProvideLogger()
 
 	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if err != nil {
-		logger.Error(err, "initializing tracer")
+		logger.Error("initializing tracer", err)
 	}
 
 	otel.SetTracerProvider(tracerProvider)
@@ -123,7 +123,7 @@ func doTheThing() error {
 		logger.WithValue("count", len(ids)).Info("publishing search index requests")
 	}
 
-	var errs *multierror.Error
+	errs := &multierror.Error{}
 	for _, id := range ids {
 		indexReq := &indexing.IndexRequest{
 			RowID:     id,

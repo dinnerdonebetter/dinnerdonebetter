@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	config2 "github.com/dinnerdonebetter/backend/internal/routing"
-
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -25,8 +23,9 @@ import (
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltracehttp"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/otel"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
@@ -102,7 +101,7 @@ const (
 	localOAuth2TokenEncryptionKey = debugCookieHashKey
 )
 
-func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConfig, indent, validate bool) error {
+func saveConfig(ctx context.Context, outputPath string, cfg *config.APIServiceConfig, indent, validate bool) error {
 	/* #nosec G301 */
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0o750); err != nil {
 		// okay, who gives a shit?
@@ -143,7 +142,7 @@ var files = map[string]configFunc{
 	"environments/dev/config_files/service-config.json":               devEnvironmentServerConfig,
 }
 
-func buildDevEnvironmentServerConfig() *config.InstanceConfig {
+func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 	emailConfig := emailconfig.Config{
 		Provider: emailconfig.ProviderSendgrid,
 		Sendgrid: &sendgrid.Config{},
@@ -154,11 +153,15 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		Segment:  &segment.Config{APIToken: ""},
 	}
 
-	cfg := &config.InstanceConfig{
-		Routing: config2.Config{
-			Provider:               config2.ChiProvider,
+	cfg := &config.APIServiceConfig{
+		Routing: routingcfg.Config{
+			Provider:               routingcfg.ChiProvider,
 			EnableCORSForLocalhost: true,
 			SilenceRouteLogging:    false,
+			ValidDomains: []string{
+				"www.dinnerdonebetter.dev",
+				"admin.dinnerdonebetter.dev",
+			},
 		},
 		Meta: config.MetaSettings{
 			Debug:   true,
@@ -317,10 +320,10 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 	return saveConfig(ctx, filePath, cfg, false, false)
 }
 
-func buildLocalDevConfig() *config.InstanceConfig {
-	return &config.InstanceConfig{
-		Routing: config2.Config{
-			Provider:               config2.ChiProvider,
+func buildLocalDevConfig() *config.APIServiceConfig {
+	return &config.APIServiceConfig{
+		Routing: routingcfg.Config{
+			Provider:               routingcfg.ChiProvider,
 			EnableCORSForLocalhost: true,
 			SilenceRouteLogging:    false,
 		},
@@ -377,7 +380,7 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderOtel,
-				Otel: &oteltracehttp.Config{
+				Otel: &otel.Config{
 					SpanCollectionProbability: 1,
 					CollectorEndpoint:         "http://tracing-server:14268/api/traces",
 					ServiceName:               "dinner_done_better_service",
@@ -597,10 +600,10 @@ func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string
 	}
 }
 
-func buildIntegrationTestsConfig() *config.InstanceConfig {
-	return &config.InstanceConfig{
-		Routing: config2.Config{
-			Provider:               config2.ChiProvider,
+func buildIntegrationTestsConfig() *config.APIServiceConfig {
+	return &config.APIServiceConfig{
+		Routing: routingcfg.Config{
+			Provider:               routingcfg.ChiProvider,
 			EnableCORSForLocalhost: true,
 			SilenceRouteLogging:    false,
 		},
@@ -653,7 +656,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderOtel,
-				Otel: &oteltracehttp.Config{
+				Otel: &otel.Config{
 					SpanCollectionProbability: 1,
 					CollectorEndpoint:         "http://tracing-server:14268/api/traces",
 					ServiceName:               "dinner_done_better_service",
@@ -845,6 +848,11 @@ func integrationTestConfig(ctx context.Context, filePath string) error {
 
 func main() {
 	ctx := context.Background()
+
+	localKubernetes := &environmentConfigSet{
+		rootConfig: buildLocalDevConfig(),
+	}
+	localKubernetes.Render("deploy/configs")
 
 	for filePath, fun := range files {
 		if err := fun(ctx, filePath); err != nil {

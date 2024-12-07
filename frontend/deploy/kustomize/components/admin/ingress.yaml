@@ -12,7 +12,7 @@ spec:
       paths:
       - backend:
           service:
-            name: dinner-done-better-admin-app-srv
+            name: dinner-done-better-admin-app-svc
             port:
               number: 9000
         path: /

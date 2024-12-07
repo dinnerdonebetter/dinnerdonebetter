@@ -34,7 +34,7 @@ func init() {
 func main() {
 	rootCtx := context.Background()
 
-	cfg, err := config.FetchForApplication(rootCtx, config.GetAPIServerConfigFromGoogleCloudRunEnvironment)
+	cfg, err := config.FetchForApplication(rootCtx, config.GetAPIServiceConfigFromGoogleCloudRunEnvironment)
 	if err != nil {
 		log.Fatal(err)
 	}

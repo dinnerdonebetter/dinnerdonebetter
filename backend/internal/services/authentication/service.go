@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -71,6 +72,7 @@ func ProvideService(
 	featureFlagManager featureflags.FeatureFlagManager,
 	analyticsReporter analytics.EventReporter,
 	routeParamManager routing.RouteParamManager,
+	mp metrics.Provider, // TODO: instrument later for something
 ) (types.AuthDataService, error) {
 	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if publisherProviderErr != nil {
@@ -88,6 +90,14 @@ func ProvideService(
 	if err != nil {
 		return nil, fmt.Errorf("creating Token signer: %w", err)
 	}
+
+	counter, err := mp.NewFloat64Counter("testing")
+	if err != nil {
+		logger.Error("creating counter", err)
+	}
+	go func() {
+		counter.Add(ctx, 1.0)
+	}()
 
 	svc := &service{
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),

@@ -207,7 +207,7 @@ var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeStepCreationRequestInput.
 func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	var err *multierror.Error
+	err := &multierror.Error{}
 
 	if len(x.Instruments) == 0 && len(x.Vessels) == 0 {
 		err = multierror.Append(err, errOneInstrumentOrVesselRequired)

@@ -134,7 +134,7 @@ func (c *Client) IsUp(ctx context.Context) bool {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.BuildURL(ctx, nil, "_meta_", "ready"), http.NoBody)
 	if err != nil {
-		c.logger.Error(err, "building steatus request")
+		c.logger.Error("building steatus request", err)
 		return false
 	}
 

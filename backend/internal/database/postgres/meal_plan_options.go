@@ -50,7 +50,7 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 		MealPlanID:       mealPlanID,
 	})
 	if err != nil {
-		logger.Error(err, "performing meal plan option existence check")
+		logger.Error("performing meal plan option existence check", err)
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan option existence check")
 	}
 

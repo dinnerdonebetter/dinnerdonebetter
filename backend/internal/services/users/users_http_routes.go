@@ -59,7 +59,7 @@ func (s *service) validateCredentialsForUpdateRequest(ctx context.Context, userI
 			return nil, http.StatusNotFound
 		}
 
-		logger.Error(err, "error encountered fetching user")
+		logger.Error("error encountered fetching user", err)
 		return nil, http.StatusInternalServerError
 	}
 	readTimer.Stop()
@@ -80,7 +80,7 @@ func (s *service) validateCredentialsForUpdateRequest(ctx context.Context, userI
 		logger.WithValue("validation_error", err).Debug("error validating credentials")
 		return nil, http.StatusBadRequest
 	} else if !valid {
-		logger.WithValue("valid", valid).Error(err, "invalid credentials")
+		logger.WithValue("valid", valid).Error("invalid credentials", err)
 		return nil, http.StatusUnauthorized
 	}
 

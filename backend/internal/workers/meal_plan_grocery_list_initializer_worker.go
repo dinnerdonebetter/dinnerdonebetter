@@ -70,7 +70,7 @@ func (w *mealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealP
 		logger.Info("attempting to initialize grocery lists for meal plans")
 	}
 
-	var errorResult *multierror.Error
+	errorResult := &multierror.Error{}
 
 	for _, mealPlan := range mealPlans {
 		l := logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
@@ -79,7 +79,7 @@ func (w *mealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealP
 		dbInputs, err = w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
 		if err != nil {
 			errorResult = multierror.Append(errorResult, err)
-			l.Error(err, "failed to generate grocery list inputs for meal plan")
+			l.Error("failed to generate grocery list inputs for meal plan", err)
 			continue
 		}
 
@@ -91,7 +91,7 @@ func (w *mealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealP
 			createdItem, err = w.dataManager.CreateMealPlanGroceryListItem(ctx, dbInput)
 			if err != nil {
 				errorResult = multierror.Append(errorResult, err)
-				l.Error(err, "failed to create grocery list for meal plan")
+				l.Error("failed to create grocery list for meal plan", err)
 				continue
 			}
 
@@ -101,7 +101,7 @@ func (w *mealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealP
 				EventType:                 types.MealPlanGroceryListItemCreatedServiceEventType,
 				MealPlanID:                dbInput.BelongsToMealPlan,
 			}); err != nil {
-				l.Error(err, "failed to write update message for meal plan grocery list item")
+				l.Error("failed to write update message for meal plan grocery list item", err)
 			}
 		}
 	}

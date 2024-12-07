@@ -95,7 +95,7 @@ func (l *zerologLogger) Debug(input string) {
 }
 
 // Error satisfies our contract for the logging.Logger Error method.
-func (l *zerologLogger) Error(err error, whatWasHappeningWhenErrorOccurred string) {
+func (l *zerologLogger) Error(whatWasHappeningWhenErrorOccurred string, err error) {
 	if err != nil {
 		l.logger.Error().Stack().Caller().Msg(fmt.Sprintf("error %s: %s", whatWasHappeningWhenErrorOccurred, err.Error()))
 	}

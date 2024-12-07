@@ -2,19 +2,20 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltracehttp"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/otel"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ProviderOtel represents the open source tracing server.
-	ProviderOtel = "otel"
+	ProviderOtel = "otelgrpc"
 	// ProviderCloudTrace represents the GCP Cloud Trace service.
 	ProviderCloudTrace = "cloudtrace"
 )
@@ -24,9 +25,9 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		CloudTrace *cloudtrace.Config    `json:"cloudTrace,omitempty" toml:"cloud_trace,omitempty"`
-		Otel       *oteltracehttp.Config `json:"otel,omitempty"       toml:"otel,omitempty"`
-		Provider   string                `json:"provider,omitempty"   toml:"provider,omitempty"`
+		CloudTrace *cloudtrace.Config `json:"cloudTrace,omitempty" toml:"cloud_trace,omitempty"`
+		Otel       *otel.Config       `json:"otelgrpc,omitempty"   toml:"otelgrpc,omitempty"`
+		Provider   string             `json:"provider,omitempty"   toml:"provider,omitempty"`
 	}
 )
 
@@ -38,11 +39,21 @@ func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (t
 
 	switch p {
 	case ProviderOtel:
-		logger.Info("configuring otel provider")
-		return oteltracehttp.SetupOtelHTTP(ctx, c.Otel)
+		logger.Info("configuring otelgrpc provider")
+		tp, err := otel.SetupOtelHTTP(ctx, c.Otel)
+		if err != nil {
+			return nil, fmt.Errorf("configuring otelgrpc provider: %w", err)
+		}
+
+		return tp, nil
 	case ProviderCloudTrace:
 		logger.Info("configuring cloud trace provider")
-		return cloudtrace.SetupCloudTrace(ctx, c.CloudTrace)
+		tp, err := cloudtrace.SetupCloudTrace(ctx, c.CloudTrace)
+		if err != nil {
+			return nil, fmt.Errorf("configuring cloud trace provider: %w", err)
+		}
+
+		return tp, nil
 	default:
 		logger.Info("invalid tracing provider")
 		return tracing.NewNoopTracerProvider(), nil

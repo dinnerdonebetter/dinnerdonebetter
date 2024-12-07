@@ -78,7 +78,7 @@ func main() {
 		log.Fatalf("failed to parse package: %p", err)
 	}
 
-	var errors *multierror.Error
+	errors := &multierror.Error{}
 
 	for _, p := range astPkg {
 		for fileName, f := range p.Files {

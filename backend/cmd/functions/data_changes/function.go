@@ -102,7 +102,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
+		logger.Error("initializing tracer", initializeTracerErr)
 	}
 	otel.SetTracerProvider(tracerProvider)
 

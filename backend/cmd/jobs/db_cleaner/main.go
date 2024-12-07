@@ -24,7 +24,7 @@ func doTheThing() error {
 		return nil
 	}
 
-	cfg, err := config.FetchForApplication(ctx, config.GetDBCleanerConfigFromGoogleCloudSecretManager)
+	cfg, err := config.GenericFetchForApplication(ctx, config.GetDBCleanerConfigFromGoogleCloudSecretManager)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
@@ -32,9 +32,9 @@ func doTheThing() error {
 
 	logger := cfg.Observability.Logging.ProvideLogger()
 
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
-	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
+	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
+	if err != nil {
+		logger.Error("initializing tracer", err)
 	}
 	otel.SetTracerProvider(tracerProvider)
 
@@ -52,7 +52,7 @@ func doTheThing() error {
 	defer dataManager.Close()
 
 	if err = dataManager.DeleteExpiredOAuth2ClientTokens(ctx); err != nil {
-		logger.Error(err, "deleting expired oauth2 client tokens")
+		logger.Error("deleting expired oauth2 client tokens", err)
 	}
 
 	return nil

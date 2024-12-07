@@ -23,8 +23,9 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Level    logging.Level `json:"level,omitempty"    toml:"level"`
-		Provider string        `json:"provider,omitempty" toml:"provider"`
+		Level          logging.Level `json:"level,omitempty"          toml:"level"`
+		Provider       string        `json:"provider,omitempty"       toml:"provider"`
+		OutputFilepath string        `json:"outputFilepath,omitempty" toml:"output_filepath"`
 	}
 )
 
@@ -38,7 +39,7 @@ func (cfg *Config) ProvideLogger() logging.Logger {
 	case ProviderZap:
 		logger = zap.NewZapLogger(cfg.Level)
 	case ProviderSlog:
-		logger = slog.NewSlogLogger(cfg.Level)
+		logger = slog.NewSlogLogger(cfg.Level, cfg.OutputFilepath)
 	default:
 		logger = logging.NewNoopLogger()
 	}

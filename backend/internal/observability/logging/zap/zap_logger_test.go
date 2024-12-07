@@ -82,7 +82,7 @@ func Test_zapLogger_Error(T *testing.T) {
 
 		l := NewZapLogger(logging.DebugLevel)
 
-		l.Error(errors.New("blah"), t.Name())
+		l.Error(t.Name(), errors.New("blah"))
 	})
 }
 

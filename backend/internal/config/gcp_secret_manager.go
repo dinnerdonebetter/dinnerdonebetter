@@ -76,14 +76,14 @@ func buildDatabaseURIFromGCPEnvVars() string {
 	)
 }
 
-// GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
-func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
+// GetAPIServiceConfigFromGoogleCloudRunEnvironment fetches an APIServiceConfig from GCP Secret Manager.
+func GetAPIServiceConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*APIServiceConfig, error) {
 	configBytes, err := os.ReadFile(os.Getenv(FilePathEnvVarKey))
 	if err != nil {
 		return nil, err
 	}
 
-	var cfg *InstanceConfig
+	var cfg *APIServiceConfig
 	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
 		return nil, err
 	}
@@ -198,14 +198,135 @@ func fetchSecretFromSecretStore(ctx context.Context, client SecretVersionAccesso
 	return result.Payload.Data, nil
 }
 
-// getWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+// BEGIN JOBS
+
+// GetDBCleanerConfigFromGoogleCloudSecretManager fetches an APIServiceConfig from GCP Secret Manager.
+func GetDBCleanerConfigFromGoogleCloudSecretManager(ctx context.Context) (*DBCleanerConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[DBCleanerConfig](ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
+	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
+
+	if err = cfg.ValidateWithContext(ctx); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+// GetEmailProberConfigFromGoogleCloudSecretManager fetches an APIServiceConfig from GCP Secret Manager.
+func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*EmailProberConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[EmailProberConfig](ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Database = dbconfig.Config{
+		ConnectionDetails:        " ",
+		OAuth2TokenEncryptionKey: " ",
+	}
+	cfg.Email = emailcfg.Config{
+		Provider: emailcfg.ProviderSendgrid,
+		Sendgrid: &sendgrid.Config{
+			APIToken: os.Getenv(gcpSendgridTokenEnvVarKey),
+		},
+	}
+
+	if err = cfg.ValidateWithContext(ctx); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+// GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches an MealPlanFinalizerConfig from GCP Secret Manager.
+func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context) (*MealPlanFinalizerConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[MealPlanFinalizerConfig](ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
+	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
+
+	if err = cfg.ValidateWithContext(ctx); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+// GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager fetches an MealPlanGroceryListInitializerConfig from GCP Secret Manager.
+func GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*MealPlanGroceryListInitializerConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[MealPlanGroceryListInitializerConfig](ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
+	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
+	cfg.Analytics = analyticscfg.Config{}
+
+	if err = cfg.ValidateWithContext(ctx); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+// GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager fetches an MealPlanTaskCreatorConfig from GCP Secret Manager.
+func GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*MealPlanTaskCreatorConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[MealPlanTaskCreatorConfig](ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
+	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
+	cfg.Analytics = analyticscfg.Config{}
+
+	if err = cfg.ValidateWithContext(ctx); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+// GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager fetches an SearchDataIndexSchedulerConfig from GCP Secret Manager.
+func GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx context.Context) (*SearchDataIndexSchedulerConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[SearchDataIndexSchedulerConfig](ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
+	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
+
+	if err = cfg.ValidateWithContext(ctx); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+// END JOBS, BEGIN FUNCTIONS
+
+// getWorkerConfigFromGoogleCloudSecretManager fetches a config from GCP Secret Manager.
+func getWorkerConfigFromGoogleCloudSecretManager[T configurations](ctx context.Context) (*T, error) {
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secretmanager client: %w", err)
 	}
 
-	var cfg *InstanceConfig
+	var cfg *T
 	configBytes, err := fetchSecretFromSecretStore(ctx, client, "api_service_config")
 	if err != nil {
 		return nil, fmt.Errorf("fetching config from secret store: %w", err)
@@ -219,8 +340,15 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		return nil, errors.New("config is nil")
 	}
 
-	// fetch supplementary data from env vars
-	dbURI := buildDatabaseURIFromGCPEnvVars()
+	return cfg, nil
+}
+
+// GetDataChangesWorkerConfigFromGoogleCloudSecretManager fetches an APIServiceConfig from GCP Secret Manager.
+func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*APIServiceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[APIServiceConfig](ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	cfg.Search = searchcfg.Config{
 		Provider: searchcfg.AlgoliaProvider,
@@ -230,26 +358,14 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		},
 	}
 
-	cfg.Database.ConnectionDetails = dbURI
+	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
 	cfg.Database.RunMigrations = false
 	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
-	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics = analyticscfg.Config{
 		Segment:  &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)},
 		Posthog:  &posthog.Config{APIKey: os.Getenv(gcpPostHogKeyEnvVarKey)},
 		Provider: analyticscfg.ProviderSegment,
 	}
-
-	return cfg, nil
-}
-
-// GetDataChangesWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	cfg.Email = emailcfg.Config{}
 
 	if err = cfg.ValidateWithContext(ctx, false); err != nil {
@@ -259,64 +375,24 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	return cfg, nil
 }
 
-// GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+// GetOutboundEmailerConfigFromGoogleCloudSecretManager fetches an APIServiceConfig from GCP Secret Manager.
+func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (*APIServiceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[APIServiceConfig](ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg.Analytics = analyticscfg.Config{}
-	cfg.Email = emailcfg.Config{}
-
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
+	cfg.Search = searchcfg.Config{
+		Provider: searchcfg.AlgoliaProvider,
+		Algolia: &algolia.Config{
+			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
+			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
+		},
 	}
 
-	return cfg, nil
-}
-
-// GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.Analytics = analyticscfg.Config{}
-	cfg.Email = emailcfg.Config{}
-
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
-}
-
-// GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.Analytics = analyticscfg.Config{}
-	cfg.Email = emailcfg.Config{}
-
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
-}
-
-// GetOutboundEmailerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
-	if err != nil {
-		return nil, err
-	}
-
+	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
+	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{
 		Provider: emailcfg.ProviderSendgrid,
@@ -332,74 +408,27 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 	return cfg, nil
 }
 
-// GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+// GetSearchDataIndexerConfigFromGoogleCloudSecretManager fetches an APIServiceConfig from GCP Secret Manager.
+func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context) (*APIServiceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[APIServiceConfig](ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg.Analytics = analyticscfg.Config{}
-	cfg.Email = emailcfg.Config{}
-
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
-}
-
-// GetSearchDataIndexerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.Analytics = analyticscfg.Config{}
-	cfg.Email = emailcfg.Config{}
-
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
-}
-
-// GetUserDataAggregatorConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetUserDataAggregatorConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.Analytics = analyticscfg.Config{}
-	cfg.Email = emailcfg.Config{}
-
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
-}
-
-// GetEmailProberConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// this just needs to pass validation, the prober has no business connecting to the database
-	cfg.Database = dbconfig.Config{ConnectionDetails: " ", OAuth2TokenEncryptionKey: " "}
-	cfg.Analytics = analyticscfg.Config{}
-	cfg.Email = emailcfg.Config{
-		Provider: emailcfg.ProviderSendgrid,
-		Sendgrid: &sendgrid.Config{
-			APIToken: os.Getenv(gcpSendgridTokenEnvVarKey),
+	cfg.Search = searchcfg.Config{
+		Provider: searchcfg.AlgoliaProvider,
+		Algolia: &algolia.Config{
+			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
+			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
 		},
 	}
 
+	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
+	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{}
+
 	if err = cfg.ValidateWithContext(ctx, false); err != nil {
 		return nil, err
 	}
@@ -407,20 +436,26 @@ func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*Ins
 	return cfg, nil
 }
 
-// GetDBCleanerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetDBCleanerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+// GetUserDataAggregatorConfigFromGoogleCloudSecretManager fetches an APIServiceConfig from GCP Secret Manager.
+func GetUserDataAggregatorConfigFromGoogleCloudSecretManager(ctx context.Context) (*APIServiceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager[APIServiceConfig](ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg.Analytics = analyticscfg.Config{}
-	cfg.Email = emailcfg.Config{
-		Provider: emailcfg.ProviderSendgrid,
-		Sendgrid: &sendgrid.Config{
-			APIToken: os.Getenv(gcpSendgridTokenEnvVarKey),
+	cfg.Search = searchcfg.Config{
+		Provider: searchcfg.AlgoliaProvider,
+		Algolia: &algolia.Config{
+			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
+			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
 		},
 	}
+
+	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
+	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{}
 
 	if err = cfg.ValidateWithContext(ctx, false); err != nil {
 		return nil, err

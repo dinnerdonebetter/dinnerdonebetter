@@ -8,7 +8,7 @@ var (
 	// ServiceConfigProviders represents this package's offering to the dependency injector.
 	ServiceConfigProviders = wire.NewSet(
 		wire.FieldsOf(
-			new(*InstanceConfig),
+			new(*APIServiceConfig),
 			"Observability",
 			"Email",
 			"Analytics",

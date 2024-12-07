@@ -81,7 +81,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 				res.WriteHeader(http.StatusTeapot)
 				return
 			} else {
-				logger.Error(err, "determining user ID")
+				logger.Error("determining user ID", err)
 			}
 		}
 		tokenTimer.Stop()

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -36,13 +37,6 @@ type router struct {
 	logger logging.Logger
 }
 
-var (
-	validDomains = map[string]struct{}{
-		"www.dinnerdonebetter.dev":   {},
-		"admin.dinnerdonebetter.dev": {},
-	}
-)
-
 func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
 	corsHandler := cors.New(cors.Options{
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
@@ -50,9 +44,8 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 			if err != nil {
 				return false
 			}
-			_, ok := validDomains[u.Hostname()]
 
-			return ok || cfg.EnableCORSForLocalhost && u.Hostname() == "localhost"
+			return slices.Contains(cfg.ValidDomains, u.Hostname()) || cfg.EnableCORSForLocalhost && u.Hostname() == "localhost"
 		},
 		AllowedMethods: []string{
 			http.MethodGet,
@@ -76,11 +69,6 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 		chimiddleware.RealIP,
 		chimiddleware.CleanPath,
 		chimiddleware.Timeout(maxTimeout),
-		// chimiddleware.AllowContentType(
-		// 	encoding.ContentTypeToString(encoding.ContentTypeJSON),
-		// 	encoding.ContentTypeToString(encoding.ContentTypeXML),
-		// 	encoding.ContentTypeToString(encoding.ContentTypeEmoji),
-		// ),
 		corsHandler.Handler,
 		func(next http.Handler) http.Handler {
 			return servertiming.Middleware(next, nil)
@@ -153,7 +141,7 @@ func (r *router) Routes() []*routing.Route {
 	}
 
 	if err := chi.Walk(r.router, routerWalkFunc); err != nil {
-		r.logger.Error(err, "logging routes")
+		r.logger.Error("logging routes", err)
 	}
 
 	return output
@@ -260,10 +248,11 @@ func (r *router) Trace(pattern string, handler http.HandlerFunc) {
 func (r *router) BuildRouteParamIDFetcher(logger logging.Logger, key, logDescription string) func(req *http.Request) uint64 {
 	return func(req *http.Request) uint64 {
 		v := chi.URLParam(req, key)
+
 		u, err := strconv.ParseUint(v, 10, 64)
-		// this should never happen
 		if err != nil && logDescription != "" {
-			logger.Error(err, fmt.Sprintf("fetching %s ID from request", logDescription))
+			// this should never happen
+			logger.Error(fmt.Sprintf("fetching %s ID from request", logDescription), err)
 		}
 
 		return u

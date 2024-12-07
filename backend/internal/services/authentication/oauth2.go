@@ -129,7 +129,7 @@ func buildPasswordAuthorizationHandler(logger logging.Logger, authenticator auth
 			"", // TODO: allow (require?) users to provide TOTP code
 		)
 		if err != nil {
-			l.Error(err, "validating credentials")
+			l.Error("validating credentials", err)
 			return "", errors.New("invalid username or password")
 		}
 
@@ -155,13 +155,13 @@ func buildUserAuthorizationHandler(tracer tracing.Tracer, logger logging.Logger,
 
 		parsedToken, err := jwtSigner.ParseJWT(ctx, token)
 		if err != nil {
-			l.Error(err, "parsing JWT in UserAuthorizationHandler")
+			l.Error("parsing JWT in UserAuthorizationHandler", err)
 			return "", errors.ErrAccessDenied
 		}
 
 		subject, err := parsedToken.Claims.GetSubject()
 		if err != nil {
-			l.Error(err, "getting JWT subject in UserAuthorizationHandler")
+			l.Error("getting JWT subject in UserAuthorizationHandler", err)
 			return "", errors.ErrAccessDenied
 		}
 

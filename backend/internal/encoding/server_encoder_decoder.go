@@ -294,7 +294,7 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 
 	defer func() {
 		if err := req.Body.Close(); err != nil {
-			e.logger.Error(err, "closing request body")
+			e.logger.Error("closing request body", err)
 		}
 	}()
 

@@ -17,6 +17,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -66,7 +67,7 @@ import (
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	workersservice "github.com/dinnerdonebetter/backend/internal/services/workers"
-	images "github.com/dinnerdonebetter/backend/internal/uploads/images"
+	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 
 	"github.com/google/wire"
 )
@@ -74,7 +75,7 @@ import (
 // Build builds a server.
 func Build(
 	ctx context.Context,
-	cfg *config.InstanceConfig,
+	cfg *config.APIServiceConfig,
 ) (http.Server, error) {
 	wire.Build(
 		authentication.AuthProviders,
@@ -138,6 +139,7 @@ func Build(
 		usernotificationsservice.Providers,
 		auditlogentriesservice.Providers,
 		dataprivacyservice.Providers,
+		metricscfg.ProvidersMetrics,
 	)
 
 	return nil, nil

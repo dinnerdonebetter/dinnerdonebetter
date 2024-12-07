@@ -47,7 +47,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	ctx := context.Background()
 	sub, err := c.consumer.CreateSubscription(ctx, c.topic, pubsub.SubscriptionConfig{Topic: c.consumer.Topic(c.topic)})
 	if err != nil {
-		c.logger.Error(err, "creating subscription")
+		c.logger.Error("creating subscription", err)
 		errors <- err
 		return
 	}
@@ -55,7 +55,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	go func() {
 		<-stopChan
 		if err = sub.Delete(ctx); err != nil {
-			c.logger.Error(err, "deleting subscription")
+			c.logger.Error("deleting subscription", err)
 			errors <- err
 		}
 	}()
@@ -67,7 +67,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 			m.Ack()
 		}
 	}); err != nil {
-		c.logger.Error(err, "receiving pub/sub data")
+		c.logger.Error("receiving pub/sub data", err)
 	}
 }
 
@@ -90,7 +90,7 @@ func ProvidePubSubConsumerProvider(logger logging.Logger, client *pubsub.Client)
 // Close closes the connection topic.
 func (p *pubsubConsumerProvider) Close() {
 	if err := p.pubsubClient.Close(); err != nil {
-		p.logger.Error(err, "closing pubsub connection")
+		p.logger.Error("closing pubsub connection", err)
 	}
 }
 

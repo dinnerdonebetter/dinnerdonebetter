@@ -41,7 +41,7 @@ var (
 type Logger interface {
 	Info(string)
 	Debug(string)
-	Error(err error, whatWasHappeningWhenErrorOccurred string)
+	Error(whatWasHappeningWhenErrorOccurred string, err error)
 
 	SetRequestIDFunc(RequestIDFunc)
 

@@ -102,9 +102,9 @@ type (
 	}
 )
 
-// ValidateWithContext validates a InstanceConfig struct.
+// ValidateWithContext validates a APIServiceConfig struct.
 func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
-	var result *multierror.Error
+	result := &multierror.Error{}
 
 	validatorsToRun := map[string]func(context.Context) error{
 		"Auth":                            cfg.Auth.ValidateWithContext,
