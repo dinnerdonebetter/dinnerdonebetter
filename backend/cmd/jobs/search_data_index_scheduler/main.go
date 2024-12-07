@@ -32,7 +32,7 @@ func doTheThing() error {
 		return nil
 	}
 
-	cfg, err := config.GenericFetchForApplication(ctx, config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager)
+	cfg, err := config.FetchForApplication(ctx, config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}

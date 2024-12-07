@@ -25,7 +25,7 @@ func doTheThing() error {
 		return nil
 	}
 
-	cfg, err := config.GenericFetchForApplication(ctx, config.GetEmailProberConfigFromGoogleCloudSecretManager)
+	cfg, err := config.FetchForApplication(ctx, config.GetEmailProberConfigFromGoogleCloudSecretManager)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}

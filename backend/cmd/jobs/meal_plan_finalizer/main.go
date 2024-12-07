@@ -27,7 +27,7 @@ func doTheThing() error {
 		return nil
 	}
 
-	cfg, err := config.GenericFetchForApplication(ctx, config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager)
+	cfg, err := config.FetchForApplication(ctx, config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}

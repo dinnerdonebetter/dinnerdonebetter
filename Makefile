@@ -51,10 +51,9 @@ skbuild:
 	skaffold build --build-concurrency 0
 
 .PHONY: skrender
-skrender:
-	rm -f environments/local/generated/kubernetes.yaml
+skrender: clean_k8s
 	mkdir -p deploy/environments/local/generated/
-	$(MAKE) deploy/environments/local/generated/kubernetes.yaml
+	$(MAKE) generate_kubernetes
 
 .PHONY: helm_deps
 helm_deps:
@@ -68,7 +67,12 @@ helm_deps:
 dev: helm_deps nuke_k8s skrender
 	skaffold dev --build-concurrency 0 --profile $(LOCAL_DEV_NAMESPACE) --port-forward --tail=false
 
-deploy/environments/local/generated/kubernetes.yaml:
+.PHONY: clean_k8s
+clean_k8s:
+	rm -f deploy/environments/local/generated/kubernetes.yaml
+
+.PHONY: generate_kubernetes
+generate_kubernetes:
 	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output deploy/environments/local/generated/kubernetes.yaml
 
 .PHONY: nuke_k8s

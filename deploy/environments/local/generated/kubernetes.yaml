@@ -14,95 +14,22 @@ data:
     			"level": 0,
     			"provider": "slog"
     		},
+    		"metrics": {
+    			"otelgrpc": {
+    				"baseName": "ddb.api",
+    				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+    				"metricsCollectionInterval": 3000000000
+    			},
+    			"provider": "otelgrpc"
+    		},
     		"tracing": {
-    			"otel": {
-    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    			"otelgrpc": {
+    				"collector_endpoint": "http://0.0.0.0:4317",
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
     			"provider": "otelgrpc"
     		}
-    	},
-    	"queues": {
-    		"dataChangesTopicName": "data_changes",
-    		"outboundEmailsTopicName": "outbound_emails",
-    		"searchIndexRequestsTopicName": "search_index_requests",
-    		"userDataAggregationTopicName": "user_data_aggregation_requests",
-    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
-    	},
-    	"email": {
-    		"sendgrid": null,
-    		"mailgun": null,
-    		"mailjet": null,
-    		"circuitBreakerConfig": null,
-    		"provider": ""
-    	},
-    	"analytics": {
-    		"segment": null,
-    		"posthog": null,
-    		"rudderstack": null,
-    		"circuitBreakerConfig": null,
-    		"provider": ""
-    	},
-    	"search": {
-    		"algolia": {
-    			"appID": "",
-    			"writeAPIKey": "",
-    			"timeout": 0
-    		},
-    		"elasticsearch": null,
-    		"circuitBreakerConfig": null,
-    		"provider": "algolia"
-    	},
-    	"featureFlags": {
-    		"LaunchDarkly": null,
-    		"PostHog": null,
-    		"CircuitBreakingConfig": null,
-    		"Provider": ""
-    	},
-    	"encoding": {
-    		"contentType": "application/json"
-    	},
-    	"meta": {
-    		"runMode": "development",
-    		"debug": true
-    	},
-    	"routing": {
-    		"provider": "chi",
-    		"enableCORSForLocalhost": true
-    	},
-    	"events": {
-    		"consumers": {
-    			"provider": "redis",
-    			"sqs": {
-    				"messageQueueAddress": ""
-    			},
-    			"pubsub": {},
-    			"redis": {
-    				"username": "",
-    				"queueAddress": [
-    					"redis-master.localdev.svc.cluster.local:6379"
-    				]
-    			}
-    		},
-    		"publishers": {
-    			"provider": "redis",
-    			"sqs": {
-    				"messageQueueAddress": ""
-    			},
-    			"pubsub": {},
-    			"redis": {
-    				"username": "",
-    				"queueAddress": [
-    					"redis-master.localdev.svc.cluster.local:6379"
-    				]
-    			}
-    		}
-    	},
-    	"server": {
-    		"startupDeadline": 60000000000,
-    		"httpPort": 8000,
-    		"debug": true
     	},
     	"database": {
     		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
@@ -112,211 +39,6 @@ data:
     		"runMigrations": true,
     		"maxPingAttempts": 50,
     		"pingWaitPeriod": 1000000000
-    	},
-    	"services": {
-    		"auditLogEntries": {},
-    		"mealPlanGroceryListItems": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validInstrumentMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettingConfigurations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeRatings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validMeasurementUnitConversions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientGroups": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"householdInstrumentOwnerships": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipePrepTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepCompletionConditions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userIngredientPreferences": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"households": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlans": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientPreparations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepProducts": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientStateIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanEvents": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptionVotes": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"workers": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userNotifications": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"dataPrivacy": {
-    			"userDataAggregationTopicName": "user_data_aggregation_requests",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/tmp"
-    					},
-    					"bucketName": "userdata",
-    					"provider": "filesystem"
-    				},
-    				"debug": false
-    			}
-    		},
-    		"recipeSteps": {
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"users": {
-    			"dataChangesTopicName": "data_changes",
-    			"publicMediaURLPrefix": "",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "avatars",
-    					"uploadFilenameKey": "avatar",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"validInstruments": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"oauth2Clients": {
-    			"dataChangesTopicName": "data_changes",
-    			"creationEnabled": false
-    		},
-    		"webhooks": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validIngredients": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"meals": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validVessels": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"householdInvitations": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validPreparations": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validIngredientStates": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"recipes": {
-    			"dataChangesTopicName": "data_changes",
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			},
-    			"searchFromDatabase": false
-    		},
-    		"auth": {
-    			"sso": {
-    				"google": {
-    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
-    				}
-    			},
-    			"dataChanges": "data_changes",
-    			"jwtAudience": "localhost",
-    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-    			"oauth2": {
-    				"domain": "http://localhost:9000",
-    				"accessTokenLifespan": 3600000000000,
-    				"refreshTokenLifespan": 3600000000000,
-    				"debug": false
-    			},
-    			"jwtLifetime": 300000000000,
-    			"debug": true,
-    			"enableUserSignup": true,
-    			"minimumUsernameLength": 3,
-    			"minimumPasswordLength": 8
-    		}
     	}
     }
 kind: ConfigMap
@@ -338,21 +60,22 @@ data:
     			"level": 0,
     			"provider": "slog"
     		},
+    		"metrics": {
+    			"otelgrpc": {
+    				"baseName": "ddb.api",
+    				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+    				"metricsCollectionInterval": 3000000000
+    			},
+    			"provider": "otelgrpc"
+    		},
     		"tracing": {
-    			"otel": {
-    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    			"otelgrpc": {
+    				"collector_endpoint": "http://0.0.0.0:4317",
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
     			"provider": "otelgrpc"
     		}
-    	},
-    	"queues": {
-    		"dataChangesTopicName": "data_changes",
-    		"outboundEmailsTopicName": "outbound_emails",
-    		"searchIndexRequestsTopicName": "search_index_requests",
-    		"userDataAggregationTopicName": "user_data_aggregation_requests",
-    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
     	},
     	"email": {
     		"sendgrid": null,
@@ -360,73 +83,6 @@ data:
     		"mailjet": null,
     		"circuitBreakerConfig": null,
     		"provider": ""
-    	},
-    	"analytics": {
-    		"segment": null,
-    		"posthog": null,
-    		"rudderstack": null,
-    		"circuitBreakerConfig": null,
-    		"provider": ""
-    	},
-    	"search": {
-    		"algolia": {
-    			"appID": "",
-    			"writeAPIKey": "",
-    			"timeout": 0
-    		},
-    		"elasticsearch": null,
-    		"circuitBreakerConfig": null,
-    		"provider": "algolia"
-    	},
-    	"featureFlags": {
-    		"LaunchDarkly": null,
-    		"PostHog": null,
-    		"CircuitBreakingConfig": null,
-    		"Provider": ""
-    	},
-    	"encoding": {
-    		"contentType": "application/json"
-    	},
-    	"meta": {
-    		"runMode": "development",
-    		"debug": true
-    	},
-    	"routing": {
-    		"provider": "chi",
-    		"enableCORSForLocalhost": true
-    	},
-    	"events": {
-    		"consumers": {
-    			"provider": "redis",
-    			"sqs": {
-    				"messageQueueAddress": ""
-    			},
-    			"pubsub": {},
-    			"redis": {
-    				"username": "",
-    				"queueAddress": [
-    					"redis-master.localdev.svc.cluster.local:6379"
-    				]
-    			}
-    		},
-    		"publishers": {
-    			"provider": "redis",
-    			"sqs": {
-    				"messageQueueAddress": ""
-    			},
-    			"pubsub": {},
-    			"redis": {
-    				"username": "",
-    				"queueAddress": [
-    					"redis-master.localdev.svc.cluster.local:6379"
-    				]
-    			}
-    		}
-    	},
-    	"server": {
-    		"startupDeadline": 60000000000,
-    		"httpPort": 8000,
-    		"debug": true
     	},
     	"database": {
     		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
@@ -436,211 +92,6 @@ data:
     		"runMigrations": true,
     		"maxPingAttempts": 50,
     		"pingWaitPeriod": 1000000000
-    	},
-    	"services": {
-    		"auditLogEntries": {},
-    		"mealPlanGroceryListItems": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validInstrumentMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettingConfigurations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeRatings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validMeasurementUnitConversions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientGroups": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"householdInstrumentOwnerships": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipePrepTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepCompletionConditions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userIngredientPreferences": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"households": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlans": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientPreparations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepProducts": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientStateIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanEvents": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptionVotes": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"workers": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userNotifications": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"dataPrivacy": {
-    			"userDataAggregationTopicName": "user_data_aggregation_requests",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/tmp"
-    					},
-    					"bucketName": "userdata",
-    					"provider": "filesystem"
-    				},
-    				"debug": false
-    			}
-    		},
-    		"recipeSteps": {
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"users": {
-    			"dataChangesTopicName": "data_changes",
-    			"publicMediaURLPrefix": "",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "avatars",
-    					"uploadFilenameKey": "avatar",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"validInstruments": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"oauth2Clients": {
-    			"dataChangesTopicName": "data_changes",
-    			"creationEnabled": false
-    		},
-    		"webhooks": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validIngredients": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"meals": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validVessels": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"householdInvitations": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validPreparations": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validIngredientStates": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"recipes": {
-    			"dataChangesTopicName": "data_changes",
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			},
-    			"searchFromDatabase": false
-    		},
-    		"auth": {
-    			"sso": {
-    				"google": {
-    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
-    				}
-    			},
-    			"dataChanges": "data_changes",
-    			"jwtAudience": "localhost",
-    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-    			"oauth2": {
-    				"domain": "http://localhost:9000",
-    				"accessTokenLifespan": 3600000000000,
-    				"refreshTokenLifespan": 3600000000000,
-    				"debug": false
-    			},
-    			"jwtLifetime": 300000000000,
-    			"debug": true,
-    			"enableUserSignup": true,
-    			"minimumUsernameLength": 3,
-    			"minimumPasswordLength": 8
-    		}
     	}
     }
 kind: ConfigMap
@@ -662,62 +113,22 @@ data:
     			"level": 0,
     			"provider": "slog"
     		},
+    		"metrics": {
+    			"otelgrpc": {
+    				"baseName": "ddb.api",
+    				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+    				"metricsCollectionInterval": 3000000000
+    			},
+    			"provider": "otelgrpc"
+    		},
     		"tracing": {
-    			"otel": {
-    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    			"otelgrpc": {
+    				"collector_endpoint": "http://0.0.0.0:4317",
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
     			"provider": "otelgrpc"
     		}
-    	},
-    	"queues": {
-    		"dataChangesTopicName": "data_changes",
-    		"outboundEmailsTopicName": "outbound_emails",
-    		"searchIndexRequestsTopicName": "search_index_requests",
-    		"userDataAggregationTopicName": "user_data_aggregation_requests",
-    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
-    	},
-    	"email": {
-    		"sendgrid": null,
-    		"mailgun": null,
-    		"mailjet": null,
-    		"circuitBreakerConfig": null,
-    		"provider": ""
-    	},
-    	"analytics": {
-    		"segment": null,
-    		"posthog": null,
-    		"rudderstack": null,
-    		"circuitBreakerConfig": null,
-    		"provider": ""
-    	},
-    	"search": {
-    		"algolia": {
-    			"appID": "",
-    			"writeAPIKey": "",
-    			"timeout": 0
-    		},
-    		"elasticsearch": null,
-    		"circuitBreakerConfig": null,
-    		"provider": "algolia"
-    	},
-    	"featureFlags": {
-    		"LaunchDarkly": null,
-    		"PostHog": null,
-    		"CircuitBreakingConfig": null,
-    		"Provider": ""
-    	},
-    	"encoding": {
-    		"contentType": "application/json"
-    	},
-    	"meta": {
-    		"runMode": "development",
-    		"debug": true
-    	},
-    	"routing": {
-    		"provider": "chi",
-    		"enableCORSForLocalhost": true
     	},
     	"events": {
     		"consumers": {
@@ -747,11 +158,6 @@ data:
     			}
     		}
     	},
-    	"server": {
-    		"startupDeadline": 60000000000,
-    		"httpPort": 8000,
-    		"debug": true
-    	},
     	"database": {
     		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
     		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
@@ -760,211 +166,6 @@ data:
     		"runMigrations": true,
     		"maxPingAttempts": 50,
     		"pingWaitPeriod": 1000000000
-    	},
-    	"services": {
-    		"auditLogEntries": {},
-    		"mealPlanGroceryListItems": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validInstrumentMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettingConfigurations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeRatings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validMeasurementUnitConversions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientGroups": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"householdInstrumentOwnerships": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipePrepTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepCompletionConditions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userIngredientPreferences": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"households": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlans": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientPreparations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepProducts": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientStateIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanEvents": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptionVotes": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"workers": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userNotifications": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"dataPrivacy": {
-    			"userDataAggregationTopicName": "user_data_aggregation_requests",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/tmp"
-    					},
-    					"bucketName": "userdata",
-    					"provider": "filesystem"
-    				},
-    				"debug": false
-    			}
-    		},
-    		"recipeSteps": {
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"users": {
-    			"dataChangesTopicName": "data_changes",
-    			"publicMediaURLPrefix": "",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "avatars",
-    					"uploadFilenameKey": "avatar",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"validInstruments": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"oauth2Clients": {
-    			"dataChangesTopicName": "data_changes",
-    			"creationEnabled": false
-    		},
-    		"webhooks": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validIngredients": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"meals": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validVessels": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"householdInvitations": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validPreparations": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validIngredientStates": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"recipes": {
-    			"dataChangesTopicName": "data_changes",
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			},
-    			"searchFromDatabase": false
-    		},
-    		"auth": {
-    			"sso": {
-    				"google": {
-    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
-    				}
-    			},
-    			"dataChanges": "data_changes",
-    			"jwtAudience": "localhost",
-    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-    			"oauth2": {
-    				"domain": "http://localhost:9000",
-    				"accessTokenLifespan": 3600000000000,
-    				"refreshTokenLifespan": 3600000000000,
-    				"debug": false
-    			},
-    			"jwtLifetime": 300000000000,
-    			"debug": true,
-    			"enableUserSignup": true,
-    			"minimumUsernameLength": 3,
-    			"minimumPasswordLength": 8
-    		}
     	}
     }
 kind: ConfigMap
@@ -986,28 +187,22 @@ data:
     			"level": 0,
     			"provider": "slog"
     		},
+    		"metrics": {
+    			"otelgrpc": {
+    				"baseName": "ddb.api",
+    				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+    				"metricsCollectionInterval": 3000000000
+    			},
+    			"provider": "otelgrpc"
+    		},
     		"tracing": {
-    			"otel": {
-    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    			"otelgrpc": {
+    				"collector_endpoint": "http://0.0.0.0:4317",
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
     			"provider": "otelgrpc"
     		}
-    	},
-    	"queues": {
-    		"dataChangesTopicName": "data_changes",
-    		"outboundEmailsTopicName": "outbound_emails",
-    		"searchIndexRequestsTopicName": "search_index_requests",
-    		"userDataAggregationTopicName": "user_data_aggregation_requests",
-    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
-    	},
-    	"email": {
-    		"sendgrid": null,
-    		"mailgun": null,
-    		"mailjet": null,
-    		"circuitBreakerConfig": null,
-    		"provider": ""
     	},
     	"analytics": {
     		"segment": null,
@@ -1015,33 +210,6 @@ data:
     		"rudderstack": null,
     		"circuitBreakerConfig": null,
     		"provider": ""
-    	},
-    	"search": {
-    		"algolia": {
-    			"appID": "",
-    			"writeAPIKey": "",
-    			"timeout": 0
-    		},
-    		"elasticsearch": null,
-    		"circuitBreakerConfig": null,
-    		"provider": "algolia"
-    	},
-    	"featureFlags": {
-    		"LaunchDarkly": null,
-    		"PostHog": null,
-    		"CircuitBreakingConfig": null,
-    		"Provider": ""
-    	},
-    	"encoding": {
-    		"contentType": "application/json"
-    	},
-    	"meta": {
-    		"runMode": "development",
-    		"debug": true
-    	},
-    	"routing": {
-    		"provider": "chi",
-    		"enableCORSForLocalhost": true
     	},
     	"events": {
     		"consumers": {
@@ -1071,11 +239,6 @@ data:
     			}
     		}
     	},
-    	"server": {
-    		"startupDeadline": 60000000000,
-    		"httpPort": 8000,
-    		"debug": true
-    	},
     	"database": {
     		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
     		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
@@ -1084,211 +247,6 @@ data:
     		"runMigrations": true,
     		"maxPingAttempts": 50,
     		"pingWaitPeriod": 1000000000
-    	},
-    	"services": {
-    		"auditLogEntries": {},
-    		"mealPlanGroceryListItems": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validInstrumentMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettingConfigurations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeRatings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validMeasurementUnitConversions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientGroups": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"householdInstrumentOwnerships": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipePrepTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepCompletionConditions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userIngredientPreferences": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"households": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlans": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientPreparations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepProducts": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientStateIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanEvents": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptionVotes": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"workers": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userNotifications": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"dataPrivacy": {
-    			"userDataAggregationTopicName": "user_data_aggregation_requests",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/tmp"
-    					},
-    					"bucketName": "userdata",
-    					"provider": "filesystem"
-    				},
-    				"debug": false
-    			}
-    		},
-    		"recipeSteps": {
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"users": {
-    			"dataChangesTopicName": "data_changes",
-    			"publicMediaURLPrefix": "",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "avatars",
-    					"uploadFilenameKey": "avatar",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"validInstruments": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"oauth2Clients": {
-    			"dataChangesTopicName": "data_changes",
-    			"creationEnabled": false
-    		},
-    		"webhooks": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validIngredients": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"meals": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validVessels": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"householdInvitations": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validPreparations": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validIngredientStates": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"recipes": {
-    			"dataChangesTopicName": "data_changes",
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			},
-    			"searchFromDatabase": false
-    		},
-    		"auth": {
-    			"sso": {
-    				"google": {
-    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
-    				}
-    			},
-    			"dataChanges": "data_changes",
-    			"jwtAudience": "localhost",
-    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-    			"oauth2": {
-    				"domain": "http://localhost:9000",
-    				"accessTokenLifespan": 3600000000000,
-    				"refreshTokenLifespan": 3600000000000,
-    				"debug": false
-    			},
-    			"jwtLifetime": 300000000000,
-    			"debug": true,
-    			"enableUserSignup": true,
-    			"minimumUsernameLength": 3,
-    			"minimumPasswordLength": 8
-    		}
     	}
     }
 kind: ConfigMap
@@ -1310,28 +268,22 @@ data:
     			"level": 0,
     			"provider": "slog"
     		},
+    		"metrics": {
+    			"otelgrpc": {
+    				"baseName": "ddb.api",
+    				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+    				"metricsCollectionInterval": 3000000000
+    			},
+    			"provider": "otelgrpc"
+    		},
     		"tracing": {
-    			"otel": {
-    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    			"otelgrpc": {
+    				"collector_endpoint": "http://0.0.0.0:4317",
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
     			"provider": "otelgrpc"
     		}
-    	},
-    	"queues": {
-    		"dataChangesTopicName": "data_changes",
-    		"outboundEmailsTopicName": "outbound_emails",
-    		"searchIndexRequestsTopicName": "search_index_requests",
-    		"userDataAggregationTopicName": "user_data_aggregation_requests",
-    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
-    	},
-    	"email": {
-    		"sendgrid": null,
-    		"mailgun": null,
-    		"mailjet": null,
-    		"circuitBreakerConfig": null,
-    		"provider": ""
     	},
     	"analytics": {
     		"segment": null,
@@ -1339,33 +291,6 @@ data:
     		"rudderstack": null,
     		"circuitBreakerConfig": null,
     		"provider": ""
-    	},
-    	"search": {
-    		"algolia": {
-    			"appID": "",
-    			"writeAPIKey": "",
-    			"timeout": 0
-    		},
-    		"elasticsearch": null,
-    		"circuitBreakerConfig": null,
-    		"provider": "algolia"
-    	},
-    	"featureFlags": {
-    		"LaunchDarkly": null,
-    		"PostHog": null,
-    		"CircuitBreakingConfig": null,
-    		"Provider": ""
-    	},
-    	"encoding": {
-    		"contentType": "application/json"
-    	},
-    	"meta": {
-    		"runMode": "development",
-    		"debug": true
-    	},
-    	"routing": {
-    		"provider": "chi",
-    		"enableCORSForLocalhost": true
     	},
     	"events": {
     		"consumers": {
@@ -1395,11 +320,6 @@ data:
     			}
     		}
     	},
-    	"server": {
-    		"startupDeadline": 60000000000,
-    		"httpPort": 8000,
-    		"debug": true
-    	},
     	"database": {
     		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
     		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
@@ -1408,211 +328,6 @@ data:
     		"runMigrations": true,
     		"maxPingAttempts": 50,
     		"pingWaitPeriod": 1000000000
-    	},
-    	"services": {
-    		"auditLogEntries": {},
-    		"mealPlanGroceryListItems": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validInstrumentMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettingConfigurations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeRatings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validMeasurementUnitConversions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientGroups": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"householdInstrumentOwnerships": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipePrepTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepCompletionConditions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userIngredientPreferences": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"households": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlans": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientPreparations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepProducts": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientStateIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanEvents": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptionVotes": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"workers": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userNotifications": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"dataPrivacy": {
-    			"userDataAggregationTopicName": "user_data_aggregation_requests",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/tmp"
-    					},
-    					"bucketName": "userdata",
-    					"provider": "filesystem"
-    				},
-    				"debug": false
-    			}
-    		},
-    		"recipeSteps": {
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"users": {
-    			"dataChangesTopicName": "data_changes",
-    			"publicMediaURLPrefix": "",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "avatars",
-    					"uploadFilenameKey": "avatar",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"validInstruments": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"oauth2Clients": {
-    			"dataChangesTopicName": "data_changes",
-    			"creationEnabled": false
-    		},
-    		"webhooks": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validIngredients": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"meals": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validVessels": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"householdInvitations": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validPreparations": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validIngredientStates": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"recipes": {
-    			"dataChangesTopicName": "data_changes",
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			},
-    			"searchFromDatabase": false
-    		},
-    		"auth": {
-    			"sso": {
-    				"google": {
-    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
-    				}
-    			},
-    			"dataChanges": "data_changes",
-    			"jwtAudience": "localhost",
-    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-    			"oauth2": {
-    				"domain": "http://localhost:9000",
-    				"accessTokenLifespan": 3600000000000,
-    				"refreshTokenLifespan": 3600000000000,
-    				"debug": false
-    			},
-    			"jwtLifetime": 300000000000,
-    			"debug": true,
-    			"enableUserSignup": true,
-    			"minimumUsernameLength": 3,
-    			"minimumPasswordLength": 8
-    		}
     	}
     }
 kind: ConfigMap
@@ -1634,62 +349,22 @@ data:
     			"level": 0,
     			"provider": "slog"
     		},
+    		"metrics": {
+    			"otelgrpc": {
+    				"baseName": "ddb.api",
+    				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+    				"metricsCollectionInterval": 3000000000
+    			},
+    			"provider": "otelgrpc"
+    		},
     		"tracing": {
-    			"otel": {
-    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    			"otelgrpc": {
+    				"collector_endpoint": "http://0.0.0.0:4317",
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
     			"provider": "otelgrpc"
     		}
-    	},
-    	"queues": {
-    		"dataChangesTopicName": "data_changes",
-    		"outboundEmailsTopicName": "outbound_emails",
-    		"searchIndexRequestsTopicName": "search_index_requests",
-    		"userDataAggregationTopicName": "user_data_aggregation_requests",
-    		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
-    	},
-    	"email": {
-    		"sendgrid": null,
-    		"mailgun": null,
-    		"mailjet": null,
-    		"circuitBreakerConfig": null,
-    		"provider": ""
-    	},
-    	"analytics": {
-    		"segment": null,
-    		"posthog": null,
-    		"rudderstack": null,
-    		"circuitBreakerConfig": null,
-    		"provider": ""
-    	},
-    	"search": {
-    		"algolia": {
-    			"appID": "",
-    			"writeAPIKey": "",
-    			"timeout": 0
-    		},
-    		"elasticsearch": null,
-    		"circuitBreakerConfig": null,
-    		"provider": "algolia"
-    	},
-    	"featureFlags": {
-    		"LaunchDarkly": null,
-    		"PostHog": null,
-    		"CircuitBreakingConfig": null,
-    		"Provider": ""
-    	},
-    	"encoding": {
-    		"contentType": "application/json"
-    	},
-    	"meta": {
-    		"runMode": "development",
-    		"debug": true
-    	},
-    	"routing": {
-    		"provider": "chi",
-    		"enableCORSForLocalhost": true
     	},
     	"events": {
     		"consumers": {
@@ -1719,11 +394,6 @@ data:
     			}
     		}
     	},
-    	"server": {
-    		"startupDeadline": 60000000000,
-    		"httpPort": 8000,
-    		"debug": true
-    	},
     	"database": {
     		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
     		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
@@ -1732,211 +402,6 @@ data:
     		"runMigrations": true,
     		"maxPingAttempts": 50,
     		"pingWaitPeriod": 1000000000
-    	},
-    	"services": {
-    		"auditLogEntries": {},
-    		"mealPlanGroceryListItems": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validInstrumentMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettingConfigurations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeRatings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validMeasurementUnitConversions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientGroups": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"serviceSettings": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"householdInstrumentOwnerships": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipePrepTasks": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepCompletionConditions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userIngredientPreferences": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"households": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlans": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationInstruments": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientPreparations": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepProducts": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validIngredientStateIngredients": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanEvents": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptionVotes": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"recipeStepVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"validPreparationVessels": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"workers": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"userNotifications": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"mealPlanOptions": {
-    			"dataChangesTopicName": "data_changes"
-    		},
-    		"dataPrivacy": {
-    			"userDataAggregationTopicName": "user_data_aggregation_requests",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/tmp"
-    					},
-    					"bucketName": "userdata",
-    					"provider": "filesystem"
-    				},
-    				"debug": false
-    			}
-    		},
-    		"recipeSteps": {
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"dataChangesTopicName": "data_changes",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"users": {
-    			"dataChangesTopicName": "data_changes",
-    			"publicMediaURLPrefix": "",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "avatars",
-    					"uploadFilenameKey": "avatar",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			}
-    		},
-    		"validInstruments": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validMeasurementUnits": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"oauth2Clients": {
-    			"dataChangesTopicName": "data_changes",
-    			"creationEnabled": false
-    		},
-    		"webhooks": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validIngredients": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"meals": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validVessels": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"householdInvitations": {
-    			"dataChangesTopicName": "data_changes",
-    			"debug": false
-    		},
-    		"validPreparations": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"validIngredientStates": {
-    			"dataChangesTopicName": "data_changes",
-    			"searchFromDatabase": false
-    		},
-    		"recipes": {
-    			"dataChangesTopicName": "data_changes",
-    			"mediaUploadPrefix": "https://example.website.lol",
-    			"uploads": {
-    				"storageConfig": {
-    					"filesystem": {
-    						"rootDirectory": "/uploads"
-    					},
-    					"bucketName": "recipe_media",
-    					"uploadFilenameKey": "recipe_media",
-    					"provider": "filesystem"
-    				},
-    				"debug": true
-    			},
-    			"searchFromDatabase": false
-    		},
-    		"auth": {
-    			"sso": {
-    				"google": {
-    					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
-    				}
-    			},
-    			"dataChanges": "data_changes",
-    			"jwtAudience": "localhost",
-    			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-    			"oauth2": {
-    				"domain": "http://localhost:9000",
-    				"accessTokenLifespan": 3600000000000,
-    				"refreshTokenLifespan": 3600000000000,
-    				"debug": false
-    			},
-    			"jwtLifetime": 300000000000,
-    			"debug": true,
-    			"enableUserSignup": true,
-    			"minimumUsernameLength": 3,
-    			"minimumPasswordLength": 8
-    		}
     	}
     }
 kind: ConfigMap
@@ -1958,9 +423,17 @@ data:
     			"level": 0,
     			"provider": "slog"
     		},
+    		"metrics": {
+    			"otelgrpc": {
+    				"baseName": "ddb.api",
+    				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+    				"metricsCollectionInterval": 3000000000
+    			},
+    			"provider": "otelgrpc"
+    		},
     		"tracing": {
-    			"otel": {
-    				"collector_endpoint": "http://tracing-server:14268/api/traces",
+    			"otelgrpc": {
+    				"collector_endpoint": "http://0.0.0.0:4317",
     				"service_name": "dinner_done_better_service",
     				"spanCollectionProbability": 1
     			},
@@ -2274,6 +747,15 @@ metadata:
   namespace: localdev
 ---
 apiVersion: v1
+data:
+  config.yaml: "receivers:\n  # TODO: this should go into a different collector instance\n  postgresql:\n    endpoint: postgres-postgresql.localdev.svc.cluster.local:5432\n    transport: tcp\n    username: dbuser\n    password: hunter2\n    databases:\n      - dinner-done-better\n    collection_interval: 10s\n    tls:\n      insecure: true\n      insecure_skip_verify: true\n  redis:\n    endpoint: \"redis.localdev.svc.cluster.local:6379\"\n    collection_interval: 10s\n  filelog:\n    include: [ /var/log/dinnerdonebetter/*.log ]\n    operators:\n      - type: json_parser\n    resource:\n      service_name: dinner-done-better-api-service\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\n        \nprocessors:\n  k8sattributes/default:\n  resourcedetection/system:\n    detectors: [env, system] #, gcp\n    timeout: 2s\n    override: false\n  batch:\n    send_batch_size: 2048\n    send_batch_max_size: 2048\n    timeout: 1s\n  batch/2:\n    send_batch_size: 2048\n    send_batch_max_size: 2048\n    timeout: 1s\n\nexporters:\n  debug:\n  otlp:\n    endpoint: tempo.localdev.svc.cluster.local:4317\n    tls:\n      insecure: true\n  prometheusremotewrite:\n    endpoint: prometheus-server.localdev.svc.cluster.local:3001/api/v1/write # /v1/push\n  otlphttp:\n    endpoint: http://loki.localdev.svc.cluster.local:3100/otlp\n\nservice:\n  telemetry:\n    metrics:\n      level: none\n  pipelines:\n    traces:\n      receivers:\n        - otlp\n      processors:\n        - batch\n      exporters:\n        - debug\n        - otlp\n    metrics:\n      receivers:\n        - otlp\n      processors:\n        - batch\n      exporters:\n        - debug\n        - prometheusremotewrite\n    logs:\n      receivers:\n        - filelog\n      processors:\n        - batch\n      exporters:\n        - otlphttp\n"
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: dinner-done-better-backend
+  name: opentelemetry-collector-config
+---
+apiVersion: v1
 kind: Service
 metadata:
   labels:
@@ -2339,10 +821,35 @@ spec:
             - mountPath: /etc/service-config.json
               name: config
               subPath: config.json
+            - mountPath: /var/log/dinnerdonebetter
+              name: logs
+        - command:
+            - /otelcol-contrib
+            - --config
+            - /conf/config.yaml
+          image: otel/opentelemetry-collector-contrib:0.115.1
+          name: opentelemetry-collector
+          ports:
+            - containerPort: 4317
+              name: otel1
+            - containerPort: 4318
+              name: otel2
+          volumeMounts:
+            - mountPath: /var/log/dinnerdonebetter
+              name: logs
+              readOnly: true
+            - mountPath: /conf
+              name: opentelemetry-config
       volumes:
         - configMap:
             name: dinner-done-better-service-api-config
           name: config
+        - emptyDir:
+            sizeLimit: 500Mi
+          name: logs
+        - configMap:
+            name: opentelemetry-collector-config
+          name: opentelemetry-config
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -2366,12 +873,17 @@ spec:
                 - mountPath: /etc/service-config.json
                   name: config
                   subPath: config.json
+                - mountPath: /var/log/dinnerdonebetter
+                  name: logs
           restartPolicy: OnFailure
           volumes:
             - configMap:
                 name: dinner-done-better-job-db-cleaner-config
               name: config
-  schedule: '* * * * *'
+            - emptyDir:
+                sizeLimit: 500Mi
+              name: logs
+  schedule: '* * 1,8,15,22 * *'
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -2395,12 +907,17 @@ spec:
                 - mountPath: /etc/service-config.json
                   name: config
                   subPath: config.json
+                - mountPath: /var/log/dinnerdonebetter
+                  name: logs
           restartPolicy: OnFailure
           volumes:
             - configMap:
                 name: dinner-done-better-job-email-prober-config
               name: config
-  schedule: '* * * * *'
+            - emptyDir:
+                sizeLimit: 500Mi
+              name: logs
+  schedule: 0 4 * * *
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -2426,12 +943,17 @@ spec:
                 - mountPath: /etc/service-config.json
                   name: config
                   subPath: config.json
+                - mountPath: /var/log/dinnerdonebetter
+                  name: logs
           restartPolicy: OnFailure
           volumes:
             - configMap:
                 name: dinner-done-better-job-meal-plan-finalizer-config
               name: config
-  schedule: '* * * * *'
+            - emptyDir:
+                sizeLimit: 500Mi
+              name: logs
+  schedule: '*/5 * * * *'
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -2457,12 +979,17 @@ spec:
                 - mountPath: /etc/service-config.json
                   name: config
                   subPath: config.json
+                - mountPath: /var/log/dinnerdonebetter
+                  name: logs
           restartPolicy: OnFailure
           volumes:
             - configMap:
                 name: dinner-done-better-job-meal-plan-grocery-list-init-config
               name: config
-  schedule: '* * * * *'
+            - emptyDir:
+                sizeLimit: 500Mi
+              name: logs
+  schedule: '*/5 * * * *'
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -2488,12 +1015,17 @@ spec:
                 - mountPath: /etc/service-config.json
                   name: config
                   subPath: config.json
+                - mountPath: /var/log/dinnerdonebetter
+                  name: logs
           restartPolicy: OnFailure
           volumes:
             - configMap:
                 name: dinner-done-better-job-meal-plan-task-creator-config
               name: config
-  schedule: '* * * * *'
+            - emptyDir:
+                sizeLimit: 500Mi
+              name: logs
+  schedule: '*/5 * * * *'
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -2519,12 +1051,17 @@ spec:
                 - mountPath: /etc/service-config.json
                   name: config
                   subPath: config.json
+                - mountPath: /var/log/dinnerdonebetter
+                  name: logs
           restartPolicy: OnFailure
           volumes:
             - configMap:
                 name: dinner-done-better-job-search-data-index-scheduler-config
               name: config
-  schedule: '* * * * *'
+            - emptyDir:
+                sizeLimit: 500Mi
+              name: logs
+  schedule: '*/30 * * * *'
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -2879,7 +1416,7 @@ metadata:
 apiVersion: v1
 data:
   password: aHVudGVyMg==
-  postgres-password: MjlmZnZSa1dNQw==
+  postgres-password: ZnZDWWs4TmxLNQ==
 kind: Secret
 metadata:
   labels:
@@ -3184,7 +1721,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  redis-password: cDZMRE5MTzRlbA==
+  redis-password: d2dtTWR1Qmw1WQ==
 kind: Secret
 metadata:
   labels:
@@ -3440,7 +1977,7 @@ spec:
         checksum/configmap: 86bcc953bb473748a3d3dc60b7c11f34e60c93519234d4c37f42e22ada559d47
         checksum/health: aff24913d801436ea469d8d374b2ddb3ec4c43ee7ab24663d5f8ff1a1b6991a9
         checksum/scripts: 560c33ff34d845009b51830c332aa05fa211444d1877d3526d3599be7543aaa5
-        checksum/secret: 5b3e1a635f4ffddbe33fae45b67015e32326f1c06d4f46f0dd59e73e4d0b1f6e
+        checksum/secret: f6d81ee71aee7c25c5af23f3d6a5ce7fb260a3f9706647d67a8c3672f8ba4936
       labels:
         app.kubernetes.io/component: master
         app.kubernetes.io/instance: redis
@@ -3589,150 +2126,162 @@ spec:
           requests:
             storage: 8Gi
 ---
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    app.kubernetes.io/component: grafana
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 11.3.0
-    helm.sh/chart: grafana-11.3.26
-  name: grafana
-  namespace: localdev
-spec:
-  egress:
-    - {}
-  ingress:
-    - ports:
-        - port: 3000
-  podSelector:
-    matchLabels:
-      app.kubernetes.io/component: grafana
-      app.kubernetes.io/instance: grafana
-      app.kubernetes.io/name: grafana
-  policyTypes:
-    - Ingress
-    - Egress
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  labels:
-    app.kubernetes.io/component: grafana
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 11.3.0
-    helm.sh/chart: grafana-11.3.26
-  name: grafana
-  namespace: localdev
-spec:
-  maxUnavailable: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/component: grafana
-      app.kubernetes.io/instance: grafana
-      app.kubernetes.io/name: grafana
----
 apiVersion: v1
-automountServiceAccountToken: false
 kind: ServiceAccount
 metadata:
+  annotations: {}
   labels:
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 11.3.0
-    helm.sh/chart: grafana-11.3.26
-  name: grafana
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/version: v3.0.0
+    helm.sh/chart: prometheus-26.0.0
+  name: prometheus-server
   namespace: localdev
-secrets:
-  - name: grafana-admin
 ---
 apiVersion: v1
 data:
-  GF_SECURITY_ADMIN_PASSWORD: cjZzNUFiQUplcg==
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/component: grafana
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 11.3.0
-    helm.sh/chart: grafana-11.3.26
-  name: grafana-admin
-  namespace: localdev
-type: Opaque
----
-apiVersion: v1
-data:
-  GF_AUTH_LDAP_ALLOW_SIGN_UP: "false"
-  GF_AUTH_LDAP_CONFIG_FILE: /opt/bitnami/grafana/conf/ldap.toml
-  GF_AUTH_LDAP_ENABLED: "false"
-  GF_INSTALL_PLUGINS: ""
-  GF_PATHS_CONFIG: /opt/bitnami/grafana/conf/grafana.ini
-  GF_PATHS_DATA: /opt/bitnami/grafana/data
-  GF_PATHS_LOGS: /opt/bitnami/grafana/logs
-  GF_PATHS_PLUGINS: /opt/bitnami/grafana/data/plugins
-  GF_PATHS_PROVISIONING: /opt/bitnami/grafana/conf/provisioning
-  GF_SECURITY_ADMIN_USER: admin
+  alerting_rules.yml: |
+    {}
+  alerts: |
+    {}
+  allow-snippet-annotations: "false"
+  prometheus.yml: |
+    global:
+      evaluation_interval: 1m
+      scrape_interval: 1m
+      scrape_timeout: 10s
+    rule_files:
+    - /etc/config/recording_rules.yml
+    - /etc/config/alerting_rules.yml
+  recording_rules.yml: |
+    {}
+  rules: |
+    {}
 kind: ConfigMap
 metadata:
   labels:
-    app.kubernetes.io/component: grafana
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 11.3.0
-    helm.sh/chart: grafana-11.3.26
-  name: grafana-envvars
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/version: v3.0.0
+    helm.sh/chart: prometheus-26.0.0
+  name: prometheus-server
   namespace: localdev
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app.kubernetes.io/component: grafana
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 11.3.0
-    helm.sh/chart: grafana-11.3.26
-  name: grafana
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/version: v3.0.0
+    helm.sh/chart: prometheus-26.0.0
+  name: prometheus-server
   namespace: localdev
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 8Gi
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/version: v3.0.0
+    helm.sh/chart: prometheus-26.0.0
+  name: prometheus-server
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+      - nodes/proxy
+      - nodes/metrics
+      - services
+      - endpoints
+      - pods
+      - ingresses
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+      - networking.k8s.io
+    resources:
+      - ingresses/status
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - get
+      - list
+      - watch
+  - nonResourceURLs:
+      - /metrics
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/version: v3.0.0
+    helm.sh/chart: prometheus-26.0.0
+  name: prometheus-server
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-server
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-server
+    namespace: localdev
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/component: grafana
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 11.3.0
-    helm.sh/chart: grafana-11.3.26
-  name: grafana
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/version: v3.0.0
+    helm.sh/chart: prometheus-26.0.0
+  name: prometheus-server
   namespace: localdev
 spec:
   ports:
     - name: http
-      nodePort: null
-      port: 3000
+      port: 3001
       protocol: TCP
-      targetPort: dashboard
+      targetPort: 9090
   selector:
-    app.kubernetes.io/component: grafana
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
   sessionAffinity: None
   type: ClusterIP
 ---
@@ -3740,19 +2289,310 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/component: grafana
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/version: v3.0.0
+    helm.sh/chart: prometheus-26.0.0
+  name: prometheus-server
+  namespace: localdev
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/name: prometheus
+  strategy:
+    rollingUpdate: null
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: server
+        app.kubernetes.io/instance: prometheus
+        app.kubernetes.io/name: prometheus
+        app.kubernetes.io/part-of: prometheus
+        app.kubernetes.io/version: v3.0.0
+        helm.sh/chart: prometheus-26.0.0
+    spec:
+      containers:
+        - args:
+            - --watched-dir=/etc/config
+            - --listen-address=0.0.0.0:8080
+            - --reload-url=http://127.0.0.1:9090/-/reload
+          image: quay.io/prometheus-operator/prometheus-config-reloader:v0.78.2
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+              scheme: HTTP
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          name: prometheus-server-configmap-reload
+          ports:
+            - containerPort: 8080
+              name: metrics
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+              scheme: HTTP
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /etc/config
+              name: config-volume
+              readOnly: true
+        - args:
+            - --storage.tsdb.retention.time=15d
+            - --config.file=/etc/config/prometheus.yml
+            - --storage.tsdb.path=/data
+            - --web.console.libraries=/etc/prometheus/console_libraries
+            - --web.console.templates=/etc/prometheus/consoles
+            - --web.enable-lifecycle
+          image: quay.io/prometheus/prometheus:v3.0.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/healthy
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: prometheus-server
+          ports:
+            - containerPort: 9090
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /-/ready
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 4
+          volumeMounts:
+            - mountPath: /etc/config
+              name: config-volume
+            - mountPath: /data
+              name: storage-volume
+              subPath: ""
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+      securityContext:
+        fsGroup: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+      serviceAccountName: prometheus-server
+      terminationGracePeriodSeconds: 300
+      volumes:
+        - configMap:
+            name: prometheus-server
+          name: config-volume
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: prometheus-server
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  labels:
     app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 11.3.0
-    helm.sh/chart: grafana-11.3.26
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
+  name: grafana
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  admin-password: aHVudGVyMg==
+  admin-user: YWRtaW4=
+  ldap-toml: ""
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
+  name: grafana
+  namespace: localdev
+type: Opaque
+---
+apiVersion: v1
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - access: proxy
+      database: dinner-done-better
+      editable: true
+      isDefault: false
+      jsonData:
+        database: dinner-done-better
+        sslmode: disable
+      name: Postgres
+      orgId: 1
+      secureJsonData:
+        password: hunter2
+      type: postgres
+      url: postgres-postgresql.localdev.svc.cluster.local:5432
+      user: dbuser
+      version: 1
+    - access: proxy
+      editable: true
+      isDefault: false
+      name: Prometheus
+      orgId: 1
+      type: prometheus
+      url: http://prometheus-server.localdev.svc.cluster.local:3001
+      version: 1
+    - access: proxy
+      editable: true
+      isDefault: false
+      name: Loki
+      orgId: 1
+      type: loki
+      url: http://loki.localdev.svc.cluster.local:3100
+      version: 1
+    - access: proxy
+      editable: true
+      isDefault: false
+      name: Tempo
+      orgId: 1
+      type: tempo
+      url: http://tempo.localdev.svc.cluster.local:3100
+      version: 1
+  grafana.ini: |
+    [analytics]
+    check_for_updates = true
+    [grafana_net]
+    url = https://grafana.net
+    [log]
+    mode = console
+    [paths]
+    data = /var/lib/grafana/
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
+    [server]
+    domain = chart-example.local
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
+  name: grafana
+  namespace: localdev
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
+  name: grafana-clusterrole
+rules: []
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
+  name: grafana-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: grafana-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: grafana
+    namespace: localdev
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
+  name: grafana
+  namespace: localdev
+rules: []
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
+  name: grafana
+  namespace: localdev
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: grafana
+subjects:
+  - kind: ServiceAccount
+    name: grafana
+    namespace: localdev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
+  name: grafana
+  namespace: localdev
+spec:
+  ports:
+    - name: service
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
   name: grafana
   namespace: localdev
 spec:
   replicas: 1
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app.kubernetes.io/component: grafana
       app.kubernetes.io/instance: grafana
       app.kubernetes.io/name: grafana
   strategy:
@@ -3760,114 +2600,1252 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 039af31494614f5c7d90c4e9dda8e8ac5fc1eb6369bec6cb8ca838c4ad4373fa
-        checksum/dashboard-provider: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
-        checksum/secret: b843c8b99aa263757256f392ee5761e912739ebe326f84c6219d707e4dfafac4
+        checksum/config: daaf83d48423b59e094c3ce48b16c05faca8f02b100f066548cfa378eadfac47
+        checksum/sc-dashboard-provider-config: e70bf6a851099d385178a76de9757bb0bef8299da6d8443602590e44f05fdf24
+        checksum/secret: 683417358cd023cce54f8d5bde0c5f0c7a8de045c2ef7a6c43c0f730bc0fb45a
+        kubectl.kubernetes.io/default-container: grafana
       labels:
-        app.kubernetes.io/component: grafana
         app.kubernetes.io/instance: grafana
-        app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: grafana
-        app.kubernetes.io/version: 11.3.0
-        helm.sh/chart: grafana-11.3.26
+        app.kubernetes.io/version: 11.3.1
+        helm.sh/chart: grafana-8.6.3
     spec:
-      affinity:
-        nodeAffinity: null
-        podAffinity: null
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/component: grafana
-                    app.kubernetes.io/instance: grafana
-                    app.kubernetes.io/name: grafana
-                topologyKey: kubernetes.io/hostname
-              weight: 1
-      automountServiceAccountToken: false
+      automountServiceAccountToken: true
       containers:
         - env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  key: admin-user
+                  name: grafana
             - name: GF_SECURITY_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: GF_SECURITY_ADMIN_PASSWORD
-                  name: grafana-admin
-          envFrom:
-            - configMapRef:
-                name: grafana-envvars
-          image: docker.io/bitnami/grafana:11.3.0-debian-12-r3
+                  key: admin-password
+                  name: grafana
+            - name: GF_PATHS_DATA
+              value: /var/lib/grafana/
+            - name: GF_PATHS_LOGS
+              value: /var/log/grafana
+            - name: GF_PATHS_PLUGINS
+              value: /var/lib/grafana/plugins
+            - name: GF_PATHS_PROVISIONING
+              value: /etc/grafana/provisioning
+          image: docker.io/grafana/grafana:11.3.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
-            failureThreshold: 6
-            initialDelaySeconds: 120
-            periodSeconds: 10
-            successThreshold: 1
-            tcpSocket:
-              port: dashboard
-            timeoutSeconds: 5
+            failureThreshold: 10
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 60
+            timeoutSeconds: 30
           name: grafana
           ports:
             - containerPort: 3000
-              name: dashboard
+              name: grafana
               protocol: TCP
+            - containerPort: 9094
+              name: gossip-tcp
+              protocol: TCP
+            - containerPort: 9094
+              name: gossip-udp
+              protocol: UDP
           readinessProbe:
-            failureThreshold: 6
             httpGet:
               path: /api/health
-              port: dashboard
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 5
-          resources:
-            limits:
-              cpu: 150m
-              ephemeral-storage: 2Gi
-              memory: 192Mi
-            requests:
-              cpu: 100m
-              ephemeral-storage: 50Mi
-              memory: 128Mi
+              port: 3000
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
-            privileged: false
-            readOnlyRootFilesystem: true
-            runAsGroup: 1001
-            runAsNonRoot: true
-            runAsUser: 1001
-            seLinuxOptions: {}
             seccompProfile:
               type: RuntimeDefault
           volumeMounts:
-            - mountPath: /tmp
-              name: empty-dir
-              subPath: tmp-dir
-            - mountPath: /opt/bitnami/grafana/conf
-              name: empty-dir
-              subPath: app-conf-dir
-            - mountPath: /opt/bitnami/grafana/tmp
-              name: empty-dir
-              subPath: app-tmp-dir
-            - mountPath: /bitnami/grafana
-              name: empty-dir
-              subPath: app-volume-dir
-            - mountPath: /opt/bitnami/grafana/data
-              name: data
+            - mountPath: /etc/grafana/grafana.ini
+              name: config
+              subPath: grafana.ini
+            - mountPath: /var/lib/grafana
+              name: storage
+            - mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+              name: config
+              subPath: datasources.yaml
       enableServiceLinks: true
-      initContainers: null
       securityContext:
-        fsGroup: 1001
-        fsGroupChangePolicy: Always
-        supplementalGroups: []
-        sysctls: []
+        fsGroup: 472
+        runAsGroup: 472
+        runAsNonRoot: true
+        runAsUser: 472
       serviceAccountName: grafana
       volumes:
+        - configMap:
+            name: grafana
+          name: config
         - emptyDir: {}
-          name: empty-dir
-        - name: data
-          persistentVolumeClaim:
-            claimName: grafana
+          name: storage
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 11.3.1
+    helm.sh/chart: grafana-8.6.3
+  name: grafana
+  namespace: localdev
+spec:
+  rules:
+    - host: chart-example.local
+      http:
+        paths:
+          - backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix
+---
+# Source: grafana/templates/tests/test-serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    helm.sh/chart: grafana-8.6.3
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "11.3.1"
+  name: grafana-test
+  namespace: localdev
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+---
+# Source: grafana/templates/tests/test-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-test
+  namespace: localdev
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+  labels:
+    helm.sh/chart: grafana-8.6.3
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "11.3.1"
+data:
+  run.sh: |-
+    @test "Test Health" {
+      url="http://grafana/api/health"
+
+      code=$(wget --server-response --spider --timeout 90 --tries 10 ${url} 2>&1 | awk '/^  HTTP/{print $2}')
+      [ "$code" == "200" ]
+    }
+---
+# Source: grafana/templates/tests/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: grafana-test
+  labels:
+    helm.sh/chart: grafana-8.6.3
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "11.3.1"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+  namespace: localdev
+spec:
+  serviceAccountName: grafana-test
+  containers:
+    - name: grafana-test
+      image: "docker.io/bats/bats:v1.4.1"
+      imagePullPolicy: "IfNotPresent"
+      command: ["/opt/bats/bin/bats", "-t", "/tests/run.sh"]
+      volumeMounts:
+        - mountPath: /tests
+          name: tests
+          readOnly: true
+  volumes:
+    - name: tests
+      configMap:
+        name: grafana-test
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: minio-sa
+  namespace: localdev
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/version: 3.3.0
+    helm.sh/chart: loki-6.22.0
+  name: loki
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  rootPassword: c3VwZXJzZWNyZXQ=
+  rootUser: ZW50ZXJwcmlzZS1sb2dz
+kind: Secret
+metadata:
+  labels:
+    app: minio
+    chart: minio-4.1.0
+    heritage: Helm
+    release: loki
+  name: loki-minio
+  namespace: localdev
+type: Opaque
+---
+apiVersion: v1
+data:
+  add-policy: |-
+    #!/bin/sh
+    set -e ; # Have script exit in the event of a failed command.
+    MC_CONFIG_DIR="/etc/minio/mc/"
+    MC="/usr/bin/mc --insecure --config-dir ${MC_CONFIG_DIR}"
+
+    # connectToMinio
+    # Use a check-sleep-check loop to wait for MinIO service to be available
+    connectToMinio() {
+      SCHEME=$1
+      ATTEMPTS=0 ; LIMIT=29 ; # Allow 30 attempts
+      set -e ; # fail if we can't read the keys.
+      ACCESS=$(cat /config/rootUser) ; SECRET=$(cat /config/rootPassword) ;
+      set +e ; # The connections to minio are allowed to fail.
+      echo "Connecting to MinIO server: $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT" ;
+      MC_COMMAND="${MC} alias set myminio $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT $ACCESS $SECRET" ;
+      $MC_COMMAND ;
+      STATUS=$? ;
+      until [ $STATUS = 0 ]
+      do
+        ATTEMPTS=`expr $ATTEMPTS + 1` ;
+        echo \"Failed attempts: $ATTEMPTS\" ;
+        if [ $ATTEMPTS -gt $LIMIT ]; then
+          exit 1 ;
+        fi ;
+        sleep 2 ; # 1 second intervals between attempts
+        $MC_COMMAND ;
+        STATUS=$? ;
+      done ;
+      set -e ; # reset `e` as active
+      return 0
+    }
+
+    # checkPolicyExists ($policy)
+    # Check if the policy exists, by using the exit code of `mc admin policy info`
+    checkPolicyExists() {
+      POLICY=$1
+      CMD=$(${MC} admin policy info myminio $POLICY > /dev/null 2>&1)
+      return $?
+    }
+
+    # createPolicy($name, $filename)
+    createPolicy () {
+      NAME=$1
+      FILENAME=$2
+
+      # Create the name if it does not exist
+      echo "Checking policy: $NAME (in /config/$FILENAME.json)"
+      if ! checkPolicyExists $NAME ; then
+        echo "Creating policy '$NAME'"
+      else
+        echo "Policy '$NAME' already exists."
+      fi
+      ${MC} admin policy add myminio $NAME /config/$FILENAME.json
+
+    }
+
+    # Try connecting to MinIO instance
+    scheme=http
+    connectToMinio $scheme
+  add-user: |-
+    #!/bin/sh
+    set -e ; # Have script exit in the event of a failed command.
+    MC_CONFIG_DIR="/etc/minio/mc/"
+    MC="/usr/bin/mc --insecure --config-dir ${MC_CONFIG_DIR}"
+
+    # AccessKey and secretkey credentials file are added to prevent shell execution errors caused by special characters.
+    # Special characters for example : ',",<,>,{,}
+    MINIO_ACCESSKEY_SECRETKEY_TMP="/tmp/accessKey_and_secretKey_tmp"
+
+    # connectToMinio
+    # Use a check-sleep-check loop to wait for MinIO service to be available
+    connectToMinio() {
+      SCHEME=$1
+      ATTEMPTS=0 ; LIMIT=29 ; # Allow 30 attempts
+      set -e ; # fail if we can't read the keys.
+      ACCESS=$(cat /config/rootUser) ; SECRET=$(cat /config/rootPassword) ;
+      set +e ; # The connections to minio are allowed to fail.
+      echo "Connecting to MinIO server: $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT" ;
+      MC_COMMAND="${MC} alias set myminio $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT $ACCESS $SECRET" ;
+      $MC_COMMAND ;
+      STATUS=$? ;
+      until [ $STATUS = 0 ]
+      do
+        ATTEMPTS=`expr $ATTEMPTS + 1` ;
+        echo \"Failed attempts: $ATTEMPTS\" ;
+        if [ $ATTEMPTS -gt $LIMIT ]; then
+          exit 1 ;
+        fi ;
+        sleep 2 ; # 1 second intervals between attempts
+        $MC_COMMAND ;
+        STATUS=$? ;
+      done ;
+      set -e ; # reset `e` as active
+      return 0
+    }
+
+    # checkUserExists ()
+    # Check if the user exists, by using the exit code of `mc admin user info`
+    checkUserExists() {
+      CMD=$(${MC} admin user info myminio $(head -1 $MINIO_ACCESSKEY_SECRETKEY_TMP) > /dev/null 2>&1)
+      return $?
+    }
+
+    # createUser ($policy)
+    createUser() {
+      POLICY=$1
+      #check accessKey_and_secretKey_tmp file
+      if [[ ! -f $MINIO_ACCESSKEY_SECRETKEY_TMP ]];then
+        echo "credentials file does not exist"
+        return 1
+      fi
+      if [[ $(cat $MINIO_ACCESSKEY_SECRETKEY_TMP|wc -l) -ne 2 ]];then
+        echo "credentials file is invalid"
+        rm -f $MINIO_ACCESSKEY_SECRETKEY_TMP
+        return 1
+      fi
+      USER=$(head -1 $MINIO_ACCESSKEY_SECRETKEY_TMP)
+      # Create the user if it does not exist
+      if ! checkUserExists ; then
+        echo "Creating user '$USER'"
+        cat $MINIO_ACCESSKEY_SECRETKEY_TMP | ${MC} admin user add myminio
+      else
+        echo "User '$USER' already exists."
+      fi
+      #clean up credentials files.
+      rm -f $MINIO_ACCESSKEY_SECRETKEY_TMP
+
+      # set policy for user
+      if [ ! -z $POLICY -a $POLICY != " " ] ; then
+          echo "Adding policy '$POLICY' for '$USER'"
+          ${MC} admin policy set myminio $POLICY user=$USER
+      else
+          echo "User '$USER' has no policy attached."
+      fi
+    }
+
+    # Try connecting to MinIO instance
+    scheme=http
+    connectToMinio $scheme
+
+
+
+    # Create the users
+    echo console > $MINIO_ACCESSKEY_SECRETKEY_TMP
+    echo console123 >> $MINIO_ACCESSKEY_SECRETKEY_TMP
+    createUser consoleAdmin
+  custom-command: |-
+    #!/bin/sh
+    set -e ; # Have script exit in the event of a failed command.
+    MC_CONFIG_DIR="/etc/minio/mc/"
+    MC="/usr/bin/mc --insecure --config-dir ${MC_CONFIG_DIR}"
+
+    # connectToMinio
+    # Use a check-sleep-check loop to wait for MinIO service to be available
+    connectToMinio() {
+      SCHEME=$1
+      ATTEMPTS=0 ; LIMIT=29 ; # Allow 30 attempts
+      set -e ; # fail if we can't read the keys.
+      ACCESS=$(cat /config/rootUser) ; SECRET=$(cat /config/rootPassword) ;
+      set +e ; # The connections to minio are allowed to fail.
+      echo "Connecting to MinIO server: $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT" ;
+      MC_COMMAND="${MC} alias set myminio $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT $ACCESS $SECRET" ;
+      $MC_COMMAND ;
+      STATUS=$? ;
+      until [ $STATUS = 0 ]
+      do
+        ATTEMPTS=`expr $ATTEMPTS + 1` ;
+        echo \"Failed attempts: $ATTEMPTS\" ;
+        if [ $ATTEMPTS -gt $LIMIT ]; then
+          exit 1 ;
+        fi ;
+        sleep 2 ; # 1 second intervals between attempts
+        $MC_COMMAND ;
+        STATUS=$? ;
+      done ;
+      set -e ; # reset `e` as active
+      return 0
+    }
+
+    # runCommand ($@)
+    # Run custom mc command
+    runCommand() {
+      ${MC} "$@"
+      return $?
+    }
+
+    # Try connecting to MinIO instance
+    scheme=http
+    connectToMinio $scheme
+  initialize: "#!/bin/sh\nset -e ; # Have script exit in the event of a failed command.\nMC_CONFIG_DIR=\"/etc/minio/mc/\"\nMC=\"/usr/bin/mc --insecure --config-dir ${MC_CONFIG_DIR}\"\n\n# connectToMinio\n# Use a check-sleep-check loop to wait for MinIO service to be available\nconnectToMinio() {\n  SCHEME=$1\n  ATTEMPTS=0 ; LIMIT=29 ; # Allow 30 attempts\n  set -e ; # fail if we can't read the keys.\n  ACCESS=$(cat /config/rootUser) ; SECRET=$(cat /config/rootPassword) ;\n  set +e ; # The connections to minio are allowed to fail.\n  echo \"Connecting to MinIO server: $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT\" ;\n  MC_COMMAND=\"${MC} alias set myminio $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT $ACCESS $SECRET\" ;\n  $MC_COMMAND ;\n  STATUS=$? ;\n  until [ $STATUS = 0 ]\n  do\n    ATTEMPTS=`expr $ATTEMPTS + 1` ;\n    echo \\\"Failed attempts: $ATTEMPTS\\\" ;\n    if [ $ATTEMPTS -gt $LIMIT ]; then\n      exit 1 ;\n    fi ;\n    sleep 2 ; # 1 second intervals between attempts\n    $MC_COMMAND ;\n    STATUS=$? ;\n  done ;\n  set -e ; # reset `e` as active\n  return 0\n}\n\n# checkBucketExists ($bucket)\n# Check if the bucket exists, by using the exit code of `mc ls`\ncheckBucketExists() {\n  BUCKET=$1\n  CMD=$(${MC} ls myminio/$BUCKET > /dev/null 2>&1)\n  return $?\n}\n\n# createBucket ($bucket, $policy, $purge)\n# Ensure bucket exists, purging if asked to\ncreateBucket() {\n  BUCKET=$1\n  POLICY=$2\n  PURGE=$3\n  VERSIONING=$4\n  OBJECTLOCKING=$5\n\n  # Purge the bucket, if set & exists\n  # Since PURGE is user input, check explicitly for `true`\n  if [ $PURGE = true ]; then\n    if checkBucketExists $BUCKET ; then\n      echo \"Purging bucket '$BUCKET'.\"\n      set +e ; # don't exit if this fails\n      ${MC} rm -r --force myminio/$BUCKET\n      set -e ; # reset `e` as active\n    else\n      echo \"Bucket '$BUCKET' does not exist, skipping purge.\"\n    fi\n  fi\n\n# Create the bucket if it does not exist and set objectlocking if enabled (NOTE: versioning will be not changed if OBJECTLOCKING is set because it enables versioning to the Buckets created)\nif ! checkBucketExists $BUCKET ; then\n    if [ ! -z $OBJECTLOCKING ] ; then\n      if [ $OBJECTLOCKING = true ] ; then\n          echo \"Creating bucket with OBJECTLOCKING '$BUCKET'\"\n          ${MC} mb --with-lock myminio/$BUCKET\n      elif [ $OBJECTLOCKING = false ] ; then\n            echo \"Creating bucket '$BUCKET'\"\n            ${MC} mb myminio/$BUCKET\n      fi\n  elif [ -z $OBJECTLOCKING ] ; then\n        echo \"Creating bucket '$BUCKET'\"\n        ${MC} mb myminio/$BUCKET\n  else\n    echo \"Bucket '$BUCKET' already exists.\"  \n  fi\n  fi\n\n\n  # set versioning for bucket if objectlocking is disabled or not set\n  if [ -z $OBJECTLOCKING ] ; then\n  if [ ! -z $VERSIONING ] ; then\n    if [ $VERSIONING = true ] ; then\n        echo \"Enabling versioning for '$BUCKET'\"\n        ${MC} version enable myminio/$BUCKET\n    elif [ $VERSIONING = false ] ; then\n        echo \"Suspending versioning for '$BUCKET'\"\n        ${MC} version suspend myminio/$BUCKET\n    fi\n    fi\n  else\n      echo \"Bucket '$BUCKET' versioning unchanged.\"\n  fi\n\n\n  # At this point, the bucket should exist, skip checking for existence\n  # Set policy on the bucket\n  echo \"Setting policy of bucket '$BUCKET' to '$POLICY'.\"\n  ${MC} policy set $POLICY myminio/$BUCKET\n}\n\n# Try connecting to MinIO instance\nscheme=http\nconnectToMinio $scheme\n\n\n\n# Create the buckets\ncreateBucket chunks none false  \ncreateBucket ruler none false  \ncreateBucket admin none false  "
+kind: ConfigMap
+metadata:
+  labels:
+    app: minio
+    chart: minio-4.1.0
+    heritage: Helm
+    release: loki
+  name: loki-minio
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    auth_enabled: false
+    bloom_build:
+      builder:
+        planner_address: ""
+      enabled: false
+    bloom_gateway:
+      client:
+        addresses: ""
+      enabled: false
+    common:
+      compactor_address: 'http://loki:3100'
+      path_prefix: /var/loki
+      replication_factor: 1
+      storage:
+        s3:
+          access_key_id: enterprise-logs
+          bucketnames: chunks
+          endpoint: loki-minio.localdev.svc:9000
+          insecure: true
+          s3forcepathstyle: true
+          secret_access_key: supersecret
+    compactor:
+      delete_request_store: s3
+      retention_enabled: true
+    frontend:
+      scheduler_address: ""
+      tail_proxy_url: ""
+    frontend_worker:
+      scheduler_address: ""
+    index_gateway:
+      mode: simple
+    limits_config:
+      allow_structured_metadata: true
+      max_cache_freshness_per_query: 10m
+      query_timeout: 300s
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+      retention_period: 24h
+      split_queries_by_interval: 15m
+      volume_enabled: true
+    memberlist:
+      join_members:
+      - loki-memberlist
+    pattern_ingester:
+      enabled: true
+    query_range:
+      align_queries_with_step: true
+    ruler:
+      storage:
+        s3:
+          bucketnames: ruler
+        type: s3
+    runtime_config:
+      file: /etc/loki/runtime-config/runtime-config.yaml
+    schema_config:
+      configs:
+      - from: "2024-04-01"
+        index:
+          period: 24h
+          prefix: loki_index_
+        object_store: s3
+        schema: v13
+        store: tsdb
+    server:
+      grpc_listen_port: 9095
+      http_listen_port: 3100
+      http_server_read_timeout: 600s
+      http_server_write_timeout: 600s
+    storage_config:
+      bloom_shipper:
+        working_directory: /var/loki/data/bloomshipper
+      boltdb_shipper:
+        index_gateway_client:
+          server_address: ""
+      hedging:
+        at: 250ms
+        max_per_second: 20
+        up_to: 3
+      tsdb_shipper:
+        index_gateway_client:
+          server_address: ""
+    tracing:
+      enabled: false
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/version: 3.3.0
+    helm.sh/chart: loki-6.22.0
+  name: loki
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  runtime-config.yaml: |
+    {}
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/version: 3.3.0
+    helm.sh/chart: loki-6.22.0
+  name: loki-runtime
+  namespace: localdev
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/version: 3.3.0
+    helm.sh/chart: loki-6.22.0
+  name: loki-clusterrole
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - secrets
+    verbs:
+      - get
+      - watch
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/version: 3.3.0
+    helm.sh/chart: loki-6.22.0
+  name: loki-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: loki-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: loki
+    namespace: localdev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: minio
+    chart: minio-4.1.0
+    heritage: Helm
+    release: loki
+  name: loki-minio-console
+  namespace: localdev
+spec:
+  ports:
+    - name: http
+      port: 9001
+      protocol: TCP
+      targetPort: 9001
+  selector:
+    app: minio
+    release: loki
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: minio
+    chart: minio-4.1.0
+    heritage: Helm
+    monitoring: "true"
+    release: loki
+  name: loki-minio
+  namespace: localdev
+spec:
+  ports:
+    - name: http
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+  selector:
+    app: minio
+    release: loki
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: minio
+    chart: minio-4.1.0
+    heritage: Helm
+    release: loki
+  name: loki-minio-svc
+  namespace: localdev
+spec:
+  clusterIP: None
+  ports:
+    - name: http
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+  publishNotReadyAddresses: true
+  selector:
+    app: minio
+    release: loki
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: null
+  labels:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/version: 3.3.0
+    helm.sh/chart: loki-6.22.0
+  name: loki-memberlist
+  namespace: localdev
+spec:
+  clusterIP: None
+  ports:
+    - name: tcp
+      port: 7946
+      protocol: TCP
+      targetPort: http-memberlist
+  selector:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: memberlist
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: null
+  labels:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/version: 3.3.0
+    helm.sh/chart: loki-6.22.0
+    prometheus.io/service-monitor: "false"
+    variant: headless
+  name: loki-headless
+  namespace: localdev
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: 3100
+      protocol: TCP
+      targetPort: http-metrics
+  selector:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: null
+  labels:
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/version: 3.3.0
+    helm.sh/chart: loki-6.22.0
+  name: loki
+  namespace: localdev
+spec:
+  ports:
+    - name: http-metrics
+      port: 3100
+      protocol: TCP
+      targetPort: http-metrics
+    - name: grpc
+      port: 9095
+      protocol: TCP
+      targetPort: grpc
+  selector:
+    app.kubernetes.io/component: single-binary
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: minio
+    chart: minio-4.1.0
+    heritage: Helm
+    release: loki
+  name: loki-minio
+  namespace: localdev
+spec:
+  podManagementPolicy: Parallel
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+      release: loki
+  serviceName: loki-minio-svc
+  template:
+    metadata:
+      annotations:
+        checksum/config: 8f6d1412e04a7dec13daaf9920aac5183e08360438351fbab9297ccb92629984
+        checksum/secrets: 39754f0a72532cb334896c36e9f27007e0659ba376125fbac52be492b68125e6
+      labels:
+        app: minio
+        release: loki
+      name: loki-minio
+    spec:
+      containers:
+        - command:
+            - /bin/sh
+            - -ce
+            - /usr/bin/docker-entrypoint.sh minio server  http://loki-minio-{0...0}.loki-minio-svc.localdev.svc.cluster.local/export-{0...1} -S /etc/minio/certs/ --address :9000 --console-address :9001
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  key: rootUser
+                  name: loki-minio
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: rootPassword
+                  name: loki-minio
+            - name: MINIO_PROMETHEUS_AUTH_TYPE
+              value: public
+          image: quay.io/minio/minio:RELEASE.2022-10-24T18-35-07Z
+          imagePullPolicy: IfNotPresent
+          name: minio
+          ports:
+            - containerPort: 9000
+              name: http
+            - containerPort: 9001
+              name: http-console
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          volumeMounts:
+            - mountPath: /export-0
+              name: export-0
+            - mountPath: /export-1
+              name: export-1
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1000
+        runAsUser: 1000
+      serviceAccountName: minio-sa
+      volumes:
+        - name: minio-user
+          secret:
+            secretName: loki-minio
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - metadata:
+        name: export-0
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+    - metadata:
+        name: export-1
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/component: single-binary
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: memberlist
+    app.kubernetes.io/version: 3.3.0
+    helm.sh/chart: loki-6.22.0
+  name: loki
+  namespace: localdev
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Delete
+    whenScaled: Delete
+  podManagementPolicy: Parallel
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: single-binary
+      app.kubernetes.io/instance: loki
+      app.kubernetes.io/name: loki
+  serviceName: loki-headless
+  template:
+    metadata:
+      annotations:
+        checksum/config: 0844e43c67896cb2ea34420b6b54f3f2a7ffefbea25dfe42823ba6e6f568988c
+      labels:
+        app.kubernetes.io/component: single-binary
+        app.kubernetes.io/instance: loki
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/part-of: memberlist
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: single-binary
+              topologyKey: kubernetes.io/hostname
+      automountServiceAccountToken: true
+      containers:
+        - env:
+            - name: METHOD
+              value: WATCH
+            - name: LABEL
+              value: loki_rule
+            - name: FOLDER
+              value: /rules
+            - name: RESOURCE
+              value: both
+            - name: WATCH_SERVER_TIMEOUT
+              value: "60"
+            - name: WATCH_CLIENT_TIMEOUT
+              value: "60"
+            - name: LOG_LEVEL
+              value: INFO
+          image: kiwigrid/k8s-sidecar:1.28.0
+          imagePullPolicy: IfNotPresent
+          name: loki-sc-rules
+          volumeMounts:
+            - mountPath: /rules
+              name: sc-rules-volume
+        - args:
+            - -config.file=/etc/loki/config/config.yaml
+            - -target=all
+          image: docker.io/grafana/loki:3.3.0
+          imagePullPolicy: IfNotPresent
+          name: loki
+          ports:
+            - containerPort: 3100
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9095
+              name: grpc
+              protocol: TCP
+            - containerPort: 7946
+              name: http-memberlist
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /etc/loki/config
+              name: config
+            - mountPath: /etc/loki/runtime-config
+              name: runtime-config
+            - mountPath: /var/loki
+              name: storage
+            - mountPath: /rules
+              name: sc-rules-volume
+      enableServiceLinks: true
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+      serviceAccountName: loki
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - emptyDir: {}
+          name: tmp
+        - configMap:
+            items:
+              - key: config.yaml
+                path: config.yaml
+            name: loki
+          name: config
+        - configMap:
+            name: loki-runtime
+          name: runtime-config
+        - emptyDir: {}
+          name: sc-rules-volume
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+---
+# Source: loki/charts/minio/templates/post-install-create-bucket-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: loki-minio-make-bucket-job
+  namespace: "localdev"
+  labels:
+    app: minio-make-bucket-job
+    chart: minio-4.1.0
+    release: loki
+    heritage: Helm
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        app: minio-job
+        release: loki
+    spec:
+      restartPolicy: OnFailure      
+      volumes:
+        - name: minio-configuration
+          projected:
+            sources:
+            - configMap:
+                name: loki-minio
+            - secret:
+                name: loki-minio
+
+      serviceAccountName: minio-sa
+      containers:
+      - name: minio-mc
+        image: "quay.io/minio/mc:RELEASE.2022-10-20T23-26-33Z"
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "/config/initialize"]
+        env:
+          - name: MINIO_ENDPOINT
+            value: loki-minio
+          - name: MINIO_PORT
+            value: "9000"
+        volumeMounts:
+          - name: minio-configuration
+            mountPath: /config
+        resources:
+          requests:
+            memory: 128Mi
+---
+# Source: loki/charts/minio/templates/post-install-create-user-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: loki-minio-make-user-job
+  namespace: "localdev"
+  labels:
+    app: minio-make-user-job
+    chart: minio-4.1.0
+    release: loki
+    heritage: Helm
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        app: minio-job
+        release: loki
+    spec:
+      restartPolicy: OnFailure      
+      volumes:
+        - name: minio-configuration
+          projected:
+            sources:
+            - configMap:
+                name: loki-minio
+            - secret:
+                name: loki-minio
+
+      serviceAccountName: minio-sa
+      containers:
+      - name: minio-mc
+        image: "quay.io/minio/mc:RELEASE.2022-10-20T23-26-33Z"
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "/config/add-user"]
+        env:
+          - name: MINIO_ENDPOINT
+            value: loki-minio
+          - name: MINIO_PORT
+            value: "9000"
+        volumeMounts:
+          - name: minio-configuration
+            mountPath: /config
+        resources:
+          requests:
+            memory: 128Mi
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: tempo
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: tempo
+    app.kubernetes.io/version: 2.6.1
+    helm.sh/chart: tempo-1.14.0
+  name: tempo
+  namespace: localdev
+---
+apiVersion: v1
+data:
+  overrides.yaml: |
+    overrides:
+      {}
+  tempo.yaml: |
+    memberlist:
+      cluster_label: "tempo.localdev"
+    multitenancy_enabled: false
+    usage_report:
+      reporting_enabled: true
+    compactor:
+      compaction:
+        block_retention: 24h
+    distributor:
+      receivers:
+            jaeger:
+              protocols:
+                grpc:
+                  endpoint: 0.0.0.0:14250
+                thrift_binary:
+                  endpoint: 0.0.0.0:6832
+                thrift_compact:
+                  endpoint: 0.0.0.0:6831
+                thrift_http:
+                  endpoint: 0.0.0.0:14268
+            opencensus: null
+            otlp:
+              protocols:
+                grpc:
+                  endpoint: 0.0.0.0:4317
+                http:
+                  endpoint: 0.0.0.0:4318
+    ingester:
+          {}
+    server:
+          http_listen_port: 3100
+    storage:
+          trace:
+            backend: local
+            local:
+              path: /var/tempo/traces
+            wal:
+              path: /var/tempo/wal
+    querier:
+          {}
+    query_frontend:
+          {}
+    overrides:
+          per_tenant_override_config: /conf/overrides.yaml
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: tempo
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: tempo
+    app.kubernetes.io/version: 2.6.1
+    helm.sh/chart: tempo-1.14.0
+  name: tempo
+  namespace: localdev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: tempo
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: tempo
+    app.kubernetes.io/version: 2.6.1
+    helm.sh/chart: tempo-1.14.0
+  name: tempo
+  namespace: localdev
+spec:
+  ports:
+    - name: tempo-prom-metrics
+      port: 3100
+      targetPort: 3100
+    - name: tempo-jaeger-thrift-compact
+      port: 6831
+      protocol: UDP
+      targetPort: 6831
+    - name: tempo-jaeger-thrift-binary
+      port: 6832
+      protocol: UDP
+      targetPort: 6832
+    - name: tempo-jaeger-thrift-http
+      port: 14268
+      protocol: TCP
+      targetPort: 14268
+    - name: grpc-tempo-jaeger
+      port: 14250
+      protocol: TCP
+      targetPort: 14250
+    - name: tempo-zipkin
+      port: 9411
+      protocol: TCP
+      targetPort: 9411
+    - name: tempo-otlp-legacy
+      port: 55680
+      protocol: TCP
+      targetPort: 55680
+    - name: tempo-otlp-http-legacy
+      port: 55681
+      protocol: TCP
+      targetPort: 4318
+    - name: grpc-tempo-otlp
+      port: 4317
+      protocol: TCP
+      targetPort: 4317
+    - name: tempo-otlp-http
+      port: 4318
+      protocol: TCP
+      targetPort: 4318
+    - name: tempo-opencensus
+      port: 55678
+      protocol: TCP
+      targetPort: 55678
+  selector:
+    app.kubernetes.io/instance: tempo
+    app.kubernetes.io/name: tempo
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/instance: tempo
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: tempo
+    app.kubernetes.io/version: 2.6.1
+    helm.sh/chart: tempo-1.14.0
+  name: tempo
+  namespace: localdev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: tempo
+      app.kubernetes.io/name: tempo
+  serviceName: tempo-headless
+  template:
+    metadata:
+      annotations:
+        checksum/config: 8b6eead65a7952203ba89c9bf1a3054a71422e8f32edc760c8b8d781f9d32643
+      labels:
+        app.kubernetes.io/instance: tempo
+        app.kubernetes.io/name: tempo
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - args:
+            - -config.file=/conf/tempo.yaml
+            - -mem-ballast-size-mbs=1024
+          env: null
+          image: grafana/tempo:2.6.1
+          imagePullPolicy: IfNotPresent
+          name: tempo
+          ports:
+            - containerPort: 3100
+              name: prom-metrics
+            - containerPort: 6831
+              name: jaeger-thrift-c
+              protocol: UDP
+            - containerPort: 6832
+              name: jaeger-thrift-b
+              protocol: UDP
+            - containerPort: 14268
+              name: jaeger-thrift-h
+            - containerPort: 14250
+              name: jaeger-grpc
+            - containerPort: 9411
+              name: zipkin
+            - containerPort: 55680
+              name: otlp-legacy
+            - containerPort: 4317
+              name: otlp-grpc
+            - containerPort: 55681
+              name: otlp-httplegacy
+            - containerPort: 4318
+              name: otlp-http
+            - containerPort: 55678
+              name: opencensus
+          resources: {}
+          volumeMounts:
+            - mountPath: /conf
+              name: tempo-conf
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+      serviceAccountName: tempo
+      volumes:
+        - configMap:
+            name: tempo
+          name: tempo-conf
+  updateStrategy:
+    type: RollingUpdate

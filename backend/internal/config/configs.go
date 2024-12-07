@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"runtime/debug"
 
@@ -301,7 +303,7 @@ func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Conte
 	return result.ErrorOrNil()
 }
 
-func GenericFetchForApplication[T configurations](ctx context.Context, cff genericCloudConfigFetcher[T]) (*T, error) {
+func FetchForApplication[T configurations](ctx context.Context, cff genericCloudConfigFetcher[T]) (*T, error) {
 	var cfg *T
 	if RunningInCloud() {
 		c, err := cff(ctx)
@@ -313,7 +315,12 @@ func GenericFetchForApplication[T configurations](ctx context.Context, cff gener
 	} else if configFilepath := os.Getenv(FilePathEnvVarKey); configFilepath != "" {
 		configBytes, err := os.ReadFile(configFilepath)
 		if err != nil {
-			return nil, fmt.Errorf("reading local config file: %w", err)
+			files, _ := ioutil.ReadDir(configFilepath)
+			for i, file := range files {
+				log.Printf("%d: %s %v\n", i, file.Name(), file.IsDir())
+			}
+
+			return nil, fmt.Errorf("reading local config file of %d files: %w", len(files), err)
 		}
 
 		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
@@ -321,35 +328,6 @@ func GenericFetchForApplication[T configurations](ctx context.Context, cff gener
 		}
 	} else {
 		return nil, errors.New("not running in the cloud, and no config filepath provided")
-	}
-
-	return cfg, nil
-}
-
-func FetchForApplication(ctx context.Context, cff cloudConfigFetcher) (*APIServiceConfig, error) {
-	var cfg *APIServiceConfig
-	if RunningInCloud() {
-		c, err := cff(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("fetching config from GCP: %w", err)
-		}
-
-		cfg = c
-	} else if configFilepath := os.Getenv(FilePathEnvVarKey); configFilepath != "" {
-		configBytes, err := os.ReadFile(configFilepath)
-		if err != nil {
-			return nil, fmt.Errorf("reading local config file: %w", err)
-		}
-
-		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-			return nil, fmt.Errorf("decoding config file contents: %w", err)
-		}
-	} else {
-		return nil, errors.New("not running in the cloud, and no config filepath provided")
-	}
-
-	if err := cfg.ValidateWithContext(ctx, true); err != nil {
-		return nil, fmt.Errorf("validating config: %w", err)
 	}
 
 	return cfg, nil
