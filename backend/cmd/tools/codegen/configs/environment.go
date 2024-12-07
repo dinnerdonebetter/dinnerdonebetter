@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"os"
 	"path"
@@ -12,7 +11,8 @@ import (
 )
 
 type environmentConfigSet struct {
-	rootConfig *config.APIServiceConfig
+	renderPretty bool
+	rootConfig   *config.APIServiceConfig
 	apiServiceConfigPath,
 	dbCleanerConfigPath,
 	emailProberConfigPath,
@@ -29,13 +29,22 @@ func stringOrDefault(s1, s2 string) string {
 	return s2
 }
 
-func renderJSON(obj any) []byte {
-	var b bytes.Buffer
-	if err := json.NewEncoder(&b).Encode(obj); err != nil {
+func renderJSON(obj any, pretty bool) []byte {
+	var (
+		b   []byte
+		err error
+	)
+	if pretty {
+		b, err = json.MarshalIndent(obj, "", "\t")
+	} else {
+		b, err = json.Marshal(obj)
+	}
+
+	if err != nil {
 		panic(err)
 	}
 
-	return b.Bytes()
+	return b
 }
 
 func writeFile(path string, content []byte) error {
@@ -51,7 +60,7 @@ func (s *environmentConfigSet) Render(outputDir string) error {
 	// write files
 	if err := writeFile(
 		path.Join(outputDir, stringOrDefault(s.apiServiceConfigPath, "api_service_config.json")),
-		renderJSON(s.rootConfig),
+		renderJSON(s.rootConfig, s.renderPretty),
 	); err != nil {
 		errs = multierror.Append(errs, err)
 	}
@@ -61,7 +70,7 @@ func (s *environmentConfigSet) Render(outputDir string) error {
 		renderJSON(&config.DBCleanerConfig{
 			Observability: s.rootConfig.Observability,
 			Database:      s.rootConfig.Database,
-		}),
+		}, s.renderPretty),
 	); err != nil {
 		errs = multierror.Append(errs, err)
 	}
@@ -72,18 +81,18 @@ func (s *environmentConfigSet) Render(outputDir string) error {
 			Observability: s.rootConfig.Observability,
 			Email:         s.rootConfig.Email,
 			Database:      s.rootConfig.Database,
-		}),
+		}, s.renderPretty),
 	); err != nil {
 		errs = multierror.Append(errs, err)
 	}
 
 	if err := writeFile(
-		path.Join(outputDir, stringOrDefault(s.mealPlanFinalizerConfigPath, "job_meal_plan_grocery_list_initializer_config.json")),
+		path.Join(outputDir, stringOrDefault(s.mealPlanFinalizerConfigPath, "job_meal_plan_finalizer_config.json")),
 		renderJSON(&config.MealPlanFinalizerConfig{
 			Observability: s.rootConfig.Observability,
 			Events:        s.rootConfig.Events,
 			Database:      s.rootConfig.Database,
-		}),
+		}, s.renderPretty),
 	); err != nil {
 		errs = multierror.Append(errs, err)
 	}
@@ -95,7 +104,7 @@ func (s *environmentConfigSet) Render(outputDir string) error {
 			Analytics:     s.rootConfig.Analytics,
 			Events:        s.rootConfig.Events,
 			Database:      s.rootConfig.Database,
-		}),
+		}, s.renderPretty),
 	); err != nil {
 		errs = multierror.Append(errs, err)
 	}
@@ -107,7 +116,7 @@ func (s *environmentConfigSet) Render(outputDir string) error {
 			Analytics:     s.rootConfig.Analytics,
 			Events:        s.rootConfig.Events,
 			Database:      s.rootConfig.Database,
-		}),
+		}, s.renderPretty),
 	); err != nil {
 		errs = multierror.Append(errs, err)
 	}
@@ -118,7 +127,7 @@ func (s *environmentConfigSet) Render(outputDir string) error {
 			Observability: s.rootConfig.Observability,
 			Events:        s.rootConfig.Events,
 			Database:      s.rootConfig.Database,
-		}),
+		}, s.renderPretty),
 	); err != nil {
 		errs = multierror.Append(errs, err)
 	}

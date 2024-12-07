@@ -21,6 +21,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/otel"
@@ -600,6 +602,275 @@ func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string
 	}
 }
 
+func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
+	return &config.APIServiceConfig{
+		Routing: routingcfg.Config{
+			Provider:               routingcfg.ChiProvider,
+			EnableCORSForLocalhost: true,
+			SilenceRouteLogging:    false,
+		},
+		Queues: config.QueuesConfig{
+			DataChangesTopicName:              dataChangesTopicName,
+			OutboundEmailsTopicName:           outboundEmailsTopicName,
+			SearchIndexRequestsTopicName:      searchIndexRequestsTopicName,
+			UserDataAggregationTopicName:      userDataAggregationTopicName,
+			WebhookExecutionRequestsTopicName: webhookExecutionRequestsTopicName,
+		},
+		Meta: config.MetaSettings{
+			Debug:   true,
+			RunMode: developmentEnv,
+		},
+		Encoding: encoding.Config{
+			ContentType: contentTypeJSON,
+		},
+		Events: msgconfig.Config{
+			Consumers: msgconfig.MessageQueueConfig{
+				Provider: msgconfig.ProviderRedis,
+				Redis: redis.Config{
+					QueueAddresses: []string{"redis-master.localdev.svc.cluster.local:6379"},
+				},
+			},
+			Publishers: msgconfig.MessageQueueConfig{
+				Provider: msgconfig.ProviderRedis,
+				Redis: redis.Config{
+					QueueAddresses: []string{"redis-master.localdev.svc.cluster.local:6379"},
+				},
+			},
+		},
+		Search: searchcfg.Config{
+			Algolia:  &algolia.Config{},
+			Provider: searchcfg.AlgoliaProvider,
+		},
+		Server: http.Config{
+			Debug:           true,
+			HTTPPort:        defaultPort,
+			StartupDeadline: time.Minute,
+		},
+		Database: dbconfig.Config{
+			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
+			Debug:                    true,
+			RunMigrations:            true,
+			LogQueries:               true,
+			MaxPingAttempts:          maxAttempts,
+			PingWaitPeriod:           time.Second,
+			ConnectionDetails:        "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+		},
+		Observability: observability.Config{
+			Logging: logcfg.Config{
+				Level:    logging.DebugLevel,
+				Provider: logcfg.ProviderSlog,
+			},
+			Tracing: tracingcfg.Config{
+				Provider: tracingcfg.ProviderOtel,
+				Otel: &otel.Config{
+					SpanCollectionProbability: 1,
+					CollectorEndpoint:         "http://0.0.0.0:4317",
+					ServiceName:               "dinner_done_better_service",
+				},
+			},
+			Metrics: metricscfg.Config{
+				Provider: tracingcfg.ProviderOtel,
+				Otel: &otelgrpc.Config{
+					CollectorEndpoint:  "http://0.0.0.0:4317",
+					BaseName:           "ddb.api",
+					CollectionInterval: 3 * time.Second,
+				},
+			},
+		},
+		Services: config.ServicesConfig{
+			AuditLogEntries: auditlogentriesservice.Config{},
+			Auth: authservice.Config{
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "http://localhost:9000",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
+				},
+				SSO: authservice.SSOConfigs{
+					Google: authservice.GoogleSSOConfig{
+						CallbackURL: "https://app.dinnerdonebetter.dev/auth/google/callback",
+					},
+				},
+				Debug:                 true,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
+				JWTAudience:           "localhost",
+				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+				JWTLifetime:           5 * time.Minute,
+			},
+			DataPrivacy: dataprivacyservice.Config{
+				Uploads: uploads.Config{
+					Storage: objectstorage.Config{
+						FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
+						BucketName:       "userdata",
+						Provider:         objectstorage.FilesystemProvider,
+					},
+					Debug: false,
+				},
+				DataChangesTopicName:         dataChangesTopicName,
+				UserDataAggregationTopicName: userDataAggregationTopicName,
+			},
+			Users: usersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+				Uploads: uploads.Config{
+					Debug: true,
+					Storage: objectstorage.Config{
+						UploadFilenameKey: "avatar",
+						Provider:          objectstorage.FilesystemProvider,
+						BucketName:        "avatars",
+						FilesystemConfig: &objectstorage.FilesystemConfig{
+							RootDirectory: "/uploads",
+						},
+					},
+				},
+			},
+			Households: householdsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			HouseholdInvitations: householdinvitationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			Webhooks: webhooksservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidInstruments: validinstrumentsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidVessels: validvesselsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidPreparationVessels: validpreparationvesselsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidIngredients: validingredientsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidIngredientGroups: validingredientgroupsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidPreparations: validpreparationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			UserIngredientPreferences: useringredientpreferencesservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidIngredientStates: validingredientstatesservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidMeasurementUnits: validmeasurementunitsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidIngredientStateIngredients: validingredientstateingredientsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidIngredientPreparations: validingredientpreparationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidPreparationInstruments: validpreparationinstrumentsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidInstrumentMeasurementUnits: validingredientmeasurementunitsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			Meals: mealsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			Recipes: recipesservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+				PublicMediaURLPrefix: "https://example.website.lol",
+				Uploads: uploads.Config{
+					Debug: true,
+					Storage: objectstorage.Config{
+						UploadFilenameKey: "recipe_media",
+						Provider:          objectstorage.FilesystemProvider,
+						BucketName:        "recipe_media",
+						FilesystemConfig: &objectstorage.FilesystemConfig{
+							RootDirectory: "/uploads",
+						},
+					},
+				},
+			},
+			RecipeSteps: recipestepsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+				PublicMediaURLPrefix: "https://example.website.lol",
+				Uploads: uploads.Config{
+					Debug: true,
+					Storage: objectstorage.Config{
+						UploadFilenameKey: "recipe_media",
+						Provider:          objectstorage.FilesystemProvider,
+						BucketName:        "recipe_media",
+						FilesystemConfig: &objectstorage.FilesystemConfig{
+							RootDirectory: "/uploads",
+						},
+					},
+				},
+			},
+			RecipeStepProducts: recipestepproductsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			RecipeStepInstruments: recipestepinstrumentsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			RecipeStepVessels: recipestepvesselsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			RecipeStepIngredients: recipestepingredientsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			RecipeStepCompletionConditions: recipestepcompletionconditionsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			MealPlans: mealplansservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			MealPlanEvents: mealplaneventsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			MealPlanOptions: mealplanoptionsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			MealPlanTasks: mealplantasks.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			RecipePrepTasks: recipepreptasksservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			MealPlanGroceryListItems: mealplangrocerylistitems.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidMeasurementUnitConversions: validmeasurementconversionsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ServiceSettings: servicesettings.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ServiceSettingConfigurations: servicesettingconfigurations.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			RecipeRatings: reciperatingsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			OAuth2Clients: oauth2clientsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			Workers: workersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			UserNotifications: usernotificationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+		},
+	}
+}
+
 func buildIntegrationTestsConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
 		Routing: routingcfg.Config{
@@ -850,9 +1121,10 @@ func main() {
 	ctx := context.Background()
 
 	localKubernetes := &environmentConfigSet{
-		rootConfig: buildLocalDevConfig(),
+		renderPretty: true,
+		rootConfig:   buildLocaldevKubernetesConfig(),
 	}
-	localKubernetes.Render("deploy/configs")
+	localKubernetes.Render("deploy/kustomize/environments/localdev/configs")
 
 	for filePath, fun := range files {
 		if err := fun(ctx, filePath); err != nil {

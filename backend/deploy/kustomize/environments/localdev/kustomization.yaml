@@ -24,37 +24,37 @@ configMapGenerator:
   - name: dinner-done-better-service-api-config
     namespace: localdev
     files:
-      - config.json
+      - configs/api_service_config.json
 
   - name: dinner-done-better-job-db-cleaner-config
     namespace: localdev
     files:
-      - config.json
+      - configs/job_db_cleaner_config.json
 
   - name: dinner-done-better-job-email-prober-config
     namespace: localdev
     files:
-      - config.json
+      - configs/job_email_prober_config.json
 
   - name: dinner-done-better-job-meal-plan-finalizer-config
     namespace: localdev
     files:
-      - config.json
+      - configs/job_meal_plan_finalizer_config.json
 
   - name: dinner-done-better-job-meal-plan-grocery-list-init-config
     namespace: localdev
     files:
-      - config.json
+      - configs/job_meal_plan_grocery_list_initializer_config.json
 
   - name: dinner-done-better-job-meal-plan-task-creator-config
     namespace: localdev
     files:
-      - config.json
+      - configs/job_meal_plan_task_creator_config.json
 
   - name: dinner-done-better-job-search-data-index-scheduler-config
     namespace: localdev
     files:
-      - config.json
+      - configs/job_search_data_index_scheduler_config.json
 
 generatorOptions:
   disableNameSuffixHash: true

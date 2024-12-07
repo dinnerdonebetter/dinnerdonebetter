@@ -4,13 +4,21 @@
 			"level": 0,
 			"provider": "slog"
 		},
+		"metrics": {
+			"otelgrpc": {
+				"baseName": "ddb.api",
+				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+				"metricsCollectionInterval": 3000000000
+			},
+			"provider": "otelgrpc"
+		},
 		"tracing": {
-			"otel": {
+			"otelgrpc": {
 				"collector_endpoint": "http://0.0.0.0:4317",
 				"service_name": "dinner_done_better_service",
 				"spanCollectionProbability": 1
 			},
-			"provider": "otel"
+			"provider": "otelgrpc"
 		}
 	},
 	"queues": {
@@ -59,11 +67,7 @@
 	},
 	"routing": {
 		"provider": "chi",
-		"enableCORSForLocalhost": true,
-		"validDomains": [
-			"www.dinnerdonebetter.dev",
-			"admin.dinnerdonebetter.dev"
-		]
+		"enableCORSForLocalhost": true
 	},
 	"events": {
 		"consumers": {
