@@ -21,6 +21,11 @@ labels:
       app.kubernetes.io/name: dinner-done-better-backend
 
 configMapGenerator:
+  - name: opentelemetry-collector-config
+    namespace: localdev
+    files:
+      - config.yaml=configs/otel_collector_config.yaml
+
   - name: dinner-done-better-service-api-config
     namespace: localdev
     files:

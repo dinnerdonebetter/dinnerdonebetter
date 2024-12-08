@@ -96,6 +96,7 @@ func ProvideService(
 		logger.Error("creating counter", err)
 	}
 	go func() {
+		logger.Info("incrementing counter")
 		counter.Add(ctx, 1.0)
 	}()
 

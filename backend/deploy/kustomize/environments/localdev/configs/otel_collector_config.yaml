@@ -1,0 +1,83 @@
+receivers:
+  # TODO: this should go into a different collector instance
+  postgresql:
+    endpoint: postgres-postgresql.localdev.svc.cluster.local:5432
+    transport: tcp
+    username: dbuser
+    password: hunter2
+    databases:
+      - dinner-done-better
+    collection_interval: 10s
+    tls:
+      insecure: true
+      insecure_skip_verify: true
+  redis:
+    endpoint: "redis.localdev.svc.cluster.local:6379"
+    collection_interval: 10s
+  filelog:
+    include: [ /var/log/dinnerdonebetter/*.log ]
+    operators:
+      - type: json_parser
+    resource:
+      service_name: dinner-done-better-api-service
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  processors:
+    k8sattributes/default:
+    resourcedetection/system:
+      detectors: [env, system] #, gcp
+      timeout: 2s
+      override: false
+    batch:
+      send_batch_size: 2048
+      send_batch_max_size: 2048
+      timeout: 1s
+    batch/2:
+      send_batch_size: 2048
+      send_batch_max_size: 2048
+      timeout: 1s
+
+  exporters:
+    debug:
+    otlp:
+      endpoint: tempo.localdev.svc.cluster.local:4317
+      tls:
+        insecure: true
+    prometheusremotewrite:
+      endpoint: prometheus-server.localdev.svc.cluster.local:3001/api/v1/write # /v1/push
+    otlphttp:
+      endpoint: http://loki.localdev.svc.cluster.local:3100/otlp
+
+  service:
+    telemetry:
+      metrics:
+        level: none
+    pipelines:
+      traces:
+        receivers:
+          - otlp
+        processors:
+          - batch
+        exporters:
+          - debug
+          - otlp
+      metrics:
+        receivers:
+          - otlp
+        processors:
+          - batch
+        exporters:
+          - debug
+          - prometheusremotewrite
+      logs:
+        receivers:
+          - filelog
+        processors:
+          - batch
+        exporters:
+          - otlphttp

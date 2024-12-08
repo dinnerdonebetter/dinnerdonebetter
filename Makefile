@@ -1,3 +1,7 @@
+PWD                    := $(shell pwd)
+MYSELF                 := $(shell id -u)
+MY_GROUP               := $(shell id -g)
+
 .PHONY: setup
 setup:
 	(cd backend && make setup)
@@ -41,14 +45,15 @@ regit:
 ### EXPERIMENTAL KUBERNETES ZONE
 
 LOCAL_DEV_NAMESPACE := localdev
+LOCAL_DEV_GENERATED_K8S := deploy/environments/local/generated/kubernetes.yaml
 
 .PHONY: k9s
 k9s:
 	k9s --refresh 1 --namespace $(LOCAL_DEV_NAMESPACE)
 
-.PHONY: skbuild
-skbuild:
-	skaffold build --build-concurrency 0
+.PHONY: build
+build:
+	skaffold build --build-concurrency 0 --profile $(LOCAL_DEV_NAMESPACE)
 
 .PHONY: skrender
 skrender: clean_k8s
@@ -69,11 +74,11 @@ dev: helm_deps nuke_k8s skrender
 
 .PHONY: clean_k8s
 clean_k8s:
-	rm -f deploy/environments/local/generated/kubernetes.yaml
+	rm -f $(LOCAL_DEV_GENERATED_K8S)
 
 .PHONY: generate_kubernetes
 generate_kubernetes:
-	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output deploy/environments/local/generated/kubernetes.yaml
+	skaffold render --profile $(LOCAL_DEV_NAMESPACE) --output $(LOCAL_DEV_GENERATED_K8S)
 
 .PHONY: nuke_k8s
 nuke_k8s:
