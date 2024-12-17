@@ -6,21 +6,26 @@ import (
 	"fmt"
 	"time"
 
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/sdk/resource"
+	"go.opentelemetry.io/otel/sdk/metric/exemplar"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 
 	"github.com/hashicorp/go-multierror"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/resource"
 )
 
 const (
 	servicePrefix = "dinner-done-better-api."
+)
+
+var (
+	ErrNilConfig = errors.New("nil config")
 )
 
 type Config struct {
@@ -31,9 +36,9 @@ type Config struct {
 	CollectionTimeout  time.Duration `json:"collectionTimeout"        toml:"collection_timeout"`
 }
 
-func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Config) (metrics.Provider, error) {
+func setupMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Config) (metric.MeterProvider, func(context.Context) error, error) {
 	if cfg == nil {
-		return nil, errors.New("nil config")
+		return nil, nil, ErrNilConfig
 	}
 
 	res, err := resource.New(ctx,
@@ -41,15 +46,18 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 		resource.WithProcess(),
 		resource.WithTelemetrySDK(),
 		resource.WithHost(),
+		resource.WithOSType(),
 		resource.WithAttributes(
 			attribute.KeyValue{
-				Key:   "service_name",
-				Value: attribute.StringValue(servicePrefix + cfg.BaseName),
+				Key:   "service.name",
+				Value: attribute.StringValue("demo-server"),
 			},
 		),
 	)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	// Set up meter provider.
 	options := []otlpmetricgrpc.Option{
 		otlpmetricgrpc.WithEndpoint(cfg.CollectorEndpoint),
 	}
@@ -58,32 +66,49 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 		options = append(options, otlpmetricgrpc.WithInsecure())
 	}
 
-	exporter, err := otlpmetricgrpc.New(ctx, options...)
+	metricExp, err := otlpmetricgrpc.New(
+		ctx,
+		options...,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create metric provider: %w", err)
+		return nil, nil, err
+	}
+
+	meterProvider := sdkmetric.NewMeterProvider(
+		sdkmetric.WithResource(res),
+		sdkmetric.WithExemplarFilter(exemplar.AlwaysOnFilter),
+		sdkmetric.WithReader(
+			sdkmetric.NewPeriodicReader(
+				metricExp,
+				sdkmetric.WithInterval(cfg.CollectionInterval),
+			),
+		),
+	)
+	otel.SetMeterProvider(meterProvider)
+
+	return meterProvider, meterProvider.Shutdown, nil
+}
+
+func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Config) (metrics.Provider, error) {
+	if cfg == nil {
+		return nil, ErrNilConfig
 	}
 
 	logger.WithValue("interval", cfg.CollectionInterval.String()).Info("setting up period metric reader")
 
-	provider := sdkmetric.NewMeterProvider(
-		sdkmetric.WithReader(
-			sdkmetric.NewPeriodicReader(
-				exporter,
-				sdkmetric.WithInterval(cfg.CollectionInterval),
-				sdkmetric.WithTimeout(time.Second),
-			),
-		),
-		sdkmetric.WithResource(res),
-	)
-
-	// TODO: handle shutdown func somehow
+	meterProvider, shutdown, err := setupMetricsProvider(ctx, logger, cfg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create metric provider: %w", err)
+	}
 
 	// Set the global meter provider
-	otel.SetMeterProvider(provider)
+	otel.SetMeterProvider(meterProvider)
 
 	i := &providerImpl{
-		mp:                provider.Meter(cfg.BaseName),
-		shutdownFunctions: []func(context.Context) error{provider.Shutdown},
+		mp: meterProvider.Meter(cfg.BaseName),
+		shutdownFunctions: []func(context.Context) error{
+			shutdown,
+		},
 	}
 
 	return i, nil
