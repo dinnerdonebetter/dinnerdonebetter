@@ -41,15 +41,25 @@ services:
     ports:
       - "9090:9090"
 
+  loki:
+    image: grafana/loki:3.1.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - source: '../config_files/loki_config.yaml'
+        target: '/etc/loki/local-config.yaml'
+        type: 'bind'
+
   grafana:
     image: "grafana/grafana:11.4.0-ubuntu"
     restart: unless-stopped
     volumes:
-      - source: '../config_files/grafana.ini'
+      - source: '../config_files/grafana/grafana.ini'
         target: '/etc/grafana/grafana.ini'
         type: 'bind'
-      - source: '../config_files/grafana_provisioning'
-        target: '/etc/grafana/provisioning'
+      - source: '../config_files/grafana/datasources'
+        target: '/etc/grafana/provisioning/datasources'
         type: 'bind'
     environment:
       - "GF_SECURITY_ADMIN_USER=admin"
@@ -84,11 +94,14 @@ services:
   api_server:
     hostname: api_server
     depends_on:
-      - postgres
-      - redis
+      - "postgres"
+      - "redis"
+      - "loki"
+      - "otel_collector"
     links:
-      - postgres
-      - redis
+      - "postgres"
+      - "redis"
+      - "otel_collector"
     environment:
       USE_NOOP_LOGGER: 'nope'
       CONFIGURATION_FILEPATH: '/etc/config'

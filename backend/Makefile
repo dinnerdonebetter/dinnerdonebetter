@@ -232,6 +232,8 @@ integration_tests: integration_tests_postgres
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
 	$(CONTAINER_RUNNER) compose \
+	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml build
+	$(CONTAINER_RUNNER) compose \
 	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
 	--build \
 	--quiet-pull \
@@ -247,6 +249,8 @@ integration_tests_postgres:
 
 .PHONY: dev
 dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
+	$(CONTAINER_RUNNER) compose \
+	--file $(ENVIRONMENTS_DIR)/localdev/compose_files/dev.yaml build
 	$(CONTAINER_RUNNER) compose \
 	--file $(ENVIRONMENTS_DIR)/localdev/compose_files/dev.yaml up \
 	--no-attach redis \

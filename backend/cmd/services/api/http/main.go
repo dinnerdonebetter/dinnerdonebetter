@@ -23,6 +23,8 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
+
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 )
 
 var rng = rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -35,6 +37,7 @@ func initProvider() (metric.MeterProvider, trace.TracerProvider, func()) {
 		resource.WithProcess(),
 		resource.WithTelemetrySDK(),
 		resource.WithHost(),
+		resource.WithOSType(),
 		resource.WithAttributes(
 			attribute.KeyValue{
 				Key:   "service.name",
@@ -72,9 +75,9 @@ func initProvider() (metric.MeterProvider, trace.TracerProvider, func()) {
 
 	bsp := sdktrace.NewBatchSpanProcessor(traceExp)
 	tracerProvider := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
 		sdktrace.WithResource(res),
 		sdktrace.WithSpanProcessor(bsp),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
 	)
 
 	// set global propagator to tracecontext (the default is no-op).
@@ -108,12 +111,20 @@ func (e *errHandler) Handle(err error) {
 }
 
 func main() {
+	logger := loggingcfg.ProvideLogger(&loggingcfg.Config{
+		Provider:       loggingcfg.ProviderSlog,
+		OutputFilepath: "/var/log/dinnerdonebetter/demo-server.log",
+	}).WithValue("service.name", "demo-server")
+
 	meterProvider, _, shutdown := initProvider()
 	defer shutdown()
 
 	otel.SetErrorHandler(&errHandler{})
 
-	meter := meterProvider.Meter("demo-server-meter")
+	meter := meterProvider.Meter("demo-server-meter", metric.WithInstrumentationAttributes(attribute.KeyValue{
+		Key:   "service.name",
+		Value: attribute.StringValue("demo-server"),
+	}))
 	serverAttribute := attribute.String("server-attribute", "foo")
 	commonLabels := []attribute.KeyValue{serverAttribute}
 
@@ -131,6 +142,7 @@ func main() {
 
 	go func() {
 		for {
+			logger.Info("arbitrary message!")
 			arbitraryCount.Add(context.Background(), 1, metric.WithAttributes(commonLabels...))
 			time.Sleep(time.Second)
 		}
