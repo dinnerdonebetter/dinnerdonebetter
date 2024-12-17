@@ -18,23 +18,17 @@ func BuildTracedHTTPTransport(timeout time.Duration) http.RoundTripper {
 		timeout = defaultTimeout
 	}
 
-	keepAlive := 30 * time.Second
-	tlsHandshakeTimeout := 10 * time.Second
-	expectContinueTimeout := 2 * timeout
-	idleConnTimeout := 3 * timeout
-	maxIdleConns := 100
-
 	t := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
 			Timeout:   timeout,
-			KeepAlive: keepAlive,
+			KeepAlive: 30 * time.Second,
 		}).DialContext,
-		MaxIdleConns:          maxIdleConns,
-		MaxIdleConnsPerHost:   maxIdleConns,
-		TLSHandshakeTimeout:   tlsHandshakeTimeout,
-		ExpectContinueTimeout: expectContinueTimeout,
-		IdleConnTimeout:       idleConnTimeout,
+		MaxIdleConns:          100,
+		MaxIdleConnsPerHost:   100,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 2 * timeout,
+		IdleConnTimeout:       3 * timeout,
 	}
 
 	return otelhttp.NewTransport(t, otelhttp.WithSpanNameFormatter(FormatSpan))

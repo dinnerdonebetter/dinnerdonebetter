@@ -234,6 +234,7 @@ integration_tests_postgres:
 	$(CONTAINER_RUNNER) compose \
 	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
 	--build \
+	--quiet-pull \
 	--force-recreate \
 	--remove-orphans \
 	--renew-anon-volumes \
@@ -247,9 +248,19 @@ integration_tests_postgres:
 .PHONY: dev
 dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
 	$(CONTAINER_RUNNER) compose \
-	--file $(ENVIRONMENTS_DIR)/local/compose_files/dev.yaml up \
+	--file $(ENVIRONMENTS_DIR)/localdev/compose_files/dev.yaml up \
+	--no-attach redis \
+	--no-attach jaeger \
+	--no-attach grafana \
+	--no-attach postgres \
+	# --no-attach prometheus \
+	--build \
 	--quiet-pull \
-	--always-recreate-deps
+	--force-recreate \
+	--remove-orphans \
+	--renew-anon-volumes \
+	--always-recreate-deps \
+	--abort-on-container-exit
 
 ## misc
 

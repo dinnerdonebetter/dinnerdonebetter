@@ -1,0 +1,69 @@
+{
+	"observability": {
+		"logging": {
+			"level": 0,
+			"provider": "slog",
+			"outputFilepath": "/var/log/dinnerdonebetter/api-service.log"
+		},
+		"metrics": {
+			"otelgrpc": {
+				"baseName": "ddb.api-svc",
+				"metricsCollectorEndpoint": "otel-collector:4318",
+				"metricsCollectionInterval": 0
+			},
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces",
+				"service_name": "dinner_done_better_service",
+				"spanCollectionProbability": 1
+			},
+			"provider": "otelgrpc"
+		}
+	},
+	"analytics": {
+		"segment": null,
+		"posthog": null,
+		"rudderstack": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
+	"events": {
+		"consumers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		},
+		"publishers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		}
+	},
+	"database": {
+		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
+		"debug": true,
+		"logQueries": true,
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000
+	}
+}

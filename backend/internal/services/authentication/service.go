@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
@@ -22,6 +23,8 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/google"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 const (
@@ -95,9 +98,21 @@ func ProvideService(
 	if err != nil {
 		logger.Error("creating counter", err)
 	}
+
 	go func() {
-		logger.Info("incrementing counter")
-		counter.Add(ctx, 1.0)
+		for {
+			logger.Info("incrementing counter")
+			counter.Add(context.Background(),
+				1.0,
+				metric.WithAttributeSet(attribute.NewSet(
+					attribute.KeyValue{
+						Key:   "name",
+						Value: attribute.StringValue("testing"),
+					},
+				)),
+			)
+			time.Sleep(1 * time.Second)
+		}
 	}()
 
 	svc := &service{

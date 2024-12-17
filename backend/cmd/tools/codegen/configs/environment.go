@@ -11,15 +11,15 @@ import (
 )
 
 type environmentConfigSet struct {
-	renderPretty bool
-	rootConfig   *config.APIServiceConfig
-	apiServiceConfigPath,
-	dbCleanerConfigPath,
-	emailProberConfigPath,
-	mealPlanFinalizerConfigPath,
-	mealPlanGroceryListInitializerConfigPath,
-	mealPlanTaskCreatorConfigPath,
-	searchDataIndexSchedulerConfigPath string
+	rootConfig                               *config.APIServiceConfig
+	apiServiceConfigPath                     string
+	dbCleanerConfigPath                      string
+	emailProberConfigPath                    string
+	mealPlanFinalizerConfigPath              string
+	mealPlanGroceryListInitializerConfigPath string
+	mealPlanTaskCreatorConfigPath            string
+	searchDataIndexSchedulerConfigPath       string
+	renderPretty                             bool
 }
 
 func stringOrDefault(s1, s2 string) string {

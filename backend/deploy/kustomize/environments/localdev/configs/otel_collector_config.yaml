@@ -1,19 +1,4 @@
 receivers:
-  # TODO: this should go into a different collector instance
-  postgresql:
-    endpoint: postgres-postgresql.localdev.svc.cluster.local:5432
-    transport: tcp
-    username: dbuser
-    password: hunter2
-    databases:
-      - dinner-done-better
-    collection_interval: 10s
-    tls:
-      insecure: true
-      insecure_skip_verify: true
-  redis:
-    endpoint: "redis.localdev.svc.cluster.local:6379"
-    collection_interval: 10s
   filelog:
     include: [ /var/log/dinnerdonebetter/*.log ]
     operators:
@@ -45,13 +30,11 @@ receivers:
   exporters:
     debug:
     otlp:
-      endpoint: tempo.localdev.svc.cluster.local:4317
+      endpoint: jaeger:16686
       tls:
         insecure: true
     prometheusremotewrite:
-      endpoint: prometheus-server.localdev.svc.cluster.local:3001/api/v1/write # /v1/push
-    otlphttp:
-      endpoint: http://loki.localdev.svc.cluster.local:3100/otlp
+      endpoint: prometheus:9090
 
   service:
     telemetry:
@@ -80,4 +63,4 @@ receivers:
         processors:
           - batch
         exporters:
-          - otlphttp
+          - debug

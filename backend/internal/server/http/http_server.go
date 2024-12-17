@@ -11,6 +11,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
 	"github.com/dinnerdonebetter/backend/internal/routing"
@@ -141,6 +142,7 @@ func ProvideHTTPServer(
 	userNotificationsService types.UserNotificationDataService,
 	auditLogService types.AuditLogEntryDataService,
 	dataPrivacyService types.DataPrivacyService,
+	mp metrics.Provider, // TODO: instrument later for something
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,

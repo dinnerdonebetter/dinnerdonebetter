@@ -2,12 +2,21 @@
 	"observability": {
 		"logging": {
 			"level": 0,
-			"provider": "slog"
+			"provider": "slog",
+			"outputFilepath": "/var/log/dinnerdonebetter/api-service.log"
 		},
-		"metrics": {},
+		"metrics": {
+			"otelgrpc": {
+				"baseName": "ddb.api-svc",
+				"collectorEndpoint": "otel_collector:8889",
+				"collectionInterval": 1000000000,
+				"insecure": true
+			},
+			"provider": "otelgrpc"
+		},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces",
+				"collector_endpoint": "otel_collector:4317",
 				"service_name": "dinner_done_better_service",
 				"spanCollectionProbability": 1
 			},

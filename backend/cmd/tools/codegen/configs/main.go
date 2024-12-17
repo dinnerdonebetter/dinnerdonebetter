@@ -4,17 +4,12 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
 
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
-	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
-	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
@@ -23,7 +18,6 @@ import (
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/otel"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
@@ -135,193 +129,6 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.APIServiceCo
 	return os.WriteFile(outputPath, output, 0o644)
 }
 
-type configFunc func(ctx context.Context, filePath string) error
-
-var files = map[string]configFunc{
-	"environments/local/config_files/service-config.json":             buildLocalDevelopmentServiceConfig(false),
-	"environments/local/config_files/service-config-local.json":       buildLocalDevelopmentServiceConfig(true),
-	"environments/testing/config_files/integration-tests-config.json": integrationTestConfig,
-	"environments/dev/config_files/service-config.json":               devEnvironmentServerConfig,
-}
-
-func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
-	emailConfig := emailconfig.Config{
-		Provider: emailconfig.ProviderSendgrid,
-		Sendgrid: &sendgrid.Config{},
-	}
-
-	analyticsConfig := analyticsconfig.Config{
-		Provider: analyticsconfig.ProviderSegment,
-		Segment:  &segment.Config{APIToken: ""},
-	}
-
-	cfg := &config.APIServiceConfig{
-		Routing: routingcfg.Config{
-			Provider:               routingcfg.ChiProvider,
-			EnableCORSForLocalhost: true,
-			SilenceRouteLogging:    false,
-			ValidDomains: []string{
-				"www.dinnerdonebetter.dev",
-				"admin.dinnerdonebetter.dev",
-			},
-		},
-		Meta: config.MetaSettings{
-			Debug:   true,
-			RunMode: developmentEnv,
-		},
-		Encoding: encoding.Config{
-			ContentType: contentTypeJSON,
-		},
-		Events: msgconfig.Config{
-			Consumers: msgconfig.MessageQueueConfig{
-				Provider: msgconfig.ProviderPubSub,
-			},
-			Publishers: msgconfig.MessageQueueConfig{
-				Provider: msgconfig.ProviderPubSub,
-			},
-		},
-		Email:     emailConfig,
-		Analytics: analyticsConfig,
-		Server: http.Config{
-			Debug:           true,
-			HTTPPort:        defaultPort,
-			StartupDeadline: time.Minute,
-		},
-		Search: searchcfg.Config{
-			Algolia:  &algolia.Config{},
-			Provider: searchcfg.AlgoliaProvider,
-		},
-		Database: dbconfig.Config{
-			Debug:           true,
-			LogQueries:      true,
-			RunMigrations:   true,
-			MaxPingAttempts: maxAttempts,
-			PingWaitPeriod:  time.Second,
-		},
-		Observability: observability.Config{
-			Logging: logcfg.Config{
-				Level:    logging.DebugLevel,
-				Provider: logcfg.ProviderSlog,
-			},
-			Tracing: tracingcfg.Config{
-				Provider: tracingcfg.ProviderCloudTrace,
-				CloudTrace: &cloudtrace.Config{
-					ProjectID:                 "dinner-done-better-dev",
-					ServiceName:               "dinner_done_better_api",
-					SpanCollectionProbability: 1,
-				},
-			},
-		},
-		Services: config.ServicesConfig{
-			AuditLogEntries: auditlogentriesservice.Config{},
-			Auth: authservice.Config{
-				OAuth2: authservice.OAuth2Config{
-					Domain:               "https://dinnerdonebetter.dev",
-					AccessTokenLifespan:  time.Hour,
-					RefreshTokenLifespan: time.Hour,
-					Debug:                false,
-				},
-				Debug:                 true,
-				EnableUserSignup:      true,
-				MinimumUsernameLength: 3,
-				MinimumPasswordLength: 8,
-				JWTAudience:           "https://api.dinnerdonebetter.dev",
-				JWTLifetime:           5 * time.Minute,
-			},
-			DataPrivacy: dataprivacyservice.Config{
-				Uploads: uploads.Config{
-					Storage: objectstorage.Config{
-						GCPConfig:  &objectstorage.GCPConfig{BucketName: "userdata.dinnerdonebetter.dev"},
-						BucketName: "userdata.dinnerdonebetter.dev",
-						Provider:   objectstorage.GCPCloudStorageProvider,
-					},
-					Debug: false,
-				},
-				DataChangesTopicName:         dataChangesTopicName,
-				UserDataAggregationTopicName: userDataAggregationTopicName,
-			},
-			Users: usersservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/avatars",
-				Uploads: uploads.Config{
-					Debug: true,
-					Storage: objectstorage.Config{
-						UploadFilenameKey: "avatar",
-						Provider:          objectstorage.GCPCloudStorageProvider,
-						BucketName:        "media.dinnerdonebetter.dev",
-						BucketPrefix:      "avatars/",
-						GCPConfig: &objectstorage.GCPConfig{
-							BucketName: "media.dinnerdonebetter.dev",
-						},
-					},
-				},
-			},
-			Recipes: recipesservice.Config{
-				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
-				UseSearchService:     true,
-				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
-				Uploads: uploads.Config{
-					Debug: true,
-					Storage: objectstorage.Config{
-						UploadFilenameKey: "recipe_media",
-						Provider:          objectstorage.GCPCloudStorageProvider,
-						BucketName:        "media.dinnerdonebetter.dev",
-						BucketPrefix:      "recipe_media/",
-						GCPConfig: &objectstorage.GCPConfig{
-							BucketName: "media.dinnerdonebetter.dev",
-						},
-					},
-				},
-			},
-			RecipeSteps: recipestepsservice.Config{
-				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
-				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
-				Uploads: uploads.Config{
-					Debug: true,
-					Storage: objectstorage.Config{
-						UploadFilenameKey: "recipe_media",
-						Provider:          objectstorage.GCPCloudStorageProvider,
-						BucketName:        "media.dinnerdonebetter.dev",
-						BucketPrefix:      "recipe_media/",
-						GCPConfig: &objectstorage.GCPConfig{
-							BucketName: "media.dinnerdonebetter.dev",
-						},
-					},
-				},
-			},
-			ValidIngredients: validingredientsservice.Config{
-				UseSearchService: true,
-			},
-			ValidIngredientStates: validingredientstatesservice.Config{
-				UseSearchService: true,
-			},
-			ValidInstruments: validinstrumentsservice.Config{
-				UseSearchService: true,
-			},
-			ValidVessels: validvesselsservice.Config{
-				UseSearchService: true,
-			},
-			ValidMeasurementUnits: validmeasurementunitsservice.Config{
-				UseSearchService: true,
-			},
-			ValidPreparations: validpreparationsservice.Config{
-				UseSearchService: true,
-			},
-			Meals: mealsservice.Config{
-				UseSearchService: true,
-			},
-		},
-	}
-
-	return cfg
-}
-
-func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
-	cfg := buildDevEnvironmentServerConfig()
-
-	return saveConfig(ctx, filePath, cfg, false, false)
-}
-
 func buildLocalDevConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
 		Routing: routingcfg.Config{
@@ -377,8 +184,17 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		},
 		Observability: observability.Config{
 			Logging: logcfg.Config{
-				Level:    logging.DebugLevel,
-				Provider: logcfg.ProviderSlog,
+				Level:          logging.DebugLevel,
+				Provider:       logcfg.ProviderSlog,
+				OutputFilepath: "/var/log/dinnerdonebetter/api-service.log",
+			},
+			Metrics: metricscfg.Config{
+				Otel: &otelgrpc.Config{
+					BaseName:           "ddb.api-svc",
+					CollectorEndpoint:  "otel-collector:4318",
+					CollectionInterval: time.Second,
+				},
+				Provider: metricscfg.ProviderOtel,
 			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderOtel,
@@ -1118,17 +934,25 @@ func integrationTestConfig(ctx context.Context, filePath string) error {
 }
 
 func main() {
-	ctx := context.Background()
-
-	localKubernetes := &environmentConfigSet{
-		renderPretty: true,
-		rootConfig:   buildLocaldevKubernetesConfig(),
+	envConfigs := map[string]*environmentConfigSet{
+		"deploy/kustomize/environments/localdev/configs": {
+			renderPretty: true,
+			rootConfig:   buildLocaldevKubernetesConfig(),
+		},
+		"environments/testing/config_files": {
+			renderPretty:         true,
+			apiServiceConfigPath: "integration-tests-config.json",
+			rootConfig:           buildIntegrationTestsConfig(),
+		},
+		"environments/localdev/config_files": {
+			renderPretty: true,
+			rootConfig:   buildLocalDevConfig(),
+		},
 	}
-	localKubernetes.Render("deploy/kustomize/environments/localdev/configs")
 
-	for filePath, fun := range files {
-		if err := fun(ctx, filePath); err != nil {
-			log.Fatalf("error rendering %s: %v", filePath, err)
+	for p, cfg := range envConfigs {
+		if err := cfg.Render(p); err != nil {
+			panic(err)
 		}
 	}
 }

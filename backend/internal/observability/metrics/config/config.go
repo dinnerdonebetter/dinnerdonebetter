@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 
@@ -26,12 +27,12 @@ type (
 )
 
 // ProvideMetricsProvider provides a metrics provider.
-func (c *Config) ProvideMetricsProvider(ctx context.Context) (metrics.Provider, error) {
+func (c *Config) ProvideMetricsProvider(ctx context.Context, logger logging.Logger) (metrics.Provider, error) {
 	p := strings.TrimSpace(strings.ToLower(c.Provider))
 
 	switch p {
 	case ProviderOtel:
-		return otelgrpc.ProvideMetricsProvider(ctx, c.Otel)
+		return otelgrpc.ProvideMetricsProvider(ctx, logger, c.Otel)
 	default:
 		return metrics.NewNoopMetricsProvider(), nil
 	}
