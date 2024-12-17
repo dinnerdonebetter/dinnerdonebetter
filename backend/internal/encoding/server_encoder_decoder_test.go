@@ -11,11 +11,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-
+	"github.com/go-yaml/yaml"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
 type example struct {
@@ -34,6 +35,62 @@ func init() {
 func TestServerEncoderDecoder_encodeResponse(T *testing.T) {
 	T.Parallel()
 
+	testCases := map[string]struct {
+		contentType      ContentType
+		expectedResponse string
+	}{
+		"json": {
+			contentType:      ContentTypeJSON,
+			expectedResponse: `{"name":"name"}` + "\n",
+		},
+		"xml": {
+			contentType:      ContentTypeXML,
+			expectedResponse: "<example><name>name</name></example>",
+		},
+		"toml": {
+			contentType:      ContentTypeTOML,
+			expectedResponse: `Name = "name"` + "\n",
+		},
+		"yaml": {
+			contentType:      ContentTypeYAML,
+			expectedResponse: "name: name\n",
+		},
+	}
+
+	for testName, tc := range testCases {
+		T.Run(testName, func(t *testing.T) {
+			t.Parallel()
+
+			ex := &example{Name: "name"}
+			encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType).(*serverEncoderDecoder)
+			require.True(t, ok)
+
+			ctx := context.Background()
+			res := httptest.NewRecorder()
+			res.Header().Set(ContentTypeHeaderKey, ContentTypeToString(tc.contentType))
+
+			encoderDecoder.encodeResponse(ctx, res, ex, http.StatusOK)
+			actual := res.Body.String()
+			assert.Equal(t, tc.expectedResponse, actual)
+		})
+	}
+
+	T.Run("emoji", func(t *testing.T) {
+		t.Parallel()
+
+		ex := &example{Name: "name"}
+		encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji).(*serverEncoderDecoder)
+		require.True(t, ok)
+
+		ctx := context.Background()
+		res := httptest.NewRecorder()
+		res.Header().Set(ContentTypeHeaderKey, ContentTypeToString(ContentTypeEmoji))
+
+		encoderDecoder.encodeResponse(ctx, res, ex, http.StatusOK)
+		actual := res.Body.String()
+		assert.NotEmpty(t, actual)
+	})
+
 	T.Run("defaults to JSON", func(t *testing.T) {
 		t.Parallel()
 		expectation := "name"
@@ -46,36 +103,6 @@ func TestServerEncoderDecoder_encodeResponse(T *testing.T) {
 
 		encoderDecoder.encodeResponse(ctx, res, ex, http.StatusOK)
 		assert.Equal(t, res.Body.String(), fmt.Sprintf("{%q:%q}\n", "name", ex.Name))
-	})
-
-	T.Run("as XML", func(t *testing.T) {
-		t.Parallel()
-		expectation := "name"
-		ex := &example{Name: expectation}
-		encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON).(*serverEncoderDecoder)
-		require.True(t, ok)
-
-		ctx := context.Background()
-		res := httptest.NewRecorder()
-		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
-
-		encoderDecoder.encodeResponse(ctx, res, ex, http.StatusOK)
-		assert.Equal(t, fmt.Sprintf("<example><name>%s</name></example>", expectation), res.Body.String())
-	})
-
-	T.Run("as Emoji", func(t *testing.T) {
-		t.Parallel()
-		expectation := "name"
-		ex := &example{Name: expectation}
-		encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji).(*serverEncoderDecoder)
-		require.True(t, ok)
-
-		ctx := context.Background()
-		res := httptest.NewRecorder()
-		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
-
-		encoderDecoder.encodeResponse(ctx, res, ex, http.StatusOK)
-		assert.NotEmpty(t, res.Body.String())
 	})
 
 	T.Run("with broken structure", func(t *testing.T) {
@@ -93,54 +120,83 @@ func TestServerEncoderDecoder_encodeResponse(T *testing.T) {
 	})
 }
 
+type exampleError struct {
+	Error string `json:"error"`
+}
+
 func TestServerEncoderDecoder_EncodeErrorResponse(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-		exampleMessage := "something went awry"
-		exampleCode := http.StatusBadRequest
+	const (
+		exampleMessage = "something went awry"
+		defaultTraceID = "00000000000000000000000000000000"
+	)
 
-		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+	testCases := map[string]struct {
+		contentType      ContentType
+		expectedResponse string
+	}{
+		"json": {
+			contentType:      ContentTypeJSON,
+			expectedResponse: fmt.Sprintf(`{"error":{"message":%q,"code":""},"details":{"currentHouseholdID":"","traceID":%q}}`, exampleMessage, defaultTraceID) + "\n",
+		},
+		"xml": {
+			contentType:      ContentTypeXML,
+			expectedResponse: fmt.Sprintf("<APIResponse><Error><Message>%s</Message><Code></Code></Error><Details><CurrentHouseholdID></CurrentHouseholdID><TraceID>%s</TraceID></Details></APIResponse>", exampleMessage, defaultTraceID),
+		},
+		"toml": {
+			contentType: ContentTypeTOML,
+			expectedResponse: fmt.Sprintf(`[Error]
+  Message = %q
+  Code = ""
+
+[Details]
+  CurrentHouseholdID = ""
+  TraceID = %q
+`, exampleMessage, defaultTraceID),
+		},
+		"yaml": {
+			contentType: ContentTypeYAML,
+			expectedResponse: fmt.Sprintf(`data: null
+pagination: null
+error:
+  message: %s
+  code: ""
+details:
+  currenthouseholdid: ""
+  traceid: %q
+`, exampleMessage, defaultTraceID),
+		},
+	}
+
+	for name, tc := range testCases {
+		T.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			expectedCode := http.StatusBadRequest
+			encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType)
+
+			ctx := context.Background()
+			res := httptest.NewRecorder()
+
+			encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, expectedCode)
+			assert.Equal(t, tc.expectedResponse, res.Body.String())
+			assert.Equal(t, expectedCode, res.Code, "expected status code to match")
+		})
+	}
+
+	T.Run("emoji", func(t *testing.T) {
+		t.Parallel()
+
+		expectedCode := http.StatusBadRequest
+		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji)
 
 		ctx := context.Background()
 		res := httptest.NewRecorder()
 
-		encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, exampleCode)
-		assert.Equal(t, "\"something went awry\"\n", res.Body.String())
-		assert.Equal(t, exampleCode, res.Code, "expected status code to match")
-	})
-
-	T.Run("as XML", func(t *testing.T) {
-		t.Parallel()
-		exampleMessage := "something went awry"
-		exampleCode := http.StatusBadRequest
-
-		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
-
-		ctx := context.Background()
-		res := httptest.NewRecorder()
-		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
-
-		encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, exampleCode)
-		assert.Equal(t, "<string>something went awry</string>", res.Body.String())
-		assert.Equal(t, exampleCode, res.Code, "expected status code to match")
-	})
-
-	T.Run("as Emoji", func(t *testing.T) {
-		t.Parallel()
-		exampleMessage := "something went awry"
-		exampleCode := http.StatusBadRequest
-
-		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
-
-		ctx := context.Background()
-		res := httptest.NewRecorder()
-		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
-
-		encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, exampleCode)
+		encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, expectedCode)
 		assert.NotEmpty(t, res.Body.String())
-		assert.Equal(t, exampleCode, res.Code, "expected status code to match")
+		assert.Equal(t, expectedCode, res.Code, "expected status code to match")
 	})
 }
 
@@ -262,32 +318,42 @@ func TestServerEncoderDecoder_MustEncodeJSON(T *testing.T) {
 func TestServerEncoderDecoder_MustEncode(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with JSON", func(t *testing.T) {
-		t.Parallel()
+	testCases := map[string]struct {
+		contentType ContentType
+		expected    string
+	}{
+		"json": {
+			contentType: ContentTypeJSON,
+			expected:    `{"name":"TestServerEncoderDecoder_MustEncode/json"}` + "\n",
+		},
+		"xml": {
+			contentType: ContentTypeXML,
+			expected:    "<example><name>TestServerEncoderDecoder_MustEncode/xml</name></example>",
+		},
+		"toml": {
+			contentType: ContentTypeTOML,
+			expected:    "Name = \"TestServerEncoderDecoder_MustEncode/toml\"\n",
+		},
+		"yaml": {
+			contentType: ContentTypeYAML,
+			expected:    "name: TestServerEncoderDecoder_MustEncode/yaml\n",
+		},
+	}
 
-		ctx := context.Background()
-		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+	for name, tc := range testCases {
+		T.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-		expected := `{"name":"TestServerEncoderDecoder_MustEncode/with_JSON"}
-`
-		actual := string(encoderDecoder.MustEncode(ctx, &example{Name: t.Name()}))
+			ctx := context.Background()
+			encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType)
 
-		assert.Equal(t, expected, actual)
-	})
+			actual := string(encoderDecoder.MustEncode(ctx, &example{Name: t.Name()}))
 
-	T.Run("with XML", func(t *testing.T) {
-		t.Parallel()
+			assert.Equal(t, tc.expected, actual)
+		})
+	}
 
-		ctx := context.Background()
-		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeXML)
-
-		expected := `<example><name>TestServerEncoderDecoder_MustEncode/with_XML</name></example>`
-		actual := string(encoderDecoder.MustEncode(ctx, &example{Name: t.Name()}))
-
-		assert.Equal(t, expected, actual)
-	})
-
-	T.Run("with Emoji", func(t *testing.T) {
+	T.Run("emoji", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -315,7 +381,7 @@ func TestServerEncoderDecoder_MustEncode(T *testing.T) {
 func TestServerEncoderDecoder_RespondWithData(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("as JSON", func(t *testing.T) {
 		t.Parallel()
 		expectation := "name"
 		ex := &example{Name: expectation}
@@ -380,81 +446,107 @@ func TestServerEncoderDecoder_EncodeResponseWithStatus(T *testing.T) {
 func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
+	testCases := map[string]struct {
+		contentType ContentType
+		expected    string
+		marshaller  func(v interface{}) ([]byte, error)
+	}{
+		"json": {
+			contentType: ContentTypeJSON,
+			expected:    `{"name":"name"}`,
+			marshaller:  json.Marshal,
+		},
+		"xml": {
+			contentType: ContentTypeXML,
+			expected:    `<example><name>name</name></example>`,
+			marshaller:  xml.Marshal,
+		},
+		"toml": {
+			contentType: ContentTypeTOML,
+			expected:    `<example><name>name</name></example>`,
+			marshaller:  tomlMarshalFunc,
+		},
+		"yaml": {
+			contentType: ContentTypeYAML,
+			expected:    `<example><name>name</name></example>`,
+			marshaller:  yaml.Marshal,
+		},
+		"emoji": {
+			contentType: ContentTypeEmoji,
+			expected:    `<example><name>name</name></example>`,
+			marshaller:  marshalEmoji,
+		},
+	}
 
-		ctx := context.Background()
+	e := &example{Name: "name"}
 
-		expectation := "name"
-		e := &example{Name: expectation}
-		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+	for name, tc := range testCases {
+		T.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-		bs, err := json.Marshal(e)
-		require.NoError(t, err)
+			ctx := context.Background()
+			encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType)
 
-		req, err := http.NewRequestWithContext(
-			ctx,
-			http.MethodGet,
-			"https://whatever.whocares.gov",
-			bytes.NewReader(bs),
-		)
-		require.NoError(t, err)
-		req.Header.Set(ContentTypeHeaderKey, contentTypeJSON)
+			bs, err := tc.marshaller(e)
+			require.NoError(t, err)
 
-		var x example
-		assert.NoError(t, encoderDecoder.DecodeRequest(ctx, req, &x))
-		assert.Equal(t, x.Name, e.Name)
-	})
+			req, err := http.NewRequestWithContext(
+				ctx,
+				http.MethodGet,
+				"https://whatever.whocares.gov",
+				bytes.NewReader(bs),
+			)
+			require.NoError(t, err)
+			req.Header.Set(ContentTypeHeaderKey, ContentTypeToString(tc.contentType))
 
-	T.Run("as XML", func(t *testing.T) {
-		t.Parallel()
+			var x example
+			assert.NoError(t, encoderDecoder.DecodeRequest(ctx, req, &x))
+			assert.Equal(t, x.Name, e.Name)
+		})
+	}
+}
 
-		ctx := context.Background()
+func Test_serverEncoderDecoder_DecodeBytes(T *testing.T) {
+	T.Parallel()
 
-		expectation := "name"
-		e := &example{Name: expectation}
-		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+	goodDataTestCases := map[string]struct {
+		data        []byte
+		contentType ContentType
+	}{
+		"json": {
+			data:        []byte(`{"name":"name"}`),
+			contentType: ContentTypeJSON,
+		},
+		"xml": {
+			data:        []byte(`<example><name>name</name></example>`),
+			contentType: ContentTypeXML,
+		},
+		"toml": {
+			data:        []byte(`name = "name"`),
+			contentType: ContentTypeTOML,
+		},
+		"yaml": {
+			data:        []byte(`name: "name"`),
+			contentType: ContentTypeYAML,
+		},
+		"emoji": {
+			data:        []byte("🍃🧁🌆🙍☔🌾🐯🦮💆🚂🚕🏏🧔✊🀄🏏☔🌊🥈🐾👥♓🙌🀄🀄🍧🦖📓♿😱🦨🐶🀄☕\n"),
+			contentType: ContentTypeEmoji,
+		},
+	}
+	goodDataExpectation := &example{Name: "name"}
 
-		bs, err := xml.Marshal(e)
-		require.NoError(t, err)
+	for name, tc := range goodDataTestCases {
+		T.Run(name, func(t *testing.T) {
+			t.Parallel()
+			ctx := context.Background()
 
-		req, err := http.NewRequestWithContext(
-			ctx,
-			http.MethodGet,
-			"https://whatever.whocares.gov",
-			bytes.NewReader(bs),
-		)
-		require.NoError(t, err)
-		req.Header.Set(ContentTypeHeaderKey, contentTypeXML)
+			encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType)
 
-		var x example
-		assert.NoError(t, encoderDecoder.DecodeRequest(ctx, req, &x))
-		assert.Equal(t, x.Name, e.Name)
-	})
+			var dest *example
+			assert.NoError(t, encoderDecoder.DecodeBytes(ctx, tc.data, &dest))
 
-	T.Run("as Emoji", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		expectation := "name"
-		e := &example{Name: expectation}
-		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
-
-		bs, err := marshalEmoji(e)
-		require.NoError(t, err)
-
-		req, err := http.NewRequestWithContext(
-			ctx,
-			http.MethodGet,
-			"https://whatever.whocares.gov",
-			bytes.NewReader(bs),
-		)
-		require.NoError(t, err)
-		req.Header.Set(ContentTypeHeaderKey, contentTypeEmoji)
-
-		var x example
-		assert.NoError(t, encoderDecoder.DecodeRequest(ctx, req, &x))
-		assert.Equal(t, x.Name, e.Name)
-	})
+			assert.Equal(t, goodDataExpectation, dest)
+		})
+	}
 }

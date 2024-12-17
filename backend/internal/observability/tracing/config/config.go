@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/otel"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -26,7 +26,7 @@ type (
 		_ struct{} `json:"-"`
 
 		CloudTrace *cloudtrace.Config `json:"cloudTrace,omitempty" toml:"cloud_trace,omitempty"`
-		Otel       *otel.Config       `json:"otelgrpc,omitempty"   toml:"otelgrpc,omitempty"`
+		Otel       *oteltrace.Config  `json:"otelgrpc,omitempty"   toml:"otelgrpc,omitempty"`
 		Provider   string             `json:"provider,omitempty"   toml:"provider,omitempty"`
 	}
 )
@@ -40,7 +40,7 @@ func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (t
 	switch p {
 	case ProviderOtel:
 		logger.WithValue("otel", c.Otel).Info("configuring otelgrpc provider")
-		tp, err := otel.SetupOtelHTTP(ctx, c.Otel)
+		tp, err := oteltrace.SetupOtelHTTP(ctx, c.Otel)
 		if err != nil {
 			return nil, fmt.Errorf("configuring otelgrpc provider: %w", err)
 		}

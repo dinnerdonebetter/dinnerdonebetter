@@ -1,4 +1,4 @@
-package otel
+package oteltrace
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
@@ -29,10 +29,10 @@ func init() {
 
 // SetupOtelHTTP creates a new trace provider instance and registers it as global trace provider.
 func SetupOtelHTTP(ctx context.Context, c *Config) (tracing.TracerProvider, error) {
-	exporter, err := otlptracehttp.New(
+	exporter, err := otlptracegrpc.New(
 		ctx,
-		otlptracehttp.WithEndpoint(c.CollectorEndpoint),
-		otlptracehttp.WithTimeout(10*time.Second),
+		otlptracegrpc.WithEndpoint(c.CollectorEndpoint),
+		otlptracegrpc.WithTimeout(10*time.Second),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("initializing Otel HTTP: %w", err)

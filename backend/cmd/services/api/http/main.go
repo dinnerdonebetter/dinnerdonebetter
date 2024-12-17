@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"log/slog"
 	"math/rand"
 	"net/http"
 	"os"
@@ -82,7 +83,7 @@ func setupTracingProvider(ctx context.Context, collectorAddress string) (trace.T
 	return tracerProvider, shutdownFunc, nil
 }
 
-func setupMetricsProvider(ctx context.Context, collectorAddress string) (metric.MeterProvider, func(), error) {
+func setupMetricsProvider(ctx context.Context, insecure bool, collectorAddress string) (metric.MeterProvider, func(), error) {
 	res, err := resource.New(ctx,
 		resource.WithFromEnv(),
 		resource.WithProcess(),
@@ -100,10 +101,17 @@ func setupMetricsProvider(ctx context.Context, collectorAddress string) (metric.
 		return nil, nil, err
 	}
 
+	options := []otlpmetricgrpc.Option{
+		otlpmetricgrpc.WithEndpoint(collectorAddress),
+	}
+
+	if insecure {
+		options = append(options, otlpmetricgrpc.WithInsecure())
+	}
+
 	metricExp, err := otlpmetricgrpc.New(
 		ctx,
-		otlpmetricgrpc.WithInsecure(),
-		otlpmetricgrpc.WithEndpoint(collectorAddress),
+		options...,
 	)
 	handleErr(err, "Failed to create the collector metric exporter")
 
@@ -131,49 +139,54 @@ func setupMetricsProvider(ctx context.Context, collectorAddress string) (metric.
 	return meterProvider, shutdownFunc, nil
 }
 
-func initProvider() (metric.MeterProvider, trace.TracerProvider, func()) {
-	ctx := context.Background()
-
-	otelAgentAddr, ok := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
-	if !ok {
-		otelAgentAddr = "otel_collector:4317"
-	}
-
-	meterProvider, metricShutdown, err := setupMetricsProvider(ctx, otelAgentAddr)
-	handleErr(err, "Failed to create the metrics provider")
-
-	tracerProvider, tracerShutdown, err := setupTracingProvider(ctx, otelAgentAddr)
-	handleErr(err, "Failed to create the tracer provider")
-
-	return meterProvider, tracerProvider, func() {
-		tracerShutdown()
-		metricShutdown()
-	}
-}
-
-func initNewProvider(logger logging.Logger) (metrics.Provider, trace.TracerProvider, func()) {
-	ctx := context.Background()
-
-	otelAgentAddr, ok := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
-	if !ok {
-		otelAgentAddr = "otel_collector:4317"
-	}
-
-	meterProviderZ, err := otelgrpc.ProvideMetricsProvider(ctx, logger, &otelgrpc.Config{
+func initProvider(ctx context.Context, collectorEndpoint string, logger logging.Logger) (metrics.Provider, trace.TracerProvider, func()) {
+	meterProvider, err := otelgrpc.ProvideMetricsProvider(ctx, logger, &otelgrpc.Config{
 		BaseName:           "api-service",
-		CollectorEndpoint:  otelAgentAddr,
+		CollectorEndpoint:  collectorEndpoint,
 		CollectionInterval: time.Second,
 		Insecure:           true,
 		CollectionTimeout:  5 * time.Second,
 	})
 	handleErr(err, "Failed to create the metrics provider")
 
-	tracerProvider, tracerShutdown, err := setupTracingProvider(ctx, otelAgentAddr)
+	tracerProvider, tracerShutdown, err := setupTracingProvider(ctx, collectorEndpoint)
 	handleErr(err, "Failed to create the tracer provider")
 
-	return meterProviderZ, tracerProvider, func() {
+	return meterProvider, tracerProvider, func() {
 		tracerShutdown()
-		meterProviderZ.Shutdown(context.Background())
+		if err = meterProvider.Shutdown(context.Background()); err != nil {
+			slog.Error("shutting down metrics provider", slog.Any("error", err))
+		}
+	}
+}
+
+func initNewProvider(ctx context.Context, collectorEndpoint string, logger logging.Logger) (metrics.Provider, trace.TracerProvider, func()) {
+	meterProvider, err := otelgrpc.ProvideMetricsProvider(ctx, logger, &otelgrpc.Config{
+		BaseName:           "api-service",
+		CollectorEndpoint:  collectorEndpoint,
+		CollectionInterval: time.Second,
+		Insecure:           true,
+		CollectionTimeout:  5 * time.Second,
+	})
+	handleErr(err, "Failed to create the metrics provider")
+
+	//tracerProvider, err := (&tracingcfg.Config{
+	//	Otel: &oteltrace.Config{
+	//		CollectorEndpoint:         collectorEndpoint,
+	//		ServiceName:               "dinner-done-better",
+	//		SpanCollectionProbability: 1,
+	//	},
+	//	Provider: tracingcfg.ProviderOtel,
+	//}).ProvideTracerProvider(ctx, logger)
+
+	tracerProvider, tracerShutdown, err := setupTracingProvider(ctx, collectorEndpoint)
+	handleErr(err, "Failed to create the tracer provider")
+
+	return meterProvider, tracerProvider, func() {
+		tracerShutdown()
+		if err = meterProvider.Shutdown(context.Background()); err != nil {
+			slog.Error("shutting down metrics provider", slog.Any("error", err))
+		}
 	}
 }
 
@@ -189,49 +202,36 @@ func (e *errHandler) Handle(err error) {
 	log.Println(err)
 }
 
-func buildCounters(useNew bool, logger logging.Logger) (metric.Int64Counter, metric.Int64Counter, func()) {
-	if useNew {
-		meterProvider, _, shutdown := initNewProvider(logger)
+func buildCounters(useNew bool, logger logging.Logger) (requestCount metric.Int64Counter, arbitraryCount metric.Int64Counter, shutdown func()) {
+	ctx := context.Background()
 
-		otel.SetErrorHandler(&errHandler{})
-
-		requestCount, err := meterProvider.NewInt64Counter(
-			"demo_server/request_counts",
-			metric.WithDescription("The number of requests received"),
-		)
-		handleErr(err, "failed to create request count metric")
-
-		arbitraryCount, err := meterProvider.NewInt64Counter(
-			"arbitrary",
-			metric.WithDescription("Meaningless number"),
-		)
-		handleErr(err, "failed to create request count metric")
-
-		return requestCount, arbitraryCount, shutdown
-	} else {
-		meterProvider, _, shutdown := initProvider()
-
-		otel.SetErrorHandler(&errHandler{})
-
-		meter := meterProvider.Meter("demo-server-meter", metric.WithInstrumentationAttributes(attribute.KeyValue{
-			Key:   "service.name",
-			Value: attribute.StringValue("demo-server"),
-		}))
-
-		requestCount, err := meter.Int64Counter(
-			"demo_server/request_counts",
-			metric.WithDescription("The number of requests received"),
-		)
-		handleErr(err, "failed to create request count metric")
-
-		arbitraryCount, err := meter.Int64Counter(
-			"arbitrary",
-			metric.WithDescription("Meaningless number"),
-		)
-		handleErr(err, "failed to create request count metric")
-
-		return requestCount, arbitraryCount, shutdown
+	otelAgentAddr, ok := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	if !ok {
+		otelAgentAddr = "otel_collector:4317"
 	}
+
+	var meterProvider metrics.Provider
+	if useNew {
+		meterProvider, _, shutdown = initNewProvider(ctx, otelAgentAddr, logger)
+	} else {
+		meterProvider, _, shutdown = initProvider(ctx, otelAgentAddr, logger)
+	}
+
+	otel.SetErrorHandler(&errHandler{})
+
+	requestCount, err := meterProvider.NewInt64Counter(
+		"demo_server/not_working/request_counts",
+		metric.WithDescription("The number of requests received"),
+	)
+	handleErr(err, "failed to create request count metric")
+
+	arbitraryCount, err = meterProvider.NewInt64Counter(
+		"arbitrary_not_working",
+		metric.WithDescription("Meaningless number"),
+	)
+	handleErr(err, "failed to create request count metric")
+
+	return requestCount, arbitraryCount, shutdown
 }
 
 func main() {

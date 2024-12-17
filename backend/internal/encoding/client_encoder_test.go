@@ -3,13 +3,16 @@ package encoding
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestProvideClientEncoder(T *testing.T) {
@@ -25,45 +28,46 @@ func TestProvideClientEncoder(T *testing.T) {
 func Test_clientEncoder_Unmarshal(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with JSON", func(t *testing.T) {
-		t.Parallel()
+	testCases := map[string]struct {
+		contentType ContentType
+		expected    string
+	}{
+		"json": {
+			contentType: ContentTypeJSON,
+			expected:    `{"name": "name"}`,
+		},
+		"xml": {
+			contentType: ContentTypeXML,
+			expected:    `<example><name>name</name></example>`,
+		},
+		"toml": {
+			contentType: ContentTypeTOML,
+			expected:    `name = "name"`,
+		},
+		"yaml": {
+			contentType: ContentTypeYAML,
+			expected:    `name: "name"`,
+		},
+		"emoji": {
+			contentType: ContentTypeEmoji,
+			expected:    "🍃🧁🌆🙍☔🌾🐯🦮💆🚂🚕🏏🧔✊🀄🏏☔🌊🥈🐾👥♓🙌🀄🀄🍧🦖📓♿😱🦨🐶🀄☕\n",
+		},
+	}
 
-		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+	for name, tc := range testCases {
+		T.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-		expected := &example{Name: "name"}
-		actual := &example{}
+			ctx := context.Background()
+			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType)
 
-		assert.NoError(t, e.Unmarshal(ctx, []byte(`{"name": "name"}`), &actual))
-		assert.Equal(t, expected, actual)
-	})
+			expected := &example{Name: "name"}
+			actual := &example{}
 
-	T.Run("with XML", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeXML)
-
-		expected := &example{Name: "name"}
-		actual := &example{}
-
-		assert.NoError(t, e.Unmarshal(ctx, []byte(`<example><name>name</name></example>`), &actual))
-		assert.Equal(t, expected, actual)
-	})
-
-	T.Run("with Emoji", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji)
-
-		expected := &example{Name: "name"}
-		actual := &example{}
-
-		assert.NoError(t, e.Unmarshal(ctx, []byte(`🍃🧁🌆🙍☔🌾🐯🦮💆🚂🚕🏏🧔✊🀄🏏☔🌊🥈🐾👥♓🙌🀄🀄🍧🦖📓♿😱🦨🐶🀄☕
-`), &actual))
-		assert.Equal(t, expected, actual)
-	})
+			assert.NoError(t, e.Unmarshal(ctx, []byte(tc.expected), &actual))
+			assert.Equal(t, expected, actual)
+		})
+	}
 
 	T.Run("with invalid data", func(t *testing.T) {
 		t.Parallel()
@@ -81,38 +85,32 @@ func Test_clientEncoder_Unmarshal(T *testing.T) {
 func Test_clientEncoder_Encode(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with JSON", func(t *testing.T) {
-		t.Parallel()
+	for _, ct := range ContentTypes {
+		T.Run(ContentTypeToString(ct), func(t *testing.T) {
+			t.Parallel()
 
-		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+			ctx := context.Background()
+			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct)
 
-		res := httptest.NewRecorder()
+			res := httptest.NewRecorder()
 
-		assert.NoError(t, e.Encode(ctx, res, &example{Name: t.Name()}))
-	})
+			assert.NoError(t, e.Encode(ctx, res, &example{Name: t.Name()}))
+		})
+	}
 
-	T.Run("with XML", func(t *testing.T) {
-		t.Parallel()
+	for _, ct := range ContentTypes {
+		T.Run(fmt.Sprintf("%s handles io.Writer errors", ContentTypeToString(ct)), func(t *testing.T) {
+			t.Parallel()
 
-		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeXML)
+			ctx := context.Background()
+			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct)
 
-		res := httptest.NewRecorder()
+			mw := &mockWriter{}
+			mw.On("Write", mock.Anything).Return(0, errors.New("blah"))
 
-		assert.NoError(t, e.Encode(ctx, res, &example{Name: t.Name()}))
-	})
-
-	T.Run("with Emoji", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji)
-
-		res := httptest.NewRecorder()
-
-		assert.NoError(t, e.Encode(ctx, res, &example{Name: t.Name()}))
-	})
+			assert.Error(t, e.Encode(ctx, mw, &example{Name: t.Name()}))
+		})
+	}
 
 	T.Run("with invalid data", func(t *testing.T) {
 		t.Parallel()
@@ -127,39 +125,18 @@ func Test_clientEncoder_Encode(T *testing.T) {
 func Test_clientEncoder_EncodeReader(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with JSON", func(t *testing.T) {
-		t.Parallel()
+	for _, ct := range ContentTypes {
+		T.Run(ContentTypeToString(ct), func(t *testing.T) {
+			t.Parallel()
 
-		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+			ctx := context.Background()
+			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct)
 
-		actual, err := e.EncodeReader(ctx, &example{Name: t.Name()})
-		assert.NoError(t, err)
-		assert.NotNil(t, actual)
-	})
-
-	T.Run("with XML", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeXML)
-
-		actual, err := e.EncodeReader(ctx, &example{Name: t.Name()})
-		assert.NoError(t, err)
-		assert.NotNil(t, actual)
-	})
-
-	T.Run("with Emoji", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji)
-
-		actual, err := e.EncodeReader(ctx, &example{Name: t.Name()})
-		assert.NoError(t, err)
-
-		assert.NotNil(t, actual)
-	})
+			actual, err := e.EncodeReader(ctx, &example{Name: t.Name()})
+			assert.NoError(t, err)
+			assert.NotNil(t, actual)
+		})
+	}
 
 	T.Run("with invalid data", func(t *testing.T) {
 		t.Parallel()

@@ -8,11 +8,15 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/BurntSushi/toml"
+	"github.com/go-yaml/yaml"
+
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 const (
@@ -20,6 +24,8 @@ const (
 	ContentTypeHeaderKey = "RawHTML-type"
 	contentTypeXML       = "application/xml"
 	contentTypeJSON      = "application/json"
+	contentTypeTOML      = "application/toml"
+	contentTypeYAML      = "application/yaml"
 	contentTypeEmoji     = "application/emoji"
 )
 
@@ -61,6 +67,23 @@ type (
 	}
 )
 
+type tomlDecoder struct {
+	reader io.Reader
+}
+
+func newTomlDecoder(reader io.Reader) decoder {
+	return &tomlDecoder{reader: reader}
+}
+
+func (t *tomlDecoder) Decode(v any) error {
+	x, err := io.ReadAll(t.reader)
+	if err != nil {
+		return err
+	}
+
+	return toml.Unmarshal(x, v)
+}
+
 // DecodeBytes decodes bytes into values.
 func (e *serverEncoderDecoder) DecodeBytes(ctx context.Context, data []byte, dest any) error {
 	_, span := e.tracer.StartSpan(ctx)
@@ -70,6 +93,10 @@ func (e *serverEncoderDecoder) DecodeBytes(ctx context.Context, data []byte, des
 	switch e.contentType {
 	case ContentTypeXML:
 		d = xml.NewDecoder(bytes.NewReader(data))
+	case ContentTypeTOML:
+		d = newTomlDecoder(bytes.NewReader(data))
+	case ContentTypeYAML:
+		d = yaml.NewDecoder(bytes.NewReader(data))
 	case ContentTypeEmoji:
 		d = newEmojiDecoder(bytes.NewReader(data))
 	default:
@@ -132,6 +159,12 @@ func (e *serverEncoderDecoder) encodeResponse(ctx context.Context, res http.Resp
 	case ContentTypeXML:
 		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
 		enc = xml.NewEncoder(res)
+	case ContentTypeTOML:
+		res.Header().Set(ContentTypeHeaderKey, contentTypeTOML)
+		enc = toml.NewEncoder(res)
+	case ContentTypeYAML:
+		res.Header().Set(ContentTypeHeaderKey, contentTypeYAML)
+		enc = yaml.NewEncoder(res)
 	case ContentTypeEmoji:
 		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
 		enc = newEmojiEncoder(res)
@@ -158,22 +191,35 @@ func (e *serverEncoderDecoder) EncodeErrorResponse(ctx context.Context, res http
 		logger = e.logger.WithValue("error_message", msg).WithValue(keys.ResponseStatusKey, statusCode)
 	)
 
-	switch contentTypeFromString(res.Header().Get(ContentTypeHeaderKey)) {
+	switch e.contentType {
 	case ContentTypeXML:
 		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
 		enc = xml.NewEncoder(res)
+	case ContentTypeTOML:
+		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
+		enc = toml.NewEncoder(res)
+	case ContentTypeYAML:
+		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
+		enc = yaml.NewEncoder(res)
 	case ContentTypeEmoji:
 		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
 		enc = newEmojiEncoder(res)
-	case ContentTypeJSON:
-		res.Header().Set(ContentTypeHeaderKey, contentTypeJSON)
-		fallthrough
 	default:
+		res.Header().Set(ContentTypeHeaderKey, contentTypeJSON)
 		enc = json.NewEncoder(res)
 	}
 
+	outboundResponse := &types.APIResponse[any]{
+		Details: types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Error: &types.APIError{
+			Message: msg,
+		},
+	}
+
 	res.WriteHeader(statusCode)
-	if err := enc.Encode(msg); err != nil {
+	if err := enc.Encode(outboundResponse); err != nil {
 		observability.AcknowledgeError(err, logger, span, "encoding error response")
 	}
 }
@@ -243,6 +289,10 @@ func (e *serverEncoderDecoder) MustEncode(ctx context.Context, v any) []byte {
 	switch e.contentType {
 	case ContentTypeXML:
 		enc = xml.NewEncoder(&b)
+	case ContentTypeTOML:
+		enc = toml.NewEncoder(&b)
+	case ContentTypeYAML:
+		enc = yaml.NewEncoder(&b)
 	case ContentTypeEmoji:
 		enc = newEmojiEncoder(&b)
 	default:
@@ -281,6 +331,10 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 	switch contentTypeFromString(req.Header.Get(ContentTypeHeaderKey)) {
 	case ContentTypeXML:
 		d = xml.NewDecoder(req.Body)
+	case ContentTypeTOML:
+		d = newTomlDecoder(req.Body)
+	case ContentTypeYAML:
+		d = yaml.NewDecoder(req.Body)
 	case ContentTypeEmoji:
 		d = newEmojiDecoder(req.Body)
 	default:

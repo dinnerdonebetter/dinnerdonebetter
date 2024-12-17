@@ -19,7 +19,7 @@ import (
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/otel"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
@@ -198,7 +198,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderOtel,
-				Otel: &otel.Config{
+				Otel: &oteltrace.Config{
 					SpanCollectionProbability: 1,
 					CollectorEndpoint:         "http://tracing-server:14268/api/traces",
 					ServiceName:               "dinner_done_better_service",
@@ -478,7 +478,7 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderOtel,
-				Otel: &otel.Config{
+				Otel: &oteltrace.Config{
 					SpanCollectionProbability: 1,
 					CollectorEndpoint:         "http://0.0.0.0:4317",
 					ServiceName:               "dinner_done_better_service",
@@ -743,7 +743,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderOtel,
-				Otel: &otel.Config{
+				Otel: &oteltrace.Config{
 					SpanCollectionProbability: 1,
 					CollectorEndpoint:         "http://tracing-server:14268/api/traces",
 					ServiceName:               "dinner_done_better_service",

@@ -9,6 +9,10 @@ var (
 	ContentTypeJSON ContentType = buildContentType(contentTypeJSON)
 	// ContentTypeXML is to indicate we want XML for some reason.
 	ContentTypeXML ContentType = buildContentType(contentTypeXML)
+	// ContentTypeTOML is to indicate we want TOML for some reason.
+	ContentTypeTOML ContentType = buildContentType(contentTypeTOML)
+	// ContentTypeYAML is to indicate we want YAML for some reason.
+	ContentTypeYAML ContentType = buildContentType(contentTypeYAML)
 	// ContentTypeEmoji is to indicate we want Emoji for some reason.
 	ContentTypeEmoji ContentType = buildContentType(contentTypeEmoji)
 )
@@ -18,6 +22,16 @@ type (
 	ContentType *contentType
 
 	contentType *string
+)
+
+var (
+	ContentTypes = []ContentType{
+		ContentTypeJSON,
+		ContentTypeXML,
+		ContentTypeTOML,
+		ContentTypeYAML,
+		ContentTypeEmoji,
+	}
 )
 
 func (e *clientEncoder) ContentType() string {
@@ -37,6 +51,10 @@ func ContentTypeToString(c ContentType) string {
 		return contentTypeJSON
 	case ContentTypeXML:
 		return contentTypeXML
+	case ContentTypeTOML:
+		return contentTypeTOML
+	case ContentTypeYAML:
+		return contentTypeYAML
 	case ContentTypeEmoji:
 		return contentTypeEmoji
 	default:
@@ -50,6 +68,10 @@ func contentTypeFromString(val string) ContentType {
 		return ContentTypeJSON
 	case contentTypeXML:
 		return ContentTypeXML
+	case contentTypeTOML:
+		return ContentTypeTOML
+	case contentTypeYAML:
+		return ContentTypeYAML
 	case contentTypeEmoji:
 		return ContentTypeEmoji
 	default:

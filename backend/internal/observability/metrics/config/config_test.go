@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 
 	"github.com/stretchr/testify/assert"
@@ -16,7 +17,7 @@ func TestConfig_ProvideTracerProvider(T *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{}
-		tracerProvider, err := cfg.ProvideMetricsProvider(context.Background())
+		tracerProvider, err := cfg.ProvideMetricsProvider(context.Background(), logging.NewNoopLogger())
 
 		assert.NoError(t, err)
 		assert.NotNil(t, tracerProvider)
