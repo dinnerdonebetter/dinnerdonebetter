@@ -11,12 +11,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+
 	"github.com/go-yaml/yaml"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
 type example struct {
@@ -448,8 +448,8 @@ func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 
 	testCases := map[string]struct {
 		contentType ContentType
-		expected    string
 		marshaller  func(v interface{}) ([]byte, error)
+		expected    string
 	}{
 		"json": {
 			contentType: ContentTypeJSON,
@@ -510,8 +510,8 @@ func Test_serverEncoderDecoder_DecodeBytes(T *testing.T) {
 	T.Parallel()
 
 	goodDataTestCases := map[string]struct {
-		data        []byte
 		contentType ContentType
+		data        []byte
 	}{
 		"json": {
 			data:        []byte(`{"name":"name"}`),

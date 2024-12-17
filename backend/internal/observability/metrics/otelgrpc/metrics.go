@@ -6,22 +6,19 @@ import (
 	"fmt"
 	"time"
 
-	"go.opentelemetry.io/otel/sdk/metric/exemplar"
-
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/exemplar"
 	"go.opentelemetry.io/otel/sdk/resource"
-)
-
-const (
-	servicePrefix = "dinner-done-better-api."
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 var (
@@ -29,14 +26,25 @@ var (
 )
 
 type Config struct {
-	BaseName           string        `json:"baseName"                 toml:"base_name"`
+	ServiceName        string        `json:"serviceName"              toml:"service_name"`
 	CollectorEndpoint  string        `json:"metricsCollectorEndpoint" toml:"metrics_collector_endpoint"`
 	CollectionInterval time.Duration `json:"collectionInterval"       toml:"collection_interval"`
 	Insecure           bool          `json:"insecure"                 toml:"insecure"`
 	CollectionTimeout  time.Duration `json:"collectionTimeout"        toml:"collection_timeout"`
 }
 
-func setupMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Config) (metric.MeterProvider, func(context.Context) error, error) {
+var _ validation.ValidatableWithContext = (*Config)(nil)
+
+// ValidateWithContext validates the config struct.
+func (c *Config) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, c,
+		validation.Field(&c.ServiceName, validation.Required),
+		validation.Field(&c.CollectorEndpoint, validation.Required),
+		validation.Field(&c.CollectionInterval, validation.Required),
+	)
+}
+
+func setupMetricsProvider(ctx context.Context, cfg *Config) (metric.MeterProvider, func(context.Context) error, error) {
 	if cfg == nil {
 		return nil, nil, ErrNilConfig
 	}
@@ -49,8 +57,8 @@ func setupMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Confi
 		resource.WithOSType(),
 		resource.WithAttributes(
 			attribute.KeyValue{
-				Key:   "service.name",
-				Value: attribute.StringValue("demo-server"),
+				Key:   semconv.ServiceNameKey,
+				Value: attribute.StringValue(cfg.ServiceName),
 			},
 		),
 	)
@@ -96,7 +104,7 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 
 	logger.WithValue("interval", cfg.CollectionInterval.String()).Info("setting up period metric reader")
 
-	meterProvider, shutdown, err := setupMetricsProvider(ctx, logger, cfg)
+	meterProvider, shutdown, err := setupMetricsProvider(ctx, cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create metric provider: %w", err)
 	}
@@ -105,7 +113,8 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 	otel.SetMeterProvider(meterProvider)
 
 	i := &providerImpl{
-		mp: meterProvider.Meter(cfg.BaseName),
+		serviceName: cfg.ServiceName,
+		mp:          meterProvider.Meter(cfg.ServiceName),
 		shutdownFunctions: []func(context.Context) error{
 			shutdown,
 		},
@@ -118,6 +127,7 @@ var _ metrics.Provider = (*providerImpl)(nil)
 
 type providerImpl struct {
 	mp                metric.Meter
+	serviceName       string
 	shutdownFunctions []func(context.Context) error
 }
 
@@ -134,33 +144,33 @@ func (m *providerImpl) Shutdown(ctx context.Context) error {
 }
 
 func (m *providerImpl) NewFloat64Counter(name string, options ...metric.Float64CounterOption) (metric.Float64Counter, error) {
-	return m.mp.Float64Counter(fmt.Sprintf("%s.%s", servicePrefix, name), options...)
+	return m.mp.Float64Counter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 }
 
 func (m *providerImpl) NewFloat64Gauge(name string, options ...metric.Float64GaugeOption) (metric.Float64Gauge, error) {
-	return m.mp.Float64Gauge(fmt.Sprintf("%s.%s", servicePrefix, name), options...)
+	return m.mp.Float64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 }
 
 func (m *providerImpl) NewFloat64UpDownCounter(name string, options ...metric.Float64UpDownCounterOption) (metric.Float64UpDownCounter, error) {
-	return m.mp.Float64UpDownCounter(fmt.Sprintf("%s.%s", servicePrefix, name), options...)
+	return m.mp.Float64UpDownCounter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 }
 
 func (m *providerImpl) NewFloat64Histogram(name string, options ...metric.Float64HistogramOption) (metric.Float64Histogram, error) {
-	return m.mp.Float64Histogram(fmt.Sprintf("%s.%s", servicePrefix, name), options...)
+	return m.mp.Float64Histogram(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 }
 
 func (m *providerImpl) NewInt64Counter(name string, options ...metric.Int64CounterOption) (metric.Int64Counter, error) {
-	return m.mp.Int64Counter(fmt.Sprintf("%s.%s", servicePrefix, name), options...)
+	return m.mp.Int64Counter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 }
 
 func (m *providerImpl) NewInt64Gauge(name string, options ...metric.Int64GaugeOption) (metric.Int64Gauge, error) {
-	return m.mp.Int64Gauge(fmt.Sprintf("%s.%s", servicePrefix, name), options...)
+	return m.mp.Int64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 }
 
 func (m *providerImpl) NewInt64UpDownCounter(name string, options ...metric.Int64UpDownCounterOption) (metric.Int64UpDownCounter, error) {
-	return m.mp.Int64UpDownCounter(fmt.Sprintf("%s.%s", servicePrefix, name), options...)
+	return m.mp.Int64UpDownCounter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 }
 
 func (m *providerImpl) NewInt64Histogram(name string, options ...metric.Int64HistogramOption) (metric.Int64Histogram, error) {
-	return m.mp.Int64Histogram(fmt.Sprintf("%s.%s", servicePrefix, name), options...)
+	return m.mp.Int64Histogram(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 }

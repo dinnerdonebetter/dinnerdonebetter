@@ -6,15 +6,17 @@
 		},
 		"metrics": {
 			"otelgrpc": {
-				"baseName": "ddb.api",
-				"metricsCollectorEndpoint": "http://otel_collector:4317",
-				"metricsCollectionInterval": 3000000000
+				"serviceName": "ddb.api",
+				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+				"collectionInterval": 3000000000,
+				"insecure": false,
+				"collectionTimeout": 0
 			},
 			"provider": "otelgrpc"
 		},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "http://otel_collector:4317",
+				"collector_endpoint": "http://0.0.0.0:4317",
 				"service_name": "dinner_done_better_service",
 				"spanCollectionProbability": 1
 			},
@@ -79,7 +81,7 @@
 			"redis": {
 				"username": "",
 				"queueAddress": [
-					"redis:6379"
+					"redis-master.localdev.svc.cluster.local:6379"
 				]
 			}
 		},
@@ -92,7 +94,7 @@
 			"redis": {
 				"username": "",
 				"queueAddress": [
-					"redis:6379"
+					"redis-master.localdev.svc.cluster.local:6379"
 				]
 			}
 		}

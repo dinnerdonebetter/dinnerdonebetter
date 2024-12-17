@@ -33,7 +33,7 @@ func TestConfig_SetupOtelHTTP(T *testing.T) {
 			SpanCollectionProbability: 0,
 		}
 
-		actual, err := SetupOtelHTTP(ctx, cfg)
+		actual, err := SetupOtelGRPC(ctx, cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})

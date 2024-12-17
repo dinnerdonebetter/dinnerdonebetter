@@ -190,8 +190,9 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			},
 			Metrics: metricscfg.Config{
 				Otel: &otelgrpc.Config{
-					BaseName:           "ddb.api-svc",
-					CollectorEndpoint:  "otel-collector:4318",
+					ServiceName:        "api-service",
+					Insecure:           true,
+					CollectorEndpoint:  "otel_collector:4317",
 					CollectionInterval: time.Second,
 				},
 				Provider: metricscfg.ProviderOtel,
@@ -200,8 +201,9 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				Provider: tracingcfg.ProviderOtel,
 				Otel: &oteltrace.Config{
 					SpanCollectionProbability: 1,
-					CollectorEndpoint:         "http://tracing-server:14268/api/traces",
-					ServiceName:               "dinner_done_better_service",
+					Insecure:                  true,
+					CollectorEndpoint:         "otel_collector:4317",
+					ServiceName:               "api-service",
 				},
 			},
 		},
@@ -488,7 +490,7 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 				Provider: tracingcfg.ProviderOtel,
 				Otel: &otelgrpc.Config{
 					CollectorEndpoint:  "http://0.0.0.0:4317",
-					BaseName:           "ddb.api",
+					ServiceName:        "ddb.api",
 					CollectionInterval: 3 * time.Second,
 				},
 			},

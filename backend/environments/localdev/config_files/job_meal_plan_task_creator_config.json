@@ -7,16 +7,19 @@
 		},
 		"metrics": {
 			"otelgrpc": {
-				"baseName": "ddb.api-svc",
-				"metricsCollectorEndpoint": "otel-collector:4318",
-				"metricsCollectionInterval": 0
+				"serviceName": "api-service",
+				"metricsCollectorEndpoint": "otel_collector:4317",
+				"collectionInterval": 1000000000,
+				"insecure": true,
+				"collectionTimeout": 0
 			},
 			"provider": "otelgrpc"
 		},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "dinner_done_better_service",
+				"collector_endpoint": "otel_collector:4317",
+				"service_name": "api-service",
+				"insecure": true,
 				"spanCollectionProbability": 1
 			},
 			"provider": "otelgrpc"

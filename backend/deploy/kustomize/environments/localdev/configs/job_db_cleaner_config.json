@@ -6,9 +6,11 @@
 		},
 		"metrics": {
 			"otelgrpc": {
-				"baseName": "ddb.api",
+				"serviceName": "ddb.api",
 				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
-				"metricsCollectionInterval": 3000000000
+				"collectionInterval": 3000000000,
+				"insecure": false,
+				"collectionTimeout": 0
 			},
 			"provider": "otelgrpc"
 		},

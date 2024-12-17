@@ -2,17 +2,18 @@ package oteltrace
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 type errorHandler struct {
@@ -27,36 +28,48 @@ func init() {
 	otel.SetErrorHandler(errorHandler{logger: logging.NewNoopLogger().WithName("otel_errors")})
 }
 
-// SetupOtelHTTP creates a new trace provider instance and registers it as global trace provider.
-func SetupOtelHTTP(ctx context.Context, c *Config) (tracing.TracerProvider, error) {
-	exporter, err := otlptracegrpc.New(
-		ctx,
-		otlptracegrpc.WithEndpoint(c.CollectorEndpoint),
-		otlptracegrpc.WithTimeout(10*time.Second),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("initializing Otel HTTP: %w", err)
-	}
-
-	res, err := resource.New(
-		ctx,
-		resource.WithProcess(),
+// SetupOtelGRPC creates a new trace provider instance and registers it as global trace provider.
+func SetupOtelGRPC(ctx context.Context, c *Config) (tracing.TracerProvider, error) {
+	res, err := resource.New(ctx,
 		resource.WithFromEnv(),
+		resource.WithProcess(),
+		resource.WithTelemetrySDK(),
 		resource.WithHost(),
-		resource.WithOS(),
-		resource.WithAttributes(semconv.ServiceNameKey.String(c.ServiceName)),
+		resource.WithOSType(),
+		resource.WithAttributes(
+			attribute.KeyValue{
+				Key:   semconv.ServiceNameKey,
+				Value: attribute.StringValue(c.ServiceName),
+			},
+		),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("setting up process runtime version: %w", err)
+		return nil, err
 	}
 
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithBatcher(exporter),
+	options := []otlptracegrpc.Option{
+		otlptracegrpc.WithEndpoint(c.CollectorEndpoint),
+	}
+
+	if c.Insecure {
+		options = append(options, otlptracegrpc.WithInsecure())
+	}
+
+	traceExp, err := otlptrace.New(ctx, otlptracegrpc.NewClient(options...))
+	if err != nil {
+		return nil, err
+	}
+
+	bsp := sdktrace.NewBatchSpanProcessor(traceExp)
+	tracerProvider := sdktrace.NewTracerProvider(
 		sdktrace.WithResource(res),
-		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(c.SpanCollectionProbability)),
+		sdktrace.WithSpanProcessor(bsp),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
 	)
 
-	otel.SetTracerProvider(tp)
+	// set global propagator to tracecontext (the default is no-op).
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
+	otel.SetTracerProvider(tracerProvider)
 
-	return tp, nil
+	return tracerProvider, nil
 }

@@ -40,7 +40,7 @@ func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (t
 	switch p {
 	case ProviderOtel:
 		logger.WithValue("otel", c.Otel).Info("configuring otelgrpc provider")
-		tp, err := oteltrace.SetupOtelHTTP(ctx, c.Otel)
+		tp, err := oteltrace.SetupOtelGRPC(ctx, c.Otel)
 		if err != nil {
 			return nil, fmt.Errorf("configuring otelgrpc provider: %w", err)
 		}
