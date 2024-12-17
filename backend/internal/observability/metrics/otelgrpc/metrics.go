@@ -113,8 +113,9 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 	otel.SetMeterProvider(meterProvider)
 
 	i := &providerImpl{
-		serviceName: cfg.ServiceName,
-		mp:          meterProvider.Meter(cfg.ServiceName),
+		serviceName:   cfg.ServiceName,
+		meterProvider: meterProvider,
+		mp:            meterProvider.Meter(cfg.ServiceName),
 		shutdownFunctions: []func(context.Context) error{
 			shutdown,
 		},
@@ -127,8 +128,13 @@ var _ metrics.Provider = (*providerImpl)(nil)
 
 type providerImpl struct {
 	mp                metric.Meter
+	meterProvider     metric.MeterProvider
 	serviceName       string
 	shutdownFunctions []func(context.Context) error
+}
+
+func (m *providerImpl) MeterProvider() metric.MeterProvider {
+	return m.meterProvider
 }
 
 func (m *providerImpl) Shutdown(ctx context.Context) error {
@@ -143,34 +149,74 @@ func (m *providerImpl) Shutdown(ctx context.Context) error {
 	return multierr.ErrorOrNil()
 }
 
-func (m *providerImpl) NewFloat64Counter(name string, options ...metric.Float64CounterOption) (metric.Float64Counter, error) {
-	return m.mp.Float64Counter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+func (m *providerImpl) NewFloat64Counter(name string, options ...metric.Float64CounterOption) (metrics.Float64Counter, error) {
+	z, err := m.mp.Float64Counter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &metrics.Float64CounterImpl{X: z}, nil
 }
 
-func (m *providerImpl) NewFloat64Gauge(name string, options ...metric.Float64GaugeOption) (metric.Float64Gauge, error) {
-	return m.mp.Float64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+func (m *providerImpl) NewFloat64Gauge(name string, options ...metric.Float64GaugeOption) (metrics.Float64Gauge, error) {
+	z, err := m.mp.Float64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &metrics.Float64GaugeImpl{X: z}, nil
 }
 
-func (m *providerImpl) NewFloat64UpDownCounter(name string, options ...metric.Float64UpDownCounterOption) (metric.Float64UpDownCounter, error) {
-	return m.mp.Float64UpDownCounter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+func (m *providerImpl) NewFloat64UpDownCounter(name string, options ...metric.Float64UpDownCounterOption) (metrics.Float64UpDownCounter, error) {
+	z, err := m.mp.Float64UpDownCounter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &metrics.Float64UpDownCounterImpl{X: z}, nil
 }
 
-func (m *providerImpl) NewFloat64Histogram(name string, options ...metric.Float64HistogramOption) (metric.Float64Histogram, error) {
-	return m.mp.Float64Histogram(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+func (m *providerImpl) NewFloat64Histogram(name string, options ...metric.Float64HistogramOption) (metrics.Float64Histogram, error) {
+	z, err := m.mp.Float64Histogram(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &metrics.Float64HistogramImpl{X: z}, nil
 }
 
-func (m *providerImpl) NewInt64Counter(name string, options ...metric.Int64CounterOption) (metric.Int64Counter, error) {
-	return m.mp.Int64Counter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+func (m *providerImpl) NewInt64Counter(name string, options ...metric.Int64CounterOption) (metrics.Int64Counter, error) {
+	z, err := m.mp.Int64Counter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &metrics.Int64CounterImpl{X: z}, nil
 }
 
-func (m *providerImpl) NewInt64Gauge(name string, options ...metric.Int64GaugeOption) (metric.Int64Gauge, error) {
-	return m.mp.Int64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+func (m *providerImpl) NewInt64Gauge(name string, options ...metric.Int64GaugeOption) (metrics.Int64Gauge, error) {
+	z, err := m.mp.Int64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &metrics.Int64GaugeImpl{X: z}, nil
 }
 
-func (m *providerImpl) NewInt64UpDownCounter(name string, options ...metric.Int64UpDownCounterOption) (metric.Int64UpDownCounter, error) {
-	return m.mp.Int64UpDownCounter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+func (m *providerImpl) NewInt64UpDownCounter(name string, options ...metric.Int64UpDownCounterOption) (metrics.Int64UpDownCounter, error) {
+	z, err := m.mp.Int64UpDownCounter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &metrics.Int64UpDownCounterImpl{X: z}, nil
 }
 
-func (m *providerImpl) NewInt64Histogram(name string, options ...metric.Int64HistogramOption) (metric.Int64Histogram, error) {
-	return m.mp.Int64Histogram(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+func (m *providerImpl) NewInt64Histogram(name string, options ...metric.Int64HistogramOption) (metrics.Int64Histogram, error) {
+	z, err := m.mp.Int64Histogram(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &metrics.Int64HistogramImpl{X: z}, nil
 }

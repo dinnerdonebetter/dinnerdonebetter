@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
@@ -23,8 +22,6 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/google"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 )
 
 const (
@@ -32,16 +29,10 @@ const (
 	AuthProviderParamKey = "auth_provider"
 )
 
-// TODO: remove this.
+// TODO: remove this when Goth can handle concurrency.
 var useProvidersMutex = sync.Mutex{}
 
 type (
-	// cookieEncoderDecoder is a stand-in interface for gorilla/securecookie.
-	cookieEncoderDecoder interface {
-		Encode(name string, value any) (string, error)
-		Decode(name, value string, dst any) error
-	}
-
 	// service handles passwords service-wide.
 	service struct {
 		config                     *Config
@@ -58,6 +49,7 @@ type (
 		dataChangesPublisher       messagequeue.Publisher
 		oauth2Server               *server.Server
 		jwtSigner                  authentication.JWTSigner
+		rejectedRequestCounter     metrics.Int64Counter
 	}
 )
 
@@ -75,45 +67,29 @@ func ProvideService(
 	featureFlagManager featureflags.FeatureFlagManager,
 	analyticsReporter analytics.EventReporter,
 	routeParamManager routing.RouteParamManager,
-	mp metrics.Provider, // TODO: instrument later for something
+	metricsProvider metrics.Provider,
 ) (types.AuthDataService, error) {
 	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if publisherProviderErr != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, publisherProviderErr)
 	}
 
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))
-
 	decryptedJWTSigningKey, err := base64.URLEncoding.DecodeString(cfg.JWTSigningKey)
 	if err != nil {
-		return nil, fmt.Errorf("decoding Token signing key: %w", err)
+		return nil, fmt.Errorf("decoding json web token signing key: %w", err)
 	}
 
 	signer, err := authentication.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
 	if err != nil {
-		return nil, fmt.Errorf("creating Token signer: %w", err)
+		return nil, fmt.Errorf("creating json web token signer: %w", err)
 	}
 
-	counter, err := mp.NewFloat64Counter("testing")
+	rejectedRequestCounter, err := metricsProvider.NewInt64Counter("auth_service.rejected_requests")
 	if err != nil {
-		logger.Error("creating counter", err)
+		return nil, fmt.Errorf("creating rejected request counter: %w", err)
 	}
 
-	go func() {
-		for {
-			logger.Info("incrementing counter")
-			counter.Add(context.Background(),
-				1.0,
-				metric.WithAttributeSet(attribute.NewSet(
-					attribute.KeyValue{
-						Key:   "name",
-						Value: attribute.StringValue("testing"),
-					},
-				)),
-			)
-			time.Sleep(1 * time.Second)
-		}
-	}()
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))
 
 	svc := &service{
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
@@ -123,11 +99,12 @@ func ProvideService(
 		householdMembershipManager: householdMembershipManager,
 		authenticator:              authenticator,
 		sessionContextDataFetcher:  authentication.FetchContextFromRequest,
-		tracer:                     tracer,
+		tracer:                     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
 		analyticsReporter:          analyticsReporter,
 		jwtSigner:                  signer,
+		rejectedRequestCounter:     rejectedRequestCounter,
 		authProviderFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
 		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
 	}

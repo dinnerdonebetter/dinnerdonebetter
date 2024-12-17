@@ -55,6 +55,7 @@ require (
 	github.com/oapi-codegen/oapi-codegen/v2 v2.4.1
 	github.com/posthog/posthog-go v1.2.24
 	github.com/pquerna/otp v1.4.0
+	github.com/riandyrn/otelchi v0.11.0
 	github.com/rs/xid v1.6.0
 	github.com/rs/zerolog v1.33.0
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible

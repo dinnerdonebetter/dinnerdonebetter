@@ -81,7 +81,7 @@ func NewMailgunEmailer(cfg *Config, logger logging.Logger, tracerProvider tracin
 
 // SendEmail sends an email.
 func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMessage) error {
-	_, span := e.tracer.StartSpan(ctx)
+	ctx, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := e.logger.WithValue("email.subject", details.Subject).WithValue("email.to_address", details.ToAddress)

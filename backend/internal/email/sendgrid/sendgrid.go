@@ -81,7 +81,7 @@ var ErrSendgridAPIResponse = errors.New("sendgrid request error")
 
 // SendEmail sends an email.
 func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMessage) error {
-	_, span := e.tracer.StartSpan(ctx)
+	ctx, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
@@ -125,7 +125,7 @@ func (e *Emailer) preparePersonalization(to *mail.Email, data map[string]any) *m
 
 // sendDynamicTemplateEmail sends an email.
 func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.Email, templateID string, data map[string]any, request rest.Request) error {
-	_, span := e.tracer.StartSpan(ctx)
+	ctx, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
 	tracing.AttachToSpan(span, "to_email", to.Address)

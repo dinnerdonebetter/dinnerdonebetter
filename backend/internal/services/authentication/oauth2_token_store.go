@@ -23,7 +23,7 @@ type oauth2TokenStoreImpl struct {
 
 // Create implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo) error {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	info.SetAccessExpiresIn(24 * time.Hour)
@@ -59,7 +59,7 @@ func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo
 
 // RemoveByCode implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) RemoveByCode(ctx context.Context, code string) error {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithValue("code", code)
@@ -74,7 +74,7 @@ func (s *oauth2TokenStoreImpl) RemoveByCode(ctx context.Context, code string) er
 
 // RemoveByAccess implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) RemoveByAccess(ctx context.Context, access string) error {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithValue("access", access)
@@ -89,7 +89,7 @@ func (s *oauth2TokenStoreImpl) RemoveByAccess(ctx context.Context, access string
 
 // RemoveByRefresh implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) RemoveByRefresh(ctx context.Context, refresh string) error {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithValue("refresh", refresh)
@@ -104,7 +104,7 @@ func (s *oauth2TokenStoreImpl) RemoveByRefresh(ctx context.Context, refresh stri
 
 // GetByCode implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) GetByCode(ctx context.Context, code string) (oauth2.TokenInfo, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithValue("code", code)
@@ -120,7 +120,7 @@ func (s *oauth2TokenStoreImpl) GetByCode(ctx context.Context, code string) (oaut
 
 // GetByAccess implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) GetByAccess(ctx context.Context, access string) (oauth2.TokenInfo, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithValue("access", access)
@@ -136,7 +136,7 @@ func (s *oauth2TokenStoreImpl) GetByAccess(ctx context.Context, access string) (
 
 // GetByRefresh implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) GetByRefresh(ctx context.Context, refresh string) (oauth2.TokenInfo, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithValue("refresh", refresh)

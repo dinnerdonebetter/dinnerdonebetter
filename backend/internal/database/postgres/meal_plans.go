@@ -502,7 +502,7 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 }
 
 func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*types.MealPlan, error) {
-	_, span := q.tracer.StartSpan(ctx)
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	results, err := q.generatedQuerier.GetFinalizedMealPlansWithoutGroceryListInit(ctx, q.db)

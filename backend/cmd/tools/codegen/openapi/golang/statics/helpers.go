@@ -65,7 +65,7 @@ func argIsNotPointerOrNil(i any) error {
 // unmarshalBody takes an HTTP response and JSON decodes its body into a destination value. The error returned here
 // should only ever be received in testing, and should never be encountered by an end-user.
 func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest any) error {
-	_, span := c.tracer.StartSpan(ctx)
+	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.WithResponse(res)

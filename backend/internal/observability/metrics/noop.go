@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/stretchr/testify/mock"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
 )
 
@@ -16,44 +15,48 @@ type noopProvider struct {
 	mock.Mock
 }
 
-// NewFloat64Counter satisfies our interface
-func (m *noopProvider) NewFloat64Counter(_ string, _ ...metric.Float64CounterOption) (metric.Float64Counter, error) {
-	return otel.Meter("noop").Float64Counter("")
+// NewFloat64Counter is a no-op method.
+func (m *noopProvider) NewFloat64Counter(string, ...metric.Float64CounterOption) (Float64Counter, error) {
+	return nil, nil
 }
 
-// NewFloat64Gauge satisfies our interface
-func (m *noopProvider) NewFloat64Gauge(_ string, _ ...metric.Float64GaugeOption) (metric.Float64Gauge, error) {
-	return otel.Meter("noop").Float64Gauge("")
+// NewFloat64Gauge is a no-op method.
+func (m *noopProvider) NewFloat64Gauge(string, ...metric.Float64GaugeOption) (Float64Gauge, error) {
+	return nil, nil
 }
 
-// NewFloat64UpDownCounter satisfies our interface
-func (m *noopProvider) NewFloat64UpDownCounter(_ string, _ ...metric.Float64UpDownCounterOption) (metric.Float64UpDownCounter, error) {
-	return otel.Meter("noop").Float64UpDownCounter("")
+// NewFloat64UpDownCounter is a no-op method.
+func (m *noopProvider) NewFloat64UpDownCounter(string, ...metric.Float64UpDownCounterOption) (Float64UpDownCounter, error) {
+	return nil, nil
 }
 
-// NewFloat64Histogram satisfies our interface
-func (m *noopProvider) NewFloat64Histogram(_ string, _ ...metric.Float64HistogramOption) (metric.Float64Histogram, error) {
-	return otel.Meter("noop").Float64Histogram("")
+// NewFloat64Histogram is a no-op method.
+func (m *noopProvider) NewFloat64Histogram(string, ...metric.Float64HistogramOption) (Float64Histogram, error) {
+	return nil, nil
 }
 
-// NewInt64Counter satisfies our interface
-func (m *noopProvider) NewInt64Counter(_ string, _ ...metric.Int64CounterOption) (metric.Int64Counter, error) {
-	return otel.Meter("noop").Int64Counter("")
+// NewInt64Counter is a no-op method.
+func (m *noopProvider) NewInt64Counter(string, ...metric.Int64CounterOption) (Int64Counter, error) {
+	return nil, nil
 }
 
-// NewInt64Gauge satisfies our interface
-func (m *noopProvider) NewInt64Gauge(_ string, _ ...metric.Int64GaugeOption) (metric.Int64Gauge, error) {
-	return otel.Meter("noop").Int64Gauge("")
+// NewInt64Gauge is a no-op method.
+func (m *noopProvider) NewInt64Gauge(string, ...metric.Int64GaugeOption) (Int64Gauge, error) {
+	return nil, nil
 }
 
-// NewInt64UpDownCounter satisfies our interface
-func (m *noopProvider) NewInt64UpDownCounter(_ string, _ ...metric.Int64UpDownCounterOption) (metric.Int64UpDownCounter, error) {
-	return otel.Meter("noop").Int64UpDownCounter("")
+// NewInt64UpDownCounter is a no-op method.
+func (m *noopProvider) NewInt64UpDownCounter(string, ...metric.Int64UpDownCounterOption) (Int64UpDownCounter, error) {
+	return nil, nil
 }
 
-// NewInt64Histogram satisfies our interface
-func (m *noopProvider) NewInt64Histogram(_ string, _ ...metric.Int64HistogramOption) (metric.Int64Histogram, error) {
-	return otel.Meter("noop").Int64Histogram("")
+// NewInt64Histogram is a no-op method.
+func (m *noopProvider) NewInt64Histogram(string, ...metric.Int64HistogramOption) (Int64Histogram, error) {
+	return nil, nil
+}
+
+func (m *noopProvider) MeterProvider() metric.MeterProvider {
+	return nil
 }
 
 // Shutdown satisfies our interface

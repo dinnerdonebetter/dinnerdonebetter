@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 
@@ -18,6 +19,8 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	servertiming "github.com/mitchellh/go-server-timing"
+	"github.com/riandyrn/otelchi"
+	otelchimetric "github.com/riandyrn/otelchi/metric"
 )
 
 const (
@@ -32,12 +35,14 @@ var (
 var _ routing.Router = (*router)(nil)
 
 type router struct {
-	router chi.Router
-	cfg    *routing.Config
-	logger logging.Logger
+	router         chi.Router
+	cfg            *routing.Config
+	logger         logging.Logger
+	tracerProvider tracing.TracerProvider
+	metricProvider metrics.Provider
 }
 
-func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
+func buildChiMux(logger logging.Logger, tracer tracing.Tracer, metricProvider metrics.Provider, cfg *routing.Config) chi.Router {
 	corsHandler := cors.New(cors.Options{
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
 			u, err := url.Parse(origin)
@@ -61,9 +66,22 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 		MaxAge:           maxCORSAge,
 	})
 
+	baseCfg := otelchimetric.NewBaseConfig(cfg.ServiceName, otelchimetric.WithMeterProvider(metricProvider.MeterProvider()))
+
 	mux := chi.NewRouter()
 	mux.Use(
-		buildTracingMiddleware(tracer),
+		otelchimetric.NewRequestDurationMillis(baseCfg),
+		otelchimetric.NewRequestInFlight(baseCfg),
+		otelchimetric.NewResponseSizeBytes(baseCfg),
+		otelchi.Middleware(
+			cfg.ServiceName,
+			// otelchi.WithPublicEndpoint(),
+			otelchi.WithRequestMethodInSpanName(true),
+			otelchi.WithTraceResponseHeaders(otelchi.TraceHeaderConfig{
+				TraceIDHeader:      "X-Trace-ID",
+				TraceSampledHeader: "X-Trace-Sampled",
+			}),
+		),
 		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), tracer, cfg.SilenceRouteLogging),
 		chimiddleware.RequestID,
 		chimiddleware.RealIP,
@@ -80,18 +98,21 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 	return mux
 }
 
-func buildRouter(mux chi.Router, l logging.Logger, tracerProvider tracing.TracerProvider, cfg *routing.Config) *router {
+func buildRouter(mux chi.Router, l logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider, cfg *routing.Config) *router {
 	logger := logging.EnsureLogger(l)
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("router"))
 
 	if mux == nil {
 		logger.Debug("starting with a new mux")
-		mux = buildChiMux(logger, tracer, cfg)
+		mux = buildChiMux(logger, tracer, metricProvider, cfg)
 	}
 
 	r := &router{
-		router: mux,
-		logger: logger,
+		router:         mux,
+		logger:         logger,
+		tracerProvider: tracerProvider,
+		metricProvider: metricProvider,
+		cfg:            cfg,
 	}
 
 	return r
@@ -110,12 +131,18 @@ func convertMiddleware(in ...routing.Middleware) []func(handler http.Handler) ht
 }
 
 // NewRouter constructs a new router.
-func NewRouter(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *routing.Config) routing.Router {
-	return buildRouter(nil, logger, tracerProvider, cfg)
+func NewRouter(logger logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider, cfg *routing.Config) routing.Router {
+	return buildRouter(nil, logger, tracerProvider, metricProvider, cfg)
 }
 
 func (r *router) clone() *router {
-	return buildRouter(r.router, r.logger, tracing.NewNoopTracerProvider(), r.cfg)
+	return buildRouter(
+		r.router,
+		r.logger,
+		tracing.EnsureTracerProvider(r.tracerProvider),
+		metrics.EnsureMetricsProvider(r.metricProvider),
+		r.cfg,
+	)
 }
 
 // WithMiddleware returns a router with certain middleware applied.
@@ -150,7 +177,13 @@ func (r *router) Routes() []*routing.Route {
 // Route lets you apply a set of routes to a subrouter with a provided pattern.
 func (r *router) Route(pattern string, routeFunction func(r routing.Router)) routing.Router {
 	r.router.Route(pattern, func(subrouter chi.Router) {
-		routeFunction(buildRouter(subrouter, r.logger, tracing.NewNoopTracerProvider(), r.cfg))
+		routeFunction(buildRouter(
+			subrouter,
+			r.logger,
+			tracing.EnsureTracerProvider(r.tracerProvider),
+			metrics.EnsureMetricsProvider(r.metricProvider),
+			r.cfg,
+		))
 	})
 
 	return r

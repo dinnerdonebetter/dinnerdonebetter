@@ -15,9 +15,10 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Logging loggingcfg.Config `json:"logging" toml:"logging,omitempty"`
-		Metrics metricscfg.Config `json:"metrics" toml:"metrics,omitempty"`
-		Tracing tracingcfg.Config `json:"tracing" toml:"tracing,omitempty"`
+		ServiceName string            `json:"serviceName" toml:"service_name,omitempty"`
+		Logging     loggingcfg.Config `json:"logging" toml:"logging,omitempty"`
+		Metrics     metricscfg.Config `json:"metrics" toml:"metrics,omitempty"`
+		Tracing     tracingcfg.Config `json:"tracing" toml:"tracing,omitempty"`
 	}
 )
 
@@ -26,6 +27,9 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
+		validation.Field(&cfg.ServiceName),
+		validation.Field(&cfg.Logging),
+		validation.Field(&cfg.Metrics),
 		validation.Field(&cfg.Tracing),
 	)
 }

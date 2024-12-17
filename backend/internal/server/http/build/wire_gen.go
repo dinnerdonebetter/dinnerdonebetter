@@ -9,17 +9,17 @@ package build
 import (
 	"context"
 
-	config6 "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	config7 "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	config5 "github.com/dinnerdonebetter/backend/internal/featureflags/config"
+	config6 "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
-	config4 "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
+	config5 "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	config2 "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	config7 "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
+	config4 "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	config3 "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -90,8 +90,13 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
+	config10 := &observabilityConfig.Metrics
+	provider, err := config4.ProvideMetricsProvider(ctx, logger, config10)
+	if err != nil {
+		return nil, err
+	}
 	routingConfig := &cfg.Routing
-	router := chi.NewRouter(logger, tracerProvider, routingConfig)
+	router := chi.NewRouter(logger, tracerProvider, provider, routingConfig)
 	servicesConfig := &cfg.Services
 	authenticationConfig := &servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
@@ -99,28 +104,23 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
-	config10 := &cfg.Events
-	publisherProvider, err := config4.ProvidePublisherProvider(ctx, logger, tracerProvider, config10)
+	config11 := &cfg.Events
+	publisherProvider, err := config5.ProvidePublisherProvider(ctx, logger, tracerProvider, config11)
 	if err != nil {
 		return nil, err
 	}
-	config11 := &cfg.FeatureFlags
+	config12 := &cfg.FeatureFlags
 	client := tracing.BuildTracedHTTPClient()
-	featureFlagManager, err := config5.ProvideFeatureFlagManager(config11, logger, tracerProvider, client)
+	featureFlagManager, err := config6.ProvideFeatureFlagManager(config12, logger, tracerProvider, client)
 	if err != nil {
 		return nil, err
 	}
-	config12 := &cfg.Analytics
-	eventReporter, err := config6.ProvideEventReporter(config12, logger, tracerProvider)
+	config13 := &cfg.Analytics
+	eventReporter, err := config7.ProvideEventReporter(config13, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	routeParamManager := chi.NewRouteParamManager()
-	config13 := &observabilityConfig.Metrics
-	provider, err := config7.ProvideMetricsProvider(ctx, logger, config13)
-	if err != nil {
-		return nil, err
-	}
 	authDataService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, provider)
 	if err != nil {
 		return nil, err

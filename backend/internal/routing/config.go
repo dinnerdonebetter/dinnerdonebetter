@@ -13,7 +13,9 @@ const (
 
 // Config configures our router.
 type Config struct {
-	_                      struct{} `json:"-"`
+	_ struct{} `json:"-"`
+
+	ServiceName            string   `json:"serviceName,omitempty" toml:"service_name,omitempty"`
 	Provider               string   `json:"provider,omitempty"            toml:"provider,omitempty"`
 	ValidDomains           []string `json:"validDomains,omitempty"        toml:"valid_domains,omitempty"`
 	EnableCORSForLocalhost bool     `json:"enableCORSForLocalhost"        toml:"enable_cors_for_localhost"`
@@ -25,6 +27,7 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a router config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
+		validation.Field(&cfg.ServiceName, validation.Required),
 		validation.Field(&cfg.Provider, validation.In(ChiProvider)),
 	)
 }

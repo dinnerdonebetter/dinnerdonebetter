@@ -152,6 +152,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/posthog/posthog-go v1.2.24 // indirect
 	github.com/pquerna/otp v1.4.0 // indirect
+	github.com/riandyrn/otelchi v0.11.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect

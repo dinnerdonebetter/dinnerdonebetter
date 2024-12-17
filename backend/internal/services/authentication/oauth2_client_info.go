@@ -6,7 +6,7 @@ import (
 	"github.com/go-oauth2/oauth2/v4"
 )
 
-var _ oauth2.ClientInfo = &oauth2ClientInfoImpl{}
+var _ oauth2.ClientInfo = (*oauth2ClientInfoImpl)(nil)
 
 type oauth2ClientInfoImpl struct {
 	client *types.OAuth2Client

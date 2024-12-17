@@ -20,13 +20,13 @@ import (
 func buildLoggingMiddleware(logger logging.Logger, tracer tracing.Tracer, silenceRouteLogging bool) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			_, span := tracer.StartSpan(req.Context())
+			ctx, span := tracer.StartSpan(req.Context())
 			defer span.End()
 
 			ww := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
 			start := time.Now()
 
-			next.ServeHTTP(ww, req)
+			next.ServeHTTP(ww, req.WithContext(ctx))
 
 			if !silenceRouteLogging {
 				logger.WithRequest(req).WithSpan(span).WithValues(map[string]any{
