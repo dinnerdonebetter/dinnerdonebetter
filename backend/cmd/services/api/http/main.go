@@ -114,7 +114,7 @@ func main() {
 	logger := loggingcfg.ProvideLogger(&loggingcfg.Config{
 		Provider:       loggingcfg.ProviderSlog,
 		OutputFilepath: "/var/log/dinnerdonebetter/demo-server.log",
-	}).WithValue("service.name", "demo-server")
+	})
 
 	meterProvider, _, shutdown := initProvider()
 	defer shutdown()
