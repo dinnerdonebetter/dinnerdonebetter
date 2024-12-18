@@ -898,6 +898,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 
 	cfg := &config.APIServiceConfig{
 		Routing: routingcfg.Config{
+			ServiceName:            otelServiceName,
 			Provider:               routingcfg.ChiProvider,
 			EnableCORSForLocalhost: true,
 			SilenceRouteLogging:    false,
