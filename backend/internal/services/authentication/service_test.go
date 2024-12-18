@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"testing"
 
-	"go.opentelemetry.io/otel/metric"
-
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -24,6 +22,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/metric"
 )
 
 func buildTestService(t *testing.T) *service {
