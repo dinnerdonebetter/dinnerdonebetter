@@ -15,7 +15,7 @@ const (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	ServiceName            string   `json:"serviceName,omitempty" toml:"service_name,omitempty"`
+	ServiceName            string   `json:"serviceName,omitempty"         toml:"service_name,omitempty"`
 	Provider               string   `json:"provider,omitempty"            toml:"provider,omitempty"`
 	ValidDomains           []string `json:"validDomains,omitempty"        toml:"valid_domains,omitempty"`
 	EnableCORSForLocalhost bool     `json:"enableCORSForLocalhost"        toml:"enable_cors_for_localhost"`

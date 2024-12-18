@@ -16,9 +16,9 @@ type (
 		_ struct{} `json:"-"`
 
 		ServiceName string            `json:"serviceName" toml:"service_name,omitempty"`
-		Logging     loggingcfg.Config `json:"logging" toml:"logging,omitempty"`
-		Metrics     metricscfg.Config `json:"metrics" toml:"metrics,omitempty"`
-		Tracing     tracingcfg.Config `json:"tracing" toml:"tracing,omitempty"`
+		Logging     loggingcfg.Config `json:"logging"     toml:"logging,omitempty"`
+		Metrics     metricscfg.Config `json:"metrics"     toml:"metrics,omitempty"`
+		Tracing     tracingcfg.Config `json:"tracing"     toml:"tracing,omitempty"`
 	}
 )
 
