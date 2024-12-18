@@ -32,29 +32,3 @@ jobs:
       - name: Build backend
         working-directory: backend/
         run: make build
-
-  cloud_functions:
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: [ '1.23.x' ]
-        script-to-build: [
-          'data_changes',
-          'outbound_emailer',
-          'search_indexer',
-          'user_data_aggregator',
-          'webhook_executor',
-        ]
-    steps:
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.go-version }}
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build data changes cloud function directory
-        working-directory: backend/
-        run: ./scripts/build_cloud_function.sh ${{ matrix.script-to-build }}
