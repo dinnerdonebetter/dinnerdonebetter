@@ -618,7 +618,7 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 	})
 }
 
-//nolint:paralleltest // pending race condition fix
+//nolint:paralleltest // pending race condition fix on Goth's part.
 func Test_service_SSOProviderHandler(T *testing.T) {
 	// T.Parallel()
 

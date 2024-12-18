@@ -45,7 +45,7 @@ func buildTestService(t *testing.T) *service {
 	).Return(func(*http.Request) string { return "" })
 
 	mmp := &metrics.MockProvider{}
-	mmp.On("NewInt64Counter", rejectedRequestCounterName, ([]metric.Int64CounterOption)(nil)).Return(
+	mmp.On("NewInt64Counter", rejectedRequestCounterName, []metric.Int64CounterOption(nil)).Return(
 		metrics.Int64CounterForTest(t.Name()), nil,
 	)
 
