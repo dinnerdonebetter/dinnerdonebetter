@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	"go.opentelemetry.io/otel/metric"
+
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -44,7 +46,9 @@ func buildTestService(t *testing.T) *service {
 	).Return(func(*http.Request) string { return "" })
 
 	mmp := &metrics.MockProvider{}
-	mmp.On("NewInt64Counter", rejectedRequestCounterName).Return(nil, nil)
+	mmp.On("NewInt64Counter", rejectedRequestCounterName, ([]metric.Int64CounterOption)(nil)).Return(
+		metrics.Int64CounterForTest(t.Name()), nil,
+	)
 
 	s, err := ProvideService(
 		context.Background(),
