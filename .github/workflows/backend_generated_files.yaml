@@ -28,7 +28,7 @@ jobs:
       
       - name: Ensure queries and querier can be generated
         working-directory: backend
-        run: make queries sqlc_struct_check format
+        run: make queries sqlc_struct_check format_golang
       
       - name: Check for changes
         run: git diff --exit-code
