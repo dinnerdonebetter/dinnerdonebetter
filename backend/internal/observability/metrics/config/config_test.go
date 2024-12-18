@@ -33,7 +33,9 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		cfg := &Config{
 			Provider: ProviderOtel,
 			Otel: &otelgrpc.Config{
-				CollectorEndpoint: t.Name(),
+				ServiceName:        t.Name(),
+				CollectorEndpoint:  t.Name(),
+				CollectionInterval: 1,
 			},
 		}
 

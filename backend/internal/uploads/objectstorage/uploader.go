@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 
-	"github.com/aws/aws-sdk-go/aws/session"
+	s3v2 "github.com/aws/aws-sdk-go-v2/service/s3"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"gocloud.dev/blob"
 	"gocloud.dev/blob/fileblob"
@@ -98,7 +98,7 @@ func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 			return ErrNilConfig
 		}
 
-		if u.bucket, err = s3blob.OpenBucket(ctx, session.Must(session.NewSession()), cfg.S3Config.BucketName, &s3blob.Options{
+		if u.bucket, err = s3blob.OpenBucketV2(ctx, s3v2.New(s3v2.Options{}), cfg.S3Config.BucketName, &s3blob.Options{
 			UseLegacyList: false,
 		}); err != nil {
 			return fmt.Errorf("initializing s3 bucket: %w", err)

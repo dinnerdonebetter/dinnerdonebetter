@@ -21,7 +21,7 @@ func TestRequestIDFunc(T *testing.T) {
 		expected := identifiers.New()
 		ctx := context.WithValue(context.Background(), chimiddleware.RequestIDKey, expected)
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/", http.NoBody)
 		require.NoError(t, err)
 
 		actual := RequestIDFunc(req)

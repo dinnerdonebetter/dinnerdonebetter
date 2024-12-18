@@ -58,10 +58,12 @@ func NewSlogLogger(lvl logging.Level, outputFilepath string) logging.Logger {
 	writers := []io.Writer{os.Stdout}
 	if outputFilepath != "" {
 		// we have to create the file ahead of time with these permissions, or else lumberjack will foolishly assume 600 is fine (it isn't)
-		f, err := os.OpenFile(outputFilepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+		//nolint:gosec // it needs to be 0o0644
+		f, err := os.OpenFile(outputFilepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o0644)
 		if err != nil {
 			log.Fatalf("Failed to create file: %v", err)
 		}
+
 		if err = f.Close(); err != nil {
 			log.Fatalf("Failed to close file: %v", err)
 		}

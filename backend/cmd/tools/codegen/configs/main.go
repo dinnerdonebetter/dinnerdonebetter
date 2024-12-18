@@ -1,11 +1,7 @@
 package main
 
 import (
-	"context"
 	"encoding/base64"
-	"encoding/json"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -96,38 +92,6 @@ const (
 	workerQueueAddress            = "worker_queue:6379"
 	localOAuth2TokenEncryptionKey = debugCookieHashKey
 )
-
-func saveConfig(ctx context.Context, outputPath string, cfg *config.APIServiceConfig, indent, validate bool) error {
-	/* #nosec G301 */
-	if err := os.MkdirAll(filepath.Dir(outputPath), 0o750); err != nil {
-		// okay, who gives a shit?
-		_ = err
-	}
-
-	if validate {
-		if err := cfg.ValidateWithContext(ctx, true); err != nil {
-			return err
-		}
-	}
-
-	var (
-		output []byte
-		err    error
-	)
-
-	if indent {
-		output, err = json.MarshalIndent(cfg, "", "\t")
-	} else {
-		output, err = json.Marshal(cfg)
-	}
-
-	if err != nil {
-		return err
-	}
-
-	/* #nosec G306 */
-	return os.WriteFile(outputPath, output, 0o644)
-}
 
 func buildLocalDevConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
@@ -398,25 +362,6 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},
-	}
-}
-
-func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string) error {
-	const localUploadsDir = "artifacts/uploads"
-	const localRedisAddr = "localhost:6379"
-	return func(ctx context.Context, filePath string) error {
-		cfg := buildLocalDevConfig()
-
-		if local {
-			cfg.Database.ConnectionDetails = "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable"
-			cfg.Events.Consumers.Redis.QueueAddresses = []string{localRedisAddr}
-			cfg.Events.Publishers.Redis.QueueAddresses = []string{localRedisAddr}
-			cfg.Services.Users.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
-			cfg.Services.Recipes.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
-			cfg.Services.RecipeSteps.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
-		}
-
-		return saveConfig(ctx, filePath, cfg, true, true)
 	}
 }
 
@@ -927,12 +872,6 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			},
 		},
 	}
-}
-
-func integrationTestConfig(ctx context.Context, filePath string) error {
-	cfg := buildIntegrationTestsConfig()
-
-	return saveConfig(ctx, filePath, cfg, true, true)
 }
 
 func main() {

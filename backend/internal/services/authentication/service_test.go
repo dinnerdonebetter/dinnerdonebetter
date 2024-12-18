@@ -20,6 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -42,6 +43,9 @@ func buildTestService(t *testing.T) *service {
 		AuthProviderParamKey,
 	).Return(func(*http.Request) string { return "" })
 
+	mmp := &metrics.MockProvider{}
+	mmp.On("NewInt64Counter", rejectedRequestCounterName).Return(nil, nil)
+
 	s, err := ProvideService(
 		context.Background(),
 		logger,
@@ -55,9 +59,11 @@ func buildTestService(t *testing.T) *service {
 		&featureflags.NoopFeatureFlagManager{},
 		analytics.NewNoopEventReporter(),
 		rpm,
-		metrics.NewNoopMetricsProvider(),
+		mmp,
 	)
 	require.NoError(t, err)
+
+	mock.AssertExpectationsForObjects(t, pp, rpm, mmp)
 
 	return s.(*service)
 }

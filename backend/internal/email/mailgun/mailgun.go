@@ -91,7 +91,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 		return types.ErrCircuitBroken
 	}
 
-	msg := e.client.NewMessage(details.FromName, details.Subject, details.HTMLContent, details.ToAddress)
+	msg := mailgun.NewMessage(details.FromName, details.Subject, details.HTMLContent, details.ToAddress)
 	if _, _, err := e.client.Send(ctx, msg); err != nil {
 		e.circuitBreaker.Failed()
 		return observability.PrepareAndLogError(err, logger, span, "sending email")

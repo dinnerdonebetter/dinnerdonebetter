@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"os"
 	"runtime/debug"
 
@@ -55,7 +53,6 @@ type (
 	}
 
 	genericCloudConfigFetcher[T configurations] func(context.Context) (*T, error)
-	cloudConfigFetcher                          func(context.Context) (*APIServiceConfig, error)
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
@@ -315,12 +312,7 @@ func FetchForApplication[T configurations](ctx context.Context, cff genericCloud
 	} else if configFilepath := os.Getenv(FilePathEnvVarKey); configFilepath != "" {
 		configBytes, err := os.ReadFile(configFilepath)
 		if err != nil {
-			files, _ := ioutil.ReadDir(configFilepath)
-			for i, file := range files {
-				log.Printf("%d: %s %v\n", i, file.Name(), file.IsDir())
-			}
-
-			return nil, fmt.Errorf("reading local config file of %d files: %w", len(files), err)
+			return nil, fmt.Errorf("reading local config file: %w", err)
 		}
 
 		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {

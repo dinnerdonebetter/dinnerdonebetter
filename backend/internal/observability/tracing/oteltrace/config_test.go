@@ -15,8 +15,9 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			CollectorEndpoint: t.Name(),
-			ServiceName:       t.Name(),
+			CollectorEndpoint:         t.Name(),
+			ServiceName:               t.Name(),
+			SpanCollectionProbability: 1,
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

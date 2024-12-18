@@ -127,7 +127,7 @@ func splitReverseConcat(input string) string {
 }
 
 const (
-	defaultImage = "postgres:17"
+	defaultPostgresImage = "postgres:17"
 )
 
 func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *postgres.PostgresContainer) {
@@ -139,9 +139,9 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	var container *postgres.PostgresContainer
 	err := try.Do(func(attempt int) (bool, error) {
 		var containerErr error
-		container, containerErr = postgres.RunContainer(
+		container, containerErr = postgres.Run(
 			ctx,
-			testcontainers.WithImage(defaultImage),
+			defaultPostgresImage,
 			postgres.WithDatabase(splitReverseConcat(dbUsername)),
 			postgres.WithUsername(dbUsername),
 			postgres.WithPassword(reverseString(dbUsername)),

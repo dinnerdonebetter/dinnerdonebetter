@@ -1,19 +1,13 @@
 package chi
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/propagation"
 )
 
 // buildLoggingMiddleware builds a logging middleware.
@@ -35,32 +29,6 @@ func buildLoggingMiddleware(logger logging.Logger, tracer tracing.Tracer, silenc
 					"written": ww.BytesWritten(),
 				}).Info("response served")
 			}
-		})
-	}
-}
-
-// buildTracingMiddleware builds a tracing middleware.
-func buildTracingMiddleware(tracer tracing.Tracer) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			ctx := otel.GetTextMapPropagator().Extract(req.Context(), propagation.HeaderCarrier(req.Header))
-			spanName := fmt.Sprintf("%s %s", req.Method, req.URL.Path)
-
-			ctx, span := tracer.StartCustomSpan(ctx, spanName)
-			defer span.End()
-
-			tracing.AttachRequestToSpan(span, req)
-			req = req.WithContext(ctx)
-
-			responseWriter := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
-			next.ServeHTTP(responseWriter, req)
-
-			for k, v := range responseWriter.Header() {
-				span.SetAttributes(attribute.String(fmt.Sprintf("%s.%s", keys.ResponseHeadersKey, k), strings.Join(v, ";")))
-			}
-
-			span.SetAttributes(attribute.Int(keys.ResponseStatusKey, responseWriter.Status()))
-			span.SetAttributes(attribute.Int(keys.ResponseBytesWrittenKey, responseWriter.BytesWritten()))
 		})
 	}
 }

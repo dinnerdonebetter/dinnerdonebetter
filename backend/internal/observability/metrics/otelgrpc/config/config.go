@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	// ProviderOtel indicates you'd like to report metrics to OpenTelemetry
+	// ProviderOtel indicates you'd like to report metrics to OpenTelemetry.
 	ProviderOtel = "otelgrpc"
 )
 

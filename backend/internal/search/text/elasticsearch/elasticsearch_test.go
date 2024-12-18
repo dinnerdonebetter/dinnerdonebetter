@@ -11,7 +11,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
 	elasticsearchcontainers "github.com/testcontainers/testcontainers-go/modules/elasticsearch"
 )
 
@@ -36,8 +35,9 @@ func TestConfig_provideElasticsearchClient(T *testing.T) {
 func buildContainerBackedElasticsearchConfig(t *testing.T, ctx context.Context) (config *Config, shutdownFunction func(context.Context) error) {
 	t.Helper()
 
-	elasticsearchContainer, err := elasticsearchcontainers.RunContainer(ctx,
-		testcontainers.WithImage("elasticsearch:8.10.2"),
+	elasticsearchContainer, err := elasticsearchcontainers.Run(
+		ctx,
+		"elasticsearch:8.10.2",
 		elasticsearchcontainers.WithPassword("arbitraryPassword"),
 	)
 	require.NoError(t, err)

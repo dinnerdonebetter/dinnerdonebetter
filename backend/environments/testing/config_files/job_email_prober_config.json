@@ -1,5 +1,6 @@
 {
 	"observability": {
+		"serviceName": "",
 		"logging": {
 			"level": 0,
 			"provider": "slog"

@@ -25,8 +25,9 @@ import (
 )
 
 const (
-	serviceName          = "auth_service"
-	AuthProviderParamKey = "auth_provider"
+	serviceName                = "auth_service"
+	AuthProviderParamKey       = "auth_provider"
+	rejectedRequestCounterName = "auth_service.rejected_requests"
 )
 
 // TODO: remove this when Goth can handle concurrency.
@@ -81,10 +82,11 @@ func ProvideService(
 
 	signer, err := authentication.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
 	if err != nil {
+		metrics.NewNoopMetricsProvider()
 		return nil, fmt.Errorf("creating json web token signer: %w", err)
 	}
 
-	rejectedRequestCounter, err := metricsProvider.NewInt64Counter("auth_service.rejected_requests")
+	rejectedRequestCounter, err := metricsProvider.NewInt64Counter(rejectedRequestCounterName)
 	if err != nil {
 		return nil, fmt.Errorf("creating rejected request counter: %w", err)
 	}

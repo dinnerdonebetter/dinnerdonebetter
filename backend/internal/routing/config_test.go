@@ -15,7 +15,8 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			Provider: ChiProvider,
+			ServiceName: t.Name(),
+			Provider:    ChiProvider,
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

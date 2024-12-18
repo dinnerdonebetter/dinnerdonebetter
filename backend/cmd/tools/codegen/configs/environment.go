@@ -47,12 +47,13 @@ func renderJSON(obj any, pretty bool) []byte {
 	return b
 }
 
-func writeFile(path string, content []byte) error {
-	return os.WriteFile(path, content, 0o0644)
+func writeFile(p string, content []byte) error {
+	//nolint:gosec // I want this to be 644 I think
+	return os.WriteFile(p, content, 0o0644)
 }
 
 func (s *environmentConfigSet) Render(outputDir string) error {
-	if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
+	if err := os.MkdirAll(outputDir, 0o0750); err != nil {
 		return err
 	}
 	errs := &multierror.Error{}

@@ -66,7 +66,9 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				Segment:  &segment.Config{},
 			},
 			Encoding: encoding.Config{ContentType: "application/json"},
-			Routing:  routing.Config{},
+			Routing: routing.Config{
+				ServiceName: t.Name(),
+			},
 			Database: dbconfig.Config{},
 			Meta:     MetaSettings{},
 			Events:   msgconfig.Config{},
