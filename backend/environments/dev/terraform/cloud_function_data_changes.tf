@@ -59,79 +59,79 @@ resource "google_project_iam_member" "data_changes_user" {
   member  = format("serviceAccount:%s", google_service_account.data_changes_user_service_account.email)
 }
 
-resource "google_cloudfunctions2_function" "data_changes" {
-  name        = "data-changes"
-  location    = local.gcp_region
-  description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)
-
-  build_config {
-    runtime     = local.go_runtime
-    entry_point = "ProcessDataChange"
-
-    source {
-      storage_source {
-        bucket = google_storage_bucket.data_changes_bucket.name
-        object = google_storage_bucket_object.data_changes_archive.name
-      }
-    }
-  }
-
-  service_config {
-    max_instance_count             = 1
-    available_memory               = "128Mi"
-    ingress_settings               = "ALLOW_INTERNAL_ONLY"
-    all_traffic_on_latest_revision = true
-    service_account_email          = google_service_account.data_changes_user_service_account.email
-
-    environment_variables = {
-      GOOGLE_CLOUD_SECRET_STORE_PREFIX      = format("projects/%d/secrets", data.google_project.project.number)
-      GOOGLE_CLOUD_PROJECT_ID               = data.google_project.project.project_id
-      OUTBOUND_EMAILS_TOPIC_NAME            = google_pubsub_topic.outbound_emails_topic.name
-      SEARCH_INDEXING_TOPIC_NAME            = google_pubsub_topic.search_index_requests_topic.name
-      WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME = google_pubsub_topic.webhook_execution_requests_topic.name
-      DINNER_DONE_BETTER_DATABASE_USER      = google_sql_user.api_user.name,
-      DINNER_DONE_BETTER_DATABASE_NAME      = local.database_name,
-      // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.
-      // You have to go into the Cloud Run interface and deploy a new revision with a database connection, which will persist upon further deployments.
-      DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
-      GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
-      GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
-    }
-
-    secret_environment_variables {
-      key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
-      project_id = local.project_id
-      secret     = google_secret_manager_secret.api_user_database_password.secret_id
-      version    = "latest"
-    }
-
-    secret_environment_variables {
-      key        = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
-      project_id = local.project_id
-      secret     = google_secret_manager_secret.sendgrid_api_token.secret_id
-      version    = "latest"
-    }
-
-    secret_environment_variables {
-      key        = "DINNER_DONE_BETTER_SEGMENT_API_TOKEN"
-      project_id = local.project_id
-      secret     = google_secret_manager_secret.segment_api_token.secret_id
-      version    = "latest"
-    }
-
-    secret_environment_variables {
-      key        = "DINNER_DONE_BETTER_POSTHOG_API_KEY"
-      project_id = local.project_id
-      secret     = google_secret_manager_secret.posthog_api_key.secret_id
-      version    = "latest"
-    }
-  }
-
-  event_trigger {
-    trigger_region        = local.gcp_region
-    event_type            = local.pubsub_topic_publish_event
-    pubsub_topic          = google_pubsub_topic.data_changes_topic.id
-    retry_policy          = "RETRY_POLICY_RETRY"
-    service_account_email = google_service_account.data_changes_user_service_account.email
-  }
-}
+# resource "google_cloudfunctions2_function" "data_changes" {
+#   name        = "data-changes"
+#   location    = local.gcp_region
+#   description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)
+#
+#   build_config {
+#     runtime     = local.go_runtime
+#     entry_point = "ProcessDataChange"
+#
+#     source {
+#       storage_source {
+#         bucket = google_storage_bucket.data_changes_bucket.name
+#         object = google_storage_bucket_object.data_changes_archive.name
+#       }
+#     }
+#   }
+#
+#   service_config {
+#     max_instance_count             = 1
+#     available_memory               = "128Mi"
+#     ingress_settings               = "ALLOW_INTERNAL_ONLY"
+#     all_traffic_on_latest_revision = true
+#     service_account_email          = google_service_account.data_changes_user_service_account.email
+#
+#     environment_variables = {
+#       GOOGLE_CLOUD_SECRET_STORE_PREFIX      = format("projects/%d/secrets", data.google_project.project.number)
+#       GOOGLE_CLOUD_PROJECT_ID               = data.google_project.project.project_id
+#       OUTBOUND_EMAILS_TOPIC_NAME            = google_pubsub_topic.outbound_emails_topic.name
+#       SEARCH_INDEXING_TOPIC_NAME            = google_pubsub_topic.search_index_requests_topic.name
+#       WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME = google_pubsub_topic.webhook_execution_requests_topic.name
+#       DINNER_DONE_BETTER_DATABASE_USER      = google_sql_user.api_user.name,
+#       DINNER_DONE_BETTER_DATABASE_NAME      = local.database_name,
+#       // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.
+#       // You have to go into the Cloud Run interface and deploy a new revision with a database connection, which will persist upon further deployments.
+#       DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
+#       GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
+#       GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
+#     }
+#
+#     secret_environment_variables {
+#       key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
+#       project_id = local.project_id
+#       secret     = google_secret_manager_secret.api_user_database_password.secret_id
+#       version    = "latest"
+#     }
+#
+#     secret_environment_variables {
+#       key        = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
+#       project_id = local.project_id
+#       secret     = google_secret_manager_secret.sendgrid_api_token.secret_id
+#       version    = "latest"
+#     }
+#
+#     secret_environment_variables {
+#       key        = "DINNER_DONE_BETTER_SEGMENT_API_TOKEN"
+#       project_id = local.project_id
+#       secret     = google_secret_manager_secret.segment_api_token.secret_id
+#       version    = "latest"
+#     }
+#
+#     secret_environment_variables {
+#       key        = "DINNER_DONE_BETTER_POSTHOG_API_KEY"
+#       project_id = local.project_id
+#       secret     = google_secret_manager_secret.posthog_api_key.secret_id
+#       version    = "latest"
+#     }
+#   }
+#
+#   event_trigger {
+#     trigger_region        = local.gcp_region
+#     event_type            = local.pubsub_topic_publish_event
+#     pubsub_topic          = google_pubsub_topic.data_changes_topic.id
+#     retry_policy          = "RETRY_POLICY_RETRY"
+#     service_account_email = google_service_account.data_changes_user_service_account.email
+#   }
+# }

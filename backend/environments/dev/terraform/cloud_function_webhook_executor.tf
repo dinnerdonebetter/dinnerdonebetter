@@ -51,59 +51,59 @@ resource "google_project_iam_member" "webhook_executor_user" {
   member  = format("serviceAccount:%s", google_service_account.webhook_executor_user_service_account.email)
 }
 
-resource "google_cloudfunctions2_function" "webhook_executor" {
-  name        = "webhook-executor"
-  location    = local.gcp_region
-  description = format("Webhook Executor (%s)", data.archive_file.webhook_executor_function.output_md5)
-
-  build_config {
-    runtime     = local.go_runtime
-    entry_point = "ExecuteWebhook"
-
-    source {
-      storage_source {
-        bucket = google_storage_bucket.webhook_executor_bucket.name
-        object = google_storage_bucket_object.webhook_executor_archive.name
-      }
-    }
-  }
-
-  service_config {
-    max_instance_count             = 1
-    available_memory               = "128Mi"
-    ingress_settings               = "ALLOW_INTERNAL_ONLY"
-    all_traffic_on_latest_revision = true
-    service_account_email          = google_service_account.webhook_executor_user_service_account.email
-
-    environment_variables = {
-      DINNER_DONE_BETTER_SERVICE_ENVIRONMENT               = local.environment,
-      DINNER_DONE_BETTER_DATABASE_USER                     = google_sql_user.api_user.name,
-      DINNER_DONE_BETTER_DATABASE_NAME                     = local.database_name,
-      DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
-      GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
-      GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
-    }
-
-    secret_environment_variables {
-      key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
-      project_id = local.project_id
-      secret     = google_secret_manager_secret.api_user_database_password.secret_id
-      version    = "latest"
-    }
-
-    secret_environment_variables {
-      key        = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
-      project_id = local.project_id
-      secret     = google_secret_manager_secret.oauth2_token_encryption_key.secret_id
-      version    = "latest"
-    }
-  }
-
-  event_trigger {
-    trigger_region        = local.gcp_region
-    event_type            = local.pubsub_topic_publish_event
-    pubsub_topic          = google_pubsub_topic.webhook_execution_requests_topic.id
-    retry_policy          = "RETRY_POLICY_RETRY"
-    service_account_email = google_service_account.webhook_executor_user_service_account.email
-  }
-}
+# resource "google_cloudfunctions2_function" "webhook_executor" {
+#   name        = "webhook-executor"
+#   location    = local.gcp_region
+#   description = format("Webhook Executor (%s)", data.archive_file.webhook_executor_function.output_md5)
+#
+#   build_config {
+#     runtime     = local.go_runtime
+#     entry_point = "ExecuteWebhook"
+#
+#     source {
+#       storage_source {
+#         bucket = google_storage_bucket.webhook_executor_bucket.name
+#         object = google_storage_bucket_object.webhook_executor_archive.name
+#       }
+#     }
+#   }
+#
+#   service_config {
+#     max_instance_count             = 1
+#     available_memory               = "128Mi"
+#     ingress_settings               = "ALLOW_INTERNAL_ONLY"
+#     all_traffic_on_latest_revision = true
+#     service_account_email          = google_service_account.webhook_executor_user_service_account.email
+#
+#     environment_variables = {
+#       DINNER_DONE_BETTER_SERVICE_ENVIRONMENT               = local.environment,
+#       DINNER_DONE_BETTER_DATABASE_USER                     = google_sql_user.api_user.name,
+#       DINNER_DONE_BETTER_DATABASE_NAME                     = local.database_name,
+#       DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
+#       GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
+#       GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
+#     }
+#
+#     secret_environment_variables {
+#       key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
+#       project_id = local.project_id
+#       secret     = google_secret_manager_secret.api_user_database_password.secret_id
+#       version    = "latest"
+#     }
+#
+#     secret_environment_variables {
+#       key        = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
+#       project_id = local.project_id
+#       secret     = google_secret_manager_secret.oauth2_token_encryption_key.secret_id
+#       version    = "latest"
+#     }
+#   }
+#
+#   event_trigger {
+#     trigger_region        = local.gcp_region
+#     event_type            = local.pubsub_topic_publish_event
+#     pubsub_topic          = google_pubsub_topic.webhook_execution_requests_topic.id
+#     retry_policy          = "RETRY_POLICY_RETRY"
+#     service_account_email = google_service_account.webhook_executor_user_service_account.email
+#   }
+# }
