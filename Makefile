@@ -1,6 +1,6 @@
-PWD                    := $(shell pwd)
-MYSELF                 := $(shell id -u)
-MY_GROUP               := $(shell id -g)
+PWD      := $(shell pwd)
+MYSELF   := $(shell id -u)
+MY_GROUP := $(shell id -g)
 
 .PHONY: setup
 setup:
