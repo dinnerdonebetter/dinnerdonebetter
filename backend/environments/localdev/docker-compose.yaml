@@ -1,7 +1,5 @@
 services:
   redis:
-    logging:
-      driver: none
     hostname: worker_queue
     image: redis:7-bullseye
     container_name: redis
@@ -10,8 +8,6 @@ services:
     command: [ "redis-server", "--cluster-enabled yes" ]
 
   postgres:
-    logging:
-      driver: none
     container_name: postgres
     hostname: pgdatabase
     image: postgres:17
@@ -52,7 +48,7 @@ services:
         type: 'bind'
 
   grafana:
-    image: "grafana/grafana:11.4.0-ubuntu"
+    image: grafana/grafana:11.4.0-ubuntu
     restart: unless-stopped
     volumes:
       - source: 'config_files/grafana/grafana.ini'
@@ -93,6 +89,7 @@ services:
 
   api_server:
     hostname: api_server
+    restart: on-failure:3
     depends_on:
       - "postgres"
       - "redis"
