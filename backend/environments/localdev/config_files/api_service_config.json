@@ -8,7 +8,7 @@
 		},
 		"metrics": {
 			"otelgrpc": {
-				"serviceName": "api-service",
+				"serviceName": "dinner_done_better_api",
 				"metricsCollectorEndpoint": "otel_collector:4317",
 				"collectionInterval": 1000000000,
 				"insecure": true,
@@ -19,7 +19,7 @@
 		"tracing": {
 			"otelgrpc": {
 				"collector_endpoint": "otel_collector:4317",
-				"service_name": "api-service",
+				"service_name": "dinner_done_better_api",
 				"insecure": true,
 				"spanCollectionProbability": 1
 			},
@@ -71,6 +71,7 @@
 		"debug": true
 	},
 	"routing": {
+		"serviceName": "dinner_done_better_api",
 		"provider": "chi",
 		"enableCORSForLocalhost": true
 	},

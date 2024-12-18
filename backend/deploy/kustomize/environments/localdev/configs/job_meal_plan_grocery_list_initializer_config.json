@@ -7,7 +7,7 @@
 		},
 		"metrics": {
 			"otelgrpc": {
-				"serviceName": "ddb.api",
+				"serviceName": "dinner_done_better_api",
 				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
 				"collectionInterval": 3000000000,
 				"insecure": false,
@@ -18,7 +18,7 @@
 		"tracing": {
 			"otelgrpc": {
 				"collector_endpoint": "http://0.0.0.0:4317",
-				"service_name": "dinner_done_better_service",
+				"service_name": "dinner_done_better_api",
 				"spanCollectionProbability": 1
 			},
 			"provider": "otelgrpc"

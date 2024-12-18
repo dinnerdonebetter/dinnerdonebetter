@@ -9,6 +9,8 @@ import (
 	"os"
 	"runtime/debug"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
@@ -58,19 +60,20 @@ type (
 	APIServiceConfig struct {
 		_ struct{} `json:"-"`
 
-		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
-		Queues        QueuesConfig              `json:"queues"        toml:"queues,omitempty"`
-		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
-		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
-		Search        searchcfg.Config          `json:"search"        toml:"search,omitempty"`
-		FeatureFlags  featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
-		Encoding      encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
-		Meta          MetaSettings              `json:"meta"          toml:"meta,omitempty"`
-		Routing       routecfg.Config           `json:"routing"       toml:"routing,omitempty"`
-		Events        msgconfig.Config          `json:"events"        toml:"events,omitempty"`
-		Server        http.Config               `json:"server"        toml:"server,omitempty"`
-		Database      dbconfig.Config           `json:"database"      toml:"database,omitempty"`
-		Services      ServicesConfig            `json:"services"      toml:"services,omitempty"`
+		validateServices bool                      `json:"-"             toml:"-"`
+		Observability    observability.Config      `json:"observability" toml:"observability,omitempty"`
+		Queues           QueuesConfig              `json:"queues"        toml:"queues,omitempty"`
+		Email            emailconfig.Config        `json:"email"         toml:"email,omitempty"`
+		Analytics        analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
+		Search           searchcfg.Config          `json:"search"        toml:"search,omitempty"`
+		FeatureFlags     featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
+		Encoding         encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
+		Meta             MetaSettings              `json:"meta"          toml:"meta,omitempty"`
+		Routing          routecfg.Config           `json:"routing"       toml:"routing,omitempty"`
+		Events           msgconfig.Config          `json:"events"        toml:"events,omitempty"`
+		Server           http.Config               `json:"server"        toml:"server,omitempty"`
+		Database         dbconfig.Config           `json:"database"      toml:"database,omitempty"`
+		Services         ServicesConfig            `json:"services"      toml:"services,omitempty"`
 	}
 
 	// DBCleanerConfig configures an instance of the database cleaner job.
@@ -155,8 +158,10 @@ func (cfg *APIServiceConfig) Commit() string {
 	return ""
 }
 
+var _ validation.ValidatableWithContext = (*APIServiceConfig)(nil)
+
 // ValidateWithContext validates a APIServiceConfig struct.
-func (cfg *APIServiceConfig) ValidateWithContext(ctx context.Context, validateServices bool) error {
+func (cfg *APIServiceConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
 
 	validators := map[string]func(context.Context) error{
@@ -180,7 +185,7 @@ func (cfg *APIServiceConfig) ValidateWithContext(ctx context.Context, validateSe
 		}
 	}
 
-	if validateServices {
+	if cfg.validateServices {
 		if err := cfg.Services.ValidateWithContext(ctx); err != nil {
 			result = multierror.Append(fmt.Errorf("error validating Services config: %w", err), result)
 		}
@@ -189,7 +194,7 @@ func (cfg *APIServiceConfig) ValidateWithContext(ctx context.Context, validateSe
 	return result.ErrorOrNil()
 }
 
-// ValidateWithContext validates a APIServiceConfig struct.
+// ValidateWithContext validates a DBCleanerConfig struct.
 func (cfg *DBCleanerConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
 

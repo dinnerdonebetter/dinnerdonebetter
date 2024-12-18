@@ -168,7 +168,9 @@ func GetAPIServiceConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*API
 	cfg.Services.DataPrivacy.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.DataPrivacy.UserDataAggregationTopicName = os.Getenv(gcpUserAggregatorTopicName)
 
-	if err = cfg.ValidateWithContext(ctx, true); err != nil {
+	cfg.validateServices = true
+
+	if err = cfg.ValidateWithContext(ctx); err != nil {
 		return nil, err
 	}
 
@@ -368,7 +370,7 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	}
 	cfg.Email = emailcfg.Config{}
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+	if err = cfg.ValidateWithContext(ctx); err != nil {
 		return nil, err
 	}
 
@@ -401,7 +403,7 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 		},
 	}
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+	if err = cfg.ValidateWithContext(ctx); err != nil {
 		return nil, err
 	}
 
@@ -429,7 +431,7 @@ func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+	if err = cfg.ValidateWithContext(ctx); err != nil {
 		return nil, err
 	}
 
@@ -457,7 +459,7 @@ func GetUserDataAggregatorConfigFromGoogleCloudSecretManager(ctx context.Context
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+	if err = cfg.ValidateWithContext(ctx); err != nil {
 		return nil, err
 	}
 

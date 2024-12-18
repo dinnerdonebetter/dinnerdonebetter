@@ -9,7 +9,7 @@
 		"tracing": {
 			"otelgrpc": {
 				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "dinner_done_better_service",
+				"service_name": "dinner_done_better_api",
 				"spanCollectionProbability": 1
 			},
 			"provider": "otelgrpc"
@@ -56,6 +56,7 @@
 		"debug": false
 	},
 	"routing": {
+		"serviceName": "dinner_done_better_api",
 		"provider": "chi",
 		"enableCORSForLocalhost": true
 	},
