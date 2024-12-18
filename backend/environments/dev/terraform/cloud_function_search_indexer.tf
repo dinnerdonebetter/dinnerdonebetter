@@ -109,7 +109,7 @@ resource "google_project_iam_member" "search_indexer_user" {
 #     }
 #
 #     secret_environment_variables {
-a551acbcf80c41a5924f27b44509067a97c05b4c#       key        = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
+#       key        = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
 #       project_id = local.project_id
 #       secret     = google_secret_manager_secret.algolia_application_id.secret_id
 #       version    = "latest"
