@@ -250,9 +250,9 @@ integration_tests_postgres:
 .PHONY: dev
 dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
 	$(CONTAINER_RUNNER) compose \
-	--file $(ENVIRONMENTS_DIR)/localdev/compose_files/dev.yaml build
+	--file $(ENVIRONMENTS_DIR)/localdev/docker-compose.yaml build
 	$(CONTAINER_RUNNER) compose \
-	--file $(ENVIRONMENTS_DIR)/localdev/compose_files/dev.yaml up \
+	--file $(ENVIRONMENTS_DIR)/localdev/docker-compose.yaml up \
 	--no-attach loki \
 	--no-attach redis \
 	--no-attach jaeger \
@@ -260,7 +260,6 @@ dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
 	--no-attach postgres \
 	--no-attach prometheus \
 	--no-attach otel_collector \
-	# --no-attach prometheus \
 	--build \
 	--quiet-pull \
 	--force-recreate \
