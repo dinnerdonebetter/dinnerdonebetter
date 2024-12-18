@@ -1086,7 +1086,7 @@ func main() {
 		shouldRenderPrettyAndValidate := p != "environments/dev/config_files"
 
 		if err := cfg.Render(p, shouldRenderPrettyAndValidate, shouldRenderPrettyAndValidate); err != nil {
-			panic(fmt.Errorf("validating config %s: %v", p, err))
+			panic(fmt.Errorf("validating config %s: %w", p, err))
 		}
 	}
 }

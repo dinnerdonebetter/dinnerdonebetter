@@ -111,7 +111,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		}
 		for i, cfg := range allConfigs {
 			if err := cfg.ValidateWithContext(context.Background()); err != nil {
-				errs = multierror.Append(errs, fmt.Errorf("validating config %d: %v", i, err))
+				errs = multierror.Append(errs, fmt.Errorf("validating config %d: %w", i, err))
 				continue
 			}
 		}
