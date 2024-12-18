@@ -17,20 +17,20 @@ type MealDataManagerMock struct {
 
 // MealExists is a mock function.
 func (m *MealDataManagerMock) MealExists(ctx context.Context, recipeID string) (bool, error) {
-	args := m.Called(ctx, recipeID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, recipeID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetMeal is a mock function.
 func (m *MealDataManagerMock) GetMeal(ctx context.Context, recipeID string) (*types.Meal, error) {
-	args := m.Called(ctx, recipeID)
-	return args.Get(0).(*types.Meal), args.Error(1)
+	returnValues := m.Called(ctx, recipeID)
+	return returnValues.Get(0).(*types.Meal), returnValues.Error(1)
 }
 
 // GetMealByIDAndUser is a mock function.
 func (m *MealDataManagerMock) GetMealByIDAndUser(ctx context.Context, recipeID, userID string) (*types.Meal, error) {
-	args := m.Called(ctx, recipeID, userID)
-	return args.Get(0).(*types.Meal), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, userID)
+	return returnValues.Get(0).(*types.Meal), returnValues.Error(1)
 }
 
 // GetMeals is a mock function.
@@ -46,8 +46,8 @@ func (m *MealDataManagerMock) GetMealsCreatedByUser(ctx context.Context, userID 
 
 // SearchForMeals is a mock function.
 func (m *MealDataManagerMock) SearchForMeals(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Meal], error) {
-	args := m.Called(ctx, query, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.Meal]), args.Error(1)
+	returnValues := m.Called(ctx, query, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.Meal]), returnValues.Error(1)
 }
 
 // CreateMeal is a mock function.

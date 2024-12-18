@@ -17,32 +17,32 @@ type ValidIngredientStateDataManagerMock struct {
 
 // ValidIngredientStateExists is a mock function.
 func (m *ValidIngredientStateDataManagerMock) ValidIngredientStateExists(ctx context.Context, validIngredientStateID string) (bool, error) {
-	args := m.Called(ctx, validIngredientStateID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, validIngredientStateID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetValidIngredientState is a mock function.
 func (m *ValidIngredientStateDataManagerMock) GetValidIngredientState(ctx context.Context, validIngredientStateID string) (*types.ValidIngredientState, error) {
-	args := m.Called(ctx, validIngredientStateID)
-	return args.Get(0).(*types.ValidIngredientState), args.Error(1)
+	returnValues := m.Called(ctx, validIngredientStateID)
+	return returnValues.Get(0).(*types.ValidIngredientState), returnValues.Error(1)
 }
 
 // SearchForValidIngredientStates is a mock function.
 func (m *ValidIngredientStateDataManagerMock) SearchForValidIngredientStates(ctx context.Context, query string) ([]*types.ValidIngredientState, error) {
-	args := m.Called(ctx, query)
-	return args.Get(0).([]*types.ValidIngredientState), args.Error(1)
+	returnValues := m.Called(ctx, query)
+	return returnValues.Get(0).([]*types.ValidIngredientState), returnValues.Error(1)
 }
 
 // GetValidIngredientStates is a mock function.
 func (m *ValidIngredientStateDataManagerMock) GetValidIngredientStates(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientState], error) {
-	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredientState]), args.Error(1)
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientState]), returnValues.Error(1)
 }
 
 // CreateValidIngredientState is a mock function.
 func (m *ValidIngredientStateDataManagerMock) CreateValidIngredientState(ctx context.Context, input *types.ValidIngredientStateDatabaseCreationInput) (*types.ValidIngredientState, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.ValidIngredientState), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.ValidIngredientState), returnValues.Error(1)
 }
 
 // UpdateValidIngredientState is a mock function.
@@ -62,6 +62,6 @@ func (m *ValidIngredientStateDataManagerMock) MarkValidIngredientStateAsIndexed(
 
 // GetValidIngredientStatesWithIDs is a mock function.
 func (m *ValidIngredientStateDataManagerMock) GetValidIngredientStatesWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredientState, error) {
-	args := m.Called(ctx, ids)
-	return args.Get(0).([]*types.ValidIngredientState), args.Error(1)
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.ValidIngredientState), returnValues.Error(1)
 }

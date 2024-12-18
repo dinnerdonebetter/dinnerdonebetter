@@ -17,26 +17,26 @@ type MealPlanOptionDataManagerMock struct {
 
 // MealPlanOptionExists is a mock function.
 func (m *MealPlanOptionDataManagerMock) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (bool, error) {
-	args := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetMealPlanOption is a mock function.
 func (m *MealPlanOptionDataManagerMock) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*types.MealPlanOption, error) {
-	args := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
-	return args.Get(0).(*types.MealPlanOption), args.Error(1)
+	returnValues := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
+	return returnValues.Get(0).(*types.MealPlanOption), returnValues.Error(1)
 }
 
 // GetMealPlanOptions is a mock function.
 func (m *MealPlanOptionDataManagerMock) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.MealPlanOption], error) {
-	args := m.Called(ctx, mealPlanID, mealPlanEventID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.MealPlanOption]), args.Error(1)
+	returnValues := m.Called(ctx, mealPlanID, mealPlanEventID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.MealPlanOption]), returnValues.Error(1)
 }
 
 // CreateMealPlanOption is a mock function.
 func (m *MealPlanOptionDataManagerMock) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.MealPlanOption), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.MealPlanOption), returnValues.Error(1)
 }
 
 // UpdateMealPlanOption is a mock function.
@@ -51,7 +51,7 @@ func (m *MealPlanOptionDataManagerMock) ArchiveMealPlanOption(ctx context.Contex
 
 // FinalizeMealPlanOption is a mock function.
 func (m *MealPlanOptionDataManagerMock) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID string) (bool, error) {
-	args := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID)
+	returnValues := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID)
 
-	return args.Bool(0), args.Error(1)
+	return returnValues.Bool(0), returnValues.Error(1)
 }

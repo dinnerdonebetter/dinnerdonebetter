@@ -17,26 +17,26 @@ type RecipeStepCompletionConditionDataManagerMock struct {
 
 // RecipeStepCompletionConditionExists is a mock function.
 func (m *RecipeStepCompletionConditionDataManagerMock) RecipeStepCompletionConditionExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (bool, error) {
-	args := m.Called(ctx, recipeID, recipeStepID, recipeStepIngredientID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID, recipeStepIngredientID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetRecipeStepCompletionCondition is a mock function.
 func (m *RecipeStepCompletionConditionDataManagerMock) GetRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*types.RecipeStepCompletionCondition, error) {
-	args := m.Called(ctx, recipeID, recipeStepID, recipeStepIngredientID)
-	return args.Get(0).(*types.RecipeStepCompletionCondition), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID, recipeStepIngredientID)
+	return returnValues.Get(0).(*types.RecipeStepCompletionCondition), returnValues.Error(1)
 }
 
 // GetRecipeStepCompletionConditions is a mock function.
 func (m *RecipeStepCompletionConditionDataManagerMock) GetRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeStepCompletionCondition], error) {
-	args := m.Called(ctx, recipeID, recipeStepID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.RecipeStepCompletionCondition]), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.RecipeStepCompletionCondition]), returnValues.Error(1)
 }
 
 // CreateRecipeStepCompletionCondition is a mock function.
 func (m *RecipeStepCompletionConditionDataManagerMock) CreateRecipeStepCompletionCondition(ctx context.Context, input *types.RecipeStepCompletionConditionDatabaseCreationInput) (*types.RecipeStepCompletionCondition, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.RecipeStepCompletionCondition), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.RecipeStepCompletionCondition), returnValues.Error(1)
 }
 
 // UpdateRecipeStepCompletionCondition is a mock function.

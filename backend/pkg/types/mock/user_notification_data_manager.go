@@ -17,26 +17,26 @@ type UserNotificationDataManagerMock struct {
 
 // UserNotificationExists is a mock function.
 func (m *UserNotificationDataManagerMock) UserNotificationExists(ctx context.Context, userID, userNotificationID string) (bool, error) {
-	args := m.Called(ctx, userID, userNotificationID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, userID, userNotificationID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetUserNotification is a mock function.
 func (m *UserNotificationDataManagerMock) GetUserNotification(ctx context.Context, userID, userNotificationID string) (*types.UserNotification, error) {
-	args := m.Called(ctx, userID, userNotificationID)
-	return args.Get(0).(*types.UserNotification), args.Error(1)
+	returnValues := m.Called(ctx, userID, userNotificationID)
+	return returnValues.Get(0).(*types.UserNotification), returnValues.Error(1)
 }
 
 // GetUserNotifications is a mock function.
 func (m *UserNotificationDataManagerMock) GetUserNotifications(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.UserNotification], error) {
-	args := m.Called(ctx, userID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.UserNotification]), args.Error(1)
+	returnValues := m.Called(ctx, userID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.UserNotification]), returnValues.Error(1)
 }
 
 // CreateUserNotification is a mock function.
 func (m *UserNotificationDataManagerMock) CreateUserNotification(ctx context.Context, input *types.UserNotificationDatabaseCreationInput) (*types.UserNotification, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.UserNotification), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.UserNotification), returnValues.Error(1)
 }
 
 // UpdateUserNotification is a mock function.

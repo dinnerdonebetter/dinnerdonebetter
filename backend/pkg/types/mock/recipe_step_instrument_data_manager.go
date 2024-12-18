@@ -17,26 +17,26 @@ type RecipeStepInstrumentDataManagerMock struct {
 
 // RecipeStepInstrumentExists is a mock function.
 func (m *RecipeStepInstrumentDataManagerMock) RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (bool, error) {
-	args := m.Called(ctx, recipeID, recipeStepID, recipeStepInstrumentID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID, recipeStepInstrumentID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetRecipeStepInstrument is a mock function.
 func (m *RecipeStepInstrumentDataManagerMock) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*types.RecipeStepInstrument, error) {
-	args := m.Called(ctx, recipeID, recipeStepID, recipeStepInstrumentID)
-	return args.Get(0).(*types.RecipeStepInstrument), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID, recipeStepInstrumentID)
+	return returnValues.Get(0).(*types.RecipeStepInstrument), returnValues.Error(1)
 }
 
 // GetRecipeStepInstruments is a mock function.
 func (m *RecipeStepInstrumentDataManagerMock) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeStepInstrument], error) {
-	args := m.Called(ctx, recipeID, recipeStepID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.RecipeStepInstrument]), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.RecipeStepInstrument]), returnValues.Error(1)
 }
 
 // CreateRecipeStepInstrument is a mock function.
 func (m *RecipeStepInstrumentDataManagerMock) CreateRecipeStepInstrument(ctx context.Context, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.RecipeStepInstrument), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.RecipeStepInstrument), returnValues.Error(1)
 }
 
 // UpdateRecipeStepInstrument is a mock function.

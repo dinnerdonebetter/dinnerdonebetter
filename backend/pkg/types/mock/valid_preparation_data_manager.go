@@ -17,38 +17,38 @@ type ValidPreparationDataManagerMock struct {
 
 // ValidPreparationExists is a mock function.
 func (m *ValidPreparationDataManagerMock) ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error) {
-	args := m.Called(ctx, validPreparationID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, validPreparationID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetValidPreparation is a mock function.
 func (m *ValidPreparationDataManagerMock) GetValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error) {
-	args := m.Called(ctx, validPreparationID)
-	return args.Get(0).(*types.ValidPreparation), args.Error(1)
+	returnValues := m.Called(ctx, validPreparationID)
+	return returnValues.Get(0).(*types.ValidPreparation), returnValues.Error(1)
 }
 
 // GetRandomValidPreparation is a mock function.
 func (m *ValidPreparationDataManagerMock) GetRandomValidPreparation(ctx context.Context) (*types.ValidPreparation, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(*types.ValidPreparation), args.Error(1)
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).(*types.ValidPreparation), returnValues.Error(1)
 }
 
 // SearchForValidPreparations is a mock function.
 func (m *ValidPreparationDataManagerMock) SearchForValidPreparations(ctx context.Context, query string) ([]*types.ValidPreparation, error) {
-	args := m.Called(ctx, query)
-	return args.Get(0).([]*types.ValidPreparation), args.Error(1)
+	returnValues := m.Called(ctx, query)
+	return returnValues.Get(0).([]*types.ValidPreparation), returnValues.Error(1)
 }
 
 // GetValidPreparations is a mock function.
 func (m *ValidPreparationDataManagerMock) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparation], error) {
-	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidPreparation]), args.Error(1)
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparation]), returnValues.Error(1)
 }
 
 // CreateValidPreparation is a mock function.
 func (m *ValidPreparationDataManagerMock) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationDatabaseCreationInput) (*types.ValidPreparation, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.ValidPreparation), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.ValidPreparation), returnValues.Error(1)
 }
 
 // UpdateValidPreparation is a mock function.
@@ -74,6 +74,6 @@ func (m *ValidPreparationDataManagerMock) GetValidPreparationIDsThatNeedSearchIn
 
 // GetValidPreparationsWithIDs is a mock function.
 func (m *ValidPreparationDataManagerMock) GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*types.ValidPreparation, error) {
-	args := m.Called(ctx, ids)
-	return args.Get(0).([]*types.ValidPreparation), args.Error(1)
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.ValidPreparation), returnValues.Error(1)
 }

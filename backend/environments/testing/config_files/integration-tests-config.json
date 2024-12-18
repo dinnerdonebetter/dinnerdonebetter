@@ -22,17 +22,17 @@
 		"userDataAggregationTopicName": "user_data_aggregation_requests",
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
-	"email": {
-		"sendgrid": null,
-		"mailgun": null,
-		"mailjet": null,
-		"circuitBreakerConfig": null,
-		"provider": ""
-	},
 	"analytics": {
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
 		"circuitBreakerConfig": null,
 		"provider": ""
 	},
@@ -54,11 +54,6 @@
 	"meta": {
 		"runMode": "testing",
 		"debug": false
-	},
-	"routing": {
-		"serviceName": "dinner_done_better_api",
-		"provider": "chi",
-		"enableCORSForLocalhost": true
 	},
 	"events": {
 		"consumers": {
@@ -87,6 +82,11 @@
 				]
 			}
 		}
+	},
+	"routing": {
+		"serviceName": "dinner_done_better_api",
+		"provider": "chi",
+		"enableCORSForLocalhost": true
 	},
 	"server": {
 		"startupDeadline": 60000000000,

@@ -17,38 +17,38 @@ type ValidIngredientMeasurementUnitDataManagerMock struct {
 
 // ValidIngredientMeasurementUnitExists is a mock function.
 func (m *ValidIngredientMeasurementUnitDataManagerMock) ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (bool, error) {
-	args := m.Called(ctx, validIngredientMeasurementUnitID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, validIngredientMeasurementUnitID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetValidIngredientMeasurementUnit is a mock function.
 func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*types.ValidIngredientMeasurementUnit, error) {
-	args := m.Called(ctx, validIngredientMeasurementUnitID)
-	return args.Get(0).(*types.ValidIngredientMeasurementUnit), args.Error(1)
+	returnValues := m.Called(ctx, validIngredientMeasurementUnitID)
+	return returnValues.Get(0).(*types.ValidIngredientMeasurementUnit), returnValues.Error(1)
 }
 
 // GetValidIngredientMeasurementUnits is a mock function.
 func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
-	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), args.Error(1)
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), returnValues.Error(1)
 }
 
 // GetValidIngredientMeasurementUnitsForIngredient is a mock function.
 func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
-	args := m.Called(ctx, ingredientID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), args.Error(1)
+	returnValues := m.Called(ctx, ingredientID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), returnValues.Error(1)
 }
 
 // GetValidIngredientMeasurementUnitsForMeasurementUnit is a mock function.
 func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, measurementUnitID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
-	args := m.Called(ctx, measurementUnitID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), args.Error(1)
+	returnValues := m.Called(ctx, measurementUnitID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), returnValues.Error(1)
 }
 
 // CreateValidIngredientMeasurementUnit is a mock function.
 func (m *ValidIngredientMeasurementUnitDataManagerMock) CreateValidIngredientMeasurementUnit(ctx context.Context, input *types.ValidIngredientMeasurementUnitDatabaseCreationInput) (*types.ValidIngredientMeasurementUnit, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.ValidIngredientMeasurementUnit), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.ValidIngredientMeasurementUnit), returnValues.Error(1)
 }
 
 // UpdateValidIngredientMeasurementUnit is a mock function.

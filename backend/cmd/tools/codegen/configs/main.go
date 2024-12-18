@@ -1062,28 +1062,29 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 }
 
 func main() {
-	envConfigs := map[string]*environmentConfigSet{
+	envConfigs := map[string]*config.EnvironmentConfigSet{
 		"deploy/kustomize/environments/localdev/configs": {
-			renderPretty: true,
-			rootConfig:   buildLocaldevKubernetesConfig(),
+			RootConfig: buildLocaldevKubernetesConfig(),
 		},
 		"environments/testing/config_files": {
-			renderPretty:         true,
-			apiServiceConfigPath: "integration-tests-config.json",
-			rootConfig:           buildIntegrationTestsConfig(),
+			APIServiceConfigPath: "integration-tests-config.json",
+			RootConfig:           buildIntegrationTestsConfig(),
 		},
 		"environments/localdev/config_files": {
-			renderPretty: true,
-			rootConfig:   buildLocalDevConfig(),
+			RootConfig: buildLocalDevConfig(),
 		},
 		"environments/dev/config_files": {
-			apiServiceConfigPath: "service-config.json",
-			rootConfig:           buildDevEnvironmentServerConfig(),
+			APIServiceConfigPath: "service-config.json",
+			RootConfig:           buildDevEnvironmentServerConfig(),
 		},
 	}
 
 	for p, cfg := range envConfigs {
-		if err := cfg.Render(p, p != "environments/dev/config_files"); err != nil {
+		// we don't want to validate the cloud env configs because they
+		// need secrets they extract from cloud providers.
+		shouldRenderPrettyAndValidate := p != "environments/dev/config_files"
+
+		if err := cfg.Render(p, shouldRenderPrettyAndValidate, shouldRenderPrettyAndValidate); err != nil {
 			panic(fmt.Errorf("validating config %s: %v", p, err))
 		}
 	}

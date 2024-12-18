@@ -17,38 +17,38 @@ type ServiceSettingDataManagerMock struct {
 
 // ServiceSettingExists is a mock function.
 func (m *ServiceSettingDataManagerMock) ServiceSettingExists(ctx context.Context, serviceSettingID string) (bool, error) {
-	args := m.Called(ctx, serviceSettingID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, serviceSettingID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetServiceSetting is a mock function.
 func (m *ServiceSettingDataManagerMock) GetServiceSetting(ctx context.Context, serviceSettingID string) (*types.ServiceSetting, error) {
-	args := m.Called(ctx, serviceSettingID)
-	return args.Get(0).(*types.ServiceSetting), args.Error(1)
+	returnValues := m.Called(ctx, serviceSettingID)
+	return returnValues.Get(0).(*types.ServiceSetting), returnValues.Error(1)
 }
 
 // GetRandomServiceSetting is a mock function.
 func (m *ServiceSettingDataManagerMock) GetRandomServiceSetting(ctx context.Context) (*types.ServiceSetting, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(*types.ServiceSetting), args.Error(1)
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).(*types.ServiceSetting), returnValues.Error(1)
 }
 
 // SearchForServiceSettings is a mock function.
 func (m *ServiceSettingDataManagerMock) SearchForServiceSettings(ctx context.Context, query string) ([]*types.ServiceSetting, error) {
-	args := m.Called(ctx, query)
-	return args.Get(0).([]*types.ServiceSetting), args.Error(1)
+	returnValues := m.Called(ctx, query)
+	return returnValues.Get(0).([]*types.ServiceSetting), returnValues.Error(1)
 }
 
 // GetServiceSettings is a mock function.
 func (m *ServiceSettingDataManagerMock) GetServiceSettings(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSetting], error) {
-	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ServiceSetting]), args.Error(1)
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ServiceSetting]), returnValues.Error(1)
 }
 
 // CreateServiceSetting is a mock function.
 func (m *ServiceSettingDataManagerMock) CreateServiceSetting(ctx context.Context, input *types.ServiceSettingDatabaseCreationInput) (*types.ServiceSetting, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.ServiceSetting), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.ServiceSetting), returnValues.Error(1)
 }
 
 // UpdateServiceSetting is a mock function.

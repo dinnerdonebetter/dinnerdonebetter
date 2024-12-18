@@ -9,8 +9,6 @@ import (
 	"os"
 	"runtime/debug"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
@@ -22,6 +20,7 @@ import (
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
 
@@ -58,22 +57,21 @@ type (
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_ struct{} `json:"-"`
-
-		validateServices bool                      `json:"-"             toml:"-"`
+		_                struct{}                  `json:"-"`
 		Observability    observability.Config      `json:"observability" toml:"observability,omitempty"`
 		Queues           QueuesConfig              `json:"queues"        toml:"queues,omitempty"`
-		Email            emailconfig.Config        `json:"email"         toml:"email,omitempty"`
 		Analytics        analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
+		Email            emailconfig.Config        `json:"email"         toml:"email,omitempty"`
 		Search           searchcfg.Config          `json:"search"        toml:"search,omitempty"`
 		FeatureFlags     featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
 		Encoding         encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
 		Meta             MetaSettings              `json:"meta"          toml:"meta,omitempty"`
-		Routing          routecfg.Config           `json:"routing"       toml:"routing,omitempty"`
 		Events           msgconfig.Config          `json:"events"        toml:"events,omitempty"`
+		Routing          routecfg.Config           `json:"routing"       toml:"routing,omitempty"`
 		Server           http.Config               `json:"server"        toml:"server,omitempty"`
 		Database         dbconfig.Config           `json:"database"      toml:"database,omitempty"`
 		Services         ServicesConfig            `json:"services"      toml:"services,omitempty"`
+		validateServices bool                      `json:"-"             toml:"-"`
 	}
 
 	// DBCleanerConfig configures an instance of the database cleaner job.
