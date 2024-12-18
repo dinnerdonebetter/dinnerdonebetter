@@ -45,7 +45,7 @@ resource "google_storage_bucket_iam_policy" "user_data_policy" {
 resource "cloudflare_record" "user_data_storage" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "userdata"
-  content = "c.storage.googleapis.com"
+  value   = "c.storage.googleapis.com"
   type    = "CNAME"
   proxied = true
   ttl     = 1
