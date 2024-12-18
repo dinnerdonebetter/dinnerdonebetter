@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"sync"
 )
@@ -25,6 +26,8 @@ func getAllTables() []string {
 	for t := range allTables {
 		tables = append(tables, t)
 	}
+
+	slices.Sort(tables)
 
 	return tables
 }
