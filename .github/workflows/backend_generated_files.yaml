@@ -132,7 +132,7 @@ jobs:
 
       - name: Ensure code can be generated
         working-directory: backend
-        run: make codegen-go format
+        run: make codegen-go format_golang
 
       - name: Check for changes
         run: git diff --exit-code
@@ -144,7 +144,7 @@ jobs:
         go-version: [ '1.23.x' ]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout codeformat
         uses: actions/checkout@v4
 
       - name: Ensure openapi spec can be generated
@@ -162,21 +162,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v5format
         with:
           go-version: '${{ matrix.go-version }}'
 
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: install client generator
-        run: >-
-          go install
-          github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0
-
       - name: generate client
         working-directory: backend
-        run: make codegen-go format
+        run: make codegen-go format_golang
         
       - name: Check for changes
         run: git diff --exit-code
