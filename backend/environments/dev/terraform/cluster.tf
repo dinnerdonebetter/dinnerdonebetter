@@ -25,6 +25,11 @@ resource "google_project_iam_custom_role" "dev_cluster_role" {
     "storage.objects.create",
     "storage.objects.delete",
     "storage.objects.get",
+    #
+    "iam.serviceAccounts.actAs",
+    "iam.serviceAccounts.get",
+    "iam.serviceAccounts.list",
+    "resourcemanager.projects.get",
   ]
 }
 
@@ -37,12 +42,6 @@ resource "google_project_iam_member" "dev_cluster" {
   project = local.project_id
   role    = google_project_iam_custom_role.dev_cluster_role.id
   member  = format("serviceAccount:%s", google_service_account.dev_cluster_service_account.email)
-}
-
-resource "google_service_account_iam_member" "dev_cluster_2" {
-  service_account_id = google_service_account.dev_cluster_service_account.id
-  role               = "roles/iam.serviceAccountUser"
-  member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
 }
 
 resource "google_container_cluster" "primary" {
