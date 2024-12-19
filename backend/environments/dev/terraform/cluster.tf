@@ -58,8 +58,6 @@ resource "google_container_node_pool" "primary_nodes" {
   name     = google_container_cluster.primary.name
   location = local.gcp_region
   cluster  = google_container_cluster.primary.name
-
-  version    = data.google_container_engine_versions.gke_version.release_channel_latest_version["STABLE"]
   node_count = 1
 
   node_locations = [
