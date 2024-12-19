@@ -75,8 +75,6 @@ resource "google_container_node_pool" "primary_nodes" {
       "https://www.googleapis.com/auth/cloud-platform",
     ]
 
-    service_account = google_service_account.dev_cluster_service_account.email
-
     labels = {
       env = local.project_id
     }
