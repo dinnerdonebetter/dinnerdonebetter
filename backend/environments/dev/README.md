@@ -20,6 +20,7 @@ gcloud iam service-accounts add-iam-policy-binding search-indexer-worker@dinner-
 gcloud iam service-accounts add-iam-policy-binding search-data-index-scheduler@dinner-done-better-dev.iam.gserviceaccount.com --member serviceAccount:terraform-cloud@dinner-done-better-dev.iam.gserviceaccount.com --role roles/iam.serviceAccountUser
 gcloud iam service-accounts add-iam-policy-binding email-prober@dinner-done-better-dev.iam.gserviceaccount.com --member serviceAccount:terraform-cloud@dinner-done-better-dev.iam.gserviceaccount.com --role roles/iam.serviceAccountUser
 gcloud iam service-accounts add-iam-policy-binding webhook-executor-worker@dinner-done-better-dev.iam.gserviceaccount.com --member serviceAccount:terraform-cloud@dinner-done-better-dev.iam.gserviceaccount.com --role roles/iam.serviceAccountUser
+gcloud iam service-accounts add-iam-policy-binding kubernetes-service-account@dinner-done-better-dev.iam.gserviceaccount.com --member serviceAccount:terraform-cloud@dinner-done-better-dev.iam.gserviceaccount.com --role roles/iam.serviceAccountUser
 ```
 
 You might get an error about not being the verified owner of a given domain. That's because you need to go to the Google Webmaster's admin interface thing and add the above terraform cloud service account as a verified owner.
