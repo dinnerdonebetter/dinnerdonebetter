@@ -39,6 +39,12 @@ resource "google_project_iam_member" "dev_cluster" {
   member  = format("serviceAccount:%s", google_service_account.dev_cluster_service_account.email)
 }
 
+resource "google_service_account_iam_member" "dev_cluster_2" {
+  service_account_id = google_service_account.dev_cluster_service_account.id
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:terraform-cloud@${local.project_id}.iam.gserviceaccount.com"
+}
+
 resource "google_container_cluster" "primary" {
   name     = local.environment
   location = local.gcp_region
