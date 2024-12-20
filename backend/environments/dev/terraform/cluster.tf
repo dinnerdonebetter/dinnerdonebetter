@@ -1,7 +1,7 @@
 # GKE cluster
 data "google_container_engine_versions" "gke_version" {
   location       = local.gcp_region
-  version_prefix = "1.27."
+  version_prefix = "1.30."
 }
 
 resource "google_project_iam_custom_role" "dev_cluster_role" {
@@ -25,11 +25,6 @@ resource "google_project_iam_custom_role" "dev_cluster_role" {
     "storage.objects.create",
     "storage.objects.delete",
     "storage.objects.get",
-    #
-    "iam.serviceAccounts.actAs",
-    "iam.serviceAccounts.get",
-    "iam.serviceAccounts.list",
-    "resourcemanager.projects.get",
   ]
 }
 
@@ -54,14 +49,14 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
-  #  network    = google_compute_network.vpc.name
-  #  subnetwork = google_compute_subnetwork.subnet.name
+  # network    = google_compute_network.vpc.name
+  # subnetwork = google_compute_subnetwork.subnet.name
 }
 
 # Separately Managed Node Pool
 resource "google_container_node_pool" "primary_nodes" {
-  name       = google_container_cluster.primary.name
   location   = local.gcp_region
+  name       = google_container_cluster.primary.name
   cluster    = google_container_cluster.primary.name
   node_count = 1
 
