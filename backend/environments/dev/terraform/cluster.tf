@@ -1,7 +1,7 @@
 # GKE cluster
 data "google_container_engine_versions" "gke_version" {
   location       = local.gcp_region
-  version_prefix = "1.27."
+  version_prefix = "1.30."
 }
 
 resource "google_project_iam_custom_role" "dev_cluster_role" {
@@ -42,6 +42,8 @@ resource "google_project_iam_member" "dev_cluster" {
 resource "google_container_cluster" "primary" {
   name     = local.environment
   location = local.gcp_region
+
+  machine_type = "e2-medium"
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
