@@ -43,8 +43,6 @@ resource "google_container_cluster" "primary" {
   name     = local.environment
   location = local.gcp_region
 
-  machine_type = "e2-medium"
-
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
