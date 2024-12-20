@@ -1,7 +1,7 @@
 # GKE cluster
 data "google_container_engine_versions" "gke_version" {
   location       = local.gcp_region
-  version_prefix = "1.30."
+  version_prefix = "1.27."
 }
 
 resource "google_project_iam_custom_role" "dev_cluster_role" {
