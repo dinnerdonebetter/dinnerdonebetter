@@ -1,14 +1,15 @@
 locals {
   database_name = "dinner-done-better"
 }
+
 resource "google_compute_network" "private_network" {
-  provider = google-beta
+  provider = google
 
   name = "private-network"
 }
 
 resource "google_compute_global_address" "private_ip_address" {
-  provider = google-beta
+  provider = google
 
   name          = "dev-private-ip"
   purpose       = "VPC_PEERING"
@@ -18,7 +19,7 @@ resource "google_compute_global_address" "private_ip_address" {
 }
 
 resource "google_service_networking_connection" "private_vpc_connection" {
-  provider = google-beta
+  provider = google
 
   network                 = google_compute_network.private_network.id
   service                 = "servicenetworking.googleapis.com"
