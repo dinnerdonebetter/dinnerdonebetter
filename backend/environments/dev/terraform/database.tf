@@ -2,11 +2,37 @@ locals {
   database_name = "dinner-done-better"
 }
 
+resource "google_compute_network" "private_network" {
+  provider = google
+
+  name = "private-network"
+}
+
+resource "google_compute_global_address" "private_ip_address" {
+  provider = google
+
+  name          = "dev-private-ip"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.private_network.id
+}
+
+resource "google_service_networking_connection" "private_vpc_connection" {
+  provider = google
+
+  network                 = google_compute_network.private_network.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
+}
+
 resource "google_sql_database_instance" "dev" {
   name                = "dev"
   database_version    = "POSTGRES_17"
   region              = local.gcp_region
   deletion_protection = false
+
+  depends_on = [google_service_networking_connection.private_vpc_connection]
 
   settings {
     tier                  = "db-f1-micro"
@@ -23,11 +49,13 @@ resource "google_sql_database_instance" "dev" {
 
     ip_configuration {
       ssl_mode                                      = "ENCRYPTED_ONLY"
+      ipv4_enabled                                  = false
+      private_network                               = google_compute_network.private_network.self_link
       enable_private_path_for_google_cloud_services = true
     }
 
     maintenance_window {
-      hour         = 3 # 2AM
+      hour         = 3 # 2 AM
       day          = 7 # Sunday
       update_track = "stable"
     }
