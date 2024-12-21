@@ -55,8 +55,8 @@ resource "google_sql_database_instance" "dev" {
     }
 
     maintenance_window {
-      day          = 7
       hour         = 3
+      day          = 7 # Sunday
       update_track = "stable"
     }
   }
