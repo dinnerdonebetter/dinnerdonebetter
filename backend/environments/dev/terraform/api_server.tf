@@ -1,6 +1,5 @@
 locals {
   api_database_username = "api_db_user"
-  public_url            = "api.dinnerdonebetter.dev"
 }
 
 resource "google_project_iam_custom_role" "api_server_role" {
