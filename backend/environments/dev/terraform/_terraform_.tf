@@ -1,5 +1,5 @@
 terraform {
-  required_version = "1.9.5"
+  required_version = "1.10.3"
 
   backend "remote" {
     organization = "dinnerdonebetter"
@@ -15,7 +15,7 @@ terraform {
     }
     google = {
       source  = "hashicorp/google"
-      version = "5.41.0"
+      version = "6.14.1"
     }
     archive = {
       source  = "hashicorp/archive"
