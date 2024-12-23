@@ -19,7 +19,5 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 
   network                 = google_compute_network.private_network.id
   service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = []
-  ## INIT: When creating this for the first time, leave it empty
-  # reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
+  reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
 }
