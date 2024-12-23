@@ -13,6 +13,7 @@ resource "google_sql_database_instance" "dev" {
     disk_size             = 20
     disk_autoresize       = true
     disk_autoresize_limit = 50
+    edition               = "ENTERPRISE"
 
     insights_config {
       query_insights_enabled  = true
