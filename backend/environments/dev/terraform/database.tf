@@ -2,37 +2,6 @@ locals {
   database_name = "dinner-done-better"
 }
 
-# BEGIN Networking shit
-
-resource "google_compute_network" "private_network" {
-  provider = google
-
-  name = "private-network"
-}
-
-resource "google_compute_global_address" "private_ip_address" {
-  provider = google
-
-  name          = "private-ip-address"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  prefix_length = 16
-  network       = google_compute_network.private_network.id
-}
-
-resource "google_service_networking_connection" "private_vpc_connection" {
-  provider = google
-
-  network                 = google_compute_network.private_network.id
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = []
-  ## INIT: When creating this for the first time, leave it empty
-  # reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
-}
-
-
-# END Networking shit
-
 resource "google_sql_database_instance" "dev" {
   name                = "dev"
   database_version    = "POSTGRES_17"
@@ -64,7 +33,7 @@ resource "google_sql_database_instance" "dev" {
     ip_configuration {
       ssl_mode                                      = "ENCRYPTED_ONLY"
       ipv4_enabled                                  = false
-      private_network                               = google_compute_network.private_network.self_link
+      private_network                               = google_compute_network.private_network.id
       enable_private_path_for_google_cloud_services = true
     }
   }
