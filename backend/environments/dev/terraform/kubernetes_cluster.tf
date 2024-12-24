@@ -76,21 +76,3 @@ resource "google_container_node_pool" "primary_nodes" {
     }
   }
 }
-
-locals {
-  k8s_namespace = "dev"
-}
-
-resource "kubernetes_namespace" "dev" {
-  metadata {
-    annotations = {
-      exampleAnnotation = "example-annotation"
-    }
-
-    labels = {
-      exampleLabel = "example-label"
-    }
-
-    name = local.k8s_namespace
-  }
-}
