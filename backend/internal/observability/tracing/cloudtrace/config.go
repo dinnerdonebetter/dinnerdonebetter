@@ -11,7 +11,7 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		ProjectID string `json:"projectID,omitempty" toml:"project_id,omitempty" env:"GOOGLE_CLOUD_TRACE_PROJECT_ID"`
+		ProjectID string `env:"GOOGLE_CLOUD_TRACE_PROJECT_ID" json:"projectID,omitempty"`
 	}
 )
 

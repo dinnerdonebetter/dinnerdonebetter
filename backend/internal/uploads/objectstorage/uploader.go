@@ -44,13 +44,13 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		FilesystemConfig  *FilesystemConfig `json:"filesystem,omitempty"        toml:"filesystem,omitempty"`
-		S3Config          *S3Config         `json:"s3,omitempty"                toml:"s3,omitempty"`
-		GCPConfig         *GCPConfig        `json:"gcpConfig,omitempty"         toml:"gcp_config,omitempty"`
-		BucketPrefix      string            `json:"bucketPrefix,omitempty"      toml:"bucket_prefix,omitempty"`
-		BucketName        string            `json:"bucketName,omitempty"        toml:"bucket_name,omitempty"`
-		UploadFilenameKey string            `json:"uploadFilenameKey,omitempty" toml:"upload_filename_key,omitempty"`
-		Provider          string            `json:"provider,omitempty"          toml:"provider,omitempty"`
+		FilesystemConfig  *FilesystemConfig `envPrefix:"FILESYSTEM_"   json:"filesystem,omitempty"`
+		S3Config          *S3Config         `envPrefix:"S3_"           json:"s3,omitempty"`
+		GCPConfig         *GCPConfig        `envPrefix:"GCP_"          json:"gcpConfig,omitempty"`
+		BucketPrefix      string            `env:"BUCKET_PREFIX"       json:"bucketPrefix,omitempty"`
+		BucketName        string            `env:"BUCKET_NAME"         json:"bucketName,omitempty"`
+		UploadFilenameKey string            `env:"UPLOAD_FILENAME_KEY" json:"uploadFilenameKey,omitempty"`
+		Provider          string            `env:"PROVIDER"            json:"provider,omitempty"`
 	}
 )
 

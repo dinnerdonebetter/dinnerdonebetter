@@ -23,9 +23,9 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Level          logging.Level `json:"level,omitempty"          toml:"level"`
-		Provider       string        `json:"provider,omitempty"       toml:"provider"`
-		OutputFilepath string        `json:"outputFilepath,omitempty" toml:"output_filepath"`
+		Level          logging.Level `env:"LEVEL"           json:"level,omitempty"`
+		Provider       string        `env:"PROVIDER"        json:"provider,omitempty"`
+		OutputFilepath string        `env:"OUTPUT_FILEPATH" json:"outputFilepath,omitempty"`
 	}
 )
 

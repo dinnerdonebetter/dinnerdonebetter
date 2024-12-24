@@ -27,11 +27,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Segment              *segment.Config         `json:"segment"        toml:"segment,omitempty"     envPrefix:"SEGMENT_"`
-		Posthog              *posthog.Config         `json:"posthog"        toml:"posthog,omitempty"     envPrefix:"POSTHOG_"`
-		Rudderstack          *rudderstack.Config     `json:"rudderstack"    toml:"rudderstack,omitempty" envPrefix:"RUDDERSTACK_"`
-		CircuitBreakerConfig *circuitbreaking.Config `json:"circuitBreaker" toml:"circuit_breaker"       envPrefix:"CIRCUIT_BREAKER_"`
-		Provider             string                  `json:"provider"       toml:"provider,omitempty"    env:"ANALYTICS_PROVIDER"`
+		Segment              *segment.Config         `envPrefix:"SEGMENT_"         json:"segment"`
+		Posthog              *posthog.Config         `envPrefix:"POSTHOG_"         json:"posthog"`
+		Rudderstack          *rudderstack.Config     `envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
+		CircuitBreakerConfig *circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
+		Provider             string                  `env:"ANALYTICS_PROVIDER"     json:"provider"`
 	}
 )
 

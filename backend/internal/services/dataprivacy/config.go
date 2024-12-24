@@ -12,9 +12,9 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	UserDataAggregationTopicName string         `json:"userDataAggregationTopicName,omitempty" toml:"user_data_aggregation_topic_name,omitempty"`
-	DataChangesTopicName         string         `json:"dataChangesTopicName,omitempty"         toml:"data_changes_topic_name,omitempty"`
-	Uploads                      uploads.Config `json:"uploads"                                toml:"uploads,omitempty"`
+	UserDataAggregationTopicName string         `env:"USER_DATA_AGGREGATION_TOPIC_NAME" json:"userDataAggregationTopicName,omitempty"`
+	DataChangesTopicName         string         `env:"DATA_CHANGES_TOPIC_NAME"          json:"dataChangesTopicName,omitempty"`
+	Uploads                      uploads.Config `envPrefix:"UPLOADS_"                   json:"uploads"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

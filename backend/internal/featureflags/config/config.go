@@ -25,10 +25,10 @@ const (
 type (
 	// Config configures our feature flag managers.
 	Config struct {
-		LaunchDarkly          *launchdarkly.Config
-		PostHog               *posthog.Config
-		CircuitBreakingConfig *circuitbreaking.Config
-		Provider              string
+		LaunchDarkly          *launchdarkly.Config    `envPrefix:"LAUNCH_DARKLY"     json:"launchDarkly"`
+		PostHog               *posthog.Config         `envPrefix:"POSTHOG_"          json:"posthog"`
+		CircuitBreakingConfig *circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakingConfig"`
+		Provider              string                  `env:"PROVIDER"                json:"provider"`
 	}
 )
 

@@ -1,4 +1,11 @@
 {
+	"analytics": {
+		"segment": null,
+		"posthog": null,
+		"rudderstack": null,
+		"circuitBreaker": null,
+		"provider": ""
+	},
 	"observability": {
 		"logging": {
 			"level": 0,
@@ -7,25 +14,18 @@
 		"metrics": {},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "dinner_done_better_api",
-				"spanCollectionProbability": 1
+				"collector_endpoint": "http://tracing-server:14268/api/traces"
 			},
-			"provider": "otelgrpc"
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
 		}
-	},
-	"analytics": {
-		"segment": null,
-		"posthog": null,
-		"rudderstack": null,
-		"circuitBreakerConfig": null,
-		"provider": ""
 	},
 	"events": {
 		"consumers": {
 			"provider": "redis",
 			"sqs": {
-				"messageQueueAddress": ""
+				"queueAddress": ""
 			},
 			"pubSub": {
 				"projectID": ""
@@ -40,7 +40,7 @@
 		"publishers": {
 			"provider": "redis",
 			"sqs": {
-				"messageQueueAddress": ""
+				"queueAddress": ""
 			},
 			"pubSub": {
 				"projectID": ""

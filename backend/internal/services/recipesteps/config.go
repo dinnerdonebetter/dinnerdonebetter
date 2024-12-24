@@ -12,9 +12,9 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	PublicMediaURLPrefix string         `json:"mediaUploadPrefix"              toml:"media_upload_prefix"`
-	DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
-	Uploads              uploads.Config `json:"uploads"                        toml:"uploads,omitempty"`
+	PublicMediaURLPrefix string         `env:"PUBLIC_MEDIA_URL_PREFIX" json:"mediaUploadPrefix"`
+	DataChangesTopicName string         `env:"DATA_CHANGES_TOPIC_NAME" json:"dataChangesTopicName,omitempty"`
+	Uploads              uploads.Config `envPrefix:"UPLOADS_"          json:"uploads"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

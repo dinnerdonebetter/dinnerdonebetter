@@ -26,11 +26,11 @@ var (
 )
 
 type Config struct {
-	ServiceName        string        `json:"serviceName"              toml:"service_name"`
-	CollectorEndpoint  string        `json:"metricsCollectorEndpoint" toml:"metrics_collector_endpoint"`
-	CollectionInterval time.Duration `json:"collectionInterval"       toml:"collection_interval"`
-	Insecure           bool          `json:"insecure"                 toml:"insecure"`
-	CollectionTimeout  time.Duration `json:"collectionTimeout"        toml:"collection_timeout"`
+	ServiceName        string        `env:"SERVICE_NAME"        json:"serviceName"`
+	CollectorEndpoint  string        `env:"COLLECTOR_ENDPOINT"  json:"metricsCollectorEndpoint"`
+	CollectionInterval time.Duration `env:"COLLECTION_INTERVAL" json:"collectionInterval"`
+	Insecure           bool          `env:"INSECURE"            json:"insecure"`
+	CollectionTimeout  time.Duration `env:"COLLECTION_TIMEOUT"  json:"collectionTimeout"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

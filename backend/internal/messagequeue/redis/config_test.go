@@ -45,7 +45,6 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 			Username:       t.Name(),
 			Password:       t.Name(),
 			QueueAddresses: []string{t.Name()},
-			DB:             1,
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

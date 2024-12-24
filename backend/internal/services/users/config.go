@@ -11,9 +11,9 @@ import (
 type (
 	// Config configures the users service.
 	Config struct {
-		DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
-		PublicMediaURLPrefix string         `json:"publicMediaURLPrefix"           toml:"public_media_url_prefix"`
-		Uploads              uploads.Config `json:"uploads"                        toml:"uploads,omitempty"`
+		DataChangesTopicName string         `env:"DATA_CHANGES_TOPIC_NAME" json:"dataChangesTopicName,omitempty"`
+		PublicMediaURLPrefix string         `env:"PUBLIC_MEDIA_URL_PREFIX" json:"publicMediaURLPrefix"`
+		Uploads              uploads.Config `envPrefix:"UPLOADS_"          json:"uploads"`
 	}
 )
 

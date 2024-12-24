@@ -21,8 +21,8 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Otel     *otelgrpc.Config `json:"otelgrpc,omitempty" toml:"otelgrpc,omitempty"`
-		Provider string           `json:"provider,omitempty" toml:"provider,omitempty"`
+		Otel     *otelgrpc.Config `envPrefix:"OTEL_" json:"otelgrpc,omitempty"`
+		Provider string           `env:"PROVIDER"    json:"provider,omitempty"`
 	}
 )
 

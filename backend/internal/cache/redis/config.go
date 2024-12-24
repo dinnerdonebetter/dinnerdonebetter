@@ -8,10 +8,9 @@ import (
 
 // Config configures a Redis-backed consumer.
 type Config struct {
-	Username       string   `json:"username"           toml:"username,omitempty"`
-	Password       string   `json:"password,omitempty" toml:"password,omitempty"`
-	QueueAddresses []string `json:"queueAddress"       toml:"queue_address,omitempty"`
-	DB             int      `json:"database,omitempty" toml:"database,omitempty"`
+	Username       string   `env:"USERNAME"        json:"username"`
+	Password       string   `env:"PASSWORD"        json:"password,omitempty"`
+	QueueAddresses []string `env:"QUEUE_ADDRESSES" json:"queueAddress"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

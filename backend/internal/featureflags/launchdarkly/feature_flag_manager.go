@@ -27,12 +27,6 @@ var (
 )
 
 type (
-	Config struct {
-		SDKKey               string                 `json:"sdkKey"               toml:"sdk_key"`
-		CircuitBreakerConfig circuitbreaking.Config `json:"circuitBreakerConfig" toml:"circuit_breaker_config"`
-		InitTimeout          time.Duration          `json:"initTimeout"          toml:"init_timeout"`
-	}
-
 	launchDarklyClient interface {
 		Close() error
 		Identify(context ldcontext.Context) error

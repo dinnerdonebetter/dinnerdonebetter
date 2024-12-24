@@ -18,18 +18,18 @@
 		"tracing": {
 			"otelgrpc": {
 				"collector_endpoint": "otel_collector:4317",
-				"service_name": "dinner_done_better_api",
-				"insecure": true,
-				"spanCollectionProbability": 1
+				"insecure": true
 			},
-			"provider": "otelgrpc"
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
 		}
 	},
 	"events": {
 		"consumers": {
 			"provider": "redis",
 			"sqs": {
-				"messageQueueAddress": ""
+				"queueAddress": ""
 			},
 			"pubSub": {
 				"projectID": ""
@@ -44,7 +44,7 @@
 		"publishers": {
 			"provider": "redis",
 			"sqs": {
-				"messageQueueAddress": ""
+				"queueAddress": ""
 			},
 			"pubSub": {
 				"projectID": ""

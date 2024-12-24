@@ -37,18 +37,18 @@ type (
 	MessageQueueConfig struct {
 		_ struct{} `json:"-"`
 
-		Provider provider      `json:"provider,omitempty" toml:"provider,omitempty"`
-		SQS      sqs.Config    `json:"sqs,omitempty"      toml:"sqs,omitempty"`
-		PubSub   pubsub.Config `json:"pubSub,omitempty"   toml:"pubSub,omitempty"`
-		Redis    redis.Config  `json:"redis,omitempty"    toml:"redis,omitempty"`
+		Provider provider      `env:"PROVIDER"      json:"provider,omitempty"`
+		SQS      sqs.Config    `envPrefix:"SQS_"    json:"sqs,omitempty"`
+		PubSub   pubsub.Config `envPrefix:"PUBSUB_" json:"pubSub,omitempty"`
+		Redis    redis.Config  `envPrefix:"REDIS_"  json:"redis,omitempty"`
 	}
 
 	// Config is used to indicate how the messaging provider should be configured.
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Consumer  MessageQueueConfig `json:"consumers,omitempty"  toml:"consumers,omitempty"`
-		Publisher MessageQueueConfig `json:"publishers,omitempty" toml:"publishers,omitempty"`
+		Consumer  MessageQueueConfig `envPrefix:"CONSUMER_"  json:"consumers,omitempty"`
+		Publisher MessageQueueConfig `envPrefix:"PUBLISHER_" json:"publishers,omitempty"`
 	}
 )
 

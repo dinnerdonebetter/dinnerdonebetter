@@ -15,29 +15,29 @@ type (
 	GoogleSSOConfig struct {
 		_ struct{} `json:"-"`
 
-		ClientID     string `json:"clientID,omitempty"     toml:"client_id,omitempty"`
-		ClientSecret string `json:"clientSecret,omitempty" toml:"client_secret,omitempty"`
-		CallbackURL  string `json:"callbackURL,omitempty"  toml:"callback_url,omitempty"`
+		ClientID     string `env:"CLIENT_ID"     json:"clientID,omitempty"`
+		ClientSecret string `env:"CLIENT_SECRET" json:"clientSecret,omitempty"`
+		CallbackURL  string `env:"CALLBACK_URL"  json:"callbackURL,omitempty"`
 	}
 
 	SSOConfigs struct {
-		Google GoogleSSOConfig `json:"google,omitempty" toml:"google,omitempty"`
+		Google GoogleSSOConfig `envPrefix:"GOOGLE_" json:"google,omitempty"`
 	}
 
 	// Config represents our passwords configuration.
 	Config struct {
 		_ struct{} `json:"-"`
 
-		SSO                   SSOConfigs    `json:"sso,omitempty"                   toml:"sso,omitempty"`
-		DataChangesTopicName  string        `json:"dataChanges,omitempty"           toml:"data_changes,omitempty"`
-		JWTAudience           string        `json:"jwtAudience,omitempty"           toml:"jwt_audience,omitempty"`
-		JWTSigningKey         string        `json:"jwtSigningKey"                   toml:"jwt_signing_key"`
-		OAuth2                OAuth2Config  `json:"oauth2,omitempty"                toml:"oauth2,omitempty"`
-		JWTLifetime           time.Duration `json:"jwtLifetime"                     toml:"jwt_lifetime"`
-		Debug                 bool          `json:"debug,omitempty"                 toml:"debug,omitempty"`
-		EnableUserSignup      bool          `json:"enableUserSignup,omitempty"      toml:"enable_user_signup,omitempty"`
-		MinimumUsernameLength uint8         `json:"minimumUsernameLength,omitempty" toml:"minimum_username_length,omitempty"`
-		MinimumPasswordLength uint8         `json:"minimumPasswordLength,omitempty" toml:"minimum_password_length,omitempty"`
+		SSO                   SSOConfigs    `envPrefix:"SSO_CONFIG_"       json:"sso,omitempty"`
+		DataChangesTopicName  string        `env:"DATA_CHANGES_TOPIC_NAME" json:"dataChanges,omitempty"`
+		JWTAudience           string        `env:"JWT_AUDIENCE"            json:"jwtAudience,omitempty"`
+		JWTSigningKey         string        `env:"JWT_SIGNING_KEY"         json:"jwtSigningKey"`
+		OAuth2                OAuth2Config  `envPrefix:"OAUTH2"            json:"oauth2,omitempty"`
+		JWTLifetime           time.Duration `env:"JWT_LIFETIME"            json:"jwtLifetime"`
+		Debug                 bool          `env:"DEBUG"                   json:"debug,omitempty"`
+		EnableUserSignup      bool          `env:"ENABLE_USER_SIGNUP"      json:"enableUserSignup,omitempty"`
+		MinimumUsernameLength uint8         `env:"MINIMUM_USERNAME_LENGTH" json:"minimumUsernameLength,omitempty"`
+		MinimumPasswordLength uint8         `env:"MINIMUM_PASSWORD_LENGTH" json:"minimumPasswordLength,omitempty"`
 	}
 )
 
@@ -55,10 +55,10 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 type OAuth2Config struct {
 	_ struct{} `json:"-"`
 
-	Domain               string        `json:"domain"               toml:"domain,omitempty"`
-	AccessTokenLifespan  time.Duration `json:"accessTokenLifespan"  toml:"access_token_lifespan,omitempty"`
-	RefreshTokenLifespan time.Duration `json:"refreshTokenLifespan" toml:"refresh_token_lifespan,omitempty"`
-	Debug                bool          `json:"debug"                toml:"debug,omitempty"`
+	Domain               string        `env:"DOMAIN"                 json:"domain"`
+	AccessTokenLifespan  time.Duration `env:"ACCESS_TOKEN_LIFESPAN"  json:"accessTokenLifespan"`
+	RefreshTokenLifespan time.Duration `env:"REFRESH_TOKEN_LIFESPAN" json:"refreshTokenLifespan"`
+	Debug                bool          `env:"DEBUG"                  json:"debug"`
 }
 
 var _ validation.ValidatableWithContext = (*OAuth2Config)(nil)

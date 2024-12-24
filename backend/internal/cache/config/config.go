@@ -23,9 +23,8 @@ const (
 type (
 	// Config is the configuration for the cache.
 	Config struct {
-		Memory   struct{}      `json:"memory"   toml:"memory"`
-		Redis    *redis.Config `json:"redis"    toml:"redis"`
-		Provider string        `json:"provider" toml:"provider"`
+		Redis    *redis.Config `envPrefix:"REDIS_" json:"redis"`
+		Provider string        `env:"PROVIDER"     json:"provider"`
 	}
 )
 
@@ -35,7 +34,6 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
 		validation.Field(&cfg.Provider, validation.In(ProviderMemory, ProviderRedis)),
-		validation.Field(&cfg.Memory, validation.When(cfg.Provider == ProviderMemory, validation.Required)),
 		validation.Field(&cfg.Redis, validation.When(cfg.Provider == ProviderRedis, validation.Required)),
 	)
 }

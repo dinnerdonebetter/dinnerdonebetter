@@ -37,12 +37,6 @@ type (
 		SendMailV31(data *mailjet.MessagesV31, options ...mailjet.RequestOptions) (*mailjet.ResultsV31, error)
 	}
 
-	// Config configures Mailjet to send email.
-	Config struct {
-		APIKey    string `json:"publicKey" toml:"public_key,omitempty"`
-		SecretKey string `json:"secretKey" toml:"secret_key,omitempty"`
-	}
-
 	// Emailer uses Mailjet to send email.
 	Emailer struct {
 		logger         logging.Logger

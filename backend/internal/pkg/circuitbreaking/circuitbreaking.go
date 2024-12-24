@@ -22,44 +22,6 @@ type BaseCircuitBreaker struct {
 	circuitBreaker *circuit.Breaker
 }
 
-type Config struct {
-	ErrorRate              float64 `json:"circuitBreakerErrorPercentage"            toml:"circuitBreaker_error_percentage"             env:"ERROR_RATE"`
-	MinimumSampleThreshold int64   `json:"circuitBreakerMinimumOccurrenceThreshold" toml:"circuitBreaker_minimum_occurrence_threshold" env:"MINIMUM_SAMPLE_THRESHOLD"`
-}
-
-func (cfg *Config) EnsureDefaults() {
-	if cfg == nil {
-		cfg = &Config{}
-	}
-
-	if cfg.ErrorRate == 0 {
-		cfg.ErrorRate = 200
-	}
-
-	if cfg.MinimumSampleThreshold == 0 {
-		cfg.MinimumSampleThreshold = 1_000_000
-	}
-}
-
-func ProvideCircuitBreaker(cfg *Config) CircuitBreaker {
-	if cfg == nil {
-		cfg = &Config{}
-	}
-	cfg.EnsureDefaults()
-
-	return &BaseCircuitBreaker{
-		circuitBreaker: circuit.NewBreakerWithOptions(&circuit.Options{
-			ShouldTrip: func(cb *circuit.Breaker) bool {
-				samples := cb.Failures() + cb.Successes()
-				result := samples >= cfg.MinimumSampleThreshold && cb.ErrorRate() >= cfg.ErrorRate
-				return result
-			},
-			WindowTime:    circuit.DefaultWindowTime,
-			WindowBuckets: circuit.DefaultWindowBuckets,
-		}),
-	}
-}
-
 func (b *BaseCircuitBreaker) Failed() {
 	b.circuitBreaker.Fail()
 }
@@ -84,4 +46,23 @@ func EnsureCircuitBreaker(breaker CircuitBreaker) CircuitBreaker {
 	}
 
 	return breaker
+}
+
+func ProvideCircuitBreaker(cfg *Config) CircuitBreaker {
+	if cfg == nil {
+		cfg = &Config{}
+	}
+	cfg.EnsureDefaults()
+
+	return &BaseCircuitBreaker{
+		circuitBreaker: circuit.NewBreakerWithOptions(&circuit.Options{
+			ShouldTrip: func(cb *circuit.Breaker) bool {
+				samples := cb.Failures() + cb.Successes()
+				result := samples >= cfg.MinimumSampleThreshold && cb.ErrorRate() >= cfg.ErrorRate
+				return result
+			},
+			WindowTime:    circuit.DefaultWindowTime,
+			WindowBuckets: circuit.DefaultWindowBuckets,
+		}),
+	}
 }

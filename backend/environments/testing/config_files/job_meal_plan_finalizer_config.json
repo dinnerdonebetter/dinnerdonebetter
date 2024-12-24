@@ -7,18 +7,18 @@
 		"metrics": {},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "dinner_done_better_api",
-				"spanCollectionProbability": 1
+				"collector_endpoint": "http://tracing-server:14268/api/traces"
 			},
-			"provider": "otelgrpc"
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
 		}
 	},
 	"events": {
 		"consumers": {
 			"provider": "redis",
 			"sqs": {
-				"messageQueueAddress": ""
+				"queueAddress": ""
 			},
 			"pubSub": {
 				"projectID": ""
@@ -33,7 +33,7 @@
 		"publishers": {
 			"provider": "redis",
 			"sqs": {
-				"messageQueueAddress": ""
+				"queueAddress": ""
 			},
 			"pubSub": {
 				"projectID": ""

@@ -15,11 +15,11 @@ const (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	ServiceName            string   `json:"serviceName,omitempty"         toml:"service_name,omitempty"`
-	Provider               string   `json:"provider,omitempty"            toml:"provider,omitempty"`
-	ValidDomains           []string `json:"validDomains,omitempty"        toml:"valid_domains,omitempty"`
-	EnableCORSForLocalhost bool     `json:"enableCORSForLocalhost"        toml:"enable_cors_for_localhost"`
-	SilenceRouteLogging    bool     `json:"silenceRouteLogging,omitempty" toml:"silence_route_logging,omitempty"`
+	ServiceName            string   `env:"SERVICE_NAME"              json:"serviceName,omitempty"`
+	Provider               string   `env:"PROVIDER"                  json:"provider,omitempty"`
+	ValidDomains           []string `env:"VALID_DOMAINS"             json:"validDomains,omitempty"`
+	EnableCORSForLocalhost bool     `env:"ENABLE_CORS_FOR_LOCALHOST" json:"enableCORSForLocalhost"`
+	SilenceRouteLogging    bool     `env:"SILENCE_ROUTE_LOGGING"     json:"silenceRouteLogging,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

@@ -16,7 +16,7 @@ type (
 	FilesystemConfig struct {
 		_ struct{} `json:"-"`
 
-		RootDirectory string `json:"rootDirectory" toml:"root_directory,omitempty"`
+		RootDirectory string `env:"ROOT_DIRECTORY" json:"rootDirectory"`
 	}
 )
 

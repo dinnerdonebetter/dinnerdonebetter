@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"os"
@@ -73,5 +74,36 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 		assert.Error(t, cfg.EncodeToFile(f.Name(), func(any) ([]byte, error) {
 			return nil, errors.New("blah")
 		}))
+	})
+}
+
+//nolint:paralleltest // because we set env vars for this, we can't
+func TestFetchForApplication(T *testing.T) {
+	T.Run("standard", func(t *testing.T) {
+		ctx := context.Background()
+
+		// TODO: we should flesh out and then render a config to test this function, not use the localdev config.
+		t.Setenv(FilePathEnvVarKey, "../../environments/localdev/config_files/api_service_config.json")
+
+		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)
+		assert.NoError(t, err)
+		assert.NotNil(t, actual)
+
+		// TODO: can't assume this responsibly
+		assert.Equal(t, actual.Meta.Debug, true)
+	})
+
+	// prior TODOs count here too
+	T.Run("overrides meta", func(t *testing.T) {
+		ctx := context.Background()
+
+		t.Setenv(FilePathEnvVarKey, "../../environments/localdev/config_files/api_service_config.json")
+		t.Setenv(EnvVarPrefix+"META_DEBUG", "false")
+
+		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)
+		assert.NoError(t, err)
+		assert.NotNil(t, actual)
+
+		assert.Equal(t, actual.Meta.Debug, false)
 	})
 }

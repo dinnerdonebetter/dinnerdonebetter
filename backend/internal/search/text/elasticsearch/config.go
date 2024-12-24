@@ -5,9 +5,9 @@ import (
 )
 
 type Config struct {
-	Address               string        `json:"address"               toml:"address,omitempty"`
-	Username              string        `json:"username"              toml:"username,omitempty"`
-	Password              string        `json:"password"              toml:"password,omitempty"`
-	CACert                []byte        `json:"caCert"                toml:"ca_cert,omitempty"`
-	IndexOperationTimeout time.Duration `json:"indexOperationTimeout" toml:"index_operation_timeout,omitempty"`
+	Address               string        `env:"ADDRESS"                 json:"address"`
+	Username              string        `env:"USERNAME"                json:"username"`
+	Password              string        `env:"PASSWORD"                json:"password"`
+	CACert                []byte        `env:"CA_CERT"                 json:"caCert"`
+	IndexOperationTimeout time.Duration `env:"INDEX_OPERATION_TIMEOUT" json:"indexOperationTimeout"`
 }

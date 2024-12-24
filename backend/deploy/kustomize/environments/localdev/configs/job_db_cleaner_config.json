@@ -16,11 +16,11 @@
 		},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "http://0.0.0.0:4317",
-				"service_name": "dinner_done_better_api",
-				"spanCollectionProbability": 1
+				"collector_endpoint": "http://0.0.0.0:4317"
 			},
-			"provider": "otelgrpc"
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
 		}
 	},
 	"database": {

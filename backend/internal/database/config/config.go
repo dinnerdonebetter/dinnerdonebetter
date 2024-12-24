@@ -17,24 +17,24 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		OAuth2TokenEncryptionKey string            `json:"oauth2TokenEncryptionKey" toml:"oauth2_token_encryption_key,omitempty"`
-		ConnectionDetails        ConnectionDetails `json:"connectionDetails"        toml:"connection_details,omitempty"`
-		Debug                    bool              `json:"debug"                    toml:"debug,omitempty"`
-		LogQueries               bool              `json:"logQueries"               toml:"log_queries,omitempty"`
-		RunMigrations            bool              `json:"runMigrations"            toml:"run_migrations,omitempty"`
-		MaxPingAttempts          uint64            `json:"maxPingAttempts"          toml:"max_ping_attempts,omitempty"`
-		PingWaitPeriod           time.Duration     `json:"pingWaitPeriod"           toml:"ping_wait_period,omitempty"`
+		OAuth2TokenEncryptionKey string            `env:"OAUTH2_TOKEN_ENCRYPTION_KEY" json:"oauth2TokenEncryptionKey"`
+		ConnectionDetails        ConnectionDetails `envPrefix:"CONNECTION_DETAILS_"   json:"connectionDetails"`
+		Debug                    bool              `env:"DEBUG"                       json:"debug"`
+		LogQueries               bool              `env:"LOG_QUERIES"                 json:"logQueries"`
+		RunMigrations            bool              `env:"RUN_MIGRATIONS"              json:"runMigrations"`
+		MaxPingAttempts          uint64            `env:"MAX_PING_ATTEMPTS"           json:"maxPingAttempts"`
+		PingWaitPeriod           time.Duration     `env:"PING_WAIT_PERIOD"            json:"pingWaitPeriod"`
 	}
 
 	ConnectionDetails struct {
 		_ struct{} `json:"-"`
 
-		Username   string `json:"username"`
-		Password   string `json:"password"`
-		Database   string `json:"database"`
-		Host       string `json:"hostname"`
-		Port       uint16 `json:"port"`
-		DisableSSL bool   `json:"disableSSL"`
+		Username   string `env:"USERNAME"    json:"username"`
+		Password   string `env:"PASSWORD"    json:"password"`
+		Database   string `env:"DATABASE"    json:"database"`
+		Host       string `env:"HOST"        json:"hostname"`
+		Port       uint16 `env:"PORT"        json:"port"`
+		DisableSSL bool   `env:"DISABLE_SSL" json:"disableSSL"`
 	}
 )
 

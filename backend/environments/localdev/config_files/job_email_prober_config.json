@@ -1,4 +1,11 @@
 {
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
 	"observability": {
 		"logging": {
 			"level": 0,
@@ -18,19 +25,12 @@
 		"tracing": {
 			"otelgrpc": {
 				"collector_endpoint": "otel_collector:4317",
-				"service_name": "dinner_done_better_api",
-				"insecure": true,
-				"spanCollectionProbability": 1
+				"insecure": true
 			},
-			"provider": "otelgrpc"
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
 		}
-	},
-	"email": {
-		"sendgrid": null,
-		"mailgun": null,
-		"mailjet": null,
-		"circuitBreakerConfig": null,
-		"provider": ""
 	},
 	"database": {
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",

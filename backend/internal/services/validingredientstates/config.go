@@ -10,8 +10,8 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
-	UseSearchService     bool   `json:"searchFromDatabase"             toml:"search_from_database,omitempty"`
+	DataChangesTopicName string `env:"DATA_CHANGES_TOPIC_NAME" json:"dataChangesTopicName,omitempty"`
+	UseSearchService     bool   `env:"USE_SEARCH_SERVICE"      json:"useSearchService"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

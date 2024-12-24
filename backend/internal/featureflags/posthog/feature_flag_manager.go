@@ -23,12 +23,6 @@ var (
 )
 
 type (
-	Config struct {
-		ProjectAPIKey        string                 `json:"projectAPIKey"        toml:"project_api_key"`
-		PersonalAPIKey       string                 `json:"personalAPIKey"       toml:"personal_api_key"`
-		CircuitBreakerConfig circuitbreaking.Config `json:"circuitBreakerConfig" toml:"circuit_breaker_config"`
-	}
-
 	// featureFlagManager implements the feature flag interface.
 	featureFlagManager struct {
 		logger         logging.Logger

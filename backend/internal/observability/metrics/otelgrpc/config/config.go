@@ -18,11 +18,11 @@ type (
 	// Config contains settings related to tracing.
 	Config struct {
 		_                         struct{}         `json:"-"`
-		Otel                      *otelgrpc.Config `json:"otel"                                toml:"otel"`
-		Provider                  string           `json:"provider"                            toml:"provider"`
-		CollectorEndpoint         string           `json:"collector_endpoint,omitempty"        toml:"collector_endpoint,omitempty"`
-		ServiceName               string           `json:"service_name,omitempty"              toml:"service_name,omitempty"`
-		MetricsCollectionInterval time.Duration    `json:"metricsCollectionInterval,omitempty" toml:"metrics_collection_intervals,omitempty"`
+		Otel                      *otelgrpc.Config `json:"otel"`
+		Provider                  string           `json:"provider"`
+		CollectorEndpoint         string           `json:"collector_endpoint,omitempty"`
+		ServiceName               string           `json:"service_name,omitempty"`
+		MetricsCollectionInterval time.Duration    `json:"metricsCollectionInterval,omitempty"`
 	}
 )
 

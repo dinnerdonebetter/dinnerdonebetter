@@ -7,11 +7,11 @@
 		"metrics": {},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "dinner_done_better_api",
-				"spanCollectionProbability": 1
+				"collector_endpoint": "http://tracing-server:14268/api/traces"
 			},
-			"provider": "otelgrpc"
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
 		}
 	},
 	"queues": {
@@ -25,7 +25,7 @@
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
-		"circuitBreakerConfig": null,
+		"circuitBreaker": null,
 		"provider": ""
 	},
 	"email": {
@@ -42,10 +42,10 @@
 		"provider": ""
 	},
 	"featureFlags": {
-		"LaunchDarkly": null,
-		"PostHog": null,
-		"CircuitBreakingConfig": null,
-		"Provider": ""
+		"launchDarkly": null,
+		"posthog": null,
+		"circuitBreakingConfig": null,
+		"provider": ""
 	},
 	"encoding": {
 		"contentType": "application/json"
@@ -58,7 +58,7 @@
 		"consumers": {
 			"provider": "redis",
 			"sqs": {
-				"messageQueueAddress": ""
+				"queueAddress": ""
 			},
 			"pubSub": {
 				"projectID": ""
@@ -73,7 +73,7 @@
 		"publishers": {
 			"provider": "redis",
 			"sqs": {
-				"messageQueueAddress": ""
+				"queueAddress": ""
 			},
 			"pubSub": {
 				"projectID": ""
@@ -233,11 +233,11 @@
 		},
 		"validInstruments": {
 			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
+			"useSearchService": false
 		},
 		"validMeasurementUnits": {
 			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
+			"useSearchService": false
 		},
 		"oauth2Clients": {
 			"creationEnabled": false
@@ -248,7 +248,7 @@
 		},
 		"validIngredients": {
 			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
+			"useSearchService": false
 		},
 		"meals": {
 			"dataChangesTopicName": "data_changes",
@@ -256,7 +256,7 @@
 		},
 		"validVessels": {
 			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
+			"useSearchService": false
 		},
 		"householdInvitations": {
 			"dataChangesTopicName": "data_changes",
@@ -264,11 +264,11 @@
 		},
 		"validPreparations": {
 			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
+			"useSearchService": false
 		},
 		"validIngredientStates": {
 			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
+			"useSearchService": false
 		},
 		"recipes": {
 			"dataChangesTopicName": "data_changes",

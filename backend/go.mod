@@ -18,6 +18,7 @@ require (
 	github.com/boombuler/barcode v1.0.2
 	github.com/brianvoe/gofakeit/v5 v5.11.2
 	github.com/brianvoe/gofakeit/v7 v7.1.2
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/ccoveille/go-safecast v1.3.0
 	github.com/cristalhq/builq v0.15.0
 	github.com/dustin/go-humanize v1.0.1

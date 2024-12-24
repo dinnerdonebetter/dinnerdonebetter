@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"runtime/debug"
 
@@ -20,6 +21,7 @@ import (
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 
+	"github.com/caarlos0/env/v11"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -31,6 +33,8 @@ const (
 	TestingRunMode runMode = "testing"
 	// ProductionRunMode is the run mode for a production environment.
 	ProductionRunMode runMode = "production"
+
+	EnvVarPrefix = "DINNER_DONE_BETTER_"
 
 	// FilePathEnvVarKey is the env var key we use to indicate where the config file is located.
 	FilePathEnvVarKey = "CONFIGURATION_FILEPATH"
@@ -57,76 +61,72 @@ type (
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_                struct{}                  `json:"-"`
-		Observability    observability.Config      `json:"observability" toml:"observability,omitempty"`
-		Queues           QueuesConfig              `json:"queues"        toml:"queues,omitempty"`
-		Analytics        analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
-		Email            emailconfig.Config        `json:"email"         toml:"email,omitempty"`
-		Search           searchcfg.Config          `json:"search"        toml:"search,omitempty"`
-		FeatureFlags     featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
-		Encoding         encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
-		Meta             MetaSettings              `json:"meta"          toml:"meta,omitempty"`
-		Events           msgconfig.Config          `json:"events"        toml:"events,omitempty"`
-		Routing          routecfg.Config           `json:"routing"       toml:"routing,omitempty"`
-		Server           http.Config               `json:"server"        toml:"server,omitempty"`
-		Database         dbconfig.Config           `json:"database"      toml:"database,omitempty"`
-		Services         ServicesConfig            `json:"services"      toml:"services,omitempty"`
-		validateServices bool                      `json:"-"             toml:"-"`
+		_ struct{} `json:"-"`
+
+		Observability    observability.Config      `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Queues           QueuesConfig              `envPrefix:"QUEUES_"        json:"queues"`
+		Analytics        analyticsconfig.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Email            emailconfig.Config        `envPrefix:"EMAIL_"         json:"email"`
+		Search           searchcfg.Config          `envPrefix:"SEARCH_"        json:"search"`
+		FeatureFlags     featureflagsconfig.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
+		Encoding         encoding.Config           `envPrefix:"ENCODING_"      json:"encoding"`
+		Meta             MetaSettings              `envPrefix:"META_"          json:"meta"`
+		Events           msgconfig.Config          `envPrefix:"EVENTS_"        json:"events"`
+		Routing          routecfg.Config           `envPrefix:"ROUTING_"       json:"routing"`
+		Server           http.Config               `envPrefix:"SERVER_"        json:"server"`
+		Database         dbconfig.Config           `envPrefix:"DATABASE_"      json:"database"`
+		Services         ServicesConfig            `envPrefix:"SERVICE_"       json:"services"`
+		validateServices bool                      `json:"-"`
 	}
 
 	// DBCleanerConfig configures an instance of the database cleaner job.
 	DBCleanerConfig struct {
 		_ struct{} `json:"-"`
 
-		Observability observability.Config `json:"observability" toml:"observability,omitempty"`
-		Database      dbconfig.Config      `json:"database"      toml:"database,omitempty"`
+		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      dbconfig.Config      `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// EmailProberConfig configures an instance of the email prober job.
 	EmailProberConfig struct {
-		_ struct{} `json:"-"`
-
-		Observability observability.Config `json:"observability" toml:"observability,omitempty"`
-		Email         emailconfig.Config   `json:"email"         toml:"email,omitempty"`
-		Database      dbconfig.Config      `json:"database"      toml:"database,omitempty"`
+		_             struct{}             `json:"-"`
+		Email         emailconfig.Config   `envPrefix:"EMAIL_"         json:"email"`
+		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      dbconfig.Config      `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// MealPlanFinalizerConfig configures an instance of the meal plan finalizer job.
 	MealPlanFinalizerConfig struct {
-		_ struct{} `json:"-"`
-
-		Observability observability.Config `json:"observability" toml:"observability,omitempty"`
-		Events        msgconfig.Config     `json:"events"        toml:"events,omitempty"`
-		Database      dbconfig.Config      `json:"database"      toml:"database,omitempty"`
+		_             struct{}             `json:"-"`
+		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
+		Database      dbconfig.Config      `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// MealPlanGroceryListInitializerConfig configures an instance of the meal plan grocery list initializer job.
 	MealPlanGroceryListInitializerConfig struct {
-		_ struct{} `json:"-"`
-
-		Observability observability.Config   `json:"observability" toml:"observability,omitempty"`
-		Analytics     analyticsconfig.Config `json:"analytics"     toml:"analytics,omitempty"`
-		Events        msgconfig.Config       `json:"events"        toml:"events,omitempty"`
-		Database      dbconfig.Config        `json:"database"      toml:"database,omitempty"`
+		_             struct{}               `json:"-"`
+		Analytics     analyticsconfig.Config `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Database      dbconfig.Config        `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// MealPlanTaskCreatorConfig configures an instance of the meal plan task creator job.
 	MealPlanTaskCreatorConfig struct {
-		_ struct{} `json:"-"`
-
-		Observability observability.Config   `json:"observability" toml:"observability,omitempty"`
-		Analytics     analyticsconfig.Config `json:"analytics"     toml:"analytics,omitempty"`
-		Events        msgconfig.Config       `json:"events"        toml:"events,omitempty"`
-		Database      dbconfig.Config        `json:"database"      toml:"database,omitempty"`
+		_             struct{}               `json:"-"`
+		Analytics     analyticsconfig.Config `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Database      dbconfig.Config        `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// SearchDataIndexSchedulerConfig configures an instance of the search data index scheduler job.
 	SearchDataIndexSchedulerConfig struct {
-		_ struct{} `json:"-"`
-
-		Observability observability.Config `json:"observability" toml:"observability,omitempty"`
-		Events        msgconfig.Config     `json:"events"        toml:"events,omitempty"`
-		Database      dbconfig.Config      `json:"database"      toml:"database,omitempty"`
+		_             struct{}             `json:"-"`
+		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
+		Database      dbconfig.Config      `envPrefix:"DATABASE_"      json:"database"`
 	}
 )
 
@@ -303,10 +303,10 @@ func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Conte
 	return result.ErrorOrNil()
 }
 
-func FetchForApplication[T configurations](ctx context.Context, cff genericCloudConfigFetcher[T]) (*T, error) {
+func FetchForApplication[T configurations](ctx context.Context, f genericCloudConfigFetcher[T]) (*T, error) {
 	var cfg *T
 	if RunningInCloud() {
-		c, err := cff(ctx)
+		c, err := f(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("fetching config from GCP: %w", err)
 		}
@@ -323,6 +323,15 @@ func FetchForApplication[T configurations](ctx context.Context, cff genericCloud
 		}
 	} else {
 		return nil, errors.New("not running in the cloud, and no config filepath provided")
+	}
+
+	if err := env.ParseWithOptions(cfg, env.Options{
+		OnSet: func(tag string, value interface{}, isDefault bool) {
+			slog.Info("set tag", slog.String("tag", tag), slog.Any("value", value), slog.Bool("is_default", isDefault))
+		},
+		Prefix: EnvVarPrefix,
+	}); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil

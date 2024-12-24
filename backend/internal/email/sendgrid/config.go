@@ -1,4 +1,4 @@
-package stripe
+package sendgrid
 
 import (
 	"context"
@@ -7,10 +7,9 @@ import (
 )
 
 type (
-	// Config configures our Stripe interface.
+	// Config configures SendGrid to send email.
 	Config struct {
-		APIKey        string `env:"API_KEY"        json:"apiKey"`
-		WebhookSecret string `env:"WEBHOOK_SECRET" json:"webhookSecret"`
+		APIToken string `env:"API_TOKEN" json:"apiToken"`
 	}
 )
 
@@ -19,6 +18,6 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.APIKey, validation.Required),
+		validation.Field(&cfg.APIToken, validation.Required),
 	)
 }
