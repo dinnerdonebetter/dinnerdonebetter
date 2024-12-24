@@ -133,13 +133,13 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			ContentType: contentTypeJSON,
 		},
 		Events: msgconfig.Config{
-			Consumers: msgconfig.MessageQueueConfig{
+			Consumer: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
-			Publishers: msgconfig.MessageQueueConfig{
+			Publisher: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
@@ -406,13 +406,13 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 			ContentType: contentTypeJSON,
 		},
 		Events: msgconfig.Config{
-			Consumers: msgconfig.MessageQueueConfig{
+			Consumer: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
 					QueueAddresses: []string{"redis-master.localdev.svc.cluster.local:6379"},
 				},
 			},
-			Publishers: msgconfig.MessageQueueConfig{
+			Publisher: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
 					QueueAddresses: []string{"redis-master.localdev.svc.cluster.local:6379"},
@@ -680,13 +680,13 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			WebhookExecutionRequestsTopicName: webhookExecutionRequestsTopicName,
 		},
 		Events: msgconfig.Config{
-			Consumers: msgconfig.MessageQueueConfig{
+			Consumer: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
-			Publishers: msgconfig.MessageQueueConfig{
+			Publisher: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
@@ -927,10 +927,10 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			ContentType: contentTypeJSON,
 		},
 		Events: msgconfig.Config{
-			Consumers: msgconfig.MessageQueueConfig{
+			Consumer: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderPubSub,
 			},
-			Publishers: msgconfig.MessageQueueConfig{
+			Publisher: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderPubSub,
 			},
 		},

@@ -38,7 +38,9 @@
 			"sqs": {
 				"messageQueueAddress": ""
 			},
-			"pubsub": {},
+			"pubSub": {
+				"projectID": ""
+			},
 			"redis": {
 				"username": "",
 				"queueAddress": [
@@ -51,7 +53,9 @@
 			"sqs": {
 				"messageQueueAddress": ""
 			},
-			"pubsub": {},
+			"pubSub": {
+				"projectID": ""
+			},
 			"redis": {
 				"username": "",
 				"queueAddress": [

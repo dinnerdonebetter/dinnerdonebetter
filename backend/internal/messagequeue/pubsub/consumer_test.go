@@ -24,7 +24,7 @@ func buildPubSubBackedConsumer(t *testing.T, ctx context.Context, topic string, 
 	projectID, err := random.GenerateHexEncodedString(ctx, 8)
 	require.NoError(t, err)
 
-	pubsubContainer, err := gcloud.RunPubsub(
+	pubSubContainer, err := gcloud.RunPubsub(
 		ctx,
 		"google/cloud-sdk:latest",
 		gcloud.WithProjectID(projectID),
@@ -33,7 +33,7 @@ func buildPubSubBackedConsumer(t *testing.T, ctx context.Context, topic string, 
 		panic(err)
 	}
 
-	conn, err := grpc.NewClient(pubsubContainer.URI, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(pubSubContainer.URI, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 
@@ -57,7 +57,7 @@ func buildPubSubBackedConsumer(t *testing.T, ctx context.Context, topic string, 
 	assert.NotNil(t, publisher)
 	assert.NoError(t, err)
 
-	return publisher, pubsubContainer.Terminate
+	return publisher, pubSubContainer.Terminate
 }
 
 func Test_pubSubConsumer_Consume(T *testing.T) {

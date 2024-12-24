@@ -124,8 +124,6 @@ format_imports: ensure_gci_installed
 
 .PHONY: terraformat
 terraformat:
-	@touch environments/dev/terraform/service-config.json
-	@touch environments/dev/terraform/worker-config.json
 	@(cd environments/dev/terraform && terraform fmt)
 
 .PHONY: lint_terraform
@@ -289,19 +287,25 @@ proxy_dev_db:
 
 #### NASCENT HELL ZONE
 
-.PHONY: full_deploy_to_k8s
-full_deploy_to_k8s:
+.PHONY: teardown_cluster
+teardown_cluster:
 	kubectl delete namespace --ignore-not-found=true demo
+
+.PHONY: full_deploy_to_k8s
+full_deploy_to_k8s: teardown_cluster
 	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest --file cmd/services/demo/Dockerfile .
 	docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest
 	kubectl apply \
 		-f cmd/services/demo/namespace.yaml \
 		-f cmd/services/demo/deployment.yaml \
 		-f cmd/services/demo/ingress.yaml \
-		-f cmd/services/demo/service.yaml
+		-f cmd/services/demo/service.yaml \
+		-f cmd/services/demo/external_dns.yaml
 
 .PHONY: deploy_to_k8s
 deploy_to_k8s:
 	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest --file cmd/services/demo/Dockerfile .
 	docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest
-	kubectl apply -f cmd/services/demo/deployment.yaml
+	kubectl apply -f cmd/services/demo/deployment.yaml \
+		-f cmd/services/demo/service.yaml \
+		-f cmd/services/demo/external_dns.yaml

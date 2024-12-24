@@ -28,7 +28,7 @@ type (
 
 	ConnectionDetails struct {
 		_ struct{} `json:"-"`
-		
+
 		Username   string `json:"username"`
 		Password   string `json:"password"`
 		Database   string `json:"database"`

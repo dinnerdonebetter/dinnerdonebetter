@@ -2,8 +2,8 @@ package config
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
@@ -18,34 +18,28 @@ import (
 
 const (
 	// ProviderRedis is used to refer to redis.
-	ProviderRedis = "redis"
+	ProviderRedis provider = "redis"
 	// ProviderSQS is used to refer to sqs.
-	ProviderSQS = "sqs"
+	ProviderSQS provider = "sqs"
 	// ProviderPubSub is used to refer to GCP Pub/Sub.
-	ProviderPubSub = "pubsub"
+	ProviderPubSub provider = "pubsub"
+)
+
+var (
+	ErrNilConfig = errors.New("nil config provided")
 )
 
 type (
-	// Provider is used to indicate what messaging provider we'll use.
-	Provider string
-
-	// RedisConfig configures a Redis-backed consumer.
-	RedisConfig struct {
-		QueueAddress string `json:"message_queue_address,omitempty" toml:"message_queue_address,omitempty"`
-	}
-
-	// SQSConfig configures a SQS-backed consumer.
-	SQSConfig struct {
-		QueueAddress string `json:"message_queue_address,omitempty" toml:"message_queue_address,omitempty"`
-	}
+	// provider is used to indicate what messaging provider we'll use.
+	provider string
 
 	// MessageQueueConfig is used to indicate how the messaging provider should be configured.
 	MessageQueueConfig struct {
 		_ struct{} `json:"-"`
 
-		Provider Provider      `json:"provider,omitempty" toml:"provider,omitempty"`
+		Provider provider      `json:"provider,omitempty" toml:"provider,omitempty"`
 		SQS      sqs.Config    `json:"sqs,omitempty"      toml:"sqs,omitempty"`
-		PubSub   pubsub.Config `json:"pubsub,omitempty"   toml:"pubsub,omitempty"`
+		PubSub   pubsub.Config `json:"pubSub,omitempty"   toml:"pubSub,omitempty"`
 		Redis    redis.Config  `json:"redis,omitempty"    toml:"redis,omitempty"`
 	}
 
@@ -53,8 +47,8 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Consumers  MessageQueueConfig `json:"consumers,omitempty"  toml:"consumers,omitempty"`
-		Publishers MessageQueueConfig `json:"publishers,omitempty" toml:"publishers,omitempty"`
+		Consumer  MessageQueueConfig `json:"consumers,omitempty"  toml:"consumers,omitempty"`
+		Publisher MessageQueueConfig `json:"publishers,omitempty" toml:"publishers,omitempty"`
 	}
 )
 
@@ -64,36 +58,44 @@ func cleanString(s string) string {
 
 // ProvideConsumerProvider provides a PublisherProvider.
 func ProvideConsumerProvider(ctx context.Context, logger logging.Logger, c *Config) (messagequeue.ConsumerProvider, error) {
-	switch cleanString(string(c.Consumers.Provider)) {
-	case ProviderRedis:
-		return redis.ProvideRedisConsumerProvider(logger, c.Consumers.Redis), nil
-	case ProviderPubSub:
-		client, err := ps.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT_ID"))
+	if c == nil {
+		return nil, ErrNilConfig
+	}
+
+	switch cleanString(string(c.Consumer.Provider)) {
+	case string(ProviderRedis):
+		return redis.ProvideRedisConsumerProvider(logger, c.Consumer.Redis), nil
+	case string(ProviderPubSub):
+		client, err := ps.NewClient(ctx, c.Consumer.PubSub.ProjectID)
 		if err != nil {
 			return nil, fmt.Errorf("establishing PubSub client: %w", err)
 		}
 
 		return pubsub.ProvidePubSubConsumerProvider(logger, client), nil
 	default:
-		return nil, fmt.Errorf("invalid provider: %q", c.Consumers.Provider)
+		return nil, fmt.Errorf("invalid provider: %q", c.Consumer.Provider)
 	}
 }
 
 // ProvidePublisherProvider provides a PublisherProvider.
 func ProvidePublisherProvider(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (messagequeue.PublisherProvider, error) {
-	switch cleanString(string(c.Publishers.Provider)) {
-	case ProviderRedis:
-		return redis.ProvideRedisPublisherProvider(logger, tracerProvider, c.Publishers.Redis), nil
-	case ProviderSQS:
+	if c == nil {
+		return nil, ErrNilConfig
+	}
+
+	switch cleanString(string(c.Publisher.Provider)) {
+	case string(ProviderRedis):
+		return redis.ProvideRedisPublisherProvider(logger, tracerProvider, c.Publisher.Redis), nil
+	case string(ProviderSQS):
 		return sqs.ProvideSQSPublisherProvider(logger, tracerProvider), nil
-	case ProviderPubSub:
-		client, err := ps.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT_ID"))
+	case string(ProviderPubSub):
+		client, err := ps.NewClient(ctx, c.Publisher.PubSub.ProjectID)
 		if err != nil {
 			return nil, fmt.Errorf("establishing PubSub client: %w", err)
 		}
 
 		return pubsub.ProvidePubSubPublisherProvider(logger, tracerProvider, client), nil
 	default:
-		return nil, fmt.Errorf("invalid publisher provider: %q", c.Publishers.Provider)
+		return nil, fmt.Errorf("invalid publisher provider: %q", c.Publisher.Provider)
 	}
 }
