@@ -48,8 +48,9 @@ func main() {
 		},
 	}
 
-	dbConfig := &dbconfig.Config{
-		ConnectionDetails: os.Getenv("DATABASE_URL"),
+	dbConfig := &dbconfig.Config{}
+	if err := dbConfig.LoadConnectionDetailsFromURL(os.Getenv("DATABASE_URL")); err != nil {
+		log.Fatal(err)
 	}
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, dbConfig)

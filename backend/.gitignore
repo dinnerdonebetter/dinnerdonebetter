@@ -48,3 +48,6 @@ artifacts/
 *.wasm
 
 environments/localdev/generated
+
+
+cmd/services/demo

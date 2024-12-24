@@ -44,9 +44,15 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 				},
 			},
 			Database: dbconfig.Config{
-				Debug:             true,
-				RunMigrations:     true,
-				ConnectionDetails: "postgres://username:password@host/table",
+				Debug:         true,
+				RunMigrations: true,
+				ConnectionDetails: dbconfig.ConnectionDetails{
+					Username:   "username",
+					Password:   "password",
+					Database:   "table",
+					Host:       "host",
+					DisableSSL: true,
+				},
 			},
 		}
 

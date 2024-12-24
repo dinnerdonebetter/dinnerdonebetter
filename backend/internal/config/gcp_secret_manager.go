@@ -60,20 +60,12 @@ type SecretVersionAccessor interface {
 	AccessSecretVersion(ctx context.Context, req *secretmanagerpb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.AccessSecretVersionResponse, error)
 }
 
-func buildDatabaseURIFromGCPEnvVars() string {
-	socketDir, isSet := os.LookupEnv(gcpDatabaseSocketDirEnvVarKey)
-	if !isSet {
-		socketDir = googleCloudCloudSQLSocket
+func buildDatabaseURIFromGCPEnvVars() dbconfig.ConnectionDetails {
+	return dbconfig.ConnectionDetails{
+		Username: os.Getenv(gcpDatabaseUserEnvVarKey),
+		Password: os.Getenv(gcpDatabaseUserPasswordEnvVarKey),
+		Database: os.Getenv(gcpDatabaseNameEnvVarKey),
 	}
-
-	return fmt.Sprintf(
-		"user=%s password=%s database=%s host=%s/%s",
-		os.Getenv(gcpDatabaseUserEnvVarKey),
-		os.Getenv(gcpDatabaseUserPasswordEnvVarKey),
-		os.Getenv(gcpDatabaseNameEnvVarKey),
-		socketDir,
-		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
-	)
 }
 
 // GetAPIServiceConfigFromGoogleCloudRunEnvironment fetches an APIServiceConfig from GCP Secret Manager.
@@ -90,8 +82,7 @@ func GetAPIServiceConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*API
 
 	rawPort := os.Getenv(gcpPortEnvVarKey)
 	var port uint64
-	port, err = strconv.ParseUint(rawPort, 10, 64)
-	if err != nil {
+	if port, err = strconv.ParseUint(rawPort, 10, 64); err != nil {
 		return nil, fmt.Errorf("parsing port: %w", err)
 	}
 	cfg.Server.HTTPPort = uint16(port)
@@ -228,7 +219,6 @@ func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*Ema
 	}
 
 	cfg.Database = dbconfig.Config{
-		ConnectionDetails:        " ",
 		OAuth2TokenEncryptionKey: " ",
 	}
 	cfg.Email = emailcfg.Config{

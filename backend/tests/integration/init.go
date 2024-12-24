@@ -32,7 +32,7 @@ const (
 var (
 	urlToUse       string
 	parsedURLToUse *url.URL
-	dbmanager      database.DataManager
+	dbManager      database.DataManager
 
 	createdClientID, createdClientSecret string
 
@@ -63,15 +63,17 @@ func init() {
 	}
 
 	cfg := &dbconfig.Config{
-		OAuth2TokenEncryptionKey: "                                ",
-		ConnectionDetails:        dbAddr,
+		OAuth2TokenEncryptionKey: "                                ", // enough characters to validate
 		Debug:                    false,
 		RunMigrations:            false,
 		MaxPingAttempts:          500,
 	}
+	if err := cfg.LoadConnectionDetailsFromURL(dbAddr); err != nil {
+		panic(err)
+	}
 
 	var err error
-	dbmanager, err = postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
+	dbManager, err = postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -82,8 +84,8 @@ func init() {
 		panic(err)
 	}
 
-	if _, err = dbmanager.GetUserByUsername(ctx, premadeAdminUser.Username); err != nil {
-		_, creationErr := dbmanager.CreateUser(ctx, &types.UserDatabaseCreationInput{
+	if _, err = dbManager.GetUserByUsername(ctx, premadeAdminUser.Username); err != nil {
+		_, creationErr := dbManager.CreateUser(ctx, &types.UserDatabaseCreationInput{
 			ID:              premadeAdminUser.ID,
 			Username:        premadeAdminUser.Username,
 			EmailAddress:    premadeAdminUser.EmailAddress,
@@ -95,7 +97,7 @@ func init() {
 		}
 	}
 
-	if err = dbmanager.MarkUserTwoFactorSecretAsVerified(ctx, premadeAdminUser.ID); err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err = dbManager.MarkUserTwoFactorSecretAsVerified(ctx, premadeAdminUser.ID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		panic(err)
 	}
 
@@ -109,7 +111,7 @@ func init() {
 		panic(err)
 	}
 
-	createdClient, err := dbmanager.CreateOAuth2Client(ctx, &types.OAuth2ClientDatabaseCreationInput{
+	createdClient, err := dbManager.CreateOAuth2Client(ctx, &types.OAuth2ClientDatabaseCreationInput{
 		ID:           identifiers.New(),
 		Name:         "integration_client",
 		Description:  "integration test client",

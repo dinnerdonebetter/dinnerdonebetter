@@ -78,8 +78,6 @@ const (
 	defaultPort = 8000
 	/* #nosec G101 */
 	debugCookieHashKey = "HEREISA32CHARSECRETWHICHISMADEUP"
-	/* #nosec G101 */
-	devPostgresDBConnDetails = "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable"
 
 	// run modes.
 	developmentEnv = "development"
@@ -99,6 +97,17 @@ const (
 	contentTypeJSON               = "application/json"
 	workerQueueAddress            = "worker_queue:6379"
 	localOAuth2TokenEncryptionKey = debugCookieHashKey
+)
+
+var (
+	devPostgresDBConnectionDetails = dbconfig.ConnectionDetails{
+		Username:   "dbuser",
+		Password:   "hunter2",
+		Database:   "dinner-done-better",
+		Host:       "pgdatabase",
+		Port:       5432,
+		DisableSSL: true,
+	}
 )
 
 func buildLocalDevConfig() *config.APIServiceConfig {
@@ -153,7 +162,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			LogQueries:               true,
 			MaxPingAttempts:          maxAttempts,
 			PingWaitPeriod:           time.Second,
-			ConnectionDetails:        devPostgresDBConnDetails,
+			ConnectionDetails:        devPostgresDBConnectionDetails,
 		},
 		Observability: observability.Config{
 			Logging: logcfg.Config{
@@ -426,7 +435,14 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 			LogQueries:               true,
 			MaxPingAttempts:          maxAttempts,
 			PingWaitPeriod:           time.Second,
-			ConnectionDetails:        "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+			ConnectionDetails: dbconfig.ConnectionDetails{
+				Username:   "dbuser",
+				Password:   "hunter2",
+				Database:   "dinner-done-better",
+				Host:       "postgres-postgresql.localdev.svc.cluster.local",
+				Port:       5432,
+				DisableSSL: true,
+			},
 		},
 		Observability: observability.Config{
 			Logging: logcfg.Config{
@@ -692,7 +708,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			LogQueries:               true,
 			MaxPingAttempts:          maxAttempts,
 			PingWaitPeriod:           1500 * time.Millisecond,
-			ConnectionDetails:        devPostgresDBConnDetails,
+			ConnectionDetails:        devPostgresDBConnectionDetails,
 		},
 		Observability: observability.Config{
 			Logging: logcfg.Config{

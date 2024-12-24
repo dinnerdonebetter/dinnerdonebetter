@@ -74,8 +74,7 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 	c := &Querier{
 		db: fakeDB,
 		config: &config.Config{
-			ConnectionDetails: t.Name(),
-			LogQueries:        false,
+			LogQueries: false,
 		},
 		logger:                  logging.NewNoopLogger(),
 		generatedQuerier:        generated.New(),
@@ -156,7 +155,13 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
 	require.NoError(t, err)
 
-	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &config.Config{ConnectionDetails: connStr, RunMigrations: true, OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah"})
+	dbConfig := &config.Config{
+		RunMigrations:            true,
+		OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
+	}
+	require.NoError(t, dbConfig.LoadConnectionDetailsFromURL(connStr))
+
+	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), dbConfig)
 	require.NoError(t, err)
 	require.NotNil(t, dbc)
 

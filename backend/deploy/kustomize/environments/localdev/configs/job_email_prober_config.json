@@ -32,7 +32,14 @@
 	},
 	"database": {
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
-		"connectionDetails": "postgres://dbuser:hunter2@postgres-postgresql.localdev.svc.cluster.local:5432/dinner-done-better?sslmode=disable",
+		"connectionDetails": {
+			"username": "dbuser",
+			"password": "hunter2",
+			"database": "dinner-done-better",
+			"hostname": "postgres-postgresql.localdev.svc.cluster.local",
+			"port": 5432,
+			"disableSSL": true
+		},
 		"debug": true,
 		"logQueries": true,
 		"runMigrations": true,

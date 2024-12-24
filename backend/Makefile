@@ -285,3 +285,23 @@ line_count: ensure_scc_installed
 .PHONY: proxy_dev_db
 proxy_dev_db:
 	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
+
+
+#### NASCENT HELL ZONE
+
+.PHONY: full_deploy_to_k8s
+full_deploy_to_k8s:
+	kubectl delete namespace --ignore-not-found=true demo
+	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest --file cmd/services/demo/Dockerfile .
+	docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest
+	kubectl apply \
+		-f cmd/services/demo/namespace.yaml \
+		-f cmd/services/demo/deployment.yaml \
+		-f cmd/services/demo/ingress.yaml \
+		-f cmd/services/demo/service.yaml
+
+.PHONY: deploy_to_k8s
+deploy_to_k8s:
+	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest --file cmd/services/demo/Dockerfile .
+	docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest
+	kubectl apply -f cmd/services/demo/deployment.yaml
