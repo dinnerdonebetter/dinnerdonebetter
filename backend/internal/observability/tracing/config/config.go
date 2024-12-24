@@ -25,9 +25,11 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		CloudTrace *cloudtrace.Config `json:"cloudTrace,omitempty" toml:"cloud_trace,omitempty"`
-		Otel       *oteltrace.Config  `json:"otelgrpc,omitempty"   toml:"otelgrpc,omitempty"`
-		Provider   string             `json:"provider,omitempty"   toml:"provider,omitempty"`
+		CloudTrace                *cloudtrace.Config `json:"cloudTrace,omitempty"                toml:"cloud_trace,omitempty"                 envPrefix:"CLOUDTRACE_"`
+		Otel                      *oteltrace.Config  `json:"otelgrpc,omitempty"                  toml:"otelgrpc,omitempty"                    envPrefix:"OTELGRPC_"`
+		ServiceName               string             `json:"service_name,omitempty"              toml:"service_name,omitempty"                env:"TRACING_SERVICE_NAME"`
+		Provider                  string             `json:"provider,omitempty"                  toml:"provider,omitempty"                    env:"TRACING_PROVIDER"`
+		SpanCollectionProbability float64            `json:"spanCollectionProbability,omitempty" toml:"span_collection_probability,omitempty" env:"TRACING_SPAN_COLLECTION_PROBABILITY"`
 	}
 )
 
@@ -40,7 +42,7 @@ func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (t
 	switch p {
 	case ProviderOtel:
 		logger.WithValue("otel", c.Otel).Info("configuring otelgrpc provider")
-		tp, err := oteltrace.SetupOtelGRPC(ctx, c.Otel)
+		tp, err := oteltrace.SetupOtelGRPC(ctx, c.ServiceName, c.SpanCollectionProbability, c.Otel)
 		if err != nil {
 			return nil, fmt.Errorf("configuring otelgrpc provider: %w", err)
 		}
@@ -48,7 +50,7 @@ func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (t
 		return tp, nil
 	case ProviderCloudTrace:
 		logger.Info("configuring cloud trace provider")
-		tp, err := cloudtrace.SetupCloudTrace(ctx, c.CloudTrace)
+		tp, err := cloudtrace.SetupCloudTrace(ctx, c.ServiceName, c.SpanCollectionProbability, c.CloudTrace)
 		if err != nil {
 			return nil, fmt.Errorf("configuring cloud trace provider: %w", err)
 		}
@@ -68,5 +70,7 @@ func (c *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&c.Provider, validation.In("", ProviderOtel, ProviderCloudTrace)),
 		validation.Field(&c.Otel, validation.When(c.Provider == ProviderOtel, validation.Required).Else(validation.Nil)),
 		validation.Field(&c.CloudTrace, validation.When(c.Provider == ProviderCloudTrace, validation.Required).Else(validation.Nil)),
+		validation.Field(&c.ServiceName, validation.Required),
+		validation.Field(&c.SpanCollectionProbability, validation.Required),
 	)
 }

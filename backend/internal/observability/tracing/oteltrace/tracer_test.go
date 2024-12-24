@@ -28,12 +28,10 @@ func TestConfig_SetupOtelHTTP(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			CollectorEndpoint:         "blah blah blah",
-			ServiceName:               t.Name(),
-			SpanCollectionProbability: 0,
+			CollectorEndpoint: "blah blah blah",
 		}
 
-		actual, err := SetupOtelGRPC(ctx, cfg)
+		actual, err := SetupOtelGRPC(ctx, t.Name(), 0, cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})

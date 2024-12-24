@@ -26,9 +26,9 @@ func TestObserveValue(T *testing.T) {
 		tracerProvider, err := (&tracingcfg.Config{
 			Provider: tracingcfg.ProviderOtel,
 			Otel: &oteltrace.Config{
-				CollectorEndpoint:         "http://localhost:4317",
-				SpanCollectionProbability: 1,
+				CollectorEndpoint: "http://localhost:4317",
 			},
+			SpanCollectionProbability: 1,
 		}).ProvideTracerProvider(ctx, logger)
 		require.NoError(t, err)
 		require.NotNil(t, tracerProvider)

@@ -15,8 +15,7 @@ func TestCloudTraceConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			ProjectID:   t.Name(),
-			ServiceName: t.Name(),
+			ProjectID: t.Name(),
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

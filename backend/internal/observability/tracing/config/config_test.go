@@ -35,11 +35,11 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{
-			Provider: ProviderOtel,
+			Provider:                  ProviderOtel,
+			ServiceName:               t.Name(),
+			SpanCollectionProbability: 1,
 			Otel: &oteltrace.Config{
-				CollectorEndpoint:         t.Name(),
-				ServiceName:               t.Name(),
-				SpanCollectionProbability: 1,
+				CollectorEndpoint: t.Name(),
 			},
 		}
 

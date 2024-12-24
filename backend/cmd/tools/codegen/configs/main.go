@@ -180,12 +180,12 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				Provider: metricscfg.ProviderOtel,
 			},
 			Tracing: tracingcfg.Config{
-				Provider: tracingcfg.ProviderOtel,
+				Provider:                  tracingcfg.ProviderOtel,
+				ServiceName:               otelServiceName,
+				SpanCollectionProbability: 1,
 				Otel: &oteltrace.Config{
-					SpanCollectionProbability: 1,
-					Insecure:                  true,
-					CollectorEndpoint:         "otel_collector:4317",
-					ServiceName:               otelServiceName,
+					Insecure:          true,
+					CollectorEndpoint: "otel_collector:4317",
 				},
 			},
 		},
@@ -450,11 +450,11 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 				Provider: logcfg.ProviderSlog,
 			},
 			Tracing: tracingcfg.Config{
-				Provider: tracingcfg.ProviderOtel,
+				Provider:                  tracingcfg.ProviderOtel,
+				SpanCollectionProbability: 1,
+				ServiceName:               otelServiceName,
 				Otel: &oteltrace.Config{
-					SpanCollectionProbability: 1,
-					CollectorEndpoint:         "http://0.0.0.0:4317",
-					ServiceName:               otelServiceName,
+					CollectorEndpoint: "http://0.0.0.0:4317",
 				},
 			},
 			Metrics: metricscfg.Config{
@@ -716,11 +716,11 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				Provider: logcfg.ProviderSlog,
 			},
 			Tracing: tracingcfg.Config{
-				Provider: tracingcfg.ProviderOtel,
+				Provider:                  tracingcfg.ProviderOtel,
+				SpanCollectionProbability: 1,
+				ServiceName:               otelServiceName,
 				Otel: &oteltrace.Config{
-					SpanCollectionProbability: 1,
-					CollectorEndpoint:         "http://tracing-server:14268/api/traces",
-					ServiceName:               otelServiceName,
+					CollectorEndpoint: "http://tracing-server:14268/api/traces",
 				},
 			},
 		},
@@ -966,11 +966,11 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				},
 			},
 			Tracing: tracingcfg.Config{
-				Provider: tracingcfg.ProviderCloudTrace,
+				Provider:                  tracingcfg.ProviderCloudTrace,
+				ServiceName:               otelServiceName,
+				SpanCollectionProbability: 1,
 				CloudTrace: &cloudtrace.Config{
-					ProjectID:                 "dinner-done-better-dev",
-					ServiceName:               otelServiceName,
-					SpanCollectionProbability: 1,
+					ProjectID: "dinner-done-better-dev",
 				},
 			},
 		},

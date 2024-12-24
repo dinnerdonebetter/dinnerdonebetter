@@ -29,7 +29,7 @@ func init() {
 }
 
 // SetupOtelGRPC creates a new trace provider instance and registers it as global trace provider.
-func SetupOtelGRPC(ctx context.Context, c *Config) (tracing.TracerProvider, error) {
+func SetupOtelGRPC(ctx context.Context, serviceName string, collectionProbability float64, c *Config) (tracing.TracerProvider, error) {
 	res, err := resource.New(ctx,
 		resource.WithFromEnv(),
 		resource.WithProcess(),
@@ -39,7 +39,7 @@ func SetupOtelGRPC(ctx context.Context, c *Config) (tracing.TracerProvider, erro
 		resource.WithAttributes(
 			attribute.KeyValue{
 				Key:   semconv.ServiceNameKey,
-				Value: attribute.StringValue(c.ServiceName),
+				Value: attribute.StringValue(serviceName),
 			},
 		),
 	)
@@ -64,7 +64,7 @@ func SetupOtelGRPC(ctx context.Context, c *Config) (tracing.TracerProvider, erro
 	tracerProvider := sdktrace.NewTracerProvider(
 		sdktrace.WithResource(res),
 		sdktrace.WithSpanProcessor(bsp),
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(collectionProbability)),
 	)
 
 	// set global propagator to tracecontext (the default is no-op).

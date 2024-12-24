@@ -9,6 +9,7 @@ import (
 
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
@@ -27,25 +28,33 @@ func init() {
 }
 
 // SetupCloudTrace creates a new trace provider instance and registers it as global trace provider.
-func SetupCloudTrace(ctx context.Context, cfg *Config) (tracing.TracerProvider, error) {
+func SetupCloudTrace(ctx context.Context, serviceName string, spanCollectionProbability float64, cfg *Config) (tracing.TracerProvider, error) {
 	exporter, err := texporter.New(texporter.WithProjectID(cfg.ProjectID))
 	if err != nil {
 		return nil, fmt.Errorf("setting up trace exporter: %w", err)
 	}
 
-	res, err := resource.New(
-		ctx,
+	res, err := resource.New(ctx,
 		resource.WithFromEnv(),
-		resource.WithAttributes(semconv.ServiceNameKey.String("dinner-done-better-api")),
+		resource.WithProcess(),
+		resource.WithTelemetrySDK(),
+		resource.WithHost(),
+		resource.WithOSType(),
+		resource.WithAttributes(
+			attribute.KeyValue{
+				Key:   semconv.ServiceNameKey,
+				Value: attribute.StringValue(serviceName),
+			},
+		),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("setting up process runtime version: %w", err)
+		return nil, err
 	}
 
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithBatcher(exporter),
 		sdktrace.WithResource(res),
-		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(cfg.SpanCollectionProbability)),
+		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(spanCollectionProbability)),
 	)
 
 	otel.SetTracerProvider(tp)
