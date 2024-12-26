@@ -15,7 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
@@ -54,7 +54,7 @@ func ProvideService(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *Config,
-	searchConfig *searchcfg.Config,
+	searchConfig *textsearchcfg.Config,
 	recipeDataManager types.RecipeDataManager,
 	recipeMediaDataManager types.RecipeMediaDataManager,
 	recipeGrapher recipeanalysis.RecipeAnalyzer,
@@ -78,7 +78,7 @@ func ProvideService(
 		return nil, fmt.Errorf("initializing %s upload manager: %w", serviceName, err)
 	}
 
-	searchIndex, err := searchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeRecipes)
+	searchIndex, err := textsearchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeRecipes)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing recipe index manager")
 	}

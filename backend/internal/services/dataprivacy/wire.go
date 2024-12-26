@@ -1,4 +1,4 @@
-package workers
+package dataprivacy
 
 import (
 	"github.com/google/wire"

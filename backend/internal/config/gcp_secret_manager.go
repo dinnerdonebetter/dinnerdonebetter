@@ -12,11 +12,11 @@ import (
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/posthog"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
@@ -60,8 +60,8 @@ type SecretVersionAccessor interface {
 	AccessSecretVersion(ctx context.Context, req *secretmanagerpb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.AccessSecretVersionResponse, error)
 }
 
-func buildDatabaseURIFromGCPEnvVars() dbconfig.ConnectionDetails {
-	return dbconfig.ConnectionDetails{
+func buildDatabaseURIFromGCPEnvVars() databasecfg.ConnectionDetails {
+	return databasecfg.ConnectionDetails{
 		Username: os.Getenv(gcpDatabaseUserEnvVarKey),
 		Password: os.Getenv(gcpDatabaseUserPasswordEnvVarKey),
 		Database: os.Getenv(gcpDatabaseNameEnvVarKey),
@@ -96,8 +96,8 @@ func GetAPIServiceConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*API
 	cfg.Services.Auth.SSO.Google.ClientSecret = os.Getenv(gcpGoogleSSOClientSecretEnvVarKey)
 	cfg.Services.Auth.JWTSigningKey = os.Getenv(gcpJWTSigningKeyEnvVarKey)
 
-	cfg.Search = searchcfg.Config{
-		Provider: searchcfg.AlgoliaProvider,
+	cfg.Search = textsearchcfg.Config{
+		Provider: textsearchcfg.AlgoliaProvider,
 		Algolia: &algolia.Config{
 			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
 			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
@@ -218,7 +218,7 @@ func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*Ema
 		return nil, err
 	}
 
-	cfg.Database = dbconfig.Config{
+	cfg.Database = databasecfg.Config{
 		OAuth2TokenEncryptionKey: " ",
 	}
 	cfg.Email = emailcfg.Config{
@@ -342,8 +342,8 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 		return nil, err
 	}
 
-	cfg.Search = searchcfg.Config{
-		Provider: searchcfg.AlgoliaProvider,
+	cfg.Search = textsearchcfg.Config{
+		Provider: textsearchcfg.AlgoliaProvider,
 		Algolia: &algolia.Config{
 			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
 			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
@@ -374,8 +374,8 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 		return nil, err
 	}
 
-	cfg.Search = searchcfg.Config{
-		Provider: searchcfg.AlgoliaProvider,
+	cfg.Search = textsearchcfg.Config{
+		Provider: textsearchcfg.AlgoliaProvider,
 		Algolia: &algolia.Config{
 			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
 			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
@@ -407,8 +407,8 @@ func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context)
 		return nil, err
 	}
 
-	cfg.Search = searchcfg.Config{
-		Provider: searchcfg.AlgoliaProvider,
+	cfg.Search = textsearchcfg.Config{
+		Provider: textsearchcfg.AlgoliaProvider,
 		Algolia: &algolia.Config{
 			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
 			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
@@ -435,8 +435,8 @@ func GetUserDataAggregatorConfigFromGoogleCloudSecretManager(ctx context.Context
 		return nil, err
 	}
 
-	cfg.Search = searchcfg.Config{
-		Provider: searchcfg.AlgoliaProvider,
+	cfg.Search = textsearchcfg.Config{
+		Provider: textsearchcfg.AlgoliaProvider,
 		Algolia: &algolia.Config{
 			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
 			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),

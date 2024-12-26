@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"time"
 
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
-	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
@@ -25,7 +25,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -100,7 +100,7 @@ const (
 )
 
 var (
-	devPostgresDBConnectionDetails = dbconfig.ConnectionDetails{
+	devPostgresDBConnectionDetails = databasecfg.ConnectionDetails{
 		Username:   "dbuser",
 		Password:   "hunter2",
 		Database:   "dinner-done-better",
@@ -146,16 +146,16 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				},
 			},
 		},
-		Search: searchcfg.Config{
+		Search: textsearchcfg.Config{
 			Algolia:  &algolia.Config{},
-			Provider: searchcfg.AlgoliaProvider,
+			Provider: textsearchcfg.AlgoliaProvider,
 		},
 		Server: http.Config{
 			Debug:           true,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
 		},
-		Database: dbconfig.Config{
+		Database: databasecfg.Config{
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
 			Debug:                    true,
 			RunMigrations:            true,
@@ -165,9 +165,9 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			ConnectionDetails:        devPostgresDBConnectionDetails,
 		},
 		Observability: observability.Config{
-			Logging: logcfg.Config{
+			Logging: loggingcfg.Config{
 				Level:          logging.DebugLevel,
-				Provider:       logcfg.ProviderSlog,
+				Provider:       loggingcfg.ProviderSlog,
 				OutputFilepath: "/var/log/dinnerdonebetter/api-service.log",
 			},
 			Metrics: metricscfg.Config{
@@ -419,23 +419,23 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 				},
 			},
 		},
-		Search: searchcfg.Config{
+		Search: textsearchcfg.Config{
 			Algolia:  &algolia.Config{},
-			Provider: searchcfg.AlgoliaProvider,
+			Provider: textsearchcfg.AlgoliaProvider,
 		},
 		Server: http.Config{
 			Debug:           true,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
 		},
-		Database: dbconfig.Config{
+		Database: databasecfg.Config{
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
 			Debug:                    true,
 			RunMigrations:            true,
 			LogQueries:               true,
 			MaxPingAttempts:          maxAttempts,
 			PingWaitPeriod:           time.Second,
-			ConnectionDetails: dbconfig.ConnectionDetails{
+			ConnectionDetails: databasecfg.ConnectionDetails{
 				Username:   "dbuser",
 				Password:   "hunter2",
 				Database:   "dinner-done-better",
@@ -445,9 +445,9 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 			},
 		},
 		Observability: observability.Config{
-			Logging: logcfg.Config{
+			Logging: loggingcfg.Config{
 				Level:    logging.DebugLevel,
-				Provider: logcfg.ProviderSlog,
+				Provider: loggingcfg.ProviderSlog,
 			},
 			Tracing: tracingcfg.Config{
 				Provider:                  tracingcfg.ProviderOtel,
@@ -701,7 +701,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
 		},
-		Database: dbconfig.Config{
+		Database: databasecfg.Config{
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
 			Debug:                    true,
 			RunMigrations:            true,
@@ -711,9 +711,9 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			ConnectionDetails:        devPostgresDBConnectionDetails,
 		},
 		Observability: observability.Config{
-			Logging: logcfg.Config{
+			Logging: loggingcfg.Config{
 				Level:    logging.InfoLevel,
-				Provider: logcfg.ProviderSlog,
+				Provider: loggingcfg.ProviderSlog,
 			},
 			Tracing: tracingcfg.Config{
 				Provider:                  tracingcfg.ProviderOtel,
@@ -902,13 +902,13 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 }
 
 func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
-	emailConfig := emailconfig.Config{
-		Provider: emailconfig.ProviderSendgrid,
+	emailConfig := emailcfg.Config{
+		Provider: emailcfg.ProviderSendgrid,
 		Sendgrid: &sendgrid.Config{},
 	}
 
-	analyticsConfig := analyticsconfig.Config{
-		Provider: analyticsconfig.ProviderSegment,
+	analyticsConfig := analyticscfg.Config{
+		Provider: analyticscfg.ProviderSegment,
 		Segment:  &segment.Config{APIToken: ""},
 	}
 
@@ -941,11 +941,11 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
 		},
-		Search: searchcfg.Config{
+		Search: textsearchcfg.Config{
 			Algolia:  &algolia.Config{},
-			Provider: searchcfg.AlgoliaProvider,
+			Provider: textsearchcfg.AlgoliaProvider,
 		},
-		Database: dbconfig.Config{
+		Database: databasecfg.Config{
 			Debug:           true,
 			LogQueries:      true,
 			RunMigrations:   true,
@@ -953,9 +953,9 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			PingWaitPeriod:  time.Second,
 		},
 		Observability: observability.Config{
-			Logging: logcfg.Config{
+			Logging: loggingcfg.Config{
 				Level:    logging.DebugLevel,
-				Provider: logcfg.ProviderSlog,
+				Provider: loggingcfg.ProviderSlog,
 			},
 			Metrics: metricscfg.Config{
 				Provider: tracingcfg.ProviderCloudTrace,

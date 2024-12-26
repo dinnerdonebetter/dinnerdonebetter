@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
@@ -111,7 +111,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
+	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "setting up customer data collector")
 	}

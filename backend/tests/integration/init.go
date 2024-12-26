@@ -12,10 +12,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -49,7 +49,7 @@ var (
 
 func init() {
 	ctx := context.Background()
-	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
+	logger := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 
 	parsedURLToUse = serverutils.DetermineServiceURL()
 	urlToUse = parsedURLToUse.String()
@@ -62,7 +62,7 @@ func init() {
 		panic("empty database address provided")
 	}
 
-	cfg := &dbconfig.Config{
+	cfg := &databasecfg.Config{
 		OAuth2TokenEncryptionKey: "                                ", // enough characters to validate
 		Debug:                    false,
 		RunMigrations:            false,

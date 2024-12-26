@@ -1,4 +1,4 @@
-package config
+package msgconfig
 
 import (
 	"github.com/google/wire"

@@ -10,11 +10,11 @@ import (
 type QueuesConfig struct {
 	_ struct{} `json:"-"`
 
-	DataChangesTopicName              string `json:"dataChangesTopicName"`
-	OutboundEmailsTopicName           string `json:"outboundEmailsTopicName"`
-	SearchIndexRequestsTopicName      string `json:"searchIndexRequestsTopicName"`
-	UserDataAggregationTopicName      string `json:"userDataAggregationTopicName"`
-	WebhookExecutionRequestsTopicName string `json:"webhookExecutionRequestsTopicName"`
+	DataChangesTopicName              string `env:"DATA_CHANGES_TOPIC_NAME"               json:"dataChangesTopicName"`
+	OutboundEmailsTopicName           string `env:"OUTBOUND_EMAILS_TOPIC_NAME"            json:"outboundEmailsTopicName"`
+	SearchIndexRequestsTopicName      string `env:"SEARCH_INDEX_REQUESTS_TOPIC_NAME"      json:"searchIndexRequestsTopicName"`
+	UserDataAggregationTopicName      string `env:"USER_DATA_AGGREGATION_TOPIC_NAME"      json:"userDataAggregationTopicName"`
+	WebhookExecutionRequestsTopicName string `env:"WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME" json:"webhookExecutionRequestsTopicName"`
 }
 
 var _ validation.ValidatableWithContext = (*QueuesConfig)(nil)

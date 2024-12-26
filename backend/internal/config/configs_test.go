@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
@@ -44,10 +44,10 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 					EnableUserSignup:      true,
 				},
 			},
-			Database: dbconfig.Config{
+			Database: databasecfg.Config{
 				Debug:         true,
 				RunMigrations: true,
-				ConnectionDetails: dbconfig.ConnectionDetails{
+				ConnectionDetails: databasecfg.ConnectionDetails{
 					Username:   "username",
 					Password:   "password",
 					Database:   "table",

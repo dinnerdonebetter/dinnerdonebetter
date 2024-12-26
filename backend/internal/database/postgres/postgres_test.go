@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -73,7 +73,7 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 
 	c := &Querier{
 		db: fakeDB,
-		config: &config.Config{
+		config: &databasecfg.Config{
 			LogQueries: false,
 		},
 		logger:                  logging.NewNoopLogger(),
@@ -155,7 +155,7 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
 	require.NoError(t, err)
 
-	dbConfig := &config.Config{
+	dbConfig := &databasecfg.Config{
 		RunMigrations:            true,
 		OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
 	}
@@ -178,7 +178,7 @@ func TestQuerier_IsReady(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		c.config = &config.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
+		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
 		db.ExpectPing().WillDelayFor(0)
 
@@ -190,7 +190,7 @@ func TestQuerier_IsReady(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		c.config = &config.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
+		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
 		db.ExpectPing().WillReturnError(errors.New("blah"))
 
@@ -204,7 +204,7 @@ func TestQuerier_IsReady(T *testing.T) {
 		defer cancel()
 
 		c, db := buildTestClient(t)
-		c.config = &config.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
+		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
 		db.ExpectPing().WillReturnError(errors.New("blah"))
 
@@ -220,7 +220,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleConfig := &config.Config{
+		exampleConfig := &databasecfg.Config{
 			Debug:                    true,
 			OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
 			RunMigrations:            false,

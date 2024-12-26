@@ -1,4 +1,4 @@
-package config
+package loggingcfg
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"

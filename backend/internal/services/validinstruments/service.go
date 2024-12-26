@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -43,7 +43,7 @@ func ProvideService(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *Config,
-	searchConfig *searchcfg.Config,
+	searchConfig *textsearchcfg.Config,
 	validInstrumentDataManager types.ValidInstrumentDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
@@ -55,7 +55,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
-	searchIndex, err := searchcfg.ProvideIndex[types.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeValidInstruments)
+	searchIndex, err := textsearchcfg.ProvideIndex[types.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeValidInstruments)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing valid instrument index manager")
 	}

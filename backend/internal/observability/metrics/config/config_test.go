@@ -1,4 +1,4 @@
-package config
+package metricscfg
 
 import (
 	"context"

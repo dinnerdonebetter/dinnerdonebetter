@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -40,13 +40,13 @@ type Querier struct {
 	oauth2ClientTokenEncDec encryption.EncryptorDecryptor
 	generatedQuerier        generated.Querier
 	timeFunc                func() time.Time
-	config                  *dbconfig.Config
+	config                  *databasecfg.Config
 	db                      *sql.DB
 	migrateOnce             sync.Once
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
-func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *dbconfig.Config) (database.DataManager, error) {
+func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *databasecfg.Config) (database.DataManager, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(tracingName))
 
 	ctx, span := tracer.StartSpan(ctx)

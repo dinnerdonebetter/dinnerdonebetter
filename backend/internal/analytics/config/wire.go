@@ -1,4 +1,4 @@
-package config
+package analyticscfg
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/analytics"

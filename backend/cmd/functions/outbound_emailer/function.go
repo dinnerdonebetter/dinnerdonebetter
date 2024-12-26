@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/email"
-	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
@@ -74,7 +74,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("outbound_emailer_job")).StartSpan(ctx)
 	defer span.End()
 
-	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
+	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "setting up customer data collector")
 	}
@@ -91,7 +91,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 	cancel()
 	defer dataManager.Close()
 
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
+	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}

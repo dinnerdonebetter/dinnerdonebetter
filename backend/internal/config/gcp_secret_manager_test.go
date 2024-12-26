@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
-	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
@@ -29,19 +29,19 @@ import (
 func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(t *testing.T) {
 	baseConfig := &APIServiceConfig{
 		Observability: observability.Config{},
-		Email: emailconfig.Config{
+		Email: emailcfg.Config{
 			Sendgrid: &sendgrid.Config{},
-			Provider: emailconfig.ProviderSendgrid,
+			Provider: emailcfg.ProviderSendgrid,
 		},
-		Analytics: analyticsconfig.Config{
-			Provider: analyticsconfig.ProviderSegment,
+		Analytics: analyticscfg.Config{
+			Provider: analyticscfg.ProviderSegment,
 			Segment:  &segment.Config{},
 		},
 		Encoding: encoding.Config{ContentType: "application/json"},
 		Routing: routing.Config{
 			ServiceName: t.Name(),
 		},
-		Database: dbconfig.Config{},
+		Database: databasecfg.Config{},
 		Meta:     MetaSettings{},
 		Events:   msgconfig.Config{},
 		Server: http.Config{

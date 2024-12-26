@@ -10,15 +10,15 @@ import (
 	"os"
 	"runtime/debug"
 
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
-	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	featureflagsconfig "github.com/dinnerdonebetter/backend/internal/featureflags/config"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	routecfg "github.com/dinnerdonebetter/backend/internal/routing"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/routing"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 
 	"github.com/caarlos0/env/v11"
@@ -63,20 +63,20 @@ type (
 	APIServiceConfig struct {
 		_ struct{} `json:"-"`
 
-		Observability    observability.Config      `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Queues           QueuesConfig              `envPrefix:"QUEUES_"        json:"queues"`
-		Analytics        analyticsconfig.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Email            emailconfig.Config        `envPrefix:"EMAIL_"         json:"email"`
-		Search           searchcfg.Config          `envPrefix:"SEARCH_"        json:"search"`
-		FeatureFlags     featureflagsconfig.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
-		Encoding         encoding.Config           `envPrefix:"ENCODING_"      json:"encoding"`
-		Meta             MetaSettings              `envPrefix:"META_"          json:"meta"`
-		Events           msgconfig.Config          `envPrefix:"EVENTS_"        json:"events"`
-		Routing          routecfg.Config           `envPrefix:"ROUTING_"       json:"routing"`
-		Server           http.Config               `envPrefix:"SERVER_"        json:"server"`
-		Database         dbconfig.Config           `envPrefix:"DATABASE_"      json:"database"`
-		Services         ServicesConfig            `envPrefix:"SERVICE_"       json:"services"`
-		validateServices bool                      `json:"-"`
+		Observability    observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Queues           QueuesConfig           `envPrefix:"QUEUES_"        json:"queues"`
+		Analytics        analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Email            emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
+		Search           textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
+		FeatureFlags     featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
+		Encoding         encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
+		Meta             MetaSettings           `envPrefix:"META_"          json:"meta"`
+		Events           msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Routing          routing.Config         `envPrefix:"ROUTING_"       json:"routing"`
+		Server           http.Config            `envPrefix:"SERVER_"        json:"server"`
+		Database         databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
+		validateServices bool                   `json:"-"`
 	}
 
 	// DBCleanerConfig configures an instance of the database cleaner job.
@@ -84,15 +84,15 @@ type (
 		_ struct{} `json:"-"`
 
 		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Database      dbconfig.Config      `envPrefix:"DATABASE_"      json:"database"`
+		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// EmailProberConfig configures an instance of the email prober job.
 	EmailProberConfig struct {
 		_             struct{}             `json:"-"`
-		Email         emailconfig.Config   `envPrefix:"EMAIL_"         json:"email"`
+		Email         emailcfg.Config      `envPrefix:"EMAIL_"         json:"email"`
 		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Database      dbconfig.Config      `envPrefix:"DATABASE_"      json:"database"`
+		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// MealPlanFinalizerConfig configures an instance of the meal plan finalizer job.
@@ -100,25 +100,25 @@ type (
 		_             struct{}             `json:"-"`
 		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
-		Database      dbconfig.Config      `envPrefix:"DATABASE_"      json:"database"`
+		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// MealPlanGroceryListInitializerConfig configures an instance of the meal plan grocery list initializer job.
 	MealPlanGroceryListInitializerConfig struct {
-		_             struct{}               `json:"-"`
-		Analytics     analyticsconfig.Config `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Database      dbconfig.Config        `envPrefix:"DATABASE_"      json:"database"`
+		_             struct{}             `json:"-"`
+		Analytics     analyticscfg.Config  `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
+		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// MealPlanTaskCreatorConfig configures an instance of the meal plan task creator job.
 	MealPlanTaskCreatorConfig struct {
-		_             struct{}               `json:"-"`
-		Analytics     analyticsconfig.Config `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Database      dbconfig.Config        `envPrefix:"DATABASE_"      json:"database"`
+		_             struct{}             `json:"-"`
+		Analytics     analyticscfg.Config  `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
+		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// SearchDataIndexSchedulerConfig configures an instance of the search data index scheduler job.
@@ -126,7 +126,7 @@ type (
 		_             struct{}             `json:"-"`
 		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
-		Database      dbconfig.Config      `envPrefix:"DATABASE_"      json:"database"`
+		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
 	}
 )
 

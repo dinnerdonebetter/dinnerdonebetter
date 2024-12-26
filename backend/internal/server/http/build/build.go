@@ -16,7 +16,7 @@ import (
 	graphing "github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
@@ -92,7 +92,7 @@ func Build(
 		tracingcfg.ProvidersTracing,
 		observability.ProvidersObservability,
 		postgres.ProvidersPostgres,
-		logcfg.ProvidersLogConfig,
+		loggingcfg.ProvidersLogConfig,
 		graphing.Providers,
 		authservice.Providers,
 		usersservice.Providers,

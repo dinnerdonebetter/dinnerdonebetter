@@ -9,19 +9,19 @@ package build
 import (
 	"context"
 
-	config7 "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	config6 "github.com/dinnerdonebetter/backend/internal/featureflags/config"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
-	config5 "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	config2 "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	config4 "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	config3 "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
@@ -79,9 +79,9 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	httpConfig := cfg.Server
 	observabilityConfig := &cfg.Observability
 	configConfig := &observabilityConfig.Logging
-	logger := config2.ProvideLogger(configConfig)
+	logger := loggingcfg.ProvideLogger(configConfig)
 	config8 := &observabilityConfig.Tracing
-	tracerProvider, err := config3.ProvideTracerProvider(ctx, config8, logger)
+	tracerProvider, err := tracingcfg.ProvideTracerProvider(ctx, config8, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	config10 := &observabilityConfig.Metrics
-	provider, err := config4.ProvideMetricsProvider(ctx, logger, config10)
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, config10)
 	if err != nil {
 		return nil, err
 	}
@@ -105,18 +105,18 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
 	config11 := &cfg.Events
-	publisherProvider, err := config5.ProvidePublisherProvider(ctx, logger, tracerProvider, config11)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, config11)
 	if err != nil {
 		return nil, err
 	}
 	config12 := &cfg.FeatureFlags
 	client := tracing.BuildTracedHTTPClient()
-	featureFlagManager, err := config6.ProvideFeatureFlagManager(config12, logger, tracerProvider, client)
+	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(config12, logger, tracerProvider, client)
 	if err != nil {
 		return nil, err
 	}
 	config13 := &cfg.Analytics
-	eventReporter, err := config7.ProvideEventReporter(config13, logger, tracerProvider)
+	eventReporter, err := analyticscfg.ProvideEventReporter(config13, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

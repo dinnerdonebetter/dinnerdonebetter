@@ -1,4 +1,4 @@
-package workers
+package dataprivacy
 
 import (
 	"context"

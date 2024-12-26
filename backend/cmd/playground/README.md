@@ -74,7 +74,7 @@ import (
 	"log"
 	"time"
 	
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -91,7 +91,7 @@ func main() {
 	dbPassword := os.Getenv("DEV_DATABASE_PASSWORD")
 	dbName := os.Getenv("DEV_DATABASE_DB")
 
-	databaseConfig := &dbconfig.Config{
+	databaseConfig := &databasecfg.Config{
 		OAuth2TokenEncryptionKey: os.Getenv("DEV_DATABASE_OAUTH2_ENCRYPTION_KEY"),
 		ConnectionDetails:        fmt.Sprintf(dbString, dbUser, dbPassword, dbName),
 		RunMigrations:            false,

@@ -12,7 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -61,7 +61,7 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			ctx,
 			logger,
 			cfg,
-			&searchcfg.Config{},
+			&textsearchcfg.Config{},
 			&mocktypes.ValidIngredientDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
@@ -92,7 +92,7 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			ctx,
 			logger,
 			cfg,
-			&searchcfg.Config{},
+			&textsearchcfg.Config{},
 			&mocktypes.ValidIngredientDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
