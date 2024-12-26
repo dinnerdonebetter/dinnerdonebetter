@@ -308,8 +308,5 @@ full_deploy_to_k8s: teardown_cluster
 
 .PHONY: deploy_to_k8s
 deploy_to_k8s:
-	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest --file cmd/services/demo/Dockerfile .
-	docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest
-	kubectl apply -f cmd/services/demo/deployment.yaml \
-		-f cmd/services/demo/service.yaml \
-		-f cmd/services/demo/external_dns.yaml
+	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+	docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest

@@ -1,0 +1,69 @@
+# See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
+resources:
+  - namespace.yaml
+  - ../../components/api_server
+  - ../../components/jobs/db_cleaner
+  - ../../components/jobs/email_prober
+  - ../../components/jobs/meal_plan_finalizer
+  - ../../components/jobs/meal_plan_grocery_list_initializer
+  - ../../components/jobs/meal_plan_task_creator
+  - ../../components/jobs/search_data_index_scheduler
+
+# See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
+patches: []
+
+labels:
+  - pairs:
+      app.kubernetes.io/name: dinner-done-better-backend
+
+configMapGenerator:
+  - name: opentelemetry-collector-config
+    namespace: dev
+    files:
+      - config.yaml=configs/otel_collector_config.yaml
+
+  - name: dinner-done-better-service-api-config
+    namespace: dev
+    files:
+      - config.json=configs/api_service_config.json
+
+  - name: dinner-done-better-job-db-cleaner-config
+    namespace: dev
+    files:
+      - config.json=configs/job_db_cleaner_config.json
+
+  - name: dinner-done-better-job-email-prober-config
+    namespace: dev
+    files:
+      - config.json=configs/job_email_prober_config.json
+
+  - name: dinner-done-better-job-meal-plan-finalizer-config
+    namespace: dev
+    files:
+      - config.json=configs/job_meal_plan_finalizer_config.json
+
+  - name: dinner-done-better-job-meal-plan-grocery-list-init-config
+    namespace: dev
+    files:
+      - config.json=configs/job_meal_plan_grocery_list_initializer_config.json
+
+  - name: dinner-done-better-job-meal-plan-task-creator-config
+    namespace: dev
+    files:
+      - config.json=configs/job_meal_plan_task_creator_config.json
+
+  - name: dinner-done-better-job-search-data-index-scheduler-config
+    namespace: dev
+    files:
+      - config.json=configs/job_search_data_index_scheduler_config.json
+
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    type: generated
+  annotations:
+    note: generated

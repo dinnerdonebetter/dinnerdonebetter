@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	strcase "github.com/codemodus/kace"
-
 	"github.com/dinnerdonebetter/backend/internal/config"
+
+	strcase "github.com/codemodus/kace"
 )
 
 func main() {
@@ -41,7 +41,7 @@ const (
 	}
 	out += ")\n"
 
-	if err = os.WriteFile(filepath.Join(dir, "internal/config/envvars/envvars.go"), []byte(out), 0o0644); err != nil {
+	if err = os.WriteFile(filepath.Join(dir, "internal", "config", "envvars", "envvars.go"), []byte(out), 0o0644); err != nil {
 		log.Fatal(err)
 	}
 }

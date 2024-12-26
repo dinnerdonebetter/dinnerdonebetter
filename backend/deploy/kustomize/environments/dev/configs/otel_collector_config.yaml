@@ -1,0 +1,66 @@
+receivers:
+  filelog:
+    include: [ /var/log/dinnerdonebetter/*.log ]
+    operators:
+      - type: json_parser
+    resource:
+      service_name: dinner-done-better-api-service
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  processors:
+    k8sattributes/default:
+    resourcedetection/system:
+      detectors: [env, system] #, gcp
+      timeout: 2s
+      override: false
+    batch:
+      send_batch_size: 2048
+      send_batch_max_size: 2048
+      timeout: 1s
+    batch/2:
+      send_batch_size: 2048
+      send_batch_max_size: 2048
+      timeout: 1s
+
+  exporters:
+    debug:
+    otlp:
+      endpoint: jaeger:16686
+      tls:
+        insecure: true
+    prometheusremotewrite:
+      endpoint: prometheus:9090
+
+  service:
+    telemetry:
+      metrics:
+        level: none
+    pipelines:
+      traces:
+        receivers:
+          - otlp
+        processors:
+          - batch
+        exporters:
+          - debug
+          - otlp
+      metrics:
+        receivers:
+          - otlp
+        processors:
+          - batch
+        exporters:
+          - debug
+          - prometheusremotewrite
+      logs:
+        receivers:
+          - filelog
+        processors:
+          - batch
+        exporters:
+          - debug
