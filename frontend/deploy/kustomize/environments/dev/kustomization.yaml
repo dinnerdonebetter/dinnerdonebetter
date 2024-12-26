@@ -1,0 +1,24 @@
+# See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
+resources:
+  - namespace.yaml
+  - ../../components/webapp
+  - ../../components/admin
+  - ../../components/landing
+
+# See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
+patches: []
+
+#labels:
+#  - pairs:
+#      app.kubernetes.io/name: dinner-done-better
+
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    type: generated
+  annotations:
+    note: generated

@@ -5,6 +5,118 @@ metadata:
   name: dinner-done-better-backend
 
 profiles:
+  - name: dev
+      artifacts:
+        # backend artifacts (ko)
+          - image: dinner-done-better-service-api
+          context: ./backend
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/services/api/http
+            fromImage: golang:1.23-bullseye
+
+          - image: dinner-done-better-job-db-cleaner
+            context: backend
+            ko:
+              dir: .
+              flags:
+                - -trimpath
+              ldflags:
+                - -s -w
+                - -extldflags "-static"
+              main: ./cmd/jobs/db_cleaner
+              fromImage: golang:1.23-bullseye
+
+          - image: dinner-done-better-job-email-prober
+            context: backend
+            ko:
+              dir: .
+              flags:
+                - -trimpath
+              ldflags:
+                - -s -w
+                - -extldflags "-static"
+              main: ./cmd/jobs/email_prober
+              fromImage: golang:1.23-bullseye
+
+          - image: dinner-done-better-job-meal-plan-finalizer
+            context: backend
+            ko:
+              dir: .
+              flags:
+                - -trimpath
+              ldflags:
+                - -s -w
+                - -extldflags "-static"
+              main: ./cmd/jobs/meal_plan_finalizer
+              fromImage: golang:1.23-bullseye
+
+          - image: dinner-done-better-job-meal-plan-grocery-list-init
+            context: backend
+            ko:
+              dir: .
+              flags:
+                - -trimpath
+              ldflags:
+                - -s -w
+                - -extldflags "-static"
+              main: ./cmd/jobs/meal_plan_grocery_list_initializer
+              fromImage: golang:1.23-bullseye
+
+          - image: dinner-done-better-job-meal-plan-task-creator
+            context: backend
+            ko:
+              dir: .
+              flags:
+                - -trimpath
+              ldflags:
+                - -s -w
+                - -extldflags "-static"
+              main: ./cmd/jobs/meal_plan_task_creator
+              fromImage: golang:1.23-bullseye
+
+          - image: dinner-done-better-job-search-data-index-scheduler
+            context: backend
+            ko:
+              dir: .
+              flags:
+                - -trimpath
+              ldflags:
+                - -s -w
+                - -extldflags "-static"
+              main: ./cmd/jobs/search_data_index_scheduler
+              fromImage: golang:1.23-bullseye
+
+            # NOTE: no cmd/functions here
+
+            # frontend artifacts
+          - image: dinner-done-better-webapp
+            context: ./frontend
+            docker:
+              dockerfile: ./apps/web/Dockerfile
+
+          - image: dinner-done-better-admin-app
+            context: ./frontend
+            docker:
+              dockerfile: ./apps/admin/Dockerfile
+
+          - image: dinner-done-better-landing
+            context: ./frontend
+            docker:
+              dockerfile: ./apps/landing/Dockerfile
+
+    manifests:
+      kustomize:
+        paths:
+          - backend/deploy/kustomize/environments/dev
+          - frontend/deploy/kustomize/environments/dev
+      output: ./deploy/environments/dev/generated.yaml
+
   - name: localdev
 
     build:
