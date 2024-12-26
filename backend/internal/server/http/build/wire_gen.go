@@ -8,27 +8,26 @@ package build
 
 import (
 	"context"
-
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
+	"github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	"github.com/dinnerdonebetter/backend/internal/services/admin"
 	"github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/authentication"
-	workers2 "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
+	"github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	"github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	"github.com/dinnerdonebetter/backend/internal/services/households"
@@ -78,20 +77,20 @@ import (
 func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, error) {
 	httpConfig := cfg.Server
 	observabilityConfig := &cfg.Observability
-	configConfig := &observabilityConfig.Logging
-	logger := loggingcfg.ProvideLogger(configConfig)
-	config8 := &observabilityConfig.Tracing
-	tracerProvider, err := tracingcfg.ProvideTracerProvider(ctx, config8, logger)
+	loggingcfgConfig := &observabilityConfig.Logging
+	logger := loggingcfg.ProvideLogger(loggingcfgConfig)
+	tracingcfgConfig := &observabilityConfig.Tracing
+	tracerProvider, err := tracingcfg.ProvideTracerProvider(ctx, tracingcfgConfig, logger)
 	if err != nil {
 		return nil, err
 	}
-	config9 := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, config9)
+	databasecfgConfig := &cfg.Database
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
 	if err != nil {
 		return nil, err
 	}
-	config10 := &observabilityConfig.Metrics
-	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, config10)
+	metricscfgConfig := &observabilityConfig.Metrics
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -104,19 +103,19 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
-	config11 := &cfg.Events
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, config11)
+	msgconfigConfig := &cfg.Events
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
 	if err != nil {
 		return nil, err
 	}
-	config12 := &cfg.FeatureFlags
+	featureflagscfgConfig := &cfg.FeatureFlags
 	client := tracing.BuildTracedHTTPClient()
-	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(config12, logger, tracerProvider, client)
+	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, client)
 	if err != nil {
 		return nil, err
 	}
-	config13 := &cfg.Analytics
-	eventReporter, err := analyticscfg.ProvideEventReporter(config13, logger, tracerProvider)
+	analyticscfgConfig := &cfg.Analytics
+	eventReporter, err := analyticscfg.ProvideEventReporter(analyticscfgConfig, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -146,15 +145,15 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	validinstrumentsConfig := &servicesConfig.ValidInstruments
-	config14 := &cfg.Search
+	textsearchcfgConfig := &cfg.Search
 	validInstrumentDataManager := database.ProvideValidInstrumentDataManager(dataManager)
-	validInstrumentDataService, err := validinstruments.ProvideService(ctx, logger, validinstrumentsConfig, config14, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validInstrumentDataService, err := validinstruments.ProvideService(ctx, logger, validinstrumentsConfig, textsearchcfgConfig, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	validingredientsConfig := &servicesConfig.ValidIngredients
 	validIngredientDataManager := database.ProvideValidIngredientDataManager(dataManager)
-	validIngredientDataService, err := validingredients.ProvideService(ctx, logger, validingredientsConfig, config14, validIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientDataService, err := validingredients.ProvideService(ctx, logger, validingredientsConfig, textsearchcfgConfig, validIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +165,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	}
 	validpreparationsConfig := &servicesConfig.ValidPreparations
 	validPreparationDataManager := database.ProvideValidPreparationDataManager(dataManager)
-	validPreparationDataService, err := validpreparations.ProvideService(ctx, logger, validpreparationsConfig, config14, validPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validPreparationDataService, err := validpreparations.ProvideService(ctx, logger, validpreparationsConfig, textsearchcfgConfig, validPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -178,7 +177,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	}
 	mealsConfig := &servicesConfig.Meals
 	mealDataManager := database.ProvideMealDataManager(dataManager)
-	mealDataService, err := meals.ProvideService(ctx, logger, mealsConfig, config14, mealDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealDataService, err := meals.ProvideService(ctx, logger, mealsConfig, textsearchcfgConfig, mealDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +186,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	recipeMediaDataManager := database.ProvideRecipeMediaDataManager(dataManager)
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
-	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, config14, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider)
+	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, textsearchcfgConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -234,13 +233,13 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	}
 	validmeasurementunitsConfig := &servicesConfig.ValidMeasurementUnits
 	validMeasurementUnitDataManager := database.ProvideValidMeasurementUnitDataManager(dataManager)
-	validMeasurementUnitDataService, err := validmeasurementunits.ProvideService(ctx, logger, validmeasurementunitsConfig, config14, validMeasurementUnitDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validMeasurementUnitDataService, err := validmeasurementunits.ProvideService(ctx, logger, validmeasurementunitsConfig, textsearchcfgConfig, validMeasurementUnitDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	validingredientstatesConfig := &servicesConfig.ValidIngredientStates
 	validIngredientStateDataManager := database.ProvideValidIngredientStateDataManager(dataManager)
-	validIngredientStateDataService, err := validingredientstates.ProvideService(ctx, logger, validingredientstatesConfig, config14, validIngredientStateDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientStateDataService, err := validingredientstates.ProvideService(ctx, logger, validingredientstatesConfig, textsearchcfgConfig, validIngredientStateDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -354,7 +353,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	}
 	validvesselsConfig := &servicesConfig.ValidVessels
 	validVesselDataManager := database.ProvideValidVesselDataManager(dataManager)
-	validVesselDataService, err := validvessels.ProvideService(ctx, logger, validvesselsConfig, config14, validVesselDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validVesselDataService, err := validvessels.ProvideService(ctx, logger, validvesselsConfig, textsearchcfgConfig, validVesselDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -380,9 +379,9 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	config15 := &servicesConfig.DataPrivacy
+	dataprivacyConfig := &servicesConfig.DataPrivacy
 	dataPrivacyDataManager := database.ProvideDataPrivacyDataManager(dataManager)
-	dataPrivacyService, err := workers2.ProvideService(ctx, logger, config15, dataPrivacyDataManager, serverEncoderDecoder, publisherProvider, tracerProvider, routeParamManager)
+	dataPrivacyService, err := dataprivacy.ProvideService(ctx, logger, dataprivacyConfig, dataPrivacyDataManager, serverEncoderDecoder, publisherProvider, tracerProvider, routeParamManager)
 	if err != nil {
 		return nil, err
 	}
