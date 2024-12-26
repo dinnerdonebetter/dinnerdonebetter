@@ -20,6 +20,7 @@ require (
 	github.com/brianvoe/gofakeit/v7 v7.1.2
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/ccoveille/go-safecast v1.3.0
+	github.com/codemodus/kace v0.5.1
 	github.com/cristalhq/builq v0.15.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/elastic/go-elasticsearch/v8 v8.16.0

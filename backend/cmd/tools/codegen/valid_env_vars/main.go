@@ -9,6 +9,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	strcase "github.com/codemodus/kace"
+
+	"github.com/dinnerdonebetter/backend/internal/config"
 )
 
 func main() {
@@ -19,12 +23,26 @@ func main() {
 
 	structs := parseGoFiles(dir)
 
+	out := `package envvars
+
+/* 
+This file contains a reference of all valid service environment variables.
+You should be able to suss out what controls what from its name.
+*/
+
+const (
+`
+
 	// Start extraction from the main struct
 	if mainAST, found := structs["config.APIServiceConfig"]; found {
-		envVars := extractEnvVars(mainAST, structs, "main", "")
-		fmt.Println("Environment Variables:", envVars)
-	} else {
-		fmt.Printf("Main struct not found.\n")
+		for _, envVar := range extractEnvVars(mainAST, structs, "main", "") {
+			out += fmt.Sprintf(`%sEnvVarKey = "%s%s"`+"\n", strcase.Pascal(envVar), config.EnvVarPrefix, envVar)
+		}
+	}
+	out += ")\n"
+
+	if err = os.WriteFile(filepath.Join(dir, "internal/config/envvars/envvars.go"), []byte(out), 0o0644); err != nil {
+		log.Fatal(err)
 	}
 }
 
