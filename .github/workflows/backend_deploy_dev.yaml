@@ -44,15 +44,10 @@ jobs:
           context_name: 'dev_context'
           location: 'us-central1'
 
-      - name: "reveal the kubeconfig path"
-        run: echo "$KUBECONFIG"
-        env:
-          KUBECONFIG: ${{ env.KUBECONFIG }}
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         env:
-          KUBECONFIG: ${{ env.KUBECONFIG }}
+          TF_VAR_KUBECONFIG: ${{ env.KUBECONFIG }}
         with:
           terraform_version: 1.10.3
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
