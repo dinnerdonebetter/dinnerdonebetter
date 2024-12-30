@@ -71,7 +71,7 @@ jobs:
           KUBECONFIG: ${{ env.KUBECONFIG }}
 
       - name: Terraform Apply
-        run: terraform apply -var="TF_VAR_KUBECONFIG=${{ env.KUBECONFIG }}" -auto-approve
+        run: terraform apply -var="KUBECONFIG=${{ env.KUBECONFIG }}" -auto-approve
         working-directory: backend/environments/dev/terraform
 
 #  build-and-push-containers:
