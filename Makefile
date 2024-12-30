@@ -4,28 +4,28 @@ MY_GROUP := $(shell id -g)
 
 .PHONY: setup
 setup:
-	(cd backend && make setup)
-	(cd frontend && make setup)
+	(cd backend && $(MAKE) setup)
+	(cd frontend && $(MAKE) setup)
 
 .PHONY: format
 format:
-	(cd backend && make format)
-	(cd frontend && make format)
+	(cd backend && $(MAKE) format)
+	(cd frontend && $(MAKE) format)
 
 .PHONY: lint
 lint:
-	(cd backend && make lint)
-	(cd frontend && make lint)
+	(cd backend && $(MAKE) lint)
+	(cd frontend && $(MAKE) lint)
 
 .PHONY: test
 test:
-	(cd backend && make test)
-	(cd frontend && make test)
+	(cd backend && $(MAKE) test)
+	(cd frontend && $(MAKE) test)
 
 .PHONY: openapi-clients
 openapi-clients:
-	(cd backend && make openapi-client)
-	(cd frontend && make openapi-client)
+	(cd backend && $(MAKE) openapi-client)
+	(cd frontend && $(MAKE) openapi-client)
 
 .PHONY: openapi-lint
 openapi-lint:
@@ -41,6 +41,10 @@ regit:
 	cp -rf tempdir/.git .
 	rm -rf tempdir
 
+.PHONY: terraformat
+terraformat:
+	(cd backend && $(MAKE) terraformat)
+	(cd frontend && $(MAKE) terraformat)
 
 ### EXPERIMENTAL KUBERNETES ZONE
 

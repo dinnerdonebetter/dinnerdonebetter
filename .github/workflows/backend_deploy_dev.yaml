@@ -42,7 +42,7 @@ jobs:
         with:
           cluster_name: 'dev'
           context_name: 'dev'
-          location: 'us-central1-a'
+          location: 'us-central1'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

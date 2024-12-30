@@ -3,7 +3,7 @@ locals {
 }
 
 variable "KUBECONFIG" {
-  type = string
+  type    = string
   default = ""
 }
 
