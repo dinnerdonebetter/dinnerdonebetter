@@ -308,5 +308,5 @@ full_deploy_to_k8s: teardown_cluster
 
 .PHONY: deploy_to_k8s
 deploy_to_k8s:
-	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-	docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest
+	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:fart --file environments/dev/dockerfiles/api_server.Dockerfile .
+	docker push --all-tags us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server
