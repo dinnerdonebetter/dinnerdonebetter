@@ -37,6 +37,13 @@ jobs:
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev'
+          location: 'us-central1-a'
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:

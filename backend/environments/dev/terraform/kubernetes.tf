@@ -2,24 +2,29 @@ locals {
   k8s_namespace = "dev"
 }
 
-# provider "kubernetes" {
-#   config_path    = "~/.kube/config"
-#   config_context = "gke_dinner-done-better-dev_us-central1_dev"
-# }
+variable "KUBECONFIG" {
+  type = string
+  default = ""
+}
 
-# resource "kubernetes_namespace" "dev" {
-#   metadata {
-#     annotations = {
-#       exampleAnnotation = "example-annotation"
-#     }
-#
-#     labels = {
-#       exampleLabel = "example-label"
-#     }
-#
-#     name = local.k8s_namespace
-#   }
-# }
+provider "kubernetes" {
+  config_path    = var.KUBECONFIG
+  config_context = local.k8s_namespace
+}
+
+resource "kubernetes_namespace" "dev" {
+  metadata {
+    annotations = {
+      exampleAnnotation = "example-annotation"
+    }
+
+    labels = {
+      exampleLabel = "example-label"
+    }
+
+    name = local.k8s_namespace
+  }
+}
 
 # # Kubernetes secrets
 #
