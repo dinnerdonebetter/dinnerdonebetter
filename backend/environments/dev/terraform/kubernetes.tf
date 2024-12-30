@@ -7,24 +7,28 @@ variable "KUBECONFIG" {
   default = ""
 }
 
-provider "kubernetes" {
-  config_path    = var.KUBECONFIG
-  config_context = local.k8s_namespace
+output "kubeconfig" {
+  value = var.KUBECONFIG
 }
 
-resource "kubernetes_namespace" "dev" {
-  metadata {
-    annotations = {
-      exampleAnnotation = "example-annotation"
-    }
+# provider "kubernetes" {
+#   config_path    = var.KUBECONFIG
+#   config_context = "${local.k8s_namespace}_context"
+# }
 
-    labels = {
-      exampleLabel = "example-label"
-    }
-
-    name = local.k8s_namespace
-  }
-}
+# resource "kubernetes_namespace" "dev" {
+#   metadata {
+#     annotations = {
+#       exampleAnnotation = "example-annotation"
+#     }
+#
+#     labels = {
+#       exampleLabel = "example-label"
+#     }
+#
+#     name = local.k8s_namespace
+#   }
+# }
 
 # # Kubernetes secrets
 #
