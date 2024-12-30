@@ -66,12 +66,12 @@ jobs:
         run: terraform validate -no-color
 
       - name: "reveal the kubeconfig path"
-        run: echo "$KUBECONFIG"
+        run: echo "KUBECONFIG=$KUBECONFIG"
         env:
           KUBECONFIG: ${{ env.KUBECONFIG }}
 
       - name: Terraform Apply
-        run: terraform apply -var="KUBECONFIG=${{ env.KUBECONFIG }}" -auto-approve
+        run: echo "KUBECONFIG=${{ env.KUBECONFIG }}" >> .tfvars && terraform apply -var-file=".tfvars" -auto-approve
         working-directory: backend/environments/dev/terraform
 
 #  build-and-push-containers:
