@@ -11,19 +11,25 @@ provider "kubernetes" {
   config_context = "${local.k8s_namespace}_context"
 }
 
-resource "kubernetes_namespace" "dev" {
-  metadata {
-    annotations = {
-      exampleAnnotation = "example-annotation"
-    }
+data "kubernetes_all_namespaces" "allns" {}
 
-    labels = {
-      exampleLabel = "example-label"
-    }
-
-    name = local.k8s_namespace
-  }
+output "all-ns" {
+  value = data.kubernetes_all_namespaces.allns.namespaces
 }
+
+# resource "kubernetes_namespace" "dev" {
+#   metadata {
+#     annotations = {
+#       exampleAnnotation = "example-annotation"
+#     }
+#
+#     labels = {
+#       exampleLabel = "example-label"
+#     }
+#
+#     name = local.k8s_namespace
+#   }
+# }
 
 # # Kubernetes secrets
 #
