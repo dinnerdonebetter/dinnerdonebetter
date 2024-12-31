@@ -2,20 +2,9 @@ locals {
   k8s_namespace = "dev"
 }
 
-# variable "KUBECONFIG" {
-#   type = string
-# }
-
 provider "kubernetes" {
   config_path    = "./terraform_kubeconfig"
   config_context = "${local.k8s_namespace}_context"
-  # host           = "https://34.56.214.46"
-}
-
-data "kubernetes_all_namespaces" "allns" {}
-
-output "all-ns" {
-  value = data.kubernetes_all_namespaces.allns.namespaces
 }
 
 resource "kubernetes_namespace" "dev" {
@@ -67,7 +56,7 @@ resource "kubernetes_secret" "api_service_config" {
   }
 
   data = {
-    "api-service-config.json"         = "${file("${path.module}/service-config.json")}"
+    "api-service-config.json"         = file("${path.module}/service-config.json")
     "OAUTH2_TOKEN_ENCRYPTION_KEY"     = random_string.oauth2_token_encryption_key.result
     "JWT_SIGNING_KEY"                 = base64encode(random_string.jwt_signing_key.result)
     "SENDGRID_API_TOKEN"              = var.SENDGRID_API_TOKEN
