@@ -65,8 +65,8 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: "reveal the kubeconfig path"
-        run: echo "KUBECONFIG=$KUBECONFIG"
+      - name: "reveal the kubeconfig"
+        run: cat $KUBECONFIG
         env:
           KUBECONFIG: ${{ env.KUBECONFIG }}
 
