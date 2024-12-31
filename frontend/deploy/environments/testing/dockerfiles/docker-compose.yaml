@@ -8,8 +8,8 @@ services:
       - '7000:7000'
       - '9000:9000'
     build:
-      context: '../../../'
-      dockerfile: 'environments/webapp/testing/dockerfiles/frontend.Dockerfile'
+      context: '../../../..'
+      dockerfile: '../../webapp/testing/dockerfiles/frontend.Dockerfile'
   webapp_tests:
     container_name: webapp_tests
     environment:
@@ -19,7 +19,7 @@ services:
     links:
       - frontend
     build:
-      context: '../../'
+      context: '../..'
       dockerfile: 'environments/webapp/testing/dockerfiles/playwright.Dockerfile'
     volumes:
       - source: '../../test-results'

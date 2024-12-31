@@ -1,7 +1,7 @@
 on:
   pull_request:
     paths:
-      - frontend/environments/dev/webapp/terraform/**
+      - frontend/deploy/environments/dev/webapp/terraform/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -22,16 +22,16 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
       - name: Terraform Init
-        working-directory: frontend/environments/dev/webapp/terraform
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
         id: init
         run: terraform init
 
       - name: Terraform Format
-        working-directory: frontend/environments/dev/webapp/terraform
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
         id: fmt
         run: terraform fmt -check
 
       - name: Terraform Validate
-        working-directory: frontend/environments/dev/webapp/terraform
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
         id: validate
         run: terraform validate -no-color

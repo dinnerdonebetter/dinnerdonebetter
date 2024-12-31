@@ -83,7 +83,7 @@ func TestFetchForApplication(T *testing.T) {
 		ctx := context.Background()
 
 		// TODO: we should flesh out and then render a config to test this function, not use the localdev config.
-		t.Setenv(FilePathEnvVarKey, "../../environments/localdev/config_files/api_service_config.json")
+		t.Setenv(FilePathEnvVarKey, "../../deploy/environments/localdev/config_files/api_service_config.json")
 
 		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)
 		assert.NoError(t, err)
@@ -97,7 +97,7 @@ func TestFetchForApplication(T *testing.T) {
 	T.Run("overrides meta", func(t *testing.T) {
 		ctx := context.Background()
 
-		t.Setenv(FilePathEnvVarKey, "../../environments/localdev/config_files/api_service_config.json")
+		t.Setenv(FilePathEnvVarKey, "../../deploy/environments/localdev/config_files/api_service_config.json")
 		t.Setenv(EnvVarPrefix+"META_DEBUG", "false")
 
 		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)

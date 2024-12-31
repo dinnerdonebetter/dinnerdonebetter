@@ -30,7 +30,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - deploy/kustomize/environments/localdev
+          - deploy/environments/localdev/kustomize
       output: ./deploy/environments/localdev/generated.yaml
 
     deploy:
