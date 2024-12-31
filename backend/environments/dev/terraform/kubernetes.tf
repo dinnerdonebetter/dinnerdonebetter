@@ -9,7 +9,7 @@ variable "KUBECONFIG" {
 provider "kubernetes" {
   config_path    = var.KUBECONFIG
   config_context = "${local.k8s_namespace}_context"
-  host           = "34.56.214.46"
+  host           = "https://34.56.214.46"
 }
 
 data "kubernetes_all_namespaces" "allns" {}
