@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -39,7 +40,6 @@ type (
 // ProvideService builds a new HouseholdsService.
 func ProvideService(
 	logger logging.Logger,
-	cfg Config,
 	householdDataManager types.HouseholdDataManager,
 	householdMembershipDataManager types.HouseholdUserMembershipDataManager,
 	encoder encoding.ServerEncoderDecoder,
@@ -47,8 +47,13 @@ func ProvideService(
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 	secretGenerator random.Generator,
+	queueConfig *msgconfig.QueuesConfig,
 ) (types.HouseholdDataService, error) {
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	if queueConfig == nil {
+		return nil, fmt.Errorf("nil queue config provided")
+	}
+
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}

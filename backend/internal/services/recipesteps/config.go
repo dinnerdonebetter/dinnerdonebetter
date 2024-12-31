@@ -13,7 +13,6 @@ type Config struct {
 	_ struct{} `json:"-"`
 
 	PublicMediaURLPrefix string         `env:"PUBLIC_MEDIA_URL_PREFIX" json:"mediaUploadPrefix"`
-	DataChangesTopicName string         `env:"DATA_CHANGES_TOPIC_NAME" json:"dataChangesTopicName,omitempty"`
 	Uploads              uploads.Config `envPrefix:"UPLOADS_"          json:"uploads"`
 }
 
@@ -26,6 +25,5 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		cfg,
 		validation.Field(&cfg.PublicMediaURLPrefix, validation.Required),
 		validation.Field(&cfg.Uploads, validation.Required),
-		validation.Field(&cfg.DataChangesTopicName, validation.Required),
 	)
 }

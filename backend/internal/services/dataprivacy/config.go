@@ -12,9 +12,7 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	UserDataAggregationTopicName string         `env:"USER_DATA_AGGREGATION_TOPIC_NAME" json:"userDataAggregationTopicName,omitempty"`
-	DataChangesTopicName         string         `env:"DATA_CHANGES_TOPIC_NAME"          json:"dataChangesTopicName,omitempty"`
-	Uploads                      uploads.Config `envPrefix:"UPLOADS_"                   json:"uploads"`
+	Uploads uploads.Config `envPrefix:"UPLOADS_" json:"uploads"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -25,7 +23,5 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		ctx,
 		cfg,
 		validation.Field(&cfg.Uploads, validation.Required),
-		validation.Field(&cfg.DataChangesTopicName, validation.Required),
-		validation.Field(&cfg.UserDataAggregationTopicName, validation.Required),
 	)
 }

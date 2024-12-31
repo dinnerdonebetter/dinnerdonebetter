@@ -8,7 +8,7 @@ provider "kubernetes" {
 }
 
 resource "kubernetes_namespace" "dev" {
-  depends_on = [ google_container_cluster.primary ]
+  depends_on = [google_container_cluster.primary]
 
   metadata {
     annotations = {
@@ -31,7 +31,7 @@ resource "kubernetes_secret" "cloudflare_api_key" {
     namespace = local.k8s_namespace
   }
 
-  depends_on = [ google_container_cluster.primary ]
+  depends_on = [google_container_cluster.primary]
 
   data = {
     "token" = var.CLOUDFLARE_API_TOKEN
@@ -44,7 +44,7 @@ resource "kubernetes_secret" "pubsub_topics" {
     namespace = local.k8s_namespace
   }
 
-  depends_on = [ google_container_cluster.primary ]
+  depends_on = [google_container_cluster.primary]
 
   data = {
     "data_changes"               = google_pubsub_topic.data_changes_topic.name
@@ -61,12 +61,15 @@ resource "kubernetes_secret" "api_service_config" {
     namespace = local.k8s_namespace
   }
 
-  depends_on = [ google_container_cluster.primary ]
+  depends_on = [google_container_cluster.primary]
 
   data = {
     "api-service-config.json"         = file("${path.module}/service-config.json")
     "OAUTH2_TOKEN_ENCRYPTION_KEY"     = random_string.oauth2_token_encryption_key.result
     "JWT_SIGNING_KEY"                 = base64encode(random_string.jwt_signing_key.result)
+    "DATABASE_HOST"                   = google_sql_database_instance.dev.private_ip_address
+    "DATABASE_USERNAME"               = local.api_database_username
+    "DATABASE_PASSWORD"               = random_password.api_user_database_password.result
     "SENDGRID_API_TOKEN"              = var.SENDGRID_API_TOKEN
     "SEGMENT_API_TOKEN"               = var.SEGMENT_API_TOKEN
     "POSTHOG_API_KEY"                 = var.POSTHOG_API_KEY

@@ -31,7 +31,7 @@ type (
 		Posthog              *posthog.Config         `envPrefix:"POSTHOG_"         json:"posthog"`
 		Rudderstack          *rudderstack.Config     `envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
 		CircuitBreakerConfig *circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
-		Provider             string                  `env:"ANALYTICS_PROVIDER"     json:"provider"`
+		Provider             string                  `env:"PROVIDER"               json:"provider"`
 	}
 )
 

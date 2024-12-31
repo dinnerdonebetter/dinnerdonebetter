@@ -229,7 +229,7 @@ func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.R
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
+	useDB := !s.useSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
 	logger = logger.WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{

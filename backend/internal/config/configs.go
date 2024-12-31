@@ -61,21 +61,20 @@ type (
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_ struct{} `json:"-"`
-
-		Observability    observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Queues           QueuesConfig           `envPrefix:"QUEUES_"        json:"queues"`
+		_                struct{}               `json:"-"`
+		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
+		Queues           msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Analytics        analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
 		Email            emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
-		Search           textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
 		FeatureFlags     featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
+		Search           textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
 		Encoding         encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
-		Meta             MetaSettings           `envPrefix:"META_"          json:"meta"`
 		Events           msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability    observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Meta             MetaSettings           `envPrefix:"META_"          json:"meta"`
 		Routing          routing.Config         `envPrefix:"ROUTING_"       json:"routing"`
 		Server           http.Config            `envPrefix:"SERVER_"        json:"server"`
 		Database         databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
-		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
 		validateServices bool                   `json:"-"`
 	}
 

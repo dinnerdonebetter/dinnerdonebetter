@@ -1,13 +1,13 @@
 package usernotifications
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -40,22 +40,19 @@ func TestProvideService(T *testing.T) {
 			UserNotificationIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := &Config{
-			DataChangesTopicName: "data_changes",
-		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
-			context.Background(),
 			logging.NewNoopLogger(),
-			cfg,
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
 			&mocktypes.UserNotificationDataManagerMock{},
+			msgCfg,
 		)
 
 		assert.NotNil(t, s)
@@ -67,24 +64,21 @@ func TestProvideService(T *testing.T) {
 	T.Run("with error providing data changes producer", func(t *testing.T) {
 		t.Parallel()
 
-		cfg := &Config{
-			DataChangesTopicName: "data_changes",
-		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		rpm := mockrouting.NewRouteParamManager()
 
 		s, err := ProvideService(
-			context.Background(),
 			logging.NewNoopLogger(),
-			cfg,
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
 			&mocktypes.UserNotificationDataManagerMock{},
+			msgCfg,
 		)
 
 		assert.Nil(t, s)

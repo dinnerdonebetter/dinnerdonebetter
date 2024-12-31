@@ -98,7 +98,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	routingConfig := &cfg.Routing
 	router := chi.NewRouter(logger, tracerProvider, provider, routingConfig)
 	servicesConfig := &cfg.Services
-	authenticationConfig := &servicesConfig.Auth
+	authenticationConfig := servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
 	encodingConfig := cfg.Encoding
@@ -125,264 +125,234 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	usersConfig := &servicesConfig.Users
 	userDataManager := database.ProvideUserDataManager(dataManager)
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	generator := random.NewGenerator(logger, tracerProvider)
 	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
-	userDataService, err := users.ProvideUsersService(ctx, usersConfig, authenticationConfig, logger, userDataManager, householdInvitationDataManager, householdUserMembershipDataManager, authenticator, serverEncoderDecoder, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, featureFlagManager, eventReporter)
+	queuesConfig := &cfg.Queues
+	userDataService, err := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdInvitationDataManager, householdUserMembershipDataManager, authenticator, serverEncoderDecoder, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, featureFlagManager, eventReporter, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	householdsConfig := servicesConfig.Households
 	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
-	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdUserMembershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator)
+	householdDataService, err := households.ProvideService(logger, householdDataManager, householdUserMembershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	householdinvitationsConfig := &servicesConfig.HouseholdInvitations
-	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator)
+	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validinstrumentsConfig := &servicesConfig.ValidInstruments
+	validinstrumentsConfig := servicesConfig.ValidInstruments
 	textsearchcfgConfig := &cfg.Search
 	validInstrumentDataManager := database.ProvideValidInstrumentDataManager(dataManager)
-	validInstrumentDataService, err := validinstruments.ProvideService(ctx, logger, validinstrumentsConfig, textsearchcfgConfig, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validInstrumentDataService, err := validinstruments.ProvideService(ctx, logger, validinstrumentsConfig, textsearchcfgConfig, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validingredientsConfig := &servicesConfig.ValidIngredients
+	validingredientsConfig := servicesConfig.ValidIngredients
 	validIngredientDataManager := database.ProvideValidIngredientDataManager(dataManager)
-	validIngredientDataService, err := validingredients.ProvideService(ctx, logger, validingredientsConfig, textsearchcfgConfig, validIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientDataService, err := validingredients.ProvideService(ctx, logger, validingredientsConfig, textsearchcfgConfig, validIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validingredientgroupsConfig := &servicesConfig.ValidIngredientGroups
 	validIngredientGroupDataManager := database.ProvideValidIngredientGroupDataManager(dataManager)
-	validIngredientGroupDataService, err := validingredientgroups.ProvideService(ctx, logger, validingredientgroupsConfig, validIngredientGroupDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientGroupDataService, err := validingredientgroups.ProvideService(logger, validIngredientGroupDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validpreparationsConfig := &servicesConfig.ValidPreparations
+	validpreparationsConfig := servicesConfig.ValidPreparations
 	validPreparationDataManager := database.ProvideValidPreparationDataManager(dataManager)
-	validPreparationDataService, err := validpreparations.ProvideService(ctx, logger, validpreparationsConfig, textsearchcfgConfig, validPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validPreparationDataService, err := validpreparations.ProvideService(ctx, logger, validpreparationsConfig, textsearchcfgConfig, validPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validingredientpreparationsConfig := &servicesConfig.ValidIngredientPreparations
 	validIngredientPreparationDataManager := database.ProvideValidIngredientPreparationDataManager(dataManager)
-	validIngredientPreparationDataService, err := validingredientpreparations.ProvideService(logger, validingredientpreparationsConfig, validIngredientPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientPreparationDataService, err := validingredientpreparations.ProvideService(logger, validIngredientPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	mealsConfig := &servicesConfig.Meals
+	mealsConfig := servicesConfig.Meals
 	mealDataManager := database.ProvideMealDataManager(dataManager)
-	mealDataService, err := meals.ProvideService(ctx, logger, mealsConfig, textsearchcfgConfig, mealDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealDataService, err := meals.ProvideService(ctx, logger, mealsConfig, textsearchcfgConfig, mealDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	recipesConfig := &servicesConfig.Recipes
+	recipesConfig := servicesConfig.Recipes
 	recipeDataManager := database.ProvideRecipeDataManager(dataManager)
 	recipeMediaDataManager := database.ProvideRecipeMediaDataManager(dataManager)
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
-	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, textsearchcfgConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider)
+	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, textsearchcfgConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	recipestepsConfig := &servicesConfig.RecipeSteps
+	recipestepsConfig := servicesConfig.RecipeSteps
 	recipeStepDataManager := database.ProvideRecipeStepDataManager(dataManager)
-	recipeStepDataService, err := recipesteps.ProvideService(ctx, logger, recipestepsConfig, recipeStepDataManager, recipeMediaDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, mediaUploadProcessor)
+	recipeStepDataService, err := recipesteps.ProvideService(ctx, logger, recipestepsConfig, recipeStepDataManager, recipeMediaDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, mediaUploadProcessor, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	recipestepproductsConfig := &servicesConfig.RecipeStepProducts
 	recipeStepProductDataManager := database.ProvideRecipeStepProductDataManager(dataManager)
-	recipeStepProductDataService, err := recipestepproducts.ProvideService(logger, recipestepproductsConfig, recipeStepProductDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepProductDataService, err := recipestepproducts.ProvideService(logger, recipeStepProductDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	recipestepinstrumentsConfig := &servicesConfig.RecipeStepInstruments
 	recipeStepInstrumentDataManager := database.ProvideRecipeStepInstrumentDataManager(dataManager)
-	recipeStepInstrumentDataService, err := recipestepinstruments.ProvideService(logger, recipestepinstrumentsConfig, recipeStepInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepInstrumentDataService, err := recipestepinstruments.ProvideService(logger, recipeStepInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	recipestepingredientsConfig := &servicesConfig.RecipeStepIngredients
 	recipeStepIngredientDataManager := database.ProvideRecipeStepIngredientDataManager(dataManager)
-	recipeStepIngredientDataService, err := recipestepingredients.ProvideService(logger, recipestepingredientsConfig, recipeStepIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepIngredientDataService, err := recipestepingredients.ProvideService(logger, recipeStepIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	mealplansConfig := &servicesConfig.MealPlans
 	mealPlanDataManager := database.ProvideMealPlanDataManager(dataManager)
-	mealPlanDataService, err := mealplans.ProvideService(logger, mealplansConfig, mealPlanDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealPlanDataService, err := mealplans.ProvideService(logger, mealPlanDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	mealplanoptionsConfig := &servicesConfig.MealPlanOptions
 	mealPlanOptionDataManager := database.ProvideMealPlanOptionDataManager(dataManager)
-	mealPlanOptionDataService, err := mealplanoptions.ProvideService(logger, mealplanoptionsConfig, mealPlanOptionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealPlanOptionDataService, err := mealplanoptions.ProvideService(logger, mealPlanOptionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	mealplanoptionvotesConfig := &servicesConfig.MealPlanOptionVotes
-	mealPlanOptionVoteDataService, err := mealplanoptionvotes.ProvideService(logger, mealplanoptionvotesConfig, dataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealPlanOptionVoteDataService, err := mealplanoptionvotes.ProvideService(logger, dataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validmeasurementunitsConfig := &servicesConfig.ValidMeasurementUnits
+	validmeasurementunitsConfig := servicesConfig.ValidMeasurementUnits
 	validMeasurementUnitDataManager := database.ProvideValidMeasurementUnitDataManager(dataManager)
-	validMeasurementUnitDataService, err := validmeasurementunits.ProvideService(ctx, logger, validmeasurementunitsConfig, textsearchcfgConfig, validMeasurementUnitDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validMeasurementUnitDataService, err := validmeasurementunits.ProvideService(ctx, logger, validmeasurementunitsConfig, textsearchcfgConfig, validMeasurementUnitDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validingredientstatesConfig := &servicesConfig.ValidIngredientStates
+	validingredientstatesConfig := servicesConfig.ValidIngredientStates
 	validIngredientStateDataManager := database.ProvideValidIngredientStateDataManager(dataManager)
-	validIngredientStateDataService, err := validingredientstates.ProvideService(ctx, logger, validingredientstatesConfig, textsearchcfgConfig, validIngredientStateDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientStateDataService, err := validingredientstates.ProvideService(ctx, logger, validingredientstatesConfig, textsearchcfgConfig, validIngredientStateDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validpreparationinstrumentsConfig := &servicesConfig.ValidPreparationInstruments
 	validPreparationInstrumentDataManager := database.ProvideValidPreparationInstrumentDataManager(dataManager)
-	validPreparationInstrumentDataService, err := validpreparationinstruments.ProvideService(logger, validpreparationinstrumentsConfig, validPreparationInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validPreparationInstrumentDataService, err := validpreparationinstruments.ProvideService(logger, validPreparationInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validingredientmeasurementunitsConfig := &servicesConfig.ValidInstrumentMeasurementUnits
 	validIngredientMeasurementUnitDataManager := database.ProvideValidIngredientMeasurementUnitDataManager(dataManager)
-	validIngredientMeasurementUnitDataService, err := validingredientmeasurementunits.ProvideService(logger, validingredientmeasurementunitsConfig, validIngredientMeasurementUnitDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientMeasurementUnitDataService, err := validingredientmeasurementunits.ProvideService(logger, validIngredientMeasurementUnitDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	mealplaneventsConfig := &servicesConfig.MealPlanEvents
 	mealPlanEventDataManager := database.ProvideMealPlanEventDataManager(dataManager)
-	mealPlanEventDataService, err := mealplanevents.ProvideService(logger, mealplaneventsConfig, mealPlanEventDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealPlanEventDataService, err := mealplanevents.ProvideService(logger, mealPlanEventDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	mealplantasksConfig := &servicesConfig.MealPlanTasks
 	mealPlanTaskDataManager := database.ProvideMealPlanTaskDataManager(dataManager)
-	mealPlanTaskDataService, err := mealplantasks.ProvideService(logger, mealplantasksConfig, mealPlanTaskDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealPlanTaskDataService, err := mealplantasks.ProvideService(logger, mealPlanTaskDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	recipepreptasksConfig := &servicesConfig.RecipePrepTasks
 	recipePrepTaskDataManager := database.ProvideRecipePrepTaskDataManager(dataManager)
-	recipePrepTaskDataService, err := recipepreptasks.ProvideService(logger, recipepreptasksConfig, recipePrepTaskDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipePrepTaskDataService, err := recipepreptasks.ProvideService(logger, recipePrepTaskDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	mealplangrocerylistitemsConfig := &servicesConfig.MealPlanGroceryListItems
 	mealPlanGroceryListItemDataManager := database.ProvideMealPlanGroceryListItemDataManager(dataManager)
-	mealPlanGroceryListItemDataService, err := mealplangrocerylistitems.ProvideService(logger, mealplangrocerylistitemsConfig, mealPlanGroceryListItemDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealPlanGroceryListItemDataService, err := mealplangrocerylistitems.ProvideService(logger, mealPlanGroceryListItemDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validmeasurementunitconversionsConfig := &servicesConfig.ValidMeasurementUnitConversions
 	validMeasurementUnitConversionDataManager := database.ProvideValidMeasurementUnitConversionDataManager(dataManager)
-	validMeasurementUnitConversionDataService, err := validmeasurementunitconversions.ProvideService(ctx, logger, validmeasurementunitconversionsConfig, validMeasurementUnitConversionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validMeasurementUnitConversionDataService, err := validmeasurementunitconversions.ProvideService(logger, validMeasurementUnitConversionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	recipestepcompletionconditionsConfig := &servicesConfig.RecipeStepCompletionConditions
 	recipeStepCompletionConditionDataManager := database.ProvideRecipeStepCompletionConditionDataManager(dataManager)
-	recipeStepCompletionConditionDataService, err := recipestepcompletionconditions.ProvideService(logger, recipestepcompletionconditionsConfig, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepCompletionConditionDataService, err := recipestepcompletionconditions.ProvideService(logger, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validingredientstateingredientsConfig := &servicesConfig.ValidIngredientStateIngredients
 	validIngredientStateIngredientDataManager := database.ProvideValidIngredientStateIngredientDataManager(dataManager)
-	validIngredientStateIngredientDataService, err := validingredientstateingredients.ProvideService(logger, validingredientstateingredientsConfig, validIngredientStateIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientStateIngredientDataService, err := validingredientstateingredients.ProvideService(logger, validIngredientStateIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	recipestepvesselsConfig := &servicesConfig.RecipeStepVessels
 	recipeStepVesselDataManager := database.ProvideRecipeStepVesselDataManager(dataManager)
-	recipeStepVesselDataService, err := recipestepvessels.ProvideService(logger, recipestepvesselsConfig, recipeStepVesselDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepVesselDataService, err := recipestepvessels.ProvideService(logger, recipeStepVesselDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	webhooksConfig := &servicesConfig.Webhooks
 	webhookDataManager := database.ProvideWebhookDataManager(dataManager)
-	webhookDataService, err := webhooks.ProvideWebhooksService(logger, webhooksConfig, webhookDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	webhookDataService, err := webhooks.ProvideWebhooksService(logger, webhookDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	adminUserDataManager := database.ProvideAdminUserDataManager(dataManager)
-	queuesConfig := &cfg.Queues
 	adminDataService, err := admin.ProvideService(logger, adminUserDataManager, serverEncoderDecoder, tracerProvider, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
-	servicesettingsConfig := &servicesConfig.ServiceSettings
 	serviceSettingDataManager := database.ProvideServiceSettingDataManager(dataManager)
-	serviceSettingDataService, err := servicesettings.ProvideService(logger, servicesettingsConfig, serviceSettingDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	serviceSettingDataService, err := servicesettings.ProvideService(logger, serviceSettingDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	servicesettingconfigurationsConfig := &servicesConfig.ServiceSettingConfigurations
 	serviceSettingConfigurationDataManager := database.ProvideServiceSettingConfigurationDataManager(dataManager)
-	serviceSettingConfigurationDataService, err := servicesettingconfigurations.ProvideService(logger, servicesettingconfigurationsConfig, serviceSettingConfigurationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	serviceSettingConfigurationDataService, err := servicesettingconfigurations.ProvideService(logger, serviceSettingConfigurationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	useringredientpreferencesConfig := &servicesConfig.UserIngredientPreferences
 	userIngredientPreferenceDataManager := database.ProvideUserIngredientPreferenceDataManager(dataManager)
-	userIngredientPreferenceDataService, err := useringredientpreferences.ProvideService(ctx, logger, useringredientpreferencesConfig, userIngredientPreferenceDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	userIngredientPreferenceDataService, err := useringredientpreferences.ProvideService(logger, userIngredientPreferenceDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	reciperatingsConfig := &servicesConfig.RecipeRatings
 	recipeRatingDataManager := database.ProvideRecipeRatingDataManager(dataManager)
-	recipeRatingDataService, err := reciperatings.ProvideService(logger, reciperatingsConfig, recipeRatingDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeRatingDataService, err := reciperatings.ProvideService(logger, recipeRatingDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	householdinstrumentownershipsConfig := &servicesConfig.HouseholdInstrumentOwnerships
 	householdInstrumentOwnershipDataManager := database.ProvideHouseholdInstrumentOwnershipDataManager(dataManager)
-	householdInstrumentOwnershipDataService, err := householdinstrumentownerships.ProvideService(logger, householdinstrumentownershipsConfig, householdInstrumentOwnershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	householdInstrumentOwnershipDataService, err := householdinstrumentownerships.ProvideService(logger, householdInstrumentOwnershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
+	oauth2clientsConfig := servicesConfig.OAuth2Clients
 	oAuth2ClientDataManager := database.ProvideOAuth2ClientDataManager(dataManager)
-	oauth2clientsConfig := oauth2clients.ProvideConfig(authenticationConfig)
-	oAuth2ClientDataService, err := oauth2clients.ProvideOAuth2ClientsService(logger, oAuth2ClientDataManager, serverEncoderDecoder, routeParamManager, oauth2clientsConfig, tracerProvider, generator, publisherProvider)
+	oAuth2ClientDataService, err := oauth2clients.ProvideOAuth2ClientsService(logger, oauth2clientsConfig, oAuth2ClientDataManager, serverEncoderDecoder, routeParamManager, tracerProvider, generator, publisherProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validvesselsConfig := &servicesConfig.ValidVessels
+	validvesselsConfig := servicesConfig.ValidVessels
 	validVesselDataManager := database.ProvideValidVesselDataManager(dataManager)
-	validVesselDataService, err := validvessels.ProvideService(ctx, logger, validvesselsConfig, textsearchcfgConfig, validVesselDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validVesselDataService, err := validvessels.ProvideService(ctx, logger, validvesselsConfig, textsearchcfgConfig, validVesselDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	validpreparationvesselsConfig := &servicesConfig.ValidPreparationVessels
 	validPreparationVesselDataManager := database.ProvideValidPreparationVesselDataManager(dataManager)
-	validPreparationVesselDataService, err := validpreparationvessels.ProvideService(logger, validpreparationvesselsConfig, validPreparationVesselDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validPreparationVesselDataService, err := validpreparationvessels.ProvideService(logger, validPreparationVesselDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	workersConfig := &servicesConfig.Workers
-	workerService, err := workers.ProvideService(ctx, logger, workersConfig, dataManager, serverEncoderDecoder, publisherProvider, tracerProvider, recipeAnalyzer)
+	workerService, err := workers.ProvideService(logger, dataManager, serverEncoderDecoder, publisherProvider, tracerProvider, recipeAnalyzer, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	usernotificationsConfig := &servicesConfig.UserNotifications
 	userNotificationDataManager := database.ProvideUserNotificationDataManager(dataManager)
-	userNotificationDataService, err := usernotifications.ProvideService(ctx, logger, usernotificationsConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, userNotificationDataManager)
+	userNotificationDataService, err := usernotifications.ProvideService(logger, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, userNotificationDataManager, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	auditLogEntryDataManager := database.ProvideAuditLogEntryDataManager(dataManager)
-	auditLogEntryDataService, err := auditlogentries.ProvideService(ctx, logger, auditLogEntryDataManager, serverEncoderDecoder, routeParamManager, tracerProvider)
+	auditLogEntryDataService, err := auditlogentries.ProvideService(logger, auditLogEntryDataManager, serverEncoderDecoder, routeParamManager, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
-	dataprivacyConfig := &servicesConfig.DataPrivacy
+	dataprivacyConfig := servicesConfig.DataPrivacy
 	dataPrivacyDataManager := database.ProvideDataPrivacyDataManager(dataManager)
-	dataPrivacyService, err := dataprivacy.ProvideService(ctx, logger, dataprivacyConfig, dataPrivacyDataManager, serverEncoderDecoder, publisherProvider, tracerProvider, routeParamManager)
+	dataPrivacyService, err := dataprivacy.ProvideService(ctx, logger, dataprivacyConfig, dataPrivacyDataManager, serverEncoderDecoder, publisherProvider, tracerProvider, routeParamManager, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

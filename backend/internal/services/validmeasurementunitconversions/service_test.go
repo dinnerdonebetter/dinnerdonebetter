@@ -1,13 +1,13 @@
 package validmeasurementunitconversions
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -35,7 +35,6 @@ func TestProvideValidMeasurementUnitConversionsService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
 		rpm := mockrouting.NewRouteParamManager()
@@ -48,7 +47,7 @@ func TestProvideValidMeasurementUnitConversionsService(T *testing.T) {
 			ValidMeasurementUnitIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := Config{
+		cfg := &msgconfig.QueuesConfig{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -56,14 +55,13 @@ func TestProvideValidMeasurementUnitConversionsService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
-			ctx,
 			logger,
-			&cfg,
 			&mocktypes.ValidMeasurementUnitConversionDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			cfg,
 		)
 
 		assert.NotNil(t, s)
@@ -75,10 +73,9 @@ func TestProvideValidMeasurementUnitConversionsService(T *testing.T) {
 	T.Run("with error providing data changes producer", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
-		cfg := Config{
+		cfg := &msgconfig.QueuesConfig{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -86,14 +83,13 @@ func TestProvideValidMeasurementUnitConversionsService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
-			ctx,
 			logger,
-			&cfg,
 			&mocktypes.ValidMeasurementUnitConversionDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			cfg,
 		)
 
 		assert.Nil(t, s)

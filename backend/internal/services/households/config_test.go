@@ -14,9 +14,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		cfg := &Config{
-			DataChangesTopicName: t.Name(),
-		}
+		cfg := &Config{}
 
 		require.NoError(t, cfg.ValidateWithContext(ctx))
 	})

@@ -212,7 +212,8 @@ sqlc_struct_check:
 openapi:
 	go run $(THIS)/cmd/tools/codegen/openapi_spec
 
-internal/config/envvars/envvars.go:
+.PHONY: envvars
+envvars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars
 	gofmt -s -w internal/config/envvars/envvars.go
 

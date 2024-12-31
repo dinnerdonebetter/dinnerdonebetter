@@ -212,7 +212,7 @@ func (s *service) SearchValidIngredientStatesHandler(res http.ResponseWriter, re
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
+	useDB := !s.useSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
 
 	query := req.URL.Query().Get(types.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)

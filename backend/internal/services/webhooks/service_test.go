@@ -7,6 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -43,7 +44,7 @@ func TestProvideWebhooksService(T *testing.T) {
 			WebhookTriggerEventIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := &Config{
+		cfg := &msgconfig.QueuesConfig{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -52,12 +53,12 @@ func TestProvideWebhooksService(T *testing.T) {
 
 		actual, err := ProvideWebhooksService(
 			logging.NewNoopLogger(),
-			cfg,
 			&mocktypes.WebhookDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			cfg,
 		)
 
 		assert.NotNil(t, actual)
@@ -69,7 +70,7 @@ func TestProvideWebhooksService(T *testing.T) {
 	T.Run("with error providing data changes publisher", func(t *testing.T) {
 		t.Parallel()
 
-		cfg := &Config{
+		cfg := &msgconfig.QueuesConfig{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -78,12 +79,12 @@ func TestProvideWebhooksService(T *testing.T) {
 
 		actual, err := ProvideWebhooksService(
 			logging.NewNoopLogger(),
-			cfg,
 			&mocktypes.WebhookDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			cfg,
 		)
 
 		assert.Nil(t, actual)

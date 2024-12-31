@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -47,22 +48,22 @@ func TestProvideOAuth2ClientsService(T *testing.T) {
 			OAuth2ClientIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := &Config{
-			DataChangesTopicName: t.Name(),
-		}
+		cfg := &Config{OAuth2ClientCreationDisabled: true}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideOAuth2ClientsService(
 			logging.NewNoopLogger(),
+			cfg,
 			mockOAuth2ClientDataManager,
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
-			cfg,
 			tracing.NewNoopTracerProvider(),
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			pp,
+			msgCfg,
 		)
 		assert.NotNil(t, s)
 		assert.NoError(t, err)

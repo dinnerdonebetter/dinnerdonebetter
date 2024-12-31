@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -63,12 +64,17 @@ func ProvideService(
 	publisherProvider messagequeue.PublisherProvider,
 	imageUploadProcessor images.MediaUploadProcessor,
 	tracerProvider tracing.TracerProvider,
+	queueConfig *msgconfig.QueuesConfig,
 ) (types.RecipeDataService, error) {
+	if queueConfig == nil {
+		return nil, fmt.Errorf("nil queue config provided")
+	}
+
 	if cfg == nil {
 		return nil, errInvalidConfig
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}

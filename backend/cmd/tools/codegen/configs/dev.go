@@ -22,7 +22,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
@@ -90,11 +89,11 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			MaxPingAttempts: maxAttempts,
 			PingWaitPeriod:  time.Second,
 			ConnectionDetails: databasecfg.ConnectionDetails{
-				Username:   "",
+				Username:   "api_db_user",
 				Password:   "",
-				Database:   "",
+				Database:   "dinner-done-better",
 				Host:       "",
-				Port:       0,
+				Port:       5432,
 				DisableSSL: false,
 			},
 		},
@@ -121,8 +120,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			},
 		},
 		Services: config.ServicesConfig{
-			AuditLogEntries: auditlogentriesservice.Config{},
-			Auth: authservice.Config{
+			Auth: &authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "https://dinnerdonebetter.dev",
 					AccessTokenLifespan:  time.Hour,
@@ -136,7 +134,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				JWTAudience:           "https://api.dinnerdonebetter.dev",
 				JWTLifetime:           5 * time.Minute,
 			},
-			DataPrivacy: dataprivacyservice.Config{
+			DataPrivacy: &dataprivacyservice.Config{
 				Uploads: uploads.Config{
 					Storage: objectstorage.Config{
 						GCPConfig:  &objectstorage.GCPConfig{BucketName: "userdata.dinnerdonebetter.dev"},
@@ -145,11 +143,8 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 					Debug: false,
 				},
-				DataChangesTopicName:         dataChangesTopicName,
-				UserDataAggregationTopicName: userDataAggregationTopicName,
 			},
-			Users: usersservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
+			Users: &usersservice.Config{
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/avatars",
 				Uploads: uploads.Config{
 					Debug: true,
@@ -164,7 +159,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			Recipes: recipesservice.Config{
+			Recipes: &recipesservice.Config{
 				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
 				UseSearchService:     true,
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
@@ -181,7 +176,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			RecipeSteps: recipestepsservice.Config{
+			RecipeSteps: &recipestepsservice.Config{
 				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
 				Uploads: uploads.Config{
@@ -197,25 +192,25 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			ValidIngredients: validingredientsservice.Config{
+			ValidIngredients: &validingredientsservice.Config{
 				UseSearchService: true,
 			},
-			ValidIngredientStates: validingredientstatesservice.Config{
+			ValidIngredientStates: &validingredientstatesservice.Config{
 				UseSearchService: true,
 			},
-			ValidInstruments: validinstrumentsservice.Config{
+			ValidInstruments: &validinstrumentsservice.Config{
 				UseSearchService: true,
 			},
-			ValidVessels: validvesselsservice.Config{
+			ValidVessels: &validvesselsservice.Config{
 				UseSearchService: true,
 			},
-			ValidMeasurementUnits: validmeasurementunitsservice.Config{
+			ValidMeasurementUnits: &validmeasurementunitsservice.Config{
 				UseSearchService: true,
 			},
-			ValidPreparations: validpreparationsservice.Config{
+			ValidPreparations: &validpreparationsservice.Config{
 				UseSearchService: true,
 			},
-			Meals: mealsservice.Config{
+			Meals: &mealsservice.Config{
 				UseSearchService: true,
 			},
 		},

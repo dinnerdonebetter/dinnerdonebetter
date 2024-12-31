@@ -78,7 +78,8 @@ jobs:
         working-directory: backend/environments/dev/terraform
 
       - name: remove kubernetes config
-        run: rm -f ${{ env.KUBECONFIG }}
+        working-directory: backend/environments/dev
+        run: rm -f ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
 #  build-and-push-containers:
 #    needs: [infrastructure]

@@ -11,8 +11,8 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		CollectorEndpoint string `env:"OTELGRPC_COLLECTOR_ENDPOINT" json:"collector_endpoint,omitempty"`
-		Insecure          bool   `env:"OTELGRPC_INSECURE"           json:"insecure,omitempty"`
+		CollectorEndpoint string `env:"COLLECTOR_ENDPOINT" json:"collector_endpoint,omitempty"`
+		Insecure          bool   `env:"INSECURE"           json:"insecure,omitempty"`
 	}
 )
 

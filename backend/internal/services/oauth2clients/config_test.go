@@ -15,8 +15,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			CreationEnabled:      true,
-			DataChangesTopicName: "blah",
+			OAuth2ClientCreationDisabled: true,
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

@@ -8,6 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -49,7 +50,6 @@ func TestProvideRecipeStepsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
-			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
 					BucketName: t.Name(),
@@ -58,6 +58,7 @@ func TestProvideRecipeStepsService(T *testing.T) {
 				Debug: false,
 			},
 		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
@@ -65,7 +66,7 @@ func TestProvideRecipeStepsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			context.Background(),
@@ -78,6 +79,7 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			pp,
 			tracing.NewNoopTracerProvider(),
 			&images.MockImageUploadProcessor{},
+			msgCfg,
 		)
 
 		assert.NotNil(t, s)
@@ -90,7 +92,6 @@ func TestProvideRecipeStepsService(T *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{
-			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
 					BucketName: t.Name(),
@@ -99,9 +100,10 @@ func TestProvideRecipeStepsService(T *testing.T) {
 				Debug: false,
 			},
 		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
 			context.Background(),
@@ -114,6 +116,7 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			pp,
 			tracing.NewNoopTracerProvider(),
 			&images.MockImageUploadProcessor{},
+			msgCfg,
 		)
 
 		assert.Nil(t, s)

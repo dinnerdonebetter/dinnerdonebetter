@@ -193,7 +193,7 @@ jobs:
 
       - name: generate client
         working-directory: backend
-        run: make internal/config/envvars/envvars.go
+        run: make envvars
         
       - name: Check for changes
         run: git diff --exit-code

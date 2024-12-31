@@ -12,7 +12,6 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	DataChangesTopicName string         `env:"DATA_CHANGES_TOPIC_NAME" json:"dataChangesTopicName,omitempty"`
 	PublicMediaURLPrefix string         `env:"PUBLIC_MEDIA_URL_PREFIX" json:"mediaUploadPrefix"`
 	Uploads              uploads.Config `envPrefix:"UPLOADS_"          json:"uploads"`
 	UseSearchService     bool           `env:"USE_SEARCH_SERVICE"      json:"searchFromDatabase"`
@@ -26,7 +25,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		ctx,
 		cfg,
 		validation.Field(&cfg.PublicMediaURLPrefix, validation.Required),
-		validation.Field(&cfg.DataChangesTopicName, validation.Required),
+
 		validation.Field(&cfg.Uploads, validation.Required),
 	)
 }

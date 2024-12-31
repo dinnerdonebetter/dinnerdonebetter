@@ -10,8 +10,7 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	DataChangesTopicName string `env:"DATA_CHANGES_TOPIC_NAME" json:"dataChangesTopicName,omitempty"`
-	Debug                bool   `env:"DEBUG"                   json:"debug"`
+	Debug bool `env:"DEBUG" json:"debug"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

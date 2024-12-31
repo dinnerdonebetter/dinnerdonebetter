@@ -434,7 +434,7 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.cfg.UseSearchService = true
+		helper.service.useSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
 			types.QueryKeySearch: []string{exampleQuery},

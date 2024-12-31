@@ -33,7 +33,7 @@ type (
 		Password   string `env:"PASSWORD"    json:"password"`
 		Database   string `env:"DATABASE"    json:"database"`
 		Host       string `env:"HOST"        json:"hostname"`
-		Port       uint16 `env:"PORT"        json:"port"`
+		Port       uint16 `env:"PORT"        json:"port"       envDefault:"5432"`
 		DisableSSL bool   `env:"DISABLE_SSL" json:"disableSSL"`
 	}
 )

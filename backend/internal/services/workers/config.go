@@ -20,6 +20,5 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		cfg,
-		validation.Field(&cfg.DataChangesTopicName, validation.Required),
 	)
 }

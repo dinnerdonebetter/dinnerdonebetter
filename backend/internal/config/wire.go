@@ -37,6 +37,7 @@ var (
 			"Webhooks",
 			"Workers",
 			"DataPrivacy",
+			"OAuth2Clients",
 			// Data
 			"ValidMeasurementUnits",
 			"ValidInstruments",

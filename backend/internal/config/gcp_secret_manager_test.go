@@ -18,7 +18,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
-	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
 
@@ -48,19 +47,15 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(t *testing.T) {
 			StartupDeadline: time.Second,
 		},
 		Services: ServicesConfig{
-			Recipes: recipesservice.Config{
+			Recipes: &recipesservice.Config{
 				PublicMediaURLPrefix: t.Name(),
 			},
-			RecipeSteps: recipestepsservice.Config{
+			RecipeSteps: &recipestepsservice.Config{
 				PublicMediaURLPrefix: t.Name(),
 			},
-			Auth: authservice.Config{
+			Auth: &authservice.Config{
 				MinimumPasswordLength: 8,
 				MinimumUsernameLength: 8,
-			},
-			DataPrivacy: dataprivacyservice.Config{
-				UserDataAggregationTopicName: "",
-				DataChangesTopicName:         "",
 			},
 		},
 	}

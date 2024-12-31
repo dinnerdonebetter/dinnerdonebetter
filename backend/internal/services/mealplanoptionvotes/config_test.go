@@ -14,9 +14,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		cfg := &Config{
-			DataChangesTopicName: "blah",
-		}
+		cfg := &Config{}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))
 	})

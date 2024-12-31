@@ -7,8 +7,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -26,31 +28,42 @@ type (
 		logger                    logging.Logger
 		oauth2ClientDataManager   types.OAuth2ClientDataManager
 		encoderDecoder            encoding.ServerEncoderDecoder
-		urlClientIDExtractor      func(req *http.Request) string
-		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		secretGenerator           random.Generator
 		tracer                    tracing.Tracer
 		dataChangesPublisher      messagequeue.Publisher
+		urlClientIDExtractor      func(req *http.Request) string
+		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
+		clientCreationDisabled    bool
 	}
 )
 
 // ProvideOAuth2ClientsService builds a new OAuth2ClientsService.
 func ProvideOAuth2ClientsService(
 	logger logging.Logger,
+	cfg *Config,
 	clientDataManager types.OAuth2ClientDataManager,
 	encoderDecoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
-	cfg *Config,
 	tracerProvider tracing.TracerProvider,
 	secretGenerator random.Generator,
 	publisherProvider messagequeue.PublisherProvider,
+	queueConfig *msgconfig.QueuesConfig,
 ) (types.OAuth2ClientDataService, error) {
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	if cfg == nil {
+		return nil, internalerrors.NilConfigError(serviceName)
+	}
+
+	if queueConfig == nil {
+		return nil, fmt.Errorf("nil queue config provided")
+	}
+
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
 	s := &service{
+		clientCreationDisabled:    cfg.OAuth2ClientCreationDisabled,
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		oauth2ClientDataManager:   clientDataManager,
 		encoderDecoder:            encoderDecoder,

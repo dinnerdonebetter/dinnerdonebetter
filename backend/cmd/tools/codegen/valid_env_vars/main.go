@@ -27,7 +27,6 @@ func main() {
 
 /* 
 This file contains a reference of all valid service environment variables.
-You should be able to suss out what controls what from its name.
 */
 
 const (
@@ -35,8 +34,11 @@ const (
 
 	// Start extraction from the main struct
 	if mainAST, found := structs["config.APIServiceConfig"]; found {
-		for _, envVar := range extractEnvVars(mainAST, structs, "main", "") {
-			out += fmt.Sprintf(`%sEnvVarKey = "%s%s"`+"\n", strcase.Pascal(envVar), config.EnvVarPrefix, envVar)
+		for envVar, fieldPath := range extractEnvVars(mainAST, structs, "main", "", "") {
+			out += fmt.Sprintf(`	// %sEnvVarKey is the environment variable name to set in order to override `+"`"+`config%s`+"`"+`.
+	%sEnvVarKey = "%s%s"
+
+`, strcase.Pascal(envVar), fieldPath, strcase.Pascal(envVar), config.EnvVarPrefix, envVar)
 		}
 	}
 	out += ")\n"
@@ -102,8 +104,8 @@ func parseGoFiles(dir string) map[string]*ast.TypeSpec {
 }
 
 // extractEnvVars traverses a struct definition and collects environment variables, resolving nested structs.
-func extractEnvVars(typeSpec *ast.TypeSpec, structs map[string]*ast.TypeSpec, currentPackage, prefix string) []string {
-	var envVars []string
+func extractEnvVars(typeSpec *ast.TypeSpec, structs map[string]*ast.TypeSpec, currentPackage, prefix, fieldName string) map[string]string {
+	envVars := map[string]string{}
 
 	structType, ok := typeSpec.Type.(*ast.StructType)
 	if !ok {
@@ -120,16 +122,19 @@ func extractEnvVars(typeSpec *ast.TypeSpec, structs map[string]*ast.TypeSpec, cu
 			continue
 		}
 
+		fn := field.Names[0].Name
+
 		envValue := getTagValue(tag, "env")
 		if envValue != "" {
 			if prefix != "" {
 				envValue = prefix + envValue
 			}
-			envVars = append(envVars, envValue)
-		}
 
-		if prefix == "OBSERVABILITY_" {
-			println("")
+			if fieldName == "" {
+				envVars[envValue] = fn
+			} else {
+				envVars[envValue] = fmt.Sprintf("%s.%s", fieldName, fn)
+			}
 		}
 
 		prefixValue := getTagValue(tag, "envPrefix")
@@ -145,7 +150,9 @@ func extractEnvVars(typeSpec *ast.TypeSpec, structs map[string]*ast.TypeSpec, cu
 					if len(keyParts) == 2 && keyParts[1] == fieldType.Name {
 						// Match structs from the same package or external packages
 						if keyParts[0] == currentPackage || currentPackage == "main" {
-							envVars = append(envVars, extractEnvVars(nestedStruct, structs, keyParts[0], prefixValue)...)
+							for k, v := range extractEnvVars(nestedStruct, structs, keyParts[0], prefixValue, fmt.Sprintf("%s.%s", fieldName, fn)) {
+								envVars[k] = v
+							}
 						}
 					}
 				}
@@ -158,9 +165,38 @@ func extractEnvVars(typeSpec *ast.TypeSpec, structs map[string]*ast.TypeSpec, cu
 					// Combine package and type to match the key in the structs map
 					fullName := pkgName + "." + typeName
 					if nestedStruct, found := structs[fullName]; found {
-						envVars = append(envVars, extractEnvVars(nestedStruct, structs, pkgName, prefixValue)...)
-					} else {
-						println("")
+						for k, v := range extractEnvVars(nestedStruct, structs, pkgName, prefixValue, fmt.Sprintf("%s.%s", fieldName, fn)) {
+							envVars[k] = v
+						}
+					}
+				}
+			case *ast.StarExpr:
+				switch ft := fieldType.X.(type) {
+				case *ast.Ident:
+					for key, nestedStruct := range structs {
+						keyParts := strings.Split(key, ".")
+						if len(keyParts) == 2 && keyParts[1] == ft.Name {
+							// Match structs from the same package or external packages
+							if keyParts[0] == currentPackage || currentPackage == "main" {
+								for k, v := range extractEnvVars(nestedStruct, structs, keyParts[0], prefixValue, fmt.Sprintf("%s.%s", fieldName, fn)) {
+									envVars[k] = v
+								}
+							}
+						}
+					}
+				case *ast.SelectorExpr:
+					// Resolve the package and type from the SelectorExpr
+					if pkgIdent, isIdentifier := ft.X.(*ast.Ident); isIdentifier {
+						pkgName := pkgIdent.Name
+						typeName := ft.Sel.Name
+
+						// Combine package and type to match the key in the structs map
+						fullName := pkgName + "." + typeName
+						if nestedStruct, found := structs[fullName]; found {
+							for k, v := range extractEnvVars(nestedStruct, structs, pkgName, prefixValue, fmt.Sprintf("%s.%s", fieldName, fn)) {
+								envVars[k] = v
+							}
+						}
 					}
 				}
 			}

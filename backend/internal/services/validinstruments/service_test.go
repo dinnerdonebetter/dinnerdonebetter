@@ -8,6 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -26,9 +27,6 @@ func buildTestService() *service {
 		validInstrumentIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:             encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		tracer:                     tracing.NewTracerForTest("test"),
-		cfg: &Config{
-			UseSearchService: false,
-		},
 	}
 }
 
@@ -47,12 +45,13 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 			ValidInstrumentIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := &Config{
+		cfg := &Config{}
+		msgCfg := &msgconfig.QueuesConfig{
 			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			ctx,
@@ -64,6 +63,7 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			msgCfg,
 		)
 
 		assert.NotNil(t, s)
@@ -78,12 +78,13 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
-		cfg := &Config{
+		cfg := &Config{}
+		msgCfg := &msgconfig.QueuesConfig{
 			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
 			ctx,
@@ -95,6 +96,7 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 			nil,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			msgCfg,
 		)
 
 		assert.Nil(t, s)

@@ -1,7 +1,6 @@
 package auditlogentries
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -32,7 +31,6 @@ func TestProvideAuditLogEntriesService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
 		rpm := mockrouting.NewRouteParamManager()
@@ -42,7 +40,6 @@ func TestProvideAuditLogEntriesService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		s, err := ProvideService(
-			ctx,
 			logger,
 			&mocktypes.AuditLogEntryDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
