@@ -2,9 +2,9 @@ locals {
   k8s_namespace = "dev"
 }
 
-variable "KUBECONFIG" {
-  type = string
-}
+# variable "KUBECONFIG" {
+#   type = string
+# }
 
 provider "kubernetes" {
   config_context = "dev_context"
