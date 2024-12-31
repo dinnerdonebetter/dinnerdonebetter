@@ -70,6 +70,11 @@ jobs:
         env:
           KUBECONFIG: ${{ env.KUBECONFIG }}
 
+      - name: "current context"
+        run: kubectl config current-context
+        env:
+          KUBECONFIG: ${{ env.KUBECONFIG }}
+
       - name: Terraform Apply
         run: echo 'KUBECONFIG="${{ env.KUBECONFIG }}"' >> dev.auto.tfvars && terraform apply -auto-approve
         working-directory: backend/environments/dev/terraform
