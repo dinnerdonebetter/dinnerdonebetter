@@ -89,6 +89,14 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			RunMigrations:   true,
 			MaxPingAttempts: maxAttempts,
 			PingWaitPeriod:  time.Second,
+			ConnectionDetails: databasecfg.ConnectionDetails{
+				Username:   "",
+				Password:   "",
+				Database:   "",
+				Host:       "",
+				Port:       0,
+				DisableSSL: false,
+			},
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{

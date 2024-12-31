@@ -289,7 +289,11 @@ proxy_dev_db:
 	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
 
 
-#### NASCENT HELL ZONE
+#### NEW DEV K8S ENVIRONMENT ZONE
+
+.PHONY: deploy_dev
+deploy_dev:
+	skaffold run --build-concurrency 0 --profile dev
 
 .PHONY: teardown_cluster
 teardown_cluster:

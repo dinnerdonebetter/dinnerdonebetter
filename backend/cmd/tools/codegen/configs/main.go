@@ -33,7 +33,7 @@ const (
 )
 
 var (
-	devPostgresDBConnectionDetails = databasecfg.ConnectionDetails{
+	localdevPostgresDBConnectionDetails = databasecfg.ConnectionDetails{
 		Username:   "dbuser",
 		Password:   "hunter2",
 		Database:   "dinner-done-better",

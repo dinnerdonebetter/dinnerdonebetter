@@ -120,7 +120,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			LogQueries:               true,
 			MaxPingAttempts:          maxAttempts,
 			PingWaitPeriod:           time.Second,
-			ConnectionDetails:        devPostgresDBConnectionDetails,
+			ConnectionDetails:        localdevPostgresDBConnectionDetails,
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{
