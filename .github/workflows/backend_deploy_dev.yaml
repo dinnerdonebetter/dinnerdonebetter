@@ -53,32 +53,32 @@ jobs:
 
       # has to be done before validate (unless we stop manipulating this file specifically)
       - name: copy API server config file
-        working-directory: backend/environments/dev
+        working-directory: backend/deploy/environmentsdev
         run: |
           cp config_files/service-config.json terraform/service-config.json
 
       - name: copy kubeconfig
-        working-directory: backend/environments/dev
+        working-directory: backend/deploy/environmentsdev
         run: |
           cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
       - name: Terraform Init
-        working-directory: backend/environments/dev/terraform
+        working-directory: backend/deploy/environmentsdev/terraform
         id: init
         run: terraform init
 
       - name: Terraform Validate
-        working-directory: backend/environments/dev/terraform
+        working-directory: backend/deploy/environmentsdev/terraform
         id: validate
         run: terraform validate -no-color
 
       - name: Terraform Apply
         # run: echo 'KUBECONFIG="${{ env.KUBECONFIG }}"' >> dev.auto.tfvars && terraform apply -auto-approve
         run: terraform apply -auto-approve
-        working-directory: backend/environments/dev/terraform
+        working-directory: backend/deploy/environmentsdev/terraform
 
       - name: remove kubernetes config
-        working-directory: backend/environments/dev
+        working-directory: backend/deploy/environmentsdev
         run: rm -f ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
 #  build-and-push-containers:

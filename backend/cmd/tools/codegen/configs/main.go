@@ -48,23 +48,22 @@ func main() {
 		"deploy/kustomize/environments/localdev/configs": {
 			RootConfig: buildLocaldevKubernetesConfig(),
 		},
-		"environments/testing/config_files": {
-			APIServiceConfigPath: "integration-tests-config.json",
-			RootConfig:           buildIntegrationTestsConfig(),
-		},
-		"environments/localdev/config_files": {
-			RootConfig: buildLocalDevConfig(),
-		},
-		"environments/dev/config_files": {
+		"deploy/environments/dev/config_files": {
 			APIServiceConfigPath: "service-config.json",
 			RootConfig:           buildDevEnvironmentServerConfig(),
+		},
+		"deploy/environments/localdev/config_files": {
+			RootConfig: buildLocalDevConfig(),
+		},
+		"deploy/environments/testing/config_files": {
+			APIServiceConfigPath: "integration-tests-config.json",
+			RootConfig:           buildIntegrationTestsConfig(),
 		},
 	}
 
 	for p, cfg := range envConfigs {
-		// we don't want to validate the cloud env configs because they
-		// need secrets they extract from cloud providers.
-		shouldRenderPrettyAndValidate := p != "environments/dev/config_files"
+		// we don't want to validate the cloud env configs because they use env vars and cluster secrets to load values
+		shouldRenderPrettyAndValidate := p != "deploy/environments/dev/config_files"
 
 		if err := cfg.Render(p, shouldRenderPrettyAndValidate, shouldRenderPrettyAndValidate); err != nil {
 			panic(fmt.Errorf("validating config %s: %w", p, err))

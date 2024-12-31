@@ -1,0 +1,206 @@
+{
+	"services": {
+		"recipeSteps": {
+			"mediaUploadPrefix": "https://example.website.lol",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/uploads"
+					},
+					"bucketName": "recipe_media",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "filesystem"
+				},
+				"debug": true
+			}
+		},
+		"users": {
+			"publicMediaURLPrefix": "",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/uploads"
+					},
+					"bucketName": "avatars",
+					"uploadFilenameKey": "avatar",
+					"provider": "filesystem"
+				},
+				"debug": true
+			}
+		},
+		"dataPrivacy": {
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/tmp"
+					},
+					"bucketName": "userdata",
+					"provider": "filesystem"
+				},
+				"debug": false
+			}
+		},
+		"recipes": {
+			"mediaUploadPrefix": "https://example.website.lol",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/uploads"
+					},
+					"bucketName": "recipe_media",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "filesystem"
+				},
+				"debug": true
+			},
+			"searchFromDatabase": false
+		},
+		"auth": {
+			"sso": {
+				"google": {
+					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
+				}
+			},
+			"dataChanges": "data_changes",
+			"jwtAudience": "localhost",
+			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+			"oauth2": {
+				"domain": "http://localhost:9000",
+				"accessTokenLifespan": 3600000000000,
+				"refreshTokenLifespan": 3600000000000,
+				"debug": false
+			},
+			"jwtLifetime": 300000000000,
+			"debug": true,
+			"enableUserSignup": true,
+			"minimumUsernameLength": 3,
+			"minimumPasswordLength": 8
+		}
+	},
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
+	"analytics": {
+		"segment": null,
+		"posthog": null,
+		"rudderstack": null,
+		"circuitBreaker": null,
+		"provider": ""
+	},
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
+	"featureFlags": {
+		"launchDarkly": null,
+		"posthog": null,
+		"circuitBreakingConfig": null,
+		"provider": ""
+	},
+	"search": {
+		"algolia": {
+			"appID": "",
+			"writeAPIKey": "",
+			"timeout": 0
+		},
+		"elasticsearch": null,
+		"circuitBreakerConfig": null,
+		"provider": "algolia"
+	},
+	"encoding": {
+		"contentType": "application/json"
+	},
+	"events": {
+		"consumers": {
+			"provider": "redis",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"redis-master.localdev.svc.cluster.local:6379"
+				]
+			}
+		},
+		"publishers": {
+			"provider": "redis",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"redis-master.localdev.svc.cluster.local:6379"
+				]
+			}
+		}
+	},
+	"observability": {
+		"logging": {
+			"level": 0,
+			"provider": "slog"
+		},
+		"metrics": {
+			"otelgrpc": {
+				"serviceName": "dinner_done_better_api",
+				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+				"collectionInterval": 3000000000,
+				"insecure": false,
+				"collectionTimeout": 0
+			},
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "http://0.0.0.0:4317"
+			},
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
+	"meta": {
+		"runMode": "development",
+		"debug": true
+	},
+	"routing": {
+		"serviceName": "dinner_done_better_api",
+		"provider": "chi",
+		"enableCORSForLocalhost": true
+	},
+	"server": {
+		"startupDeadline": 60000000000,
+		"httpPort": 8000,
+		"debug": true
+	},
+	"database": {
+		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"connectionDetails": {
+			"username": "dbuser",
+			"password": "hunter2",
+			"database": "dinner-done-better",
+			"hostname": "postgres-postgresql.localdev.svc.cluster.local",
+			"port": 5432,
+			"disableSSL": true
+		},
+		"debug": true,
+		"logQueries": true,
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000
+	}
+}

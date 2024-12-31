@@ -13,7 +13,6 @@ profiles:
       artifacts:
         # backend artifacts (ko)
         - image: dinner-done-better-service-api
-          context: ./backend
           ko:
             dir: .
             flags:
@@ -25,7 +24,6 @@ profiles:
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-db-cleaner
-          context: backend
           ko:
             dir: .
             flags:
@@ -37,7 +35,6 @@ profiles:
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-email-prober
-          context: backend
           ko:
             dir: .
             flags:
@@ -49,7 +46,6 @@ profiles:
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-meal-plan-finalizer
-          context: backend
           ko:
             dir: .
             flags:
@@ -61,7 +57,6 @@ profiles:
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-meal-plan-grocery-list-init
-          context: backend
           ko:
             dir: .
             flags:
@@ -73,7 +68,6 @@ profiles:
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-meal-plan-task-creator
-          context: backend
           ko:
             dir: .
             flags:
@@ -85,7 +79,6 @@ profiles:
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-search-data-index-scheduler
-          context: backend
           ko:
             dir: .
             flags:
@@ -101,7 +94,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - deploy/kustomize/environments/localdev
+          - deploy/environments/localdev/kustomize
       output: ./deploy/environments/localdev/generated.yaml
 
     deploy:
@@ -544,7 +537,7 @@ profiles:
         sha256: {}
       artifacts:
         # backend artifacts (ko)
-        - image: dinner-done-better-service-api
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api
           ko:
             dir: .
             flags:
@@ -555,7 +548,7 @@ profiles:
             main: ./cmd/services/api/http
             fromImage: golang:1.23-bullseye
 
-        - image: dinner-done-better-job-db-cleaner
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner
           ko:
             dir: .
             flags:
@@ -566,7 +559,7 @@ profiles:
             main: ./cmd/jobs/db_cleaner
             fromImage: golang:1.23-bullseye
 
-        - image: dinner-done-better-job-email-prober
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober
           ko:
             dir: .
             flags:
@@ -577,7 +570,7 @@ profiles:
             main: ./cmd/jobs/email_prober
             fromImage: golang:1.23-bullseye
 
-        - image: dinner-done-better-job-meal-plan-finalizer
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
           ko:
             dir: .
             flags:
@@ -588,7 +581,7 @@ profiles:
             main: ./cmd/jobs/meal_plan_finalizer
             fromImage: golang:1.23-bullseye
 
-        - image: dinner-done-better-job-meal-plan-grocery-list-init
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
           ko:
             dir: .
             flags:
@@ -599,7 +592,7 @@ profiles:
             main: ./cmd/jobs/meal_plan_grocery_list_initializer
             fromImage: golang:1.23-bullseye
 
-        - image: dinner-done-better-job-meal-plan-task-creator
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
           ko:
             dir: .
             flags:
@@ -610,7 +603,7 @@ profiles:
             main: ./cmd/jobs/meal_plan_task_creator
             fromImage: golang:1.23-bullseye
 
-        - image: dinner-done-better-job-search-data-index-scheduler
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
           ko:
             dir: .
             flags:
@@ -626,7 +619,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - deploy/kustomize/environments/dev
+          - deploy/environments/dev/kustomize
       output: ./deploy/environments/dev/generated.yaml
 
     deploy:

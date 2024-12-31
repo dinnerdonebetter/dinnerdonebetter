@@ -105,8 +105,8 @@ services:
     ports:
       - '8000:8000'
     build:
-      context: '../../'
-      dockerfile: 'environments/localdev/dockerfiles/api_server.Dockerfile'
+      context: '../../..'
+      dockerfile: 'dockerfiles/api_server.Dockerfile'
     volumes:
       - source: 'config_files/api_service_config.json'
         target: '/etc/config'

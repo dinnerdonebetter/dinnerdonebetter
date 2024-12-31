@@ -1,7 +1,7 @@
 on: [gollum]
 #  pull_request:
 #    paths:
-#      - backend/environments/dev/terraform/**
+#      - backend/deploy/environmentsdev/terraform/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -31,23 +31,23 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
       - name: Terraform Init
-        working-directory: backend/environments/dev/terraform
+        working-directory: backend/deploy/environmentsdev/terraform
         id: init
         run: terraform init
 
       - name: copy server config file
-        working-directory: backend/environments/dev
+        working-directory: backend/deploy/environmentsdev
         run: |
           cp config_files/service-config.json terraform/service-config.json
 
       # end things have to be done for terraform to succeed
 
       - name: Terraform Validate
-        working-directory: backend/environments/dev/terraform
+        working-directory: backend/deploy/environmentsdev/terraform
         id: validate
         run: terraform validate -no-color
 
       - name: Check formatting
-        working-directory: backend/environments/dev/terraform
+        working-directory: backend/deploy/environmentsdev/terraform
         id: fmt
         run: terraform fmt -check

@@ -45,37 +45,3 @@ regit:
 terraformat:
 	(cd backend && $(MAKE) terraformat)
 	(cd frontend && $(MAKE) terraformat)
-
-### EXPERIMENTAL KUBERNETES ZONE
-
-DEV_NAMESPACE := dev
-DEV_GENERATED_K8S := deploy/environments/dev/generated/kubernetes.yaml
-
-.PHONY: k9s
-k9s:
-	k9s --refresh 1 --namespace $(DEV_NAMESPACE)
-
-.PHONY: build
-build:
-	skaffold build --build-concurrency 0 --profile $(DEV_NAMESPACE)
-
-.PHONY: skrender
-skrender: clean_k8s
-	mkdir -p deploy/environments/local/generated/
-	$(MAKE) generate_kubernetes
-
-.PHONY: dev
-dev: helm_deps nuke_k8s skrender
-	skaffold dev --build-concurrency 0 --profile $(DEV_NAMESPACE) --port-forward --tail=false
-
-.PHONY: clean_k8s
-clean_k8s:
-	rm -f $(DEV_GENERATED_K8S)
-
-.PHONY: generate_kubernetes
-generate_kubernetes:
-	skaffold render --profile $(DEV_NAMESPACE) --output $(DEV_GENERATED_K8S)
-
-.PHONY: nuke_k8s
-nuke_k8s:
-	kubectl delete namespace $(DEV_NAMESPACE) || true
