@@ -3,11 +3,18 @@ locals {
 }
 
 provider "kubernetes" {
-  config_path    = "./terraform_kubeconfig"
-  config_context = "${local.k8s_namespace}_context"
+  # config_path    = "./terraform_kubeconfig"
+  # config_context = "${local.k8s_namespace}_context"
+
+  host = google_container_cluster.primary.endpoint
+  client_certificate = google_container_cluster.primary.master_auth.0.client_certificate
+  client_key = google_container_cluster.primary.master_auth.0.client_key
+  cluster_ca_certificate = google_container_cluster.primary.master_auth.0.cluster_ca_certificate
 }
 
 resource "kubernetes_namespace" "dev" {
+  depends_on = [ google_container_cluster.primary ]
+
   metadata {
     annotations = {
       exampleAnnotation = "example-annotation"
@@ -29,6 +36,8 @@ resource "kubernetes_secret" "cloudflare_api_key" {
     namespace = local.k8s_namespace
   }
 
+  depends_on = [ google_container_cluster.primary ]
+
   data = {
     "token" = var.CLOUDFLARE_API_TOKEN
   }
@@ -39,6 +48,8 @@ resource "kubernetes_secret" "pubsub_topics" {
     name      = "pubsub-topic-names"
     namespace = local.k8s_namespace
   }
+
+  depends_on = [ google_container_cluster.primary ]
 
   data = {
     "data_changes"               = google_pubsub_topic.data_changes_topic.name
@@ -54,6 +65,8 @@ resource "kubernetes_secret" "api_service_config" {
     name      = "api-service-config"
     namespace = local.k8s_namespace
   }
+
+  depends_on = [ google_container_cluster.primary ]
 
   data = {
     "api-service-config.json"         = file("${path.module}/service-config.json")
