@@ -9,7 +9,7 @@ variable "KUBECONFIG" {
 provider "kubernetes" {
   config_path    = var.KUBECONFIG
   config_context = "gke_dinner-done-better-dev_us-central1_dev"
-  # host           = "https://34.56.214.46"
+  host           = "https://34.56.214.46"
 }
 
 data "kubernetes_all_namespaces" "allns" {}
