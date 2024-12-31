@@ -72,7 +72,7 @@ jobs:
         run: kubectl delete namespace --ignore-not-found=true dev
 
       - name: "delete namespace"
-        run: kubectl apply --file deploy/kustomize/environments/dev/namespace.yaml
+        run: kubectl apply --filename deploy/kustomize/environments/dev/namespace.yaml
         working-directory: backend
 
       - name: Terraform Apply
