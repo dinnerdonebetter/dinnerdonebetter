@@ -2,12 +2,12 @@ locals {
   k8s_namespace = "dev"
 }
 
-variable "KUBECONFIG" {
-  type = string
-}
+# variable "KUBECONFIG" {
+#   type = string
+# }
 
 provider "kubernetes" {
-  config_path    = var.KUBECONFIG
+  config_path    = "./terraform_kubeconfig"
   config_context = "${local.k8s_namespace}_context"
   host           = "https://34.56.214.46"
 }

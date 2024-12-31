@@ -57,6 +57,11 @@ jobs:
         run: |
           cp config_files/service-config.json terraform/service-config.json
 
+      - name: copy kubeconfig
+        working-directory: backend/environments/dev
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
       - name: Terraform Init
         working-directory: backend/environments/dev/terraform
         id: init
@@ -68,7 +73,8 @@ jobs:
         run: terraform validate -no-color
 
       - name: Terraform Apply
-        run: echo 'KUBECONFIG="${{ env.KUBECONFIG }}"' >> dev.auto.tfvars && terraform apply -auto-approve
+        # run: echo 'KUBECONFIG="${{ env.KUBECONFIG }}"' >> dev.auto.tfvars && terraform apply -auto-approve
+        run: terraform apply -auto-approve
         working-directory: backend/environments/dev/terraform
 
 #  build-and-push-containers:
