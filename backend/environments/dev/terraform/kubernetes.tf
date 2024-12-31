@@ -3,13 +3,8 @@ locals {
 }
 
 provider "kubernetes" {
-  # config_path    = "./terraform_kubeconfig"
-  # config_context = "${local.k8s_namespace}_context"
-
-  host = google_container_cluster.primary.endpoint
-  client_certificate = google_container_cluster.primary.master_auth.0.client_certificate
-  client_key = google_container_cluster.primary.master_auth.0.client_key
-  cluster_ca_certificate = google_container_cluster.primary.master_auth.0.cluster_ca_certificate
+  config_path    = "./terraform_kubeconfig"
+  config_context = "${local.k8s_namespace}_context"
 }
 
 resource "kubernetes_namespace" "dev" {

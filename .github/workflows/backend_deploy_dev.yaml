@@ -77,6 +77,9 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: backend/environments/dev/terraform
 
+      - name: remove kubernetes config
+        run: rm -f ${{ env.KUBECONFIG }}
+
 #  build-and-push-containers:
 #    needs: [infrastructure]
 #    runs-on: ubuntu-latest
