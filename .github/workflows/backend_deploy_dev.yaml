@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         go-version: [ '1.23.x' ]
+        container-registry: [ 'us-central1-docker.pkg.dev' ]
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
@@ -35,7 +36,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.container-registry }}
 
       - name: get GKE credentials
         uses: 'google-github-actions/get-gke-credentials@v2'
@@ -50,30 +51,21 @@ jobs:
           terraform_version: 1.10.3
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
-      - name: Terraform Init
-        working-directory: backend/environments/dev/terraform
-        id: init
-        run: terraform init
-
+      # has to be done before validate (unless we stop manipulating this file specifically)
       - name: copy API server config file
         working-directory: backend/environments/dev
         run: |
           cp config_files/service-config.json terraform/service-config.json
 
+      - name: Terraform Init
+        working-directory: backend/environments/dev/terraform
+        id: init
+        run: terraform init
+
       - name: Terraform Validate
         working-directory: backend/environments/dev/terraform
         id: validate
         run: terraform validate -no-color
-
-      - name: "current context"
-        run: kubectl config current-context
-
-      - name: "delete namespace"
-        run: kubectl delete namespace --ignore-not-found=true dev
-
-      - name: "delete namespace"
-        run: kubectl apply --filename deploy/kustomize/environments/dev/namespace.yaml
-        working-directory: backend
 
       - name: Terraform Apply
         run: terraform apply -auto-approve

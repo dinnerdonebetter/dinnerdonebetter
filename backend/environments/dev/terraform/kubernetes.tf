@@ -6,9 +6,7 @@ locals {
 #   type = string
 # }
 
-provider "kubernetes" {
-  config_context = "dev_context"
-}
+provider "kubernetes" {}
 
 data "kubernetes_all_namespaces" "allns" {}
 
