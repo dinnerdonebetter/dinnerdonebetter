@@ -37,15 +37,12 @@ jobs:
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
-#      - name: get GKE credentials
-#        uses: 'google-github-actions/get-gke-credentials@v2'
-#        with:
-#          cluster_name: 'dev'
-#          context_name: 'dev_context'
-#          location: 'us-central1'
-
       - name: get GKE credentials
-        run: gcloud container clusters get-credentials dev --region us-central1 --project dinner-done-better-dev
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -68,23 +65,18 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: "reveal the kubeconfig"
-        run: cat $KUBECONFIG
-        env:
-          KUBECONFIG: ${{ env.KUBECONFIG }}
-
       - name: "current context"
         run: kubectl config current-context
-        env:
-          KUBECONFIG: ${{ env.KUBECONFIG }}
 
-#      - name: "current namespaces"
-#        run: kubectl get namespaces --all-namespaces
-#        env:
-#          KUBECONFIG: ${{ env.KUBECONFIG }}
+      - name: "delete namespace"
+        run: kubectl delete namespace --ignore-not-found=true dev
+
+      - name: "delete namespace"
+        run: kubectl apply --file deploy/kustomize/environments/dev/namespace.yaml
+        working-directory: backend
 
       - name: Terraform Apply
-        run: echo 'KUBECONFIG="$HOME/.kube/config"' >> dev.auto.tfvars && terraform apply -auto-approve
+        run: terraform apply -auto-approve
         working-directory: backend/environments/dev/terraform
 
 #  build-and-push-containers:
