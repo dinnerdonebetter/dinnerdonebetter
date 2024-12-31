@@ -292,26 +292,12 @@ proxy_dev_db:
 
 #### NEW DEV K8S ENVIRONMENT ZONE
 
+DEV_NAMESPACE := dev
+
+.PHONY: nuke_dev_namespace
+nuke_dev_namespace:
+	kubectl delete namespace --ignore-not-found=true $(DEV_NAMESPACE)
+
 .PHONY: deploy_dev
-deploy_dev:
-	skaffold run --build-concurrency 0 --profile dev
-
-.PHONY: teardown_cluster
-teardown_cluster:
-	kubectl delete namespace --ignore-not-found=true demo
-
-.PHONY: full_deploy_to_k8s
-full_deploy_to_k8s: teardown_cluster
-	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest --file cmd/services/demo/Dockerfile .
-	docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/whatever:latest
-	kubectl apply \
-		-f cmd/services/demo/namespace.yaml \
-		-f cmd/services/demo/deployment.yaml \
-		-f cmd/services/demo/ingress.yaml \
-		-f cmd/services/demo/service.yaml \
-		-f cmd/services/demo/external_dns.yaml
-
-.PHONY: deploy_to_k8s
-deploy_to_k8s:
-	docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:fart --file environments/dev/dockerfiles/api_server.Dockerfile .
-	docker push --all-tags us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server
+deploy_dev: nuke_dev_namespace
+	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)

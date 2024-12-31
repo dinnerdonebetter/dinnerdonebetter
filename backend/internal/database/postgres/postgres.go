@@ -52,7 +52,7 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	db, err := sql.Open("pgx", cfg.ConnectionDetails.URI())
+	db, err := sql.Open("pgx", cfg.ConnectionDetails.String())
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
@@ -108,7 +108,7 @@ func (q *Querier) IsReady(ctx context.Context) bool {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails.URI())
+	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails.String())
 
 	attemptCount := 0
 	for {

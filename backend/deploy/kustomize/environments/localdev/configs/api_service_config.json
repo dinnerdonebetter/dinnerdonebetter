@@ -188,6 +188,7 @@
 		"debug": true
 	},
 	"database": {
+		"provider": "",
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 		"connectionDetails": {
 			"username": "dbuser",

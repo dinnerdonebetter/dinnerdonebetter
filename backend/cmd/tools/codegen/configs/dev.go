@@ -39,16 +39,6 @@ import (
 )
 
 func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
-	emailConfig := emailcfg.Config{
-		Provider: emailcfg.ProviderSendgrid,
-		Sendgrid: &sendgrid.Config{},
-	}
-
-	analyticsConfig := analyticscfg.Config{
-		Provider: analyticscfg.ProviderSegment,
-		Segment:  &segment.Config{APIToken: ""},
-	}
-
 	cfg := &config.APIServiceConfig{
 		Routing: routingcfg.Config{
 			ServiceName:            otelServiceName,
@@ -71,8 +61,14 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				Provider: msgconfig.ProviderPubSub,
 			},
 		},
-		Email:     emailConfig,
-		Analytics: analyticsConfig,
+		Email: emailcfg.Config{
+			Provider: emailcfg.ProviderSendgrid,
+			Sendgrid: &sendgrid.Config{},
+		},
+		Analytics: analyticscfg.Config{
+			Provider: analyticscfg.ProviderSegment,
+			Segment:  &segment.Config{APIToken: ""},
+		},
 		Server: http.Config{
 			Debug:           true,
 			HTTPPort:        defaultPort,

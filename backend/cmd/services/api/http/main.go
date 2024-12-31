@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"log/slog"
 	"os"
@@ -41,6 +42,20 @@ func main() {
 
 	// only allow initialization to take so long.
 	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
+
+	configBytes, err := os.ReadFile(os.Getenv(config.FilePathEnvVarKey))
+	if err != nil {
+		panic(err)
+	}
+
+	loadedCfg := &config.APIServiceConfig{}
+	json.Unmarshal(configBytes, &loadedCfg)
+
+	logger := cfg.Observability.Logging.ProvideLogger()
+	logger.WithValues(map[string]any{
+		"raw_config":      loadedCfg,
+		"post_env_config": cfg,
+	}).Info("parsed configs")
 
 	log.Println("building server")
 	// build our server struct.

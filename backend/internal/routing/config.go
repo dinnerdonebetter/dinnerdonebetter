@@ -16,10 +16,10 @@ type Config struct {
 	_ struct{} `json:"-"`
 
 	ServiceName            string   `env:"SERVICE_NAME"              json:"serviceName,omitempty"`
-	Provider               string   `env:"PROVIDER"                  json:"provider,omitempty"`
+	Provider               string   `env:"PROVIDER"                  json:"provider,omitempty" envDefault:"chi"`
 	ValidDomains           []string `env:"VALID_DOMAINS"             json:"validDomains,omitempty"`
-	EnableCORSForLocalhost bool     `env:"ENABLE_CORS_FOR_LOCALHOST" json:"enableCORSForLocalhost"`
-	SilenceRouteLogging    bool     `env:"SILENCE_ROUTE_LOGGING"     json:"silenceRouteLogging,omitempty"`
+	EnableCORSForLocalhost bool     `env:"ENABLE_CORS_FOR_LOCALHOST" json:"enableCORSForLocalhost" envDefault:"false"`
+	SilenceRouteLogging    bool     `env:"SILENCE_ROUTE_LOGGING"     json:"silenceRouteLogging,omitempty" envDefault:"true"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

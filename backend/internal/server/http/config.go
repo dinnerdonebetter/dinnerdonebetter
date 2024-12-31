@@ -15,8 +15,8 @@ type (
 		HTTPSCertificateFile    string        `env:"HTTPS_CERTIFICATE_FILEPATH"     json:"httpsCertificate,omitempty"`
 		HTTPSCertificateKeyFile string        `env:"HTTPS_CERTIFICATE_KEY_FILEPATH" json:"httpsCertificateKey,omitempty"`
 		StartupDeadline         time.Duration `env:"STARTUP_DEADLINE"               json:"startupDeadline,omitempty"`
-		HTTPPort                uint16        `env:"HTTP_PORT"                      json:"httpPort"`
-		Debug                   bool          `env:"DEBUG"                          json:"debug"`
+		HTTPPort                uint16        `env:"HTTP_PORT"                      json:"httpPort"   envDefault:"8000"`
+		Debug                   bool          `env:"DEBUG"                          json:"debug" envDefault:"false"`
 	}
 )
 

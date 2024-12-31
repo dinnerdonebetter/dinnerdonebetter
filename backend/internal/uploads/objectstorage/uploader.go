@@ -50,7 +50,7 @@ type (
 		BucketPrefix      string            `env:"BUCKET_PREFIX"       json:"bucketPrefix,omitempty"`
 		BucketName        string            `env:"BUCKET_NAME"         json:"bucketName,omitempty"`
 		UploadFilenameKey string            `env:"UPLOAD_FILENAME_KEY" json:"uploadFilenameKey,omitempty"`
-		Provider          string            `env:"PROVIDER"            json:"provider,omitempty"`
+		Provider          string            `env:"PROVIDER"            json:"provider,omitempty" envDefault:"memory"`
 	}
 )
 

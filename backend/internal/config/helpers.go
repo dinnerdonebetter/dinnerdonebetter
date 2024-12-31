@@ -16,6 +16,6 @@ func ShouldCeaseOperation() bool {
 	return strings.TrimSpace(strings.ToLower(os.Getenv(CeaseOperationEnvVarKey))) == "true"
 }
 
-func RunningInCloud() bool {
+func RunningInTheCloud() bool {
 	return os.Getenv(RunningInGCPEnvVarKey) != ""
 }

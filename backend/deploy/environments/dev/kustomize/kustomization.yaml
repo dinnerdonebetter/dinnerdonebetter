@@ -5,40 +5,80 @@ kind: Kustomization
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
   - namespace.yaml
-  - ../../components/api_server
-  - ../../components/jobs/db_cleaner
-  - ../../components/jobs/email_prober
-  - ../../components/jobs/meal_plan_finalizer
-  - ../../components/jobs/meal_plan_grocery_list_initializer
-  - ../../components/jobs/meal_plan_task_creator
-  - ../../components/jobs/search_data_index_scheduler
+  - ingress.yaml
+  - ../../../kustomize/components/api_server
+#  - ../../../kustomize/components/jobs/db_cleaner
+#  - ../../../kustomize/components/jobs/email_prober
+#  - ../../../kustomize/components/jobs/meal_plan_finalizer
+#  - ../../../kustomize/components/jobs/meal_plan_grocery_list_initializer
+#  - ../../../kustomize/components/jobs/meal_plan_task_creator
+#  - ../../../kustomize/components/jobs/search_data_index_scheduler
+
+images:
+  - name: dinner-done-better-service-api
+    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api
+    newTag: latest
+#  - name: dinner-done-better-job-db-cleaner
+#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner
+#    newTag: latest
+#  - name: dinner-done-better-job-email-prober
+#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober
+#    newTag: latest
+#  - name: dinner-done-better-job-meal-plan-finalizer
+#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
+#    newTag: latest
+#  - name: dinner-done-better-job-meal-plan-grocery-list-init
+#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
+#    newTag: latest
+#  - name: dinner-done-better-job-meal-plan-task-creator
+#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
+#    newTag: latest
+#  - name: dinner-done-better-job-search-data-index-scheduler
+#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
+#    newTag: latest
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches:
-  - op: add
-    path: "/spec/template/spec/containers/0/env/-"
-    value:
-      name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
-      valueFrom:
-        secretKeyRef:
-          name: api-service-config
-          key: DATABASE_HOST
-  - op: add
-    path: "/spec/template/spec/containers/0/env/-"
-    value:
-      name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_USERNAME
-      valueFrom:
-        secretKeyRef:
-          name: api-service-config
-          key: DATABASE_USERNAME
-  - op: add
-    path: "/spec/template/spec/containers/0/env/-"
-    value:
-      name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: api-service-config
-          key: DATABASE_PASSWORD
+  ### let's set up some environment variables sourced by kubernetes secrets.
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_HOST
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-service-api-deployment
+#  - patch: |-
+#      - op: add
+#        path: "/spec/template/spec/containers/0/env/-"
+#        value:
+#          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
+#          valueFrom:
+#            secretKeyRef:
+#              name: api-service-config
+#              key: DATABASE_HOST
+#    target:
+#      version: v1
+#      kind: Deployment
+#      name: dinner-done-better-service-api-deployment
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_PASSWORD
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-service-api-deployment
 
 labels:
   - pairs:

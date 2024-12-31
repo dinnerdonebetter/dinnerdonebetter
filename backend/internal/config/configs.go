@@ -304,7 +304,7 @@ func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Conte
 
 func FetchForApplication[T configurations](ctx context.Context, f genericCloudConfigFetcher[T]) (*T, error) {
 	var cfg *T
-	if RunningInCloud() {
+	if RunningInTheCloud() {
 		c, err := f(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("fetching config from GCP: %w", err)
