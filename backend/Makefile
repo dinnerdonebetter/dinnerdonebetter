@@ -299,5 +299,5 @@ nuke_dev_namespace:
 	kubectl delete namespace --ignore-not-found=true $(DEV_NAMESPACE)
 
 .PHONY: deploy_dev
-deploy_dev: nuke_dev_namespace
+deploy_dev:
 	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)

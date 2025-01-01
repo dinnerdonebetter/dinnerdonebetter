@@ -24,7 +24,7 @@ type (
 		Google GoogleSSOConfig `envPrefix:"GOOGLE_" json:"google,omitempty"`
 	}
 
-	// Config represents our passwords configuration.
+	// Config is our configuration.
 	Config struct {
 		_ struct{} `json:"-"`
 
@@ -34,10 +34,10 @@ type (
 		JWTSigningKey         string        `env:"JWT_SIGNING_KEY"         json:"jwtSigningKey"`
 		OAuth2                OAuth2Config  `envPrefix:"OAUTH2"            json:"oauth2,omitempty"`
 		JWTLifetime           time.Duration `env:"JWT_LIFETIME"            json:"jwtLifetime"`
-		Debug                 bool          `env:"DEBUG"                   json:"debug,omitempty" envDefault:"false"`
+		Debug                 bool          `env:"DEBUG"                   json:"debug,omitempty"`
 		EnableUserSignup      bool          `env:"ENABLE_USER_SIGNUP"      json:"enableUserSignup,omitempty"`
-		MinimumUsernameLength uint8         `env:"MINIMUM_USERNAME_LENGTH" json:"minimumUsernameLength,omitempty" envDefault:"4"`
-		MinimumPasswordLength uint8         `env:"MINIMUM_PASSWORD_LENGTH" json:"minimumPasswordLength,omitempty" envDefault:"8"`
+		MinimumUsernameLength uint8         `env:"MINIMUM_USERNAME_LENGTH" json:"minimumUsernameLength,omitempty"`
+		MinimumPasswordLength uint8         `env:"MINIMUM_PASSWORD_LENGTH" json:"minimumPasswordLength,omitempty"`
 	}
 )
 
@@ -58,7 +58,7 @@ type OAuth2Config struct {
 	Domain               string        `env:"DOMAIN"                 json:"domain"`
 	AccessTokenLifespan  time.Duration `env:"ACCESS_TOKEN_LIFESPAN"  json:"accessTokenLifespan"`
 	RefreshTokenLifespan time.Duration `env:"REFRESH_TOKEN_LIFESPAN" json:"refreshTokenLifespan"`
-	Debug                bool          `env:"DEBUG"                  json:"debug" envDefault:"false"`
+	Debug                bool          `env:"DEBUG"                  json:"debug"`
 }
 
 var _ validation.ValidatableWithContext = (*OAuth2Config)(nil)

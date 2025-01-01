@@ -24,7 +24,7 @@ type (
 		_ struct{} `json:"-"`
 
 		Level          logging.Level `env:"LEVEL"           json:"level,omitempty"`
-		Provider       string        `env:"PROVIDER"        json:"provider,omitempty"        envDefault:"slog"`
+		Provider       string        `env:"PROVIDER"        json:"provider,omitempty"`
 		OutputFilepath string        `env:"OUTPUT_FILEPATH" json:"outputFilepath,omitempty"`
 	}
 )

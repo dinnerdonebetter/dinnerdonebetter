@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/config/envvars"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -82,23 +83,43 @@ func TestFetchForApplication(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		ctx := context.Background()
 
-		// TODO: we should flesh out and then render a config to test this function, not use the localdev config.
-		t.Setenv(FilePathEnvVarKey, "../../deploy/environments/localdev/config_files/api_service_config.json")
+		cfg := &APIServiceConfig{
+			Database: databasecfg.Config{
+				Debug: true,
+			},
+		}
+		cfgBytes, err := json.Marshal(cfg)
+		require.NoError(t, err)
+
+		configFilepath := t.TempDir() + "/config.json"
+		require.NoError(t, os.WriteFile(configFilepath, cfgBytes, 0o0644))
+
+		t.Setenv(FilePathEnvVarKey, configFilepath)
 
 		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 
-		// TODO: can't assume this responsibly
-		assert.Equal(t, actual.Meta.Debug, true)
+		assert.Equal(t, actual.Database.Debug, true)
 	})
 
 	// prior TODOs count here too
 	T.Run("overrides meta", func(t *testing.T) {
 		ctx := context.Background()
 
-		t.Setenv(FilePathEnvVarKey, "../../deploy/environments/localdev/config_files/api_service_config.json")
-		t.Setenv(EnvVarPrefix+"META_DEBUG", "false")
+		cfg := &APIServiceConfig{
+			Database: databasecfg.Config{
+				Debug: true,
+			},
+		}
+		cfgBytes, err := json.Marshal(cfg)
+		require.NoError(t, err)
+
+		configFilepath := t.TempDir() + "/config.json"
+		require.NoError(t, os.WriteFile(configFilepath, cfgBytes, 0o0644))
+
+		t.Setenv(FilePathEnvVarKey, configFilepath)
+		t.Setenv(envvars.MetaDebugEnvVarKey, "false")
 
 		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)
 		assert.NoError(t, err)

@@ -39,18 +39,18 @@ spec:
           requests:
             memory: 64Mi
             cpu: "100m"
-#        livenessProbe:
-#          httpGet:
-#            path: "/_meta_/live"
-#            port: 8000
-#          initialDelaySeconds: 15
-#          periodSeconds: 3
-#        readinessProbe:
-#          httpGet:
-#            path: "/_meta_/ready"
-#            port: 8000
-#          initialDelaySeconds: 15
-#          periodSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: "/_meta_/live"
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: "/_meta_/ready"
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 3
 #      # This is the OpenTelemetry collector sidecar
 #      - name: opentelemetry-collector
 #        image: otel/opentelemetry-collector-contrib:0.115.1

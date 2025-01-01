@@ -22,25 +22,25 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Provider                 string            `env:"PROVIDER"                    json:"provider"                  envDefault:"postgres" `
+		Provider                 string            `env:"PROVIDER"                    json:"provider"`
 		OAuth2TokenEncryptionKey string            `env:"OAUTH2_TOKEN_ENCRYPTION_KEY" json:"oauth2TokenEncryptionKey"`
 		ConnectionDetails        ConnectionDetails `envPrefix:"CONNECTION_DETAILS_"   json:"connectionDetails"`
-		Debug                    bool              `env:"DEBUG"                       json:"debug"                     envDefault:"false"`
-		LogQueries               bool              `env:"LOG_QUERIES"                 json:"logQueries"                envDefault:"false"`
-		RunMigrations            bool              `env:"RUN_MIGRATIONS"              json:"runMigrations"             envDefault:"false"`
-		MaxPingAttempts          uint64            `env:"MAX_PING_ATTEMPTS"           json:"maxPingAttempts"           envDefault:"50"`
-		PingWaitPeriod           time.Duration     `env:"PING_WAIT_PERIOD"            json:"pingWaitPeriod"            envDefault:"1s"`
+		Debug                    bool              `env:"DEBUG"                       json:"debug"`
+		LogQueries               bool              `env:"LOG_QUERIES"                 json:"logQueries"`
+		RunMigrations            bool              `env:"RUN_MIGRATIONS"              json:"runMigrations"`
+		MaxPingAttempts          uint64            `env:"MAX_PING_ATTEMPTS"           json:"maxPingAttempts"`
+		PingWaitPeriod           time.Duration     `env:"PING_WAIT_PERIOD"            json:"pingWaitPeriod"`
 	}
 
 	ConnectionDetails struct {
 		_ struct{} `json:"-"`
 
-		Username   string `env:"USERNAME"    json:"username"`
-		Password   string `env:"PASSWORD"    json:"password"`
-		Database   string `env:"DATABASE"    json:"database"`
-		Host       string `env:"HOST"        json:"hostname"`
-		Port       uint16 `env:"PORT"        json:"port"       envDefault:"5432"`
-		DisableSSL bool   `env:"DISABLE_SSL" json:"disableSSL"`
+		Username   string `env:"USERNAME"       json:"username"`
+		Password   string `env:"PASSWORD,unset" json:"password"`
+		Database   string `env:"DATABASE"       json:"database"`
+		Host       string `env:"HOST"           json:"hostname"`
+		Port       uint16 `env:"PORT"           json:"port"`
+		DisableSSL bool   `env:"DISABLE_SSL"    json:"disableSSL"`
 	}
 )
 

@@ -22,7 +22,7 @@ type (
 		_ struct{} `json:"-"`
 
 		Otel     *otelgrpc.Config `envPrefix:"OTEL_" json:"otelgrpc,omitempty"`
-		Provider string           `env:"PROVIDER"    json:"provider,omitempty" envDefault:"otelgrpc"`
+		Provider string           `env:"PROVIDER"    json:"provider,omitempty"`
 	}
 )
 

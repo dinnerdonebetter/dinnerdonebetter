@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
 	"os"
 	"runtime/debug"
 
@@ -324,12 +323,7 @@ func FetchForApplication[T configurations](ctx context.Context, f genericCloudCo
 		return nil, errors.New("not running in the cloud, and no config filepath provided")
 	}
 
-	if err := env.ParseWithOptions(cfg, env.Options{
-		OnSet: func(tag string, value interface{}, isDefault bool) {
-			slog.Info("set tag", slog.String("tag", tag), slog.Any("value", value), slog.Bool("is_default", isDefault))
-		},
-		Prefix: EnvVarPrefix,
-	}); err != nil {
+	if err := env.ParseWithOptions(cfg, env.Options{Prefix: EnvVarPrefix}); err != nil {
 		return nil, err
 	}
 
