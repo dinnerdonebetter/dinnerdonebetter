@@ -1,66 +1,79 @@
 receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: "0.0.0.0:4318"
+      grpc:
+        endpoint: "0.0.0.0:4317"
+
   filelog:
     include: [ /var/log/dinnerdonebetter/*.log ]
     operators:
       - type: json_parser
-    resource:
-      service_name: dinner-done-better-api-service
+      - type: add
+        field: resource["service.name"]
+        value: dinner-done-better-api
+      - type: add
+        field: resource["deployment.environment"]
+        value: dev
+
+extensions:
+  basicauth/prometheus:
+    client_auth:
+      username: ${env:PROMETHEUS_USERNAME} 
+      password: ${env:PROMETHEUS_PASSWORD} 
+
+  basicauth/loki:
+    client_auth:
+      username: ${env:LOKI_USERNAME} 
+      password: ${env:LOKI_PASSWORD} 
+
+  basicauth/tempo:
+    client_auth:
+      username: ${env:TEMPO_USERNAME} 
+      password: ${env:TEMPO_PASSWORD} 
+
+exporters:
+  debug:
+
+  prometheusremotewrite:
+    endpoint: "https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/push"
+    auth:
+      authenticator: basicauth/prometheus
+
   otlp:
-    protocols:
-      grpc:
-        endpoint: 0.0.0.0:4317
-      http:
-        endpoint: 0.0.0.0:4318
+    endpoint: "https://tempo-prod-04-prod-us-east-0.grafana.net:443"
+    tls:
+      insecure: true
+    auth:
+      authenticator: basicauth/tempo
 
-  processors:
-    k8sattributes/default:
-    resourcedetection/system:
-      detectors: [env, system] #, gcp
-      timeout: 2s
-      override: false
-    batch:
-      send_batch_size: 2048
-      send_batch_max_size: 2048
-      timeout: 1s
-    batch/2:
-      send_batch_size: 2048
-      send_batch_max_size: 2048
-      timeout: 1s
+  otlphttp:
+    endpoint: "https://logs-prod-006.grafana.net/otlp"
+    auth:
+      authenticator: basicauth/loki
 
-  exporters:
-    debug:
-    otlp:
-      endpoint: jaeger:16686
-      tls:
-        insecure: true
-    prometheusremotewrite:
-      endpoint: prometheus:9090
+processors:
+  batch:
 
-  service:
-    telemetry:
-      metrics:
-        level: none
-    pipelines:
-      traces:
-        receivers:
-          - otlp
-        processors:
-          - batch
-        exporters:
-          - debug
-          - otlp
-      metrics:
-        receivers:
-          - otlp
-        processors:
-          - batch
-        exporters:
-          - debug
-          - prometheusremotewrite
-      logs:
-        receivers:
-          - filelog
-        processors:
-          - batch
-        exporters:
-          - debug
+  resource:
+    attributes:
+      - action: insert
+        key: service_name
+        from_attribute: service.name
+
+service:
+  extensions: [basicauth/prometheus, basicauth/loki, basicauth/tempo]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, otlp]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, prometheusremotewrite]
+    logs:
+      receivers: [filelog]
+      processors: [resource, batch]
+      exporters: [debug, otlphttp]

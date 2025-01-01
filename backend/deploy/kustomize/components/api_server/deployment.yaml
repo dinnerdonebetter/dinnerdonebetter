@@ -26,6 +26,8 @@ spec:
         env:
           - name: "CONFIGURATION_FILEPATH"
             value: "/etc/service-config.json"
+          - name: "RUNNING_IN_KUBERNETES"
+            value: "true"
         volumeMounts:
         - name: "config"
           mountPath: "/etc/service-config.json"
@@ -51,24 +53,24 @@ spec:
             port: 8000
           initialDelaySeconds: 15
           periodSeconds: 3
-#      # This is the OpenTelemetry collector sidecar
-#      - name: opentelemetry-collector
-#        image: otel/opentelemetry-collector-contrib:0.115.1
-#        command:
-#          - "/otelcol-contrib"
-#          - "--config"
-#          - "/conf/config.yaml"
-#        ports:
-#          - containerPort: 4317
-#            name: otel1
-#          - containerPort: 4318
-#            name: otel2
-#        volumeMounts:
-#          - name: logs
-#            mountPath: /var/log/dinnerdonebetter
-#            readOnly: true
-#          - name: opentelemetry-config
-#            mountPath: /conf
+      # This is the OpenTelemetry collector sidecar
+      - name: opentelemetry-collector
+        image: otel/opentelemetry-collector-contrib:0.115.1
+        command:
+          - "/otelcol-contrib"
+          - "--config"
+          - "/conf/config.yaml"
+        ports:
+          - containerPort: 4317
+            name: otel1
+          - containerPort: 4318
+            name: otel2
+        volumeMounts:
+          - name: logs
+            mountPath: /var/log/dinnerdonebetter
+            readOnly: true
+          - name: opentelemetry-config
+            mountPath: /conf
       volumes:
         # this volume contains the configuration file for the API service
         - name: "config"
@@ -78,8 +80,8 @@ spec:
         - name: logs
           emptyDir:
             sizeLimit: 500Mi
-#        # this volume contains the configuration file for the OTel collector.
-#        - name: opentelemetry-config
-#          configMap:
-#            name: opentelemetry-collector-config
+        # this volume contains the configuration file for the OTel collector.
+        - name: opentelemetry-config
+          configMap:
+            name: opentelemetry-collector-config
 ---

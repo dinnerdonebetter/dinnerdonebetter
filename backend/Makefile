@@ -215,7 +215,7 @@ openapi:
 .PHONY: envvars
 envvars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars
-	gofmt -s -w internal/config/envvars/envvars.go
+	gofmt -s -w internal/config/envvars/*.go
 
 ## Integration tests
 

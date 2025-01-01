@@ -125,6 +125,11 @@ configMapGenerator:
     files:
       - config.json=configs/job_search_data_index_scheduler_config.json
 
+#  - name: dinner-done-better-job-search-data-index-scheduler-config
+#    namespace: dev
+#    files:
+#      - config.yaml=configs/otel_collector_config.yaml
+
 generatorOptions:
   disableNameSuffixHash: true
   labels:
