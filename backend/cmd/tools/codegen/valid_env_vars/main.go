@@ -103,15 +103,41 @@ func parseGoFiles(dir string) map[string]*ast.TypeSpec {
 	return structs
 }
 
+// getTagValue extracts the value of a specific tag from a struct field tag.
+func getTagValue(tag, key string) string {
+	tags := strings.Split(tag, " ")
+	for _, t := range tags {
+		parts := strings.SplitN(t, ":", 2)
+		if len(parts) == 2 && parts[0] == key {
+			return strings.Trim(parts[1], "\"")
+		}
+	}
+	return ""
+}
+
+// handleIdent handles extracting info from an *ast.Ident node.
 func handleIdent(structs map[string]*ast.TypeSpec, fieldType *ast.Ident, envVars map[string]string, currentPackage, prefixValue, fieldNamePrefix, fieldName string) {
 	for key, nestedStruct := range structs {
 		keyParts := strings.Split(key, ".")
 		if len(keyParts) == 2 && keyParts[1] == fieldType.Name {
-			// Match structs from the same package or external packages
 			if keyParts[0] == currentPackage || currentPackage == "main" {
 				for k, v := range extractEnvVars(nestedStruct, structs, keyParts[0], prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName)) {
 					envVars[k] = v
 				}
+			}
+		}
+	}
+}
+
+// handleSelectorExpr handles extracting info from an *ast.SelectorExpr node.
+func handleSelectorExpr(structs map[string]*ast.TypeSpec, fieldType *ast.SelectorExpr, envVars map[string]string, prefixValue, fieldNamePrefix, fieldName string) {
+	if pkgIdent, isIdentifier := fieldType.X.(*ast.Ident); isIdentifier {
+		pkgName := pkgIdent.Name
+
+		fullName := fmt.Sprintf("%s.%s", pkgName, fieldType.Sel.Name)
+		if nestedStruct, found := structs[fullName]; found {
+			for k, v := range extractEnvVars(nestedStruct, structs, pkgName, prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName)) {
+				envVars[k] = v
 			}
 		}
 	}
@@ -159,61 +185,17 @@ func extractEnvVars(typeSpec *ast.TypeSpec, structs map[string]*ast.TypeSpec, cu
 			case *ast.Ident:
 				handleIdent(structs, fieldType, envVars, currentPackage, prefixValue, fieldNamePrefix, fn)
 			case *ast.SelectorExpr:
-				if pkgIdent, isIdentifier := fieldType.X.(*ast.Ident); isIdentifier {
-					pkgName := pkgIdent.Name
-					typeName := fieldType.Sel.Name
-
-					fullName := fmt.Sprintf("%s.%s", pkgName, typeName)
-					if nestedStruct, found := structs[fullName]; found {
-						for k, v := range extractEnvVars(nestedStruct, structs, pkgName, prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fn)) {
-							envVars[k] = v
-						}
-					}
-				}
+				handleSelectorExpr(structs, fieldType, envVars, prefixValue, fieldNamePrefix, fn)
 			case *ast.StarExpr:
 				switch ft := fieldType.X.(type) {
 				case *ast.Ident:
-					for key, nestedStruct := range structs {
-						keyParts := strings.Split(key, ".")
-						if len(keyParts) == 2 && keyParts[1] == ft.Name {
-							// Match structs from the same package or external packages
-							if keyParts[0] == currentPackage || currentPackage == "main" {
-								for k, v := range extractEnvVars(nestedStruct, structs, keyParts[0], prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fn)) {
-									envVars[k] = v
-								}
-							}
-						}
-					}
+					handleIdent(structs, ft, envVars, currentPackage, prefixValue, fieldNamePrefix, fn)
 				case *ast.SelectorExpr:
-					// Resolve the package and type from the SelectorExpr
-					if pkgIdent, isIdentifier := ft.X.(*ast.Ident); isIdentifier {
-						pkgName := pkgIdent.Name
-						typeName := ft.Sel.Name
-
-						// Combine package and type to match the key in the structs map
-						fullName := fmt.Sprintf("%s.%s", pkgName, typeName)
-						if nestedStruct, found := structs[fullName]; found {
-							for k, v := range extractEnvVars(nestedStruct, structs, pkgName, prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fn)) {
-								envVars[k] = v
-							}
-						}
-					}
+					handleSelectorExpr(structs, ft, envVars, prefixValue, fieldNamePrefix, fn)
 				}
 			}
 		}
 	}
 
 	return envVars
-}
-
-// getTagValue extracts the value of a specific tag from a struct field tag.
-func getTagValue(tag, key string) string {
-	tags := strings.Split(tag, " ")
-	for _, t := range tags {
-		parts := strings.SplitN(t, ":", 2)
-		if len(parts) == 2 && parts[0] == key {
-			return strings.Trim(parts[1], "\"")
-		}
-	}
-	return ""
 }
