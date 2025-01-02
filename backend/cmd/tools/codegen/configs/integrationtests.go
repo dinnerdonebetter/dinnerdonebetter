@@ -91,7 +91,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			},
 		},
 		Services: config.ServicesConfig{
-			Auth: &authservice.Config{
+			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "http://localhost:9000",
 					AccessTokenLifespan:  time.Hour,
@@ -106,7 +106,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				JWTLifetime:           5 * time.Minute,
 			},
-			DataPrivacy: &dataprivacyservice.Config{
+			DataPrivacy: dataprivacyservice.Config{
 				Uploads: uploads.Config{
 					Storage: objectstorage.Config{
 						FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
@@ -116,7 +116,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 					Debug: false,
 				},
 			},
-			Users: &usersservice.Config{
+			Users: usersservice.Config{
 				Uploads: uploads.Config{
 					Debug: false,
 					Storage: objectstorage.Config{
@@ -126,8 +126,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			Recipes: &recipesservice.Config{
-
+			Recipes: recipesservice.Config{
 				PublicMediaURLPrefix: "https://media.example.website/lol",
 				Uploads: uploads.Config{
 					Debug: false,
@@ -138,8 +137,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			RecipeSteps: &recipestepsservice.Config{
-
+			RecipeSteps: recipestepsservice.Config{
 				PublicMediaURLPrefix: "https://media.example.website/lol",
 				Uploads: uploads.Config{
 					Debug: false,

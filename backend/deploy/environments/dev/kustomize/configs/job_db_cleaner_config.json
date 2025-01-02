@@ -1,14 +1,15 @@
 {
 	"observability": {
 		"logging": {
-			"level": 0,
-			"provider": "slog"
+			"level": "debug",
+			"provider": "slog",
+			"outputFilepath": "/var/log/application/service.log"
 		},
 		"metrics": {
 			"otelgrpc": {
 				"serviceName": "dinner_done_better_api",
-				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
-				"collectionInterval": 3000000000,
+				"metricsCollectorEndpoint": "localhost:4317",
+				"collectionInterval": 1000000000,
 				"insecure": false,
 				"collectionTimeout": 0
 			},
@@ -16,7 +17,8 @@
 		},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "http://0.0.0.0:4317"
+				"collector_endpoint": "localhost:4317",
+				"insecure": true
 			},
 			"service_name": "dinner_done_better_api",
 			"provider": "otelgrpc",
@@ -24,14 +26,15 @@
 		}
 	},
 	"database": {
-		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"provider": "",
+		"oauth2TokenEncryptionKey": "",
 		"connectionDetails": {
-			"username": "dbuser",
-			"password": "hunter2",
+			"username": "api_db_user",
+			"password": "",
 			"database": "dinner-done-better",
-			"hostname": "postgres-postgresql.localdev.svc.cluster.local",
+			"hostname": "",
 			"port": 5432,
-			"disableSSL": true
+			"disableSSL": false
 		},
 		"debug": true,
 		"logQueries": true,

@@ -61,12 +61,11 @@ type (
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
 		_                struct{}               `json:"-"`
-		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
 		Queues           msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
-		Analytics        analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
 		Email            emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
-		FeatureFlags     featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
+		Analytics        analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
 		Search           textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
+		FeatureFlags     featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
 		Encoding         encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
 		Events           msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
 		Observability    observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
@@ -74,6 +73,7 @@ type (
 		Routing          routing.Config         `envPrefix:"ROUTING_"       json:"routing"`
 		Server           http.Config            `envPrefix:"SERVER_"        json:"server"`
 		Database         databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
 		validateServices bool                   `json:"-"`
 	}
 

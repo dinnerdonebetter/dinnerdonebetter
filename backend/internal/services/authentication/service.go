@@ -13,9 +13,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -69,8 +71,13 @@ func ProvideService(
 	analyticsReporter analytics.EventReporter,
 	routeParamManager routing.RouteParamManager,
 	metricsProvider metrics.Provider,
+	queuesConfig *msgconfig.QueuesConfig,
 ) (types.AuthDataService, error) {
-	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	if queuesConfig == nil {
+		return nil, internalerrors.NilConfigError("queuesConfig for AuthDataService")
+	}
+
+	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)
 	if publisherProviderErr != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, publisherProviderErr)
 	}

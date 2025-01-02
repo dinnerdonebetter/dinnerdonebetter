@@ -7,7 +7,7 @@ receivers:
         endpoint: "0.0.0.0:4317"
 
   filelog:
-    include: [ /var/log/dinnerdonebetter/*.log ]
+    include: [ /var/log/application/*.log ]
     operators:
       - type: json_parser
       - type: add
@@ -20,18 +20,18 @@ receivers:
 extensions:
   basicauth/prometheus:
     client_auth:
-      username: ${env:PROMETHEUS_USERNAME} 
-      password: ${env:PROMETHEUS_PASSWORD} 
+      username: ${env:PROMETHEUS_USERNAME}
+      password: ${env:PROMETHEUS_PASSWORD}
 
   basicauth/loki:
     client_auth:
-      username: ${env:LOKI_USERNAME} 
-      password: ${env:LOKI_PASSWORD} 
+      username: ${env:LOKI_USERNAME}
+      password: ${env:LOKI_PASSWORD}
 
   basicauth/tempo:
     client_auth:
-      username: ${env:TEMPO_USERNAME} 
-      password: ${env:TEMPO_PASSWORD} 
+      username: ${env:TEMPO_USERNAME}
+      password: ${env:TEMPO_PASSWORD}
 
 exporters:
   debug:

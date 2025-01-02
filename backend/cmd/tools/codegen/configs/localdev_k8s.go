@@ -114,7 +114,7 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 			},
 		},
 		Services: config.ServicesConfig{
-			Auth: &authservice.Config{
+			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "http://localhost:9000",
 					AccessTokenLifespan:  time.Hour,
@@ -130,12 +130,11 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
-				DataChangesTopicName:  dataChangesTopicName,
 				JWTAudience:           "localhost",
 				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				JWTLifetime:           5 * time.Minute,
 			},
-			DataPrivacy: &dataprivacyservice.Config{
+			DataPrivacy: dataprivacyservice.Config{
 				Uploads: uploads.Config{
 					Storage: objectstorage.Config{
 						FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
@@ -145,7 +144,7 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 					Debug: false,
 				},
 			},
-			Users: &usersservice.Config{
+			Users: usersservice.Config{
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: objectstorage.Config{
@@ -158,7 +157,7 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			Recipes: &recipesservice.Config{
+			Recipes: recipesservice.Config{
 				PublicMediaURLPrefix: "https://example.website.lol",
 				Uploads: uploads.Config{
 					Debug: true,
@@ -172,7 +171,7 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			RecipeSteps: &recipestepsservice.Config{
+			RecipeSteps: recipestepsservice.Config{
 				PublicMediaURLPrefix: "https://example.website.lol",
 				Uploads: uploads.Config{
 					Debug: true,

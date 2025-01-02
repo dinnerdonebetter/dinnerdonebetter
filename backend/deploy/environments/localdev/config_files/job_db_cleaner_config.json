@@ -1,7 +1,7 @@
 {
 	"observability": {
 		"logging": {
-			"level": 0,
+			"level": "debug",
 			"provider": "slog",
 			"outputFilepath": "/var/log/dinnerdonebetter/api-service.log"
 		},

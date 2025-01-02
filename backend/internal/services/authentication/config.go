@@ -29,7 +29,6 @@ type (
 		_ struct{} `json:"-"`
 
 		SSO                   SSOConfigs    `envPrefix:"SSO_CONFIG_"       json:"sso,omitempty"`
-		DataChangesTopicName  string        `env:"DATA_CHANGES_TOPIC_NAME" json:"dataChanges,omitempty"`
 		JWTAudience           string        `env:"JWT_AUDIENCE"            json:"jwtAudience,omitempty"`
 		JWTSigningKey         string        `env:"JWT_SIGNING_KEY"         json:"jwtSigningKey"`
 		OAuth2                OAuth2Config  `envPrefix:"OAUTH2"            json:"oauth2,omitempty"`

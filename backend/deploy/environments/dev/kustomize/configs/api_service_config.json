@@ -1,47 +1,132 @@
 {
-	"observability": {
-		"logging": {
-			"level": 0,
-			"provider": "slog"
+	"services": {
+		"recipeSteps": {
+			"mediaUploadPrefix": "https://media.dinnerdonebetter.dev/recipe_media",
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "media.dinnerdonebetter.dev"
+					},
+					"bucketPrefix": "recipe_media/",
+					"bucketName": "media.dinnerdonebetter.dev",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "gcp"
+				},
+				"debug": true
+			}
 		},
-		"metrics": {
-			"otelgrpc": {
-				"serviceName": "dinner_done_better_api",
-				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
-				"collectionInterval": 3000000000,
-				"insecure": false,
-				"collectionTimeout": 0
-			},
-			"provider": "otelgrpc"
+		"users": {
+			"publicMediaURLPrefix": "https://media.dinnerdonebetter.dev/avatars",
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "media.dinnerdonebetter.dev"
+					},
+					"bucketPrefix": "avatars/",
+					"bucketName": "media.dinnerdonebetter.dev",
+					"uploadFilenameKey": "avatar",
+					"provider": "gcp"
+				},
+				"debug": true
+			}
 		},
-		"tracing": {
-			"otelgrpc": {
-				"collector_endpoint": "http://0.0.0.0:4317"
+		"dataPrivacy": {
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "userdata.dinnerdonebetter.dev"
+					},
+					"bucketName": "userdata.dinnerdonebetter.dev",
+					"provider": "gcp"
+				},
+				"debug": false
+			}
+		},
+		"recipes": {
+			"mediaUploadPrefix": "https://media.dinnerdonebetter.dev/recipe_media",
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "media.dinnerdonebetter.dev"
+					},
+					"bucketPrefix": "recipe_media/",
+					"bucketName": "media.dinnerdonebetter.dev",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "gcp"
+				},
+				"debug": true
 			},
-			"service_name": "dinner_done_better_api",
-			"provider": "otelgrpc",
-			"spanCollectionProbability": 1
+			"searchFromDatabase": true
+		},
+		"auth": {
+			"sso": {
+				"google": {}
+			},
+			"jwtAudience": "https://api.dinnerdonebetter.dev",
+			"jwtSigningKey": "",
+			"oauth2": {
+				"domain": "https://dinnerdonebetter.dev",
+				"accessTokenLifespan": 3600000000000,
+				"refreshTokenLifespan": 3600000000000,
+				"debug": false
+			},
+			"jwtLifetime": 300000000000,
+			"debug": true,
+			"enableUserSignup": true,
+			"minimumUsernameLength": 3,
+			"minimumPasswordLength": 8
+		},
+		"validInstruments": {
+			"useSearchService": true
+		},
+		"meals": {
+			"searchFromDatabase": true
+		},
+		"validMeasurementUnits": {
+			"useSearchService": true
+		},
+		"validVessels": {
+			"useSearchService": true
+		},
+		"validPreparations": {
+			"useSearchService": true
+		},
+		"validIngredientStates": {
+			"useSearchService": true
+		},
+		"validIngredients": {
+			"useSearchService": true
 		}
 	},
 	"queues": {
-		"dataChangesTopicName": "data_changes",
-		"outboundEmailsTopicName": "outbound_emails",
-		"searchIndexRequestsTopicName": "search_index_requests",
-		"userDataAggregationTopicName": "user_data_aggregation_requests",
-		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+		"dataChangesTopicName": "",
+		"outboundEmailsTopicName": "",
+		"searchIndexRequestsTopicName": "",
+		"userDataAggregationTopicName": "",
+		"webhookExecutionRequestsTopicName": ""
 	},
 	"analytics": {
-		"segment": null,
+		"segment": {
+			"apiToken": ""
+		},
 		"posthog": null,
 		"rudderstack": null,
 		"circuitBreaker": null,
-		"provider": ""
+		"provider": "segment"
 	},
 	"email": {
-		"sendgrid": null,
+		"sendgrid": {
+			"apiToken": ""
+		},
 		"mailgun": null,
 		"mailjet": null,
 		"circuitBreakerConfig": null,
+		"provider": "sendgrid"
+	},
+	"featureFlags": {
+		"launchDarkly": null,
+		"posthog": null,
+		"circuitBreakingConfig": null,
 		"provider": ""
 	},
 	"search": {
@@ -54,50 +139,66 @@
 		"circuitBreakerConfig": null,
 		"provider": "algolia"
 	},
-	"featureFlags": {
-		"launchDarkly": null,
-		"posthog": null,
-		"circuitBreakingConfig": null,
-		"provider": ""
-	},
 	"encoding": {
 		"contentType": "application/json"
+	},
+	"events": {
+		"consumers": {
+			"provider": "pubsub",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": "dinner-done-better-dev"
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": null
+			}
+		},
+		"publishers": {
+			"provider": "pubsub",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": "dinner-done-better-dev"
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": null
+			}
+		}
+	},
+	"observability": {
+		"logging": {
+			"level": "debug",
+			"provider": "slog",
+			"outputFilepath": "/var/log/application/service.log"
+		},
+		"metrics": {
+			"otelgrpc": {
+				"serviceName": "dinner_done_better_api",
+				"metricsCollectorEndpoint": "localhost:4317",
+				"collectionInterval": 1000000000,
+				"insecure": false,
+				"collectionTimeout": 0
+			},
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "localhost:4317",
+				"insecure": true
+			},
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
 	},
 	"meta": {
 		"runMode": "development",
 		"debug": true
-	},
-	"events": {
-		"consumers": {
-			"provider": "redis",
-			"sqs": {
-				"queueAddress": ""
-			},
-			"pubSub": {
-				"projectID": ""
-			},
-			"redis": {
-				"username": "",
-				"queueAddress": [
-					"redis-master.localdev.svc.cluster.local:6379"
-				]
-			}
-		},
-		"publishers": {
-			"provider": "redis",
-			"sqs": {
-				"queueAddress": ""
-			},
-			"pubSub": {
-				"projectID": ""
-			},
-			"redis": {
-				"username": "",
-				"queueAddress": [
-					"redis-master.localdev.svc.cluster.local:6379"
-				]
-			}
-		}
 	},
 	"routing": {
 		"serviceName": "dinner_done_better_api",
@@ -110,224 +211,20 @@
 		"debug": true
 	},
 	"database": {
-		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"provider": "",
+		"oauth2TokenEncryptionKey": "",
 		"connectionDetails": {
-			"username": "dbuser",
-			"password": "hunter2",
+			"username": "api_db_user",
+			"password": "",
 			"database": "dinner-done-better",
-			"hostname": "postgres-postgresql.localdev.svc.cluster.local",
+			"hostname": "",
 			"port": 5432,
-			"disableSSL": true
+			"disableSSL": false
 		},
 		"debug": true,
 		"logQueries": true,
 		"runMigrations": true,
 		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1000000000
-	},
-	"services": {
-		"auditLogEntries": {},
-		"mealPlanGroceryListItems": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validInstrumentMeasurementUnits": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"serviceSettingConfigurations": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipeRatings": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validMeasurementUnitConversions": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validIngredientGroups": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"serviceSettings": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"mealPlanTasks": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipeStepInstruments": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipeStepIngredients": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"householdInstrumentOwnerships": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipePrepTasks": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipeStepCompletionConditions": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"userIngredientPreferences": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"households": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"mealPlans": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validPreparationInstruments": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validIngredientPreparations": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipeStepProducts": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validIngredientStateIngredients": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"mealPlanEvents": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"mealPlanOptionVotes": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipeStepVessels": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validPreparationVessels": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"workers": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"userNotifications": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"mealPlanOptions": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"dataPrivacy": {
-			"userDataAggregationTopicName": "user_data_aggregation_requests",
-			"dataChangesTopicName": "data_changes",
-			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/tmp"
-					},
-					"bucketName": "userdata",
-					"provider": "filesystem"
-				},
-				"debug": false
-			}
-		},
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://example.website.lol",
-			"dataChangesTopicName": "data_changes",
-			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/uploads"
-					},
-					"bucketName": "recipe_media",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "filesystem"
-				},
-				"debug": true
-			}
-		},
-		"users": {
-			"dataChangesTopicName": "data_changes",
-			"publicMediaURLPrefix": "",
-			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/uploads"
-					},
-					"bucketName": "avatars",
-					"uploadFilenameKey": "avatar",
-					"provider": "filesystem"
-				},
-				"debug": true
-			}
-		},
-		"validInstruments": {
-			"dataChangesTopicName": "data_changes",
-			"useSearchService": false
-		},
-		"validMeasurementUnits": {
-			"dataChangesTopicName": "data_changes",
-			"useSearchService": false
-		},
-		"oauth2Clients": {
-			"dataChangesTopicName": "data_changes",
-			"creationEnabled": false
-		},
-		"webhooks": {
-			"dataChangesTopicName": "data_changes",
-			"debug": false
-		},
-		"validIngredients": {
-			"dataChangesTopicName": "data_changes",
-			"useSearchService": false
-		},
-		"meals": {
-			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
-		},
-		"validVessels": {
-			"dataChangesTopicName": "data_changes",
-			"useSearchService": false
-		},
-		"householdInvitations": {
-			"dataChangesTopicName": "data_changes",
-			"debug": false
-		},
-		"validPreparations": {
-			"dataChangesTopicName": "data_changes",
-			"useSearchService": false
-		},
-		"validIngredientStates": {
-			"dataChangesTopicName": "data_changes",
-			"useSearchService": false
-		},
-		"recipes": {
-			"dataChangesTopicName": "data_changes",
-			"mediaUploadPrefix": "https://example.website.lol",
-			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/uploads"
-					},
-					"bucketName": "recipe_media",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "filesystem"
-				},
-				"debug": true
-			},
-			"searchFromDatabase": false
-		},
-		"auth": {
-			"sso": {
-				"google": {
-					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
-				}
-			},
-			"dataChanges": "data_changes",
-			"jwtAudience": "localhost",
-			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-			"oauth2": {
-				"domain": "http://localhost:9000",
-				"accessTokenLifespan": 3600000000000,
-				"refreshTokenLifespan": 3600000000000,
-				"debug": false
-			},
-			"jwtLifetime": 300000000000,
-			"debug": true,
-			"enableUserSignup": true,
-			"minimumUsernameLength": 3,
-			"minimumPasswordLength": 8
-		}
 	}
 }

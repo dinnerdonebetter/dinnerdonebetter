@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
@@ -34,9 +35,10 @@ func buildTestService(t *testing.T) *service {
 	cfg := &Config{
 		JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 	}
+	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 	pp := &mockpublishers.ProducerProvider{}
-	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	rpm := mockrouting.NewRouteParamManager()
 	rpm.On(
@@ -63,6 +65,7 @@ func buildTestService(t *testing.T) *service {
 		analytics.NewNoopEventReporter(),
 		rpm,
 		mmp,
+		queueCfg,
 	)
 	require.NoError(t, err)
 
@@ -82,9 +85,10 @@ func TestProvideService(T *testing.T) {
 		cfg := &Config{
 			JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 		}
+		queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
@@ -106,6 +110,7 @@ func TestProvideService(T *testing.T) {
 			analytics.NewNoopEventReporter(),
 			rpm,
 			metrics.NewNoopMetricsProvider(),
+			queueCfg,
 		)
 
 		assert.NotNil(t, s)

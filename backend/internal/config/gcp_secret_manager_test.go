@@ -47,13 +47,13 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(t *testing.T) {
 			StartupDeadline: time.Second,
 		},
 		Services: ServicesConfig{
-			Recipes: &recipesservice.Config{
+			Recipes: recipesservice.Config{
 				PublicMediaURLPrefix: t.Name(),
 			},
-			RecipeSteps: &recipestepsservice.Config{
+			RecipeSteps: recipestepsservice.Config{
 				PublicMediaURLPrefix: t.Name(),
 			},
-			Auth: &authservice.Config{
+			Auth: authservice.Config{
 				MinimumPasswordLength: 8,
 				MinimumUsernameLength: 8,
 			},

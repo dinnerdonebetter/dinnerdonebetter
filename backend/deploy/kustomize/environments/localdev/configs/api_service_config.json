@@ -151,7 +151,7 @@
 	},
 	"observability": {
 		"logging": {
-			"level": 0,
+			"level": "debug",
 			"provider": "slog"
 		},
 		"metrics": {

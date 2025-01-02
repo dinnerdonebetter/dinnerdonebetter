@@ -33,7 +33,7 @@ spec:
           mountPath: "/etc/service-config.json"
           subPath: "config.json"
         - name: logs
-          mountPath: /var/log/dinnerdonebetter
+          mountPath: /var/log/application
         ports:
         - containerPort: 8000
           name: http
@@ -67,10 +67,13 @@ spec:
             name: otel2
         volumeMounts:
           - name: logs
-            mountPath: /var/log/dinnerdonebetter
+            mountPath: /var/log/application
             readOnly: true
           - name: opentelemetry-config
             mountPath: /conf
+        env:
+          - name: "RUNNING_IN_KUBERNETES"
+            value: "true"
       volumes:
         # this volume contains the configuration file for the API service
         - name: "config"

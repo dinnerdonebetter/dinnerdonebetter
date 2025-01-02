@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -13,8 +15,19 @@ const (
 	LoggerNameKey = "service_name"
 )
 
+var (
+	// InfoLevel describes a info-level log.
+	InfoLevel Level = pointer.To[level]("info")
+	// DebugLevel describes a debug-level log.
+	DebugLevel Level = pointer.To[level]("debug")
+	// ErrorLevel describes a error-level log.
+	ErrorLevel Level = pointer.To[level]("error")
+	// WarnLevel describes a warn-level log.
+	WarnLevel Level = pointer.To[level]("warn")
+)
+
 type (
-	level int
+	level string
 
 	// Level is a simple string alias for dependency injection's sake.
 	Level *level
@@ -23,16 +36,7 @@ type (
 	RequestIDFunc func(*http.Request) string
 )
 
-var (
-	// InfoLevel describes a info-level log.
-	InfoLevel Level = new(level)
-	// DebugLevel describes a debug-level log.
-	DebugLevel Level = new(level)
-	// ErrorLevel describes a error-level log.
-	ErrorLevel Level = new(level)
-	// WarnLevel describes a warn-level log.
-	WarnLevel Level = new(level)
-)
+var ()
 
 // Logger represents a simple logging interface we can build wrappers around.
 // NOTICE: someone, naive and green, may be enticed to add a method to this interface akin to:

@@ -11,13 +11,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue/pubsub"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
@@ -38,6 +39,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 )
 
+const (
+	gcpProjectID = "dinner-done-better-dev"
+)
+
 func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 	cfg := &config.APIServiceConfig{
 		Routing: routingcfg.Config{
@@ -56,9 +61,11 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		Events: msgconfig.Config{
 			Consumer: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderPubSub,
+				PubSub:   pubsub.Config{ProjectID: gcpProjectID},
 			},
 			Publisher: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderPubSub,
+				PubSub:   pubsub.Config{ProjectID: gcpProjectID},
 			},
 		},
 		Email: emailcfg.Config{
@@ -95,28 +102,30 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{
-				Level:    logging.DebugLevel,
-				Provider: loggingcfg.ProviderSlog,
+				Level:          logging.DebugLevel,
+				Provider:       loggingcfg.ProviderSlog,
+				OutputFilepath: "/var/log/application/service.log",
 			},
 			Metrics: metricscfg.Config{
-				Provider: tracingcfg.ProviderCloudTrace,
+				Provider: tracingcfg.ProviderOtel,
 				Otel: &otelgrpc.Config{
 					ServiceName:        otelServiceName,
 					CollectorEndpoint:  "localhost:4317",
-					CollectionInterval: 3 * time.Second,
+					CollectionInterval: 1 * time.Second,
 				},
 			},
 			Tracing: tracingcfg.Config{
-				Provider:                  tracingcfg.ProviderCloudTrace,
+				Provider:                  tracingcfg.ProviderOtel,
 				ServiceName:               otelServiceName,
 				SpanCollectionProbability: 1,
-				CloudTrace: &cloudtrace.Config{
-					ProjectID: "dinner-done-better-dev",
+				Otel: &oteltrace.Config{
+					CollectorEndpoint: "localhost:4317",
+					Insecure:          true,
 				},
 			},
 		},
 		Services: config.ServicesConfig{
-			Auth: &authservice.Config{
+			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "https://dinnerdonebetter.dev",
 					AccessTokenLifespan:  time.Hour,
@@ -130,7 +139,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				JWTAudience:           "https://api.dinnerdonebetter.dev",
 				JWTLifetime:           5 * time.Minute,
 			},
-			DataPrivacy: &dataprivacyservice.Config{
+			DataPrivacy: dataprivacyservice.Config{
 				Uploads: uploads.Config{
 					Storage: objectstorage.Config{
 						GCPConfig:  &objectstorage.GCPConfig{BucketName: "userdata.dinnerdonebetter.dev"},
@@ -140,7 +149,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					Debug: false,
 				},
 			},
-			Users: &usersservice.Config{
+			Users: usersservice.Config{
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/avatars",
 				Uploads: uploads.Config{
 					Debug: true,
@@ -155,7 +164,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			Recipes: &recipesservice.Config{
+			Recipes: recipesservice.Config{
 				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
 				UseSearchService:     true,
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
@@ -172,7 +181,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			RecipeSteps: &recipestepsservice.Config{
+			RecipeSteps: recipestepsservice.Config{
 				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
 				Uploads: uploads.Config{
@@ -188,25 +197,25 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			ValidIngredients: &validingredientsservice.Config{
+			ValidIngredients: validingredientsservice.Config{
 				UseSearchService: true,
 			},
-			ValidIngredientStates: &validingredientstatesservice.Config{
+			ValidIngredientStates: validingredientstatesservice.Config{
 				UseSearchService: true,
 			},
-			ValidInstruments: &validinstrumentsservice.Config{
+			ValidInstruments: validinstrumentsservice.Config{
 				UseSearchService: true,
 			},
-			ValidVessels: &validvesselsservice.Config{
+			ValidVessels: validvesselsservice.Config{
 				UseSearchService: true,
 			},
-			ValidMeasurementUnits: &validmeasurementunitsservice.Config{
+			ValidMeasurementUnits: validmeasurementunitsservice.Config{
 				UseSearchService: true,
 			},
-			ValidPreparations: &validpreparationsservice.Config{
+			ValidPreparations: validpreparationsservice.Config{
 				UseSearchService: true,
 			},
-			Meals: &mealsservice.Config{
+			Meals: mealsservice.Config{
 				UseSearchService: true,
 			},
 		},
