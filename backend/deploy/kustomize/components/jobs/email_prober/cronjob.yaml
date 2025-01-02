@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: dinner-done-better-job-email-prober
+  name: dinner-done-better-cronjob-email-prober
 spec:
   # schedule: "* * * * *"
   schedule: "0 4 * * *"
@@ -12,7 +12,7 @@ spec:
         spec:
           containers:
           - name: email-prober
-            image: dinner-done-better-job-email-prober
+            image: dinner-done-better-cronjob-email-prober
             imagePullPolicy: IfNotPresent
             env:
               - name: "CONFIGURATION_FILEPATH"
@@ -27,7 +27,7 @@ spec:
           volumes:
             - name: "config"
               configMap:
-                name: "dinner-done-better-job-email-prober-config"
+                name: "dinner-done-better-cronjob-email-prober-config"
             # this volume is where we write logs to, and where we read logs from in the collector.
             - name: logs
               emptyDir:

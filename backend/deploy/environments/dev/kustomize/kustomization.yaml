@@ -8,11 +8,11 @@ resources:
   - ingress.yaml
   - ../../../kustomize/components/api_server
   - ../../../kustomize/components/jobs/db_cleaner
-#  - ../../../kustomize/components/jobs/email_prober
-#  - ../../../kustomize/components/jobs/meal_plan_finalizer
-#  - ../../../kustomize/components/jobs/meal_plan_grocery_list_initializer
-#  - ../../../kustomize/components/jobs/meal_plan_task_creator
-#  - ../../../kustomize/components/jobs/search_data_index_scheduler
+  - ../../../kustomize/components/jobs/email_prober
+  - ../../../kustomize/components/jobs/meal_plan_finalizer
+  - ../../../kustomize/components/jobs/meal_plan_grocery_list_initializer
+  - ../../../kustomize/components/jobs/meal_plan_task_creator
+  - ../../../kustomize/components/jobs/search_data_index_scheduler
 
 images:
   - name: dinner-done-better-service-api
@@ -21,25 +21,25 @@ images:
   - name: dinner-done-better-job-db-cleaner
     newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner
     newTag: latest
-#  - name: dinner-done-better-job-email-prober
-#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober
-#    newTag: latest
-#  - name: dinner-done-better-job-meal-plan-finalizer
-#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
-#    newTag: latest
-#  - name: dinner-done-better-job-meal-plan-grocery-list-init
-#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
-#    newTag: latest
-#  - name: dinner-done-better-job-meal-plan-task-creator
-#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
-#    newTag: latest
-#  - name: dinner-done-better-job-search-data-index-scheduler
-#    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
-#    newTag: latest
+  - name: dinner-done-better-job-email-prober
+    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober
+    newTag: latest
+  - name: dinner-done-better-job-meal-plan-finalizer
+    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
+    newTag: latest
+  - name: dinner-done-better-job-meal-plan-grocery-list-init
+    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
+    newTag: latest
+  - name: dinner-done-better-job-meal-plan-task-creator
+    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
+    newTag: latest
+  - name: dinner-done-better-job-search-data-index-scheduler
+    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
+    newTag: latest
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches:
-  ### let's set up some API service environment variables sourced by kubernetes secrets.
+  ### patch env vars for the API service
   - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -49,11 +49,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: DATABASE_HOST
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -62,11 +57,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: DATABASE_PASSWORD
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -75,11 +65,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: OAUTH2_TOKEN_ENCRYPTION_KEY
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -88,11 +73,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: SEGMENT_API_TOKEN
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -101,11 +81,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: ALGOLIA_API_KEY
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -114,11 +89,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: ALGOLIA_APPLICATION_ID
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -127,11 +97,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: SENDGRID_API_TOKEN
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -140,11 +105,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: POSTHOG_PERSONAL_API_KEY
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -153,11 +113,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: POSTHOG_API_KEY
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -166,11 +121,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: JWT_SIGNING_KEY
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -179,11 +129,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: GOOGLE_SSO_OAUTH2_CLIENT_ID
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -192,11 +137,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: GOOGLE_SSO_OAUTH2_CLIENT_SECRET
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -205,11 +145,6 @@ patches:
             secretKeyRef:
               name: pubsub-topic-names
               key: data_changes
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -218,11 +153,6 @@ patches:
             secretKeyRef:
               name: pubsub-topic-names
               key: outbound_emails
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -231,11 +161,6 @@ patches:
             secretKeyRef:
               name: pubsub-topic-names
               key: search_index_requests
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -244,11 +169,6 @@ patches:
             secretKeyRef:
               name: pubsub-topic-names
               key: user_data_aggregator
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -261,6 +181,858 @@ patches:
       version: v1
       kind: Deployment
       name: dinner-done-better-service-api-deployment
+  ### patch env vars for the db cleaner job
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_HOST
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_PASSWORD
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: OAUTH2_TOKEN_ENCRYPTION_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SEGMENT_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_APPLICATION_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SENDGRID_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_PERSONAL_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PROJECT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: JWT_SIGNING_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_DATA_CHANGES_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: data_changes
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_OUTBOUND_EMAILS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: outbound_emails
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_SEARCH_INDEX_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: search_index_requests
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_USER_DATA_AGGREGATION_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: user_data_aggregator
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: webhook_execution_requests
+    target:
+      version: batch/v1
+      kind: CronJob
+      name: dinner-done-better-cronjob-db-cleaner
+  ### patch env vars for the email prober job
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_HOST
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_PASSWORD
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: OAUTH2_TOKEN_ENCRYPTION_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SEGMENT_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_APPLICATION_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SENDGRID_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_PERSONAL_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PROJECT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: JWT_SIGNING_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_DATA_CHANGES_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: data_changes
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_OUTBOUND_EMAILS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: outbound_emails
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_SEARCH_INDEX_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: search_index_requests
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_USER_DATA_AGGREGATION_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: user_data_aggregator
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: webhook_execution_requests
+    target:
+      version: batch/v1
+      kind: CronJob
+      name: dinner-done-better-cronjob-email-prober
+  ### patch env vars for the meal plan finalizer job
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_HOST
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_PASSWORD
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: OAUTH2_TOKEN_ENCRYPTION_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SEGMENT_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_APPLICATION_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SENDGRID_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_PERSONAL_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PROJECT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: JWT_SIGNING_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_DATA_CHANGES_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: data_changes
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_OUTBOUND_EMAILS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: outbound_emails
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_SEARCH_INDEX_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: search_index_requests
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_USER_DATA_AGGREGATION_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: user_data_aggregator
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: webhook_execution_requests
+    target:
+      version: batch/v1
+      kind: CronJob
+      name: dinner-done-better-cronjob-meal-plan-finalizer
+  ### patch env vars for the meal plan grocery list init job
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_HOST
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_PASSWORD
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: OAUTH2_TOKEN_ENCRYPTION_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SEGMENT_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_APPLICATION_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SENDGRID_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_PERSONAL_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PROJECT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: JWT_SIGNING_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_DATA_CHANGES_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: data_changes
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_OUTBOUND_EMAILS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: outbound_emails
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_SEARCH_INDEX_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: search_index_requests
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_USER_DATA_AGGREGATION_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: user_data_aggregator
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: webhook_execution_requests
+    target:
+      version: batch/v1
+      kind: CronJob
+      name: dinner-done-better-cronjob-meal-plan-grocery-list-init
+  ### patch env vars for the meal plan task creator job
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_HOST
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_PASSWORD
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: OAUTH2_TOKEN_ENCRYPTION_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SEGMENT_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_APPLICATION_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SENDGRID_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_PERSONAL_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PROJECT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: JWT_SIGNING_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_DATA_CHANGES_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: data_changes
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_OUTBOUND_EMAILS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: outbound_emails
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_SEARCH_INDEX_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: search_index_requests
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_USER_DATA_AGGREGATION_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: user_data_aggregator
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: webhook_execution_requests
+    target:
+      version: batch/v1
+      kind: CronJob
+      name: dinner-done-better-cronjob-meal-plan-task-creator
+  ### patch env vars for the search data index scheduler job
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_HOST
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: DATABASE_PASSWORD
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: OAUTH2_TOKEN_ENCRYPTION_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SEGMENT_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: ALGOLIA_APPLICATION_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: SENDGRID_API_TOKEN
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_PERSONAL_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PROJECT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: POSTHOG_API_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: JWT_SIGNING_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: api-service-config
+              key: GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_DATA_CHANGES_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: data_changes
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_OUTBOUND_EMAILS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: outbound_emails
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_SEARCH_INDEX_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: search_index_requests
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_USER_DATA_AGGREGATION_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: user_data_aggregator
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME
+          valueFrom:
+            secretKeyRef:
+              name: pubsub-topic-names
+              key: webhook_execution_requests
+    target:
+      version: batch/v1
+      kind: CronJob
+      name: dinner-done-better-cronjob-search-data-index-scheduler
 
   #
   # otel collctor sidecar patches
@@ -275,11 +1047,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
         value:
@@ -288,11 +1055,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
         value:
@@ -301,11 +1063,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: GRAFANA_CLOUD_LOKI_USERNAME
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
         value:
@@ -314,11 +1071,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: GRAFANA_CLOUD_LOKI_PASSWORD
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
         value:
@@ -327,11 +1079,6 @@ patches:
             secretKeyRef:
               name: api-service-config
               key: GRAFANA_CLOUD_TEMPO_USERNAME
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
-  - patch: |-
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
         value:

@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: dinner-done-better-job-search-data-index-scheduler
+  name: dinner-done-better-cronjob-search-data-index-scheduler
 spec:
   schedule: "*/30 * * * *"
   jobTemplate:
@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: search-data-index-scheduler
-            image: dinner-done-better-job-search-data-index-scheduler
+            image: dinner-done-better-cronjob-search-data-index-scheduler
             imagePullPolicy: IfNotPresent
             env:
               - name: "CONFIGURATION_FILEPATH"
@@ -28,7 +28,7 @@ spec:
           volumes:
             - name: "config"
               configMap:
-                name: "dinner-done-better-job-search-data-index-scheduler-config"
+                name: "dinner-done-better-cronjob-search-data-index-scheduler-config"
             # this volume is where we write logs to, and where we read logs from in the collector.
             - name: logs
               emptyDir:

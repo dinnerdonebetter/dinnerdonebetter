@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"runtime/debug"
 
@@ -303,7 +304,7 @@ func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Conte
 
 func FetchForApplication[T configurations](ctx context.Context, f genericCloudConfigFetcher[T]) (*T, error) {
 	var cfg *T
-	if RunningInTheCloud() {
+	if RunningInTheCloud() && f != nil {
 		c, err := f(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("fetching config from GCP: %w", err)
@@ -320,6 +321,7 @@ func FetchForApplication[T configurations](ctx context.Context, f genericCloudCo
 			return nil, fmt.Errorf("decoding config file contents: %w", err)
 		}
 	} else {
+		log.Println("f == nil: ", f == nil)
 		return nil, errors.New("not running in the cloud, and no config filepath provided")
 	}
 

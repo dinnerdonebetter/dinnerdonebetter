@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: dinner-done-better-job-meal-plan-finalizer
+  name: dinner-done-better-cronjob-meal-plan-finalizer
 spec:
   schedule: "*/5 * * * *"
   jobTemplate:
@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: meal-plan-finalizer
-            image: dinner-done-better-job-meal-plan-finalizer
+            image: dinner-done-better-cronjob-meal-plan-finalizer
             imagePullPolicy: IfNotPresent
             env:
               - name: "CONFIGURATION_FILEPATH"
@@ -28,7 +28,7 @@ spec:
           volumes:
             - name: "config"
               configMap:
-                name: "dinner-done-better-job-meal-plan-finalizer-config"
+                name: "dinner-done-better-cronjob-meal-plan-finalizer-config"
             # this volume is where we write logs to, and where we read logs from in the collector.
             - name: logs
               emptyDir:

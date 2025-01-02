@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: db-cleaner
-            image: dinner-done-better-job-db-cleaner
+            image: dinner-done-better-cronjob-db-cleaner
             imagePullPolicy: IfNotPresent
             env:
               - name: "CONFIGURATION_FILEPATH"
@@ -26,7 +26,7 @@ spec:
           volumes:
             - name: "config"
               configMap:
-                name: "dinner-done-better-job-db-cleaner-config"
+                name: "dinner-done-better-cronjob-db-cleaner-config"
             # this volume is where we write logs to, and where we read logs from in the collector.
             - name: logs
               emptyDir:
