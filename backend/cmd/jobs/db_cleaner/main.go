@@ -24,7 +24,7 @@ func doTheThing() error {
 		return nil
 	}
 
-	cfg, err := config.FetchForApplication(ctx, config.GetDBCleanerConfigFromGoogleCloudSecretManager)
+	cfg, err := config.LoadConfigFromEnvironment[config.DBCleanerConfig]()
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}

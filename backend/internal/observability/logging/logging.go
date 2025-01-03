@@ -36,8 +36,6 @@ type (
 	RequestIDFunc func(*http.Request) string
 )
 
-var ()
-
 // Logger represents a simple logging interface we can build wrappers around.
 // NOTICE: someone, naive and green, may be enticed to add a method to this interface akin to:
 // WithQueryFilter(*types.QueryFilter) Logger

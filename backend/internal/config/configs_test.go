@@ -39,7 +39,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 			},
 			Observability: observability.Config{},
 			Services: ServicesConfig{
-				Auth: &authservice.Config{
+				Auth: authservice.Config{
 					MinimumUsernameLength: 4,
 					MinimumPasswordLength: 8,
 					EnableUserSignup:      true,

@@ -45,7 +45,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	}
 
 	ctx := context.Background()
-	sub, err := c.consumer.CreateSubscription(ctx, c.topic, pubsub.SubscriptionConfig{Topic: c.consumer.Topic(c.topic)})
+	sub, err := c.consumer.Topic(c.topic).Subscriptions(ctx).Next()
 	if err != nil {
 		c.logger.Error("creating subscription", err)
 		errors <- err

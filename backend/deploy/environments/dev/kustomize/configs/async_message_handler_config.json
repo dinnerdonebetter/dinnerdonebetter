@@ -1,10 +1,26 @@
 {
+	"storage": {
+		"gcpConfig": {
+			"bucketName": "userdata.dinnerdonebetter.dev"
+		},
+		"bucketName": "userdata.dinnerdonebetter.dev",
+		"provider": "gcp"
+	},
 	"queues": {
 		"dataChangesTopicName": "",
 		"outboundEmailsTopicName": "",
 		"searchIndexRequestsTopicName": "",
 		"userDataAggregationTopicName": "",
 		"webhookExecutionRequestsTopicName": ""
+	},
+	"email": {
+		"sendgrid": {
+			"apiToken": ""
+		},
+		"mailgun": null,
+		"mailjet": null,
+		"circuitBreakerConfig": null,
+		"provider": "sendgrid"
 	},
 	"analytics": {
 		"segment": {
@@ -14,6 +30,16 @@
 		"rudderstack": null,
 		"circuitBreaker": null,
 		"provider": "segment"
+	},
+	"search": {
+		"algolia": {
+			"appID": "",
+			"writeAPIKey": "",
+			"timeout": 0
+		},
+		"elasticsearch": null,
+		"circuitBreakerConfig": null,
+		"provider": "algolia"
 	},
 	"events": {
 		"consumers": {

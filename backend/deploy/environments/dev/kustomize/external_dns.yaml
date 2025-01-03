@@ -9,7 +9,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: external-dns
-  namespace: dev
 rules:
   - apiGroups: [""]
     resources: ["services"]
@@ -39,7 +38,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: external-dns
-    namespace: demo
+    namespace: dev
 ---
 apiVersion: apps/v1
 kind: Deployment

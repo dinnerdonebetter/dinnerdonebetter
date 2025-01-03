@@ -614,7 +614,16 @@ profiles:
             main: ./cmd/jobs/search_data_index_scheduler
             fromImage: golang:1.23-bullseye
 
-          # NOTE: no cmd/functions here
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/functions/async_message_handler
+            fromImage: golang:1.23-bullseye
 
     manifests:
       kustomize:

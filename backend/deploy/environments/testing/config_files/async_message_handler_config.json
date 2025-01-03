@@ -1,4 +1,11 @@
 {
+	"storage": {
+		"filesystem": {
+			"rootDirectory": "/tmp"
+		},
+		"bucketName": "userdata",
+		"provider": "filesystem"
+	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -6,11 +13,24 @@
 		"userDataAggregationTopicName": "user_data_aggregation_requests",
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
 	"analytics": {
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
 		"circuitBreaker": null,
+		"provider": ""
+	},
+	"search": {
+		"algolia": null,
+		"elasticsearch": null,
+		"circuitBreakerConfig": null,
 		"provider": ""
 	},
 	"events": {

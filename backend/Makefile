@@ -12,8 +12,6 @@ TESTABLE_PACKAGE_LIST  := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock
 ENVIRONMENTS_DIR       := environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-CLOUD_JOBS             := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler email_prober
-CLOUD_FUNCTIONS        := data_changes outbound_emailer search_indexer webhook_executor user_data_aggregator
 WIRE_TARGETS           := server/http/build
 CONTAINER_RUNNER       := docker
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
@@ -89,12 +87,6 @@ vendor:
 	if [ ! -f go.mod ]; then go mod init; fi
 	go mod tidy
 	go mod vendor
-	for thing in $(CLOUD_FUNCTIONS); do \
-  		(cd cmd/functions/$$thing && go mod tidy) \
-	done
-	for thing in $(CLOUD_JOBS); do \
-  		(cd cmd/jobs/$$thing && go mod tidy) \
-	done
 
 .PHONY: revendor
 revendor: clean_vendor vendor
@@ -300,4 +292,6 @@ nuke_dev_namespace:
 
 .PHONY: deploy_dev
 deploy_dev:
+	kubectl delete deployments,cronjobs --all --namespace $(DEV_NAMESPACE)
+	kubectl delete configmap --namespace $(DEV_NAMESPACE) --field-selector metadata.name!=kube-root-ca.crt --field-selector metadata.name!=pubsub-topic-names
 	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)

@@ -1,29 +1,10 @@
 {
-	"observability": {
-		"logging": {
-			"level": "debug",
-			"provider": "slog",
-			"outputFilepath": "/var/log/application/service.log"
-		},
-		"metrics": {
-			"otelgrpc": {
-				"serviceName": "dinner_done_better_api",
-				"metricsCollectorEndpoint": "localhost:4317",
-				"collectionInterval": 1000000000,
-				"insecure": false,
-				"collectionTimeout": 0
-			},
-			"provider": "otelgrpc"
-		},
-		"tracing": {
-			"otelgrpc": {
-				"collector_endpoint": "localhost:4317",
-				"insecure": true
-			},
-			"service_name": "dinner_done_better_api",
-			"provider": "otelgrpc",
-			"spanCollectionProbability": 1
-		}
+	"queues": {
+		"dataChangesTopicName": "",
+		"outboundEmailsTopicName": "",
+		"searchIndexRequestsTopicName": "",
+		"userDataAggregationTopicName": "",
+		"webhookExecutionRequestsTopicName": ""
 	},
 	"events": {
 		"consumers": {
@@ -53,6 +34,32 @@
 			}
 		}
 	},
+	"observability": {
+		"logging": {
+			"level": "debug",
+			"provider": "slog",
+			"outputFilepath": "/var/log/application/service.log"
+		},
+		"metrics": {
+			"otelgrpc": {
+				"serviceName": "dinner_done_better_api",
+				"metricsCollectorEndpoint": "localhost:4317",
+				"collectionInterval": 1000000000,
+				"insecure": false,
+				"collectionTimeout": 0
+			},
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "localhost:4317",
+				"insecure": true
+			},
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
 	"database": {
 		"provider": "",
 		"oauth2TokenEncryptionKey": "",
@@ -69,12 +76,5 @@
 		"runMigrations": true,
 		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1000000000
-	},
-	"queues": {
-		"dataChangesTopicName": "",
-		"outboundEmailsTopicName": "",
-		"searchIndexRequestsTopicName": "",
-		"userDataAggregationTopicName": "",
-		"webhookExecutionRequestsTopicName": ""
 	}
 }

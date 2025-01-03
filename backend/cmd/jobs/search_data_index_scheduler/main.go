@@ -31,10 +31,7 @@ func doTheThing() error {
 		return nil
 	}
 
-	// sleep for a bit to allow the otel collector sidecar to spin up, so we get those nice, juicy pillars
-	time.Sleep(2 * time.Second)
-
-	cfg, err := config.FetchForApplication(ctx, config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager)
+	cfg, err := config.LoadConfigFromEnvironment[config.SearchDataIndexSchedulerConfig]()
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}

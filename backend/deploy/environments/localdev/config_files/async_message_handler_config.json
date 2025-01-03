@@ -1,4 +1,11 @@
 {
+	"storage": {
+		"filesystem": {
+			"rootDirectory": "/tmp"
+		},
+		"bucketName": "userdata",
+		"provider": "filesystem"
+	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -6,12 +13,29 @@
 		"userDataAggregationTopicName": "user_data_aggregation_requests",
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	},
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
 	"analytics": {
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
 		"circuitBreaker": null,
 		"provider": ""
+	},
+	"search": {
+		"algolia": {
+			"appID": "",
+			"writeAPIKey": "",
+			"timeout": 0
+		},
+		"elasticsearch": null,
+		"circuitBreakerConfig": null,
+		"provider": "algolia"
 	},
 	"events": {
 		"consumers": {
@@ -47,13 +71,24 @@
 	},
 	"observability": {
 		"logging": {
-			"level": "info",
-			"provider": "slog"
+			"level": "debug",
+			"provider": "slog",
+			"outputFilepath": "/var/log/dinnerdonebetter/api-service.log"
 		},
-		"metrics": {},
+		"metrics": {
+			"otelgrpc": {
+				"serviceName": "dinner_done_better_api",
+				"metricsCollectorEndpoint": "otel_collector:4317",
+				"collectionInterval": 1000000000,
+				"insecure": true,
+				"collectionTimeout": 0
+			},
+			"provider": "otelgrpc"
+		},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces"
+				"collector_endpoint": "otel_collector:4317",
+				"insecure": true
 			},
 			"service_name": "dinner_done_better_api",
 			"provider": "otelgrpc",
@@ -75,6 +110,6 @@
 		"logQueries": true,
 		"runMigrations": true,
 		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1500000000
+		"pingWaitPeriod": 1000000000
 	}
 }

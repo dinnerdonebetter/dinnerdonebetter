@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 	"runtime/debug"
 
@@ -20,6 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
 	"github.com/caarlos0/env/v11"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -54,7 +56,8 @@ type (
 			MealPlanFinalizerConfig |
 			MealPlanGroceryListInitializerConfig |
 			MealPlanTaskCreatorConfig |
-			SearchDataIndexSchedulerConfig
+			SearchDataIndexSchedulerConfig |
+			AsyncMessageHandlerConfig
 	}
 
 	genericCloudConfigFetcher[T configurations] func(context.Context) (*T, error)
@@ -98,44 +101,54 @@ type (
 
 	// MealPlanFinalizerConfig configures an instance of the meal plan finalizer job.
 	MealPlanFinalizerConfig struct {
-		_ struct{} `json:"-"`
-
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		_             struct{}               `json:"-"`
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// MealPlanGroceryListInitializerConfig configures an instance of the meal plan grocery list initializer job.
 	MealPlanGroceryListInitializerConfig struct {
-		_ struct{} `json:"-"`
-
-		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		_             struct{}               `json:"-"`
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// MealPlanTaskCreatorConfig configures an instance of the meal plan task creator job.
 	MealPlanTaskCreatorConfig struct {
-		_ struct{} `json:"-"`
-
-		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		_             struct{}               `json:"-"`
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
 
 	// SearchDataIndexSchedulerConfig configures an instance of the search data index scheduler job.
 	SearchDataIndexSchedulerConfig struct {
+		_             struct{}               `json:"-"`
+		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+	}
+
+	// AsyncMessageHandlerConfig configures an instance of the search data index scheduler job.
+	AsyncMessageHandlerConfig struct {
 		_ struct{} `json:"-"`
 
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Storage       objectstorage.Config   `envPrefix:"STORAGE_"       json:"storage"`
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
+		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Search        textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
 )
 
@@ -316,6 +329,60 @@ func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Conte
 	return result.ErrorOrNil()
 }
 
+// ValidateWithContext validates a AsyncMessageHandlerConfig struct.
+func (cfg *AsyncMessageHandlerConfig) ValidateWithContext(ctx context.Context) error {
+	result := &multierror.Error{}
+
+	validators := map[string]func(context.Context) error{
+		"Queues":        cfg.Queues.ValidateWithContext,
+		"Analytics":     cfg.Analytics.ValidateWithContext,
+		"Observability": cfg.Observability.ValidateWithContext,
+		"Database":      cfg.Database.ValidateWithContext,
+		"Email":         cfg.Email.ValidateWithContext,
+		"Search":        cfg.Search.ValidateWithContext,
+		"Storage":       cfg.Storage.ValidateWithContext,
+	}
+
+	for name, validator := range validators {
+		if err := validator(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
+		}
+	}
+
+	return result.ErrorOrNil()
+}
+
+func envVarOnSetFunc(tag string, value any, isDefault bool) {
+	slog.Info("env var set",
+		slog.String("tag", tag),
+		slog.String("value", fmt.Sprintf("%+v", value)),
+		slog.Bool("isDefault", isDefault),
+	)
+}
+
+func LoadConfigFromEnvironment[T configurations]() (*T, error) {
+	configFilepath := os.Getenv(ConfigurationFilePathEnvVarKey)
+
+	configBytes, err := os.ReadFile(configFilepath)
+	if err != nil {
+		return nil, fmt.Errorf("reading local config file: %w", err)
+	}
+
+	var cfg *T
+	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+		return nil, fmt.Errorf("decoding config file (%s) contents (%s): %w", configFilepath, string(configBytes), err)
+	}
+
+	if err = env.ParseWithOptions(cfg, env.Options{
+		Prefix: EnvVarPrefix,
+		OnSet:  envVarOnSetFunc,
+	}); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
 func FetchForApplication[T configurations](ctx context.Context, f genericCloudConfigFetcher[T]) (*T, error) {
 	var cfg *T
 	if RunningInTheCloud() && f != nil {
@@ -326,13 +393,10 @@ func FetchForApplication[T configurations](ctx context.Context, f genericCloudCo
 
 		cfg = c
 	} else if configFilepath := os.Getenv(ConfigurationFilePathEnvVarKey); configFilepath != "" {
-		configBytes, err := os.ReadFile(configFilepath)
+		var err error
+		cfg, err = LoadConfigFromEnvironment[T]()
 		if err != nil {
-			return nil, fmt.Errorf("reading local config file: %w", err)
-		}
-
-		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-			return nil, fmt.Errorf("decoding config file (%s) contents (%s): %w", configFilepath, string(configBytes), err)
+			return nil, fmt.Errorf("loading config from environment variable: %w", err)
 		}
 	} else {
 		log.Println("f == nil: ", f == nil)

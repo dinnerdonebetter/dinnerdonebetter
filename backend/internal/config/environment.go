@@ -102,6 +102,16 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Database:      s.RootConfig.Database,
 		Queues:        s.RootConfig.Queues,
 	}
+	amhConfig := &AsyncMessageHandlerConfig{
+		Storage:       s.RootConfig.Services.DataPrivacy.Uploads.Storage,
+		Queues:        s.RootConfig.Queues,
+		Email:         s.RootConfig.Email,
+		Analytics:     s.RootConfig.Analytics,
+		Search:        s.RootConfig.Search,
+		Events:        s.RootConfig.Events,
+		Observability: s.RootConfig.Observability,
+		Database:      s.RootConfig.Database,
+	}
 
 	if validate {
 		allConfigs := []validation.ValidatableWithContext{
@@ -112,6 +122,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 			mpgliConfig,
 			mptcConfig,
 			sdisConfig,
+			amhConfig,
 		}
 		for i, cfg := range allConfigs {
 			if err := cfg.ValidateWithContext(context.Background()); err != nil {
@@ -133,6 +144,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		path.Join(outputDir, stringOrDefault(s.MealPlanGroceryListInitializerConfigPath, "job_meal_plan_grocery_list_initializer_config.json")): renderJSON(mpgliConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.MealPlanTaskCreatorConfigPath, "job_meal_plan_task_creator_config.json")):                        renderJSON(mptcConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "job_search_data_index_scheduler_config.json")):              renderJSON(sdisConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "async_message_handler_config.json")):                        renderJSON(amhConfig, pretty),
 	}
 
 	for p, b := range pathToConfigMap {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -26,10 +25,7 @@ func doTheThing() error {
 		return nil
 	}
 
-	// sleep for a bit to allow the otel collector sidecar to spin up, so we get those nice, juicy pillars
-	time.Sleep(2 * time.Second)
-
-	cfg, err := config.FetchForApplication(ctx, config.GetEmailProberConfigFromGoogleCloudSecretManager)
+	cfg, err := config.LoadConfigFromEnvironment[config.EmailProberConfig]()
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}

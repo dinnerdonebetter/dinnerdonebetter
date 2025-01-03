@@ -1,34 +1,17 @@
 {
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
 	"analytics": {
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
 		"circuitBreaker": null,
 		"provider": ""
-	},
-	"observability": {
-		"logging": {
-			"level": "debug",
-			"provider": "slog"
-		},
-		"metrics": {
-			"otelgrpc": {
-				"serviceName": "dinner_done_better_api",
-				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
-				"collectionInterval": 3000000000,
-				"insecure": false,
-				"collectionTimeout": 0
-			},
-			"provider": "otelgrpc"
-		},
-		"tracing": {
-			"otelgrpc": {
-				"collector_endpoint": "http://0.0.0.0:4317"
-			},
-			"service_name": "dinner_done_better_api",
-			"provider": "otelgrpc",
-			"spanCollectionProbability": 1
-		}
 	},
 	"events": {
 		"consumers": {
@@ -62,6 +45,30 @@
 			}
 		}
 	},
+	"observability": {
+		"logging": {
+			"level": "debug",
+			"provider": "slog"
+		},
+		"metrics": {
+			"otelgrpc": {
+				"serviceName": "dinner_done_better_api",
+				"metricsCollectorEndpoint": "http://0.0.0.0:4317",
+				"collectionInterval": 3000000000,
+				"insecure": false,
+				"collectionTimeout": 0
+			},
+			"provider": "otelgrpc"
+		},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "http://0.0.0.0:4317"
+			},
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
 	"database": {
 		"provider": "",
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
@@ -78,12 +85,5 @@
 		"runMigrations": true,
 		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1000000000
-	},
-	"queues": {
-		"dataChangesTopicName": "data_changes",
-		"outboundEmailsTopicName": "outbound_emails",
-		"searchIndexRequestsTopicName": "search_index_requests",
-		"userDataAggregationTopicName": "user_data_aggregation_requests",
-		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	}
 }

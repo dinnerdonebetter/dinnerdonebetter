@@ -1,25 +1,17 @@
 {
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
 	"analytics": {
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
 		"circuitBreaker": null,
 		"provider": ""
-	},
-	"observability": {
-		"logging": {
-			"level": "info",
-			"provider": "slog"
-		},
-		"metrics": {},
-		"tracing": {
-			"otelgrpc": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces"
-			},
-			"service_name": "dinner_done_better_api",
-			"provider": "otelgrpc",
-			"spanCollectionProbability": 1
-		}
 	},
 	"events": {
 		"consumers": {
@@ -53,6 +45,21 @@
 			}
 		}
 	},
+	"observability": {
+		"logging": {
+			"level": "info",
+			"provider": "slog"
+		},
+		"metrics": {},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces"
+			},
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
 	"database": {
 		"provider": "",
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
@@ -69,12 +76,5 @@
 		"runMigrations": true,
 		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1500000000
-	},
-	"queues": {
-		"dataChangesTopicName": "data_changes",
-		"outboundEmailsTopicName": "outbound_emails",
-		"searchIndexRequestsTopicName": "search_index_requests",
-		"userDataAggregationTopicName": "user_data_aggregation_requests",
-		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	}
 }
