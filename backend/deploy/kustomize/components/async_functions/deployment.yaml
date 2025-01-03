@@ -76,15 +76,12 @@ spec:
           - name: "RUNNING_IN_KUBERNETES"
             value: "true"
       volumes:
-        # this volume contains the configuration file for the API service
         - name: "config"
           configMap:
             name: "dinner-done-better-async-message-handler-config"
-        # this volume is where we write logs to in the API, and where we read logs from in the collector.
         - name: logs
           emptyDir:
             sizeLimit: 500Mi
-        # this volume contains the configuration file for the OTel collector.
         - name: opentelemetry-config
           configMap:
             name: opentelemetry-collector-config

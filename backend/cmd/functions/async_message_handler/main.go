@@ -275,7 +275,7 @@ func main() {
 		for {
 			select {
 			case e := <-errorsChan:
-				logger.Error("error consuming message", e)
+				logger.Error("consuming message", e)
 			}
 		}
 	}()

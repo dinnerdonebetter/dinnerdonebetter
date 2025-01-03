@@ -2,6 +2,7 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
@@ -47,7 +48,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	ctx := context.Background()
 	sub, err := c.consumer.Topic(c.topic).Subscriptions(ctx).Next()
 	if err != nil {
-		c.logger.Error("creating subscription", err)
+		c.logger.Error(fmt.Sprintf("creating %s subscription", c.topic), err)
 		errors <- err
 		return
 	}
@@ -55,7 +56,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	go func() {
 		<-stopChan
 		if err = sub.Delete(ctx); err != nil {
-			c.logger.Error("deleting subscription", err)
+			c.logger.Error(fmt.Sprintf("deleting %s subscription", c.topic), err)
 			errors <- err
 		}
 	}()
@@ -67,7 +68,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 			m.Ack()
 		}
 	}); err != nil {
-		c.logger.Error("receiving pub/sub data", err)
+		c.logger.Error(fmt.Sprintf("receiving %s pub/sub data", c.topic), err)
 	}
 }
 
