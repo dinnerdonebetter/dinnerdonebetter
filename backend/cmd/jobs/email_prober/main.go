@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -24,6 +25,9 @@ func doTheThing() error {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
+
+	// sleep for a bit to allow the otel collector sidecar to spin up, so we get those nice, juicy pillars
+	time.Sleep(2 * time.Second)
 
 	cfg, err := config.FetchForApplication(ctx, config.GetEmailProberConfigFromGoogleCloudSecretManager)
 	if err != nil {

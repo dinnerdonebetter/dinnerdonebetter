@@ -38,7 +38,7 @@ resource "kubernetes_secret" "cloudflare_api_key" {
   }
 }
 
-resource "kubernetes_secret" "pubsub_topics" {
+resource "kubernetes_config_map_v1" "pubsub_topics" {
   metadata {
     name      = "pubsub-topic-names"
     namespace = local.k8s_namespace
@@ -47,11 +47,11 @@ resource "kubernetes_secret" "pubsub_topics" {
   depends_on = [google_container_cluster.primary]
 
   data = {
-    "data_changes"               = google_pubsub_topic.data_changes_topic.name
-    "outbound_emails"            = google_pubsub_topic.outbound_emails_topic.name
-    "search_index_requests"      = google_pubsub_topic.search_index_requests_topic.name
-    "user_data_aggregator"       = google_pubsub_topic.user_data_aggregator_topic.name
-    "webhook_execution_requests" = google_pubsub_topic.webhook_execution_requests_topic.name
+    data_changes               = google_pubsub_topic.data_changes_topic.name
+    outbound_emails            = google_pubsub_topic.outbound_emails_topic.name
+    search_index_requests      = google_pubsub_topic.search_index_requests_topic.name
+    user_data_aggregator       = google_pubsub_topic.user_data_aggregator_topic.name
+    webhook_execution_requests = google_pubsub_topic.webhook_execution_requests_topic.name
   }
 }
 
@@ -64,19 +64,24 @@ resource "kubernetes_secret" "api_service_config" {
   depends_on = [google_container_cluster.primary]
 
   data = {
-    "api-service-config.json"         = file("${path.module}/service-config.json")
-    "OAUTH2_TOKEN_ENCRYPTION_KEY"     = random_string.oauth2_token_encryption_key.result
-    "JWT_SIGNING_KEY"                 = base64encode(random_string.jwt_signing_key.result)
-    "DATABASE_HOST"                   = google_sql_database_instance.dev.private_ip_address
-    "DATABASE_USERNAME"               = local.api_database_username
-    "DATABASE_PASSWORD"               = random_password.api_user_database_password.result
-    "SENDGRID_API_TOKEN"              = var.SENDGRID_API_TOKEN
-    "SEGMENT_API_TOKEN"               = var.SEGMENT_API_TOKEN
-    "POSTHOG_API_KEY"                 = var.POSTHOG_API_KEY
-    "POSTHOG_PERSONAL_API_KEY"        = var.POSTHOG_PERSONAL_API_KEY
-    "ALGOLIA_APPLICATION_ID"          = var.ALGOLIA_APPLICATION_ID
-    "ALGOLIA_API_KEY"                 = var.ALGOLIA_API_KEY
-    "GOOGLE_SSO_OAUTH2_CLIENT_ID"     = var.GOOGLE_SSO_OAUTH2_CLIENT_ID
-    "GOOGLE_SSO_OAUTH2_CLIENT_SECRET" = var.GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+    OAUTH2_TOKEN_ENCRYPTION_KEY       = random_string.oauth2_token_encryption_key.result
+    JWT_SIGNING_KEY                   = base64encode(random_string.jwt_signing_key.result)
+    DATABASE_HOST                     = google_sql_database_instance.dev.private_ip_address
+    DATABASE_USERNAME                 = local.api_database_username
+    DATABASE_PASSWORD                 = random_password.api_user_database_password.result
+    SENDGRID_API_TOKEN                = var.SENDGRID_API_TOKEN
+    SEGMENT_API_TOKEN                 = var.SEGMENT_API_TOKEN
+    POSTHOG_API_KEY                   = var.POSTHOG_API_KEY
+    POSTHOG_PERSONAL_API_KEY          = var.POSTHOG_PERSONAL_API_KEY
+    ALGOLIA_APPLICATION_ID            = var.ALGOLIA_APPLICATION_ID
+    ALGOLIA_API_KEY                   = var.ALGOLIA_API_KEY
+    GOOGLE_SSO_OAUTH2_CLIENT_ID       = var.GOOGLE_SSO_OAUTH2_CLIENT_ID
+    GOOGLE_SSO_OAUTH2_CLIENT_SECRET   = var.GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+    GRAFANA_CLOUD_PROMETHEUS_USERNAME = var.GRAFANA_CLOUD_PROMETHEUS_USERNAME
+    GRAFANA_CLOUD_PROMETHEUS_PASSWORD = var.GRAFANA_CLOUD_PROMETHEUS_PASSWORD
+    GRAFANA_CLOUD_LOKI_USERNAME       = var.GRAFANA_CLOUD_LOKI_USERNAME
+    GRAFANA_CLOUD_LOKI_PASSWORD       = var.GRAFANA_CLOUD_LOKI_PASSWORD
+    GRAFANA_CLOUD_TEMPO_USERNAME      = var.GRAFANA_CLOUD_TEMPO_USERNAME
+    GRAFANA_CLOUD_TEMPO_PASSWORD      = var.GRAFANA_CLOUD_TEMPO_PASSWORD
   }
 }

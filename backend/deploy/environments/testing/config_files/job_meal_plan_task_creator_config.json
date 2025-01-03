@@ -69,5 +69,12 @@
 		"runMigrations": true,
 		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1500000000
+	},
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
 	}
 }

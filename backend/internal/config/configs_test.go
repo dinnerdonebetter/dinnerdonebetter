@@ -94,7 +94,7 @@ func TestFetchForApplication(T *testing.T) {
 		configFilepath := t.TempDir() + "/config.json"
 		require.NoError(t, os.WriteFile(configFilepath, cfgBytes, 0o0644))
 
-		t.Setenv(FilePathEnvVarKey, configFilepath)
+		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
 
 		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)
 		assert.NoError(t, err)
@@ -118,7 +118,7 @@ func TestFetchForApplication(T *testing.T) {
 		configFilepath := t.TempDir() + "/config.json"
 		require.NoError(t, os.WriteFile(configFilepath, cfgBytes, 0o0644))
 
-		t.Setenv(FilePathEnvVarKey, configFilepath)
+		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
 		t.Setenv(envvars.MetaDebugEnvVarKey, "false")
 
 		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)

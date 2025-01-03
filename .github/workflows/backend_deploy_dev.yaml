@@ -51,12 +51,6 @@ jobs:
           terraform_version: 1.10.3
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
-      # has to be done before validate (unless we stop manipulating this file specifically)
-      - name: copy API server config file
-        working-directory: backend/deploy/environments/dev
-        run: |
-          cp config_files/service-config.json terraform/service-config.json
-
       - name: copy kubeconfig
         working-directory: backend/deploy/environments/dev
         run: |
@@ -73,61 +67,9 @@ jobs:
         run: terraform validate -no-color
 
       - name: Terraform Apply
-        # run: echo 'KUBECONFIG="${{ env.KUBECONFIG }}"' >> dev.auto.tfvars && terraform apply -auto-approve
         run: terraform apply -auto-approve
         working-directory: backend/deploy/environments/dev/terraform
 
       - name: remove kubernetes config
         working-directory: backend/deploy/environments/dev
         run: rm -f ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
-
-#  build-and-push-containers:
-#    needs: [infrastructure]
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        configs:
-#        - gcp-region: 'us-central1'
-#          gcp-project: 'dinner-done-better-dev'
-#          container-name: 'search-data-index-scheduler'
-#          container-filename: 'search_data_index_scheduler'
-#        - gcp-region: 'us-central1'
-#          gcp-project: 'dinner-done-better-dev'
-#          container-name: 'db-cleaner'
-#          container-filename: 'db_cleaner'
-#        - gcp-region: 'us-central1'
-#          gcp-project: 'dinner-done-better-dev'
-#          container-name: 'email-prober'
-#          container-filename: 'email_prober'
-#        - gcp-region: 'us-central1'
-#          gcp-project: 'dinner-done-better-dev'
-#          container-name: 'meal-plan-finalizer'
-#          container-filename: 'meal_plan_finalizer'
-#        - gcp-region: 'us-central1'
-#          gcp-project: 'dinner-done-better-dev'
-#          container-name: 'meal-plan-grocery-list-initializer'
-#          container-filename: 'meal_plan_grocery_list_initializer'
-#        - gcp-region: 'us-central1'
-#          gcp-project: 'dinner-done-better-dev'
-#          container-name: 'meal-plan-task-creator'
-#          container-filename: 'meal_plan_task_creator'
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#
-#      - name: authenticate with GCP
-#        uses: google-github-actions/auth@v2
-#        with:
-#          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-#
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v2
-#
-#      - name: Authorize Docker push to pkg.dev
-#        run: gcloud auth configure-docker ${{ matrix.configs.gcp-region }}-docker.pkg.dev
-#
-#      - name: Build and push search data index scheduler container
-#        working-directory: backend/
-#        run: |
-#          docker build --tag ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:${{  github.sha }} --tag ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:latest --file environments/dev/dockerfiles/${{ matrix.configs.container-filename }}.Dockerfile .
-#          docker image push --all-tags ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}

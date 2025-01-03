@@ -22,7 +22,7 @@ spec:
       # this is the API server container
       - name: dinner-done-better-service-api
         image: dinner-done-better-service-api
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
           - name: "CONFIGURATION_FILEPATH"
             value: "/etc/service-config.json"
@@ -65,6 +65,8 @@ spec:
             name: otel1
           - containerPort: 4318
             name: otel2
+          - containerPort: 13313
+            name: health
         volumeMounts:
           - name: logs
             mountPath: /var/log/application

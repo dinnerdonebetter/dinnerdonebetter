@@ -36,8 +36,8 @@ const (
 
 	EnvVarPrefix = "DINNER_DONE_BETTER_"
 
-	// FilePathEnvVarKey is the env var key we use to indicate where the config file is located.
-	FilePathEnvVarKey = "CONFIGURATION_FILEPATH"
+	// ConfigurationFilePathEnvVarKey is the env var key we use to indicate where the config file is located.
+	ConfigurationFilePathEnvVarKey = "CONFIGURATION_FILEPATH"
 )
 
 type (
@@ -61,7 +61,8 @@ type (
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_                struct{}               `json:"-"`
+		_ struct{} `json:"-"`
+
 		Queues           msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Email            emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
 		Analytics        analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
@@ -88,7 +89,8 @@ type (
 
 	// EmailProberConfig configures an instance of the email prober job.
 	EmailProberConfig struct {
-		_             struct{}             `json:"-"`
+		_ struct{} `json:"-"`
+
 		Email         emailcfg.Config      `envPrefix:"EMAIL_"         json:"email"`
 		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
@@ -96,36 +98,44 @@ type (
 
 	// MealPlanFinalizerConfig configures an instance of the meal plan finalizer job.
 	MealPlanFinalizerConfig struct {
-		_             struct{}             `json:"-"`
-		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
-		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
+		_ struct{} `json:"-"`
+
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 	}
 
 	// MealPlanGroceryListInitializerConfig configures an instance of the meal plan grocery list initializer job.
 	MealPlanGroceryListInitializerConfig struct {
-		_             struct{}             `json:"-"`
-		Analytics     analyticscfg.Config  `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
-		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
+		_ struct{} `json:"-"`
+
+		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 	}
 
 	// MealPlanTaskCreatorConfig configures an instance of the meal plan task creator job.
 	MealPlanTaskCreatorConfig struct {
-		_             struct{}             `json:"-"`
-		Analytics     analyticscfg.Config  `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
-		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
+		_ struct{} `json:"-"`
+
+		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 	}
 
 	// SearchDataIndexSchedulerConfig configures an instance of the search data index scheduler job.
 	SearchDataIndexSchedulerConfig struct {
-		_             struct{}             `json:"-"`
-		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Events        msgconfig.Config     `envPrefix:"EVENTS_"        json:"events"`
-		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
+		_ struct{} `json:"-"`
+
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 	}
 )
 
@@ -235,6 +245,7 @@ func (cfg *MealPlanFinalizerConfig) ValidateWithContext(ctx context.Context) err
 	validators := map[string]func(context.Context) error{
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Database":      cfg.Database.ValidateWithContext,
+		"Queues":        cfg.Queues.ValidateWithContext,
 	}
 
 	for name, validator := range validators {
@@ -254,6 +265,7 @@ func (cfg *MealPlanGroceryListInitializerConfig) ValidateWithContext(ctx context
 		"Analytics":     cfg.Analytics.ValidateWithContext,
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Database":      cfg.Database.ValidateWithContext,
+		"Queues":        cfg.Queues.ValidateWithContext,
 	}
 
 	for name, validator := range validators {
@@ -273,6 +285,7 @@ func (cfg *MealPlanTaskCreatorConfig) ValidateWithContext(ctx context.Context) e
 		"Analytics":     cfg.Analytics.ValidateWithContext,
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Database":      cfg.Database.ValidateWithContext,
+		"Queues":        cfg.Queues.ValidateWithContext,
 	}
 
 	for name, validator := range validators {
@@ -291,6 +304,7 @@ func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Conte
 	validators := map[string]func(context.Context) error{
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Database":      cfg.Database.ValidateWithContext,
+		"Queues":        cfg.Queues.ValidateWithContext,
 	}
 
 	for name, validator := range validators {
@@ -311,14 +325,14 @@ func FetchForApplication[T configurations](ctx context.Context, f genericCloudCo
 		}
 
 		cfg = c
-	} else if configFilepath := os.Getenv(FilePathEnvVarKey); configFilepath != "" {
+	} else if configFilepath := os.Getenv(ConfigurationFilePathEnvVarKey); configFilepath != "" {
 		configBytes, err := os.ReadFile(configFilepath)
 		if err != nil {
 			return nil, fmt.Errorf("reading local config file: %w", err)
 		}
 
 		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-			return nil, fmt.Errorf("decoding config file contents: %w", err)
+			return nil, fmt.Errorf("decoding config file (%s) contents (%s): %w", configFilepath, string(configBytes), err)
 		}
 	} else {
 		log.Println("f == nil: ", f == nil)

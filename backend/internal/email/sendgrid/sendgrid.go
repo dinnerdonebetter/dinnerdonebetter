@@ -97,7 +97,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	// Fun fact: if your account is limited and not able to send an email, there is
 	// no distinguishing feature of the response to let you know. Thanks, SendGrid!
 	if res.StatusCode != http.StatusAccepted {
-		e.logger.WithValue("sendgrid_api_token", e.config.APIToken).Info("sending email yielded an invalid response")
+		e.logger.Info("sending email yielded an invalid response")
 		tracing.AttachToSpan(span, e.config.APIToken, "sendgrid_api_token")
 		e.circuitBreaker.Failed()
 		return observability.PrepareError(ErrSendgridAPIResponse, span, "sending email yielded a %d response", res.StatusCode)

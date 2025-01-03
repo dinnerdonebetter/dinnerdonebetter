@@ -548,71 +548,71 @@ profiles:
             main: ./cmd/services/api/http
             fromImage: golang:1.23-bullseye
 
-#        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner
-#          ko:
-#            dir: .
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/db_cleaner
-#            fromImage: golang:1.23-bullseye
-#
-#        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober
-#          ko:
-#            dir: .
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/email_prober
-#            fromImage: golang:1.23-bullseye
-#
-#        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
-#          ko:
-#            dir: .
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/meal_plan_finalizer
-#            fromImage: golang:1.23-bullseye
-#
-#        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
-#          ko:
-#            dir: .
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/meal_plan_grocery_list_initializer
-#            fromImage: golang:1.23-bullseye
-#
-#        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
-#          ko:
-#            dir: .
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/meal_plan_task_creator
-#            fromImage: golang:1.23-bullseye
-#
-#        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
-#          ko:
-#            dir: .
-#            flags:
-#              - -trimpath
-#            ldflags:
-#              - -s -w
-#              - -extldflags "-static"
-#            main: ./cmd/jobs/search_data_index_scheduler
-#            fromImage: golang:1.23-bullseye
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/db_cleaner
+            fromImage: golang:1.23-bullseye
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/email_prober
+            fromImage: golang:1.23-bullseye
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/meal_plan_finalizer
+            fromImage: golang:1.23-bullseye
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/meal_plan_grocery_list_initializer
+            fromImage: golang:1.23-bullseye
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/meal_plan_task_creator
+            fromImage: golang:1.23-bullseye
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
+          ko:
+            dir: .
+            flags:
+              - -trimpath
+            ldflags:
+              - -s -w
+              - -extldflags "-static"
+            main: ./cmd/jobs/search_data_index_scheduler
+            fromImage: golang:1.23-bullseye
 
           # NOTE: no cmd/functions here
 

@@ -1,0 +1,65 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dinner-done-better-job-meal-plan-grocery-list-init
+spec:
+  concurrencyPolicy: Replace
+  schedule: "*/5 * * * *" # every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          shareProcessNamespace: true
+          initContainers:
+            # This is the OpenTelemetry collector sidecar
+            - name: opentelemetry-collector
+              restartPolicy: Always
+              image: otel/opentelemetry-collector-contrib:0.115.1
+              command:
+                - "/otelcol-contrib"
+                - "--config"
+                - "/conf/config.yaml"
+              ports:
+                - containerPort: 4317
+                  name: otel1
+                - containerPort: 4318
+                  name: otel2
+              volumeMounts:
+                - name: logs
+                  mountPath: /var/log/application
+                  readOnly: true
+                - name: opentelemetry-config
+                  mountPath: /conf
+              env:
+                - name: "RUNNING_IN_KUBERNETES"
+                  value: "true"
+          containers:
+          - name: meal-plan-grocery-list-init
+            image: dinner-done-better-job-meal-plan-grocery-list-init
+            imagePullPolicy: Always
+            env:
+              - name: "CONFIGURATION_FILEPATH"
+                value: "/etc/service-config.json"
+              - name: "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
+                value: "data_changes"
+            volumeMounts:
+            - name: "config"
+              mountPath: "/etc/service-config.json"
+              subPath: "config.json"
+            - name: logs
+              mountPath: /var/log/application
+          restartPolicy: OnFailure
+          volumes:
+            - name: "config"
+              configMap:
+                name: "dinner-done-better-job-meal-plan-grocery-list-init-config"
+            # this volume is where we write logs to, and where we read logs from in the collector.
+            - name: logs
+              emptyDir:
+                sizeLimit: 500Mi
+            # this volume contains the configuration file for the OTel collector.
+            - name: opentelemetry-config
+              configMap:
+                name: opentelemetry-collector-config
+---

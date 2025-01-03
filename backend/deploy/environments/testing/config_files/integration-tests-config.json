@@ -1,79 +1,10 @@
 {
-	"services": {
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://media.example.website/lol",
-			"uploads": {
-				"storageConfig": {
-					"bucketName": "recipes",
-					"provider": "memory"
-				},
-				"debug": false
-			}
-		},
-		"users": {
-			"publicMediaURLPrefix": "",
-			"uploads": {
-				"storageConfig": {
-					"bucketName": "avatars",
-					"provider": "memory"
-				},
-				"debug": false
-			}
-		},
-		"dataPrivacy": {
-			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/tmp"
-					},
-					"bucketName": "userdata",
-					"provider": "filesystem"
-				},
-				"debug": false
-			}
-		},
-		"recipes": {
-			"mediaUploadPrefix": "https://media.example.website/lol",
-			"uploads": {
-				"storageConfig": {
-					"bucketName": "recipes",
-					"provider": "memory"
-				},
-				"debug": false
-			},
-			"searchFromDatabase": false
-		},
-		"auth": {
-			"sso": {
-				"google": {}
-			},
-			"jwtAudience": "localhost",
-			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-			"oauth2": {
-				"domain": "http://localhost:9000",
-				"accessTokenLifespan": 3600000000000,
-				"refreshTokenLifespan": 3600000000000,
-				"debug": false
-			},
-			"jwtLifetime": 300000000000,
-			"enableUserSignup": true,
-			"minimumUsernameLength": 3,
-			"minimumPasswordLength": 8
-		}
-	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
 		"searchIndexRequestsTopicName": "search_index_requests",
 		"userDataAggregationTopicName": "user_data_aggregation_requests",
 		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
-	},
-	"analytics": {
-		"segment": null,
-		"posthog": null,
-		"rudderstack": null,
-		"circuitBreaker": null,
-		"provider": ""
 	},
 	"email": {
 		"sendgrid": null,
@@ -82,16 +13,23 @@
 		"circuitBreakerConfig": null,
 		"provider": ""
 	},
-	"featureFlags": {
-		"launchDarkly": null,
+	"analytics": {
+		"segment": null,
 		"posthog": null,
-		"circuitBreakingConfig": null,
+		"rudderstack": null,
+		"circuitBreaker": null,
 		"provider": ""
 	},
 	"search": {
 		"algolia": null,
 		"elasticsearch": null,
 		"circuitBreakerConfig": null,
+		"provider": ""
+	},
+	"featureFlags": {
+		"launchDarkly": null,
+		"posthog": null,
+		"circuitBreakingConfig": null,
 		"provider": ""
 	},
 	"encoding": {
@@ -174,5 +112,125 @@
 		"runMigrations": true,
 		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1500000000
+	},
+	"services": {
+		"mealPlanEvents": {},
+		"validInstrumentMeasurementUnits": {},
+		"mealPlanGroceryListItems": {},
+		"validIngredientStateIngredients": {},
+		"serviceSettingConfigurations": {},
+		"recipeRatings": {},
+		"validMeasurementUnitConversions": {},
+		"validIngredientGroups": {},
+		"serviceSettings": {},
+		"mealPlanTasks": {},
+		"recipeStepProducts": {},
+		"recipeStepIngredients": {},
+		"recipePrepTasks": {},
+		"recipeStepCompletionConditions": {},
+		"userIngredientPreferences": {},
+		"households": {},
+		"mealPlans": {},
+		"validPreparationInstruments": {},
+		"validIngredientPreparations": {},
+		"recipeStepInstruments": {},
+		"auditLogEntries": {},
+		"householdInstrumentOwnerships": {},
+		"mealPlanOptionVotes": {},
+		"recipeStepVessels": {},
+		"validPreparationVessels": {},
+		"mealPlanOptions": {},
+		"userNotifications": {},
+		"workers": {},
+		"recipeSteps": {
+			"mediaUploadPrefix": "https://media.example.website/lol",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "recipes",
+					"provider": "memory"
+				},
+				"debug": false
+			}
+		},
+		"users": {
+			"publicMediaURLPrefix": "",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "avatars",
+					"provider": "memory"
+				},
+				"debug": false
+			}
+		},
+		"dataPrivacy": {
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/tmp"
+					},
+					"bucketName": "userdata",
+					"provider": "filesystem"
+				},
+				"debug": false
+			}
+		},
+		"recipes": {
+			"mediaUploadPrefix": "https://media.example.website/lol",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "recipes",
+					"provider": "memory"
+				},
+				"debug": false
+			},
+			"searchFromDatabase": false
+		},
+		"auth": {
+			"sso": {
+				"google": {}
+			},
+			"jwtAudience": "localhost",
+			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+			"oauth2": {
+				"domain": "http://localhost:9000",
+				"accessTokenLifespan": 3600000000000,
+				"refreshTokenLifespan": 3600000000000,
+				"debug": false
+			},
+			"jwtLifetime": 300000000000,
+			"enableUserSignup": true,
+			"minimumUsernameLength": 3,
+			"minimumPasswordLength": 8
+		},
+		"validInstruments": {
+			"useSearchService": false
+		},
+		"meals": {
+			"searchFromDatabase": false
+		},
+		"validMeasurementUnits": {
+			"useSearchService": false
+		},
+		"oauth2Clients": {
+			"creationEnabled": false
+		},
+		"validVessels": {
+			"useSearchService": false
+		},
+		"householdInvitations": {
+			"debug": false
+		},
+		"validPreparations": {
+			"useSearchService": false
+		},
+		"validIngredientStates": {
+			"useSearchService": false
+		},
+		"validIngredients": {
+			"useSearchService": false
+		},
+		"webhooks": {
+			"debug": false
+		}
 	}
 }

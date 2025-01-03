@@ -11,6 +11,8 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
+	"go.opentelemetry.io/contrib/instrumentation/host"
+	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
@@ -94,6 +96,14 @@ func setupMetricsProvider(ctx context.Context, cfg *Config) (metric.MeterProvide
 	)
 	otel.SetMeterProvider(meterProvider)
 
+	if err = runtime.Start(runtime.WithMeterProvider(meterProvider)); err != nil {
+		return nil, nil, fmt.Errorf("starting runtime metrics: %w", err)
+	}
+
+	if err = host.Start(host.WithMeterProvider(meterProvider)); err != nil {
+		return nil, nil, fmt.Errorf("starting host metrics: %w", err)
+	}
+
 	return meterProvider, meterProvider.Shutdown, nil
 }
 
@@ -106,7 +116,7 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 
 	meterProvider, shutdown, err := setupMetricsProvider(ctx, cfg)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create metric provider: %w", err)
+		return nil, fmt.Errorf("creating metric provider: %w", err)
 	}
 
 	// Set the global meter provider

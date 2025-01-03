@@ -71,7 +71,7 @@ func buildDatabaseURIFromGCPEnvVars() databasecfg.ConnectionDetails {
 
 // GetAPIServiceConfigFromGoogleCloudRunEnvironment fetches an APIServiceConfig from GCP Secret Manager.
 func GetAPIServiceConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*APIServiceConfig, error) {
-	configBytes, err := os.ReadFile(os.Getenv(FilePathEnvVarKey))
+	configBytes, err := os.ReadFile(os.Getenv(ConfigurationFilePathEnvVarKey))
 	if err != nil {
 		return nil, err
 	}
@@ -202,7 +202,6 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 		return nil, err
 	}
 
-	cfg.Database.ConnectionDetails = buildDatabaseURIFromGCPEnvVars()
 	cfg.Database.RunMigrations = false
 	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
 

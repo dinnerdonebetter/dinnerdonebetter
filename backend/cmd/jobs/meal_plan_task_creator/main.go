@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"os"
+	"time"
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -27,6 +27,9 @@ func doTheThing() error {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
+
+	// sleep for a bit to allow the otel collector sidecar to spin up, so we get those nice, juicy pillars
+	time.Sleep(2 * time.Second)
 
 	cfg, err := config.FetchForApplication(ctx, config.GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager)
 	if err != nil {
@@ -66,7 +69,7 @@ func doTheThing() error {
 
 	defer publisherProvider.Close()
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"))
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.DataChangesTopicName)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}

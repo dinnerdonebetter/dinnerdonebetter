@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"os"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -31,6 +30,9 @@ func doTheThing() error {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
+
+	// sleep for a bit to allow the otel collector sidecar to spin up, so we get those nice, juicy pillars
+	time.Sleep(2 * time.Second)
 
 	cfg, err := config.FetchForApplication(ctx, config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager)
 	if err != nil {
@@ -72,7 +74,7 @@ func doTheThing() error {
 	}
 	defer publisherProvider.Close()
 
-	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("SEARCH_INDEXING_TOPIC_NAME"))
+	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.SearchIndexRequestsTopicName)
 	if err != nil {
 		return observability.PrepareError(err, span, "configuring search indexing publisher")
 	}

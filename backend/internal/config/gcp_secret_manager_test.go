@@ -65,7 +65,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(t *testing.T) {
 
 	require.NoError(t, json.NewEncoder(f).Encode(baseConfig))
 
-	t.Setenv(FilePathEnvVarKey, f.Name())
+	t.Setenv(ConfigurationFilePathEnvVarKey, f.Name())
 	t.Setenv(gcpPortEnvVarKey, "1234")
 	t.Setenv(gcpDatabaseSocketDirEnvVarKey, "/example/blah")
 	t.Setenv(gcpDatabaseUserEnvVarKey, "user")

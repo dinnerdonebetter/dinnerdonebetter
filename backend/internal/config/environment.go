@@ -80,23 +80,27 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Observability: s.RootConfig.Observability,
 		Events:        s.RootConfig.Events,
 		Database:      s.RootConfig.Database,
+		Queues:        s.RootConfig.Queues,
 	}
 	mpgliConfig := &MealPlanGroceryListInitializerConfig{
 		Observability: s.RootConfig.Observability,
 		Analytics:     s.RootConfig.Analytics,
 		Events:        s.RootConfig.Events,
 		Database:      s.RootConfig.Database,
+		Queues:        s.RootConfig.Queues,
 	}
 	mptcConfig := &MealPlanTaskCreatorConfig{
 		Observability: s.RootConfig.Observability,
 		Analytics:     s.RootConfig.Analytics,
 		Events:        s.RootConfig.Events,
 		Database:      s.RootConfig.Database,
+		Queues:        s.RootConfig.Queues,
 	}
 	sdisConfig := &SearchDataIndexSchedulerConfig{
 		Observability: s.RootConfig.Observability,
 		Events:        s.RootConfig.Events,
 		Database:      s.RootConfig.Database,
+		Queues:        s.RootConfig.Queues,
 	}
 
 	if validate {

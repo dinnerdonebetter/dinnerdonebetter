@@ -12,12 +12,15 @@ receivers:
       - type: json_parser
       - type: add
         field: resource["service.name"]
-        value: dinner-done-better-api
+        value: ${env:SERVICE_NAME}
       - type: add
         field: resource["deployment.environment"]
         value: dev
 
 extensions:
+  health_check:
+    endpoint: "0.0.0.0:13133"
+
   basicauth/prometheus:
     client_auth:
       username: ${env:PROMETHEUS_USERNAME}
@@ -63,7 +66,7 @@ processors:
         from_attribute: service.name
 
 service:
-  extensions: [basicauth/prometheus, basicauth/loki, basicauth/tempo]
+  extensions: [health_check, basicauth/prometheus, basicauth/loki, basicauth/tempo]
   pipelines:
     traces:
       receivers: [otlp]

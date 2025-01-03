@@ -43,7 +43,7 @@ func main() {
 	// only allow initialization to take so long.
 	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
 
-	configBytes, err := os.ReadFile(os.Getenv(config.FilePathEnvVarKey))
+	configBytes, err := os.ReadFile(os.Getenv(config.ConfigurationFilePathEnvVarKey))
 	if err != nil {
 		panic(err)
 	}

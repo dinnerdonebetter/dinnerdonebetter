@@ -1,118 +1,10 @@
 {
-	"services": {
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://media.dinnerdonebetter.dev/recipe_media",
-			"uploads": {
-				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "media.dinnerdonebetter.dev"
-					},
-					"bucketPrefix": "recipe_media/",
-					"bucketName": "media.dinnerdonebetter.dev",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "gcp"
-				},
-				"debug": true
-			}
-		},
-		"users": {
-			"publicMediaURLPrefix": "https://media.dinnerdonebetter.dev/avatars",
-			"uploads": {
-				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "media.dinnerdonebetter.dev"
-					},
-					"bucketPrefix": "avatars/",
-					"bucketName": "media.dinnerdonebetter.dev",
-					"uploadFilenameKey": "avatar",
-					"provider": "gcp"
-				},
-				"debug": true
-			}
-		},
-		"dataPrivacy": {
-			"uploads": {
-				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "userdata.dinnerdonebetter.dev"
-					},
-					"bucketName": "userdata.dinnerdonebetter.dev",
-					"provider": "gcp"
-				},
-				"debug": false
-			}
-		},
-		"recipes": {
-			"mediaUploadPrefix": "https://media.dinnerdonebetter.dev/recipe_media",
-			"uploads": {
-				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "media.dinnerdonebetter.dev"
-					},
-					"bucketPrefix": "recipe_media/",
-					"bucketName": "media.dinnerdonebetter.dev",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "gcp"
-				},
-				"debug": true
-			},
-			"searchFromDatabase": true
-		},
-		"auth": {
-			"sso": {
-				"google": {}
-			},
-			"jwtAudience": "https://api.dinnerdonebetter.dev",
-			"jwtSigningKey": "",
-			"oauth2": {
-				"domain": "https://dinnerdonebetter.dev",
-				"accessTokenLifespan": 3600000000000,
-				"refreshTokenLifespan": 3600000000000,
-				"debug": false
-			},
-			"jwtLifetime": 300000000000,
-			"debug": true,
-			"enableUserSignup": true,
-			"minimumUsernameLength": 3,
-			"minimumPasswordLength": 8
-		},
-		"validInstruments": {
-			"useSearchService": true
-		},
-		"meals": {
-			"searchFromDatabase": true
-		},
-		"validMeasurementUnits": {
-			"useSearchService": true
-		},
-		"validVessels": {
-			"useSearchService": true
-		},
-		"validPreparations": {
-			"useSearchService": true
-		},
-		"validIngredientStates": {
-			"useSearchService": true
-		},
-		"validIngredients": {
-			"useSearchService": true
-		}
-	},
 	"queues": {
 		"dataChangesTopicName": "",
 		"outboundEmailsTopicName": "",
 		"searchIndexRequestsTopicName": "",
 		"userDataAggregationTopicName": "",
 		"webhookExecutionRequestsTopicName": ""
-	},
-	"analytics": {
-		"segment": {
-			"apiToken": ""
-		},
-		"posthog": null,
-		"rudderstack": null,
-		"circuitBreaker": null,
-		"provider": "segment"
 	},
 	"email": {
 		"sendgrid": {
@@ -123,11 +15,14 @@
 		"circuitBreakerConfig": null,
 		"provider": "sendgrid"
 	},
-	"featureFlags": {
-		"launchDarkly": null,
+	"analytics": {
+		"segment": {
+			"apiToken": ""
+		},
 		"posthog": null,
-		"circuitBreakingConfig": null,
-		"provider": ""
+		"rudderstack": null,
+		"circuitBreaker": null,
+		"provider": "segment"
 	},
 	"search": {
 		"algolia": {
@@ -138,6 +33,12 @@
 		"elasticsearch": null,
 		"circuitBreakerConfig": null,
 		"provider": "algolia"
+	},
+	"featureFlags": {
+		"launchDarkly": null,
+		"posthog": null,
+		"circuitBreakingConfig": null,
+		"provider": ""
 	},
 	"encoding": {
 		"contentType": "application/json"
@@ -226,5 +127,141 @@
 		"runMigrations": true,
 		"maxPingAttempts": 50,
 		"pingWaitPeriod": 1000000000
+	},
+	"services": {
+		"mealPlanEvents": {},
+		"validInstrumentMeasurementUnits": {},
+		"mealPlanGroceryListItems": {},
+		"validIngredientStateIngredients": {},
+		"serviceSettingConfigurations": {},
+		"recipeRatings": {},
+		"validMeasurementUnitConversions": {},
+		"validIngredientGroups": {},
+		"serviceSettings": {},
+		"mealPlanTasks": {},
+		"recipeStepProducts": {},
+		"recipeStepIngredients": {},
+		"recipePrepTasks": {},
+		"recipeStepCompletionConditions": {},
+		"userIngredientPreferences": {},
+		"households": {},
+		"mealPlans": {},
+		"validPreparationInstruments": {},
+		"validIngredientPreparations": {},
+		"recipeStepInstruments": {},
+		"auditLogEntries": {},
+		"householdInstrumentOwnerships": {},
+		"mealPlanOptionVotes": {},
+		"recipeStepVessels": {},
+		"validPreparationVessels": {},
+		"mealPlanOptions": {},
+		"userNotifications": {},
+		"workers": {},
+		"recipeSteps": {
+			"mediaUploadPrefix": "https://media.dinnerdonebetter.dev/recipe_media",
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "media.dinnerdonebetter.dev"
+					},
+					"bucketPrefix": "recipe_media/",
+					"bucketName": "media.dinnerdonebetter.dev",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "gcp"
+				},
+				"debug": true
+			}
+		},
+		"users": {
+			"publicMediaURLPrefix": "https://media.dinnerdonebetter.dev/avatars",
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "media.dinnerdonebetter.dev"
+					},
+					"bucketPrefix": "avatars/",
+					"bucketName": "media.dinnerdonebetter.dev",
+					"uploadFilenameKey": "avatar",
+					"provider": "gcp"
+				},
+				"debug": true
+			}
+		},
+		"dataPrivacy": {
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "userdata.dinnerdonebetter.dev"
+					},
+					"bucketName": "userdata.dinnerdonebetter.dev",
+					"provider": "gcp"
+				},
+				"debug": false
+			}
+		},
+		"recipes": {
+			"mediaUploadPrefix": "https://media.dinnerdonebetter.dev/recipe_media",
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "media.dinnerdonebetter.dev"
+					},
+					"bucketPrefix": "recipe_media/",
+					"bucketName": "media.dinnerdonebetter.dev",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "gcp"
+				},
+				"debug": true
+			},
+			"searchFromDatabase": true
+		},
+		"auth": {
+			"sso": {
+				"google": {}
+			},
+			"jwtAudience": "https://api.dinnerdonebetter.dev",
+			"jwtSigningKey": "",
+			"oauth2": {
+				"domain": "https://dinnerdonebetter.dev",
+				"accessTokenLifespan": 3600000000000,
+				"refreshTokenLifespan": 3600000000000,
+				"debug": false
+			},
+			"jwtLifetime": 300000000000,
+			"debug": true,
+			"enableUserSignup": true,
+			"minimumUsernameLength": 3,
+			"minimumPasswordLength": 8
+		},
+		"validInstruments": {
+			"useSearchService": true
+		},
+		"meals": {
+			"searchFromDatabase": true
+		},
+		"validMeasurementUnits": {
+			"useSearchService": true
+		},
+		"oauth2Clients": {
+			"creationEnabled": false
+		},
+		"validVessels": {
+			"useSearchService": true
+		},
+		"householdInvitations": {
+			"debug": false
+		},
+		"validPreparations": {
+			"useSearchService": true
+		},
+		"validIngredientStates": {
+			"useSearchService": true
+		},
+		"validIngredients": {
+			"useSearchService": true
+		},
+		"webhooks": {
+			"debug": false
+		}
 	}
 }
