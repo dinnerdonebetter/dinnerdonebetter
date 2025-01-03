@@ -286,12 +286,9 @@ proxy_dev_db:
 
 DEV_NAMESPACE := dev
 
-.PHONY: nuke_dev_namespace
-nuke_dev_namespace:
-	kubectl delete namespace --ignore-not-found=true $(DEV_NAMESPACE)
-
 .PHONY: deploy_dev
 deploy_dev:
-	kubectl delete deployments,cronjobs --all --namespace $(DEV_NAMESPACE)
-	kubectl delete configmap --namespace $(DEV_NAMESPACE) --field-selector metadata.name!=kube-root-ca.crt --field-selector metadata.name!=pubsub-topic-names
+	kubectl delete deployments,cronjobs --all --ignore-not-found=true --namespace $(DEV_NAMESPACE)
+	kubectl get configmap --namespace $(DEV_NAMESPACE) --no-headers -o custom-columns=NAME:.metadata.name | grep '^dinner-done-better-' | xargs kubectl delete configmap --namespace $(DEV_NAMESPACE)
+	kubectl delete configmap --namespace $(DEV_NAMESPACE) opentelemetry-collector-config
 	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)
