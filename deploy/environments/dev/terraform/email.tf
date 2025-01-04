@@ -24,7 +24,7 @@ resource "cloudflare_record" "domain_verification_records" {
   zone_id  = var.CLOUDFLARE_ZONE_ID
   name     = each.value.host
   type     = upper(each.value.type)
-  value    = each.value.data
+  content  = each.value.data
   ttl      = 1
   proxied  = false
   comment  = "Managed by Terraform"

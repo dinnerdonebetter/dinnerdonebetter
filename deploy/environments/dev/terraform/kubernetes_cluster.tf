@@ -77,16 +77,16 @@ resource "google_container_node_pool" "primary_nodes" {
   }
 }
 
-resource "google_gke_backup_backup_plan" "basic" {
-  name = "basic-plan"
-  cluster = google_container_cluster.primary.id
-  location = local.gcp_region
-  backup_config {
-    include_volume_data = true
-    include_secrets = true
-    all_namespaces = true
-  }
-}
+# resource "google_gke_backup_backup_plan" "basic" {
+#   name = "basic-plan"
+#   cluster = google_container_cluster.primary.id
+#   location = local.gcp_region
+#   backup_config {
+#     include_volume_data = true
+#     include_secrets = true
+#     all_namespaces = true
+#   }
+# }
 
 locals {
   k8s_namespace = "dev"
