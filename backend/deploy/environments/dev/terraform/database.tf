@@ -33,7 +33,7 @@ resource "google_sql_database_instance" "dev" {
     ip_configuration {
       ssl_mode                                      = "ENCRYPTED_ONLY"
       ipv4_enabled                                  = true
-      private_network                               = google_compute_network.private_network.id
+      private_network                               = data.google_compute_network.private_network.id
       enable_private_path_for_google_cloud_services = true
     }
   }
