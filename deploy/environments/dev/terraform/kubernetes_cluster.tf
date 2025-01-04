@@ -87,3 +87,23 @@ resource "google_gke_backup_backup_plan" "basic" {
     all_namespaces = true
   }
 }
+
+locals {
+  k8s_namespace = "dev"
+}
+
+resource "kubernetes_namespace" "dev" {
+  metadata {
+    annotations = {
+      managed_by = "terraform"
+    }
+
+    labels = {
+      managed_by = "terraform"
+    }
+
+    name = local.k8s_namespace
+  }
+
+  depends_on = [google_container_cluster.primary]
+}
