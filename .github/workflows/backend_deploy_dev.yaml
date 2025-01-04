@@ -94,10 +94,10 @@ jobs:
 #          context_name: 'dev_context'
 #          location: 'us-central1'
 
-      - name: copy kubeconfig
-        working-directory: backend/deploy/environments/dev
-        run: |
-          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+#      - name: copy kubeconfig
+#        working-directory: backend/deploy/environments/dev
+#        run: |
+#          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
