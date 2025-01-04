@@ -87,12 +87,12 @@ jobs:
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker ${{ matrix.container-registry }}
 
-      - name: get GKE credentials
-        uses: 'google-github-actions/get-gke-credentials@v2'
-        with:
-          cluster_name: 'dev'
-          context_name: 'dev_context'
-          location: 'us-central1'
+#      - name: get GKE credentials
+#        uses: 'google-github-actions/get-gke-credentials@v2'
+#        with:
+#          cluster_name: 'dev'
+#          context_name: 'dev_context'
+#          location: 'us-central1'
 
       - name: copy kubeconfig
         working-directory: backend/deploy/environments/dev
