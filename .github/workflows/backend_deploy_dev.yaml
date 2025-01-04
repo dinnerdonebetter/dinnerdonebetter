@@ -10,53 +10,53 @@ on: [pull_request]
 
 name: backend - deploy
 jobs:
-#  baseline-infra:
-#    timeout-minutes: 90
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#
-#      - name: authenticate with GCP
-#        uses: google-github-actions/auth@v2
+  baseline-infra:
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+#      - name: get GKE credentials
+#        uses: 'google-github-actions/get-gke-credentials@v2'
 #        with:
-#          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-#
-#      # Setup gcloud CLI
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v2
-#
-##      - name: get GKE credentials
-##        uses: 'google-github-actions/get-gke-credentials@v2'
-##        with:
-##          cluster_name: 'dev'
-##          context_name: 'dev_context'
-##          location: 'us-central1'
-#
-##      - name: copy kubeconfig
-##        working-directory: backend/deploy/environments/dev
-##        run: |
-##          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
-#
-#      - name: Setup Terraform
-#        uses: hashicorp/setup-terraform@v3
-#        with:
-#          terraform_version: 1.10.3
-#          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
-#
-#      - name: Terraform Init
-#        working-directory: deploy/environments/dev/terraform
-#        id: init
-#        run: terraform init
-#
-#      - name: Terraform Validate
-#        working-directory: deploy/environments/dev/terraform
-#        id: validate
-#        run: terraform validate -no-color
-#
-#      - name: Terraform Apply
-#        run: terraform apply -auto-approve
-#        working-directory: deploy/environments/dev/terraform
+#          cluster_name: 'dev'
+#          context_name: 'dev_context'
+#          location: 'us-central1'
+
+#      - name: copy kubeconfig
+#        working-directory: backend/deploy/environments/dev
+#        run: |
+#          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.3
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: deploy/environments/dev/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: deploy/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: deploy/environments/dev/terraform
 
   app-infra:
 #    needs: [baseline-infra]
@@ -87,17 +87,17 @@ jobs:
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker ${{ matrix.container-registry }}
 
-#      - name: get GKE credentials
-#        uses: 'google-github-actions/get-gke-credentials@v2'
-#        with:
-#          cluster_name: 'dev'
-#          context_name: 'dev_context'
-#          location: 'us-central1'
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
 
-#      - name: copy kubeconfig
-#        working-directory: backend/deploy/environments/dev
-#        run: |
-#          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+      - name: copy kubeconfig
+        working-directory: backend/deploy/environments/dev
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
