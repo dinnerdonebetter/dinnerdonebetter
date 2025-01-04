@@ -59,7 +59,7 @@ jobs:
         working-directory: deploy/environments/dev/terraform
 
   app-infra:
-#    needs: [baseline-infra]
+    needs: [baseline-infra]
     timeout-minutes: 90
     runs-on: ubuntu-latest
     strategy:
@@ -118,7 +118,7 @@ jobs:
         run: terraform validate -no-color
 
       - name: Terraform Apply
-        run: terraform apply -destroy -auto-approve
+        run: terraform apply -auto-approve
         working-directory: backend/deploy/environments/dev/terraform
 
       - name: remove kubernetes config
