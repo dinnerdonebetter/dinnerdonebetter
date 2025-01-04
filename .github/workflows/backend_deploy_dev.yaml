@@ -43,7 +43,7 @@ jobs:
         run: terraform validate -no-color
 
       - name: Terraform Apply
-        run: pwd && whoami && ls -Alh && terraform apply -auto-approve
+        run: terraform apply -auto-approve
         working-directory: deploy/environments/dev/terraform
 
   app-infra:
