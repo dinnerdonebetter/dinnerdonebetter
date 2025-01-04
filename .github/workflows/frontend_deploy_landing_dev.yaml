@@ -107,7 +107,7 @@ jobs:
         run: terraform validate -no-color
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -destroy -auto-approve
         working-directory: frontend/deploy/environments/dev/landing/terraform
 
       - name: Push Container
