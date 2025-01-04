@@ -48,7 +48,7 @@ jobs:
         working-directory: deploy/environments/dev/terraform
 
   app-infrastructure:
-#    needs: baseline-infrastructure
+    needs: baseline-infrastructure
     runs-on: ubuntu-latest
     strategy:
       matrix:
