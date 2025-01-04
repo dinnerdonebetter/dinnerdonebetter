@@ -47,7 +47,7 @@ jobs:
         working-directory: deploy/environments/dev/terraform
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: pwd && ls -Alh && terraform apply -auto-approve
         working-directory: deploy/environments/dev/terraform
 
   app-infra:
