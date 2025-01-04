@@ -34,7 +34,7 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
       - name: Terraform Init
-        working-directory: frontend/deploy/environments/dev/admin/terraform
+        working-directory: deploy/environments/dev/admin/terraform
         id: init
         run: terraform init
 
