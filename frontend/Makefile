@@ -73,3 +73,12 @@ build_landing_container:
 .PHONY: build_web_container
 build_web_container:
 	$(CONTAINER_RUNNER) build --tag ddb_web:latest --file apps/web/Dockerfile .
+
+#### NEW DEV K8S ENVIRONMENT ZONE
+
+DEV_NAMESPACE := dev
+
+.PHONY: deploy_dev
+deploy_dev:
+	kubectl delete deployments --all --ignore-not-found=true --namespace $(DEV_NAMESPACE)
+	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)

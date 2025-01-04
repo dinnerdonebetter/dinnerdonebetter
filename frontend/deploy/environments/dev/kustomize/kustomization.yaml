@@ -9,12 +9,29 @@ resources:
   - ../../../kustomize/components/admin
   - ../../../kustomize/components/landing
 
+images:
+  - name: dinner-done-better-webapp
+    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-webapp
+    newTag: latest
+  - name: dinner-done-better-admin-app
+    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-app
+    newTag: latest
+  - name: dinner-done-better-landing
+    newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-landing
+    newTag: latest
+
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches: []
 
 #labels:
 #  - pairs:
 #      app.kubernetes.io/name: dinner-done-better
+
+configMapGenerator:
+  - name: opentelemetry-collector-config
+    namespace: dev
+    files:
+      - config.yaml=configs/otel_collector_config.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

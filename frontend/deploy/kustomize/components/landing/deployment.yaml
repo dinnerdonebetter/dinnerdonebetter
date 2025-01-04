@@ -30,8 +30,8 @@ spec:
           name: http
         resources:
           requests:
-            memory: 256Mi
-            cpu: "1000m"
+            memory: 128Mi
+            cpu: "50m"
 #        livenessProbe:
 #          httpGet:
 #            path: "/api/_meta_/live"

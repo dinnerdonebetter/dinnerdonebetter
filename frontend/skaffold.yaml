@@ -2,7 +2,7 @@ apiVersion: skaffold/v4beta11
 kind: Config
 
 metadata:
-  name: dinner-done-better-backend
+  name: dinner-done-better-frontend
 
 profiles:
   - name: localdev
@@ -11,19 +11,16 @@ profiles:
       tagPolicy:
         sha256: {}
       artifacts:
-          # frontend artifacts
+        # frontend artifacts
         - image: dinner-done-better-webapp
-          context: ./frontend
           docker:
             dockerfile: ./apps/web/Dockerfile
 
         - image: dinner-done-better-admin-app
-          context: ./frontend
           docker:
             dockerfile: ./apps/admin/Dockerfile
 
         - image: dinner-done-better-landing
-          context: ./frontend
           docker:
             dockerfile: ./apps/landing/Dockerfile
 
@@ -51,3 +48,32 @@ profiles:
         resourceName: dinner-done-better-landing-svc
         namespace: localdev
         port: 10000
+
+  - name: dev
+
+    build:
+      tagPolicy:
+        sha256: {}
+      artifacts:
+        # frontend artifacts
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-webapp
+          docker:
+            dockerfile: ./apps/web/Dockerfile
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-app
+          docker:
+            dockerfile: ./apps/admin/Dockerfile
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-landing
+          docker:
+            dockerfile: ./apps/landing/Dockerfile
+
+    manifests:
+      kustomize:
+        paths:
+          - deploy/environments/dev/kustomize
+      output: ./deploy/environments/dev/generated.yaml
+
+    deploy:
+      kubectl:
+        defaultNamespace: dev

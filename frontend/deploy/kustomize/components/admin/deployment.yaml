@@ -26,7 +26,7 @@ spec:
           - name: "DISABLE_REGISTRATION"
             value: "false"
           - name: "NEXT_API_ENDPOINT"
-            value: "dinner-done-better.localdev.svc.cluster.local:8000"
+            value: "dinner-done-better.dev.svc.cluster.local:8000"
           - name: "NEXT_COOKIE_ENCRYPTION_KEY"
             value: "ZOTGz4KEhZFSM6udeESOX5JVqhtEdHdS"
           - name: "NEXT_BASE64_COOKIE_ENCRYPT_IV"
@@ -43,13 +43,16 @@ spec:
             value: ""
           - name: "NEXT_PUBLIC_SEGMENT_API_TOKEN"
             value: ""
+        volumeMounts:
+          - name: logs
+            mountPath: /var/log/application
         ports:
         - containerPort: 7000
           name: http
         resources:
           requests:
-            memory: 256Mi
-            cpu: "1000m"
+            memory: 128Mi
+            cpu: "50m"
         livenessProbe:
           httpGet:
             path: "/api/_meta_/live"
@@ -62,4 +65,36 @@ spec:
             port: 7000
           initialDelaySeconds: 15
           periodSeconds: 3
+        # This is the OpenTelemetry collector sidecar
+      - name: opentelemetry-collector
+        image: otel/opentelemetry-collector-contrib:0.115.1
+        command:
+          - "/otelcol-contrib"
+          - "--config"
+          - "/conf/config.yaml"
+        ports:
+          - containerPort: 4317
+            name: otel1
+          - containerPort: 4318
+            name: otel2
+          - containerPort: 13313
+            name: health
+        volumeMounts:
+          - name: logs
+            mountPath: /var/log/application
+            readOnly: true
+          - name: opentelemetry-config
+            mountPath: /conf
+        env:
+          - name: "RUNNING_IN_KUBERNETES"
+            value: "true"
+      volumes:
+        # this volume is where we write logs to in the API, and where we read logs from in the collector.
+        - name: logs
+          emptyDir:
+            sizeLimit: 500Mi
+        # this volume contains the configuration file for the OTel collector.
+        - name: opentelemetry-config
+          configMap:
+            name: opentelemetry-collector-config
 ---

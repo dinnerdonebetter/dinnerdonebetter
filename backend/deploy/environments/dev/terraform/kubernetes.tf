@@ -12,11 +12,11 @@ resource "kubernetes_namespace" "dev" {
 
   metadata {
     annotations = {
-      exampleAnnotation = "example-annotation"
+      "managed_by" = "terraform"
     }
 
     labels = {
-      exampleLabel = "example-label"
+      "managed_by" = "terraform"
     }
 
     name = local.k8s_namespace
@@ -29,6 +29,14 @@ resource "kubernetes_secret" "cloudflare_api_key" {
   metadata {
     name      = "cloudflare-api-key"
     namespace = local.k8s_namespace
+
+    annotations = {
+      "managed_by" = "terraform"
+    }
+
+    labels = {
+      "managed_by" = "terraform"
+    }
   }
 
   depends_on = [google_container_cluster.primary]
@@ -42,6 +50,14 @@ resource "kubernetes_config_map_v1" "pubsub_topics" {
   metadata {
     name      = "pubsub-topic-names"
     namespace = local.k8s_namespace
+
+    annotations = {
+      "managed_by" = "terraform"
+    }
+
+    labels = {
+      "managed_by" = "terraform"
+    }
   }
 
   depends_on = [google_container_cluster.primary]
@@ -59,6 +75,14 @@ resource "kubernetes_secret" "api_service_config" {
   metadata {
     name      = "api-service-config"
     namespace = local.k8s_namespace
+
+    annotations = {
+      "managed_by" = "terraform"
+    }
+
+    labels = {
+      "managed_by" = "terraform"
+    }
   }
 
   depends_on = [google_container_cluster.primary]

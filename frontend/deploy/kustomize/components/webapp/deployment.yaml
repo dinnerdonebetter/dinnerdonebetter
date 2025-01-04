@@ -31,15 +31,9 @@ spec:
           - name: "NEXT_BASE64_COOKIE_ENCRYPT_IV"
             value: "S2IwVXVvMW9hSEl4WjQ0ak1NYW50QndMTzJBWDJFV2o="
           - name: "NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID"
-            value: ""
+            value: "fake-oauth2-client-id"
           - name: "NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET"
-            value: ""
-          - name: "REWRITE_COOKIE_SECURE"
-            value: "false"
-          - name: "REWRITE_COOKIE_HOST_FROM"
-            value: ""
-          - name: "REWRITE_COOKIE_HOST_TO"
-            value: ""
+            value: "fake-oauth2-client-secret"
           - name: "NEXT_PUBLIC_SEGMENT_API_TOKEN"
             value: ""
         ports:
@@ -47,8 +41,8 @@ spec:
           name: http
         resources:
           requests:
-            memory: 256Mi
-            cpu: "1000m"
+            memory: 128Mi
+            cpu: "50m"
         livenessProbe:
           httpGet:
             path: "/api/_meta_/live"
@@ -61,4 +55,34 @@ spec:
             port: 9000
           initialDelaySeconds: 15
           periodSeconds: 3
+        # This is the OpenTelemetry collector sidecar
+      - name: opentelemetry-collector
+        image: otel/opentelemetry-collector-contrib:0.115.1
+        command:
+          - "/otelcol-contrib"
+          - "--config"
+          - "/conf/config.yaml"
+        ports:
+          - containerPort: 4317
+            name: otel1
+          - containerPort: 4318
+            name: otel2
+          - containerPort: 13313
+            name: health
+        volumeMounts:
+          - name: logs
+            mountPath: /var/log/application
+            readOnly: true
+          - name: opentelemetry-config
+            mountPath: /conf
+        env:
+          - name: "RUNNING_IN_KUBERNETES"
+            value: "true"
+      volumes:
+        - name: logs
+          emptyDir:
+            sizeLimit: 500Mi
+        - name: opentelemetry-config
+          configMap:
+            name: opentelemetry-collector-config
 ---
