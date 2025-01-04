@@ -42,6 +42,10 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
+      - name: Terraform ls
+        run: ls -Al
+        working-directory: deploy/environments/dev/terraform
+
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: deploy/environments/dev/terraform
