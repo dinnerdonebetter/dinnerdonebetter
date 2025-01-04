@@ -59,7 +59,7 @@ jobs:
 #        working-directory: deploy/environments/dev/terraform
 
   app-infra:
-    needs: [baseline-infra]
+#    needs: [baseline-infra]
     timeout-minutes: 90
     runs-on: ubuntu-latest
     strategy:
