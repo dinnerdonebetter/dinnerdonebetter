@@ -33,10 +33,6 @@ spec:
           subPath: "config.json"
         - name: logs
           mountPath: /var/log/application
-        resources:
-          requests:
-            memory: 64Mi
-            cpu: "100m"
       # This is the OpenTelemetry collector sidecar
       - name: opentelemetry-collector
         image: otel/opentelemetry-collector-contrib:0.115.1

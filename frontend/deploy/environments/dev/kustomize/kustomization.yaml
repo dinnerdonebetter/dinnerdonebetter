@@ -5,6 +5,9 @@ kind: Kustomization
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
   - namespace.yaml
+  - ingress_webapp.yaml
+  - ingress_admin.yaml
+  - ingress_landing.yaml
   - ../../../kustomize/components/webapp
   - ../../../kustomize/components/admin
   - ../../../kustomize/components/landing

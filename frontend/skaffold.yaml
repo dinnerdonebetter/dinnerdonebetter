@@ -31,7 +31,7 @@ profiles:
       output: ./deploy/environments/localdev/generated.yaml
 
     deploy:
-      kubeContext: docker-desktop
+      # kubeContext: docker-desktop
       kubectl:
         defaultNamespace: localdev
 

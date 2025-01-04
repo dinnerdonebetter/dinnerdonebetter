@@ -12,7 +12,44 @@ on: # [pull_request]
 
 name: frontend - deploy webapp to dev
 jobs:
-  deploy:
+  baseline-infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: deploy/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: deploy/environments/dev/terraform
+
+
+  app-infrastructure:
+    needs: [baseline-infrastructure]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -79,11 +116,3 @@ jobs:
         run: |
           docker push ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:${{  github.sha }}
           docker push ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:latest
-
-      # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
-      - id: deploy-webapp-server
-        uses: google-github-actions/deploy-cloudrun@v1
-        with:
-          service: 'webapp-server'
-          project_id: '${{ matrix.configs.gcp-project }}'
-          image: '${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}'

@@ -28,10 +28,6 @@ spec:
         ports:
         - containerPort: 10000
           name: http
-        resources:
-          requests:
-            memory: 128Mi
-            cpu: "50m"
 #        livenessProbe:
 #          httpGet:
 #            path: "/api/_meta_/live"

@@ -7,20 +7,9 @@ provider "kubernetes" {
   config_context = "${local.k8s_namespace}_context"
 }
 
-resource "kubernetes_namespace" "dev" {
-  depends_on = [google_container_cluster.primary]
-
-  metadata {
-    annotations = {
-      "managed_by" = "terraform"
-    }
-
-    labels = {
-      "managed_by" = "terraform"
-    }
-
-    name = local.k8s_namespace
-  }
+data "google_container_cluster" "dev_cluster" {
+  name     = "dev"
+  location = local.gcp_region
 }
 
 # Kubernetes secrets
@@ -39,7 +28,7 @@ resource "kubernetes_secret" "cloudflare_api_key" {
     }
   }
 
-  depends_on = [google_container_cluster.primary]
+  depends_on = [data.google_container_cluster.dev_cluster]
 
   data = {
     "token" = var.CLOUDFLARE_API_TOKEN
@@ -60,7 +49,7 @@ resource "kubernetes_config_map_v1" "pubsub_topics" {
     }
   }
 
-  depends_on = [google_container_cluster.primary]
+  depends_on = [data.google_container_cluster.dev_cluster]
 
   data = {
     data_changes               = google_pubsub_topic.data_changes_topic.name
@@ -85,7 +74,7 @@ resource "kubernetes_secret" "api_service_config" {
     }
   }
 
-  depends_on = [google_container_cluster.primary]
+  depends_on = [data.google_container_cluster.dev_cluster]
 
   data = {
     OAUTH2_TOKEN_ENCRYPTION_KEY       = random_string.oauth2_token_encryption_key.result
