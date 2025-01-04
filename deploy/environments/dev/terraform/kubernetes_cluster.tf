@@ -92,7 +92,10 @@ locals {
   k8s_namespace = "dev"
 }
 
-variable "CREATE_NAMESPACE" {}
+variable "CREATE_NAMESPACE" {
+  type = bool
+  default = false
+}
 
 resource "kubernetes_namespace" "dev" {
   count = var.CREATE_NAMESPACE ? 1 : 0
