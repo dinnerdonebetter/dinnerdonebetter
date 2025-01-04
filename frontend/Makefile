@@ -24,15 +24,15 @@ lint:
 
 .PHONY: terraformat
 terraformat:
-	@(cd environments/dev/webapp/terraform && terraform fmt)
-	@(cd environments/dev/landing/terraform && terraform fmt)
-	@(cd environments/dev/admin/terraform && terraform fmt)
+	@(cd deploy/environments/dev/webapp/terraform && terraform fmt)
+	@(cd deploy/environments/dev/landing/terraform && terraform fmt)
+	@(cd deploy/environments/dev/admin/terraform && terraform fmt)
 
 .PHONY: lint_terraform
 lint_terraform: terraformat
-	@(cd environments/dev/admin/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
-	@(cd environments/dev/landing/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
-	@(cd environments/dev/webapp/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
+	@(cd deploy/environments/dev/admin/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
+	@(cd deploy/environments/dev/landing/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
+	@(cd deploy/environments/dev/webapp/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
 
 .PHONY: dev
 dev:

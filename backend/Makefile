@@ -116,7 +116,7 @@ format_imports: ensure_gci_installed
 
 .PHONY: terraformat
 terraformat:
-	@(cd environments/dev/terraform && terraform fmt)
+	@(cd deploy/environments/dev/terraform && terraform fmt)
 
 .PHONY: lint_terraform
 lint_terraform: terraformat
