@@ -86,7 +86,7 @@ resource "google_certificate_manager_certificate" "default" {
   }
 }
 
-resource "cloudflare_record" "domain_verification_records" {
+resource "cloudflare_record" "cert_domain_verification_records" {
   for_each = {
     "0": google_certificate_manager_dns_authorization.api
     "1": google_certificate_manager_dns_authorization.admin
