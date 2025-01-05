@@ -50,7 +50,12 @@ terraformat:
 
 DEV_NAMESPACE := dev
 
+.PHONY: helm_deps
+helm_deps:
+	helm repo add jetstack https://charts.jetstack.io --force-update
+	helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/ --force-update
+
 .PHONY: deploy_dev
-deploy_dev:
-	kubectl delete deployments,cronjobs,configmaps,services --namespace $(DEV_NAMESPACE) --selector='managed_by!=terraform'
+deploy_dev: helm_deps
+	# kubectl delete deployments,cronjobs,configmaps,services,secrets --namespace $(DEV_NAMESPACE) --selector='managed_by!=terraform'
 	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)

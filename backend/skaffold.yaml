@@ -94,7 +94,6 @@ profiles:
       kustomize:
         paths:
           - deploy/environments/localdev/kustomize
-      output: ./deploy/environments/localdev/generated.yaml
 
     deploy:
       kubeContext: docker-desktop
@@ -204,7 +203,6 @@ profiles:
       kustomize:
         paths:
           - deploy/environments/dev/kustomize
-      output: ./deploy/environments/dev/generated.yaml
 
     deploy:
       kubectl:
