@@ -6,7 +6,6 @@ metadata:
 
 profiles:
   - name: localdev
-
     build:
       tagPolicy:
         sha256: {}
@@ -31,7 +30,7 @@ profiles:
       output: ./deploy/environments/localdev/generated.yaml
 
     deploy:
-      # kubeContext: docker-desktop
+      kubeContext: docker-desktop
       kubectl:
         defaultNamespace: localdev
 
@@ -50,7 +49,6 @@ profiles:
         port: 10000
 
   - name: dev
-
     build:
       tagPolicy:
         sha256: {}

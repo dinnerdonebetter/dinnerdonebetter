@@ -52,5 +52,5 @@ DEV_NAMESPACE := dev
 
 .PHONY: deploy_dev
 deploy_dev:
-	kubectl delete deployments,cronjobs --all --ignore-not-found=true --namespace $(DEV_NAMESPACE)
+	kubectl delete deployments,cronjobs,configmaps,services --namespace $(DEV_NAMESPACE) --selector='managed_by!=terraform'
 	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)

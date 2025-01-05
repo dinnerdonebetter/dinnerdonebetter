@@ -101,11 +101,11 @@ resource "kubernetes_namespace" "dev" {
   count = var.CREATE_NAMESPACE ? 1 : 0
   metadata {
     annotations = {
-      managed_by = "terraform"
+      local.managed_by_label = "terraform"
     }
 
     labels = {
-      managed_by = "terraform"
+      local.managed_by_label = "terraform"
     }
 
     name = local.k8s_namespace

@@ -2,14 +2,20 @@ apiVersion: skaffold/v4beta11
 kind: Config
 
 requires:
+  - configs: ["dinner-done-better-infra"]
+    path: ./deploy/skaffold.yaml
+    activeProfiles:
+      # - name: localdev
+      - name: dev
+
   - configs: ["dinner-done-better-frontend"]
     path: ./frontend/skaffold.yaml
     activeProfiles:
-      - name: localdev
+      # - name: localdev
       - name: dev
 
   - configs: ["dinner-done-better-backend"]
     path: ./backend/skaffold.yaml
     activeProfiles:
-      - name: localdev
+      # - name: localdev
       - name: dev
