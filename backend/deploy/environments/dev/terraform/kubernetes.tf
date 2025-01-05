@@ -101,7 +101,7 @@ resource "kubernetes_secret" "api_service_config" {
 
 resource "kubernetes_secret" "https_certificate" {
   metadata {
-    name      = "api-service-config"
+    name      = "tls-certs"
     namespace = local.k8s_namespace
 
     annotations = {
