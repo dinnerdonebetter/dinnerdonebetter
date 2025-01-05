@@ -15,3 +15,7 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [data.google_compute_global_address.private_ip_address.name]
 }
+
+data "google_compute_ssl_certificate" "dev" {
+  name = "dev-cert"
+}

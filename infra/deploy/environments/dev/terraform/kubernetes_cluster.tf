@@ -92,13 +92,13 @@ locals {
   k8s_namespace = "dev"
 }
 
-variable "CREATE_NAMESPACE" {
+variable "CREATE_CLUSTER_RESOURCES" {
   type = bool
   default = false
 }
 
 resource "kubernetes_namespace" "dev" {
-  count = var.CREATE_NAMESPACE ? 1 : 0
+  count = var.CREATE_CLUSTER_RESOURCES ? 1 : 0
   metadata {
     annotations = {
       local.managed_by_label = "terraform"

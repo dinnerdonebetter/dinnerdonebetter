@@ -6,6 +6,8 @@ metadata:
   namespace: dev
   annotations:
     kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.allow-http: "true"
+    kubernetes.io/ingress.global-static-ip-name: "dev"
     external-dns.alpha.kubernetes.io/hostname: "api.dinnerdonebetter.dev"
 spec:
   rules:

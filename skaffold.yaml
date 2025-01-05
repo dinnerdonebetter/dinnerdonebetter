@@ -3,7 +3,7 @@ kind: Config
 
 requires:
   - configs: ["dinner-done-better-infra"]
-    path: ./deploy/skaffold.yaml
+    path: ./infra/deploy/skaffold.yaml
     activeProfiles:
       # - name: localdev
       - name: dev

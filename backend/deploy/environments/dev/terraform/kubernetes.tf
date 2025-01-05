@@ -98,3 +98,25 @@ resource "kubernetes_secret" "api_service_config" {
     GRAFANA_CLOUD_TEMPO_PASSWORD      = var.GRAFANA_CLOUD_TEMPO_PASSWORD
   }
 }
+
+resource "kubernetes_secret" "https_certificate" {
+  metadata {
+    name      = "api-service-config"
+    namespace = local.k8s_namespace
+
+    annotations = {
+      local.managed_by_label = "terraform"
+    }
+
+    labels = {
+      local.managed_by_label = "terraform"
+    }
+  }
+
+  depends_on = [data.google_container_cluster.dev_cluster]
+
+  data = {
+    cert: data.google_compute_ssl_certificate.dev.certificate,
+    private_key: data.google_compute_ssl_certificate.dev.private_key,
+  }
+}

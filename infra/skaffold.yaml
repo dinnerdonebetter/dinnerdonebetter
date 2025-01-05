@@ -229,8 +229,8 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - ./environments/dev/kustomize
-      output: ./environments/dev/generated.yaml
+          - ./deploy/environments/dev/kustomize
+      output: ./deploy/environments/dev/generated.yaml
 
     deploy:
       kubectl:
