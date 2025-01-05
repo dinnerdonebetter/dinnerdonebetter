@@ -31,11 +31,11 @@ resource "kubernetes_secret" "cloudflare_api_key" {
     namespace = local.k8s_namespace
 
     annotations = {
-      "managed_by" = "terraform"
+      (local.managed_by_label) = "terraform"
     }
 
     labels = {
-      "managed_by" = "terraform"
+      (local.managed_by_label) = "terraform"
     }
   }
 

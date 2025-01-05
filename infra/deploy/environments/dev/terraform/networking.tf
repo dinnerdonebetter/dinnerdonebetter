@@ -25,7 +25,7 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 resource "google_compute_address" "static_ip" {
   name = "dev"
   labels = {
-    local.managed_by_label = "terraform"
+    (local.managed_by_label) = "terraform"
   }
 }
 

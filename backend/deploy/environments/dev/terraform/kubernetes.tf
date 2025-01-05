@@ -20,11 +20,11 @@ resource "kubernetes_secret" "cloudflare_api_key" {
     namespace = local.k8s_namespace
 
     annotations = {
-      local.managed_by_label = "terraform"
+      (local.managed_by_label) = "terraform"
     }
 
     labels = {
-      local.managed_by_label = "terraform"
+      (local.managed_by_label) = "terraform"
     }
   }
 
@@ -41,11 +41,11 @@ resource "kubernetes_config_map_v1" "pubsub_topics" {
     namespace = local.k8s_namespace
 
     annotations = {
-      local.managed_by_label = "terraform"
+      (local.managed_by_label) = "terraform"
     }
 
     labels = {
-      local.managed_by_label = "terraform"
+      (local.managed_by_label) = "terraform"
     }
   }
 
@@ -66,11 +66,11 @@ resource "kubernetes_secret" "api_service_config" {
     namespace = local.k8s_namespace
 
     annotations = {
-      local.managed_by_label = "terraform"
+      (local.managed_by_label) = "terraform"
     }
 
     labels = {
-      local.managed_by_label = "terraform"
+      (local.managed_by_label) = "terraform"
     }
   }
 
@@ -105,11 +105,11 @@ resource "kubernetes_secret" "https_certificate" {
     namespace = local.k8s_namespace
 
     annotations = {
-      local.managed_by_label = "terraform"
+      (local.managed_by_label) = "terraform"
     }
 
     labels = {
-      local.managed_by_label = "terraform"
+      (local.managed_by_label) = "terraform"
     }
   }
 
