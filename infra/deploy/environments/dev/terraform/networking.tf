@@ -29,10 +29,59 @@ resource "google_compute_address" "static_ip" {
   }
 }
 
-resource "google_compute_managed_ssl_certificate" "dev" {
-  name = "dev-cert"
+resource "google_certificate_manager_dns_authorization" "api" {
+  name        = "api"
+  domain      = "api.dinnerdonebetter.dev"
+}
 
+resource "google_certificate_manager_dns_authorization" "admin" {
+  name        = "admin"
+  domain      = "admin.dinnerdonebetter.dev"
+}
+
+resource "google_certificate_manager_dns_authorization" "app" {
+  name        = "app"
+  domain      = "app.dinnerdonebetter.dev"
+}
+
+resource "google_certificate_manager_dns_authorization" "www" {
+  name   = "www"
+  domain = "www.dinnerdonebetter.dev"
+}
+
+resource "google_certificate_manager_dns_authorization" "media" {
+  name   = "media"
+  domain = "media.dinnerdonebetter.dev"
+}
+
+resource "google_certificate_manager_dns_authorization" "userdata" {
+  name   = "userdata"
+  domain = "userdata.dinnerdonebetter.dev"
+}
+
+resource "google_certificate_manager_certificate" "default" {
+  name        = "dns-cert"
+  description = "The default cert"
+  scope       = "EDGE_CACHE"
+  labels = {
+    (local.managed_by_label) = "terraform"
+  }
   managed {
-    domains = ["dinnerdonebetter.dev"]
+    domains = [
+      google_certificate_manager_dns_authorization.api.domain,
+      google_certificate_manager_dns_authorization.admin.domain,
+      google_certificate_manager_dns_authorization.app.domain,
+      google_certificate_manager_dns_authorization.www.domain,
+      google_certificate_manager_dns_authorization.media.domain,
+      google_certificate_manager_dns_authorization.userdata.domain,
+    ]
+    dns_authorizations = [
+      google_certificate_manager_dns_authorization.api.id,
+      google_certificate_manager_dns_authorization.admin.id,
+      google_certificate_manager_dns_authorization.app.id,
+      google_certificate_manager_dns_authorization.www.id,
+      google_certificate_manager_dns_authorization.media.id,
+      google_certificate_manager_dns_authorization.userdata.id,
+    ]
   }
 }

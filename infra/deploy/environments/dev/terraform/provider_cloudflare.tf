@@ -1,5 +1,4 @@
 variable "CLOUDFLARE_API_TOKEN" {}
-variable "CLOUDFLARE_ACCOUNT_ID" {}
 variable "CLOUDFLARE_ZONE_ID" {}
 
 provider "cloudflare" {

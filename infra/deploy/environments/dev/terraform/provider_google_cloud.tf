@@ -12,6 +12,3 @@ provider "google" {
   zone        = local.gcp_main_zone
   credentials = var.GOOGLE_CLOUD_CREDENTIALS
 }
-
-variable "GOOGLE_SSO_OAUTH2_CLIENT_ID" {}
-variable "GOOGLE_SSO_OAUTH2_CLIENT_SECRET" {}

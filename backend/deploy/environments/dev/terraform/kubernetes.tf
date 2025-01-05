@@ -116,7 +116,6 @@ resource "kubernetes_secret" "https_certificate" {
   depends_on = [data.google_container_cluster.dev_cluster]
 
   data = {
-    cert: data.google_compute_ssl_certificate.dev.certificate,
-    private_key: data.google_compute_ssl_certificate.dev.private_key,
+    cert: jsonencode(data.google_certificate_manager_certificates.dev),
   }
 }
