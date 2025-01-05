@@ -26,17 +26,18 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-#      - name: get GKE credentials
-#        uses: 'google-github-actions/get-gke-credentials@v2'
-#        with:
-#          cluster_name: 'dev'
-#          context_name: 'dev_context'
-#          location: 'us-central1'
+      # these two steps should be commented out if the cluster hasn't been created yet
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
 
-#      - name: copy kubeconfig
-#        working-directory: backend/deploy/environments/dev
-#        run: |
-#          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+      - name: copy kubeconfig
+        working-directory: backend/deploy/environments/dev
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -45,18 +46,18 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
       - name: Terraform Init
-        working-directory: deploy/environments/dev/terraform
+        working-directory: infra/deploy/environments/dev/terraform
         id: init
         run: terraform init
 
       - name: Terraform Validate
-        working-directory: deploy/environments/dev/terraform
+        working-directory: infra/deploy/environments/dev/terraform
         id: validate
         run: terraform validate -no-color
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: deploy/environments/dev/terraform
+        working-directory: infra/deploy/environments/dev/terraform
 
   app-infra:
     needs: [baseline-infra]
