@@ -88,12 +88,12 @@ resource "google_certificate_manager_certificate" "default" {
 
 resource "cloudflare_record" "cert_domain_verification_records" {
   for_each = {
-    "0": google_certificate_manager_dns_authorization.api
-    "1": google_certificate_manager_dns_authorization.admin
-    "2": google_certificate_manager_dns_authorization.app
-    "3": google_certificate_manager_dns_authorization.www
-    "4": google_certificate_manager_dns_authorization.media
-    "5": google_certificate_manager_dns_authorization.userdata
+    "0": google_certificate_manager_dns_authorization.api.dns_resource_record.0
+    "1": google_certificate_manager_dns_authorization.admin.dns_resource_record.0
+    "2": google_certificate_manager_dns_authorization.app.dns_resource_record.0
+    "3": google_certificate_manager_dns_authorization.www.dns_resource_record.0
+    "4": google_certificate_manager_dns_authorization.media.dns_resource_record.0
+    "5": google_certificate_manager_dns_authorization.userdata.dns_resource_record.0
   }
 
   zone_id  = var.CLOUDFLARE_ZONE_ID
