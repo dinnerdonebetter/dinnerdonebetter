@@ -34,20 +34,20 @@ spec:
                 - name: "RUNNING_IN_KUBERNETES"
                   value: "true"
           containers:
-          - name: search-data-index-scheduler
-            image: dinner-done-better-job-search-data-index-scheduler
-            imagePullPolicy: Always
-            env:
-              - name: "CONFIGURATION_FILEPATH"
-                value: "/etc/service-config.json"
-              - name: "SEARCH_INDEXING_TOPIC_NAME"
-                value: "search_index_requests"
-            volumeMounts:
-            - name: "config"
-              mountPath: "/etc/service-config.json"
-              subPath: "config.json"
-            - name: logs
-              mountPath: /var/log/application
+            - name: search-data-index-scheduler
+              image: dinner-done-better-job-search-data-index-scheduler
+              imagePullPolicy: Always
+              env:
+                - name: "CONFIGURATION_FILEPATH"
+                  value: "/etc/service-config.json"
+                - name: "SEARCH_INDEXING_TOPIC_NAME"
+                  value: "search_index_requests"
+              volumeMounts:
+                - name: "config"
+                  mountPath: "/etc/service-config.json"
+                  subPath: "config.json"
+                - name: logs
+                  mountPath: /var/log/application
           restartPolicy: OnFailure
           volumes:
             - name: "config"

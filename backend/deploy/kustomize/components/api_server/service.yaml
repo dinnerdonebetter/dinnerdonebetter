@@ -10,9 +10,9 @@ spec:
   selector:
     app.kubernetes.io/name: dinner-done-better-backend
   ports:
-  - name: http
-    port: 8000
-    protocol: TCP
-    targetPort: http
+    - name: http
+      port: 8000
+      protocol: TCP
+      targetPort: http
   type: ClusterIP
 ---

@@ -1,6 +1,7 @@
+---
 receivers:
   filelog:
-    include: [ /var/log/dinnerdonebetter/*.log ]
+    include: [/var/log/dinnerdonebetter/*.log]
     operators:
       - type: json_parser
     resource:

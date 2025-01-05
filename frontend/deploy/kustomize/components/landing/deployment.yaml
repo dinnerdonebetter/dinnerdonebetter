@@ -19,15 +19,15 @@ spec:
         app.kubernetes.io/name: dinner-done-better-landing-app
     spec:
       containers:
-      - name: dinner-done-better-landing
-        image: dinner-done-better-landing
-        imagePullPolicy: IfNotPresent
-        env:
-          - name: "NEXT_PUBLIC_SEGMENT_API_TOKEN"
-            value: ""
-        ports:
-        - containerPort: 10000
-          name: http
+        - name: dinner-done-better-landing
+          image: dinner-done-better-landing
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: "NEXT_PUBLIC_SEGMENT_API_TOKEN"
+              value: ""
+          ports:
+            - containerPort: 10000
+              name: http
 #        livenessProbe:
 #          httpGet:
 #            path: "/api/_meta_/live"

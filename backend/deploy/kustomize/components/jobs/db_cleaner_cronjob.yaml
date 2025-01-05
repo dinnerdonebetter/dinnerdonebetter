@@ -35,18 +35,18 @@ spec:
                   value: "true"
           restartPolicy: OnFailure
           containers:
-          - name: db-cleaner
-            image: dinner-done-better-job-db-cleaner
-            imagePullPolicy: Always
-            env:
-              - name: "CONFIGURATION_FILEPATH"
-                value: "/etc/service-config.json"
-            volumeMounts:
-            - name: "config"
-              mountPath: "/etc/service-config.json"
-              subPath: "config.json"
-            - name: logs
-              mountPath: /var/log/application
+            - name: db-cleaner
+              image: dinner-done-better-job-db-cleaner
+              imagePullPolicy: Always
+              env:
+                - name: "CONFIGURATION_FILEPATH"
+                  value: "/etc/service-config.json"
+              volumeMounts:
+                - name: "config"
+                  mountPath: "/etc/service-config.json"
+                  subPath: "config.json"
+                - name: logs
+                  mountPath: /var/log/application
           volumes:
             - name: "config"
               configMap:

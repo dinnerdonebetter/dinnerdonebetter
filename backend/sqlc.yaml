@@ -1,3 +1,4 @@
+---
 version: "2"
 sql:
   - engine: "postgresql"
@@ -47,5 +48,5 @@ sql:
 rules:
   - name: no-delete
     message: "don't use delete statements"
-    rule: |
+    rule: |-
       query.sql.contains("DELETE") && !query.name.contains("OAuth2ClientToken") && query.name != "DeleteUser"

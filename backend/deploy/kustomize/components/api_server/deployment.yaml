@@ -19,59 +19,59 @@ spec:
         app.kubernetes.io/name: dinner-done-better-backend
     spec:
       containers:
-      # this is the API server container
-      - name: dinner-done-better-service-api
-        image: dinner-done-better-service-api
-        imagePullPolicy: Always
-        env:
-          - name: "CONFIGURATION_FILEPATH"
-            value: "/etc/service-config.json"
-          - name: "RUNNING_IN_KUBERNETES"
-            value: "true"
-        volumeMounts:
-        - name: "config"
-          mountPath: "/etc/service-config.json"
-          subPath: "config.json"
-        - name: logs
-          mountPath: /var/log/application
-        ports:
-        - containerPort: 8000
-          name: http
-        livenessProbe:
-          httpGet:
-            path: "/_meta_/live"
-            port: 8000
-          initialDelaySeconds: 15
-          periodSeconds: 3
-        readinessProbe:
-          httpGet:
-            path: "/_meta_/ready"
-            port: 8000
-          initialDelaySeconds: 15
-          periodSeconds: 3
-      # This is the OpenTelemetry collector sidecar
-      - name: opentelemetry-collector
-        image: otel/opentelemetry-collector-contrib:0.115.1
-        command:
-          - "/otelcol-contrib"
-          - "--config"
-          - "/conf/config.yaml"
-        ports:
-          - containerPort: 4317
-            name: otel1
-          - containerPort: 4318
-            name: otel2
-          - containerPort: 13313
-            name: health
-        volumeMounts:
-          - name: logs
-            mountPath: /var/log/application
-            readOnly: true
-          - name: opentelemetry-config
-            mountPath: /conf
-        env:
-          - name: "RUNNING_IN_KUBERNETES"
-            value: "true"
+        # this is the API server container
+        - name: dinner-done-better-service-api
+          image: dinner-done-better-service-api
+          imagePullPolicy: Always
+          env:
+            - name: "CONFIGURATION_FILEPATH"
+              value: "/etc/service-config.json"
+            - name: "RUNNING_IN_KUBERNETES"
+              value: "true"
+          volumeMounts:
+            - name: "config"
+              mountPath: "/etc/service-config.json"
+              subPath: "config.json"
+            - name: logs
+              mountPath: /var/log/application
+          ports:
+            - containerPort: 8000
+              name: http
+          livenessProbe:
+            httpGet:
+              path: "/_meta_/live"
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: "/_meta_/ready"
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 3
+        # This is the OpenTelemetry collector sidecar
+        - name: opentelemetry-collector
+          image: otel/opentelemetry-collector-contrib:0.115.1
+          command:
+            - "/otelcol-contrib"
+            - "--config"
+            - "/conf/config.yaml"
+          ports:
+            - containerPort: 4317
+              name: otel1
+            - containerPort: 4318
+              name: otel2
+            - containerPort: 13313
+              name: health
+          volumeMounts:
+            - name: logs
+              mountPath: /var/log/application
+              readOnly: true
+            - name: opentelemetry-config
+              mountPath: /conf
+          env:
+            - name: "RUNNING_IN_KUBERNETES"
+              value: "true"
       volumes:
         # this volume contains the configuration file for the API service
         - name: "config"

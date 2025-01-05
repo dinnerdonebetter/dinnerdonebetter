@@ -1,3 +1,4 @@
+---
 # NOTE: this file is the contents of the following URL:
 #       https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
@@ -20,7 +21,6 @@
 # metadata:
 #   name: cert-manager
 
----
 # Source: cert-manager/templates/crds.yaml
 #
 # START crd
@@ -12281,8 +12281,8 @@ rules:
   - apiGroups: ["networking.k8s.io"]
     resources: ["ingresses"]
     verbs: ["get", "list", "watch", "create", "delete", "update"]
-  - apiGroups: [ "gateway.networking.k8s.io" ]
-    resources: [ "httproutes" ]
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources: ["httproutes"]
     verbs: ["get", "list", "watch", "create", "delete", "update"]
   # We require the ability to specify a custom hostname when we are creating
   # new ingress resources.

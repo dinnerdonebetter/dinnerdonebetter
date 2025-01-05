@@ -35,20 +35,20 @@ spec:
                 - name: "RUNNING_IN_KUBERNETES"
                   value: "true"
           containers:
-          - name: meal-plan-grocery-list-init
-            image: dinner-done-better-job-meal-plan-grocery-list-init
-            imagePullPolicy: Always
-            env:
-              - name: "CONFIGURATION_FILEPATH"
-                value: "/etc/service-config.json"
-              - name: "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
-                value: "data_changes"
-            volumeMounts:
-            - name: "config"
-              mountPath: "/etc/service-config.json"
-              subPath: "config.json"
-            - name: logs
-              mountPath: /var/log/application
+            - name: meal-plan-grocery-list-init
+              image: dinner-done-better-job-meal-plan-grocery-list-init
+              imagePullPolicy: Always
+              env:
+                - name: "CONFIGURATION_FILEPATH"
+                  value: "/etc/service-config.json"
+                - name: "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
+                  value: "data_changes"
+              volumeMounts:
+                - name: "config"
+                  mountPath: "/etc/service-config.json"
+                  subPath: "config.json"
+                - name: logs
+                  mountPath: /var/log/application
           restartPolicy: OnFailure
           volumes:
             - name: "config"

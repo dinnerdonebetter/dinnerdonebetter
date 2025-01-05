@@ -1,9 +1,10 @@
+---
 on: [gollum]
-  # pull_request:
-  #   paths:
-  #     - backend/pkg/**
-  #     - backend/internal/**
-  #     - backend/tests/**
+# pull_request:
+#   paths:
+#     - backend/pkg/**
+#     - backend/internal/**
+#     - backend/tests/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -14,7 +15,7 @@ jobs:
   run:
     strategy:
       matrix:
-        go-version: [ '1.23.x' ]
+        go-version: ['1.23.x']
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:

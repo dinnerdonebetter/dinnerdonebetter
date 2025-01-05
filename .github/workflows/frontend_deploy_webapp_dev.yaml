@@ -1,3 +1,4 @@
+---
 concurrency:
   group: ${{ github.ref }}-deploy-webapp
 
@@ -46,7 +47,6 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: deploy/environments/dev/terraform
-
 
   app-infrastructure:
     needs: [baseline-infrastructure]
@@ -113,6 +113,6 @@ jobs:
 
       - name: Push Container
         working-directory: frontend
-        run: |
+        run: |-
           docker push ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:${{  github.sha }}
           docker push ${{ matrix.configs.gcp-region }}-docker.pkg.dev/${{ matrix.configs.gcp-project }}/containers/${{ matrix.configs.container-name }}:latest

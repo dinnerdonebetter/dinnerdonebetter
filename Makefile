@@ -2,15 +2,30 @@ PWD      := $(shell pwd)
 MYSELF   := $(shell id -u)
 MY_GROUP := $(shell id -g)
 
+.PHONY: ensure_yamlfmt_installed
+ensure_yamlfmt_installed:
+ifeq (, $(shell which yamlfmt))
+	$(shell go install github.com/google/yamlfmt/cmd/yamlfmt@latest)
+endif
+
 .PHONY: setup
-setup:
+setup: ensure_yamlfmt_installed
 	(cd backend && $(MAKE) setup)
 	(cd frontend && $(MAKE) setup)
 
 .PHONY: format
-format:
+format: format_yaml
 	(cd backend && $(MAKE) format)
 	(cd frontend && $(MAKE) format)
+
+.PHONY: terraformat
+terraformat:
+	(cd backend && $(MAKE) terraformat)
+	(cd frontend && $(MAKE) terraformat)
+
+.PHONY: format_yaml
+format_yaml: ensure_yamlfmt_installed
+	yamlfmt -conf .yamlfmt.yaml
 
 .PHONY: lint
 lint:
@@ -40,11 +55,6 @@ regit:
 	fi
 	cp -rf tempdir/.git .
 	rm -rf tempdir
-
-.PHONY: terraformat
-terraformat:
-	(cd backend && $(MAKE) terraformat)
-	(cd frontend && $(MAKE) terraformat)
 
 #### NEW DEV K8S ENVIRONMENT ZONE
 

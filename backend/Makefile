@@ -41,7 +41,13 @@ clean-$(ARTIFACTS_DIR):
 ## prerequisites
 
 .PHONY: setup
-setup: $(ARTIFACTS_DIR) revendor rewire configs
+setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed
+
+.PHONY: ensure_scc_installed
+ensure_scc_installed:
+ifeq (, $(shell which scc))
+	$(shell go install github.com/boyter/scc@latest)
+endif
 
 .PHONY: ensure_wire_installed
 ensure_wire_installed:
@@ -101,9 +107,6 @@ rewire: ensure_wire_installed
 
 ## formatting
 
-.PHONY: format
-format: format_golang terraformat
-
 .PHONY: format_golang
 format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
 	@until fieldalignment -fix ./...; do true; done > /dev/null
@@ -118,14 +121,13 @@ format_imports: ensure_gci_installed
 terraformat:
 	@(cd deploy/environments/dev/terraform && terraform fmt)
 
-.PHONY: lint_terraform
-lint_terraform: terraformat
-	@(cd environments/dev/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
+.PHONY: format
+format: format_golang terraformat
 
 .PHONY: fmt
-fmt: format terraformat
+fmt: format
 
-## Testing things
+## Linting
 
 .PHONY: pre_lint
 pre_lint:
@@ -147,6 +149,10 @@ queries_lint:
 golang_lint: sqlc_struct_check
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
 	$(LINTER) run --config=.golangci.yml --timeout 15m ./...
+
+.PHONY: lint_terraform
+lint_terraform: terraformat
+	@(cd environments/dev/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
 
 .PHONY: lint
 lint: lint_containers queries_lint golang_lint

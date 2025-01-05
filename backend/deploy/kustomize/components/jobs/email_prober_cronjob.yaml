@@ -34,18 +34,18 @@ spec:
                 - name: "RUNNING_IN_KUBERNETES"
                   value: "true"
           containers:
-          - name: email-prober
-            image: dinner-done-better-job-email-prober
-            imagePullPolicy: Always
-            env:
-              - name: "CONFIGURATION_FILEPATH"
-                value: "/etc/service-config.json"
-            volumeMounts:
-            - name: "config"
-              mountPath: "/etc/service-config.json"
-              subPath: "config.json"
-            - name: logs
-              mountPath: /var/log/application
+            - name: email-prober
+              image: dinner-done-better-job-email-prober
+              imagePullPolicy: Always
+              env:
+                - name: "CONFIGURATION_FILEPATH"
+                  value: "/etc/service-config.json"
+              volumeMounts:
+                - name: "config"
+                  mountPath: "/etc/service-config.json"
+                  subPath: "config.json"
+                - name: logs
+                  mountPath: /var/log/application
           restartPolicy: OnFailure
           volumes:
             - name: "config"
