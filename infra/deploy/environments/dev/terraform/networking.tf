@@ -85,3 +85,22 @@ resource "google_certificate_manager_certificate" "default" {
     ]
   }
 }
+
+resource "cloudflare_record" "domain_verification_records" {
+  for_each = {
+    "0": google_certificate_manager_dns_authorization.api
+    "1": google_certificate_manager_dns_authorization.admin
+    "2": google_certificate_manager_dns_authorization.app
+    "3": google_certificate_manager_dns_authorization.www
+    "4": google_certificate_manager_dns_authorization.media
+    "5": google_certificate_manager_dns_authorization.userdata
+  }
+
+  zone_id  = var.CLOUDFLARE_ZONE_ID
+  name     = each.value.name
+  type     = upper(each.value.type)
+  content  = each.value.data
+  ttl      = 1
+  proxied  = false
+  comment  = "Managed by Terraform"
+}

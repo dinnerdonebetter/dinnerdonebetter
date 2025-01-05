@@ -17,3 +17,6 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 }
 
 data "google_certificate_manager_certificates" "dev" {}
+
+
+
