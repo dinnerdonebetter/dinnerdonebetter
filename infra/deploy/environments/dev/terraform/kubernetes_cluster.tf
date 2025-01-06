@@ -87,33 +87,3 @@ resource "google_container_node_pool" "primary_nodes" {
 #     all_namespaces = true
 #   }
 # }
-
-locals {
-  k8s_namespace = "dev"
-}
-
-variable "CREATE_CLUSTER_RESOURCES" {
-  type = bool
-  default = false
-}
-
-provider "kubernetes" {
-  config_path    = "./terraform_kubeconfig"
-  config_context = "${local.k8s_namespace}_context"
-}
-
-resource "kubernetes_namespace" "dev" {
-  metadata {
-    annotations = {
-      (local.managed_by_label) = "terraform"
-    }
-
-    labels = {
-      (local.managed_by_label) = "terraform"
-    }
-
-    name = local.k8s_namespace
-  }
-
-  depends_on = [google_container_cluster.primary]
-}

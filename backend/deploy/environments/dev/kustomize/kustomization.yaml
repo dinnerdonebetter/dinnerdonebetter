@@ -5,7 +5,6 @@ kind: Kustomization
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
-  - namespace.yaml
   - ingress.yaml
   - ../../../kustomize/components/api_server
   - ../../../kustomize/components/jobs
