@@ -98,7 +98,7 @@ variable "CREATE_CLUSTER_RESOURCES" {
 }
 
 resource "kubernetes_namespace" "dev" {
-  count = var.CREATE_CLUSTER_RESOURCES ? 1 : 0
+  # count = var.CREATE_CLUSTER_RESOURCES ? 1 : 0
   metadata {
     annotations = {
       (local.managed_by_label) = "terraform"
