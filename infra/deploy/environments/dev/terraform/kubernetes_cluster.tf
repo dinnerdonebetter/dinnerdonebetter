@@ -97,8 +97,12 @@ variable "CREATE_CLUSTER_RESOURCES" {
   default = false
 }
 
+provider "kubernetes" {
+  config_path    = "./terraform_kubeconfig"
+  config_context = "${local.k8s_namespace}_context"
+}
+
 resource "kubernetes_namespace" "dev" {
-  # count = var.CREATE_CLUSTER_RESOURCES ? 1 : 0
   metadata {
     annotations = {
       (local.managed_by_label) = "terraform"
