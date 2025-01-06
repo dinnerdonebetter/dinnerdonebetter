@@ -67,5 +67,8 @@ helm_deps:
 
 .PHONY: deploy_dev
 deploy_dev: helm_deps
-	# kubectl delete deployments,cronjobs,configmaps,services,secrets --namespace $(DEV_NAMESPACE) --selector='managed_by!=terraform'
 	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)
+
+.PHONY: nuke_dev
+nuke_dev:
+	kubectl delete deployments,cronjobs,configmaps,services,secrets --namespace $(DEV_NAMESPACE) --selector='managed_by!=terraform'

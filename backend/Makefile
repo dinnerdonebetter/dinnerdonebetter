@@ -40,9 +40,6 @@ clean-$(ARTIFACTS_DIR):
 
 ## prerequisites
 
-.PHONY: setup
-setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed
-
 .PHONY: ensure_scc_installed
 ensure_scc_installed:
 ifeq (, $(shell which scc))
@@ -85,6 +82,15 @@ ifeq (, $(shell which scc))
 	$(shell go install github.com/boyter/scc@latest)
 endif
 
+.PHONY: ensure_yamlfmt_installed
+ensure_yamlfmt_installed:
+ifeq (, $(shell which yamlfmt))
+	$(shell go install github.com/google/yamlfmt/cmd/yamlfmt@latest)
+endif
+
+.PHONY: setup
+setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed ensure_yamlfmt_installed
+
 .PHONY: clean_vendor
 clean_vendor:
 	rm -rf vendor go.sum
@@ -126,6 +132,10 @@ format: format_golang terraformat
 
 .PHONY: fmt
 fmt: format
+
+.PHONY: format_yaml
+format_yaml: ensure_yamlfmt_installed
+	yamlfmt -conf .yamlfmt.yaml
 
 ## Linting
 
@@ -294,7 +304,4 @@ DEV_NAMESPACE := dev
 
 .PHONY: deploy_dev
 deploy_dev:
-	kubectl delete deployments,cronjobs --all --ignore-not-found=true --namespace $(DEV_NAMESPACE)
-	kubectl get configmap --namespace $(DEV_NAMESPACE) --no-headers -o custom-columns=NAME:.metadata.name | grep '^dinner-done-better-' | xargs kubectl delete configmap --namespace $(DEV_NAMESPACE)
-	kubectl delete configmap --namespace $(DEV_NAMESPACE) opentelemetry-collector-config
 	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)

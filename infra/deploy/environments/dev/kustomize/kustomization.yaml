@@ -5,10 +5,10 @@ kind: Kustomization
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
-  - external_dns.yaml
   # - cert_manager.yaml
-  # - cert_issuer.yaml
-  # - cert_secret.yaml
+  - external_dns.yaml
+  - cert_issuer.yaml
+  - cert_secret.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

@@ -7,7 +7,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ingress.yaml
-  - external_dns.yaml
   - ../../../kustomize/components/api_server
   - ../../../kustomize/components/jobs
   - ../../../kustomize/components/async_functions

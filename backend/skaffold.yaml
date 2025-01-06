@@ -7,6 +7,8 @@ metadata:
 
 profiles:
   - name: localdev
+    activation:
+      - kubeContext: docker-desktop
     build:
       tagPolicy:
         sha256: {}
