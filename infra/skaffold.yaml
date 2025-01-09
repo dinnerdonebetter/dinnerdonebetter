@@ -58,8 +58,8 @@ profiles:
               serverFiles:
                 prometheus.yml:
                   rule_files:
-                    - /etc/config/recording_rules.yml
-                    - /etc/config/alerting_rules.yml
+                    - /etc/routingcfg/recording_rules.yml
+                    - /etc/routingcfg/alerting_rules.yml
 
           # o11y dashboard
           - name: grafana

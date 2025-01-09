@@ -68,10 +68,9 @@ spec:
             - --events
             - --cloudflare-proxied # (optional) enable the proxy feature of Cloudflare (DDOS protection, CDN...)
             - --source=ingress # service is also possible
-            # - --source=service                                  # ingress is also possible
-            # - --cloudflare-dns-records-per-page=5000            # (optional) configure how many DNS records to fetch per request
-            # - --domain-filter=dinnerdonebetter.dev              # (optional) limit to only example.com domains; change to match the zone created above.
-            # - --zone-id-filter=e70f90623cbb6e3b344f132b58311c69 # (optional) limit to a specific zone.
+            - --domain-filter=dinnerdonebetter.dev # (optional) limit to only example.com domains; change to match the zone created above.
+            - --zone-id-filter=e70f90623cbb6e3b344f132b58311c69 # (optional) limit to a specific zone.
+            - --cloudflare-dns-records-per-page=5000 # (optional) configure how many DNS records to fetch per request
           env:
             - name: CF_API_TOKEN
               valueFrom:

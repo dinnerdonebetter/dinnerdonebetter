@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/go-chi/chi/v5"
@@ -17,7 +18,7 @@ import (
 )
 
 func buildRouterForTest() routing.Router {
-	return NewRouter(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routing.Config{})
+	return NewRouter(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routingcfg.Config{})
 }
 
 func TestNewRouter(T *testing.T) {
@@ -26,7 +27,7 @@ func TestNewRouter(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, NewRouter(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routing.Config{}))
+		assert.NotNil(t, NewRouter(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routingcfg.Config{}))
 	})
 }
 
@@ -36,7 +37,7 @@ func Test_buildChiMux(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, buildChiMux(logging.NewNoopLogger(), tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())), metrics.NewNoopMetricsProvider(), &routing.Config{}))
+		assert.NotNil(t, buildChiMux(logging.NewNoopLogger(), tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())), metrics.NewNoopMetricsProvider(), &routingcfg.Config{}))
 	})
 }
 
@@ -272,7 +273,7 @@ func Test_router_clone(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routing.Config{})
+		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routingcfg.Config{})
 
 		assert.NotNil(t, r.clone())
 	})
@@ -284,7 +285,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routing.Config{})
+		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routingcfg.Config{})
 		l := logging.NewNoopLogger()
 		ctx := context.Background()
 		exampleKey := "blah"
@@ -312,7 +313,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 	T.Run("without appropriate value attached to context", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routing.Config{})
+		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routingcfg.Config{})
 		l := logging.NewNoopLogger()
 		ctx := context.Background()
 		exampleKey := "blah"
@@ -335,7 +336,7 @@ func Test_router_BuildRouteParamStringIDFetcher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routing.Config{})
+		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &routingcfg.Config{})
 		ctx := context.Background()
 		exampleKey := "blah"
 

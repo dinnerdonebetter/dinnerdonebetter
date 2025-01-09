@@ -17,8 +17,8 @@ spec:
               image: otel/opentelemetry-collector-contrib:0.115.1
               command:
                 - "/otelcol-contrib"
-                - "--config"
-                - "/conf/config.yaml"
+                - "--routingcfg"
+                - "/conf/routingcfg.yaml"
               ports:
                 - containerPort: 4317
                   name: otel1
@@ -28,7 +28,7 @@ spec:
                 - name: logs
                   mountPath: /var/log/application
                   readOnly: true
-                - name: opentelemetry-config
+                - name: opentelemetry-routingcfg
                   mountPath: /conf
               env:
                 - name: "RUNNING_IN_KUBERNETES"
@@ -40,23 +40,23 @@ spec:
               imagePullPolicy: Always
               env:
                 - name: "CONFIGURATION_FILEPATH"
-                  value: "/etc/service-config.json"
+                  value: "/etc/service-routingcfg.json"
               volumeMounts:
-                - name: "config"
-                  mountPath: "/etc/service-config.json"
-                  subPath: "config.json"
+                - name: "routingcfg"
+                  mountPath: "/etc/service-routingcfg.json"
+                  subPath: "routingcfg.json"
                 - name: logs
                   mountPath: /var/log/application
           volumes:
-            - name: "config"
+            - name: "routingcfg"
               configMap:
-                name: "dinner-done-better-job-db-cleaner-config"
+                name: "dinner-done-better-job-db-cleaner-routingcfg"
             # this volume is where we write logs to, and where we read logs from in the collector.
             - name: logs
               emptyDir:
                 sizeLimit: 500Mi
             # this volume contains the configuration file for the OTel collector.
-            - name: opentelemetry-config
+            - name: opentelemetry-routingcfg
               configMap:
-                name: opentelemetry-collector-config
+                name: opentelemetry-collector-routingcfg
 ---

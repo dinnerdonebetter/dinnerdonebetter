@@ -3,6 +3,7 @@ package encoding
 import (
 	"bytes"
 	"context"
+	"io"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -25,4 +26,9 @@ func MustEncode(data any, ct *contentType) []byte {
 // MustEncodeJSON JSON encodes a piece of data.
 func MustEncodeJSON(data any) []byte {
 	return MustEncode(data, ContentTypeJSON)
+}
+
+// MustJSONIntoReader JSON encodes a piece of data.
+func MustJSONIntoReader(data any) io.Reader {
+	return bytes.NewReader(MustEncode(data, ContentTypeJSON))
 }

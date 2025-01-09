@@ -1,15 +1,16 @@
 ---
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersion: kustomize.routingcfg.k8s.io/v1beta1
 kind: Kustomization
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
   - namespace.yaml
   - external_dns.yaml
-  # - cert_manager.yaml
-  # - cert_issuer.yaml
-  # - cert_secret.yaml
+  - ingress.yaml
+  - cert_issuer.yaml # the letsencrypt definition that will issue our cert
+  - cert_secret.yaml # the secret where the cert will get stored
+  - certificate.yaml # the certificate request itself for the issuer to fulfill
 
 generatorOptions:
   disableNameSuffixHash: true

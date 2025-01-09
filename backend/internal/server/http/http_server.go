@@ -242,9 +242,8 @@ func (s *server) Serve() {
 		s.panicker.Panic(err)
 	}
 
-	s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTP requests")
-
 	if s.config.HTTPSCertificateFile != "" && s.config.HTTPSCertificateKeyFile != "" {
+		s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTPS requests")
 		// returns ErrServerClosed on graceful close.
 		if err := s.httpServer.ListenAndServeTLS(s.config.HTTPSCertificateFile, s.config.HTTPSCertificateKeyFile); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
@@ -256,6 +255,7 @@ func (s *server) Serve() {
 			s.logger.Error("shutting server down", err)
 		}
 	} else {
+		s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTP requests")
 		// returns ErrServerClosed on graceful close.
 		if err := s.httpServer.ListenAndServe(); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {

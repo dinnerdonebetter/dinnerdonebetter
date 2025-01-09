@@ -56,17 +56,16 @@ regit:
 	cp -rf tempdir/.git .
 	rm -rf tempdir
 
-#### NEW DEV K8S ENVIRONMENT ZONE
+#### K8S ENVIRONMENT ZONE
 
 DEV_NAMESPACE := dev
 
-.PHONY: helm_deps
-helm_deps:
-	helm repo add jetstack https://charts.jetstack.io --force-update
-	helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/ --force-update
+.PHONY: install_cert_manager
+install_cert_manager:
+	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
 .PHONY: deploy_dev
-deploy_dev: helm_deps
+deploy_dev: install_cert_manager
 	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)
 
 .PHONY: nuke_dev

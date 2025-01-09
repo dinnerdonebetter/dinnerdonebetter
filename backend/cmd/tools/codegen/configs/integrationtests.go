@@ -15,7 +15,8 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/routing/chi"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
@@ -29,10 +30,12 @@ import (
 func buildIntegrationTestsConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
 		Routing: routingcfg.Config{
-			ServiceName:            otelServiceName,
-			Provider:               routingcfg.ChiProvider,
-			EnableCORSForLocalhost: true,
-			SilenceRouteLogging:    false,
+			Provider: routingcfg.ProviderChi,
+			ChiConfig: &chi.Config{
+				ServiceName:            otelServiceName,
+				EnableCORSForLocalhost: true,
+				SilenceRouteLogging:    false,
+			},
 		},
 		Meta: config.MetaSettings{
 			Debug:   false,

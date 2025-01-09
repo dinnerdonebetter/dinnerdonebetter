@@ -15,7 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
@@ -37,7 +37,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(t *testing.T) {
 			Segment:  &segment.Config{},
 		},
 		Encoding: encoding.Config{ContentType: "application/json"},
-		Routing: routing.Config{
+		Routing: routingcfg.Config{
 			ServiceName: t.Name(),
 		},
 		Database: databasecfg.Config{},

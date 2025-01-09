@@ -87,11 +87,16 @@
 		"debug": false
 	},
 	"routing": {
-		"serviceName": "dinner_done_better_api",
-		"provider": "chi",
-		"enableCORSForLocalhost": true
+		"chiConfig": {
+			"serviceName": "dinner_done_better_api",
+			"enableCORSForLocalhost": true
+		},
+		"provider": "chi"
 	},
 	"server": {
+		"autocert": {
+			"addresses": null
+		},
 		"startupDeadline": 60000000000,
 		"httpPort": 8000,
 		"debug": false

@@ -19,7 +19,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/routing/chi"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
@@ -46,10 +47,12 @@ const (
 func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 	cfg := &config.APIServiceConfig{
 		Routing: routingcfg.Config{
-			ServiceName:            otelServiceName,
-			Provider:               routingcfg.ChiProvider,
-			EnableCORSForLocalhost: true,
-			SilenceRouteLogging:    false,
+			Provider: routingcfg.ProviderChi,
+			ChiConfig: &chi.Config{
+				ServiceName:            otelServiceName,
+				EnableCORSForLocalhost: true,
+				SilenceRouteLogging:    false,
+			},
 		},
 		Meta: config.MetaSettings{
 			Debug:   true,

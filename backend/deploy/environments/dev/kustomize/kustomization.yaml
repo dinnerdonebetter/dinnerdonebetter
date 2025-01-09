@@ -1,11 +1,10 @@
 ---
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersion: kustomize.routingcfg.k8s.io/v1beta1
 kind: Kustomization
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
-  - ingress.yaml
   - ../../../kustomize/components/api_server
   - ../../../kustomize/components/jobs
   - ../../../kustomize/components/async_functions
@@ -46,7 +45,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_HOST
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -54,7 +53,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -62,7 +61,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: OAUTH2_TOKEN_ENCRYPTION_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -70,7 +69,7 @@ patches:
           name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: SEGMENT_API_TOKEN
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -78,7 +77,7 @@ patches:
           name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: ALGOLIA_API_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -86,7 +85,7 @@ patches:
           name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_APP_ID
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: ALGOLIA_APPLICATION_ID
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -94,7 +93,7 @@ patches:
           name: DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: SENDGRID_API_TOKEN
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -102,7 +101,7 @@ patches:
           name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: POSTHOG_PERSONAL_API_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -110,7 +109,7 @@ patches:
           name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PROJECT_API_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: POSTHOG_API_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -118,7 +117,7 @@ patches:
           name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: JWT_SIGNING_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -126,7 +125,7 @@ patches:
           name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GOOGLE_SSO_OAUTH2_CLIENT_ID
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -134,7 +133,7 @@ patches:
           name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GOOGLE_SSO_OAUTH2_CLIENT_SECRET
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -189,7 +188,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_HOST
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -197,7 +196,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -205,7 +204,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: OAUTH2_TOKEN_ENCRYPTION_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -213,7 +212,7 @@ patches:
           name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: SEGMENT_API_TOKEN
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -221,7 +220,7 @@ patches:
           name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: ALGOLIA_API_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -229,7 +228,7 @@ patches:
           name: DINNER_DONE_BETTER_SEARCH_ALGOLIA_APP_ID
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: ALGOLIA_APPLICATION_ID
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -237,7 +236,7 @@ patches:
           name: DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: SENDGRID_API_TOKEN
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -245,7 +244,7 @@ patches:
           name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: POSTHOG_PERSONAL_API_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -253,7 +252,7 @@ patches:
           name: DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PROJECT_API_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: POSTHOG_API_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -261,7 +260,7 @@ patches:
           name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: JWT_SIGNING_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -269,7 +268,7 @@ patches:
           name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GOOGLE_SSO_OAUTH2_CLIENT_ID
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -277,7 +276,7 @@ patches:
           name: DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GOOGLE_SSO_OAUTH2_CLIENT_SECRET
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -332,7 +331,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_HOST
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -340,7 +339,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -348,7 +347,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: OAUTH2_TOKEN_ENCRYPTION_KEY
     target:
       kind: CronJob
@@ -362,7 +361,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_HOST
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -370,7 +369,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -378,7 +377,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: OAUTH2_TOKEN_ENCRYPTION_KEY
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -386,7 +385,7 @@ patches:
           name: DINNER_DONE_BETTER_EMAIL_SENDGRID_API_TOKEN
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: SENDGRID_API_TOKEN
     target:
       kind: CronJob
@@ -400,7 +399,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_HOST
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -408,7 +407,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -416,7 +415,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: OAUTH2_TOKEN_ENCRYPTION_KEY
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -470,7 +469,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_HOST
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -478,7 +477,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -486,7 +485,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: OAUTH2_TOKEN_ENCRYPTION_KEY
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -494,7 +493,7 @@ patches:
           name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: SEGMENT_API_TOKEN
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -548,7 +547,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_HOST
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -556,7 +555,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -564,7 +563,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: OAUTH2_TOKEN_ENCRYPTION_KEY
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -572,7 +571,7 @@ patches:
             name: DINNER_DONE_BETTER_ANALYTICS_SEGMENT_API_TOKEN
             valueFrom:
                 secretKeyRef:
-                    name: api-service-config
+                    name: api-service-routingcfg
                     key: SEGMENT_API_TOKEN
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -626,7 +625,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_HOST
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -634,7 +633,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: DATABASE_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -642,7 +641,7 @@ patches:
           name: DINNER_DONE_BETTER_DATABASE_OAUTH2_TOKEN_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: OAUTH2_TOKEN_ENCRYPTION_KEY
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
@@ -704,7 +703,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -712,7 +711,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -720,7 +719,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -728,7 +727,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -736,7 +735,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -744,7 +743,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       version: v1
@@ -763,7 +762,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -771,7 +770,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -779,7 +778,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -787,7 +786,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -795,7 +794,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -803,7 +802,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       version: v1
@@ -827,7 +826,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -835,7 +834,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -843,7 +842,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -851,7 +850,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -859,7 +858,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -867,7 +866,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -886,7 +885,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -894,7 +893,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -902,7 +901,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -910,7 +909,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -918,7 +917,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -926,7 +925,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -944,7 +943,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -952,7 +951,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -960,7 +959,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -968,7 +967,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -976,7 +975,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -984,7 +983,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -1002,7 +1001,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1010,7 +1009,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1018,7 +1017,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1026,7 +1025,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1034,7 +1033,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1042,7 +1041,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -1060,7 +1059,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1068,7 +1067,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1076,7 +1075,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1084,7 +1083,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1092,7 +1091,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1100,7 +1099,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -1118,7 +1117,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1126,7 +1125,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1134,7 +1133,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1142,7 +1141,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1150,7 +1149,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1158,7 +1157,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: api-service-routingcfg
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -1169,50 +1168,50 @@ labels:
       app.kubernetes.io/name: dinner-done-better-backend
 
 configMapGenerator:
-  - name: opentelemetry-collector-config
+  - name: opentelemetry-collector-routingcfg
     namespace: dev
     files:
-      - config.yaml=./configs/otel_collector_config.yaml
+      - routingcfg.yaml=./configs/otel_collector_config.yaml
 
-  - name: dinner-done-better-service-api-config
+  - name: dinner-done-better-service-api-routingcfg
     namespace: dev
     files:
-      - config.json=./configs/api_service_config.json
+      - routingcfg.json=./configs/api_service_config.json
 
-  - name: dinner-done-better-async-message-handler-config
+  - name: dinner-done-better-async-message-handler-routingcfg
     namespace: dev
     files:
-      - config.json=./configs/async_message_handler_config.json
+      - routingcfg.json=./configs/async_message_handler_config.json
 
-  - name: dinner-done-better-job-db-cleaner-config
+  - name: dinner-done-better-job-db-cleaner-routingcfg
     namespace: dev
     files:
-      - config.json=./configs/job_db_cleaner_config.json
+      - routingcfg.json=./configs/job_db_cleaner_config.json
 
-  - name: dinner-done-better-job-email-prober-config
+  - name: dinner-done-better-job-email-prober-routingcfg
     namespace: dev
     files:
-      - config.json=./configs/job_email_prober_config.json
+      - routingcfg.json=./configs/job_email_prober_config.json
 
-  - name: dinner-done-better-job-meal-plan-finalizer-config
+  - name: dinner-done-better-job-meal-plan-finalizer-routingcfg
     namespace: dev
     files:
-      - config.json=./configs/job_meal_plan_finalizer_config.json
+      - routingcfg.json=./configs/job_meal_plan_finalizer_config.json
 
-  - name: dinner-done-better-job-meal-plan-grocery-list-init-config
+  - name: dinner-done-better-job-meal-plan-grocery-list-init-routingcfg
     namespace: dev
     files:
-      - config.json=./configs/job_meal_plan_grocery_list_initializer_config.json
+      - routingcfg.json=./configs/job_meal_plan_grocery_list_initializer_config.json
 
-  - name: dinner-done-better-job-meal-plan-task-creator-config
+  - name: dinner-done-better-job-meal-plan-task-creator-routingcfg
     namespace: dev
     files:
-      - config.json=./configs/job_meal_plan_task_creator_config.json
+      - routingcfg.json=./configs/job_meal_plan_task_creator_config.json
 
-  - name: dinner-done-better-job-search-data-index-scheduler-config
+  - name: dinner-done-better-job-search-data-index-scheduler-routingcfg
     namespace: dev
     files:
-      - config.json=./configs/job_search_data_index_scheduler_config.json
+      - routingcfg.json=./configs/job_search_data_index_scheduler_config.json
 
 generatorOptions:
   disableNameSuffixHash: true

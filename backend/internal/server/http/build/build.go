@@ -21,7 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
-	"github.com/dinnerdonebetter/backend/internal/routing/chi"
+	"github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	adminservice "github.com/dinnerdonebetter/backend/internal/services/admin"
 	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
@@ -85,7 +85,6 @@ func Build(
 		msgconfig.MessageQueueProviders,
 		http.ProvidersHTTP,
 		images.ProvidersImages,
-		chi.ProvidersChi,
 		random.ProvidersRandom,
 		featureflagscfg.ProvidersFeatureFlags,
 		tracing.ProvidersTracing,
@@ -140,6 +139,7 @@ func Build(
 		auditlogentriesservice.Providers,
 		dataprivacyservice.Providers,
 		metricscfg.ProvidersMetrics,
+		routingcfg.RoutingConfigProviders,
 	)
 
 	return nil, nil

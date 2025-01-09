@@ -17,7 +17,8 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/routing/chi"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
@@ -33,10 +34,12 @@ import (
 func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
 		Routing: routingcfg.Config{
-			ServiceName:            otelServiceName,
-			Provider:               routingcfg.ChiProvider,
-			EnableCORSForLocalhost: true,
-			SilenceRouteLogging:    false,
+			Provider: routingcfg.ProviderChi,
+			ChiConfig: &chi.Config{
+				ServiceName:            otelServiceName,
+				EnableCORSForLocalhost: true,
+				SilenceRouteLogging:    false,
+			},
 		},
 		Queues: msgconfig.QueuesConfig{
 			DataChangesTopicName:              dataChangesTopicName,

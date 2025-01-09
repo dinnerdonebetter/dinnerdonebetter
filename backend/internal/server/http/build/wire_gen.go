@@ -8,7 +8,6 @@ package build
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -23,7 +22,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
-	"github.com/dinnerdonebetter/backend/internal/routing/chi"
+	"github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	"github.com/dinnerdonebetter/backend/internal/services/admin"
 	"github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
@@ -90,13 +89,16 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
+	routingcfgConfig := &cfg.Routing
 	metricscfgConfig := &observabilityConfig.Metrics
 	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
 	if err != nil {
 		return nil, err
 	}
-	routingConfig := &cfg.Routing
-	router := chi.NewRouter(logger, tracerProvider, provider, routingConfig)
+	router, err := routingcfg.ProvideRouter(routingcfgConfig, logger, tracerProvider, provider)
+	if err != nil {
+		return nil, err
+	}
 	servicesConfig := &cfg.Services
 	authenticationConfig := &servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
@@ -120,7 +122,10 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	routeParamManager := chi.NewRouteParamManager()
+	routeParamManager, err := routingcfg.ProvideRouteParamManager(routingcfgConfig, logger, tracerProvider, provider)
+	if err != nil {
+		return nil, err
+	}
 	queuesConfig := &cfg.Queues
 	authDataService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, provider, queuesConfig)
 	if err != nil {

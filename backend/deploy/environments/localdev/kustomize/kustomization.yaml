@@ -1,6 +1,6 @@
 ---
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersion: kustomize.routingcfg.k8s.io/v1beta1
 kind: Kustomization
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
@@ -22,45 +22,45 @@ labels:
       app.kubernetes.io/name: dinner-done-better-backend
 
 configMapGenerator:
-  - name: opentelemetry-collector-config
+  - name: opentelemetry-collector-routingcfg
     namespace: localdev
     files:
-      - config.yaml=configs/otel_collector_config.yaml
+      - routingcfg.yaml=configs/otel_collector_config.yaml
 
-  - name: dinner-done-better-service-api-config
+  - name: dinner-done-better-service-api-routingcfg
     namespace: localdev
     files:
-      - config.json=configs/api_service_config.json
+      - routingcfg.json=configs/api_service_config.json
 
-  - name: dinner-done-better-job-db-cleaner-config
+  - name: dinner-done-better-job-db-cleaner-routingcfg
     namespace: localdev
     files:
-      - config.json=configs/job_db_cleaner_config.json
+      - routingcfg.json=configs/job_db_cleaner_config.json
 
-  - name: dinner-done-better-job-email-prober-config
+  - name: dinner-done-better-job-email-prober-routingcfg
     namespace: localdev
     files:
-      - config.json=configs/job_email_prober_config.json
+      - routingcfg.json=configs/job_email_prober_config.json
 
-  - name: dinner-done-better-job-meal-plan-finalizer-config
+  - name: dinner-done-better-job-meal-plan-finalizer-routingcfg
     namespace: localdev
     files:
-      - config.json=configs/job_meal_plan_finalizer_config.json
+      - routingcfg.json=configs/job_meal_plan_finalizer_config.json
 
-  - name: dinner-done-better-job-meal-plan-grocery-list-init-config
+  - name: dinner-done-better-job-meal-plan-grocery-list-init-routingcfg
     namespace: localdev
     files:
-      - config.json=configs/job_meal_plan_grocery_list_initializer_config.json
+      - routingcfg.json=configs/job_meal_plan_grocery_list_initializer_config.json
 
-  - name: dinner-done-better-job-meal-plan-task-creator-config
+  - name: dinner-done-better-job-meal-plan-task-creator-routingcfg
     namespace: localdev
     files:
-      - config.json=configs/job_meal_plan_task_creator_config.json
+      - routingcfg.json=configs/job_meal_plan_task_creator_config.json
 
-  - name: dinner-done-better-job-search-data-index-scheduler-config
+  - name: dinner-done-better-job-search-data-index-scheduler-routingcfg
     namespace: localdev
     files:
-      - config.json=configs/job_search_data_index_scheduler_config.json
+      - routingcfg.json=configs/job_search_data_index_scheduler_config.json
 
 generatorOptions:
   disableNameSuffixHash: true

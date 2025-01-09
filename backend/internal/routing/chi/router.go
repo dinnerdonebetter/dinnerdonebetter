@@ -35,14 +35,15 @@ var (
 var _ routing.Router = (*router)(nil)
 
 type router struct {
-	router         chi.Router
-	cfg            *routing.Config
+	router chi.Router
+	// we hold onto this to create subrouters with
+	cfg            *Config
 	logger         logging.Logger
 	tracerProvider tracing.TracerProvider
 	metricProvider metrics.Provider
 }
 
-func buildChiMux(logger logging.Logger, tracer tracing.Tracer, metricProvider metrics.Provider, cfg *routing.Config) chi.Router {
+func buildChiMux(logger logging.Logger, tracer tracing.Tracer, metricProvider metrics.Provider, cfg *Config) chi.Router {
 	corsHandler := cors.New(cors.Options{
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
 			u, err := url.Parse(origin)
@@ -50,7 +51,13 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, metricProvider me
 				return false
 			}
 
-			return slices.Contains(cfg.ValidDomains, u.Hostname()) || cfg.EnableCORSForLocalhost && u.Hostname() == "localhost"
+			cfg.ValidDomains = append(cfg.ValidDomains, "dinner-done-better.dev.svc.cluster.local:8000")
+
+			result := slices.Contains(cfg.ValidDomains, u.Hostname()) || cfg.EnableCORSForLocalhost && u.Hostname() == "localhost"
+
+			logger.WithValue("result", result).Info("CORS Middleware")
+
+			return result
 		},
 		AllowedMethods: []string{
 			http.MethodGet,
@@ -98,7 +105,7 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, metricProvider me
 	return mux
 }
 
-func buildRouter(mux chi.Router, l logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider, cfg *routing.Config) *router {
+func buildRouter(mux chi.Router, l logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider, cfg *Config) *router {
 	logger := logging.EnsureLogger(l)
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("router"))
 
@@ -131,7 +138,7 @@ func convertMiddleware(in ...routing.Middleware) []func(handler http.Handler) ht
 }
 
 // NewRouter constructs a new router.
-func NewRouter(logger logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider, cfg *routing.Config) routing.Router {
+func NewRouter(logger logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider, cfg *Config) routing.Router {
 	return buildRouter(nil, logger, tracerProvider, metricProvider, cfg)
 }
 

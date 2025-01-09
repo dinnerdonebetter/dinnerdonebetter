@@ -52,12 +52,8 @@ func main() {
 	json.Unmarshal(configBytes, &loadedCfg)
 
 	logger := cfg.Observability.Logging.ProvideLogger()
-	logger.WithValues(map[string]any{
-		"raw_config":      loadedCfg,
-		"post_env_config": cfg,
-	}).Info("parsed configs")
 
-	log.Println("building server")
+	logger.Info("building server")
 	// build our server struct.
 	srv, err := build.Build(buildCtx, cfg)
 	if err != nil {

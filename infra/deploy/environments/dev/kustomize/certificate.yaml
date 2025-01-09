@@ -1,0 +1,74 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dinner-done-better-cert
+spec:
+  # Secret names are always required.
+  secretName: dinner-done-better-cert
+
+  # secretTemplate is optional. If set, these annotations and labels will be
+  # copied to the Secret named dinner-done-better-tls. These labels and annotations will
+  # be re-reconciled if the Certificate's secretTemplate changes. secretTemplate
+  # is also enforced, so relevant label and annotation changes on the Secret by a
+  # third party will be overwriten by cert-manager to match the secretTemplate.
+  secretTemplate:
+    annotations:
+      managed_by: "cert-manager"
+    labels:
+      managed_by: "cert-manager"
+
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+
+  #  # keystores allows adding additional output formats. This is an example for reference only.
+  #  keystores:
+  #    pkcs12:
+  #      create: true
+  #      passwordSecretRef:
+  #        name: dinner-done-better-tls-keystore
+  #        key: password
+  #      profile: Modern2023
+
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+
+  isCA: false
+  usages:
+    - server auth
+    - client auth
+
+  subject:
+    organizations:
+      - dinner-done-better
+
+  # Avoid using commonName for DNS names in end-entity (leaf) certificates. Unless you have a specific
+  # need for it in your environment, use dnsNames exclusively to avoid issues with commonName.
+  # Usually, commonName is used to give human-readable names to CA certificates and can be avoided for
+  # other certificates.
+  # commonName: dinnerdonebetter.dev
+
+  # The literalSubject field is exclusive with subject and commonName. It allows
+  # specifying the subject directly as a string. This is useful for when the order
+  # of the subject fields is important or when the subject contains special types
+  # which can be specified by their OID.
+  #
+  # literalSubject: "O=jetstack, CN=example.com, 2.5.4.42=John, 2.5.4.4=Doe"
+
+  # At least one of commonName (possibly through literalSubject), dnsNames, uris, emailAddresses, ipAddresses or otherNames is required.
+  dnsNames:
+    - api.dinnerdonebetter.dev
+    - app.dinnerdonebetter.dev
+    - admin.dinnerdonebetter.dev
+    - www.dinnerdonebetter.dev
+    #  emailAddresses:
+    #    - verygoodsoftwarenotvirus@protonmail.com
+
+  # Issuer references are always required.
+  issuerRef:
+    name: letsencrypt
+    kind: Issuer
+    group: cert-manager.io
+---

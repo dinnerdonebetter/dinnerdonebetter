@@ -43,49 +43,49 @@ clean-$(ARTIFACTS_DIR):
 .PHONY: ensure_scc_installed
 ensure_scc_installed:
 ifeq (, $(shell which scc))
-	$(shell go install github.com/boyter/scc@latest)
+	$(shell go install github.com/boyter/scc@v3.4.0)
 endif
 
 .PHONY: ensure_wire_installed
 ensure_wire_installed:
 ifeq (, $(shell which wire))
-	$(shell go install github.com/google/wire/cmd/wire@latest)
+	$(shell go install github.com/google/wire/cmd/wire@v0.6.0)
 endif
 
 .PHONY: ensure_fieldalignment_installed
 ensure_fieldalignment_installed:
 ifeq (, $(shell which fieldalignment))
-	$(shell go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest)
+	$(shell go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@v0.29.0)
 endif
 
 .PHONY: ensure_tagalign_installed
 ensure_tagalign_installed:
 ifeq (, $(shell which tagalign))
-	$(shell go install github.com/4meepo/tagalign/cmd/tagalign@latest)
+	$(shell go install github.com/4meepo/tagalign/cmd/tagalign@v1.4.1)
 endif
 
 .PHONY: ensure_gci_installed
 ensure_gci_installed:
 ifeq (, $(shell which gci))
-	$(shell go install github.com/daixiang0/gci@latest)
+	$(shell go install github.com/daixiang0/gci@v0.13.5)
 endif
 
 .PHONY: ensure_sqlc_installed
 ensure_sqlc_installed:
 ifeq (, $(shell which sqlc))
-	$(shell go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest)
-endif
-
-.PHONY: ensure_scc_installed
-ensure_scc_installed:
-ifeq (, $(shell which scc))
-	$(shell go install github.com/boyter/scc@latest)
+	$(shell go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0)
 endif
 
 .PHONY: ensure_yamlfmt_installed
 ensure_yamlfmt_installed:
 ifeq (, $(shell which yamlfmt))
-	$(shell go install github.com/google/yamlfmt/cmd/yamlfmt@latest)
+	$(shell go install github.com/google/yamlfmt/cmd/yamlfmt@v0.14.0)
+endif
+
+.PHONY: ensure_air_installed
+ensure_air_installed:
+ifeq (, $(shell which air))
+	$(shell go install github.com/air-verse/air@v1.61.5)
 endif
 
 .PHONY: setup
@@ -279,6 +279,10 @@ dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
 	--always-recreate-deps \
 	--abort-on-container-exit
 
+.PHONY: run_admin_app
+run_admin_app: ensure_air_installed
+	(cd cmd/services/admin && air -c .air.toml)
+
 ## misc
 
 .PHONY: tree
@@ -297,8 +301,7 @@ line_count: ensure_scc_installed
 proxy_dev_db:
 	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
 
-
-#### NEW DEV K8S ENVIRONMENT ZONE
+#### K8S ENVIRONMENT ZONE
 
 DEV_NAMESPACE := dev
 

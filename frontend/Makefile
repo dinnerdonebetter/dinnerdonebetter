@@ -74,7 +74,7 @@ build_landing_container:
 build_web_container:
 	$(CONTAINER_RUNNER) build --tag ddb_web:latest --file apps/web/Dockerfile .
 
-#### NEW DEV K8S ENVIRONMENT ZONE
+#### K8S ENVIRONMENT ZONE
 
 DEV_NAMESPACE := dev
 

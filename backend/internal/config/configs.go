@@ -18,7 +18,7 @@ import (
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/routing/config"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
@@ -75,7 +75,7 @@ type (
 		Events           msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
 		Observability    observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Meta             MetaSettings           `envPrefix:"META_"          json:"meta"`
-		Routing          routing.Config         `envPrefix:"ROUTING_"       json:"routing"`
+		Routing          routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
 		Server           http.Config            `envPrefix:"SERVER_"        json:"server"`
 		Database         databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`

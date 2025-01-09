@@ -123,6 +123,6 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: backend/deploy/environments/dev/terraform
 
-      - name: remove kubernetes config
+      - name: remove kubernetes routingcfg
         working-directory: backend/deploy/environments/dev
         run: rm -f ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
