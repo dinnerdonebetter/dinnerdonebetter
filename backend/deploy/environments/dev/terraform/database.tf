@@ -38,7 +38,7 @@ resource "google_sql_database_instance" "dev" {
     }
 
     password_validation_policy {
-      min_length                  = 32
+      min_length                  = 30 # [0, 30]
       reuse_interval              = 1
       # A combination of lowercase, uppercase, numeric, and non-alphanumeric characters. only other option is "COMPLEXITY_UNSPECIFIED"
       complexity                  = "COMPLEXITY_DEFAULT"
