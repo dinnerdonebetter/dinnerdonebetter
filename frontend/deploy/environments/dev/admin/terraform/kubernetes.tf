@@ -29,11 +29,11 @@ resource "kubernetes_config_map_v1" "frontend_admin_app_service_configmap" {
   depends_on = [data.google_container_cluster.dev_cluster]
 
   data = {
-    APIEndpoint: "dinner-done-better.dev.svc.cluster.local:8000",
-    SegmentAPIToken: var.SEGMENT_API_TOKEN,
-    CookieEncryptionKey: random_string.cookie_encryption_key.result,
-    CookieEncryptionIV: random_bytes.cookie_encryption_iv.base64,
-    APIOAuth2ClientID: var.DINNER_DONE_BETTER_OAUTH2_CLIENT_ID,
-    APIOAuth2ClientSecret: var.DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET
+    APIEndpoint : "dinner-done-better.dev.svc.cluster.local:8000",
+    SegmentAPIToken : var.SEGMENT_API_TOKEN,
+    CookieEncryptionKey : random_string.cookie_encryption_key.result,
+    CookieEncryptionIV : random_bytes.cookie_encryption_iv.base64,
+    APIOAuth2ClientID : var.DINNER_DONE_BETTER_OAUTH2_CLIENT_ID,
+    APIOAuth2ClientSecret : var.DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET
   }
 }
