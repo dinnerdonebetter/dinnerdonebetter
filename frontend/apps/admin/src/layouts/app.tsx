@@ -60,7 +60,7 @@ export function AppLayout(props: AppLayoutProps) {
       });
   };
 
-  const pageTitle = `${disableTitlePrefix ? '' : 'Dinner Done Farter'}${title ? ` - ${title}` : ''}`;
+  const pageTitle = `${disableTitlePrefix ? '' : 'Dinner Done Better'}${title ? ` - ${title}` : ''}`;
 
   const header = (
     <Header height={50} p="xs">

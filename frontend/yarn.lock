@@ -1945,11 +1945,6 @@
   resolved "https://registry.npmjs.org/@open-draft/until/-/until-2.1.0.tgz"
   integrity sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==
 
-"@opentelemetry/api-metrics@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@opentelemetry/api-metrics/-/api-metrics-0.25.0.tgz#3b996842c8043068da4d11a6e96960e757ad6be9"
-  integrity sha512-9T0c9NQAEGRujUC7HzPa2/qZ5px/UvB2sfSU5CAKFRrAlDl2gn25B0oUbDqSRHW/IG1X2rnQ3z2bBQkJyJvE4g==
-
 "@opentelemetry/api@1.9.0":
   version "1.9.0"
   resolved "https://registry.npmjs.org/@opentelemetry/api/-/api-1.9.0.tgz"
@@ -1960,31 +1955,12 @@
   resolved "https://registry.npmjs.org/@opentelemetry/context-async-hooks/-/context-async-hooks-1.26.0.tgz"
   integrity sha512-HedpXXYzzbaoutw6DFLWLDket2FwLkLpil4hGCZ1xYEIMTcivdfwEOISgdbLEWyG3HW52gTq2V9mOVJrONgiwg==
 
-"@opentelemetry/core@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@opentelemetry/core/-/core-0.25.0.tgz#44fae79865483be5dacdf72f99db9f1a603c4bae"
-  integrity sha512-8OTWF4vfCENU112XB5ElLqf0eq/FhsY0SBvvY65vB3+fbZ2Oi+CPsRASrUZWGtC9MJ5rK2lBlY+/jI4a/NPPBg==
-  dependencies:
-    "@opentelemetry/semantic-conventions" "0.25.0"
-    semver "^7.3.5"
-
 "@opentelemetry/core@1.26.0":
   version "1.26.0"
   resolved "https://registry.npmjs.org/@opentelemetry/core/-/core-1.26.0.tgz"
   integrity sha512-1iKxXXE8415Cdv0yjG3G6hQnB5eVEsJce3QaawX8SjDn0mAS0ZM8fAbZZJD4ajvhC15cePvosSCut404KrIIvQ==
   dependencies:
     "@opentelemetry/semantic-conventions" "1.27.0"
-
-"@opentelemetry/exporter-collector@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@opentelemetry/exporter-collector/-/exporter-collector-0.25.0.tgz#5c6a6a95cb2220aba6085f79b561166e150737df"
-  integrity sha512-xZYstLt4hz1aTloJaepWdjMMf9305MqwqbUWjcU/X9pOxvgFWRlchO6x/HQTw7ow0i/S+ShzC+greKnb+1WvLA==
-  dependencies:
-    "@opentelemetry/api-metrics" "0.25.0"
-    "@opentelemetry/core" "0.25.0"
-    "@opentelemetry/resources" "0.25.0"
-    "@opentelemetry/sdk-metrics-base" "0.25.0"
-    "@opentelemetry/sdk-trace-base" "0.25.0"
 
 "@opentelemetry/propagator-b3@1.26.0":
   version "1.26.0"
@@ -2000,14 +1976,6 @@
   dependencies:
     "@opentelemetry/core" "1.26.0"
 
-"@opentelemetry/resources@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@opentelemetry/resources/-/resources-0.25.0.tgz#a780ab536577359ca9ebe93ccc5d02ba8c3fb2ce"
-  integrity sha512-O46u53vDBlxCML8O9dIjsRcCC2VT5ri1upwhp02ITobgJ16aVD/iScCo1lPl/x2E7yq9uwzMINENiiYZRFb6XA==
-  dependencies:
-    "@opentelemetry/core" "0.25.0"
-    "@opentelemetry/semantic-conventions" "0.25.0"
-
 "@opentelemetry/resources@1.26.0":
   version "1.26.0"
   resolved "https://registry.npmjs.org/@opentelemetry/resources/-/resources-1.26.0.tgz"
@@ -2015,26 +1983,6 @@
   dependencies:
     "@opentelemetry/core" "1.26.0"
     "@opentelemetry/semantic-conventions" "1.27.0"
-
-"@opentelemetry/sdk-metrics-base@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@opentelemetry/sdk-metrics-base/-/sdk-metrics-base-0.25.0.tgz#3ac340ef9f1ff7c649339bb031f6c390a2c8ed70"
-  integrity sha512-7fwPlAFB5Xw8mnVQfq0wqKNw3RXiAMad9T1bk5Sza9LK/L6hz8RTuHWCsFMsj+1OOSAaiPFuUMYrK1J75+2IAg==
-  dependencies:
-    "@opentelemetry/api-metrics" "0.25.0"
-    "@opentelemetry/core" "0.25.0"
-    "@opentelemetry/resources" "0.25.0"
-    lodash.merge "^4.6.2"
-
-"@opentelemetry/sdk-trace-base@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@opentelemetry/sdk-trace-base/-/sdk-trace-base-0.25.0.tgz#4393903a7db8a5ae81a99c4a34121df67e4fdfbe"
-  integrity sha512-TInkLSF/ThM3GNVM+9tgnCVjyNLnRxvAkG585Fhu0HNwaEtCTUwI0r7AvMRIREOreeRWttBG6kvT0LOKdo8yjw==
-  dependencies:
-    "@opentelemetry/core" "0.25.0"
-    "@opentelemetry/resources" "0.25.0"
-    "@opentelemetry/semantic-conventions" "0.25.0"
-    lodash.merge "^4.6.2"
 
 "@opentelemetry/sdk-trace-base@1.26.0":
   version "1.26.0"
@@ -2056,11 +2004,6 @@
     "@opentelemetry/propagator-jaeger" "1.26.0"
     "@opentelemetry/sdk-trace-base" "1.26.0"
     semver "^7.5.2"
-
-"@opentelemetry/semantic-conventions@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-0.25.0.tgz#c100d146957949608c6b9614267ae044cdcb5315"
-  integrity sha512-V3N+MDBiv0TUlorbgiSqk6CvcP876CYUk/41Tg6s8OIyvniTwprE6vPvFQayuABiVkGlHOxv1Mlvp0w4qNdnVg==
 
 "@opentelemetry/semantic-conventions@1.27.0":
   version "1.27.0"
@@ -7929,7 +7872,7 @@ semver@^6.1.1, semver@^6.1.2, semver@^6.3.0, semver@^6.3.1:
   resolved "https://registry.npmjs.org/semver/-/semver-6.3.1.tgz"
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
 
-semver@^7.2.1, semver@^7.3.5, semver@^7.3.7, semver@^7.5.2, semver@^7.5.3, semver@^7.5.4:
+semver@^7.2.1, semver@^7.3.7, semver@^7.5.2, semver@^7.5.3, semver@^7.5.4:
   version "7.6.3"
   resolved "https://registry.npmjs.org/semver/-/semver-7.6.3.tgz"
   integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==

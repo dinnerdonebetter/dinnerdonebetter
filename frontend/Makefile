@@ -2,14 +2,18 @@ NODE_PACKAGE_MANAGER = yarn
 CONTAINER_RUNNER     = docker
 APPS                 = admin web landing
 
+.PHONY: regit
 regit:
 	(rm -rf .git && cd ../ && rm -rf frontend2 && git clone git@github.com:dinnerdonebetter/frontend frontend2 && cp -rf frontend2/.git frontend/.git && rm -rf frontend2)
 
+.PHONY: clean
 clean:
+	for thing in $(APPS); do \
+		(rm -rf node_modules apps/$$thing/node_modules apps/$$thing/.turbo apps/$$thing/.next) \
+	done
 	rm -rf node_modules \
-	apps/web/node_modules apps/web/.turbo apps/web/.next \
-	packages/eslint-custom-config/node_modules \
-	packages/models/node_modules packages/models/.turbo
+		packages/eslint-custom-config/node_modules \
+		packages/models/node_modules packages/**/.turbo
 
 .PHONY: setup
 setup:
