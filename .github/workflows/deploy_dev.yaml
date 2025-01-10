@@ -196,17 +196,6 @@ jobs:
         id: init
         run: terraform init
 
-      # validate infra workspace terraform
-
-      - name: Terraform Validate
-        working-directory: deploy/environments/dev/terraform
-        id: validate
-        run: terraform validate -no-color
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: deploy/environments/dev/terraform
-
       # validate backend workspace terraform
 
       - name: Terraform Format
