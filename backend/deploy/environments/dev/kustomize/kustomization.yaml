@@ -1166,6 +1166,7 @@ patches:
 labels:
   - pairs:
       app.kubernetes.io/name: dinner-done-better-backend
+      deployed_by: skaffold
 
 configMapGenerator:
   - name: opentelemetry-collector-config
@@ -1216,6 +1217,8 @@ configMapGenerator:
 generatorOptions:
   disableNameSuffixHash: true
   labels:
-    type: generated
+    generated_by: skaffold
+    deployed_by: skaffold
   annotations:
-    note: generated
+    generated_by: skaffold
+    deployed_by: skaffold

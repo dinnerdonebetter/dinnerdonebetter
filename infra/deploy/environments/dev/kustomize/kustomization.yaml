@@ -15,9 +15,11 @@ resources:
 generatorOptions:
   disableNameSuffixHash: true
   labels:
-    type: generated
+    deployed_by: skaffold
+    generated_by: skaffold
   annotations:
-    note: generated
+    deployed_by: skaffold
+    generated_by: skaffold
 
 namespace: dev
 ---

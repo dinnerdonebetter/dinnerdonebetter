@@ -13,13 +13,15 @@ resources:
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches: []
 
-#labels:
-#  - pairs:
-#      app.kubernetes.io/name: dinner-done-better
+labels:
+  - pairs:
+      deployed_by: skaffold
 
 generatorOptions:
   disableNameSuffixHash: true
   labels:
-    type: generated
+    deployed_by: skaffold
+    generated_by: skaffold
   annotations:
-    note: generated
+    deployed_by: skaffold
+    generated_by: skaffold

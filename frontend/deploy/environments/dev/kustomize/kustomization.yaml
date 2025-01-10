@@ -92,19 +92,11 @@ patches:
       kind: Deployment
       name: dinner-done-better-webapp-deployment
 
-#labels:
-#  - pairs:
-#      app.kubernetes.io/name: dinner-done-better
+labels:
+  - pairs:
+      deployed_by: skaffold
 
 configMapGenerator:
-  - name: opentelemetry-collector-config
-    namespace: dev
-    files:
-      - config.yaml=configs/otel_collector_config.yaml
-  - name: opentelemetry-collector-config
-    namespace: dev
-    files:
-      - config.yaml=configs/otel_collector_config.yaml
   - name: opentelemetry-collector-config
     namespace: dev
     files:
@@ -113,6 +105,8 @@ configMapGenerator:
 generatorOptions:
   disableNameSuffixHash: true
   labels:
-    type: generated
+    deployed_by: skaffold
+    generated_by: skaffold
   annotations:
-    note: generated
+    deployed_by: skaffold
+    generated_by: skaffold
