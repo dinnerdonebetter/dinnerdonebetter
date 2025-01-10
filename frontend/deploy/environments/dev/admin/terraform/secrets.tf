@@ -12,6 +12,3 @@ resource "random_bytes" "cookie_encryption_iv" {
 # Service OAuth2 Client ID & Secret
 variable "DINNER_DONE_BETTER_OAUTH2_CLIENT_ID" {}
 variable "DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET" {}
-
-# Segment API token
-variable "SEGMENT_API_TOKEN" {}
