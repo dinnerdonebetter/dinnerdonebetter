@@ -1,0 +1,406 @@
+---
+concurrency:
+  group: ${{ github.ref }}
+
+on: [pull_request]
+# push:
+#   branches:
+#     - dev
+
+name: backend - deploy
+jobs:
+  baseline-infra:
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
+      frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
+      frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # these two steps should be commented out if the cluster hasn't been created yet
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
+
+      - name: copy kubeconfig
+        working-directory: backend/deploy/environments/dev
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.3
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: infra/deploy/environments/dev/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: infra/deploy/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: infra/deploy/environments/dev/terraform
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - backend/**
+            frontend:
+              - frontend/apps/**
+              - frontend/packages/**
+              - frontend/environments/dev/**
+            frontend_webapp:
+              - frontend/apps/web/**
+              - frontend/packages/**
+              - frontend/environments/dev/webapp/**
+            frontend_landing:
+              - frontend/apps/landing/**
+              - frontend/packages/**
+              - frontend/environments/dev/landing/**
+            frontend_admin:
+              - frontend/apps/admin/**
+              - frontend/packages/**
+              - frontend/environments/dev/admin/**
+
+  backend-infra:
+    needs: [baseline-infra]
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    if: ${{ needs.baseline-infra.outputs.backend == 'true' }}
+    strategy:
+      matrix:
+        go-version: ['1.23.x']
+        container-registry: ['us-central1-docker.pkg.dev']
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.container-registry }}
+
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
+
+      - name: copy kubeconfig
+        working-directory: backend/deploy/environments/dev
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.3
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: backend/deploy/environments/dev/terraform
+        id: init
+        run: terraform init
+
+      # validate backend workspace terraform
+
+      - name: Terraform Validate
+        working-directory: backend/deploy/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: backend/deploy/environments/dev/terraform
+
+      - name: remove kubernetes config
+        working-directory: backend/deploy/environments/dev
+        run: rm -f ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
+  admin-webapp-infra:
+    needs: [baseline-infra]
+    runs-on: ubuntu-latest
+    if: ${{ needs.baseline-infra.outputs.frontend_admin == 'true' }}
+    strategy:
+      matrix:
+        configs:
+          - gcp-region: 'us-central1'
+            gcp-project: 'dinner-done-better-dev'
+            container-name: 'admin_app_server'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: frontend/deploy/environments/dev/admin/terraform
+        id: init
+        run: terraform init
+
+      # validate infra workspace terraform
+
+      - name: Terraform Validate
+        working-directory: deploy/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: deploy/environments/dev/terraform
+
+      # validate backend workspace terraform
+
+      - name: Terraform Format
+        working-directory: frontend/deploy/environments/dev/admin/terraform
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        working-directory: frontend/deploy/environments/dev/admin/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: frontend/deploy/environments/dev/admin/terraform
+
+  landing-infra:
+    needs: [baseline-infra]
+    runs-on: ubuntu-latest
+    if: ${{ needs.baseline-infra.outputs.frontend_landing == 'true' }}
+    strategy:
+      matrix:
+        configs:
+          - gcp-region: 'us-central1'
+            gcp-project: 'dinner-done-better-dev'
+            container-name: 'landing_server'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: frontend/deploy/environments/dev/landing/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Format
+        working-directory: frontend/deploy/environments/dev/landing/terraform
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        working-directory: frontend/deploy/environments/dev/landing/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: frontend/deploy/environments/dev/landing/terraform
+
+  webapp-infra:
+    needs: [baseline-infra]
+    runs-on: ubuntu-latest
+    if: ${{ needs.baseline-infra.outputs.frontend_webapp == 'true' }}
+    strategy:
+      matrix:
+        configs:
+          - gcp-region: 'us-central1'
+            gcp-project: 'dinner-done-better-dev'
+            container-name: 'webapp_server'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Format
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
+
+  application_deploy:
+    needs:
+      - backend-infra
+      - webapp-infra
+      - admin-webapp-infra
+      - landing-infra
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    if: ${{ needs.baseline-infra.outputs.backend == 'true' }}
+    strategy:
+      matrix:
+        go-version: ['1.23.x']
+        container-registry: ['us-central1-docker.pkg.dev']
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.container-registry }}
+
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
+
+      - name: copy kubeconfig
+        working-directory: backend/deploy/environments/dev
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.3
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: backend/deploy/environments/dev/terraform
+        id: init
+        run: terraform init
+
+      # validate backend workspace terraform
+
+      - name: Terraform Validate
+        working-directory: backend/deploy/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: backend/deploy/environments/dev/terraform
+
+      - name: remove kubernetes config
+        working-directory: backend/deploy/environments/dev
+        run: rm -f ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig

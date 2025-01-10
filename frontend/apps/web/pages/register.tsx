@@ -36,16 +36,6 @@ export const getServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<RegistrationPageProps>> => {
   const span = serverSideTracer.startSpan('RegistrationPage.getServerSideProps');
 
-  if (process.env.DISABLE_REGISTRATION === 'true') {
-    span.end();
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-
   let props: GetServerSidePropsResult<RegistrationPageProps> = {
     props: {
       invitationID: context.query['i']?.toString() || '',

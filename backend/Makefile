@@ -281,7 +281,7 @@ dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
 
 .PHONY: run_admin_app
 run_admin_app: ensure_air_installed
-	(cd cmd/services/admin && air -c .air.toml)
+	(cd cmd/services/admin_webapp && air -c .air.toml)
 
 ## misc
 

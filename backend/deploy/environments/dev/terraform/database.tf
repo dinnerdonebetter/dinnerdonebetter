@@ -36,6 +36,16 @@ resource "google_sql_database_instance" "dev" {
       private_network                               = data.google_compute_network.private_network.id
       enable_private_path_for_google_cloud_services = true
     }
+
+    password_validation_policy {
+      min_length                  = 32
+      reuse_interval              = 1
+      # A combination of lowercase, uppercase, numeric, and non-alphanumeric characters. only other option is "COMPLEXITY_UNSPECIFIED"
+      complexity                  = "COMPLEXITY_DEFAULT"
+      disallow_username_substring = true
+      password_change_interval    = "1s"
+      enable_password_policy      = true
+    }
   }
 }
 

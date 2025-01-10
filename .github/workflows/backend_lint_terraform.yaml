@@ -36,7 +36,7 @@ jobs:
         id: init
         run: terraform init
 
-      - name: copy server routingcfg file
+      - name: copy server config file
         working-directory: backend/deploy/environments/dev
         run: |
           cp config_files/service-config.json terraform/service-config.json

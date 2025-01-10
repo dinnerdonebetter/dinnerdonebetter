@@ -5,19 +5,14 @@ import (
 	"net/http"
 
 	"maragu.dev/gomponents"
-	gcomponents "maragu.dev/gomponents/components"
 	ghtml "maragu.dev/gomponents/html"
 
-	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
+	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (b *PageBuilder) buildAPIClient() (*apiclient.Client, error) {
-	return apiclient.NewClient(b.apiServerURL, b.tracerProvider)
-}
-
-func (b *PageBuilder) LoginSubmit(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
+func (b *PageBuilder) AdminLoginSubmit(req *http.Request) (*types.JWTResponse, error) {
 	ctx, span := b.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -27,7 +22,6 @@ func (b *PageBuilder) LoginSubmit(res http.ResponseWriter, req *http.Request) (g
 	}
 
 	if err := x.ValidateWithContext(ctx); err != nil {
-		res.Header().Set("HX-Redirect", "/login")
 		return nil, err
 	}
 
@@ -36,13 +30,14 @@ func (b *PageBuilder) LoginSubmit(res http.ResponseWriter, req *http.Request) (g
 		return nil, err
 	}
 
-	jwtResponse, err := client.LoginForJWT(ctx, &x)
+	jwtResponse, err := client.AdminLoginForJWT(ctx, &x)
 	if err != nil {
 		return nil, err
 	}
-	return ghtml.Div(
-		ghtml.H1(gomponents.Text(jwtResponse.Token)),
-	), nil
+
+	apiclient.UsingOAuth2(ctx, "clientID", "clientSecret", []string{"*"}, jwtResponse.Token)
+
+	return jwtResponse, nil
 }
 
 var (
@@ -71,30 +66,18 @@ var (
 	})
 )
 
-func (b *PageBuilder) LoginPage(_ http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
+func (b *PageBuilder) AdminLoginPage(_ http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
 	ctx, span := b.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	return components.PageShell("Registration",
+	output := components.PageShell("Registration",
 		ghtml.Form(
-			gcomponents.Classes{
-				"flex flex-col": true,
-				"gap-4":         true,
-				"max-w-md":      true,
-				"mt-10":         true,
-			},
-			ghtml.Div(
-				components.FormTextInput(ctx, validatedUsernameInputProps),
-			),
-			ghtml.Div(
-				components.FormTextInput(ctx, validatedPasswordInputProps),
-			),
-			ghtml.Div(
-				components.FormTextInput(ctx, validatedTOTPCodeInputProps),
-			),
-			ghtml.Div(
-				components.Button("Login"),
-			),
+			components.FormTextInput(ctx, validatedUsernameInputProps),
+			components.FormTextInput(ctx, validatedPasswordInputProps),
+			components.FormTextInput(ctx, validatedTOTPCodeInputProps),
+			components.Button("Login"),
 		),
-	), nil
+	)
+
+	return output, nil
 }

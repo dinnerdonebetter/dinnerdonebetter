@@ -8,10 +8,14 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 	ghttp "maragu.dev/gomponents/http"
 
-	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
-	"github.com/dinnerdonebetter/backend/cmd/services/admin/pages"
+	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
+	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
 	"github.com/dinnerdonebetter/backend/internal/pkg/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+)
+
+const (
+	cookieName = "dinner-done-better-admin-webapp"
 )
 
 func mustValidateTextProps(props components.TextInputsProps) components.ValidatedTextInput {
@@ -49,7 +53,7 @@ var (
 	})
 )
 
-func setupRoutes(router routing.Router, pageBuilder *pages.PageBuilder) error {
+func setupRoutes(router routing.Router, pageBuilder *pages.PageBuilder, cookieBuilder CookieBuilder) error {
 	if pageBuilder == nil {
 		return internalerrors.NilConfigError("pageBuilder for frontend admin service")
 	}
@@ -66,7 +70,36 @@ func setupRoutes(router routing.Router, pageBuilder *pages.PageBuilder) error {
 		return pageBuilder.AboutPage(ctx), nil
 	}))
 
-	router.Post("/login/submit", ghttp.Adapt(pageBuilder.LoginSubmit))
+	router.Post("/login/submit", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
+		response, err := pageBuilder.AdminLoginSubmit(req)
+		if err != nil {
+			return nil, err
+		}
+
+		if response == nil {
+			res.Header().Set("HX-Redirect", "/login")
+			return ghtml.Div(
+				ghtml.H1(gomponents.Text("bad")),
+			), nil
+		}
+
+		encoded, err := cookieBuilder.Encode(cookieName, response)
+		if err != nil {
+			return nil, err
+		}
+
+		res.Header().Set("HX-Redirect", "/")
+		cookie := &http.Cookie{
+			Name:     cookieName,
+			Value:    encoded,
+			Path:     "/",
+			Secure:   true,
+			HttpOnly: true,
+		}
+		http.SetCookie(res, cookie)
+
+		return nil, nil
+	}))
 
 	router.Get("/login", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
 		ctx := req.Context()
@@ -74,7 +107,6 @@ func setupRoutes(router routing.Router, pageBuilder *pages.PageBuilder) error {
 		return components.PageShell(
 			"Fart",
 			ghtml.Div(
-				ghtml.Class("flex items-center justify-center min-h-screen bg-gray-100"),
 				ghtml.Div(
 					ghtml.Class("w-full max-w-sm"),
 					components.BuildHTMXPoweredSubmissionForm(

@@ -6,7 +6,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 )
+
+type CookieBuilder interface {
+	Encode(name string, value any) (string, error)
+}
 
 type PageBuilder struct {
 	tracerProvider tracing.TracerProvider
@@ -33,4 +38,8 @@ func NewPageBuilder(
 	}
 
 	return s
+}
+
+func (b *PageBuilder) buildAPIClient() (*apiclient.Client, error) {
+	return apiclient.NewClient(b.apiServerURL, b.tracerProvider)
 }

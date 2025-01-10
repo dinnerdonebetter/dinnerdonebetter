@@ -1,6 +1,6 @@
 ---
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/
-apiVersion: kustomize.routingcfg.k8s.io/v1beta1
+apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
@@ -29,7 +29,7 @@ patches:
           name: NEXT_PUBLIC_SEGMENT_API_TOKEN
           valueFrom:
             secretKeyRef:
-              name: frontend-service-routingcfg
+              name: frontend-service-config
               key: SEGMENT_API_TOKEN
     target:
       version: v1
@@ -45,10 +45,15 @@ patches:
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
+          name: NEXT_PUBLIC_API_ENDPOINT
+          value: "https://api.dinnerdonebetter.dev"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
           name: NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: frontend-service-routingcfg
+              name: frontend-service-config
               key: OAUTH2_CLIENT_ID
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -56,7 +61,7 @@ patches:
           name: NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: frontend-service-routingcfg
+              name: frontend-service-config
               key: OAUTH2_CLIENT_SECRET
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -64,7 +69,7 @@ patches:
           name: NEXT_COOKIE_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:
-              name: frontend-service-routingcfg
+              name: frontend-service-config
               key: COOKIE_ENCRYPTION_KEY
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -72,7 +77,7 @@ patches:
           name: NEXT_BASE64_COOKIE_ENCRYPT_IV
           valueFrom:
             secretKeyRef:
-              name: frontend-service-routingcfg
+              name: frontend-service-config
               key: COOKIE_ENCRYPTION_IV
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
@@ -80,7 +85,7 @@ patches:
           name: NEXT_PUBLIC_SEGMENT_API_TOKEN
           valueFrom:
             secretKeyRef:
-              name: frontend-service-routingcfg
+              name: frontend-service-config
               key: SEGMENT_API_TOKEN
     target:
       version: v1
@@ -92,10 +97,18 @@ patches:
 #      app.kubernetes.io/name: dinner-done-better
 
 configMapGenerator:
-  - name: opentelemetry-collector-routingcfg
+  - name: opentelemetry-collector-config
     namespace: dev
     files:
-      - routingcfg.yaml=configs/otel_collector_config.yaml
+      - config.yaml=configs/otel_collector_config.yaml
+  - name: opentelemetry-collector-config
+    namespace: dev
+    files:
+      - config.yaml=configs/otel_collector_config.yaml
+  - name: opentelemetry-collector-config
+    namespace: dev
+    files:
+      - config.yaml=configs/otel_collector_config.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

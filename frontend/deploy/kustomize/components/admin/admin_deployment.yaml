@@ -23,11 +23,14 @@ spec:
           image: dinner-done-better-admin-app
           imagePullPolicy: IfNotPresent
           env:
-            - name: "NEXT_API_ENDPOINT"
-              value: "dinner-done-better.dev.svc.cluster.local:8000"
+            - name: "RUNNING_IN_KUBERNETES"
+              value: "true"
           volumeMounts:
             - name: logs
               mountPath: /var/log/application
+            - name: "config"
+              mountPath: "/app/apps/web/config.json"
+              subPath: "config.json"
           ports:
             - containerPort: 7000
               name: http
@@ -48,8 +51,8 @@ spec:
           image: otel/opentelemetry-collector-contrib:0.115.1
           command:
             - "/otelcol-contrib"
-            - "--routingcfg"
-            - "/conf/routingcfg.yaml"
+            - "--config"
+            - "/conf/config.yaml"
           ports:
             - containerPort: 4317
               name: otel1
@@ -61,18 +64,22 @@ spec:
             - name: logs
               mountPath: /var/log/application
               readOnly: true
-            - name: opentelemetry-routingcfg
+            - name: opentelemetry-config
               mountPath: /conf
           env:
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"
       volumes:
+        # this volume contains the configuration file for the API service
+        - name: "config"
+          configMap:
+            name: "frontend-service-config"
         # this volume is where we write logs to in the API, and where we read logs from in the collector.
         - name: logs
           emptyDir:
             sizeLimit: 500Mi
         # this volume contains the configuration file for the OTel collector.
-        - name: opentelemetry-routingcfg
+        - name: opentelemetry-config
           configMap:
-            name: opentelemetry-collector-routingcfg
+            name: opentelemetry-collector-config
 ---

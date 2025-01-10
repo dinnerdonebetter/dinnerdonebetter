@@ -24,13 +24,13 @@ spec:
           imagePullPolicy: Always
           env:
             - name: "CONFIGURATION_FILEPATH"
-              value: "/etc/service-routingcfg.json"
+              value: "/etc/service-config.json"
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"
           volumeMounts:
-            - name: "routingcfg"
-              mountPath: "/etc/service-routingcfg.json"
-              subPath: "routingcfg.json"
+            - name: "config"
+              mountPath: "/etc/service-config.json"
+              subPath: "config.json"
             - name: logs
               mountPath: /var/log/application
         # This is the OpenTelemetry collector sidecar
@@ -38,8 +38,8 @@ spec:
           image: otel/opentelemetry-collector-contrib:0.115.1
           command:
             - "/otelcol-contrib"
-            - "--routingcfg"
-            - "/conf/routingcfg.yaml"
+            - "--config"
+            - "/conf/config.yaml"
           ports:
             - containerPort: 4317
               name: otel1
@@ -51,19 +51,19 @@ spec:
             - name: logs
               mountPath: /var/log/application
               readOnly: true
-            - name: opentelemetry-routingcfg
+            - name: opentelemetry-config
               mountPath: /conf
           env:
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"
       volumes:
-        - name: "routingcfg"
+        - name: "config"
           configMap:
-            name: "dinner-done-better-async-message-handler-routingcfg"
+            name: "dinner-done-better-async-message-handler-config"
         - name: logs
           emptyDir:
             sizeLimit: 500Mi
-        - name: opentelemetry-routingcfg
+        - name: opentelemetry-config
           configMap:
-            name: opentelemetry-collector-routingcfg
+            name: opentelemetry-collector-config
 ---

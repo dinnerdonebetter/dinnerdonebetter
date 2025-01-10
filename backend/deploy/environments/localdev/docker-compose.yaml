@@ -42,10 +42,10 @@ services:
     image: grafana/loki:3.1.0
     ports:
       - "3100:3100"
-    command: -routingcfg.file=/etc/loki/local-routingcfg.yaml
+    command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - source: 'config_files/loki_config.yaml'
-        target: '/etc/loki/local-routingcfg.yaml'
+        target: '/etc/loki/local-config.yaml'
         type: 'bind'
 
   grafana:
@@ -68,8 +68,8 @@ services:
     image: otel/opentelemetry-collector-contrib:0.115.1
     restart: on-failure:3
     command:
-      - "--routingcfg"
-      - "/conf/routingcfg.yaml"
+      - "--config"
+      - "/conf/config.yaml"
     depends_on:
       - "prometheus"
       - "jaeger"
@@ -82,7 +82,7 @@ services:
       - "55679:55679" # zpages extension
     volumes:
       - source: 'config_files/otel_collector_config.yaml'
-        target: '/conf/routingcfg.yaml'
+        target: '/conf/config.yaml'
         type: 'bind'
       - source: '../../artifacts'
         target: '/var/log/dinnerdonebetter'
@@ -102,7 +102,7 @@ services:
       - "otel_collector"
     environment:
       USE_NOOP_LOGGER: 'nope'
-      CONFIGURATION_FILEPATH: '/etc/routingcfg'
+      CONFIGURATION_FILEPATH: '/etc/config'
     ports:
       - '8000:8000'
     build:
@@ -110,7 +110,7 @@ services:
       dockerfile: 'dockerfiles/api_server.Dockerfile'
     volumes:
       - source: 'config_files/api_service_config.json'
-        target: '/etc/routingcfg'
+        target: '/etc/config'
         type: 'bind'
       - source: '../../artifacts'
         target: '/var/log/dinnerdonebetter'

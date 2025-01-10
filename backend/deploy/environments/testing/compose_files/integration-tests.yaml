@@ -32,15 +32,15 @@ services:
       - redis
     environment:
       USE_NOOP_LOGGER: 'nope'
-      CONFIGURATION_FILEPATH: '/etc/routingcfg'
+      CONFIGURATION_FILEPATH: '/etc/config'
     ports:
       - '8000:8000'
     build:
       context: '../../../'
       dockerfile: 'environments/testing/dockerfiles/integration-server.Dockerfile'
     volumes:
-      - source: '../config_files/integration-tests-routingcfg.json'
-        target: '/etc/routingcfg'
+      - source: '../config_files/integration-tests-config.json'
+        target: '/etc/config'
         type: 'bind'
   # coordination_server:
   #     hostname: coordination_server

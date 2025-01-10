@@ -5,7 +5,7 @@ terraform {
     organization = "dinnerdonebetter"
 
     workspaces {
-      name = "dev-frontend-apps"
+      name = "dev-admin-app"
     }
   }
 
@@ -18,13 +18,13 @@ terraform {
       source  = "hashicorp/google"
       version = "5.41.0"
     }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.35.1"
-    }
     archive = {
       source  = "hashicorp/archive"
       version = "2.5.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.35.1"
     }
   }
 }

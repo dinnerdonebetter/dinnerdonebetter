@@ -23,6 +23,9 @@ COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/yarn.lock ./yarn.lock
 RUN yarn install
 
+ARG NEXT_PUBLIC_API_ENDPOINT
+ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
+
 # Build the project
 COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json

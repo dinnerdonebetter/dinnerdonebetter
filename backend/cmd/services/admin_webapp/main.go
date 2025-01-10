@@ -1,16 +1,20 @@
 package main
 
 import (
+	"context"
 	"log"
 	"log/slog"
 	"net/http"
 	"net/url"
 
-	"github.com/dinnerdonebetter/backend/cmd/services/admin/pages"
+	"github.com/gorilla/securecookie"
+
+	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
 )
@@ -20,6 +24,8 @@ const (
 )
 
 func main() {
+	ctx := context.Background()
+
 	tracerProvider := tracing.NewNoopTracerProvider()
 	logger := loggingcfg.ProvideLogger(&loggingcfg.Config{
 		Level:    logging.DebugLevel,
@@ -45,8 +51,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	cookieBuilder := securecookie.New(random.MustGenerateRawBytes(ctx, 32), random.MustGenerateRawBytes(ctx, 32))
 	pageBuilder := pages.NewPageBuilder(tracerProvider, logger, router, parsedURL)
-	if err = setupRoutes(router, pageBuilder); err != nil {
+
+	if err = setupRoutes(router, pageBuilder, cookieBuilder); err != nil {
 		log.Fatal(err)
 	}
 

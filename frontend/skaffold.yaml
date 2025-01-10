@@ -17,10 +17,14 @@ profiles:
         - image: dinner-done-better-webapp
           docker:
             dockerfile: ./apps/web/Dockerfile
+            buildArgs:
+              NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
 
         - image: dinner-done-better-admin-app
           docker:
             dockerfile: ./apps/admin/Dockerfile
+            buildArgs:
+              NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
 
         - image: dinner-done-better-landing
           docker:
