@@ -26,11 +26,45 @@ patches:
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
-          name: NEXT_PUBLIC_SEGMENT_API_TOKEN
+          name: NEXT_API_ENDPOINT
+          value: "http://dinner-done-better.dev.svc.cluster.local:8000"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: NEXT_PUBLIC_API_ENDPOINT
+          value: "https://api.dinnerdonebetter.dev"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_ID
           valueFrom:
             secretKeyRef:
               name: frontend-service-config
-              key: SEGMENT_API_TOKEN
+              key: OAUTH2_CLIENT_ID
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: NEXT_DINNER_DONE_BETTER_OAUTH2_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: frontend-service-config
+              key: OAUTH2_CLIENT_SECRET
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: NEXT_COOKIE_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: frontend-service-config
+              key: COOKIE_ENCRYPTION_KEY
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: NEXT_BASE64_COOKIE_ENCRYPT_IV
+          valueFrom:
+            secretKeyRef:
+              name: frontend-service-config
+              key: COOKIE_ENCRYPTION_IV
     target:
       version: v1
       kind: Deployment
@@ -41,7 +75,7 @@ patches:
         path: "/spec/template/spec/containers/0/env/-"
         value:
           name: NEXT_API_ENDPOINT
-          value: "http://dinner-done-better-api-svc:8000"
+          value: "http://dinner-done-better.dev.svc.cluster.local:8000"
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
