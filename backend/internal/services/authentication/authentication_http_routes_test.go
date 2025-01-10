@@ -81,10 +81,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		token, err := helper.service.jwtSigner.ParseJWT(helper.ctx, actual.Data.Token)
-		require.NoError(t, err)
-
-		sub, err := token.Claims.GetSubject()
+		sub, err := helper.service.tokenIssuer.ParseUserIDFromToken(helper.ctx, actual.Data.Token)
 		assert.NoError(t, err)
 		assert.Equal(t, helper.exampleUser.ID, sub)
 

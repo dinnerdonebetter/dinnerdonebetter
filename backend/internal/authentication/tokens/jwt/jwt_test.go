@@ -1,4 +1,4 @@
-package authentication
+package jwt
 
 import (
 	"context"
@@ -35,35 +35,12 @@ func Test_jwtSigner_IssueJWT(T *testing.T) {
 		ctx := context.Background()
 		user := fakes.BuildFakeUser()
 
-		actual, err := signer.IssueJWT(ctx, user, exampleExpiry)
+		actual, err := signer.IssueToken(ctx, user, exampleExpiry)
 		assert.NoError(t, err)
 
-		parsed, err := signer.ParseJWT(ctx, actual)
+		parsed, err := signer.ParseUserIDFromToken(ctx, actual)
 		assert.NoError(t, err)
-
-		sub, err := parsed.Claims.GetSubject()
-		assert.NoError(t, err)
-		assert.Equal(t, sub, user.ID)
-
-		expTime, err := parsed.Claims.GetExpirationTime()
-		assert.NoError(t, err)
-		assert.NotEmpty(t, expTime)
-
-		issuedAt, err := parsed.Claims.GetIssuedAt()
-		assert.NoError(t, err)
-		assert.NotEmpty(t, issuedAt)
-
-		notBefore, err := parsed.Claims.GetNotBefore()
-		assert.NoError(t, err)
-		assert.NotEmpty(t, notBefore)
-
-		jwtIssuer, err := parsed.Claims.GetIssuer()
-		assert.NoError(t, err)
-		assert.Equal(t, issuer, jwtIssuer)
-
-		audience, err := parsed.Claims.GetAudience()
-		assert.NoError(t, err)
-		assert.Equal(t, audience[0], signer.(*jwtSigner).audience)
+		assert.Equal(t, parsed, user.ID)
 	})
 }
 
@@ -79,12 +56,12 @@ func Test_jwtSigner_ParseJWT(T *testing.T) {
 		ctx := context.Background()
 		user := fakes.BuildFakeUser()
 
-		exampleToken, err := signer.IssueJWT(ctx, user, exampleExpiry)
+		exampleToken, err := signer.IssueToken(ctx, user, exampleExpiry)
 		assert.NoError(t, err)
 
-		actual, err := signer.ParseJWT(ctx, exampleToken)
+		actual, err := signer.ParseUserIDFromToken(ctx, exampleToken)
 		assert.NoError(t, err)
-		assert.NotNil(t, actual)
+		assert.Equal(t, actual, user.ID)
 	})
 
 	T.Run("with invalid algo", func(t *testing.T) {
@@ -101,9 +78,9 @@ func Test_jwtSigner_ParseJWT(T *testing.T) {
 		signer, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
-		actual, err := signer.ParseJWT(ctx, tokenString)
+		actual, err := signer.ParseUserIDFromToken(ctx, tokenString)
 		assert.Error(t, err)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 	})
 
 	T.Run("with invalid key", func(t *testing.T) {
@@ -117,8 +94,8 @@ func Test_jwtSigner_ParseJWT(T *testing.T) {
 
 		ctx := context.Background()
 
-		actual, err := signer.ParseJWT(ctx, exampleToken)
+		actual, err := signer.ParseUserIDFromToken(ctx, exampleToken)
 		assert.Error(t, err)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 	})
 }

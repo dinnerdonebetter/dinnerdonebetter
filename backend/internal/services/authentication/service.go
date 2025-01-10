@@ -9,6 +9,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/jwt"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
@@ -51,7 +53,7 @@ type (
 		tracer                     tracing.Tracer
 		dataChangesPublisher       messagequeue.Publisher
 		oauth2Server               *server.Server
-		jwtSigner                  authentication.JWTSigner
+		tokenIssuer                tokens.Issuer
 		rejectedRequestCounter     metrics.Int64Counter
 	}
 )
@@ -87,7 +89,7 @@ func ProvideService(
 		return nil, fmt.Errorf("decoding json web token signing key: %w", err)
 	}
 
-	signer, err := authentication.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
+	signer, err := jwt.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
 	if err != nil {
 		metrics.NewNoopMetricsProvider()
 		return nil, fmt.Errorf("creating json web token signer: %w", err)
@@ -112,7 +114,7 @@ func ProvideService(
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
 		analyticsReporter:          analyticsReporter,
-		jwtSigner:                  signer,
+		tokenIssuer:                signer,
 		rejectedRequestCounter:     rejectedRequestCounter,
 		authProviderFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
 		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),

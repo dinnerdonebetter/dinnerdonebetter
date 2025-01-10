@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"maragu.dev/gomponents"
-	ghtml "maragu.dev/gomponents/html"
-
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"maragu.dev/gomponents"
+	ghtml "maragu.dev/gomponents/html"
 )
 
 func (b *PageBuilder) AdminLoginSubmit(req *http.Request) (*types.JWTResponse, error) {

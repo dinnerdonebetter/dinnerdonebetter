@@ -4,14 +4,14 @@ import (
 	"context"
 	"net/http"
 
-	"maragu.dev/gomponents"
-	ghtml "maragu.dev/gomponents/html"
-	ghttp "maragu.dev/gomponents/http"
-
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
 	"github.com/dinnerdonebetter/backend/internal/pkg/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+
+	"maragu.dev/gomponents"
+	ghtml "maragu.dev/gomponents/html"
+	ghttp "maragu.dev/gomponents/http"
 )
 
 const (

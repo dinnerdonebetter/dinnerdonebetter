@@ -95,7 +95,7 @@ export default function Register(props: RegistrationPageProps): JSX.Element {
       registrationInput.birthday = formatISO(registrationForm.values.birthday);
     }
 
-    await buildBrowserSideClient("https://api.dinnerdonebetter.dev")
+    await buildBrowserSideClient('https://api.dinnerdonebetter.dev')
       .createUser(registrationInput)
       .then(() => {
         router.push('/login');

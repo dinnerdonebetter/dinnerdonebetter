@@ -1,10 +1,11 @@
-package authentication
+package jwt
 
 import (
 	"context"
 	"fmt"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
@@ -14,15 +15,10 @@ import (
 )
 
 const (
-	issuer = "dinnerdonebetter"
+	issuer = "dinner-done-better"
 )
 
 type (
-	JWTSigner interface {
-		IssueJWT(ctx context.Context, user *types.User, expiry time.Duration) (string, error)
-		ParseJWT(ctx context.Context, token string) (*jwt.Token, error)
-	}
-
 	jwtSigner struct {
 		tracer     tracing.Tracer
 		logger     logging.Logger
@@ -31,7 +27,7 @@ type (
 	}
 )
 
-func NewJWTSigner(logger logging.Logger, tracerProvider tracing.TracerProvider, audience string, signingKey []byte) (JWTSigner, error) {
+func NewJWTSigner(logger logging.Logger, tracerProvider tracing.TracerProvider, audience string, signingKey []byte) (tokens.Issuer, error) {
 	s := &jwtSigner{
 		audience:   audience,
 		signingKey: signingKey,
@@ -42,8 +38,8 @@ func NewJWTSigner(logger logging.Logger, tracerProvider tracing.TracerProvider, 
 	return s, nil
 }
 
-// IssueJWT issues a new JSON web token.
-func (s *jwtSigner) IssueJWT(ctx context.Context, user *types.User, expiry time.Duration) (string, error) {
+// IssueToken issues a new JSON web token.
+func (s *jwtSigner) IssueToken(ctx context.Context, user *types.User, expiry time.Duration) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -70,12 +66,12 @@ func (s *jwtSigner) IssueJWT(ctx context.Context, user *types.User, expiry time.
 	return tokenString, nil
 }
 
-// ParseJWT parses a Token and returns the associated token.
-func (s *jwtSigner) ParseJWT(ctx context.Context, token string) (*jwt.Token, error) {
+// ParseUserIDFromToken parses a Token and returns the associated user ID.
+func (s *jwtSigner) ParseUserIDFromToken(ctx context.Context, token string) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -85,8 +81,13 @@ func (s *jwtSigner) ParseJWT(ctx context.Context, token string) (*jwt.Token, err
 	})
 	if err != nil {
 		s.logger.Error("parsing JWT", err)
-		return nil, err
+		return "", err
 	}
 
-	return parsedToken, nil
+	subject, err := parsedToken.Claims.GetSubject()
+	if err != nil {
+		return "", err
+	}
+
+	return subject, nil
 }

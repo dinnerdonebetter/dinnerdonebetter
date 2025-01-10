@@ -6,7 +6,6 @@ import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 
 import { webappCookieName } from '../constants';
 import { encryptorDecryptor } from '../encryption';
-import config from '../config';
 
 export interface RedirectProps {
   destination: string;
@@ -19,7 +18,7 @@ interface clientOrRedirect {
 }
 
 export const buildServerSideClientOrRedirect = (context: GetServerSidePropsContext): clientOrRedirect => {
-  const apiEndpoint = config.APIEndpoint || '';
+  const apiEndpoint = process.env.NEXT_API_ENDPOINT || '';
   if (!apiEndpoint) {
     throw new Error('no API endpoint set');
   }

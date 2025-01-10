@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (

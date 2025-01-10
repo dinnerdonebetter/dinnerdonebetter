@@ -448,7 +448,7 @@ func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 
 	testCases := map[string]struct {
 		contentType ContentType
-		marshaller  func(v interface{}) ([]byte, error)
+		marshaller  func(v any) ([]byte, error)
 		expected    string
 	}{
 		"json": {

@@ -3,10 +3,10 @@ package pages
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
+
 	"maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
-
-	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
 )
 
 func (b *PageBuilder) HomePage(ctx context.Context) gomponents.Node {

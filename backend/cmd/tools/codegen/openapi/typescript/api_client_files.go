@@ -234,7 +234,7 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		switch x := allOf.(type) {
 		case []any:
 			for _, yy := range x {
-				if y, ok := yy.(map[string]interface{}); ok {
+				if y, ok := yy.(map[string]any); ok {
 					if allOfRef, ok2 := y[refKey]; ok2 {
 						if allOfRefStr, ok3 := allOfRef.(string); ok3 {
 							rt.GenericContainer = allOfRefStr
