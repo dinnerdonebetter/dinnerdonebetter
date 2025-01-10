@@ -186,7 +186,7 @@ jobs:
           location: 'us-central1'
 
       - name: copy kubeconfig
-        working-directory: backend/deploy/environments/dev
+        working-directory: frontend/deploy/environments/dev/admin
         run: |
           cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
@@ -239,18 +239,6 @@ jobs:
       # Setup gcloud CLI
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
-
-      - name: get GKE credentials
-        uses: 'google-github-actions/get-gke-credentials@v2'
-        with:
-          cluster_name: 'dev'
-          context_name: 'dev_context'
-          location: 'us-central1'
-
-      - name: copy kubeconfig
-        working-directory: backend/deploy/environments/dev
-        run: |
-          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -308,7 +296,7 @@ jobs:
           location: 'us-central1'
 
       - name: copy kubeconfig
-        working-directory: backend/deploy/environments/dev
+        working-directory: frontend/deploy/environments/dev/webapp
         run: |
           cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
@@ -383,27 +371,8 @@ jobs:
         run: |
           cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.10.3
-          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
-
-      - name: Terraform Init
-        working-directory: backend/deploy/environments/dev/terraform
-        id: init
-        run: terraform init
-
-      # validate backend workspace terraform
-
-      - name: Terraform Validate
-        working-directory: backend/deploy/environments/dev/terraform
-        id: validate
-        run: terraform validate -no-color
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: backend/deploy/environments/dev/terraform
+      - name: Terraform Format
+        run: make deploy_dev
 
       - name: remove kubernetes config
         working-directory: backend/deploy/environments/dev
