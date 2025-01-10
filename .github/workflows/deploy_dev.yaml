@@ -185,6 +185,11 @@ jobs:
           context_name: 'dev_context'
           location: 'us-central1'
 
+      - name: copy kubeconfig
+        working-directory: backend/deploy/environments/dev
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -242,6 +247,11 @@ jobs:
           context_name: 'dev_context'
           location: 'us-central1'
 
+      - name: copy kubeconfig
+        working-directory: backend/deploy/environments/dev
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -297,6 +307,11 @@ jobs:
           context_name: 'dev_context'
           location: 'us-central1'
 
+      - name: copy kubeconfig
+        working-directory: backend/deploy/environments/dev
+        run: |
+          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -322,7 +337,7 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: frontend/deploy/environments/dev/webapp/terraform
 
-  application_deploy:
+  applications:
     needs:
       - backend-infra
       - webapp-infra
