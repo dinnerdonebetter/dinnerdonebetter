@@ -11,8 +11,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/build/api"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/server/http/build"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
@@ -74,7 +74,7 @@ func main() {
 	neutralizeConfig(cfg)
 
 	// build our server struct.
-	srv, err := build.Build(ctx, cfg)
+	srv, err := api.Build(ctx, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

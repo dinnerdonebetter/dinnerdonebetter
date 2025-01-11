@@ -127,7 +127,7 @@ func buildPasswordAuthorizationHandler(logger logging.Logger, authenticator auth
 			user.HashedPassword,
 			password,
 			"",
-			"", // TODO: allow (require?) users to provide TOTP code
+			"",
 		)
 		if err != nil {
 			l.Error("validating credentials", err)

@@ -13,7 +13,6 @@ type tokenImpl struct {
 }
 
 func (t *tokenImpl) New() oauth2.TokenInfo {
-	// TODO: huh?
 	return &tokenImpl{}
 }
 

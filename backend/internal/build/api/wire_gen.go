@@ -4,11 +4,10 @@
 //go:build !wireinject
 // +build !wireinject
 
-package build
+package api
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"

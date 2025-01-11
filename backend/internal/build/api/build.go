@@ -1,7 +1,7 @@
 //go:build wireinject
 // +build wireinject
 
-package build
+package api
 
 import (
 	"context"

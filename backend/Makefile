@@ -12,7 +12,7 @@ TESTABLE_PACKAGE_LIST  := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock
 ENVIRONMENTS_DIR       := environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-WIRE_TARGETS           := server/http/build
+WIRE_TARGETS           := internal/build/api
 CONTAINER_RUNNER       := docker
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
 LINTER_IMAGE           := golangci/golangci-lint:v1.61.0
@@ -108,7 +108,7 @@ revendor: clean_vendor vendor
 .PHONY: rewire
 rewire: ensure_wire_installed
 	for tgt in $(WIRE_TARGETS); do \
-		rm -f $(THIS)/internal/$$tgt/wire_gen.go && wire gen $(THIS)/internal/$$tgt; \
+		rm -f $(THIS)/$$tgt/wire_gen.go && wire gen $(THIS)/$$tgt; \
 	done
 
 ## formatting
@@ -307,4 +307,4 @@ DEV_NAMESPACE := dev
 
 .PHONY: deploy_dev
 deploy_dev:
-	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)
+	skaffold run --filename=skaffold.yaml --build-concurrency 0 --profile $(DEV_NAMESPACE)

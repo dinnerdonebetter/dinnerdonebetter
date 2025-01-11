@@ -3,7 +3,6 @@ package slog
 import (
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -53,28 +52,26 @@ func NewSlogLogger(lvl logging.Level, outputFilepath string) logging.Logger {
 		},
 	}
 
-	// TODO: configure output path and also handle error returns
-
 	writers := []io.Writer{os.Stdout}
 	if outputFilepath != "" {
 		// we have to create the file ahead of time with these permissions, or else lumberjack will foolishly assume 600 is fine (it isn't)
 		//nolint:gosec // it needs to be 0o0644
 		f, err := os.OpenFile(outputFilepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o0644)
-		if err != nil {
-			log.Fatalf("Failed to create file: %v", err)
+		if err == nil {
+			if err = f.Close(); err == nil {
+				writers = append(writers, &lumberjack.Logger{
+					Filename:   outputFilepath,
+					MaxSize:    500, // megabytes
+					MaxBackups: 3,
+					MaxAge:     3, // days
+					Compress:   true,
+				})
+			} else {
+				slog.Error("closing log output file", slog.Any("error", err))
+			}
+		} else {
+			slog.Error("opening log output file", slog.Any("error", err))
 		}
-
-		if err = f.Close(); err != nil {
-			log.Fatalf("Failed to close file: %v", err)
-		}
-
-		writers = append(writers, &lumberjack.Logger{
-			Filename:   outputFilepath,
-			MaxSize:    500, // megabytes
-			MaxBackups: 3,
-			MaxAge:     3, // days
-			Compress:   true,
-		})
 	}
 
 	return &slogLogger{

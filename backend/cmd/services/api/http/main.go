@@ -10,11 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/server/http/build"
-
 	"github.com/KimMachineGun/automemlimit/memlimit"
 	_ "go.uber.org/automaxprocs"
+
+	"github.com/dinnerdonebetter/backend/internal/build/api"
+	"github.com/dinnerdonebetter/backend/internal/config"
 )
 
 func init() {
@@ -52,10 +52,10 @@ func main() {
 	json.Unmarshal(configBytes, &loadedCfg)
 
 	logger := cfg.Observability.Logging.ProvideLogger()
-
 	logger.Info("building server")
+
 	// build our server struct.
-	srv, err := build.Build(buildCtx, cfg)
+	srv, err := api.Build(buildCtx, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
