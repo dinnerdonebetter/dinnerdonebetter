@@ -148,6 +148,14 @@ jobs:
       - name: Checkout codeformat
         uses: actions/checkout@v4
 
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '${{ matrix.go-version }}'
+
+      - name: install yamlfmt
+        run: go install github.com/google/yamlfmt/cmd/yamlfmt@v0.14.0
+
       - name: Ensure openapi spec can be generated
         working-directory: backend
         run: make openapi format_yaml
