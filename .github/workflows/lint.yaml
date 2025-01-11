@@ -8,6 +8,8 @@ concurrency:
 name: lint
 jobs:
   changes:
+    permissions:
+      pull-requests: read
     timeout-minutes: 5
     outputs:
       backend: ${{ steps.filter.outputs.backend }}

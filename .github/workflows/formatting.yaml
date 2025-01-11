@@ -8,6 +8,8 @@ concurrency:
 name: formatting
 jobs:
   changes:
+    permissions:
+      pull-requests: read
     outputs:
       backend_golang: ${{ steps.filter.outputs.backend_golang }}
       frontend_typescript: ${{ steps.filter.outputs.frontend_typescript }}

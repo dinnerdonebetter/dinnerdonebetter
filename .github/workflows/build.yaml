@@ -8,6 +8,8 @@ concurrency:
 name: build
 jobs:
   changes:
+    permissions:
+      pull-requests: read
     runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
