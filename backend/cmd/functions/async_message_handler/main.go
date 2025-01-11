@@ -20,6 +20,7 @@ import (
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
@@ -82,6 +83,40 @@ func main() {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(
+		signalChan,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGQUIT,
+		syscall.SIGTERM,
+	)
+
+	stopChan := make(chan bool)
+	errorsChan := make(chan error)
+
+	if err = doTheThing(ctx, logger, tracerProvider, cfg, stopChan, errorsChan); err != nil {
+		log.Fatal(err)
+	}
+
+	// os.Interrupt
+	<-signalChan
+
+	go func() {
+		// os.Kill
+		<-signalChan
+		stopChan <- true
+	}()
+}
+
+func doTheThing(
+	ctx context.Context,
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
+	cfg *config.AsyncMessageHandlerConfig,
+	stopChan chan bool,
+	errorsChan chan error,
+) error {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("async_message_handler"))
 
 	ctx, span := tracer.StartSpan(ctx)
@@ -93,8 +128,7 @@ func main() {
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
 	if err != nil {
 		cancel()
-		observability.AcknowledgeError(err, logger, span, "establishing database connection")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
 	}
 
 	cancel()
@@ -104,14 +138,12 @@ func main() {
 
 	consumerProvider, err := msgconfig.ProvideConsumerProvider(ctx, logger, &cfg.Events)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring queue manager")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
 	}
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring queue manager")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
 	}
 
 	defer publisherProvider.Close()
@@ -120,32 +152,28 @@ func main() {
 
 	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "setting up customer data collector")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "setting up customer data collector")
 	}
 
 	defer analyticsEventReporter.Close()
 
 	outboundEmailsPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.OutboundEmailsTopicName)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring outbound emails publisher")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emails publisher")
 	}
 
 	defer outboundEmailsPublisher.Stop()
 
 	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.SearchIndexRequestsTopicName)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring search indexing publisher")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring search indexing publisher")
 	}
 
 	defer searchDataIndexPublisher.Stop()
 
 	webhookExecutionRequestPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.WebhookExecutionRequestsTopicName)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring webhook execution requests publisher")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring webhook execution requests publisher")
 	}
 
 	defer webhookExecutionRequestPublisher.Stop()
@@ -154,16 +182,14 @@ func main() {
 
 	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring outbound emailer")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}
 
 	// setup uploader
 
 	uploadManager, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Storage, chi.NewRouteParamManager())
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating upload manager")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "creating upload manager")
 	}
 
 	// setup message listeners
@@ -176,8 +202,7 @@ func main() {
 		return handleDataChangeMessage(ctx, logger, tracer, dataManager, analyticsEventReporter, webhookExecutionRequestPublisher, outboundEmailsPublisher, searchDataIndexPublisher, &dataChangeMessage)
 	})
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring data changes consumer")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring data changes consumer")
 	}
 
 	outboundEmailsConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.Queues.OutboundEmailsTopicName, func(ctx context.Context, rawMsg []byte) error {
@@ -189,8 +214,7 @@ func main() {
 		return handleEmailRequest(ctx, logger, tracer, dataManager, emailer, analyticsEventReporter, &emailMessage)
 	})
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring outbound emails consumer")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emails consumer")
 	}
 
 	searchIndexRequestsConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.Queues.SearchIndexRequestsTopicName, func(ctx context.Context, rawMsg []byte) error {
@@ -201,11 +225,9 @@ func main() {
 
 		// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
 		return indexing.HandleIndexRequest(ctx, logger, tracerProvider, &cfg.Search, dataManager, &searchIndexRequest)
-
 	})
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring search index requests consumer")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring search index requests consumer")
 	}
 
 	userDataAggregationConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.Queues.UserDataAggregationTopicName, func(ctx context.Context, rawMsg []byte) error {
@@ -217,8 +239,7 @@ func main() {
 		return handleUserDataRequest(ctx, logger, tracer, uploadManager, dataManager, &userDataAggregationRequest)
 	})
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring user data aggregation consumer")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring user data aggregation consumer")
 	}
 
 	webhookExecutionRequestsConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.Queues.WebhookExecutionRequestsTopicName, func(ctx context.Context, rawMsg []byte) error {
@@ -230,21 +251,8 @@ func main() {
 		return handleWebhookExecutionRequest(ctx, logger, tracer, dataManager, &webhookExecutionRequest)
 	})
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "configuring webhook execution requests consumer")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, span, "configuring webhook execution requests consumer")
 	}
-
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(
-		signalChan,
-		syscall.SIGHUP,
-		syscall.SIGINT,
-		syscall.SIGQUIT,
-		syscall.SIGTERM,
-	)
-
-	stopChan := make(chan bool)
-	errorsChan := make(chan error)
 
 	go dataChangesConsumer.Consume(
 		stopChan,
@@ -272,20 +280,10 @@ func main() {
 	)
 
 	go func() {
-		for {
-			select {
-			case e := <-errorsChan:
-				logger.Error("consuming message", e)
-			}
+		for e := range errorsChan {
+			logger.Error("consuming message", e)
 		}
 	}()
 
-	// os.Interrupt
-	<-signalChan
-
-	go func() {
-		// os.Kill
-		<-signalChan
-		stopChan <- true
-	}()
+	return nil
 }

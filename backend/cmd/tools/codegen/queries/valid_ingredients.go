@@ -149,7 +149,6 @@ ORDER BY %s.%s
 						validIngredientsTableName,
 						true,
 						true,
-						nil,
 					),
 					validIngredientsTableName,
 					idColumn,

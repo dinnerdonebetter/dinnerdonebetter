@@ -119,7 +119,6 @@ ORDER BY %s.%s
 						validInstrumentsTableName,
 						true,
 						true,
-						nil,
 					),
 					validInstrumentsTableName,
 					idColumn,

@@ -33,7 +33,6 @@ type (
 		dataChangesPublisher      messagequeue.Publisher
 		urlClientIDExtractor      func(req *http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		clientCreationDisabled    bool
 	}
 )
 
@@ -63,7 +62,6 @@ func ProvideOAuth2ClientsService(
 	}
 
 	s := &service{
-		clientCreationDisabled:    cfg.OAuth2ClientCreationDisabled,
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		oauth2ClientDataManager:   clientDataManager,
 		encoderDecoder:            encoderDecoder,

@@ -3,6 +3,8 @@ package config
 import (
 	"os"
 	"strings"
+
+	"github.com/caarlos0/env/v11"
 )
 
 const (
@@ -27,4 +29,11 @@ func RunningInTheCloud() bool {
 // RunningInKubernetes returns whether the service is running in a Kubernetes cluster.
 func RunningInKubernetes() bool {
 	return os.Getenv(RunningInKubernetesEnvVarKey) != ""
+}
+
+func ApplyEnvironmentVariables(cfg any) error {
+	return env.ParseWithOptions(cfg, env.Options{
+		Prefix: EnvVarPrefix,
+		OnSet:  envVarOnSetFunc,
+	})
 }

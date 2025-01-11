@@ -340,19 +340,7 @@ issues:
       linters:
         - forcetypeassert
 
-    - path: internal/database/database_mock.go
-      linters:
-        - forcetypeassert
-
     - path: internal/encoding/mock
-      linters:
-        - forcetypeassert
-
-    - path: internal/uploads/images/mock.go
-      linters:
-        - forcetypeassert
-
-    - path: internal/features/grocerylistpreparation/mocks.go
       linters:
         - forcetypeassert
 
@@ -385,15 +373,48 @@ issues:
       linters:
         - gocritic
 
+    - path: cmd/tools/codegen
+      linters:
+        - gocritic
+      text: "rangeValCopy: each iteration copies"
+
+    - path: internal/email/sendgrid
+      linters:
+        - paralleltest
+
+    - path: internal/featureflags/posthog
+      linters:
+        - paralleltest
+
     ## BEGIN SPECIAL SNOWFLAKES
 
+    # TODO: could I maybe get rid of these?
+    - path: internal/uploads/images/mock.go
+      linters:
+        - forcetypeassert
+
+    - path: internal/features/grocerylistpreparation/mocks.go
+      linters:
+        - forcetypeassert
+
+    - path: internal/database/database_mock.go
+      linters:
+        - forcetypeassert
+
+    # there are variables in here with content like "THISISAFAKESECRET" and gosec can NOT get along with that.
     - path: cmd/tools/codegen/configs/main.go
       linters:
         - gosec
 
+    # I forget why we did this
     - path: internal/featureflags/launchdarkly/mock_client.go
       linters:
         - gocritic
+
+    # you can't use t.Parallel and t.Setenv at the same time
+    - path: internal/config/env_vars_test.go
+      linters:
+        - paralleltest
 
     ## END SPECIAL SNOWFLAKES
 
@@ -416,19 +437,6 @@ issues:
     - linters:
         - gosec
       text: "G115:"
-
-    - path: cmd/tools/codegen
-      linters:
-        - gocritic
-      text: "rangeValCopy: each iteration copies"
-
-    - path: internal/email/sendgrid
-      linters:
-        - paralleltest
-
-    - path: internal/featureflags/posthog
-      linters:
-        - paralleltest
 
   # Independently of option `exclude` we use default exclude patterns, it can be disabled by this option. To list all
   # excluded by default patterns execute `golangci-lint run --help`.

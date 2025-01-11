@@ -175,7 +175,7 @@ WHERE %s.%s IS NULL
 					householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
 					householdsTableName, archivedAtColumn,
 					householdUserMembershipsTableName, archivedAtColumn,
-					buildFilterConditions(householdsTableName, true, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn)),
+					buildFilterConditions(householdsTableName, true, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn)),
 					offsetLimitAddendum,
 				)),
 			},

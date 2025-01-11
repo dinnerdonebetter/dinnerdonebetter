@@ -198,7 +198,7 @@ GROUP BY
 					mealPlanEventsTableName, idColumn, mealPlanEventIDColumn,
 					mealPlansTableName, archivedAtColumn,
 					mealPlansTableName, idColumn, mealPlanIDColumn,
-					buildFilterConditions(mealPlanOptionVotesTableName, true, false, nil),
+					buildFilterConditions(mealPlanOptionVotesTableName, true, false),
 					mealPlanOptionVotesTableName, idColumn,
 					mealPlanOptionsTableName, idColumn,
 					mealPlanEventsTableName, idColumn,

@@ -115,7 +115,6 @@ ORDER BY %s.%s
 						validIngredientStatesTableName,
 						true,
 						true,
-						nil,
 					),
 					validIngredientStatesTableName,
 					idColumn,

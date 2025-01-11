@@ -177,7 +177,7 @@ WHERE
 					strings.Join(fullSelectColumns, ",\n\t"),
 					buildFilterCountSelect(mealPlanOptionsTableName, true, true, []string{}, "meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)"),
 					buildTotalCountSelect(mealPlanOptionsTableName, true, []string{}),
-					buildFilterConditions(mealPlanOptionsTableName, true, false, []string{}, "meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)"),
+					buildFilterConditions(mealPlanOptionsTableName, true, false, "meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)"),
 					offsetLimitAddendum,
 				)),
 			},

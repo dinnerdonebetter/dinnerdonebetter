@@ -2,20 +2,36 @@
 concurrency:
   group: ${{ github.ref }}
 
-on: [pull_request]
-# push:
-#   branches:
-#     - dev
+on: # [pull_request]
+  push:
+    branches:
+      - dev
 
 name: deploy dev
 jobs:
-  baseline-infra:
+  changes:
+    permissions:
+      pull-requests: read
+    runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
       frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
       frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
       frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - backend/**/*.go
+            frontend:
+              - frontend/packages/**/*.ts
+              - frontend/packages/**/*.test
+
+  baseline-infra:
+    needs: [changes]
     timeout-minutes: 90
     runs-on: ubuntu-latest
     steps:
@@ -88,10 +104,12 @@ jobs:
               - frontend/environments/dev/admin/**
 
   backend-infra:
-    needs: [baseline-infra]
+    needs:
+      - changes
+      - baseline-infra
     timeout-minutes: 90
     runs-on: ubuntu-latest
-    if: ${{ needs.baseline-infra.outputs.backend == 'true' }}
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     strategy:
       matrix:
         go-version: ['1.23.x']
@@ -156,9 +174,11 @@ jobs:
         run: rm -f ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
 
   admin-webapp-infra:
-    needs: [baseline-infra]
+    needs:
+      - changes
+      - baseline-infra
     runs-on: ubuntu-latest
-    if: ${{ needs.baseline-infra.outputs.frontend_admin == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_admin == 'true' }}
     strategy:
       matrix:
         configs:
@@ -218,9 +238,11 @@ jobs:
         working-directory: frontend/deploy/environments/dev/admin/terraform
 
   landing-infra:
-    needs: [baseline-infra]
+    needs:
+      - changes
+      - baseline-infra
     runs-on: ubuntu-latest
-    if: ${{ needs.baseline-infra.outputs.frontend_landing == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_landing == 'true' }}
     strategy:
       matrix:
         configs:
@@ -266,9 +288,11 @@ jobs:
         working-directory: frontend/deploy/environments/dev/landing/terraform
 
   webapp-infra:
-    needs: [baseline-infra]
+    needs:
+      - changes
+      - baseline-infra
     runs-on: ubuntu-latest
-    if: ${{ needs.baseline-infra.outputs.frontend_webapp == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_webapp == 'true' }}
     strategy:
       matrix:
         configs:
@@ -326,6 +350,7 @@ jobs:
         working-directory: frontend/deploy/environments/dev/webapp/terraform
 
   applications:
+    if: ${{ success() || cancelled() }}
     needs:
       - backend-infra
       - webapp-infra
@@ -333,7 +358,6 @@ jobs:
       - landing-infra
     timeout-minutes: 90
     runs-on: ubuntu-latest
-    if: ${{ needs.baseline-infra.outputs.backend == 'true' }}
     strategy:
       matrix:
         go-version: ['1.23.x']
@@ -366,11 +390,6 @@ jobs:
           context_name: 'dev_context'
           location: 'us-central1'
 
-      - name: copy kubeconfig
-        working-directory: backend/deploy/environments/dev
-        run: |
-          cp ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
-
       - name: setup Skaffold
         run: gcloud components update && gcloud components install skaffold
 
@@ -379,4 +398,4 @@ jobs:
 
       - name: remove kubernetes config
         working-directory: backend/deploy/environments/dev
-        run: rm -f ${{ env.KUBECONFIG }} terraform/terraform_kubeconfig
+        run: rm -f ${{ env.KUBECONFIG }}

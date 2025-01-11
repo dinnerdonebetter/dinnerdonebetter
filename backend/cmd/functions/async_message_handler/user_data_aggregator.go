@@ -41,7 +41,7 @@ func handleUserDataRequest(
 
 	collectionBytes, err := json.Marshal(collection)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "marshalling collection")
+		return observability.PrepareAndLogError(err, logger, span, "marshaling collection")
 	}
 
 	logger.Info("saving file")

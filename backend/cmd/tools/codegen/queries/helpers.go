@@ -87,7 +87,7 @@ func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet int) []str
 	return output
 }
 
-func buildFilterConditions(tableName string, withUpdateColumn, withArchivedAtColumn bool, joins []string, conditions ...string) string {
+func buildFilterConditions(tableName string, withUpdateColumn, withArchivedAtColumn bool, conditions ...string) string {
 	updateAddendum := ""
 	if withUpdateColumn {
 		updateAddendum = fmt.Sprintf("\n\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`

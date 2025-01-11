@@ -126,7 +126,6 @@ ORDER BY %s.%s
 						validPreparationsTableName,
 						true,
 						true,
-						nil,
 					),
 					validPreparationsTableName, idColumn,
 					validPreparationsTableName, idColumn,

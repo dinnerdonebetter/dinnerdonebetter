@@ -106,7 +106,6 @@ WHERE %s.%s IS NULL
 						serviceSettingsTableName,
 						true,
 						true,
-						nil,
 					),
 					offsetLimitAddendum,
 				)),

@@ -52,7 +52,7 @@ type (
 		Publisher MessageQueueConfig `envPrefix:"PUBLISHER_" json:"publishers,omitempty"`
 	}
 
-	// QueuesConfig contains the various queue names
+	// QueuesConfig contains the various queue names.
 	QueuesConfig struct {
 		_ struct{} `json:"-"`
 

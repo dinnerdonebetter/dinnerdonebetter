@@ -45,16 +45,16 @@ func handleWebhookExecutionRequest(
 	case "application/json":
 		payloadBody, err = json.Marshal(webhookExecutionRequest.Payload)
 		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "marshalling webhook payload")
+			return observability.PrepareAndLogError(err, logger, span, "marshaling webhook payload")
 		}
 	case "application/xml":
 		payloadBody, err = xml.Marshal(webhookExecutionRequest.Payload)
 		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "marshalling webhook payload")
+			return observability.PrepareAndLogError(err, logger, span, "marshaling webhook payload")
 		}
 	}
 
-	req, err := http.NewRequest(webhook.Method, webhook.URL, bytes.NewReader(payloadBody))
+	req, err := http.NewRequestWithContext(ctx, webhook.Method, webhook.URL, bytes.NewReader(payloadBody))
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "creating webhook request")
 	}
@@ -75,6 +75,11 @@ func handleWebhookExecutionRequest(
 		observability.AcknowledgeError(err, logger, span, "executing webhook request")
 		return nil
 	}
+	defer func() {
+		if err = res.Body.Close(); err != nil {
+			logger.Error("closing response body", err)
+		}
+	}()
 
 	logger = logger.WithResponse(res)
 	tracing.AttachResponseToSpan(span, res)

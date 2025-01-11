@@ -23,7 +23,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
-	"github.com/caarlos0/env/v11"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -373,11 +372,8 @@ func LoadConfigFromEnvironment[T configurations]() (*T, error) {
 		return nil, fmt.Errorf("decoding config file (%s) contents (%s): %w", configFilepath, string(configBytes), err)
 	}
 
-	if err = env.ParseWithOptions(cfg, env.Options{
-		Prefix: EnvVarPrefix,
-		OnSet:  envVarOnSetFunc,
-	}); err != nil {
-		return nil, err
+	if err = ApplyEnvironmentVariables(cfg); err != nil {
+		return nil, fmt.Errorf("applying environment variables: %w", err)
 	}
 
 	return cfg, nil
@@ -403,8 +399,8 @@ func FetchForApplication[T configurations](ctx context.Context, f genericCloudCo
 		return nil, errors.New("not running in the cloud, and no config filepath provided")
 	}
 
-	if err := env.ParseWithOptions(cfg, env.Options{Prefix: EnvVarPrefix}); err != nil {
-		return nil, err
+	if err := ApplyEnvironmentVariables(cfg); err != nil {
+		return nil, fmt.Errorf("applying environment variables: %w", err)
 	}
 
 	return cfg, nil

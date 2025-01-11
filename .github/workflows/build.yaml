@@ -35,15 +35,6 @@ jobs:
               - frontend/apps/admin/**
               - frontend/packages/**
               - frontend/environments/dev/admin/**
-  debug:
-    needs: [changes]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: ['1.23.x']
-    steps:
-      - name: Debug
-        run: echo ${{ needs.changes.outputs }}
 
   backend:
     needs: [changes]

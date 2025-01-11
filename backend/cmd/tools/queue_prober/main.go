@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 
+	"github.com/dinnerdonebetter/backend/internal/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/pubsub"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
@@ -47,28 +49,38 @@ func main() {
 		},
 	}
 
-	// setup baseline messaging providers
-
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, eventConfig)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, nil, "configuring queue manager")
-		os.Exit(1)
+	if err := config.ApplyEnvironmentVariables(eventConfig); err != nil {
+		log.Fatalln(err)
 	}
 
-	defer publisherProvider.Close()
+	// setup baseline messaging providers
 
-	// set up myriad publishers
+	if err := doTheThing(ctx, logger, tracerProvider, eventConfig); err != nil {
+		observability.AcknowledgeError(err, logger, nil, "doing the thing")
+	}
+}
+
+func doTheThing(
+	ctx context.Context,
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
+	eventConfig *msgconfig.Config,
+) error {
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, eventConfig)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, nil, "configuring queue manager")
+	}
+	defer publisherProvider.Close()
 
 	publisher, err := publisherProvider.ProvidePublisher(*queueNameFlag)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, nil, "configuring publisher")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, nil, "configuring publisher")
 	}
-
 	defer publisher.Stop()
 
 	if err = publisher.Publish(ctx, *dataFlag); err != nil {
-		observability.AcknowledgeError(err, logger, nil, "publishing data")
-		os.Exit(1)
+		return observability.PrepareAndLogError(err, logger, nil, "publishing data")
 	}
+
+	return nil
 }

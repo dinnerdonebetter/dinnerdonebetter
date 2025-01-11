@@ -165,7 +165,7 @@ WHERE %s.%s IS NULL
 					recipeStepsTableName, archivedAtColumn,
 					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
 					recipesTableName, archivedAtColumn,
-					buildFilterConditions(recipeStepsTableName, true, false, nil),
+					buildFilterConditions(recipeStepsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

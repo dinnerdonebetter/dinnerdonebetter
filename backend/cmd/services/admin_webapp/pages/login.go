@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
+	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -16,8 +17,11 @@ func (b *PageBuilder) AdminLoginSubmit(req *http.Request) (*types.JWTResponse, e
 	ctx, span := b.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	logger := b.logger.WithRequest(req)
+
 	var x types.UserLoginInput
 	if err := json.NewDecoder(req.Body).Decode(&x); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding json")
 		return nil, err
 	}
 
@@ -41,7 +45,7 @@ func (b *PageBuilder) AdminLoginSubmit(req *http.Request) (*types.JWTResponse, e
 }
 
 var (
-	validatedUsernameInputProps = mustValidateTextProps(components.TextInputsProps{
+	validatedUsernameInputProps = mustValidateTextProps(&components.TextInputsProps{
 		ID:          "username",
 		Name:        "username",
 		LabelText:   "Username",
@@ -49,7 +53,7 @@ var (
 		Placeholder: "username",
 	})
 
-	validatedPasswordInputProps = mustValidateTextProps(components.TextInputsProps{
+	validatedPasswordInputProps = mustValidateTextProps(&components.TextInputsProps{
 		ID:          "password",
 		Name:        "password",
 		LabelText:   "Password",
@@ -57,7 +61,7 @@ var (
 		Placeholder: "hunter2",
 	})
 
-	validatedTOTPCodeInputProps = mustValidateTextProps(components.TextInputsProps{
+	validatedTOTPCodeInputProps = mustValidateTextProps(&components.TextInputsProps{
 		ID:          "totpToken",
 		Name:        "totpToken",
 		LabelText:   "TOTP Token",

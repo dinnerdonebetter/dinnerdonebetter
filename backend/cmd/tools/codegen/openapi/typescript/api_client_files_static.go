@@ -35,7 +35,12 @@ export const buildCookielessServerSideClient = (apiEndpoint?: string): DinnerDon
 };
 
 export const buildBrowserSideClient = (): DinnerDoneBetterAPIClient => {
-  const ddbClient = buildCookielessServerSideClient('');
+  const apiEndpointToUse = process.env.NEXT_PUBLIC_API_ENDPOINT;
+  if (!apiEndpointToUse) {
+    throw new Error('no API endpoint set!');
+  }
+
+  const ddbClient = new DinnerDoneBetterAPIClient(apiEndpointToUse);
 
   ddbClient.configureRouterRejectionInterceptor((loc: Location) => {
     const destParam = new URLSearchParams(loc.search).get('dest') ?? encodeURIComponent(` + "`" + `${loc.pathname}${loc.search}` + "`" + `);

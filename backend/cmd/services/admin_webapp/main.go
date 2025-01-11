@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -52,13 +53,19 @@ func main() {
 	}
 
 	cookieBuilder := securecookie.New(random.MustGenerateRawBytes(ctx, 32), random.MustGenerateRawBytes(ctx, 32))
-	pageBuilder := pages.NewPageBuilder(tracerProvider, logger, router, parsedURL)
+	pageBuilder := pages.NewPageBuilder(tracerProvider, logger, parsedURL)
 
 	if err = setupRoutes(router, pageBuilder, cookieBuilder); err != nil {
 		log.Fatal(err)
 	}
 
-	if err = http.ListenAndServe(":8080", router.Handler()); err != nil {
-		slog.Info("Error starting", "error", err)
+	server := &http.Server{
+		Addr:              ":8080",
+		ReadHeaderTimeout: 5 * time.Second,
+		Handler:           router.Handler(),
+	}
+
+	if err = server.ListenAndServe(); err != nil {
+		slog.Info("Error serving", "error", err)
 	}
 }

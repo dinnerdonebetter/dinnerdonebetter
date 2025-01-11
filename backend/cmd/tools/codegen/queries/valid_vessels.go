@@ -135,7 +135,6 @@ ORDER BY %s.%s
 						validVesselsTableName,
 						true,
 						true,
-						nil,
 					),
 					validVesselsTableName,
 					idColumn,

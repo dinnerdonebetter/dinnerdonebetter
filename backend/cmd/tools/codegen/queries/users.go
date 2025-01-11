@@ -328,7 +328,6 @@ WHERE %s.%s IS NULL
 						usersTableName,
 						true,
 						true,
-						nil,
 					),
 					offsetLimitAddendum,
 				)),

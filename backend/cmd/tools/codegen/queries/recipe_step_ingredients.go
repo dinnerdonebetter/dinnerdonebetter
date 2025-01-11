@@ -227,7 +227,7 @@ WHERE
 					recipeStepsTableName, idColumn, recipeStepIDColumn,
 					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
 					recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-					buildFilterConditions(recipeStepIngredientsTableName, true, false, nil),
+					buildFilterConditions(recipeStepIngredientsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

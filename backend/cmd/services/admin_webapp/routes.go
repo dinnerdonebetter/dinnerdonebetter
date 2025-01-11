@@ -18,8 +18,12 @@ const (
 	cookieName = "dinner-done-better-admin-webapp"
 )
 
-func mustValidateTextProps(props components.TextInputsProps) components.ValidatedTextInput {
-	validatedProps, err := components.BuildValidatedTextInputPrompt(context.Background(), &props)
+func mustValidateTextProps(props *components.TextInputsProps) components.ValidatedTextInput {
+	if props == nil {
+		panic("props cannot be nil")
+	}
+
+	validatedProps, err := components.BuildValidatedTextInputPrompt(context.Background(), props)
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +32,7 @@ func mustValidateTextProps(props components.TextInputsProps) components.Validate
 }
 
 var (
-	validatedUsernameInputProps = mustValidateTextProps(components.TextInputsProps{
+	validatedUsernameInputProps = mustValidateTextProps(&components.TextInputsProps{
 		ID:          "username",
 		Name:        "username",
 		LabelText:   "Username",
@@ -36,7 +40,7 @@ var (
 		Placeholder: "username",
 	})
 
-	validatedPasswordInputProps = mustValidateTextProps(components.TextInputsProps{
+	validatedPasswordInputProps = mustValidateTextProps(&components.TextInputsProps{
 		ID:          "password",
 		Name:        "password",
 		LabelText:   "Password",
@@ -44,7 +48,7 @@ var (
 		Placeholder: "hunter2",
 	})
 
-	validatedTOTPCodeInputProps = mustValidateTextProps(components.TextInputsProps{
+	validatedTOTPCodeInputProps = mustValidateTextProps(&components.TextInputsProps{
 		ID:          "totpToken",
 		Name:        "totpToken",
 		LabelText:   "TOTP Token",
@@ -98,7 +102,8 @@ func setupRoutes(router routing.Router, pageBuilder *pages.PageBuilder, cookieBu
 		}
 		http.SetCookie(res, cookie)
 
-		return nil, nil
+		// obligatory div return
+		return ghtml.Div(), nil
 	}))
 
 	router.Get("/login", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
