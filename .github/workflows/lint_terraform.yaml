@@ -28,11 +28,44 @@ jobs:
             backend_dev:
               - backend/deploy/environments/dev/terraform/*.tf
             frontend_webapp_dev:
-              - frontend/deploy/environments/dev/webapp/terraform*.tf
+              - frontend/deploy/environments/dev/webapp/terraform/*.tf
             frontend_landing_dev:
-              - frontend/deploy/environments/dev/landing/terraform*.tf
+              - frontend/deploy/environments/dev/landing/terraform/*.tf
             frontend_admin_dev:
-              - frontend/deploy/environments/dev/admin/terraform*.tf
+              - frontend/deploy/environments/dev/admin/terraform/*.tf
+
+  infra:
+    needs: [changes]
+    if: ${{ needs.baseline-infra.outputs.infra_dev == 'true' }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.23.x']
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.3
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: backend/deploy/environments/dev/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: backend/deploy/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
 
   backend:
     needs: [changes]

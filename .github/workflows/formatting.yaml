@@ -53,7 +53,6 @@ jobs:
     strategy:
       matrix:
         node: ['lts/*']
-    name: check
     steps:
       - uses: actions/checkout@v4
 

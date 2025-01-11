@@ -22,8 +22,8 @@ jobs:
             backend:
               - backend/**/*.go
             frontend:
-              - frontend/packages/*.ts
-              - frontend/packages/*.test
+              - frontend/packages/**/*.ts
+              - frontend/packages/**/*.test
 
   backend:
     needs: [changes]
