@@ -77,8 +77,8 @@ export function AppLayout(
 
   const pageTitle =
     (titlePosition || 'right') === 'right'
-      ? `${disableTitlePrefix ? '' : 'Dinner Done Better'}${title ? ` - ${title}` : ''}`
-      : `${title ?? ''}${disableTitlePrefix ? '' : ' - Dinner Done Better'}`;
+      ? `${disableTitlePrefix ? '' : 'Dinner Fart Better'}${title ? ` - ${title}` : ''}`
+      : `${title ?? ''}${disableTitlePrefix ? '' : ' - Dinner Fart Better'}`;
 
   const header = (
     <Header height={50} p="xs">

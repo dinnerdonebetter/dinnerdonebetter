@@ -1,6 +1,7 @@
-PWD      := $(shell pwd)
-MYSELF   := $(shell id -u)
-MY_GROUP := $(shell id -g)
+PWD           := $(shell pwd)
+MYSELF        := $(shell id -u)
+MY_GROUP      := $(shell id -g)
+DEV_NAMESPACE := dev
 
 .PHONY: ensure_yamlfmt_installed
 ensure_yamlfmt_installed:
@@ -56,17 +57,10 @@ regit:
 	cp -rf tempdir/.git .
 	rm -rf tempdir
 
-#### K8S ENVIRONMENT ZONE
-
-DEV_NAMESPACE := dev
-
-.PHONY: install_cert_manager
-install_cert_manager:
-	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
-
 .PHONY: deploy_dev
-deploy_dev: install_cert_manager
-	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)
+deploy_dev:
+	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+	skaffold run --filename=skaffold.yaml --build-concurrency 0 --profile $(DEV_NAMESPACE)
 
 .PHONY: nuke_dev
 nuke_dev:

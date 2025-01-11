@@ -85,4 +85,4 @@ DEV_NAMESPACE := dev
 .PHONY: deploy_dev
 deploy_dev:
 	kubectl delete deployments --all --ignore-not-found=true --namespace $(DEV_NAMESPACE)
-	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile $(DEV_NAMESPACE)
+	skaffold run --filename=skaffold.yaml --build-concurrency 0 --profile $(DEV_NAMESPACE)
