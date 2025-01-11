@@ -236,20 +236,20 @@ const (
 	// QueuesWebhookExecutionRequestsTopicNameEnvVarKey is the environment variable name to set in order to override `config.Queues.WebhookExecutionRequestsTopicName`.
 	QueuesWebhookExecutionRequestsTopicNameEnvVarKey = "DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME"
 
-	// RoutingEnableCorsForLocalhostEnvVarKey is the environment variable name to set in order to override `config.Routing.EnableCORSForLocalhost`.
-	RoutingEnableCorsForLocalhostEnvVarKey = "DINNER_DONE_BETTER_ROUTING_ENABLE_CORS_FOR_LOCALHOST"
+	// RoutingChiEnableCorsForLocalhostEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig.EnableCORSForLocalhost`.
+	RoutingChiEnableCorsForLocalhostEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_ENABLE_CORS_FOR_LOCALHOST"
+
+	// RoutingChiServiceNameEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig.ServiceName`.
+	RoutingChiServiceNameEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_SERVICE_NAME"
+
+	// RoutingChiSilenceRouteLoggingEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig.SilenceRouteLogging`.
+	RoutingChiSilenceRouteLoggingEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_SILENCE_ROUTE_LOGGING"
+
+	// RoutingChiValidDomainsEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig.ValidDomains`.
+	RoutingChiValidDomainsEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_VALID_DOMAINS"
 
 	// RoutingProviderEnvVarKey is the environment variable name to set in order to override `config.Routing.Provider`.
 	RoutingProviderEnvVarKey = "DINNER_DONE_BETTER_ROUTING_PROVIDER"
-
-	// RoutingServiceNameEnvVarKey is the environment variable name to set in order to override `config.Routing.ServiceName`.
-	RoutingServiceNameEnvVarKey = "DINNER_DONE_BETTER_ROUTING_SERVICE_NAME"
-
-	// RoutingSilenceRouteLoggingEnvVarKey is the environment variable name to set in order to override `config.Routing.SilenceRouteLogging`.
-	RoutingSilenceRouteLoggingEnvVarKey = "DINNER_DONE_BETTER_ROUTING_SILENCE_ROUTE_LOGGING"
-
-	// RoutingValidDomainsEnvVarKey is the environment variable name to set in order to override `config.Routing.ValidDomains`.
-	RoutingValidDomainsEnvVarKey = "DINNER_DONE_BETTER_ROUTING_VALID_DOMAINS"
 
 	// SearchAlgoliaAPIKeyEnvVarKey is the environment variable name to set in order to override `config.Search.Algolia.APIKey`.
 	SearchAlgoliaAPIKeyEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY"
@@ -284,6 +284,9 @@ const (
 	// SearchProviderEnvVarKey is the environment variable name to set in order to override `config.Search.Provider`.
 	SearchProviderEnvVarKey = "DINNER_DONE_BETTER_SEARCH_PROVIDER"
 
+	// ServerAutocertAddressesEnvVarKey is the environment variable name to set in order to override `config.Server.Autocert.Addresses`.
+	ServerAutocertAddressesEnvVarKey = "DINNER_DONE_BETTER_SERVER_AUTOCERT_ADDRESSES"
+
 	// ServerDebugEnvVarKey is the environment variable name to set in order to override `config.Server.Debug`.
 	ServerDebugEnvVarKey = "DINNER_DONE_BETTER_SERVER_DEBUG"
 
@@ -298,9 +301,6 @@ const (
 
 	// ServerStartupDeadlineEnvVarKey is the environment variable name to set in order to override `config.Server.StartupDeadline`.
 	ServerStartupDeadlineEnvVarKey = "DINNER_DONE_BETTER_SERVER_STARTUP_DEADLINE"
-
-	// ServiceAuthDataChangesTopicNameEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.DataChangesTopicName`.
-	ServiceAuthDataChangesTopicNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_DATA_CHANGES_TOPIC_NAME"
 
 	// ServiceAuthDebugEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Debug`.
 	ServiceAuthDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_DEBUG"

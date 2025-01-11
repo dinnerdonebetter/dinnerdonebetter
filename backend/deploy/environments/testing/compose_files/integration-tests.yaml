@@ -36,20 +36,12 @@ services:
     ports:
       - '8000:8000'
     build:
-      context: '../../../'
-      dockerfile: 'environments/testing/dockerfiles/integration-server.Dockerfile'
+      context: '../../../../'
+      dockerfile: 'deploy/environments/testing/dockerfiles/integration-server.Dockerfile'
     volumes:
       - source: '../config_files/integration-tests-config.json'
         target: '/etc/config'
         type: 'bind'
-  # coordination_server:
-  #     hostname: coordination_server
-  #     container_name: coordination_server
-  #     ports:
-  #         - '9999:9999'
-  #     build:
-  #         context: '../../../'
-  #         dockerfile: 'environments/testing/dockerfiles/test-coordinator-server.Dockerfile'
   tests:
     environment:
       TARGET_ADDRESS: 'http://api_server:8000'
@@ -57,12 +49,10 @@ services:
     depends_on:
       - postgres
       - redis
-      # - coordination_server
     links:
       - postgres
       - api_server
-      # - coordination_server
     build:
-      context: '../../../'
-      dockerfile: 'environments/testing/dockerfiles/integration-tests.Dockerfile'
+      context: '../../../../'
+      dockerfile: 'deploy/environments/testing/dockerfiles/integration-tests.Dockerfile'
     container_name: 'integration_tests'

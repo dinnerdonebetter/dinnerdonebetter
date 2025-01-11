@@ -9,7 +9,7 @@ GO_TEST                := CGO_ENABLED=1 go test -shuffle=on -race -vet=all
 THIS                   := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST     := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST  := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)'`
-ENVIRONMENTS_DIR       := environments
+ENVIRONMENTS_DIR       := deploy/environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
 WIRE_TARGETS           := internal/build/api

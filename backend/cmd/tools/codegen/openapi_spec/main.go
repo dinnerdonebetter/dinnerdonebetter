@@ -61,7 +61,7 @@ var skipRoutes = map[string]bool{
 func main() {
 	ctx := context.Background()
 
-	rawCfg, err := os.ReadFile("environments/localdev/config_files/api_service_config.json")
+	rawCfg, err := os.ReadFile("deploy/environments/localdev/config_files/api_service_config.json")
 	if err != nil {
 		log.Fatal(err)
 	}

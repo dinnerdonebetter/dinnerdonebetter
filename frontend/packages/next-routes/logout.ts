@@ -33,7 +33,7 @@ export function buildLogoutRoute(
         return;
       }
 
-      // TODO: there's no revocation URL in the routingcfg, so this will fail
+      // TODO: there's no revocation URL in the config, so this will fail
       // const userSessionDetails = encryptorDecryptor.decrypt(parsedCookie[cookieName]) as UserSessionDetails;
       // await (userSessionDetails.Token as AccessToken).revoke('access_token');
 
