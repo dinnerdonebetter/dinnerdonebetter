@@ -150,7 +150,7 @@ jobs:
 
       - name: Ensure openapi spec can be generated
         working-directory: backend
-        run: make openapi
+        run: make openapi format_yaml
 
       - name: Check for changes
         run: git diff --exit-code

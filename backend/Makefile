@@ -135,7 +135,7 @@ fmt: format
 
 .PHONY: format_yaml
 format_yaml: ensure_yamlfmt_installed
-	yamlfmt -conf .yamlfmt.yaml
+	yamlfmt -conf ../yamlfmt.yaml
 
 ## Linting
 
@@ -208,7 +208,7 @@ codegen-go:
 codegen: codegen-ts codegen-go
 
 .PHONY: querier
-querier: queries queries_lint  ## TODO: Why is this target broken?
+querier: queries queries_lint  # TODO: Why is this target broken?
 	rm --recursive --force internal/database/postgres/generated/*.go
 	$(SQL_GENERATOR) generate --no-remote
 
