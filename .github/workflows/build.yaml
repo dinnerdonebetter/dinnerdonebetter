@@ -37,7 +37,6 @@ jobs:
               - frontend/environments/dev/admin/**
   debug:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
