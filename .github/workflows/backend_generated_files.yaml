@@ -156,12 +156,9 @@ jobs:
       - name: install yamlfmt
         run: go install github.com/google/yamlfmt/cmd/yamlfmt@v0.14.0
 
-      - name: copy yamlfmt config
-        run: cp .yamlfmt.yaml backend/.yamlfmt.yaml
-
       - name: Ensure openapi spec can be generated
         working-directory: backend
-        run: make openapi format_yaml
+        run: cp ../.yamlfmt.yaml .yamlfmt.yaml && make openapi format_yaml
 
       - name: Check for changes
         run: git diff --exit-code
