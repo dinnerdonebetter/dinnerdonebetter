@@ -27,7 +27,7 @@ jobs:
 
   golang:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.backend_golang == 'true' }}
+    if: ${{ needs.changes.outputs.backend_golang == 'true' }}
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
@@ -48,7 +48,7 @@ jobs:
 
   typescript:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.frontend_typescript == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_typescript == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:

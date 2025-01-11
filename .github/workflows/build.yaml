@@ -43,11 +43,11 @@ jobs:
         go-version: ['1.23.x']
     steps:
       - name: Debug
-        run: echo ${{ needs.baseline-infra.outputs }}
+        run: echo ${{ needs.changes.outputs }}
 
   backend:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.backend == 'true' }}
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -67,7 +67,7 @@ jobs:
 
   frontend_webapp:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.frontend_webapp == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_webapp == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -93,7 +93,7 @@ jobs:
 
   admin_webapp:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.frontend_admin == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_admin == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -119,7 +119,7 @@ jobs:
 
   landing_webapp:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.frontend_landing == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_landing == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:

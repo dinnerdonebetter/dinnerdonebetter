@@ -30,7 +30,7 @@ jobs:
               - openapi_spec.yaml
   golang:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.backend == 'true' }}
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -43,7 +43,7 @@ jobs:
 
   typescript:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.frontend == 'true' }}
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -66,7 +66,7 @@ jobs:
 
   openapi:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.openapi == 'true' }}
+    if: ${{ needs.changes.outputs.openapi == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:

@@ -36,7 +36,7 @@ jobs:
 
   infra:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.infra_dev == 'true' }}
+    if: ${{ needs.changes.outputs.infra_dev == 'true' }}
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
@@ -69,7 +69,7 @@ jobs:
 
   backend:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.backend_dev == 'true' }}
+    if: ${{ needs.changes.outputs.backend_dev == 'true' }}
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
@@ -102,7 +102,7 @@ jobs:
 
   landing:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.frontend_landing_dev == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_landing_dev == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -126,7 +126,7 @@ jobs:
 
   admin:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.frontend_admin_dev == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_admin_dev == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -151,7 +151,7 @@ jobs:
   webapp:
     needs: [changes]
     runs-on: ubuntu-latest
-    if: ${{ needs.baseline-infra.outputs.frontend_webapp_dev == 'true' }}
+    if: ${{ needs.changes.outputs.frontend_webapp_dev == 'true' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

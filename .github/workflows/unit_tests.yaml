@@ -27,7 +27,7 @@ jobs:
 
   backend:
     needs: [changes]
-    if: ${{ needs.baseline-infra.outputs.backend == 'true' }}
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     timeout-minutes: 25
     strategy:
       matrix:
@@ -47,12 +47,13 @@ jobs:
         run: make test
 
   frontend:
-    if: ${{ needs.baseline-infra.outputs.frontend == 'true' }}
+    needs: [changes]
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node: ['lts/*']
-    name: ${{ matrix.node }}
+    name: testing on Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v4
 
