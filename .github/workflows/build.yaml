@@ -1,0 +1,131 @@
+---
+on: [pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+name: backend - build
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        outputs:
+          backend: ${{ steps.filter.outputs.backend }}
+          frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
+          frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
+          frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
+        with:
+          filters: |
+            backend:
+              - backend/**
+            frontend_webapp:
+              - frontend/apps/web/**
+              - frontend/packages/**
+              - frontend/environments/dev/webapp/**
+            frontend_landing:
+              - frontend/apps/landing/**
+              - frontend/packages/**
+              - frontend/environments/dev/landing/**
+            frontend_admin:
+              - frontend/apps/admin/**
+              - frontend/packages/**
+              - frontend/environments/dev/admin/**
+
+  backend:
+    needs: [changes]
+    if: ${{ needs.baseline-infra.outputs.backend == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.23.x']
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build backend
+        working-directory: backend/
+        run: make build
+
+  frontend_webapp:
+    needs: [changes]
+    if: ${{ needs.baseline-infra.outputs.frontend_webapp == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configs:
+          - node: 'lts/*'
+    name: web on ${{ matrix.configs.node }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+
+      - run: npm install -g yarn
+
+      - run: yarn install
+        working-directory: frontend/
+
+      - run: yarn run build
+        env:
+          NEXT_COOKIE_ENCRYPTION_KEY: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+          NEXT_BASE64_COOKIE_ENCRYPT_IV: 'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE='
+        working-directory: frontend/apps/web
+
+  admin_webapp:
+    needs: [changes]
+    if: ${{ needs.baseline-infra.outputs.frontend_admin == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configs:
+          - node: 'lts/*'
+    name: web on ${{ matrix.configs.node }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+
+      - run: npm install -g yarn
+
+      - run: yarn install
+        working-directory: frontend/
+
+      - run: yarn run build
+        env:
+          NEXT_COOKIE_ENCRYPTION_KEY: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+          NEXT_BASE64_COOKIE_ENCRYPT_IV: 'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE='
+        working-directory: frontend/apps/admin
+
+  landing_webapp:
+    needs: [changes]
+    if: ${{ needs.baseline-infra.outputs.frontend_landing == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configs:
+          - node: 'lts/*'
+    name: web on ${{ matrix.configs.node }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+
+      - run: npm install -g yarn
+
+      - run: yarn install
+        working-directory: frontend/
+
+      - run: yarn run build
+        working-directory: frontend/apps/landing
+

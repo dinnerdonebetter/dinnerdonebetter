@@ -1,0 +1,69 @@
+---
+on: [pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+name: backend - formatting
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        outputs:
+          backend: ${{ steps.filter.outputs.backend }}
+          frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
+          frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
+          frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
+        with:
+          filters: |
+            backend_golang:
+              - backend/**/*.go
+            frontend_typescript:
+              - frontend/**/*.ts
+              - frontend/**/*.tsx
+
+  golang:
+    needs: [changes]
+    if: ${{ needs.baseline-infra.outputs.backend_golang == 'true' }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.23.x']
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: check formatting
+        working-directory: backend
+        run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
+
+  typescript:
+    needs: [changes]
+    if: ${{ needs.baseline-infra.outputs.frontend_typescript == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['lts/*']
+    name: check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+
+      - run: npm install -g yarn
+
+      - run: yarn install
+        working-directory: frontend
+
+      - run: yarn run format-check
+        working-directory: frontend

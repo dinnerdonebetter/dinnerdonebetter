@@ -4,8 +4,6 @@ import (
 	"context"
 	"os"
 
-	"github.com/spf13/pflag"
-
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/pubsub"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
@@ -14,6 +12,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+
+	"github.com/spf13/pflag"
 )
 
 var (

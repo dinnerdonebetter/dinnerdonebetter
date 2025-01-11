@@ -9,7 +9,6 @@ const withTM = require('next-transpile-modules')([
   '@dinnerdonebetter/next-routes',
   '@dinnerdonebetter/analytics',
   '@dinnerdonebetter/encryption',
-  '@dinnerdonebetter/configloader',
 ]);
 
 module.exports = withTM({

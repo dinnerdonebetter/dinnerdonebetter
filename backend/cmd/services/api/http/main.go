@@ -10,11 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/KimMachineGun/automemlimit/memlimit"
-	_ "go.uber.org/automaxprocs"
-
 	"github.com/dinnerdonebetter/backend/internal/build/api"
 	"github.com/dinnerdonebetter/backend/internal/config"
+
+	"github.com/KimMachineGun/automemlimit/memlimit"
+	_ "go.uber.org/automaxprocs"
 )
 
 func init() {
