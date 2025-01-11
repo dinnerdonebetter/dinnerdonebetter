@@ -55,7 +55,7 @@ func TestProvideValidMeasurementUnitsService(T *testing.T) {
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), nil)
 		s, err := ProvideService(
 			ctx,
 			logger,
