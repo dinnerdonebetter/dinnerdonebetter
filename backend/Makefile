@@ -135,7 +135,7 @@ fmt: format
 
 .PHONY: format_yaml
 format_yaml: ensure_yamlfmt_installed
-	yamlfmt
+	yamlfmt -conf .yamlfmt.yaml
 
 ## Linting
 
