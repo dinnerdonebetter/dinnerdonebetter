@@ -10,14 +10,15 @@ jobs:
   changes:
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    outputs:
+      infra_dev: ${{ steps.filter.outputs.infra_dev }}
+      backend_dev: ${{ steps.filter.outputs.backend_dev }}
+      frontend_webapp_dev: ${{ steps.filter.outputs.frontend_webapp_dev }}
+      frontend_landing_dev: ${{ steps.filter.outputs.frontend_landing_dev }}
+      frontend_admin_dev: ${{ steps.filter.outputs.frontend_admin_dev }}
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
-        outputs:
-          backend: ${{ steps.filter.outputs.backend }}
-          frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
-          frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
-          frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
         with:
           filters: |
             infra_dev:

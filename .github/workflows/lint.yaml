@@ -9,15 +9,14 @@ name: lint
 jobs:
   changes:
     timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      openapi: ${{ steps.filter.outputs.openapi }}
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
-        outputs:
-          backend: ${{ steps.filter.outputs.backend }}
-          frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
-          frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
-          frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
         with:
           filters: |
             backend:

@@ -8,15 +8,13 @@ concurrency:
 name: formatting
 jobs:
   changes:
+    outputs:
+      backend_golang: ${{ steps.filter.outputs.backend_golang }}
+      frontend_typescript: ${{ steps.filter.outputs.frontend_typescript }}
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
-        outputs:
-          backend: ${{ steps.filter.outputs.backend }}
-          frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
-          frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
-          frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
         with:
           filters: |
             backend_golang:

@@ -10,14 +10,14 @@ on: [pull_request]
 name: deploy dev
 jobs:
   baseline-infra:
-    timeout-minutes: 90
-    runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
       frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
       frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
       frontend: ${{ steps.filter.outputs.frontend }}
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

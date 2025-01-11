@@ -9,14 +9,14 @@ name: build
 jobs:
   changes:
     runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
+      frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
+      frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
-        outputs:
-          backend: ${{ steps.filter.outputs.backend }}
-          frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
-          frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
-          frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
         with:
           filters: |
             backend:
