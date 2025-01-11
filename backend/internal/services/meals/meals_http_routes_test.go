@@ -442,7 +442,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.cfg.UseSearchService = true
+		helper.service.useSearchService = true
 
 		exampleLimit := uint8(123)
 

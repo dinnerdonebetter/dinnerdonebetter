@@ -11,9 +11,8 @@ import (
 type (
 	// Config configures the users service.
 	Config struct {
-		DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
-		PublicMediaURLPrefix string         `json:"publicMediaURLPrefix"           toml:"public_media_url_prefix"`
-		Uploads              uploads.Config `json:"uploads"                        toml:"uploads,omitempty"`
+		PublicMediaURLPrefix string         `env:"PUBLIC_MEDIA_URL_PREFIX" json:"publicMediaURLPrefix"`
+		Uploads              uploads.Config `envPrefix:"UPLOADS_"          json:"uploads"`
 	}
 )
 
@@ -24,7 +23,6 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		cfg,
-		validation.Field(&cfg.DataChangesTopicName, validation.Required),
 		validation.Field(&cfg.Uploads, validation.Required),
 	)
 }

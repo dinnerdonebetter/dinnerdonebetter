@@ -10,7 +10,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
 	rediscontainers "github.com/testcontainers/testcontainers-go/modules/redis"
 )
 
@@ -21,8 +20,8 @@ const (
 func buildContainerBackedRedisConfig(t *testing.T, ctx context.Context) (config *Config, shutdownFunction func(context.Context) error) {
 	t.Helper()
 
-	redisContainer, err := rediscontainers.RunContainer(ctx,
-		testcontainers.WithImage("docker.io/redis:7-bullseye"),
+	redisContainer, err := rediscontainers.Run(ctx,
+		"docker.io/redis:7-bullseye",
 		rediscontainers.WithLogLevel(rediscontainers.LogLevelNotice),
 	)
 	if err != nil {

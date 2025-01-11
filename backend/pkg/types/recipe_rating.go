@@ -143,7 +143,7 @@ var _ validation.ValidatableWithContext = (*RecipeRatingCreationRequestInput)(ni
 
 // ValidateWithContext validates a RecipeRatingCreationRequestInput.
 func (x *RecipeRatingCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	var errs *multierror.Error
+	errs := &multierror.Error{}
 
 	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
 		errs = multierror.Append(errs, errAtLeastOneRatingRequired)
@@ -164,7 +164,7 @@ var _ validation.ValidatableWithContext = (*RecipeRatingDatabaseCreationInput)(n
 
 // ValidateWithContext validates a RecipeRatingDatabaseCreationInput.
 func (x *RecipeRatingDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
-	var errs *multierror.Error
+	errs := &multierror.Error{}
 
 	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
 		errs = multierror.Append(errs, errAtLeastOneRatingRequired)

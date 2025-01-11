@@ -11,6 +11,10 @@ const (
 	validPreparationVesselsTableName = "valid_preparation_vessels"
 )
 
+func init() {
+	registerTableName(validPreparationVesselsTableName)
+}
+
 var validPreparationVesselsColumns = []string{
 	idColumn,
 	notesColumn,
@@ -130,9 +134,7 @@ WHERE
 					validPreparationsTableName, archivedAtColumn,
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validPreparationVesselsTableName, validPreparationIDColumn, idColumn,
-					buildFilterConditions(validPreparationVesselsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validPreparationVesselsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},
@@ -170,9 +172,7 @@ WHERE
 					validPreparationsTableName, archivedAtColumn,
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validPreparationVesselsTableName, validVesselIDColumn, idColumn,
-					buildFilterConditions(validPreparationVesselsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validPreparationVesselsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},
@@ -207,9 +207,7 @@ WHERE
 					validVesselsTableName, archivedAtColumn,
 					validPreparationsTableName, archivedAtColumn,
 					validMeasurementUnitsTableName, archivedAtColumn,
-					buildFilterConditions(validPreparationVesselsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validPreparationVesselsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

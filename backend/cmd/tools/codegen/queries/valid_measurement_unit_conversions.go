@@ -15,6 +15,10 @@ const (
 	validMeasurementUnitConversionsOnlyForIngredientColumn = "only_for_ingredient"
 )
 
+func init() {
+	registerTableName(validMeasurementUnitConversionsTableName)
+}
+
 var validMeasurementUnitConversionsColumns = []string{
 	idColumn,
 	"from_unit",

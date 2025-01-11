@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -18,7 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -40,16 +40,17 @@ func main() {
 
 	tracerProvider := tracing.NewNoopTracerProvider()
 
-	cfg := &searchcfg.Config{
-		Provider: searchcfg.AlgoliaProvider,
+	cfg := &textsearchcfg.Config{
+		Provider: textsearchcfg.AlgoliaProvider,
 		Algolia: &algolia.Config{
 			AppID:  os.Getenv("ALGOLIA_APP_ID"),
 			APIKey: os.Getenv("ALGOLIA_API_KEY"),
 		},
 	}
 
-	dbConfig := &dbconfig.Config{
-		ConnectionDetails: os.Getenv("DATABASE_URL"),
+	dbConfig := &databasecfg.Config{}
+	if err := dbConfig.LoadConnectionDetailsFromURL(os.Getenv("DATABASE_URL")); err != nil {
+		log.Fatal(err)
 	}
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, dbConfig)
@@ -101,7 +102,7 @@ func main() {
 
 		switch index {
 		case textsearch.IndexTypeRecipes:
-			im, err = searchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = textsearchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -127,7 +128,7 @@ func main() {
 				*filter.Page++
 			}
 		case textsearch.IndexTypeMeals:
-			im, err = searchcfg.ProvideIndex[types.MealSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = textsearchcfg.ProvideIndex[types.MealSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -153,7 +154,7 @@ func main() {
 				*filter.Page++
 			}
 		case textsearch.IndexTypeValidIngredients:
-			im, err = searchcfg.ProvideIndex[types.ValidIngredientSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = textsearchcfg.ProvideIndex[types.ValidIngredientSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -179,7 +180,7 @@ func main() {
 				*filter.Page++
 			}
 		case textsearch.IndexTypeValidInstruments:
-			im, err = searchcfg.ProvideIndex[types.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = textsearchcfg.ProvideIndex[types.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -205,7 +206,7 @@ func main() {
 				*filter.Page++
 			}
 		case textsearch.IndexTypeValidMeasurementUnits:
-			im, err = searchcfg.ProvideIndex[types.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = textsearchcfg.ProvideIndex[types.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -231,7 +232,7 @@ func main() {
 				*filter.Page++
 			}
 		case textsearch.IndexTypeValidPreparations:
-			im, err = searchcfg.ProvideIndex[types.ValidPreparationSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = textsearchcfg.ProvideIndex[types.ValidPreparationSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -257,7 +258,7 @@ func main() {
 				*filter.Page++
 			}
 		case textsearch.IndexTypeValidIngredientStates:
-			im, err = searchcfg.ProvideIndex[types.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = textsearchcfg.ProvideIndex[types.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -283,7 +284,7 @@ func main() {
 				*filter.Page++
 			}
 		case textsearch.IndexTypeValidVessels:
-			im, err = searchcfg.ProvideIndex[types.ValidVesselSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = textsearchcfg.ProvideIndex[types.ValidVesselSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -309,7 +310,7 @@ func main() {
 				*filter.Page++
 			}
 		case textsearch.IndexTypeUsers:
-			im, err = searchcfg.ProvideIndex[types.UserSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = textsearchcfg.ProvideIndex[types.UserSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return

@@ -17,44 +17,44 @@ type ValidIngredientDataManagerMock struct {
 
 // ValidIngredientExists is a mock function.
 func (m *ValidIngredientDataManagerMock) ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error) {
-	args := m.Called(ctx, validIngredientID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, validIngredientID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetValidIngredient is a mock function.
 func (m *ValidIngredientDataManagerMock) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
-	args := m.Called(ctx, validIngredientID)
-	return args.Get(0).(*types.ValidIngredient), args.Error(1)
+	returnValues := m.Called(ctx, validIngredientID)
+	return returnValues.Get(0).(*types.ValidIngredient), returnValues.Error(1)
 }
 
 // GetRandomValidIngredient is a mock function.
 func (m *ValidIngredientDataManagerMock) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(*types.ValidIngredient), args.Error(1)
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).(*types.ValidIngredient), returnValues.Error(1)
 }
 
 // SearchForValidIngredients is a mock function.
 func (m *ValidIngredientDataManagerMock) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
-	args := m.Called(ctx, query, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), args.Error(1)
+	returnValues := m.Called(ctx, query, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), returnValues.Error(1)
 }
 
 // SearchForValidIngredientsForPreparation is a mock function.
 func (m *ValidIngredientDataManagerMock) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
-	args := m.Called(ctx, preparationID, query, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), args.Error(1)
+	returnValues := m.Called(ctx, preparationID, query, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), returnValues.Error(1)
 }
 
 // GetValidIngredients is a mock function.
 func (m *ValidIngredientDataManagerMock) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
-	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), args.Error(1)
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), returnValues.Error(1)
 }
 
 // CreateValidIngredient is a mock function.
 func (m *ValidIngredientDataManagerMock) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.ValidIngredient), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.ValidIngredient), returnValues.Error(1)
 }
 
 // UpdateValidIngredient is a mock function.

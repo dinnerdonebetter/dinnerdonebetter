@@ -8,11 +8,15 @@ import (
 )
 
 const (
-	preparationIDColumn         = "preparation_id"
 	validPreparationsTableName  = "valid_preparations"
+	preparationIDColumn         = "preparation_id"
 	validPreparationIDColumn    = "valid_preparation_id"
 	restrictToIngredientsColumn = "restrict_to_ingredients"
 )
+
+func init() {
+	registerTableName(validPreparationsTableName)
+}
 
 var validPreparationsColumns = []string{
 	idColumn,
@@ -122,7 +126,6 @@ ORDER BY %s.%s
 						validPreparationsTableName,
 						true,
 						true,
-						nil,
 					),
 					validPreparationsTableName, idColumn,
 					validPreparationsTableName, idColumn,

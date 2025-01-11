@@ -24,7 +24,7 @@ const (
 func main() {
 	pflag.Parse()
 
-	var runErrors *multierror.Error
+	runErrors := &multierror.Error{}
 
 	databaseToUse := *databaseFlag
 

@@ -8,8 +8,8 @@ import (
 
 // MetaSettings is primarily used for development.
 type MetaSettings struct {
-	RunMode runMode `json:"runMode" toml:"run_mode,omitempty"`
-	Debug   bool    `json:"debug"   toml:"debug,omitempty"`
+	RunMode runMode `env:"RUN_MODE" json:"runMode"`
+	Debug   bool    `env:"DEBUG"    json:"debug"`
 }
 
 var _ validation.ValidatableWithContext = (*MetaSettings)(nil)

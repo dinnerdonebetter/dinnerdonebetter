@@ -27,7 +27,8 @@ func init() {
 type (
 	// ValidIngredientMeasurementUnit represents a valid ingredient measurement unit.
 	ValidIngredientMeasurementUnit struct {
-		_                 struct{}                    `json:"-"`
+		_ struct{} `json:"-"`
+
 		CreatedAt         time.Time                   `json:"createdAt"`
 		LastUpdatedAt     *time.Time                  `json:"lastUpdatedAt"`
 		ArchivedAt        *time.Time                  `json:"archivedAt"`

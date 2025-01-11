@@ -66,7 +66,7 @@ func (w *mealPlanTaskCreatorWorker) CreateMealPlanTasksForFinalizedMealPlans(ctx
 
 	logger = logger.WithValue("creatable_steps_qty", len(mealPlansAndSteps))
 
-	var result *multierror.Error
+	result := &multierror.Error{}
 	for mealPlanID, steps := range mealPlansAndSteps {
 		l := logger.Clone().WithValue(keys.MealPlanIDKey, mealPlanID).WithValue("creatable_prep_step_qty", len(steps))
 

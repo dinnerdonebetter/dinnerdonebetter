@@ -15,6 +15,10 @@ const (
 	belongsToRecipeStepColumn = "belongs_to_recipe_step"
 )
 
+func init() {
+	registerTableName(recipeStepsTableName)
+}
+
 var recipeStepsColumns = []string{
 	idColumn,
 	indexColumn,
@@ -161,7 +165,7 @@ WHERE %s.%s IS NULL
 					recipeStepsTableName, archivedAtColumn,
 					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
 					recipesTableName, archivedAtColumn,
-					buildFilterConditions(recipeStepsTableName, true, false, nil),
+					buildFilterConditions(recipeStepsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

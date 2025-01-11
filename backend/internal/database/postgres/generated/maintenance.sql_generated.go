@@ -20,3 +20,12 @@ func (q *Queries) DeleteExpiredOAuth2ClientTokens(ctx context.Context, db DBTX) 
 	}
 	return result.RowsAffected()
 }
+
+const destroyAllData = `-- name: DestroyAllData :exec
+TRUNCATE meal_plans, valid_ingredient_states, audit_log_entries, recipe_step_vessels, valid_measurement_units, meal_plan_grocery_list_items, meal_plan_tasks, user_notifications, valid_ingredient_groups, valid_ingredient_state_ingredients, valid_instruments, valid_preparations, valid_vessels, meal_plan_option_votes, webhooks, households, meal_components, meal_plan_events, meals, password_reset_tokens, recipe_prep_tasks, recipe_ratings, household_invitations, service_setting_configurations, recipe_step_ingredients, recipe_step_products, recipe_steps, valid_ingredient_measurement_units, recipe_step_instruments, oauth2_client_tokens, recipes, user_ingredient_preferences, valid_ingredient_group_members, valid_measurement_unit_conversions, valid_preparation_instruments, webhook_trigger_events, household_user_memberships, meal_plan_options, oauth2_clients, recipe_media, recipe_step_completion_condition_ingredients, recipe_step_completion_conditions, users, valid_ingredient_preparations, household_instrument_ownerships, service_settings, valid_ingredients, valid_preparation_vessels, recipe_prep_task_steps CASCADE
+`
+
+func (q *Queries) DestroyAllData(ctx context.Context, db DBTX) error {
+	_, err := db.ExecContext(ctx, destroyAllData)
+	return err
+}

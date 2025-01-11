@@ -19,7 +19,6 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		cfg := &Config{
 			PublicMediaURLPrefix: t.Name(),
 			Uploads:              uploads.Config{},
-			DataChangesTopicName: "blah",
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

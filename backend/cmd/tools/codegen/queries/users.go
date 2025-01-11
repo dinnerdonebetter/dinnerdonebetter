@@ -34,6 +34,10 @@ const (
 	lastAcceptedPrivacyPolicyColumn     = "last_accepted_privacy_policy"
 )
 
+func init() {
+	registerTableName(usersTableName)
+}
+
 var usersColumns = []string{
 	idColumn,
 	usernameColumn,
@@ -324,7 +328,6 @@ WHERE %s.%s IS NULL
 						usersTableName,
 						true,
 						true,
-						nil,
 					),
 					offsetLimitAddendum,
 				)),

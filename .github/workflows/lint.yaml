@@ -1,0 +1,81 @@
+---
+on: [pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+name: lint
+jobs:
+  changes:
+    permissions:
+      pull-requests: read
+    timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      openapi: ${{ steps.filter.outputs.openapi }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - backend/**
+            frontend:
+              - frontend/**/*.ts
+              - frontend/**/*.tsx
+            openapi:
+              - openapi_spec.yaml
+  golang:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.backend == 'true' }}
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint
+        working-directory: backend
+        run: make lint
+
+  typescript:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['lts/*']
+    name: ${{ matrix.node }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+
+      - run: npm install -g yarn
+
+      - run: yarn install
+        working-directory: frontend
+
+      - run: yarn run lint
+        working-directory: frontend
+
+  openapi:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.openapi == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['lts/*']
+    name: ${{ matrix.node }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: stoplightio/spectral-action@latest
+        with:
+          file_glob: 'openapi_spec.yaml'

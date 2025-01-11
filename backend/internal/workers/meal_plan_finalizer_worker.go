@@ -75,7 +75,7 @@ func (w *mealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 				MealPlan:    mealPlan,
 				HouseholdID: mealPlan.BelongsToHousehold,
 			}); err != nil {
-				logger.Error(err, "writing data change message for finalized meal plan")
+				logger.Error("writing data change message for finalized meal plan", err)
 			}
 		}
 	}

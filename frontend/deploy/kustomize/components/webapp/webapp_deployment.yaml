@@ -1,0 +1,84 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dinner-done-better-webapp-deployment
+  labels:
+    app: dinner-done-better-webapp
+spec:
+  selector:
+    matchLabels:
+      app: dinner-done-better-webapp
+      app.kubernetes.io/name: dinner-done-better-webapp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better-webapp
+        app.kubernetes.io/name: dinner-done-better-webapp
+    spec:
+      containers:
+        - name: dinner-done-better-webapp
+          image: dinner-done-better-webapp
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: "RUNNING_IN_KUBERNETES"
+              value: "true"
+          ports:
+            - containerPort: 9000
+              name: http
+          volumeMounts:
+            - name: logs
+              mountPath: /var/log/application
+            - name: "config"
+              mountPath: "/app/apps/web/config.json"
+              subPath: "config.json"
+          livenessProbe:
+            httpGet:
+              path: "/api/_meta_/live"
+              port: 9000
+            initialDelaySeconds: 15
+            periodSeconds: 32
+          readinessProbe:
+            httpGet:
+              path: "/api/_meta_/ready"
+              port: 9000
+            initialDelaySeconds: 15
+            periodSeconds: 3
+            # This is the OpenTelemetry collector sidecar
+        - name: opentelemetry-collector
+          image: otel/opentelemetry-collector-contrib:0.115.1
+          command:
+            - "/otelcol-contrib"
+            - "--config"
+            - "/conf/config.yaml"
+          ports:
+            - containerPort: 4317
+              name: otel1
+            - containerPort: 4318
+              name: otel2
+            - containerPort: 13313
+              name: health
+          volumeMounts:
+            - name: logs
+              mountPath: /var/log/application
+              readOnly: true
+            - name: opentelemetry-config
+              mountPath: /conf
+          env:
+            - name: "RUNNING_IN_KUBERNETES"
+              value: "true"
+      volumes:
+        # this volume contains the configuration file for the API service
+        - name: "config"
+          configMap:
+            name: "frontend-service-config"
+        # this volume is where we write logs to in the API, and where we read logs from in the collector.
+        - name: logs
+          emptyDir:
+            sizeLimit: 500Mi
+        # this volume contains the configuration file for the OTel collector.
+        - name: opentelemetry-config
+          configMap:
+            name: opentelemetry-collector-config
+---

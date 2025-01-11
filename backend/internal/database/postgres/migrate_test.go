@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -30,7 +30,7 @@ func TestQuerier_Migrate(T *testing.T) {
 		c.timeFunc = func() time.Time {
 			return exampleCreationTime
 		}
-		c.config = &dbconfig.Config{MaxPingAttempts: 1, PingWaitPeriod: time.Second}
+		c.config = &databasecfg.Config{MaxPingAttempts: 1, PingWaitPeriod: time.Second}
 
 		// called by c.IsReady()
 		db.ExpectPing()

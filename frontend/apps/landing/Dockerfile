@@ -8,6 +8,7 @@ RUN apk update
 WORKDIR /app
 RUN yarn global add turbo
 COPY . .
+RUN rm -rf deploy documentation
 RUN turbo prune --scope=landing --docker
 
 # Add lockfile and package.json's of isolated subworkspace
@@ -50,6 +51,6 @@ COPY --from=installer /app/apps/landing/package.json .
 COPY --from=installer --chown=nextjs:nodejs /app/apps/landing/.next/standalone ./
 COPY --from=installer --chown=nextjs:nodejs /app/apps/landing/.next/static ./apps/landing/.next/static
 
-ENV PORT=9000
+ENV PORT=10000
 
 CMD node apps/landing/server.js

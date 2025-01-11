@@ -13,6 +13,10 @@ const (
 	validMeasurementUnitIDColumn             = "valid_measurement_unit_id"
 )
 
+func init() {
+	registerTableName(validIngredientMeasurementUnitsTableName)
+}
+
 var validIngredientMeasurementUnitsColumns = []string{
 	idColumn,
 	notesColumn,
@@ -123,9 +127,11 @@ WHERE
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientIDColumn,
-					buildFilterConditions(validIngredientMeasurementUnitsTableName, true,
+					buildFilterConditions(
+						validIngredientMeasurementUnitsTableName,
+						true,
 						false,
-						nil),
+					),
 					offsetLimitAddendum,
 				)),
 			},
@@ -158,9 +164,7 @@ WHERE
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitIDColumn,
-					buildFilterConditions(validIngredientMeasurementUnitsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validIngredientMeasurementUnitsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},
@@ -191,9 +195,7 @@ WHERE
 					validIngredientMeasurementUnitsTableName, archivedAtColumn,
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validIngredientsTableName, archivedAtColumn,
-					buildFilterConditions(validIngredientMeasurementUnitsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validIngredientMeasurementUnitsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

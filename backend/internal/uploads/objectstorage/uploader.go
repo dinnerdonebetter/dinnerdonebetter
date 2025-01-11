@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 
-	"github.com/aws/aws-sdk-go/aws/session"
+	s3v2 "github.com/aws/aws-sdk-go-v2/service/s3"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"gocloud.dev/blob"
 	"gocloud.dev/blob/fileblob"
@@ -44,13 +44,13 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		FilesystemConfig  *FilesystemConfig `json:"filesystem,omitempty"        toml:"filesystem,omitempty"`
-		S3Config          *S3Config         `json:"s3,omitempty"                toml:"s3,omitempty"`
-		GCPConfig         *GCPConfig        `json:"gcpConfig,omitempty"         toml:"gcp_config,omitempty"`
-		BucketPrefix      string            `json:"bucketPrefix,omitempty"      toml:"bucket_prefix,omitempty"`
-		BucketName        string            `json:"bucketName,omitempty"        toml:"bucket_name,omitempty"`
-		UploadFilenameKey string            `json:"uploadFilenameKey,omitempty" toml:"upload_filename_key,omitempty"`
-		Provider          string            `json:"provider,omitempty"          toml:"provider,omitempty"`
+		FilesystemConfig  *FilesystemConfig `envPrefix:"FILESYSTEM_"   json:"filesystem,omitempty"`
+		S3Config          *S3Config         `envPrefix:"S3_"           json:"s3,omitempty"`
+		GCPConfig         *GCPConfig        `envPrefix:"GCP_"          json:"gcpConfig,omitempty"`
+		BucketPrefix      string            `env:"BUCKET_PREFIX"       json:"bucketPrefix,omitempty"`
+		BucketName        string            `env:"BUCKET_NAME"         json:"bucketName,omitempty"`
+		UploadFilenameKey string            `env:"UPLOAD_FILENAME_KEY" json:"uploadFilenameKey,omitempty"`
+		Provider          string            `env:"PROVIDER"            json:"provider,omitempty"`
 	}
 )
 
@@ -98,7 +98,7 @@ func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 			return ErrNilConfig
 		}
 
-		if u.bucket, err = s3blob.OpenBucket(ctx, session.Must(session.NewSession()), cfg.S3Config.BucketName, &s3blob.Options{
+		if u.bucket, err = s3blob.OpenBucketV2(ctx, s3v2.New(s3v2.Options{}), cfg.S3Config.BucketName, &s3blob.Options{
 			UseLegacyList: false,
 		}); err != nil {
 			return fmt.Errorf("initializing s3 bucket: %w", err)

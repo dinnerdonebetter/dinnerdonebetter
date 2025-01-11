@@ -16,32 +16,32 @@ type AuditLogEntryDataManagerMock struct {
 }
 
 func (m *AuditLogEntryDataManagerMock) GetAuditLogEntry(ctx context.Context, auditLogID string) (*types.AuditLogEntry, error) {
-	args := m.Called(ctx, auditLogID)
-	return args.Get(0).(*types.AuditLogEntry), args.Error(1)
+	returnValues := m.Called(ctx, auditLogID)
+	return returnValues.Get(0).(*types.AuditLogEntry), returnValues.Error(1)
 }
 
 func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
-	args := m.Called(ctx, userID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), args.Error(1)
+	returnValues := m.Called(ctx, userID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), returnValues.Error(1)
 }
 
 func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID string, resourceTypes []string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
-	args := m.Called(ctx, userID, resourceTypes, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), args.Error(1)
+	returnValues := m.Called(ctx, userID, resourceTypes, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), returnValues.Error(1)
 }
 
 func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForHousehold(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
-	args := m.Called(ctx, householdID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), args.Error(1)
+	returnValues := m.Called(ctx, householdID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), returnValues.Error(1)
 }
 
 func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID string, resourceTypes []string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
-	args := m.Called(ctx, householdID, resourceTypes, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), args.Error(1)
+	returnValues := m.Called(ctx, householdID, resourceTypes, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), returnValues.Error(1)
 }
 
 // CreateAuditLogEntry is a mock function.
 func (m *AuditLogEntryDataManagerMock) CreateAuditLogEntry(ctx context.Context, input *types.AuditLogEntryDatabaseCreationInput) (*types.AuditLogEntry, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.AuditLogEntry), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.AuditLogEntry), returnValues.Error(1)
 }

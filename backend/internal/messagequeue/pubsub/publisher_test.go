@@ -12,7 +12,6 @@ import (
 	"cloud.google.com/go/pubsub"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/gcloud"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -27,9 +26,9 @@ func buildPubSubBackedPublisher(t *testing.T, ctx context.Context) (publisher me
 	topicID, err := random.GenerateHexEncodedString(ctx, 8)
 	require.NoError(t, err)
 
-	pubsubContainer, err := gcloud.RunPubsubContainer(
+	pubsubContainer, err := gcloud.RunPubsub(
 		ctx,
-		testcontainers.WithImage("google/cloud-sdk:latest"),
+		"google/cloud-sdk:latest",
 		gcloud.WithProjectID(projectID),
 	)
 	if err != nil {

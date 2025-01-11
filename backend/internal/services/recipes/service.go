@@ -10,12 +10,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
@@ -54,7 +55,7 @@ func ProvideService(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *Config,
-	searchConfig *searchcfg.Config,
+	searchConfig *textsearchcfg.Config,
 	recipeDataManager types.RecipeDataManager,
 	recipeMediaDataManager types.RecipeMediaDataManager,
 	recipeGrapher recipeanalysis.RecipeAnalyzer,
@@ -63,22 +64,27 @@ func ProvideService(
 	publisherProvider messagequeue.PublisherProvider,
 	imageUploadProcessor images.MediaUploadProcessor,
 	tracerProvider tracing.TracerProvider,
+	queueConfig *msgconfig.QueuesConfig,
 ) (types.RecipeDataService, error) {
+	if queueConfig == nil {
+		return nil, fmt.Errorf("nil queue config provided")
+	}
+
 	if cfg == nil {
 		return nil, errInvalidConfig
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
 	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
 	if err != nil {
-		return nil, fmt.Errorf("initializing recipe service upload manager: %w", err)
+		return nil, fmt.Errorf("initializing %s upload manager: %w", serviceName, err)
 	}
 
-	searchIndex, err := searchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeRecipes)
+	searchIndex, err := textsearchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeRecipes)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing recipe index manager")
 	}

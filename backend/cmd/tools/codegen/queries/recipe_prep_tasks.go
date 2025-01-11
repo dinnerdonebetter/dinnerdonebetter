@@ -12,6 +12,10 @@ const (
 	belongsToRecipePrepTaskColumn = "belongs_to_recipe_prep_task"
 )
 
+func init() {
+	registerTableName(recipePrepTasksTableName)
+}
+
 var recipePrepTasksColumns = []string{
 	idColumn,
 	nameColumn,

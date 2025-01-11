@@ -7,7 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/slog"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltracehttp"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,13 +22,13 @@ func TestObserveValue(T *testing.T) {
 		ctx := context.Background()
 		exampleValue := t.Name()
 
-		logger := slog.NewSlogLogger(logging.DebugLevel)
+		logger := slog.NewSlogLogger(logging.DebugLevel, "")
 		tracerProvider, err := (&tracingcfg.Config{
 			Provider: tracingcfg.ProviderOtel,
-			Otel: &oteltracehttp.Config{
-				CollectorEndpoint:         "http://localhost:4317",
-				SpanCollectionProbability: 1,
+			Otel: &oteltrace.Config{
+				CollectorEndpoint: "http://localhost:4317",
 			},
+			SpanCollectionProbability: 1,
 		}).ProvideTracerProvider(ctx, logger)
 		require.NoError(t, err)
 		require.NotNil(t, tracerProvider)

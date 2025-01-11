@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltracehttp"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -19,11 +19,11 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		ctx := context.Background()
 		cfg := &Config{
 			Tracing: tracingcfg.Config{
-				Provider: tracingcfg.ProviderOtel,
-				Otel: &oteltracehttp.Config{
-					CollectorEndpoint:         "0.0.0.0",
-					ServiceName:               t.Name(),
-					SpanCollectionProbability: 1,
+				ServiceName:               t.Name(),
+				SpanCollectionProbability: 1,
+				Provider:                  tracingcfg.ProviderOtel,
+				Otel: &oteltrace.Config{
+					CollectorEndpoint: "0.0.0.0",
 				},
 			},
 		}

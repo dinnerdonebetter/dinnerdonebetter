@@ -13,6 +13,10 @@ const (
 	mealIDColumn = "meal_id"
 )
 
+func init() {
+	registerTableName(mealsTableName)
+}
+
 var mealsColumns = []string{
 	idColumn,
 	nameColumn,
@@ -158,7 +162,6 @@ WHERE
 						mealsTableName,
 						true,
 						true,
-						nil,
 					),
 					offsetLimitAddendum,
 				)),
@@ -186,13 +189,7 @@ WHERE
 					mealsTableName,
 					mealsTableName, archivedAtColumn,
 					mealsTableName, createdByUserColumn, createdByUserColumn,
-					buildFilterConditions(
-						mealsTableName,
-						true,
-						true,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn),
-					),
+					buildFilterConditions(mealsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
 					offsetLimitAddendum,
 				)),
 			},
@@ -223,7 +220,6 @@ WHERE
 						mealsTableName,
 						true,
 						true,
-						nil,
 					),
 					offsetLimitAddendum,
 				)),

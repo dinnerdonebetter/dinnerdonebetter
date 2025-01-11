@@ -5,16 +5,12 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
@@ -25,21 +21,22 @@ import (
 func doTheThing() error {
 	ctx := context.Background()
 
-	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
-
-	cfg, err := config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.LoadConfigFromEnvironment[config.MealPlanFinalizerConfig]()
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
 
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
-	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
+	logger := cfg.Observability.Logging.ProvideLogger()
+
+	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
+	if err != nil {
+		logger.Error("initializing tracer", err)
 	}
 	otel.SetTracerProvider(tracerProvider)
 
@@ -63,7 +60,7 @@ func doTheThing() error {
 
 	defer publisherProvider.Close()
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"))
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.DataChangesTopicName)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}
@@ -90,7 +87,9 @@ func doTheThing() error {
 }
 
 func main() {
+	log.Println("doing the thing")
 	if err := doTheThing(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println("the thing is done")
 }

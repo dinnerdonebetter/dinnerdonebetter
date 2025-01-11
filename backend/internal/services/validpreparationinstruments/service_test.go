@@ -7,6 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -47,7 +48,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 			ValidInstrumentIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := &Config{
+		cfg := &msgconfig.QueuesConfig{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -56,12 +57,12 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
-			cfg,
 			&mocktypes.ValidPreparationInstrumentDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			cfg,
 		)
 
 		assert.NotNil(t, s)
@@ -73,7 +74,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 	T.Run("with error providing data changes producer", func(t *testing.T) {
 		t.Parallel()
 
-		cfg := &Config{
+		cfg := &msgconfig.QueuesConfig{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -82,12 +83,12 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
-			cfg,
 			&mocktypes.ValidPreparationInstrumentDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			cfg,
 		)
 
 		assert.Nil(t, s)

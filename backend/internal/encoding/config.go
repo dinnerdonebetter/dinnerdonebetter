@@ -10,7 +10,7 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	ContentType string `json:"contentType" toml:"content_type,omitempty"`
+	ContentType string `env:"CONTENT_TYPE" json:"contentType"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

@@ -11,6 +11,10 @@ const (
 	webhooksTableName = "webhooks"
 )
 
+func init() {
+	registerTableName(webhooksTableName)
+}
+
 var (
 	webhooksColumns = []string{
 		idColumn,
@@ -120,14 +124,7 @@ WHERE %s.%s IS NULL
 					webhooksTableName,
 					webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
 					webhooksTableName, archivedAtColumn,
-					buildFilterConditions(
-						webhooksTableName,
-						true,
-						true,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn),
-						fmt.Sprintf("%s.%s IS NULL", webhookTriggerEventsTableName, archivedAtColumn),
-					),
+					buildFilterConditions(webhooksTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn), fmt.Sprintf("%s.%s IS NULL", webhookTriggerEventsTableName, archivedAtColumn)),
 					offsetLimitAddendum,
 				)),
 			},

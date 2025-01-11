@@ -15,6 +15,10 @@ const (
 	belongsToMealPlanColumn      = "belongs_to_meal_plan"
 )
 
+func init() {
+	registerTableName(mealPlanEventsTableName)
+}
+
 var mealPlanEventsColumns = []string{
 	idColumn,
 	notesColumn,
@@ -137,13 +141,7 @@ ORDER BY %s.%s
 					buildTotalCountSelect(mealPlanEventsTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn)),
 					mealPlanEventsTableName,
 					mealPlanEventsTableName, archivedAtColumn,
-					buildFilterConditions(
-						mealPlanEventsTableName,
-						true,
-						true,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn),
-					),
+					buildFilterConditions(mealPlanEventsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn)),
 					mealPlanEventsTableName, idColumn,
 					mealPlanEventsTableName, idColumn,
 					offsetLimitAddendum,

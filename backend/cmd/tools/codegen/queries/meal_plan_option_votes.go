@@ -14,6 +14,10 @@ const (
 	belongsToMealPlanOptionColumn = "belongs_to_meal_plan_option"
 )
 
+func init() {
+	registerTableName(mealPlanOptionVotesTableName)
+}
+
 var mealPlanOptionVotesColumns = []string{
 	idColumn,
 	"rank",
@@ -194,7 +198,7 @@ GROUP BY
 					mealPlanEventsTableName, idColumn, mealPlanEventIDColumn,
 					mealPlansTableName, archivedAtColumn,
 					mealPlansTableName, idColumn, mealPlanIDColumn,
-					buildFilterConditions(mealPlanOptionVotesTableName, true, false, nil),
+					buildFilterConditions(mealPlanOptionVotesTableName, true, false),
 					mealPlanOptionVotesTableName, idColumn,
 					mealPlanOptionsTableName, idColumn,
 					mealPlanEventsTableName, idColumn,

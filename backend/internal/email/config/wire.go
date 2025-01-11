@@ -1,4 +1,4 @@
-package config
+package emailcfg
 
 import (
 	"net/http"

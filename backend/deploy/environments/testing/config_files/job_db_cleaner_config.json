@@ -1,0 +1,34 @@
+{
+	"observability": {
+		"logging": {
+			"level": "info",
+			"provider": "slog"
+		},
+		"metrics": {},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces"
+			},
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
+	"database": {
+		"provider": "",
+		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"connectionDetails": {
+			"username": "dbuser",
+			"password": "hunter2",
+			"database": "dinner-done-better",
+			"hostname": "pgdatabase",
+			"port": 5432,
+			"disableSSL": true
+		},
+		"debug": true,
+		"logQueries": true,
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1500000000
+	}
+}

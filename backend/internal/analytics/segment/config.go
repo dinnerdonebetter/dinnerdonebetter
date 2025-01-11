@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	APIToken string `json:"apiToken" toml:"api_token,omitempty"`
+	APIToken string `env:"API_TOKEN" json:"apiToken"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

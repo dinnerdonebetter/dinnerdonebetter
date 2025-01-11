@@ -18,6 +18,10 @@ const (
 	refreshExpiresAtColumn      = "refresh_expires_at"
 )
 
+func init() {
+	registerTableName(oauth2ClientTokensTableName)
+}
+
 /* #nosec G101 */
 var oauth2ClientTokensColumns = []string{
 	idColumn,

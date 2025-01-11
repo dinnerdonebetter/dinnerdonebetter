@@ -20,7 +20,7 @@ func (s *service) IncomingWebhookHandler(res http.ResponseWriter, req *http.Requ
 	webhookHandleTimer := timing.NewMetric("handler").WithDesc("handle webhook event").Start()
 	statusToWrite := http.StatusOK
 	if err := s.paymentManager.HandleEventWebhook(req); err != nil {
-		logger.Error(err, "handling subscription event webhook")
+		logger.Error("handling subscription event webhook", err)
 		statusToWrite = http.StatusInternalServerError
 	}
 	webhookHandleTimer.Stop()

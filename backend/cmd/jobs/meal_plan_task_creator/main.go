@@ -5,17 +5,13 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"os"
-	"strings"
 
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
@@ -26,28 +22,29 @@ import (
 func doTheThing() error {
 	ctx := context.Background()
 
-	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
-
-	cfg, err := config.GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.LoadConfigFromEnvironment[config.MealPlanTaskCreatorConfig]()
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
+
+	logger := cfg.Observability.Logging.ProvideLogger()
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
+		logger.Error("initializing tracer", initializeTracerErr)
 	}
 	otel.SetTracerProvider(tracerProvider)
 
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("meal_plan_task_creator_job")).StartSpan(ctx)
 	defer span.End()
 
-	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
+	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring customer data collector")
 	}
@@ -68,7 +65,7 @@ func doTheThing() error {
 
 	defer publisherProvider.Close()
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"))
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.DataChangesTopicName)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}
@@ -91,7 +88,9 @@ func doTheThing() error {
 }
 
 func main() {
+	log.Println("doing the thing")
 	if err := doTheThing(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println("the thing is done")
 }

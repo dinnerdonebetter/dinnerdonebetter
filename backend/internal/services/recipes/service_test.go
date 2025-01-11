@@ -9,11 +9,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
@@ -57,19 +58,21 @@ func TestProvideRecipesService(T *testing.T) {
 				Debug: false,
 			},
 		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
+
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			cfg.Uploads.Storage.UploadFilenameKey,
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
-			&searchcfg.Config{},
+			&textsearchcfg.Config{},
 			&mocktypes.RecipeDataManagerMock{},
 			&mocktypes.RecipeMediaDataManagerMock{},
 			&recipeanalysis.MockRecipeAnalyzer{},
@@ -78,6 +81,7 @@ func TestProvideRecipesService(T *testing.T) {
 			pp,
 			&images.MockImageUploadProcessor{},
 			tracing.NewNoopTracerProvider(),
+			msgCfg,
 		)
 
 		assert.NotNil(t, s)
@@ -98,15 +102,16 @@ func TestProvideRecipesService(T *testing.T) {
 				Debug: false,
 			},
 		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
 			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
-			&searchcfg.Config{},
+			&textsearchcfg.Config{},
 			&mocktypes.RecipeDataManagerMock{},
 			&mocktypes.RecipeMediaDataManagerMock{},
 			&recipeanalysis.MockRecipeAnalyzer{},
@@ -115,6 +120,7 @@ func TestProvideRecipesService(T *testing.T) {
 			pp,
 			&images.MockImageUploadProcessor{},
 			tracing.NewNoopTracerProvider(),
+			msgCfg,
 		)
 
 		assert.Nil(t, s)

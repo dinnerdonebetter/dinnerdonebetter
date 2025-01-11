@@ -12,6 +12,10 @@ const (
 	byUserColumn           = "by_user"
 )
 
+func init() {
+	registerTableName(recipeRatingsTableName)
+}
+
 var recipeRatingsColumns = []string{
 	idColumn,
 	recipeIDColumn,
@@ -107,13 +111,7 @@ ORDER BY %s.%s
 					recipeRatingsTableName,
 					recipeRatingsTableName, archivedAtColumn,
 					recipeRatingsTableName, recipeIDColumn, recipeIDColumn,
-					buildFilterConditions(
-						recipeRatingsTableName,
-						true,
-						true,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn),
-					),
+					buildFilterConditions(recipeRatingsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, recipeIDColumn, recipeIDColumn)),
 					recipeRatingsTableName, idColumn,
 					recipeRatingsTableName, idColumn,
 					offsetLimitAddendum,
@@ -144,13 +142,7 @@ ORDER BY %s.%s
 					recipeRatingsTableName,
 					recipeRatingsTableName, archivedAtColumn,
 					recipeRatingsTableName, byUserColumn, byUserColumn,
-					buildFilterConditions(
-						recipeRatingsTableName,
-						true,
-						true,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn),
-					),
+					buildFilterConditions(recipeRatingsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipeRatingsTableName, byUserColumn, byUserColumn)),
 					recipeRatingsTableName, idColumn,
 					recipeRatingsTableName, idColumn,
 					offsetLimitAddendum,

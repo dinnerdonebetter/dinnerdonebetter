@@ -17,26 +17,26 @@ type OAuth2ClientDataManagerMock struct {
 
 // GetOAuth2ClientByClientID is a mock function.
 func (m *OAuth2ClientDataManagerMock) GetOAuth2ClientByClientID(ctx context.Context, clientID string) (*types.OAuth2Client, error) {
-	args := m.Called(ctx, clientID)
-	return args.Get(0).(*types.OAuth2Client), args.Error(1)
+	returnValues := m.Called(ctx, clientID)
+	return returnValues.Get(0).(*types.OAuth2Client), returnValues.Error(1)
 }
 
 // GetOAuth2ClientByDatabaseID is a mock function.
 func (m *OAuth2ClientDataManagerMock) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID string) (*types.OAuth2Client, error) {
-	args := m.Called(ctx, clientID)
-	return args.Get(0).(*types.OAuth2Client), args.Error(1)
+	returnValues := m.Called(ctx, clientID)
+	return returnValues.Get(0).(*types.OAuth2Client), returnValues.Error(1)
 }
 
 // GetOAuth2Clients is a mock function.
 func (m *OAuth2ClientDataManagerMock) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.OAuth2Client], error) {
-	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.OAuth2Client]), args.Error(1)
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.OAuth2Client]), returnValues.Error(1)
 }
 
 // CreateOAuth2Client is a mock function.
 func (m *OAuth2ClientDataManagerMock) CreateOAuth2Client(ctx context.Context, input *types.OAuth2ClientDatabaseCreationInput) (*types.OAuth2Client, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.OAuth2Client), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.OAuth2Client), returnValues.Error(1)
 }
 
 // ArchiveOAuth2Client is a mock function.

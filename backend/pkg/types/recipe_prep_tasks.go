@@ -191,7 +191,7 @@ var _ validation.ValidatableWithContext = (*RecipePrepTaskCreationRequestInput)(
 
 // ValidateWithContext validates a RecipePrepTaskCreationRequestInput.
 func (x *RecipePrepTaskCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	var result *multierror.Error
+	result := &multierror.Error{}
 
 	if err := validation.ValidateStructWithContext(
 		ctx,

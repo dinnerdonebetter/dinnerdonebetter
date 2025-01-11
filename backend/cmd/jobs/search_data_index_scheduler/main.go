@@ -6,18 +6,15 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
-	"os"
-	"strings"
+	"log/slog"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
 
@@ -29,23 +26,24 @@ import (
 func doTheThing() error {
 	ctx := context.Background()
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
-
-	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
-		logger.Info("CEASE_OPERATION is set to true, exiting")
+	if config.ShouldCeaseOperation() {
+		slog.Info("CEASE_OPERATION is set to true, exiting")
+		return nil
 	}
 
-	cfg, err := config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.LoadConfigFromEnvironment[config.SearchDataIndexSchedulerConfig]()
 	if err != nil {
-		log.Fatal(fmt.Errorf("error getting config: %w", err))
+		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
 
-	logger = logger.WithValue("commit", cfg.Commit())
+	logger := cfg.Observability.Logging.ProvideLogger()
 
 	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if err != nil {
-		logger.Error(err, "initializing tracer")
+		logger.Error("initializing tracer", err)
 	}
+
 	otel.SetTracerProvider(tracerProvider)
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer_cloud_function"))
 
@@ -73,15 +71,14 @@ func doTheThing() error {
 	}
 	defer publisherProvider.Close()
 
-	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("SEARCH_INDEXING_TOPIC_NAME"))
+	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.SearchIndexRequestsTopicName)
 	if err != nil {
 		return observability.PrepareError(err, span, "configuring search indexing publisher")
 	}
 	defer searchDataIndexPublisher.Stop()
 
 	// figure out what records to join
-	//nolint:gosec // not important to use crypto/rand here
-	chosenIndex := indexing.AllIndexTypes[rand.Intn(len(indexing.AllIndexTypes))]
+	chosenIndex := random.Element(indexing.AllIndexTypes)
 
 	logger = logger.WithValue("chosen_index_type", chosenIndex)
 	logger.Info("index type chosen")
@@ -125,7 +122,7 @@ func doTheThing() error {
 		logger.WithValue("count", len(ids)).Info("publishing search index requests")
 	}
 
-	var errs *multierror.Error
+	errs := &multierror.Error{}
 	for _, id := range ids {
 		indexReq := &indexing.IndexRequest{
 			RowID:     id,
@@ -140,7 +137,9 @@ func doTheThing() error {
 }
 
 func main() {
+	log.Println("doing the thing")
 	if err := doTheThing(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println("the thing is done")
 }

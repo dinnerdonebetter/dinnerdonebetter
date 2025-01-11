@@ -31,20 +31,20 @@ func (m *ValidMeasurementUnitConversionDataManagerMock) GetValidMeasurementUnitC
 
 // ValidMeasurementUnitConversionExists is a mock function.
 func (m *ValidMeasurementUnitConversionDataManagerMock) ValidMeasurementUnitConversionExists(ctx context.Context, validPreparationID string) (bool, error) {
-	args := m.Called(ctx, validPreparationID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, validPreparationID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetValidMeasurementUnitConversion is a mock function.
 func (m *ValidMeasurementUnitConversionDataManagerMock) GetValidMeasurementUnitConversion(ctx context.Context, validPreparationID string) (*types.ValidMeasurementUnitConversion, error) {
-	args := m.Called(ctx, validPreparationID)
-	return args.Get(0).(*types.ValidMeasurementUnitConversion), args.Error(1)
+	returnValues := m.Called(ctx, validPreparationID)
+	return returnValues.Get(0).(*types.ValidMeasurementUnitConversion), returnValues.Error(1)
 }
 
 // CreateValidMeasurementUnitConversion is a mock function.
 func (m *ValidMeasurementUnitConversionDataManagerMock) CreateValidMeasurementUnitConversion(ctx context.Context, input *types.ValidMeasurementUnitConversionDatabaseCreationInput) (*types.ValidMeasurementUnitConversion, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.ValidMeasurementUnitConversion), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.ValidMeasurementUnitConversion), returnValues.Error(1)
 }
 
 // UpdateValidMeasurementUnitConversion is a mock function.

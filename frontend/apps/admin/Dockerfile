@@ -8,6 +8,7 @@ RUN apk update
 WORKDIR /app
 RUN yarn global add turbo
 COPY . .
+RUN rm -rf deploy documentation
 RUN turbo prune --scope=admin --docker
 
 # Add lockfile and package.json's of isolated subworkspace
@@ -21,6 +22,9 @@ COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/yarn.lock ./yarn.lock
 RUN yarn install
+
+ARG NEXT_PUBLIC_API_ENDPOINT
+ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 
 # Build the project
 COPY --from=builder /app/out/full/ .

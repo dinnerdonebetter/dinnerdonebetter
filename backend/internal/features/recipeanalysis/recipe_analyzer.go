@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"image"
 	"strings"
 	"time"
 
@@ -16,7 +15,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/dustin/go-humanize/english"
-	"github.com/goccy/go-graphviz"
 	"github.com/hako/durafmt"
 	"github.com/heimdalr/dag"
 	"gonum.org/v1/gonum/graph"
@@ -79,7 +77,6 @@ func graphIDForStep(step *types.RecipeStep) int64 {
 // RecipeAnalyzer analyzes recipes for insights (ugh).
 type RecipeAnalyzer interface {
 	MakeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error)
-	GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error)
 	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
 	RenderMermaidDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string
 	RenderGraphvizDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string
@@ -99,19 +96,6 @@ func NewRecipeAnalyzer(logger logging.Logger, tracerProvider tracing.TracerProvi
 		logger: logging.EnsureLogger(logger).WithName("recipe_analyzer"),
 		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("recipe_grapher")),
 	}
-}
-
-// GenerateDAGDiagramForRecipe generates DAG diagrams for a given recipe.
-func (g *recipeAnalyzer) GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error) {
-	ctx, span := g.tracer.StartSpan(ctx)
-	defer span.End()
-
-	img, err := g.renderGraph(ctx, recipe)
-	if err != nil {
-		return nil, err
-	}
-
-	return img, nil
 }
 
 func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error) {
@@ -244,24 +228,6 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 	recipeGraph.ReduceTransitively()
 
 	return recipeGraph, nil
-}
-
-func (g *recipeAnalyzer) renderGraph(ctx context.Context, recipe *types.Recipe) (image.Image, error) {
-	_, span := g.tracer.StartSpan(ctx)
-	defer span.End()
-
-	gv := graphviz.New()
-	pg, err := graphviz.ParseBytes([]byte(g.RenderGraphvizDiagramForRecipe(ctx, recipe)))
-	if err != nil {
-		return nil, err
-	}
-
-	img, err := gv.RenderImage(pg)
-	if err != nil {
-		return nil, err
-	}
-
-	return img, nil
 }
 
 // frozenIngredientDefrostStepsFilter iterates through a recipe and returns

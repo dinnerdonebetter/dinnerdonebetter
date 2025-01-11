@@ -149,6 +149,7 @@ type Querier interface {
 	DeleteOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) (int64, error)
 	DeleteOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) (int64, error)
 	DeleteUser(ctx context.Context, db DBTX, id string) (int64, error)
+	DestroyAllData(ctx context.Context, db DBTX) error
 	FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMealPlanParams) error
 	FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)

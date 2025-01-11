@@ -10,11 +10,12 @@ import (
 const (
 	userNotificationsTableName      = "user_notifications"
 	contentColumn                   = "content"
-	statusColumn                    = "status"
-	userNotificationStatusUnread    = "unread"
-	userNotificationStatusRead      = "read"
 	userNotificationStatusDismissed = "dismissed"
 )
+
+func init() {
+	registerTableName(userNotificationsTableName)
+}
 
 var (
 	userNotificationsColumns = []string{
@@ -119,7 +120,7 @@ WHERE %s%s
 					),
 					userNotificationsTableName,
 					fmt.Sprintf("user_notifications.status != '%s'\n\t", userNotificationStatusDismissed),
-					buildFilterConditions(userNotificationsTableName, true, false, []string{}, "user_notifications.belongs_to_user = sqlc.arg(user_id)"),
+					buildFilterConditions(userNotificationsTableName, true, false, "user_notifications.belongs_to_user = sqlc.arg(user_id)"),
 					offsetLimitAddendum,
 				)),
 			},

@@ -774,12 +774,6 @@ var routeInfoMap = map[string]routeDetails{
 		ResponseType: &types.Recipe{},
 		OAuth2Scopes: []string{householdMember},
 	},
-	"GET /api/v1/recipes/{recipeID}/dag": {
-		ID:           "GetRecipeDAG",
-		Description:  "Fetches a RecipeDAG",
-		ResponseType: &types.APIError{},
-		OAuth2Scopes: []string{householdMember},
-	},
 	"GET /api/v1/recipes/{recipeID}/mermaid": {
 		ID:           "GetMermaidDiagramForRecipe",
 		Description:  "Fetches a MermaidDiagramForRecipe",

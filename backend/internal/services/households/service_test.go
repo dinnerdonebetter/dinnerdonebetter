@@ -7,6 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -46,16 +47,13 @@ func TestProvideHouseholdsService(T *testing.T) {
 			UserIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := Config{
-			DataChangesTopicName: "data changes",
-		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
-			cfg,
 			&mocktypes.HouseholdDataManagerMock{},
 			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
@@ -63,6 +61,7 @@ func TestProvideHouseholdsService(T *testing.T) {
 			pp,
 			tracing.NewNoopTracerProvider(),
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+			msgCfg,
 		)
 
 		assert.NotNil(t, s)
@@ -75,16 +74,14 @@ func TestProvideHouseholdsService(T *testing.T) {
 		t.Parallel()
 
 		rpm := mockrouting.NewRouteParamManager()
-		cfg := Config{
-			DataChangesTopicName: "data changes",
-		}
+
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, errors.New("blah"))
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, errors.New("blah"))
 
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
-			cfg,
 			&mocktypes.HouseholdDataManagerMock{},
 			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
@@ -92,6 +89,7 @@ func TestProvideHouseholdsService(T *testing.T) {
 			pp,
 			tracing.NewNoopTracerProvider(),
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+			msgCfg,
 		)
 
 		assert.Nil(t, s)

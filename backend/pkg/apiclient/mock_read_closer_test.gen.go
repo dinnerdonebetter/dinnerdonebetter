@@ -22,8 +22,8 @@ func newMockReadCloser() *mockReadCloser {
 
 // ReadHandler implements the ReadHandler part of our mockReadCloser.
 func (m *mockReadCloser) Read(b []byte) (int, error) {
-	retVals := m.Called(b)
-	return retVals.Int(0), retVals.Error(1)
+	returnValues := m.Called(b)
+	return returnValues.Int(0), returnValues.Error(1)
 }
 
 // Close implements the Closer part of our mockReadCloser.

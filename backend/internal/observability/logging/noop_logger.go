@@ -21,7 +21,7 @@ func (l *noopLogger) Info(string) {}
 func (l *noopLogger) Debug(string) {}
 
 // Error satisfies our interface.
-func (l *noopLogger) Error(error, string) {}
+func (l *noopLogger) Error(string, error) {}
 
 // Fatal satisfies our interface.
 func (l *noopLogger) Fatal(error) {}

@@ -12,9 +12,8 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	PublicMediaURLPrefix string         `json:"mediaUploadPrefix"              toml:"media_upload_prefix"`
-	DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
-	Uploads              uploads.Config `json:"uploads"                        toml:"uploads,omitempty"`
+	PublicMediaURLPrefix string         `env:"PUBLIC_MEDIA_URL_PREFIX" json:"mediaUploadPrefix"`
+	Uploads              uploads.Config `envPrefix:"UPLOADS_"          json:"uploads"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -26,6 +25,5 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		cfg,
 		validation.Field(&cfg.PublicMediaURLPrefix, validation.Required),
 		validation.Field(&cfg.Uploads, validation.Required),
-		validation.Field(&cfg.DataChangesTopicName, validation.Required),
 	)
 }

@@ -11,8 +11,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/build/api"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/server/http/build"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
@@ -61,12 +61,12 @@ var skipRoutes = map[string]bool{
 func main() {
 	ctx := context.Background()
 
-	rawCfg, err := os.ReadFile("environments/local/config_files/service-config.json")
+	rawCfg, err := os.ReadFile("deploy/environments/localdev/config_files/api_service_config.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var cfg *config.InstanceConfig
+	var cfg *config.APIServiceConfig
 	if err = json.Unmarshal(rawCfg, &cfg); err != nil {
 		log.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func main() {
 	neutralizeConfig(cfg)
 
 	// build our server struct.
-	srv, err := build.Build(ctx, cfg)
+	srv, err := api.Build(ctx, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -270,7 +270,7 @@ const (
 	dataChangesTopicName = "dataChangesTopicName"
 )
 
-func neutralizeConfig(cfg *config.InstanceConfig) {
+func neutralizeConfig(cfg *config.APIServiceConfig) {
 	if err := os.Setenv("GOOGLE_CLOUD_PROJECT_ID", "something"); err != nil {
 		panic(err)
 	}
@@ -293,46 +293,5 @@ func neutralizeConfig(cfg *config.InstanceConfig) {
 	cfg.Services.DataPrivacy.Uploads.Storage.Provider = objectstorage.FilesystemProvider
 	cfg.Services.DataPrivacy.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
 
-	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidPreparations.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidIngredientPreparations.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidPreparationInstruments.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidInstrumentMeasurementUnits.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Recipes.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeSteps.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeStepProducts.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeStepInstruments.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeStepIngredients.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Meals.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.MealPlans.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.MealPlanEvents.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.MealPlanOptions.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.MealPlanOptionVotes.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.MealPlanTasks.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Households.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Users.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidIngredientGroups.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Auth.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipePrepTasks.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.MealPlanGroceryListItems.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidMeasurementUnitConversions.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidIngredientStates.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeStepCompletionConditions.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidIngredientStateIngredients.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeStepVessels.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ServiceSettings.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ServiceSettingConfigurations.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.UserIngredientPreferences.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeRatings.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.HouseholdInstrumentOwnerships.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidVessels.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidPreparationVessels.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Workers.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.UserNotifications.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.DataPrivacy.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.DataPrivacy.UserDataAggregationTopicName = dataChangesTopicName
+	cfg.Queues.DataChangesTopicName = dataChangesTopicName
 }

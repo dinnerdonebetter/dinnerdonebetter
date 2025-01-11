@@ -65,7 +65,7 @@ func argIsNotPointerOrNil(i any) error {
 // unmarshalBody takes an HTTP response and JSON decodes its body into a destination value. The error returned here
 // should only ever be received in testing, and should never be encountered by an end-user.
 func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest any) error {
-	_, span := c.tracer.StartSpan(ctx)
+	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.WithResponse(res)
@@ -76,7 +76,7 @@ func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest any
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "unmarshalling error response")
+		return observability.PrepareAndLogError(err, logger, span, "unmarshaling error response")
 	}
 
 	if res.StatusCode >= http.StatusBadRequest {
@@ -85,7 +85,7 @@ func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest any
 
 	if err = c.encoder.Unmarshal(ctx, bodyBytes, &dest); err != nil {
 		logger = logger.WithValue("raw_body", string(bodyBytes))
-		return observability.PrepareAndLogError(err, logger, span, "unmarshalling response body")
+		return observability.PrepareAndLogError(err, logger, span, "unmarshaling response body")
 	}
 
 	return nil

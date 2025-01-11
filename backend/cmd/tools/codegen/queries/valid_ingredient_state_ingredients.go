@@ -14,6 +14,10 @@ const (
 	validIngredientColumn      = "valid_ingredient"
 )
 
+func init() {
+	registerTableName(validIngredientStateIngredientsTableName)
+}
+
 var validIngredientStateIngredientsColumns = []string{
 	idColumn,
 	notesColumn,
@@ -122,9 +126,7 @@ WHERE
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientStatesTableName, archivedAtColumn,
 					validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientColumn,
-					buildFilterConditions(validIngredientStateIngredientsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validIngredientStateIngredientsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},
@@ -157,9 +159,7 @@ WHERE
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientStatesTableName, archivedAtColumn,
 					validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStateColumn,
-					buildFilterConditions(validIngredientStateIngredientsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validIngredientStateIngredientsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},
@@ -190,9 +190,7 @@ WHERE
 					validIngredientStateIngredientsTableName, archivedAtColumn,
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientStatesTableName, archivedAtColumn,
-					buildFilterConditions(validIngredientStateIngredientsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validIngredientStateIngredientsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

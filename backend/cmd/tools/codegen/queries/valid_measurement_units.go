@@ -13,6 +13,10 @@ const (
 	validMeasurementUnitsUniversalColumn = "universal"
 )
 
+func init() {
+	registerTableName(validMeasurementUnitsTableName)
+}
+
 var validMeasurementUnitsColumns = []string{
 	idColumn,
 	nameColumn,
@@ -113,7 +117,6 @@ ORDER BY %s.%s
 						validMeasurementUnitsTableName,
 						true,
 						true,
-						nil,
 					),
 					validMeasurementUnitsTableName,
 					idColumn,
@@ -266,9 +269,7 @@ WHERE
 					validMeasurementUnitsTableName, archivedAtColumn,
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientMeasurementUnitsTableName, archivedAtColumn,
-					buildFilterConditions(validMeasurementUnitsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validMeasurementUnitsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

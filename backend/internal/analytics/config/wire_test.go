@@ -1,4 +1,4 @@
-package config
+package analyticscfg
 
 import (
 	"testing"

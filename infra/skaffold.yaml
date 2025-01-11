@@ -1,0 +1,233 @@
+---
+apiVersion: skaffold/v4beta11
+kind: Config
+
+metadata:
+  name: dinner-done-better-infra
+
+profiles:
+  - name: localdev
+    activation:
+      - kubeContext: docker-desktop
+    manifests:
+      kustomize:
+        paths:
+          - deploy/environments/localdev/kustomize
+      helm:
+        releases:
+          - name: postgres
+            namespace: localdev
+            createNamespace: true
+            remoteChart: oci://registry-1.docker.io/bitnamicharts/postgresql
+            version: 16.1.2
+            overrides:
+              global:
+                postgresql:
+                  auth:
+                    username: dbuser
+                    password: hunter2
+                    database: dinner-done-better
+
+          - name: redis
+            namespace: localdev
+            createNamespace: true
+            remoteChart: oci://registry-1.docker.io/bitnamicharts/redis
+            version: 20.2.1
+            overrides:
+              architecture: standalone
+
+          # metrics storage
+          - name: prometheus
+            namespace: localdev
+            createNamespace: true
+            # repo: https://prometheus-community.github.io/helm-charts
+            remoteChart: prometheus/prometheus
+            version: 26.0.0
+            overrides:
+              alertmanager:
+                enabled: false
+              kube-state-metrics:
+                enabled: false
+              prometheus-node-exporter:
+                enabled: false
+              prometheus-pushgateway:
+                enabled: false
+              server:
+                service:
+                  servicePort: 3001
+              serverFiles:
+                prometheus.yml:
+                  rule_files:
+                    - /etc/config/recording_rules.yml
+                    - /etc/config/alerting_rules.yml
+
+          # o11y dashboard
+          - name: grafana
+            namespace: localdev
+            createNamespace: true
+            # repo: https://grafana.github.io/helm-charts
+            remoteChart: grafana/grafana
+            version: 8.6.3
+            overrides:
+              service:
+                port: 3000
+                targetPort: 3000
+              ingress:
+                enabled: true
+              adminUser: "admin"
+              adminPassword: "hunter2"
+              datasources:
+                datasources.yaml:
+                  apiVersion: 1
+                  datasources:
+                    - name: Postgres
+                      type: postgres
+                      access: proxy
+                      orgId: 1
+                      isDefault: false
+                      version: 1
+                      editable: true
+                      url: postgres-postgresql.localdev.svc.cluster.local:5432
+                      # db creds
+                      database: dinner-done-better
+                      user: dbuser
+                      secureJsonData:
+                        password: 'hunter2'
+                      jsonData:
+                        database: dinner-done-better
+                        sslmode: 'disable'
+                    - name: Prometheus
+                      type: prometheus
+                      access: proxy
+                      orgId: 1
+                      url: http://prometheus-server.localdev.svc.cluster.local:3001
+                      isDefault: false
+                      version: 1
+                      editable: true
+                    - name: Loki
+                      type: loki
+                      access: proxy
+                      orgId: 1
+                      url: http://loki.localdev.svc.cluster.local:3100
+                      isDefault: false
+                      version: 1
+                      editable: true
+                    - name: Tempo
+                      type: tempo
+                      access: proxy
+                      orgId: 1
+                      url: http://tempo.localdev.svc.cluster.local:3100
+                      isDefault: false
+                      version: 1
+                      editable: true
+              dashboards: {}
+          #               default:
+          #                 some-dashboard:
+          #                   json: |
+          #                     $RAW_JSON
+          #               custom-dashboard:
+          #                 file: dashboards/custom-dashboard.json
+
+          # log storage
+          - name: loki
+            namespace: localdev
+            createNamespace: true
+            # repo: https://grafana.github.io/helm-charts
+            remoteChart: grafana/loki
+            version: 6.22.0
+            overrides:
+              loki:
+                auth_enabled: false
+                commonConfig:
+                  replication_factor: 1
+                schemaConfig:
+                  configs:
+                    - from: "2024-04-01"
+                      store: tsdb
+                      object_store: s3
+                      schema: v13
+                      index:
+                        prefix: loki_index_
+                        period: 24h
+                pattern_ingester:
+                  enabled: true
+                limits_config:
+                  allow_structured_metadata: true
+                  volume_enabled: true
+                  retention_period: 24h
+                compactor:
+                  retention_enabled: true
+                  delete_request_store: s3
+                ruler:
+                  enable_api: true
+              minio:
+                enabled: true
+              lokiCanary:
+                enabled: false
+              gateway:
+                enabled: false
+              deploymentMode: SingleBinary
+              singleBinary:
+                replicas: 0
+                autoscaling:
+                  enabled: false
+                  maxReplicas: 1 # just in case
+              backend:
+                replicas: 0
+              read:
+                replicas: 0
+              write:
+                replicas: 0
+              ingester:
+                replicas: 0
+                zoneAwareReplication:
+                  enabled: false
+              ruler:
+                enabled: false
+              test:
+                enabled: false
+              querier:
+                replicas: 0
+              queryFrontend:
+                replicas: 0
+              queryScheduler:
+                replicas: 0
+              distributor:
+                replicas: 0
+              compactor:
+                replicas: 0
+              indexGateway:
+                replicas: 0
+              bloomCompactor:
+                replicas: 0
+              bloomGateway:
+                replicas: 0
+              memcachedExporter:
+                enabled: false
+              resultsCache:
+                enabled: false
+              chunksCache:
+                enabled: false
+
+          # tracing data storage
+          - name: tempo
+            namespace: localdev
+            createNamespace: true
+            # repo: https://grafana.github.io/helm-charts
+            remoteChart: grafana/tempo
+            version: 1.14.0
+
+    deploy:
+      kubeContext: docker-desktop
+      kubectl:
+        defaultNamespace: localdev
+
+  - name: dev
+    manifests:
+      kustomize:
+        paths:
+          - ./deploy/environments/dev/kustomize
+
+    deploy:
+      kubectl:
+        defaultNamespace: dev

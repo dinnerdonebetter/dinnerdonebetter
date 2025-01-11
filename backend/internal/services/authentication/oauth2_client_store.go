@@ -12,7 +12,7 @@ import (
 	"github.com/go-oauth2/oauth2/v4"
 )
 
-var _ oauth2.ClientStore = &oauth2ClientStoreImpl{}
+var _ oauth2.ClientStore = (*oauth2ClientStoreImpl)(nil)
 
 type oauth2ClientStoreImpl struct {
 	tracer      tracing.Tracer

@@ -63,7 +63,7 @@ func NewRudderstackEventReporter(logger logging.Logger, tracerProvider tracing.T
 // Close wraps the internal client's Close method.
 func (c *EventReporter) Close() {
 	if err := c.client.Close(); err != nil {
-		c.logger.Error(err, "closing connection")
+		c.logger.Error("closing connection", err)
 	}
 }
 

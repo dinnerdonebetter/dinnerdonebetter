@@ -19,6 +19,10 @@ const (
 	householdInvitationsExpiresAtColumn  = "expires_at"
 )
 
+func init() {
+	registerTableName(householdInvitationsTableName)
+}
+
 var householdInvitationsColumns = []string{
 	idColumn,
 	fromUserColumn,
@@ -211,8 +215,7 @@ WHERE %s.%s IS NULL
 					householdInvitationsTableName, archivedAtColumn,
 					householdInvitationsTableName, fromUserColumn, fromUserColumn,
 					householdInvitationsTableName, householdInvitationsStatusColumn, householdInvitationsStatusColumn,
-
-					buildFilterConditions(householdInvitationsTableName, true, false, []string{}),
+					buildFilterConditions(householdInvitationsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},
@@ -246,7 +249,6 @@ WHERE %s.%s IS NULL
 						householdInvitationsTableName,
 						true,
 						true,
-						nil,
 					),
 					offsetLimitAddendum,
 				)),

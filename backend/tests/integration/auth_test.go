@@ -339,7 +339,7 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 		queryErr := db.QueryRow(`SELECT token FROM password_reset_tokens WHERE belongs_to_user = $1`, u.ID).Scan(&token)
 		require.NoError(t, queryErr)
 
-		resetToken, err := dbmanager.GetPasswordResetTokenByToken(ctx, token)
+		resetToken, err := dbManager.GetPasswordResetTokenByToken(ctx, token)
 		requireNotNilAndNoProblems(t, resetToken, err)
 
 		fakeInput := fakes.BuildFakeUserCreationInput()

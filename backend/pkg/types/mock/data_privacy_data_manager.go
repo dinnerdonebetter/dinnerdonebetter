@@ -16,9 +16,9 @@ type DataPrivacyDataManagerMock struct {
 }
 
 func (m *DataPrivacyDataManagerMock) AggregateUserData(ctx context.Context, userID string) (*types.UserDataCollection, error) {
-	returnArgs := m.Called(ctx, userID)
+	returnValues := m.Called(ctx, userID)
 
-	return returnArgs.Get(0).(*types.UserDataCollection), returnArgs.Error(1)
+	return returnValues.Get(0).(*types.UserDataCollection), returnValues.Error(1)
 }
 
 // DeleteUser is a mock function.

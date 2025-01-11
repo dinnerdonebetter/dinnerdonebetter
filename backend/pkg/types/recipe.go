@@ -57,7 +57,8 @@ type (
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
-		_                   struct{}                                          `json:"-"`
+		_ struct{} `json:"-"`
+
 		InspiredByRecipeID  *string                                           `json:"inspiredByRecipeID"`
 		Name                string                                            `json:"name"`
 		Source              string                                            `json:"source"`
@@ -148,7 +149,6 @@ type (
 		ArchiveRecipeHandler(http.ResponseWriter, *http.Request)
 		RecipeEstimatedPrepStepsHandler(http.ResponseWriter, *http.Request)
 		RecipeImageUploadHandler(http.ResponseWriter, *http.Request)
-		RecipeDAGHandler(http.ResponseWriter, *http.Request)
 		RecipeMermaidHandler(http.ResponseWriter, *http.Request)
 		CloneRecipeHandler(http.ResponseWriter, *http.Request)
 	}
@@ -261,7 +261,7 @@ var _ validation.ValidatableWithContext = (*RecipeCreationRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeCreationRequestInput.
 func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	var errResult *multierror.Error
+	errResult := &multierror.Error{}
 
 	if len(x.Steps) < 2 {
 		errResult = multierror.Append(fmt.Errorf("recipe must have at least 2 steps"), errResult)
@@ -278,8 +278,8 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 		}
 	}
 
-	if errResult != nil {
-		return errResult
+	if err := errResult.ErrorOrNil(); err != nil {
+		return err
 	}
 
 	return validation.ValidateStructWithContext(

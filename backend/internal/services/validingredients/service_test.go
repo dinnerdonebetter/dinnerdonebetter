@@ -8,11 +8,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -26,9 +27,6 @@ func buildTestService() *service {
 		validIngredientIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:             encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		tracer:                     tracing.NewTracerForTest("test"),
-		cfg: &Config{
-			UseSearchService: false,
-		},
 	}
 }
 
@@ -50,23 +48,24 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			"BuildRouteParamStringIDFetcher",
 			ValidPreparationIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
-		cfg := &Config{
-			DataChangesTopicName: "data_changes",
-		}
+
+		cfg := &Config{}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			ctx,
 			logger,
 			cfg,
-			&searchcfg.Config{},
+			&textsearchcfg.Config{},
 			&mocktypes.ValidIngredientDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			msgCfg,
 		)
 
 		assert.NotNil(t, s)
@@ -81,23 +80,23 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
-		cfg := &Config{
-			DataChangesTopicName: "data_changes",
-		}
+		cfg := &Config{}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
 			ctx,
 			logger,
 			cfg,
-			&searchcfg.Config{},
+			&textsearchcfg.Config{},
 			&mocktypes.ValidIngredientDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			msgCfg,
 		)
 
 		assert.Nil(t, s)

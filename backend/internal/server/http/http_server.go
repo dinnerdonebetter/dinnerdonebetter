@@ -11,6 +11,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
 	"github.com/dinnerdonebetter/backend/internal/routing"
@@ -141,6 +142,7 @@ func ProvideHTTPServer(
 	userNotificationsService types.UserNotificationDataService,
 	auditLogService types.AuditLogEntryDataService,
 	dataPrivacyService types.DataPrivacyService,
+	mp metrics.Provider, // TODO: instrument later for something
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,
@@ -218,7 +220,7 @@ func (s *server) Shutdown(ctx context.Context) error {
 	s.dataManager.Close()
 
 	if err := s.tracerProvider.ForceFlush(ctx); err != nil {
-		s.logger.Error(err, "flushing traces")
+		s.logger.Error("flushing traces", err)
 	}
 
 	return s.httpServer.Shutdown(ctx)
@@ -236,13 +238,12 @@ func (s *server) Serve() {
 
 	http2ServerConf := &http2.Server{}
 	if err := http2.ConfigureServer(s.httpServer, http2ServerConf); err != nil {
-		s.logger.Error(err, "configuring HTTP2")
+		s.logger.Error("configuring HTTP2", err)
 		s.panicker.Panic(err)
 	}
 
-	s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTP requests")
-
 	if s.config.HTTPSCertificateFile != "" && s.config.HTTPSCertificateKeyFile != "" {
+		s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTPS requests")
 		// returns ErrServerClosed on graceful close.
 		if err := s.httpServer.ListenAndServeTLS(s.config.HTTPSCertificateFile, s.config.HTTPSCertificateKeyFile); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
@@ -251,9 +252,10 @@ func (s *server) Serve() {
 				os.Exit(0)
 			}
 
-			s.logger.Error(err, "shutting server down")
+			s.logger.Error("shutting server down", err)
 		}
 	} else {
+		s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTP requests")
 		// returns ErrServerClosed on graceful close.
 		if err := s.httpServer.ListenAndServe(); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
@@ -262,7 +264,7 @@ func (s *server) Serve() {
 				os.Exit(0)
 			}
 
-			s.logger.Error(err, "shutting server down")
+			s.logger.Error("shutting server down", err)
 		}
 	}
 }

@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dinner-done-better-async-message-handler-deployment
+  labels:
+    app: dinner-done-better-backend
+    app.kubernetes.io/name: dinner-done-better-backend-services
+spec:
+  selector:
+    matchLabels:
+      app: dinner-done-better-backend
+      app.kubernetes.io/name: dinner-done-better-backend-services
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better-backend
+        app.kubernetes.io/name: dinner-done-better-backend-services
+    spec:
+      containers:
+        - name: dinner-done-better-async-message-handler
+          image: dinner-done-better-async-message-handler
+          imagePullPolicy: Always
+          env:
+            - name: "CONFIGURATION_FILEPATH"
+              value: "/etc/service-config.json"
+            - name: "RUNNING_IN_KUBERNETES"
+              value: "true"
+          volumeMounts:
+            - name: "config"
+              mountPath: "/etc/service-config.json"
+              subPath: "config.json"
+            - name: logs
+              mountPath: /var/log/application
+        # This is the OpenTelemetry collector sidecar
+        - name: opentelemetry-collector
+          image: otel/opentelemetry-collector-contrib:0.115.1
+          command:
+            - "/otelcol-contrib"
+            - "--config"
+            - "/conf/config.yaml"
+          ports:
+            - containerPort: 4317
+              name: otel1
+            - containerPort: 4318
+              name: otel2
+            - containerPort: 13313
+              name: health
+          volumeMounts:
+            - name: logs
+              mountPath: /var/log/application
+              readOnly: true
+            - name: opentelemetry-config
+              mountPath: /conf
+          env:
+            - name: "RUNNING_IN_KUBERNETES"
+              value: "true"
+      volumes:
+        - name: "config"
+          configMap:
+            name: "dinner-done-better-async-message-handler-config"
+        - name: logs
+          emptyDir:
+            sizeLimit: 500Mi
+        - name: opentelemetry-config
+          configMap:
+            name: opentelemetry-collector-config
+---

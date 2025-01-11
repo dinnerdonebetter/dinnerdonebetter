@@ -1,0 +1,241 @@
+{
+	"queues": {
+		"dataChangesTopicName": "data_changes",
+		"outboundEmailsTopicName": "outbound_emails",
+		"searchIndexRequestsTopicName": "search_index_requests",
+		"userDataAggregationTopicName": "user_data_aggregation_requests",
+		"webhookExecutionRequestsTopicName": "webhook_execution_requests"
+	},
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
+	"analytics": {
+		"segment": null,
+		"posthog": null,
+		"rudderstack": null,
+		"circuitBreaker": null,
+		"provider": ""
+	},
+	"search": {
+		"algolia": null,
+		"elasticsearch": null,
+		"circuitBreakerConfig": null,
+		"provider": ""
+	},
+	"featureFlags": {
+		"launchDarkly": null,
+		"posthog": null,
+		"circuitBreakingConfig": null,
+		"provider": ""
+	},
+	"encoding": {
+		"contentType": "application/json"
+	},
+	"events": {
+		"consumers": {
+			"provider": "redis",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		},
+		"publishers": {
+			"provider": "redis",
+			"sqs": {
+				"queueAddress": ""
+			},
+			"pubSub": {
+				"projectID": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		}
+	},
+	"observability": {
+		"logging": {
+			"level": "info",
+			"provider": "slog"
+		},
+		"metrics": {},
+		"tracing": {
+			"otelgrpc": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces"
+			},
+			"service_name": "dinner_done_better_api",
+			"provider": "otelgrpc",
+			"spanCollectionProbability": 1
+		}
+	},
+	"meta": {
+		"runMode": "testing",
+		"debug": false
+	},
+	"routing": {
+		"chiConfig": {
+			"serviceName": "dinner_done_better_api",
+			"enableCORSForLocalhost": true
+		},
+		"provider": "chi"
+	},
+	"server": {
+		"autocert": {
+			"addresses": null
+		},
+		"startupDeadline": 60000000000,
+		"httpPort": 8000,
+		"debug": false
+	},
+	"database": {
+		"provider": "",
+		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"connectionDetails": {
+			"username": "dbuser",
+			"password": "hunter2",
+			"database": "dinner-done-better",
+			"hostname": "pgdatabase",
+			"port": 5432,
+			"disableSSL": true
+		},
+		"debug": true,
+		"logQueries": true,
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1500000000
+	},
+	"services": {
+		"mealPlanEvents": {},
+		"validInstrumentMeasurementUnits": {},
+		"mealPlanGroceryListItems": {},
+		"validIngredientStateIngredients": {},
+		"serviceSettingConfigurations": {},
+		"recipeRatings": {},
+		"validMeasurementUnitConversions": {},
+		"validIngredientGroups": {},
+		"serviceSettings": {},
+		"mealPlanTasks": {},
+		"recipeStepProducts": {},
+		"recipeStepIngredients": {},
+		"recipePrepTasks": {},
+		"recipeStepCompletionConditions": {},
+		"userIngredientPreferences": {},
+		"households": {},
+		"mealPlans": {},
+		"validPreparationInstruments": {},
+		"validIngredientPreparations": {},
+		"recipeStepInstruments": {},
+		"auditLogEntries": {},
+		"householdInstrumentOwnerships": {},
+		"mealPlanOptionVotes": {},
+		"recipeStepVessels": {},
+		"validPreparationVessels": {},
+		"mealPlanOptions": {},
+		"userNotifications": {},
+		"workers": {},
+		"recipeSteps": {
+			"mediaUploadPrefix": "https://media.example.website/lol",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "recipes",
+					"provider": "memory"
+				},
+				"debug": false
+			}
+		},
+		"users": {
+			"publicMediaURLPrefix": "",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "avatars",
+					"provider": "memory"
+				},
+				"debug": false
+			}
+		},
+		"dataPrivacy": {
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/tmp"
+					},
+					"bucketName": "userdata",
+					"provider": "filesystem"
+				},
+				"debug": false
+			}
+		},
+		"recipes": {
+			"mediaUploadPrefix": "https://media.example.website/lol",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "recipes",
+					"provider": "memory"
+				},
+				"debug": false
+			},
+			"searchFromDatabase": false
+		},
+		"auth": {
+			"sso": {
+				"google": {}
+			},
+			"jwtAudience": "localhost",
+			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+			"oauth2": {
+				"domain": "http://localhost:9000",
+				"accessTokenLifespan": 3600000000000,
+				"refreshTokenLifespan": 3600000000000,
+				"debug": false
+			},
+			"jwtLifetime": 300000000000,
+			"enableUserSignup": true,
+			"minimumUsernameLength": 3,
+			"minimumPasswordLength": 8
+		},
+		"validInstruments": {
+			"useSearchService": false
+		},
+		"meals": {
+			"searchFromDatabase": false
+		},
+		"validMeasurementUnits": {
+			"useSearchService": false
+		},
+		"oauth2Clients": {
+			"creationEnabled": false
+		},
+		"validVessels": {
+			"useSearchService": false
+		},
+		"householdInvitations": {
+			"debug": false
+		},
+		"validPreparations": {
+			"useSearchService": false
+		},
+		"validIngredientStates": {
+			"useSearchService": false
+		},
+		"validIngredients": {
+			"useSearchService": false
+		},
+		"webhooks": {
+			"debug": false
+		}
+	}
+}

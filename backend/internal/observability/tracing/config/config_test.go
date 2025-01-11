@@ -1,11 +1,11 @@
-package config
+package tracingcfg
 
 import (
 	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltracehttp"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -35,11 +35,11 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{
-			Provider: ProviderOtel,
-			Otel: &oteltracehttp.Config{
-				CollectorEndpoint:         t.Name(),
-				ServiceName:               t.Name(),
-				SpanCollectionProbability: 1,
+			Provider:                  ProviderOtel,
+			ServiceName:               t.Name(),
+			SpanCollectionProbability: 1,
+			Otel: &oteltrace.Config{
+				CollectorEndpoint: t.Name(),
 			},
 		}
 

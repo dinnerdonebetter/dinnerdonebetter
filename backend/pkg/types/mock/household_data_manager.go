@@ -17,14 +17,14 @@ type HouseholdDataManagerMock struct {
 
 // HouseholdExists is a mock function.
 func (m *HouseholdDataManagerMock) HouseholdExists(ctx context.Context, householdID, userID string) (bool, error) {
-	args := m.Called(ctx, householdID, userID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, householdID, userID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetHousehold is a mock function.
 func (m *HouseholdDataManagerMock) GetHousehold(ctx context.Context, householdID string) (*types.Household, error) {
-	args := m.Called(ctx, householdID)
-	return args.Get(0).(*types.Household), args.Error(1)
+	returnValues := m.Called(ctx, householdID)
+	return returnValues.Get(0).(*types.Household), returnValues.Error(1)
 }
 
 // GetAllHouseholds is a mock function.
@@ -34,14 +34,14 @@ func (m *HouseholdDataManagerMock) GetAllHouseholds(ctx context.Context, results
 
 // GetHouseholds is a mock function.
 func (m *HouseholdDataManagerMock) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Household], error) {
-	args := m.Called(ctx, userID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.Household]), args.Error(1)
+	returnValues := m.Called(ctx, userID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.Household]), returnValues.Error(1)
 }
 
 // CreateHousehold is a mock function.
 func (m *HouseholdDataManagerMock) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.Household), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.Household), returnValues.Error(1)
 }
 
 // UpdateHousehold is a mock function.

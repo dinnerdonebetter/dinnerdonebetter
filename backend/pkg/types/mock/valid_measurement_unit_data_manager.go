@@ -17,38 +17,38 @@ type ValidMeasurementUnitDataManagerMock struct {
 
 // ValidMeasurementUnitsForIngredientID is a mock function.
 func (m *ValidMeasurementUnitDataManagerMock) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
-	args := m.Called(ctx, validIngredientID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidMeasurementUnit]), args.Error(1)
+	returnValues := m.Called(ctx, validIngredientID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidMeasurementUnit]), returnValues.Error(1)
 }
 
 // ValidMeasurementUnitExists is a mock function.
 func (m *ValidMeasurementUnitDataManagerMock) ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (bool, error) {
-	args := m.Called(ctx, validMeasurementUnitID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, validMeasurementUnitID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetValidMeasurementUnit is a mock function.
 func (m *ValidMeasurementUnitDataManagerMock) GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
-	args := m.Called(ctx, validMeasurementUnitID)
-	return args.Get(0).(*types.ValidMeasurementUnit), args.Error(1)
+	returnValues := m.Called(ctx, validMeasurementUnitID)
+	return returnValues.Get(0).(*types.ValidMeasurementUnit), returnValues.Error(1)
 }
 
 // SearchForValidMeasurementUnitsByName is a mock function.
 func (m *ValidMeasurementUnitDataManagerMock) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
-	args := m.Called(ctx, query)
-	return args.Get(0).([]*types.ValidMeasurementUnit), args.Error(1)
+	returnValues := m.Called(ctx, query)
+	return returnValues.Get(0).([]*types.ValidMeasurementUnit), returnValues.Error(1)
 }
 
 // GetValidMeasurementUnits is a mock function.
 func (m *ValidMeasurementUnitDataManagerMock) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
-	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidMeasurementUnit]), args.Error(1)
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidMeasurementUnit]), returnValues.Error(1)
 }
 
 // CreateValidMeasurementUnit is a mock function.
 func (m *ValidMeasurementUnitDataManagerMock) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.ValidMeasurementUnit), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.ValidMeasurementUnit), returnValues.Error(1)
 }
 
 // UpdateValidMeasurementUnit is a mock function.

@@ -1,0 +1,68 @@
+---
+on: [pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+name: unit tests
+jobs:
+  changes:
+    permissions:
+      pull-requests: read
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - backend/**/*.go
+            frontend:
+              - frontend/packages/**/*.ts
+              - frontend/packages/**/*.test
+
+  backend:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.backend == 'true' }}
+    timeout-minutes: 25
+    strategy:
+      matrix:
+        go-version: ['1.23.x']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: run unit tests
+        working-directory: backend
+        run: make test
+
+  frontend:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['lts/*']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+
+      - run: npm install -g yarn
+
+      - run: yarn install
+        working-directory: frontend
+
+      - run: yarn run test
+        working-directory: frontend

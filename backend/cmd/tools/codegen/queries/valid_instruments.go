@@ -13,6 +13,10 @@ const (
 	validInstrumentIDColumn = "valid_instrument_id"
 )
 
+func init() {
+	registerTableName(validInstrumentsTableName)
+}
+
 var validInstrumentsColumns = []string{
 	idColumn,
 	nameColumn,
@@ -115,7 +119,6 @@ ORDER BY %s.%s
 						validInstrumentsTableName,
 						true,
 						true,
-						nil,
 					),
 					validInstrumentsTableName,
 					idColumn,

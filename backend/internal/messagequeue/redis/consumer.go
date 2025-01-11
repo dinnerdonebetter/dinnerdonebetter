@@ -51,7 +51,7 @@ func (r *redisConsumer) Consume(stopChan chan bool, errs chan error) {
 		select {
 		case msg := <-subChan:
 			if err := r.handlerFunc(context.Background(), []byte(msg.Payload)); err != nil {
-				r.logger.Error(err, "handling message")
+				r.logger.Error("handling message", err)
 				if errs != nil {
 					errs <- err
 				}

@@ -42,8 +42,8 @@ type (
 
 // Stop implements the Publisher interface.
 func (r *redisPublisher) Stop() {
-	if err := r.publisher.Close(); err != nil {
-		r.logger.Error(err, "closing redis publisher")
+	if err := r.publisher.Close(); err != nil && !errors.Is(err, redis.ErrClosed) {
+		r.logger.Error("closing redis publisher", err)
 	}
 }
 
@@ -138,6 +138,6 @@ func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publish
 // Close closes the publisher.
 func (p *publisherProvider) Close() {
 	if err := p.redisClient.Close(); err != nil {
-		p.logger.Error(err, "closing redis publisher")
+		p.logger.Error("closing redis publisher", err)
 	}
 }

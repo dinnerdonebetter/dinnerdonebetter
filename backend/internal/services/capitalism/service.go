@@ -1,8 +1,6 @@
 package capitalism
 
 import (
-	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/capitalism"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -26,7 +24,6 @@ type (
 
 // ProvideService builds a new ValidInstrumentsService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	paymentManager capitalism.PaymentManager,

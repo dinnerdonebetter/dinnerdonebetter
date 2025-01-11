@@ -33,12 +33,6 @@ var (
 )
 
 type (
-	// Config configures Mailgun to send email.
-	Config struct {
-		PrivateAPIKey string `json:"privateAPIKey" toml:"private_api_key,omitempty"`
-		Domain        string `json:"domain"        toml:"domain,omitempty"`
-	}
-
 	// Emailer uses Mailgun to send email.
 	Emailer struct {
 		logger         logging.Logger
@@ -81,7 +75,7 @@ func NewMailgunEmailer(cfg *Config, logger logging.Logger, tracerProvider tracin
 
 // SendEmail sends an email.
 func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMessage) error {
-	_, span := e.tracer.StartSpan(ctx)
+	ctx, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := e.logger.WithValue("email.subject", details.Subject).WithValue("email.to_address", details.ToAddress)
@@ -91,7 +85,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 		return types.ErrCircuitBroken
 	}
 
-	msg := e.client.NewMessage(details.FromName, details.Subject, details.HTMLContent, details.ToAddress)
+	msg := mailgun.NewMessage(details.FromName, details.Subject, details.HTMLContent, details.ToAddress)
 	if _, _, err := e.client.Send(ctx, msg); err != nil {
 		e.circuitBreaker.Failed()
 		return observability.PrepareAndLogError(err, logger, span, "sending email")

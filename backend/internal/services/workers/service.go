@@ -1,7 +1,6 @@
 package workers
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
@@ -38,16 +38,15 @@ type (
 
 // ProvideService builds a new WorkerService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
-	cfg *Config,
 	dataManager database.DataManager,
 	encoder encoding.ServerEncoderDecoder,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 	grapher recipeanalysis.RecipeAnalyzer,
+	queueConfig *msgconfig.QueuesConfig,
 ) (types.WorkerService, error) {
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}

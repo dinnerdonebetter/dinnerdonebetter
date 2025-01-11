@@ -6,7 +6,6 @@ import (
 
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
-	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -116,11 +115,6 @@ type MockDatabase struct {
 	*mocktypes.ValidPreparationVesselDataManagerMock
 
 	mock.Mock
-}
-
-// ProvideSessionStore satisfies the DataManager interface.
-func (m *MockDatabase) ProvideSessionStore() scs.Store {
-	return m.Called().Get(0).(scs.Store)
 }
 
 // Migrate satisfies the DataManager interface.

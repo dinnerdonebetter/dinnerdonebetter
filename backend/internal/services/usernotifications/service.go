@@ -1,14 +1,13 @@
 package usernotifications
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
@@ -36,20 +35,19 @@ type (
 
 // ProvideService builds a new UserNotificationsService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
-	cfg *Config,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 	userNotificationDataManager types.UserNotificationDataManager,
+	queueConfig *msgconfig.QueuesConfig,
 ) (types.UserNotificationDataService, error) {
-	if cfg == nil {
-		return nil, errors.New("nil config provided to user notifications service")
+	if queueConfig == nil {
+		return nil, fmt.Errorf("nil queue config provided")
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}

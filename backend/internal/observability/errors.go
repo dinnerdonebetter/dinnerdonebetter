@@ -19,7 +19,7 @@ func PrepareAndLogError(err error, logger logging.Logger, span tracing.Span, des
 	}
 
 	if logger != nil {
-		logger.Error(err, desc)
+		logger.Error(desc, err)
 	}
 
 	if desc != "" {
@@ -48,7 +48,7 @@ func PrepareError(err error, span tracing.Span, descriptionFmt string, descripti
 // AcknowledgeError standardizes our error handling by logging and tracing consistently.
 func AcknowledgeError(err error, logger logging.Logger, span tracing.Span, descriptionFmt string, descriptionArgs ...any) {
 	if desc := fmt.Sprintf(descriptionFmt, descriptionArgs...); desc != "" {
-		logging.EnsureLogger(logger).Error(err, desc)
+		logging.EnsureLogger(logger).Error(desc, err)
 		if span != nil {
 			tracing.AttachErrorToSpan(span, desc, err)
 		}

@@ -156,7 +156,7 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []st
 		}
 		defer func() {
 			if closeErr := res.Body.Close(); closeErr != nil {
-				c.logger.Error(err, "failed to close oauth2 response body")
+				c.logger.Error("failed to close oauth2 response body", err)
 			}
 		}()
 

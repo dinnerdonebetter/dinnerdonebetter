@@ -11,6 +11,10 @@ const (
 	validIngredientGroupsTableName = "valid_ingredient_groups"
 )
 
+func init() {
+	registerTableName(validIngredientGroupsTableName)
+}
+
 var validIngredientGroupsColumns = []string{
 	idColumn,
 	nameColumn,
@@ -149,7 +153,6 @@ ORDER BY %s.%s
 						validIngredientGroupsTableName,
 						true,
 						true,
-						nil,
 					),
 					validIngredientGroupsTableName, idColumn,
 					validIngredientGroupsTableName, idColumn,
@@ -230,7 +233,6 @@ ORDER BY %s.%s
 						validIngredientGroupsTableName,
 						true,
 						true,
-						nil,
 					),
 					validIngredientGroupsTableName,
 					idColumn,

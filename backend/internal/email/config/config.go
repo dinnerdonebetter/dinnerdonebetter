@@ -1,4 +1,4 @@
-package config
+package emailcfg
 
 import (
 	"context"
@@ -28,19 +28,21 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Sendgrid             *sendgrid.Config        `json:"sendgrid"             toml:"sendgrid,omitempty"`
-		Mailgun              *mailgun.Config         `json:"mailgun"              toml:"mailgun,omitempty"`
-		Mailjet              *mailjet.Config         `json:"mailjet"              toml:"mailjet,omitempty"`
-		CircuitBreakerConfig *circuitbreaking.Config `json:"circuitBreakerConfig" toml:"circuit_breaker_config"`
-		Provider             string                  `json:"provider"             toml:"provider,omitempty"`
+		Sendgrid             *sendgrid.Config        `envPrefix:"SENDGRID_"         json:"sendgrid"`
+		Mailgun              *mailgun.Config         `envPrefix:"MAILGUN_"          json:"mailgun"`
+		Mailjet              *mailjet.Config         `envPrefix:"MAILJET_"          json:"mailjet"`
+		CircuitBreakerConfig *circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakerConfig"`
+		Provider             string                  `env:"PROVIDER"                json:"provider"`
 	}
 )
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
 
-// ValidateWithContext validates a Config struct.
+// ValidateWithContext validates a Config.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(ctx, cfg,
+	return validation.ValidateStructWithContext(
+		ctx,
+		cfg,
 		validation.Field(&cfg.Sendgrid, validation.When(cfg.Provider == ProviderSendgrid, validation.Required)),
 		validation.Field(&cfg.Mailgun, validation.When(cfg.Provider == ProviderMailgun, validation.Required)),
 		validation.Field(&cfg.Mailjet, validation.When(cfg.Provider == ProviderMailjet, validation.Required)),

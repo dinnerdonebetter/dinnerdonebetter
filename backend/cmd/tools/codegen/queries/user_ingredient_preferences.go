@@ -13,6 +13,10 @@ const (
 	userIngredientPreferencesIngredientColumn = "ingredient"
 )
 
+func init() {
+	registerTableName(userIngredientPreferencesTableName)
+}
+
 var userIngredientPreferencesColumns = []string{
 	idColumn,
 	userIngredientPreferencesIngredientColumn,
@@ -118,9 +122,7 @@ WHERE %s.%s IS NULL
 					userIngredientPreferencesTableName, archivedAtColumn,
 					userIngredientPreferencesTableName, belongsToUserColumn, belongsToUserColumn,
 					validIngredientsTableName, archivedAtColumn,
-					buildFilterConditions(userIngredientPreferencesTableName, true,
-						false,
-						nil),
+					buildFilterConditions(userIngredientPreferencesTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

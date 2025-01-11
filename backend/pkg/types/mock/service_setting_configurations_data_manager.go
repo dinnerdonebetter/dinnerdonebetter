@@ -41,26 +41,26 @@ func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurat
 
 // ServiceSettingConfigurationExists is a mock function.
 func (m *ServiceSettingConfigurationDataManagerMock) ServiceSettingConfigurationExists(ctx context.Context, serviceSettingConfigurationID string) (bool, error) {
-	args := m.Called(ctx, serviceSettingConfigurationID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, serviceSettingConfigurationID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetServiceSettingConfiguration is a mock function.
 func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) (*types.ServiceSettingConfiguration, error) {
-	args := m.Called(ctx, serviceSettingConfigurationID)
-	return args.Get(0).(*types.ServiceSettingConfiguration), args.Error(1)
+	returnValues := m.Called(ctx, serviceSettingConfigurationID)
+	return returnValues.Get(0).(*types.ServiceSettingConfiguration), returnValues.Error(1)
 }
 
 // GetRandomServiceSettingConfiguration is a mock function.
 func (m *ServiceSettingConfigurationDataManagerMock) GetRandomServiceSettingConfiguration(ctx context.Context) (*types.ServiceSettingConfiguration, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(*types.ServiceSettingConfiguration), args.Error(1)
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).(*types.ServiceSettingConfiguration), returnValues.Error(1)
 }
 
 // CreateServiceSettingConfiguration is a mock function.
 func (m *ServiceSettingConfigurationDataManagerMock) CreateServiceSettingConfiguration(ctx context.Context, input *types.ServiceSettingConfigurationDatabaseCreationInput) (*types.ServiceSettingConfiguration, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.ServiceSettingConfiguration), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.ServiceSettingConfiguration), returnValues.Error(1)
 }
 
 // UpdateServiceSettingConfiguration is a mock function.

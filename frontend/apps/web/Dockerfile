@@ -8,6 +8,7 @@ RUN apk update
 WORKDIR /app
 RUN yarn global add turbo
 COPY . .
+RUN rm -rf deploy documentation
 RUN turbo prune --scope=web --docker
 
 # Add lockfile and package.json's of isolated subworkspace
@@ -29,6 +30,9 @@ COPY turbo.json turbo.json
 # you could give this a default value as well
 ARG SEGMENT_API_TOKEN
 ENV NEXT_PUBLIC_SEGMENT_API_TOKEN=$SEGMENT_API_TOKEN
+
+ARG NEXT_PUBLIC_API_ENDPOINT
+ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 
 RUN yarn turbo run build --filter=web...
 

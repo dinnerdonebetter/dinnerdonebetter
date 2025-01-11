@@ -7,7 +7,9 @@ import (
 )
 
 // Config configures a PubSub-backed pubSubConsumer.
-type Config struct{}
+type Config struct {
+	ProjectID string `env:"PROJECT_ID" json:"projectID"`
+}
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
 

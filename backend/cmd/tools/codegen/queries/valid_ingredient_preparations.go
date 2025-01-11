@@ -11,6 +11,10 @@ const (
 	validIngredientPreparationsTableName = "valid_ingredient_preparations"
 )
 
+func init() {
+	registerTableName(validIngredientPreparationsTableName)
+}
+
 var validIngredientPreparationsColumns = []string{
 	idColumn,
 	notesColumn,
@@ -131,9 +135,7 @@ WHERE
 					validIngredientPreparationsTableName,
 					validIngredientIDColumn,
 					idColumn,
-					buildFilterConditions(validIngredientPreparationsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validIngredientPreparationsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},
@@ -173,9 +175,7 @@ WHERE
 					validIngredientPreparationsTableName,
 					validPreparationIDColumn,
 					idColumn,
-					buildFilterConditions(validIngredientPreparationsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validIngredientPreparationsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},
@@ -211,9 +211,7 @@ WHERE
 					idColumn,
 					validIngredientPreparationsTableName,
 					archivedAtColumn,
-					buildFilterConditions(validIngredientPreparationsTableName, true,
-						false,
-						nil),
+					buildFilterConditions(validIngredientPreparationsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

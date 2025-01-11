@@ -18,6 +18,10 @@ const (
 	electionMethodColumn                 = "election_method"
 )
 
+func init() {
+	registerTableName(mealPlansTableName)
+}
+
 var mealPlansColumns = []string{
 	idColumn,
 	notesColumn,
@@ -243,13 +247,7 @@ WHERE %s.%s IS NULL
 					buildTotalCountSelect(mealPlansTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)),
 					mealPlansTableName,
 					mealPlansTableName, archivedAtColumn,
-					buildFilterConditions(
-						mealPlansTableName,
-						true,
-						true,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn),
-					),
+					buildFilterConditions(mealPlansTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)),
 					offsetLimitAddendum,
 				)),
 			},

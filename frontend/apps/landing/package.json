@@ -5,12 +5,12 @@
   "scripts": {
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "dev": "next dev -p 9001",
+    "dev": "next dev -p 10000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "fix": "eslint --fix .",
-    "test:local": "cross-env TARGET_ADDRESS=http://localhost:9001 npx playwright test"
+    "test:local": "cross-env TARGET_ADDRESS=http://localhost:10000 npx playwright test"
   },
   "dependencies": {
     "@emotion/react": "11.10.5",

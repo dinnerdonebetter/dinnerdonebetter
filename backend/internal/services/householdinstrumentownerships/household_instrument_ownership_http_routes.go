@@ -237,14 +237,14 @@ func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 	// check for parsed input attached to session context data.
 	input := new(types.HouseholdInstrumentOwnershipUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
-		logger.Error(err, "error encountered decoding request body")
+		logger.Error("error encountered decoding request body", err)
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.Error(err, "provided input was invalid")
+		logger.Error("provided input was invalid", err)
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return

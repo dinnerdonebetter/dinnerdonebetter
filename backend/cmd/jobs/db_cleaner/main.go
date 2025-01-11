@@ -5,15 +5,11 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"go.opentelemetry.io/otel"
@@ -23,21 +19,22 @@ import (
 func doTheThing() error {
 	ctx := context.Background()
 
-	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
-
-	cfg, err := config.GetDBCleanerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.LoadConfigFromEnvironment[config.DBCleanerConfig]()
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
 
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
-	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
+	logger := cfg.Observability.Logging.ProvideLogger()
+
+	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
+	if err != nil {
+		logger.Error("initializing tracer", err)
 	}
 	otel.SetTracerProvider(tracerProvider)
 
@@ -55,14 +52,16 @@ func doTheThing() error {
 	defer dataManager.Close()
 
 	if err = dataManager.DeleteExpiredOAuth2ClientTokens(ctx); err != nil {
-		logger.Error(err, "deleting expired oauth2 client tokens")
+		logger.Error("deleting expired oauth2 client tokens", err)
 	}
 
 	return nil
 }
 
 func main() {
+	log.Println("doing the thing")
 	if err := doTheThing(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println("the thing is done")
 }

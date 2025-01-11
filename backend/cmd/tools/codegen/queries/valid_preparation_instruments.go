@@ -11,6 +11,10 @@ const (
 	validPreparationInstrumentsTableName = "valid_preparation_instruments"
 )
 
+func init() {
+	registerTableName(validPreparationInstrumentsTableName)
+}
+
 var validPreparationInstrumentsColumns = []string{
 	idColumn,
 	notesColumn,
@@ -154,7 +158,6 @@ ORDER BY %s.%s
 						validPreparationInstrumentsTableName,
 						true,
 						true,
-						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationsTableName, idColumn,
@@ -221,7 +224,6 @@ ORDER BY %s.%s
 						validPreparationInstrumentsTableName,
 						true,
 						true,
-						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationInstrumentsTableName,
@@ -242,7 +244,6 @@ ORDER BY %s.%s
 						validPreparationInstrumentsTableName,
 						true,
 						true,
-						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationsTableName, idColumn,
@@ -305,7 +306,6 @@ ORDER BY %s.%s
 						validPreparationInstrumentsTableName,
 						true,
 						true,
-						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationInstrumentsTableName,
@@ -324,7 +324,6 @@ ORDER BY %s.%s
 						validPreparationInstrumentsTableName,
 						true,
 						true,
-						nil,
 					),
 					validPreparationInstrumentsTableName, idColumn,
 					validPreparationsTableName, idColumn,

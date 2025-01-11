@@ -1,8 +1,6 @@
 package users
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -11,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -51,13 +50,8 @@ type (
 	}
 )
 
-// ErrNilConfig is returned when you provide a nil configuration to the users service constructor.
-var ErrNilConfig = errors.New("nil config provided")
-
 // ProvideUsersService builds a new UsersService.
 func ProvideUsersService(
-	_ context.Context,
-	cfg *Config,
 	authSettings *authservice.Config,
 	logger logging.Logger,
 	userDataManager types.UserDataManager,
@@ -72,12 +66,13 @@ func ProvideUsersService(
 	passwordResetTokenDataManager types.PasswordResetTokenDataManager,
 	featureFlagManager featureflags.FeatureFlagManager,
 	analyticsReporter analytics.EventReporter,
+	queueConfig *msgconfig.QueuesConfig,
 ) (types.UserDataService, error) {
-	if cfg == nil {
-		return nil, ErrNilConfig
+	if queueConfig == nil {
+		return nil, fmt.Errorf("nil queue config provided")
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}

@@ -13,6 +13,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
+	"github.com/BurntSushi/toml"
+	"github.com/go-yaml/yaml"
 	"github.com/keith-turner/ecoji/v2"
 )
 
@@ -45,12 +47,16 @@ func (e *clientEncoder) Unmarshal(ctx context.Context, data []byte, v any) error
 		unmarshalFunc = xml.Unmarshal
 	case ContentTypeEmoji:
 		unmarshalFunc = unmarshalEmoji
+	case ContentTypeTOML:
+		unmarshalFunc = toml.Unmarshal
+	case ContentTypeYAML:
+		unmarshalFunc = yaml.Unmarshal
 	default:
 		unmarshalFunc = json.Unmarshal
 	}
 
 	if err := unmarshalFunc(data, v); err != nil {
-		return observability.PrepareError(err, span, "unmarshalling JSON content")
+		return observability.PrepareError(err, span, "unmarshaling JSON content")
 	}
 
 	logger.Debug("unmarshalled")
@@ -67,6 +73,10 @@ func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data any) er
 	switch e.contentType {
 	case ContentTypeXML:
 		err = xml.NewEncoder(dest).Encode(data)
+	case ContentTypeTOML:
+		err = toml.NewEncoder(dest).Encode(data)
+	case ContentTypeYAML:
+		err = yaml.NewEncoder(dest).Encode(data)
 	case ContentTypeEmoji:
 		emojiEncoded, emojiEncodeErr := marshalEmoji(data)
 		if emojiEncodeErr != nil {
@@ -79,7 +89,7 @@ func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data any) er
 	}
 
 	if err != nil {
-		return observability.PrepareError(err, span, "encoding JSON content")
+		return observability.PrepareError(err, span, "encoding content")
 	}
 
 	return nil
@@ -87,16 +97,14 @@ func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data any) er
 
 func marshalEmoji(v any) ([]byte, error) {
 	var gobWriter bytes.Buffer
-	gobEncoder := gob.NewEncoder(&gobWriter)
-	if err := gobEncoder.Encode(v); err != nil {
+	if err := gob.NewEncoder(&gobWriter).Encode(v); err != nil {
 		return nil, fmt.Errorf("encoding to gob: %w", err)
 	}
 
-	gobEncoded := gobWriter.Bytes()
-
-	r := bytes.NewBuffer(gobEncoded)
+	r := bytes.NewBuffer(gobWriter.Bytes())
 	w := bytes.NewBuffer([]byte{})
 
+	// lord help me, I don't know why it's 76 here
 	if err := ecoji.EncodeV2(r, w, 76); err != nil {
 		return nil, fmt.Errorf("encoding to emoji: %w", err)
 	}
@@ -114,6 +122,15 @@ func unmarshalEmoji(data []byte, v any) error {
 	return gob.NewDecoder(w).Decode(v)
 }
 
+func tomlMarshalFunc(v any) ([]byte, error) {
+	var b bytes.Buffer
+	if err := toml.NewEncoder(&b).Encode(v); err != nil {
+		return nil, err
+	}
+
+	return b.Bytes(), nil
+}
+
 func (e *clientEncoder) EncodeReader(ctx context.Context, data any) (io.Reader, error) {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
@@ -123,6 +140,10 @@ func (e *clientEncoder) EncodeReader(ctx context.Context, data any) (io.Reader, 
 	switch e.contentType {
 	case ContentTypeXML:
 		marshalFunc = xml.Marshal
+	case ContentTypeTOML:
+		marshalFunc = tomlMarshalFunc
+	case ContentTypeYAML:
+		marshalFunc = yaml.Marshal
 	case ContentTypeEmoji:
 		marshalFunc = marshalEmoji
 	default:

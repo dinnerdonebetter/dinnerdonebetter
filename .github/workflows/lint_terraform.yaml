@@ -1,0 +1,173 @@
+---
+on: [pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+name: lint terraform
+jobs:
+  changes:
+    permissions:
+      pull-requests: read
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    outputs:
+      infra_dev: ${{ steps.filter.outputs.infra_dev }}
+      backend_dev: ${{ steps.filter.outputs.backend_dev }}
+      frontend_webapp_dev: ${{ steps.filter.outputs.frontend_webapp_dev }}
+      frontend_landing_dev: ${{ steps.filter.outputs.frontend_landing_dev }}
+      frontend_admin_dev: ${{ steps.filter.outputs.frontend_admin_dev }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            infra_dev:
+              - infra/deploy/environments/dev/terraform/*.tf
+            backend_dev:
+              - backend/deploy/environments/dev/terraform/*.tf
+            frontend_webapp_dev:
+              - frontend/deploy/environments/dev/webapp/terraform/*.tf
+            frontend_landing_dev:
+              - frontend/deploy/environments/dev/landing/terraform/*.tf
+            frontend_admin_dev:
+              - frontend/deploy/environments/dev/admin/terraform/*.tf
+
+  infra:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.infra_dev == 'true' }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.23.x']
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.3
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: backend/deploy/environments/dev/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: backend/deploy/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+  backend:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.backend_dev == 'true' }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.23.x']
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.3
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: backend/deploy/environments/dev/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: backend/deploy/environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+  landing:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.frontend_landing_dev == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: frontend/deploy/environments/dev/landing/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: frontend/deploy/environments/dev/landing/terraform
+        id: validate
+        run: terraform validate -no-color
+
+  admin:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.frontend_admin_dev == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: frontend/deploy/environments/dev/admin/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: frontend/deploy/environments/dev/admin/terraform
+        id: validate
+        run: terraform validate -no-color
+
+  webapp:
+    needs: [changes]
+    runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.frontend_webapp_dev == 'true' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: frontend/deploy/environments/dev/webapp/terraform
+        id: validate
+        run: terraform validate -no-color

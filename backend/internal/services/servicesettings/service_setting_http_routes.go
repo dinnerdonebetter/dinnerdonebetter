@@ -231,7 +231,7 @@ func (s *service) SearchServiceSettingsHandler(res http.ResponseWriter, req *htt
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		logger.Error(err, "retrieving session context data")
+		logger.Error("retrieving session context data", err)
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return

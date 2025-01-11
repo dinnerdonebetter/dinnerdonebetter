@@ -1,4 +1,4 @@
-package config
+package loggingcfg
 
 import (
 	"strings"
@@ -23,21 +23,26 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Level    logging.Level `json:"level,omitempty"    toml:"level"`
-		Provider string        `json:"provider,omitempty" toml:"provider"`
+		Level          logging.Level `env:"LEVEL"           json:"level,omitempty"`
+		Provider       string        `env:"PROVIDER"        json:"provider,omitempty"`
+		OutputFilepath string        `env:"OUTPUT_FILEPATH" json:"outputFilepath,omitempty"`
 	}
 )
 
 // ProvideLogger builds a logger according to the provided config.
 func (cfg *Config) ProvideLogger() logging.Logger {
+	var logger logging.Logger
+
 	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case ProviderZerolog:
-		return zerolog.NewZerologLogger(cfg.Level)
+		logger = zerolog.NewZerologLogger(cfg.Level)
 	case ProviderZap:
-		return zap.NewZapLogger(cfg.Level)
+		logger = zap.NewZapLogger(cfg.Level)
 	case ProviderSlog:
-		return slog.NewSlogLogger(cfg.Level)
+		logger = slog.NewSlogLogger(cfg.Level, cfg.OutputFilepath)
 	default:
-		return logging.NewNoopLogger()
+		logger = logging.NewNoopLogger()
 	}
+
+	return logger
 }

@@ -223,7 +223,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			require.NotNil(t, createdMealPlanOptionVotesC)
 
 			createdMealPlan.VotingDeadline = time.Now().Add(-time.Minute)
-			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
+			require.NoError(t, dbManager.UpdateMealPlan(ctx, createdMealPlan))
 
 			runRes, err := testClients.adminClient.RunFinalizeMealPlanWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
 			require.NoError(t, err)
@@ -395,7 +395,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			assert.Equal(t, string(types.MealPlanStatusAwaitingVotes), createdMealPlan.Status)
 
 			createdMealPlan.VotingDeadline = time.Now().Add(-10 * time.Hour)
-			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
+			require.NoError(t, dbManager.UpdateMealPlan(ctx, createdMealPlan))
 
 			runRes, err := testClients.adminClient.RunFinalizeMealPlanWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
 			require.NoError(t, err)

@@ -22,7 +22,6 @@ const (
 var skipOps = map[string]bool{
 	"CheckForLiveness":  true,
 	"CheckForReadiness": true,
-	"GetRecipeDAG":      true,
 }
 
 func GenerateClientFiles(spec *openapi31.Spec) (map[string]*APIClientFunction, error) {
@@ -177,7 +176,7 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		schema            map[string]any
 	)
 	if responseContainer, ok := op.Responses.MapOfResponseOrReferenceValues["200"]; ok {
-		defaultStatusCode = 200
+		defaultStatusCode = http.StatusOK
 		if response, ok2 := responseContainer.Response.Content[jsonContentType]; ok2 {
 			schema = response.Schema
 		}
@@ -189,21 +188,21 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 	}
 
 	if responseContainer, ok := op.Responses.MapOfResponseOrReferenceValues["201"]; ok {
-		defaultStatusCode = 201
+		defaultStatusCode = http.StatusCreated
 		if response, ok2 := responseContainer.Response.Content[jsonContentType]; ok2 {
 			schema = response.Schema
 		}
 	}
 
 	if responseContainer, ok := op.Responses.MapOfResponseOrReferenceValues["202"]; ok {
-		defaultStatusCode = 202
+		defaultStatusCode = http.StatusAccepted
 		if response, ok2 := responseContainer.Response.Content[jsonContentType]; ok2 {
 			schema = response.Schema
 		}
 	}
 
 	if responseContainer, ok := op.Responses.MapOfResponseOrReferenceValues["204"]; ok {
-		defaultStatusCode = 204
+		defaultStatusCode = http.StatusNoContent
 		if response, ok2 := responseContainer.Response.Content[jsonContentType]; ok2 {
 			schema = response.Schema
 		}
@@ -235,7 +234,7 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		switch x := allOf.(type) {
 		case []any:
 			for _, yy := range x {
-				if y, ok := yy.(map[string]interface{}); ok {
+				if y, ok := yy.(map[string]any); ok {
 					if allOfRef, ok2 := y[refKey]; ok2 {
 						if allOfRefStr, ok3 := allOfRef.(string); ok3 {
 							rt.GenericContainer = allOfRefStr

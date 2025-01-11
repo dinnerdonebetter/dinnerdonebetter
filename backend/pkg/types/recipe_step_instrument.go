@@ -157,7 +157,7 @@ var _ validation.ValidatableWithContext = (*RecipeStepInstrumentCreationRequestI
 
 // ValidateWithContext validates a RecipeStepInstrumentCreationRequestInput.
 func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	var err *multierror.Error
+	err := &multierror.Error{}
 
 	if x.InstrumentID == nil && x.ProductOfRecipeStepIndex == nil && x.ProductOfRecipeStepProductIndex == nil {
 		err = multierror.Append(err, errInstrumentIDOrProductIndicesRequired)

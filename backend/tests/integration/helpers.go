@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
@@ -69,7 +69,7 @@ func initializeOAuth2PoweredClient(ctx context.Context, input *types.UserLoginIn
 		panic("url not set!")
 	}
 
-	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
+	logger := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 
 	c, err := apiclient.NewClient(
 		parsedURLToUse,
@@ -138,7 +138,7 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauth
 	u := serverutils.DetermineServiceURL()
 	urlToUse = u.String()
 
-	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
+	logger := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
 
 	serverutils.EnsureServerIsUp(ctx, urlToUse)

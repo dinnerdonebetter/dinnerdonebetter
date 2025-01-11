@@ -17,38 +17,38 @@ type ValidPreparationInstrumentDataManagerMock struct {
 
 // ValidPreparationInstrumentExists is a mock function.
 func (m *ValidPreparationInstrumentDataManagerMock) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (bool, error) {
-	args := m.Called(ctx, validPreparationInstrumentID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, validPreparationInstrumentID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetValidPreparationInstrument is a mock function.
 func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*types.ValidPreparationInstrument, error) {
-	args := m.Called(ctx, validPreparationInstrumentID)
-	return args.Get(0).(*types.ValidPreparationInstrument), args.Error(1)
+	returnValues := m.Called(ctx, validPreparationInstrumentID)
+	return returnValues.Get(0).(*types.ValidPreparationInstrument), returnValues.Error(1)
 }
 
 // GetValidPreparationInstruments is a mock function.
 func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationInstrument], error) {
-	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), args.Error(1)
+	returnValues := m.Called(ctx, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
 // GetValidPreparationInstrumentsForPreparation is a mock function.
 func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationInstrument], error) {
-	args := m.Called(ctx, preparationID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), args.Error(1)
+	returnValues := m.Called(ctx, preparationID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
 // GetValidPreparationInstrumentsForInstrument is a mock function.
 func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationInstrument], error) {
-	args := m.Called(ctx, instrumentID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), args.Error(1)
+	returnValues := m.Called(ctx, instrumentID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
 // CreateValidPreparationInstrument is a mock function.
 func (m *ValidPreparationInstrumentDataManagerMock) CreateValidPreparationInstrument(ctx context.Context, input *types.ValidPreparationInstrumentDatabaseCreationInput) (*types.ValidPreparationInstrument, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.ValidPreparationInstrument), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.ValidPreparationInstrument), returnValues.Error(1)
 }
 
 // UpdateValidPreparationInstrument is a mock function.

@@ -50,7 +50,7 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 		MealPlanID:       mealPlanID,
 	})
 	if err != nil {
-		logger.Error(err, "performing meal plan option existence check")
+		logger.Error("performing meal plan option existence check", err)
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan option existence check")
 	}
 
@@ -490,7 +490,7 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
 func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID string) (changed bool, err error) {
-	_, span := q.tracer.StartSpan(ctx)
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()

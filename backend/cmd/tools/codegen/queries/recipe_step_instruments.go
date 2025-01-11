@@ -14,6 +14,10 @@ const (
 	instrumentIDColumn           = "instrument_id"
 )
 
+func init() {
+	registerTableName(recipeStepInstrumentsTableName)
+}
+
 var recipeStepInstrumentsColumns = []string{
 	idColumn,
 	instrumentIDColumn,
@@ -213,7 +217,7 @@ WHERE
 					recipeStepsTableName, idColumn, recipeStepIDColumn,
 					recipesTableName, archivedAtColumn,
 					recipesTableName, idColumn, recipeIDColumn,
-					buildFilterConditions(recipeStepInstrumentsTableName, true, false, nil),
+					buildFilterConditions(recipeStepInstrumentsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

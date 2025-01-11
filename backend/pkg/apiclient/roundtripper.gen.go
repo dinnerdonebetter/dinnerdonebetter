@@ -106,7 +106,7 @@ func buildErrorHandler(logger logging.Logger) func(res *http.Response, err error
 	logger = logging.EnsureLogger(logger)
 
 	return func(res *http.Response, err error, numTries int) (*http.Response, error) {
-		logger.WithValue("attempt_number", numTries).WithResponse(res).Error(err, "executing request")
+		logger.WithValue("attempt_number", numTries).WithResponse(res).Error("executing request", err)
 
 		return res, err
 	}

@@ -3,8 +3,8 @@ package admin
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -24,7 +24,7 @@ func buildTestService(t *testing.T) *service {
 		&mocktypes.AdminUserDataManagerMock{},
 		encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 		tracing.NewNoopTracerProvider(),
-		&config.QueuesConfig{
+		&msgconfig.QueuesConfig{
 			DataChangesTopicName:              "DataChangesTopicName",
 			OutboundEmailsTopicName:           "OutboundEmailsTopicName",
 			SearchIndexRequestsTopicName:      "SearchIndexRequestsTopicName",
@@ -54,7 +54,7 @@ func TestProvideAdminService(T *testing.T) {
 			&mocktypes.AdminUserDataManagerMock{},
 			encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 			tracing.NewNoopTracerProvider(),
-			&config.QueuesConfig{},
+			&msgconfig.QueuesConfig{},
 			&mockpublishers.ProducerProvider{},
 		)
 		assert.NoError(t, err)

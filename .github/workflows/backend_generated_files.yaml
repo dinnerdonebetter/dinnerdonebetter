@@ -1,4 +1,5 @@
-on:
+---
+on: # [gollum]
   pull_request:
     paths:
       - backend/cmd/**
@@ -15,21 +16,21 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [ '1.22.x' ]
+        go-version: ['1.23.x']
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
           go-version: '${{ matrix.go-version }}'
-      
+
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Ensure queries and querier can be generated
         working-directory: backend
-        run: make queries sqlc_struct_check
-      
+        run: make queries sqlc_struct_check format_golang
+
       - name: Check for changes
         run: git diff --exit-code
 
@@ -37,7 +38,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [ '1.22.x' ]
+        go-version: ['1.23.x']
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -59,7 +60,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [ '1.22.x' ]
+        go-version: ['1.23.x']
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -72,7 +73,7 @@ jobs:
 
       - name: Install wire
         run: go install github.com/google/wire/cmd/wire@latest
-        
+
       - name: Ensure dependency injection code can be generated
         working-directory: backend
         run: make rewire format_golang
@@ -84,7 +85,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [ '1.22.x' ]
+        go-version: ['1.23.x']
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -97,42 +98,42 @@ jobs:
 
       - name: Setup node
         uses: actions/setup-node@v4
-      
+
       - run: npm install -g yarn
         working-directory: frontend
-      
+
       - run: yarn install
         working-directory: frontend
-      
+
       - name: Ensure code can be generated
         working-directory: backend
         run: make codegen-ts
-      
+
       - name: format files
         working-directory: frontend
         run: make format
-      
+
       - name: Check for changes
         run: git diff --exit-code
-        
+
   golang-api-client:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [ '1.22.x' ]
+        go-version: ['1.23.x']
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
           go-version: '${{ matrix.go-version }}'
-          
+
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Ensure code can be generated
         working-directory: backend
-        run: make codegen-go format
+        run: make codegen-go format_golang
 
       - name: Check for changes
         run: git diff --exit-code
@@ -141,15 +142,26 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [ '1.22.x' ]
+        go-version: ['1.23.x']
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout codeformat
         uses: actions/checkout@v4
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '${{ matrix.go-version }}'
+
+      - name: install yamlfmt
+        run: go install github.com/google/yamlfmt/cmd/yamlfmt@v0.14.0
 
       - name: Ensure openapi spec can be generated
         working-directory: backend
         run: make openapi
+
+      - name: Format
+        run: yamlfmt -conf .yamlfmt.yaml
 
       - name: Check for changes
         run: git diff --exit-code
@@ -158,7 +170,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [ '1.22.x' ]
+        go-version: ['1.23.x']
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -169,14 +181,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: install client generator
-        run: >-
-          go install
-          github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.0
+      - name: generate client
+        working-directory: backend
+        run: make codegen-go format_golang
+
+      - name: Check for changes
+        run: git diff --exit-code
+
+  env_vars_file:
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        go-version: ['1.23.x']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '${{ matrix.go-version }}'
+
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: generate client
         working-directory: backend
-        run: make codegen-go format
-        
+        run: make envvars
+
       - name: Check for changes
         run: git diff --exit-code

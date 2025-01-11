@@ -17,26 +17,26 @@ type RecipeStepVesselDataManagerMock struct {
 
 // RecipeStepVesselExists is a mock function.
 func (m *RecipeStepVesselDataManagerMock) RecipeStepVesselExists(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (bool, error) {
-	args := m.Called(ctx, recipeID, recipeStepID, recipeStepVesselID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID, recipeStepVesselID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetRecipeStepVessel is a mock function.
 func (m *RecipeStepVesselDataManagerMock) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (*types.RecipeStepVessel, error) {
-	args := m.Called(ctx, recipeID, recipeStepID, recipeStepVesselID)
-	return args.Get(0).(*types.RecipeStepVessel), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID, recipeStepVesselID)
+	return returnValues.Get(0).(*types.RecipeStepVessel), returnValues.Error(1)
 }
 
 // GetRecipeStepVessels is a mock function.
 func (m *RecipeStepVesselDataManagerMock) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeStepVessel], error) {
-	args := m.Called(ctx, recipeID, recipeStepID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.RecipeStepVessel]), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.RecipeStepVessel]), returnValues.Error(1)
 }
 
 // CreateRecipeStepVessel is a mock function.
 func (m *RecipeStepVesselDataManagerMock) CreateRecipeStepVessel(ctx context.Context, input *types.RecipeStepVesselDatabaseCreationInput) (*types.RecipeStepVessel, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.RecipeStepVessel), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.RecipeStepVessel), returnValues.Error(1)
 }
 
 // UpdateRecipeStepVessel is a mock function.

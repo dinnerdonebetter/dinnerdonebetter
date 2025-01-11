@@ -1,4 +1,4 @@
-package workers
+package dataprivacy
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -47,9 +48,8 @@ func TestProvideService(T *testing.T) {
 				},
 				Debug: false,
 			},
-			DataChangesTopicName:         "data_changes",
-			UserDataAggregationTopicName: "user_data_aggregation",
 		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
@@ -63,8 +63,8 @@ func TestProvideService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
-		pp.On("ProvidePublisher", cfg.UserDataAggregationTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.UserDataAggregationTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			ctx,
@@ -75,6 +75,7 @@ func TestProvideService(T *testing.T) {
 			pp,
 			tracing.NewNoopTracerProvider(),
 			rpm,
+			msgCfg,
 		)
 
 		assert.NoError(t, err)
@@ -99,9 +100,8 @@ func TestProvideService(T *testing.T) {
 				},
 				Debug: false,
 			},
-			DataChangesTopicName:         "data_changes",
-			UserDataAggregationTopicName: "user_data_aggregation",
 		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
@@ -110,7 +110,7 @@ func TestProvideService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
 			ctx,
@@ -121,6 +121,7 @@ func TestProvideService(T *testing.T) {
 			pp,
 			tracing.NewNoopTracerProvider(),
 			rpm,
+			msgCfg,
 		)
 
 		assert.Nil(t, s)
@@ -145,9 +146,8 @@ func TestProvideService(T *testing.T) {
 				},
 				Debug: false,
 			},
-			DataChangesTopicName:         "data_changes",
-			UserDataAggregationTopicName: "user_data_aggregation",
 		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
@@ -156,8 +156,8 @@ func TestProvideService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
-		pp.On("ProvidePublisher", cfg.UserDataAggregationTopicName).Return(&mockpublishers.Publisher{}, errors.New("blah"))
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.UserDataAggregationTopicName).Return(&mockpublishers.Publisher{}, errors.New("blah"))
 
 		s, err := ProvideService(
 			ctx,
@@ -168,6 +168,7 @@ func TestProvideService(T *testing.T) {
 			pp,
 			tracing.NewNoopTracerProvider(),
 			rpm,
+			msgCfg,
 		)
 
 		assert.Nil(t, s)

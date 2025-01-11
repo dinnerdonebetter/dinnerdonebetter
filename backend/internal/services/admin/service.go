@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -26,7 +26,7 @@ type (
 		publisherProvider         messagequeue.PublisherProvider
 		tracer                    tracing.Tracer
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		queuesConfig              config.QueuesConfig
+		queuesConfig              msgconfig.QueuesConfig
 	}
 )
 
@@ -36,7 +36,7 @@ func ProvideService(
 	userDataManager types.AdminUserDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
-	queuesConfig *config.QueuesConfig,
+	queuesConfig *msgconfig.QueuesConfig,
 	publisherProvider messagequeue.PublisherProvider,
 ) (types.AdminDataService, error) {
 	if queuesConfig == nil {

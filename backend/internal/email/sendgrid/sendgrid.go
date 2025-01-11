@@ -32,11 +32,6 @@ var (
 )
 
 type (
-	// Config configures SendGrid to send email.
-	Config struct {
-		APIToken string `json:"apiToken" toml:"api_token,omitempty"`
-	}
-
 	// Emailer uses SendGrid to send email.
 	Emailer struct {
 		logger         logging.Logger
@@ -81,7 +76,7 @@ var ErrSendgridAPIResponse = errors.New("sendgrid request error")
 
 // SendEmail sends an email.
 func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMessage) error {
-	_, span := e.tracer.StartSpan(ctx)
+	ctx, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
@@ -102,7 +97,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	// Fun fact: if your account is limited and not able to send an email, there is
 	// no distinguishing feature of the response to let you know. Thanks, SendGrid!
 	if res.StatusCode != http.StatusAccepted {
-		e.logger.WithValue("sendgrid_api_token", e.config.APIToken).Info("sending email yielded an invalid response")
+		e.logger.Info("sending email yielded an invalid response")
 		tracing.AttachToSpan(span, e.config.APIToken, "sendgrid_api_token")
 		e.circuitBreaker.Failed()
 		return observability.PrepareError(ErrSendgridAPIResponse, span, "sending email yielded a %d response", res.StatusCode)
@@ -125,7 +120,7 @@ func (e *Emailer) preparePersonalization(to *mail.Email, data map[string]any) *m
 
 // sendDynamicTemplateEmail sends an email.
 func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.Email, templateID string, data map[string]any, request rest.Request) error {
-	_, span := e.tracer.StartSpan(ctx)
+	ctx, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
 	tracing.AttachToSpan(span, "to_email", to.Address)

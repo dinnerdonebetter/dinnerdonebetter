@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -20,8 +20,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/alexedwards/scs/postgresstore"
-	"github.com/alexedwards/scs/v2"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -42,26 +40,26 @@ type Querier struct {
 	oauth2ClientTokenEncDec encryption.EncryptorDecryptor
 	generatedQuerier        generated.Querier
 	timeFunc                func() time.Time
-	config                  *dbconfig.Config
+	config                  *databasecfg.Config
 	db                      *sql.DB
 	migrateOnce             sync.Once
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
-func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *dbconfig.Config) (database.DataManager, error) {
+func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *databasecfg.Config) (database.DataManager, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(tracingName))
 
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	db, err := sql.Open("pgx", cfg.ConnectionDetails)
+	db, err := sql.Open("pgx", cfg.ConnectionDetails.String())
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
 
 	db.SetMaxIdleConns(5)
 	db.SetMaxOpenConns(7)
-	db.SetConnMaxLifetime(1800 * time.Second)
+	db.SetConnMaxLifetime(30 * time.Minute)
 
 	encDec, err := salsa20.NewEncryptorDecryptor(tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))
 	if err != nil {
@@ -80,13 +78,14 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 	}
 
 	if cfg.RunMigrations {
-		c.logger.Debug("migrating querier")
+		c.logger.Info("migrating querier")
 
+		start := time.Now()
 		if err = c.Migrate(ctx); err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "migrating database")
 		}
 
-		c.logger.Debug("querier migrated!")
+		c.logger.WithValue("elapsed", time.Since(start).Milliseconds()).Info("querier migrated!")
 	}
 
 	return c, nil
@@ -100,28 +99,21 @@ func (q *Querier) DB() *sql.DB {
 // Close closes the database connection.
 func (q *Querier) Close() {
 	if err := q.db.Close(); err != nil {
-		q.logger.Error(err, "closing database connection")
+		q.logger.Error("closing database connection", err)
 	}
 }
 
-// ProvideSessionStore provides the scs Store for Postgres.
-func (q *Querier) ProvideSessionStore() scs.Store {
-	return postgresstore.New(q.db)
-}
-
-// IsReady is a simple wrapper around the core querier IsReady call.
-func (q *Querier) IsReady(ctx context.Context) (ready bool) {
+// IsReady returns whether the database is ready for the querier.
+func (q *Querier) IsReady(ctx context.Context) bool {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails.String())
+
 	attemptCount := 0
-
-	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails)
-
-	for !ready {
-		err := q.db.PingContext(ctx)
-		if err != nil {
-			logger.WithValue("attempt_count", attemptCount).Debug("ping failed, waiting for db")
+	for {
+		if err := q.db.PingContext(ctx); err != nil {
+			logger.WithValue("attempt_count", attemptCount).Info("ping failed, waiting for db")
 			time.Sleep(q.config.PingWaitPeriod)
 
 			attemptCount++
@@ -129,8 +121,7 @@ func (q *Querier) IsReady(ctx context.Context) (ready bool) {
 				break
 			}
 		} else {
-			ready = true
-			return ready
+			return true
 		}
 	}
 
@@ -154,12 +145,12 @@ func (q *Querier) checkRowsForErrorAndClose(ctx context.Context, rows database.R
 	defer span.End()
 
 	if err := rows.Err(); err != nil {
-		q.logger.Error(err, "row error")
+		q.logger.Error("row error", err)
 		return observability.PrepareAndLogError(err, q.logger, span, "row error")
 	}
 
 	if err := rows.Close(); err != nil {
-		q.logger.Error(err, "closing database rows")
+		q.logger.Error("closing database rows", err)
 		return observability.PrepareAndLogError(err, q.logger, span, "closing database rows")
 	}
 
@@ -208,4 +199,9 @@ func fetchAllRows[T any](fetchFunc func(*types.QueryFilter) (*types.QueryFiltere
 	}
 
 	return allData, nil
+}
+
+// Destroy deletes all data in the database.
+func (q *Querier) Destroy(ctx context.Context) error {
+	return q.generatedQuerier.DestroyAllData(ctx, q.db)
 }

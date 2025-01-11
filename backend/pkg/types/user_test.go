@@ -110,6 +110,31 @@ func TestUserLoginInput_ValidateWithContext(T *testing.T) {
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
 	})
+
+	T.Run("without token", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &UserLoginInput{
+			Username: t.Name(),
+			Password: t.Name(),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+
+	T.Run("with invalid token", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &UserLoginInput{
+			Username:  t.Name(),
+			Password:  t.Name(),
+			TOTPToken: "not_real",
+		}
+
+		assert.Error(t, x.ValidateWithContext(ctx))
+	})
 }
 
 func TestPasswordUpdateInput_ValidateWithContext(T *testing.T) {

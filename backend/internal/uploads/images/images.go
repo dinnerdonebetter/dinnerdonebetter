@@ -210,7 +210,7 @@ func (p *uploadProcessor) ProcessFiles(ctx context.Context, req *http.Request, f
 	}
 
 	if errs != nil {
-		logger.Error(errs, "processing image uploads")
+		logger.Error("processing image uploads", errs)
 		return nil, errs
 	}
 

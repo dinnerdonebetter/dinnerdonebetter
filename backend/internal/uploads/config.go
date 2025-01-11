@@ -12,8 +12,8 @@ import (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	Storage objectstorage.Config `json:"storageConfig" toml:"storage_config,omitempty"`
-	Debug   bool                 `json:"debug"         toml:"debug,omitempty"`
+	Storage objectstorage.Config `envPrefix:"STORAGE_" json:"storageConfig"`
+	Debug   bool                 `env:"DEBUG"          json:"debug"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

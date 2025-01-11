@@ -1,7 +1,6 @@
 package users
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -9,6 +8,7 @@ import (
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -16,8 +16,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
-	"github.com/dinnerdonebetter/backend/internal/uploads"
-	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -28,22 +26,12 @@ import (
 func buildTestService(t *testing.T) *service {
 	t.Helper()
 
-	cfg := &Config{
-		Uploads: uploads.Config{
-			Storage: objectstorage.Config{
-				BucketName: t.Name(),
-				Provider:   objectstorage.MemoryProvider,
-			},
-			Debug: false,
-		},
-	}
+	msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 	pp := &mockpublishers.ProducerProvider{}
-	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	s, err := ProvideUsersService(
-		context.Background(),
-		cfg,
 		&authservice.Config{},
 		logging.NewNoopLogger(),
 		&mocktypes.UserDataManagerMock{},
@@ -58,6 +46,7 @@ func buildTestService(t *testing.T) *service {
 		&mocktypes.PasswordResetTokenDataManagerMock{},
 		&featureflags.NoopFeatureFlagManager{},
 		analytics.NewNoopEventReporter(),
+		msgCfg,
 	)
 
 	require.NoError(t, err)
@@ -71,15 +60,7 @@ func TestProvideUsersService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		cfg := &Config{
-			Uploads: uploads.Config{
-				Storage: objectstorage.Config{
-					BucketName: t.Name(),
-					Provider:   objectstorage.MemoryProvider,
-				},
-				Debug: false,
-			},
-		}
+		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
@@ -88,11 +69,9 @@ func TestProvideUsersService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideUsersService(
-			context.Background(),
-			cfg,
 			&authservice.Config{},
 			logging.NewNoopLogger(),
 			&mocktypes.UserDataManagerMock{},
@@ -107,6 +86,7 @@ func TestProvideUsersService(T *testing.T) {
 			&mocktypes.PasswordResetTokenDataManagerMock{},
 			&featureflags.NoopFeatureFlagManager{},
 			analytics.NewNoopEventReporter(),
+			msgCfg,
 		)
 
 		assert.NotNil(t, s)

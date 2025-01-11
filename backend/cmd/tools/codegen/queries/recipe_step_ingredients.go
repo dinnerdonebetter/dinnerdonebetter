@@ -15,6 +15,10 @@ const (
 	measurementUnitColumn        = "measurement_unit"
 )
 
+func init() {
+	registerTableName(recipeStepIngredientsTableName)
+}
+
 var recipeStepIngredientsColumns = []string{
 	idColumn,
 	nameColumn,
@@ -223,7 +227,7 @@ WHERE
 					recipeStepsTableName, idColumn, recipeStepIDColumn,
 					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
 					recipeStepIngredientsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-					buildFilterConditions(recipeStepIngredientsTableName, true, false, nil),
+					buildFilterConditions(recipeStepIngredientsTableName, true, false),
 					offsetLimitAddendum,
 				)),
 			},

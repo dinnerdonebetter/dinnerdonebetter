@@ -17,26 +17,26 @@ type RecipeStepDataManagerMock struct {
 
 // RecipeStepExists is a mock function.
 func (m *RecipeStepDataManagerMock) RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (bool, error) {
-	args := m.Called(ctx, recipeID, recipeStepID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetRecipeStep is a mock function.
 func (m *RecipeStepDataManagerMock) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
-	args := m.Called(ctx, recipeID, recipeStepID)
-	return args.Get(0).(*types.RecipeStep), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, recipeStepID)
+	return returnValues.Get(0).(*types.RecipeStep), returnValues.Error(1)
 }
 
 // GetRecipeSteps is a mock function.
 func (m *RecipeStepDataManagerMock) GetRecipeSteps(ctx context.Context, recipeID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeStep], error) {
-	args := m.Called(ctx, recipeID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.RecipeStep]), args.Error(1)
+	returnValues := m.Called(ctx, recipeID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.RecipeStep]), returnValues.Error(1)
 }
 
 // CreateRecipeStep is a mock function.
 func (m *RecipeStepDataManagerMock) CreateRecipeStep(ctx context.Context, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.RecipeStep), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.RecipeStep), returnValues.Error(1)
 }
 
 // UpdateRecipeStep is a mock function.

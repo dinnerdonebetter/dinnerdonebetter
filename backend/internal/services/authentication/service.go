@@ -9,12 +9,17 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/jwt"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -24,20 +29,15 @@ import (
 )
 
 const (
-	serviceName          = "auth_service"
-	AuthProviderParamKey = "auth_provider"
+	serviceName                = "auth_service"
+	AuthProviderParamKey       = "auth_provider"
+	rejectedRequestCounterName = "auth_service.rejected_requests"
 )
 
-// TODO: remove this.
+// TODO: remove this when Goth can handle concurrency.
 var useProvidersMutex = sync.Mutex{}
 
 type (
-	// cookieEncoderDecoder is a stand-in interface for gorilla/securecookie.
-	cookieEncoderDecoder interface {
-		Encode(name string, value any) (string, error)
-		Decode(name, value string, dst any) error
-	}
-
 	// service handles passwords service-wide.
 	service struct {
 		config                     *Config
@@ -53,7 +53,8 @@ type (
 		tracer                     tracing.Tracer
 		dataChangesPublisher       messagequeue.Publisher
 		oauth2Server               *server.Server
-		jwtSigner                  authentication.JWTSigner
+		tokenIssuer                tokens.Issuer
+		rejectedRequestCounter     metrics.Int64Counter
 	}
 )
 
@@ -71,23 +72,35 @@ func ProvideService(
 	featureFlagManager featureflags.FeatureFlagManager,
 	analyticsReporter analytics.EventReporter,
 	routeParamManager routing.RouteParamManager,
+	metricsProvider metrics.Provider,
+	queuesConfig *msgconfig.QueuesConfig,
 ) (types.AuthDataService, error) {
-	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	if queuesConfig == nil {
+		return nil, internalerrors.NilConfigError("queuesConfig for AuthDataService")
+	}
+
+	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)
 	if publisherProviderErr != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, publisherProviderErr)
 	}
 
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))
-
 	decryptedJWTSigningKey, err := base64.URLEncoding.DecodeString(cfg.JWTSigningKey)
 	if err != nil {
-		return nil, fmt.Errorf("decoding Token signing key: %w", err)
+		return nil, fmt.Errorf("decoding json web token signing key: %w", err)
 	}
 
-	signer, err := authentication.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
+	signer, err := jwt.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
 	if err != nil {
-		return nil, fmt.Errorf("creating Token signer: %w", err)
+		metrics.NewNoopMetricsProvider()
+		return nil, fmt.Errorf("creating json web token signer: %w", err)
 	}
+
+	rejectedRequestCounter, err := metricsProvider.NewInt64Counter(rejectedRequestCounterName)
+	if err != nil {
+		return nil, fmt.Errorf("creating rejected request counter: %w", err)
+	}
+
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))
 
 	svc := &service{
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
@@ -97,11 +110,12 @@ func ProvideService(
 		householdMembershipManager: householdMembershipManager,
 		authenticator:              authenticator,
 		sessionContextDataFetcher:  authentication.FetchContextFromRequest,
-		tracer:                     tracer,
+		tracer:                     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
 		analyticsReporter:          analyticsReporter,
-		jwtSigner:                  signer,
+		tokenIssuer:                signer,
+		rejectedRequestCounter:     rejectedRequestCounter,
 		authProviderFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
 		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
 	}

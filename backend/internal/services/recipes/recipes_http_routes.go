@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"image/png"
 	"net/http"
 	"strings"
 	"time"
@@ -342,14 +341,14 @@ func (s *service) UpdateRecipeHandler(res http.ResponseWriter, req *http.Request
 	// check for parsed input attached to session context data.
 	input := new(types.RecipeUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
-		logger.Error(err, "error encountered decoding request body")
+		logger.Error("error encountered decoding request body", err)
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.Error(err, "provided input was invalid")
+		logger.Error("provided input was invalid", err)
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
@@ -486,71 +485,6 @@ func (s *service) ArchiveRecipeHandler(res http.ResponseWriter, req *http.Reques
 
 	// let everybody go home.
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
-}
-
-// RecipeDAGHandler is a handler that returns a DAG image.
-func (s *service) RecipeDAGHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req).WithSpan(span)
-	tracing.AttachRequestToSpan(span, req)
-
-	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
-	}
-
-	// determine user ID.
-	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
-		return
-	}
-	sessionContextTimer.Stop()
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
-
-	// determine recipe ID.
-	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-
-	// fetch recipe from database.
-	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
-	if errors.Is(err, sql.ErrNoRows) {
-		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving recipe")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
-	readTimer.Stop()
-
-	dag, err := s.recipeAnalyzer.GenerateDAGDiagramForRecipe(ctx, x)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
-		errRes := types.NewAPIErrorResponse("generating secret", types.ErrValidatingRequestInput, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
-
-	res.Header().Set("Content-type", "image/png")
-	if err = png.Encode(res, dag); err != nil {
-		observability.AcknowledgeError(err, logger, span, "encoding response")
-		errRes := types.NewAPIErrorResponse("encode error", types.ErrMisbehavingDependency, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
 }
 
 // RecipeEstimatedPrepStepsHandler is a handler that returns expected prep steps for a given recipe.

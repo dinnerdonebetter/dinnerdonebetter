@@ -13,6 +13,10 @@ const (
 	capacityUnitColumn    = "capacity_unit"
 )
 
+func init() {
+	registerTableName(validVesselsTableName)
+}
+
 var validVesselsColumns = []string{
 	idColumn,
 	nameColumn,
@@ -131,7 +135,6 @@ ORDER BY %s.%s
 						validVesselsTableName,
 						true,
 						true,
-						nil,
 					),
 					validVesselsTableName,
 					idColumn,

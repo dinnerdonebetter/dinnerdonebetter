@@ -1,4 +1,4 @@
-package config
+package msgconfig
 
 import (
 	"context"
@@ -29,7 +29,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{
-			Consumers: MessageQueueConfig{
+			Consumer: MessageQueueConfig{
 				Provider: ProviderRedis,
 			},
 		}
@@ -61,7 +61,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{
-			Publishers: MessageQueueConfig{
+			Publisher: MessageQueueConfig{
 				Provider: ProviderRedis,
 			},
 		}

@@ -21,9 +21,9 @@ const (
 type (
 	// Config allows for the configuration of this package and its subpackages.
 	Config struct {
-		Stripe   *stripe.Config `json:"stripe"   toml:"stripe"`
-		Provider string         `json:"provider" toml:"provider"`
-		Enabled  bool           `json:"enabled"  toml:"enabled"`
+		Stripe   *stripe.Config `envPrefix:"STRIPE_" json:"stripe"`
+		Provider string         `env:"PROVIDER"      json:"provider"`
+		Enabled  bool           `env:"ENABLED"       json:"enabled"`
 	}
 )
 

@@ -209,7 +209,7 @@ var _ validation.ValidatableWithContext = (*MealCreationRequestInput)(nil)
 
 // ValidateWithContext validates a MealCreationRequestInput.
 func (x *MealCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	var result *multierror.Error
+	result := &multierror.Error{}
 
 	atLeastOneMain := false
 	for _, component := range x.Components {

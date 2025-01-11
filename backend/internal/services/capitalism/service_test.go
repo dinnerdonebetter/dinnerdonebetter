@@ -1,7 +1,6 @@
 package capitalism
 
 import (
-	"context"
 	"testing"
 
 	capitalismmock "github.com/dinnerdonebetter/backend/internal/capitalism/mock"
@@ -27,14 +26,12 @@ func TestProvideService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
 		rpm := mockrouting.NewRouteParamManager()
 		mpm := capitalismmock.NewMockPaymentManager()
 
 		s := ProvideService(
-			ctx,
 			logger,
 			tracing.NewNoopTracerProvider(),
 			mpm,

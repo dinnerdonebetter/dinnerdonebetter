@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	mockmetrics "github.com/dinnerdonebetter/backend/internal/observability/metrics/mock"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -65,6 +66,10 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 
 		helper.exampleUser.AccountStatus = string(types.BannedUserAccountStatus)
 		helper.setContextFetcher(t)
+
+		mp := &mockmetrics.Int64Counter{}
+		mp.On("Add", testutils.ContextMatcher, int64(1), mock.Anything).Return()
+		helper.service.rejectedRequestCounter = mp
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
@@ -140,11 +145,16 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 			return sessionCtxData, nil
 		}
 
+		mp := &mockmetrics.Int64Counter{}
+		mp.On("Add", testutils.ContextMatcher, int64(1), mock.Anything).Return()
+		helper.service.rejectedRequestCounter = mp
+
 		helper.req = helper.req.WithContext(context.WithValue(helper.ctx, types.SessionContextDataKey, sessionCtxData))
 
 		helper.service.AuthorizationMiddleware(&testutils.MockHTTPHandler{}).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		mock.AssertExpectationsForObjects(t, mp)
 	})
 }
 

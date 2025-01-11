@@ -14,6 +14,10 @@ const (
 	householdRoleColumn    = "household_role"
 )
 
+func init() {
+	registerTableName(householdUserMembershipsTableName)
+}
+
 var householdUserMembershipsColumns = []string{
 	idColumn,
 	belongsToHouseholdColumn,

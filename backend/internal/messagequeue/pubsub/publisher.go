@@ -67,7 +67,7 @@ func ProvidePubSubPublisherProvider(logger logging.Logger, tracerProvider tracin
 // Close closes the connection topic.
 func (p *publisherProvider) Close() {
 	if err := p.pubsubClient.Close(); err != nil {
-		p.logger.Error(err, "closing pubsub connection")
+		p.logger.Error("closing pubsub connection", err)
 	}
 }
 

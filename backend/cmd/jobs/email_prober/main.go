@@ -5,15 +5,11 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"os"
-	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/email"
-	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -24,28 +20,29 @@ import (
 func doTheThing() error {
 	ctx := context.Background()
 
-	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
-
-	cfg, err := config.GetEmailProberConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.LoadConfigFromEnvironment[config.EmailProberConfig]()
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
+
+	logger := cfg.Observability.Logging.ProvideLogger()
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
+		logger.Error("initializing tracer", initializeTracerErr)
 	}
 	otel.SetTracerProvider(tracerProvider)
 
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("email_prober_job")).StartSpan(ctx)
 	defer span.End()
 
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
+	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}
@@ -61,7 +58,9 @@ func doTheThing() error {
 }
 
 func main() {
+	log.Println("doing the thing")
 	if err := doTheThing(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println("the thing is done")
 }

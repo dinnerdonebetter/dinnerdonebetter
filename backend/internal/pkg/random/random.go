@@ -59,9 +59,29 @@ func GenerateHexEncodedString(ctx context.Context, length int) (string, error) {
 	return defaultGenerator.GenerateHexEncodedString(ctx, length)
 }
 
+// MustGenerateHexEncodedString generates a one-off value with an anonymous Generator, but does not return an error.
+func MustGenerateHexEncodedString(ctx context.Context, length int) string {
+	x, err := defaultGenerator.GenerateHexEncodedString(ctx, length)
+	if err != nil {
+		panic(err)
+	}
+
+	return x
+}
+
 // GenerateBase32EncodedString generates a one-off value with an anonymous Generator.
 func GenerateBase32EncodedString(ctx context.Context, length int) (string, error) {
 	return defaultGenerator.GenerateBase32EncodedString(ctx, length)
+}
+
+// MustGenerateBase32EncodedString generates a one-off value with an anonymous Generator, but does not return an error.
+func MustGenerateBase32EncodedString(ctx context.Context, length int) string {
+	x, err := defaultGenerator.GenerateBase32EncodedString(ctx, length)
+	if err != nil {
+		panic(err)
+	}
+
+	return x
 }
 
 // GenerateBase64EncodedString generates a one-off value with an anonymous Generator.
@@ -69,9 +89,29 @@ func GenerateBase64EncodedString(ctx context.Context, length int) (string, error
 	return defaultGenerator.GenerateBase64EncodedString(ctx, length)
 }
 
+// MustGenerateBase64EncodedString generates a one-off value with an anonymous Generator, but does not return an error.
+func MustGenerateBase64EncodedString(ctx context.Context, length int) string {
+	x, err := defaultGenerator.GenerateBase64EncodedString(ctx, length)
+	if err != nil {
+		panic(err)
+	}
+
+	return x
+}
+
 // GenerateRawBytes generates a one-off value with an anonymous Generator.
 func GenerateRawBytes(ctx context.Context, length int) ([]byte, error) {
 	return defaultGenerator.GenerateRawBytes(ctx, length)
+}
+
+// MustGenerateRawBytes generates a one-off value with an anonymous Generator, but does not return an error.
+func MustGenerateRawBytes(ctx context.Context, length int) []byte {
+	x, err := defaultGenerator.GenerateRawBytes(ctx, length)
+	if err != nil {
+		panic(err)
+	}
+
+	return x
 }
 
 // generateSecret generates a securely random byte array of a given length.
@@ -91,7 +131,7 @@ func (g *standardGenerator) generateSecret(ctx context.Context, length int) ([]b
 
 // GenerateRawBytes generates a securely random byte array.
 func (g *standardGenerator) GenerateRawBytes(ctx context.Context, length int) ([]byte, error) {
-	_, span := g.tracer.StartSpan(ctx)
+	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
 	tracing.AttachToSpan(span, "rand_gen.requested_length", length)
@@ -101,7 +141,7 @@ func (g *standardGenerator) GenerateRawBytes(ctx context.Context, length int) ([
 
 // GenerateHexEncodedString generates a base64-encoded string of a securely random byte array of a given length.
 func (g *standardGenerator) GenerateHexEncodedString(ctx context.Context, length int) (string, error) {
-	_, span := g.tracer.StartSpan(ctx)
+	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := g.logger.WithValue("length", length)
@@ -117,7 +157,7 @@ func (g *standardGenerator) GenerateHexEncodedString(ctx context.Context, length
 
 // GenerateBase32EncodedString generates a base64-encoded string of a securely random byte array of a given length.
 func (g *standardGenerator) GenerateBase32EncodedString(ctx context.Context, length int) (string, error) {
-	_, span := g.tracer.StartSpan(ctx)
+	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := g.logger.WithValue("length", length)
@@ -133,7 +173,7 @@ func (g *standardGenerator) GenerateBase32EncodedString(ctx context.Context, len
 
 // GenerateBase64EncodedString generates a base64-encoded string of a securely random byte array of a given length.
 func (g *standardGenerator) GenerateBase64EncodedString(ctx context.Context, length int) (string, error) {
-	_, span := g.tracer.StartSpan(ctx)
+	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := g.logger.WithValue("length", length)

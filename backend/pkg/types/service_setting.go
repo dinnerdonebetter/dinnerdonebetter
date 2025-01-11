@@ -89,7 +89,7 @@ var _ validation.ValidatableWithContext = (*ServiceSettingCreationRequestInput)(
 
 // ValidateWithContext validates a ServiceSettingCreationRequestInput.
 func (x *ServiceSettingCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	var result *multierror.Error
+	result := &multierror.Error{}
 
 	if x.DefaultValue != nil && !slices.Contains(x.Enumeration, *x.DefaultValue) {
 		result = multierror.Append(result, errDefaultValueMustBeEnumerationValue)

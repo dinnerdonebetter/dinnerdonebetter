@@ -12,6 +12,10 @@ const (
 	clientIDColumn         = "client_id"
 )
 
+func init() {
+	registerTableName(oauth2ClientsTableName)
+}
+
 var oauth2ClientsColumns = []string{
 	idColumn,
 	nameColumn,
@@ -128,7 +132,6 @@ WHERE %s.%s IS NULL
 							oauth2ClientsTableName,
 							false,
 							true,
-							nil,
 						), "\n"),
 						"\n\t\t",
 					),
@@ -139,7 +142,6 @@ WHERE %s.%s IS NULL
 						oauth2ClientsTableName,
 						false,
 						true,
-						nil,
 					),
 					offsetLimitAddendum,
 				)),

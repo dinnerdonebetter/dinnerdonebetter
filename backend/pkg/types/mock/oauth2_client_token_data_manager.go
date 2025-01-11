@@ -16,23 +16,23 @@ type OAuth2ClientTokenDataManagerMock struct {
 }
 
 func (m *OAuth2ClientTokenDataManagerMock) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) (*types.OAuth2ClientToken, error) {
-	returnVals := m.Called(ctx, input)
-	return returnVals.Get(0).(*types.OAuth2ClientToken), returnVals.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.OAuth2ClientToken), returnValues.Error(1)
 }
 
 func (m *OAuth2ClientTokenDataManagerMock) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*types.OAuth2ClientToken, error) {
-	returnVals := m.Called(ctx, code)
-	return returnVals.Get(0).(*types.OAuth2ClientToken), returnVals.Error(1)
+	returnValues := m.Called(ctx, code)
+	return returnValues.Get(0).(*types.OAuth2ClientToken), returnValues.Error(1)
 }
 
 func (m *OAuth2ClientTokenDataManagerMock) GetOAuth2ClientTokenByAccess(ctx context.Context, access string) (*types.OAuth2ClientToken, error) {
-	returnVals := m.Called(ctx, access)
-	return returnVals.Get(0).(*types.OAuth2ClientToken), returnVals.Error(1)
+	returnValues := m.Called(ctx, access)
+	return returnValues.Get(0).(*types.OAuth2ClientToken), returnValues.Error(1)
 }
 
 func (m *OAuth2ClientTokenDataManagerMock) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) (*types.OAuth2ClientToken, error) {
-	returnVals := m.Called(ctx, refresh)
-	return returnVals.Get(0).(*types.OAuth2ClientToken), returnVals.Error(1)
+	returnValues := m.Called(ctx, refresh)
+	return returnValues.Get(0).(*types.OAuth2ClientToken), returnValues.Error(1)
 }
 
 func (m *OAuth2ClientTokenDataManagerMock) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access string) error {

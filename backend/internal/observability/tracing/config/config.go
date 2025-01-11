@@ -1,20 +1,21 @@
-package config
+package tracingcfg
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltracehttp"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ProviderOtel represents the open source tracing server.
-	ProviderOtel = "otel"
+	ProviderOtel = "otelgrpc"
 	// ProviderCloudTrace represents the GCP Cloud Trace service.
 	ProviderCloudTrace = "cloudtrace"
 )
@@ -24,25 +25,39 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		CloudTrace *cloudtrace.Config    `json:"cloudTrace,omitempty" toml:"cloud_trace,omitempty"`
-		Otel       *oteltracehttp.Config `json:"otel,omitempty"       toml:"otel,omitempty"`
-		Provider   string                `json:"provider,omitempty"   toml:"provider,omitempty"`
+		CloudTrace                *cloudtrace.Config `envPrefix:"CLOUDTRACE_"                   json:"cloudTrace,omitempty"`
+		Otel                      *oteltrace.Config  `envPrefix:"OTELGRPC_"                     json:"otelgrpc,omitempty"`
+		ServiceName               string             `env:"TRACING_SERVICE_NAME"                json:"service_name,omitempty"`
+		Provider                  string             `env:"TRACING_PROVIDER"                    json:"provider,omitempty"`
+		SpanCollectionProbability float64            `env:"TRACING_SPAN_COLLECTION_PROBABILITY" json:"spanCollectionProbability,omitempty"`
 	}
 )
 
 // ProvideTracerProvider provides an instrumentation handler.
-func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (traceProvider tracing.TracerProvider, err error) {
+func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (tracing.TracerProvider, error) {
 	logger := l.WithValue("tracing_provider", c.Provider)
 
 	p := strings.TrimSpace(strings.ToLower(c.Provider))
 
 	switch p {
 	case ProviderOtel:
-		return oteltracehttp.SetupOtelHTTP(ctx, c.Otel)
+		logger.WithValue("otel", c.Otel).Info("configuring otelgrpc provider")
+		tp, err := oteltrace.SetupOtelGRPC(ctx, c.ServiceName, c.SpanCollectionProbability, c.Otel)
+		if err != nil {
+			return nil, fmt.Errorf("configuring otelgrpc provider: %w", err)
+		}
+
+		return tp, nil
 	case ProviderCloudTrace:
-		return cloudtrace.SetupCloudTrace(ctx, c.CloudTrace)
+		logger.Info("configuring cloud trace provider")
+		tp, err := cloudtrace.SetupCloudTrace(ctx, c.ServiceName, c.SpanCollectionProbability, c.CloudTrace)
+		if err != nil {
+			return nil, fmt.Errorf("configuring cloud trace provider: %w", err)
+		}
+
+		return tp, nil
 	default:
-		logger.Debug("invalid tracing provider")
+		logger.Info("invalid tracing provider")
 		return tracing.NewNoopTracerProvider(), nil
 	}
 }
@@ -55,5 +70,7 @@ func (c *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&c.Provider, validation.In("", ProviderOtel, ProviderCloudTrace)),
 		validation.Field(&c.Otel, validation.When(c.Provider == ProviderOtel, validation.Required).Else(validation.Nil)),
 		validation.Field(&c.CloudTrace, validation.When(c.Provider == ProviderCloudTrace, validation.Required).Else(validation.Nil)),
+		validation.Field(&c.ServiceName, validation.Required),
+		validation.Field(&c.SpanCollectionProbability, validation.Required),
 	)
 }

@@ -141,7 +141,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		}
 
 		var token string
-		token, err = s.jwtSigner.IssueJWT(ctx, user, s.config.JWTLifetime)
+		token, err = s.tokenIssuer.IssueToken(ctx, user, s.config.JWTLifetime)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "signing token")
 			errRes := types.NewAPIErrorResponse(staticError, types.ErrEncryptionIssue, responseDetails)
@@ -267,7 +267,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 
 	sess, err := provider.UnmarshalSession(value)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "unmarshalling session")
+		observability.AcknowledgeError(err, logger, span, "unmarshaling session")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to unmarshal session", http.StatusInternalServerError)
 		return
 	}
@@ -323,7 +323,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	defaultHouseholdTimer.Stop()
 
 	var token string
-	token, err = s.jwtSigner.IssueJWT(ctx, user, s.config.JWTLifetime)
+	token, err = s.tokenIssuer.IssueToken(ctx, user, s.config.JWTLifetime)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "signing token")
 		errRes := types.NewAPIErrorResponse(staticError, types.ErrEncryptionIssue, responseDetails)

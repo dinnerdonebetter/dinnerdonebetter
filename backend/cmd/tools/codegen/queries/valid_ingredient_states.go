@@ -11,6 +11,10 @@ const (
 	validIngredientStatesTableName = "valid_ingredient_states"
 )
 
+func init() {
+	registerTableName(validIngredientStatesTableName)
+}
+
 var validIngredientStatesColumns = []string{
 	idColumn,
 	nameColumn,
@@ -111,7 +115,6 @@ ORDER BY %s.%s
 						validIngredientStatesTableName,
 						true,
 						true,
-						nil,
 					),
 					validIngredientStatesTableName,
 					idColumn,

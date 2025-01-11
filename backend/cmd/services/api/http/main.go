@@ -1,11 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -13,16 +9,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/build/api"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/server/http/build"
 
 	"github.com/KimMachineGun/automemlimit/memlimit"
 	_ "go.uber.org/automaxprocs"
-)
-
-const (
-	configFilepathEnvVar       = "CONFIGURATION_FILEPATH"
-	googleCloudIndicatorEnvVar = "RUNNING_IN_GCP"
 )
 
 func init() {
@@ -40,39 +31,10 @@ func init() {
 	}
 }
 
-func getConfig(ctx context.Context) (*config.InstanceConfig, error) {
-	var cfg *config.InstanceConfig
-	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
-		c, err := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("fetching config from GCP: %w", err)
-		}
-
-		cfg = c
-	} else if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
-		configBytes, err := os.ReadFile(configFilepath)
-		if err != nil {
-			return nil, fmt.Errorf("reading local config file: %w", err)
-		}
-
-		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-			return nil, fmt.Errorf("decoding config file contents: %w", err)
-		}
-	} else {
-		return nil, errors.New("no config provided")
-	}
-
-	if err := cfg.ValidateWithContext(ctx, true); err != nil {
-		return nil, fmt.Errorf("validating config: %w", err)
-	}
-
-	return cfg, nil
-}
-
 func main() {
 	rootCtx := context.Background()
 
-	cfg, err := getConfig(rootCtx)
+	cfg, err := config.FetchForApplication(rootCtx, config.GetAPIServiceConfigFromGoogleCloudRunEnvironment)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -80,8 +42,11 @@ func main() {
 	// only allow initialization to take so long.
 	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
 
+	logger := cfg.Observability.Logging.ProvideLogger()
+	logger.Info("building server")
+
 	// build our server struct.
-	srv, err := build.Build(buildCtx, cfg)
+	srv, err := api.Build(buildCtx, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -97,6 +62,7 @@ func main() {
 		syscall.SIGTERM,
 	)
 
+	log.Println("serving")
 	// Run server
 	go srv.Serve()
 
@@ -110,6 +76,8 @@ func main() {
 
 	cancelCtx, cancelShutdown := context.WithTimeout(rootCtx, 10*time.Second)
 	defer cancelShutdown()
+
+	log.Println("shutting down")
 
 	// Gracefully shutdown the server by waiting on existing requests (except websockets).
 	if err = srv.Shutdown(cancelCtx); err != nil {

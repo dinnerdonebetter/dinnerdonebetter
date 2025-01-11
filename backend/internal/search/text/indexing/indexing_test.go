@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
-	"github.com/dinnerdonebetter/backend/internal/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -26,7 +26,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.UserDataManagerMock.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
@@ -49,7 +49,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.UserDataManagerMock.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
@@ -72,7 +72,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.RecipeDataManagerMock.On("GetRecipe", testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
@@ -95,7 +95,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.MealDataManagerMock.On("GetMeal", testutils.ContextMatcher, exampleMeal.ID).Return(exampleMeal, nil)
@@ -118,7 +118,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.ValidVesselDataManagerMock.On("GetValidVessel", testutils.ContextMatcher, exampleValidVessel.ID).Return(exampleValidVessel, nil)
@@ -141,7 +141,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.ValidIngredientDataManagerMock.On("GetValidIngredient", testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
@@ -164,7 +164,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.ValidInstrumentDataManagerMock.On("GetValidInstrument", testutils.ContextMatcher, exampleValidInstrument.ID).Return(exampleValidInstrument, nil)
@@ -187,7 +187,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.ValidPreparationDataManagerMock.On("GetValidPreparation", testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
@@ -210,7 +210,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.ValidMeasurementUnitDataManagerMock.On("GetValidMeasurementUnit", testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(exampleValidMeasurementUnit, nil)
@@ -233,7 +233,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider
-		searchConfig := &config.Config{}
+		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
 		dataManager.ValidIngredientStateDataManagerMock.On("GetValidIngredientState", testutils.ContextMatcher, exampleValidIngredientState.ID).Return(exampleValidIngredientState, nil)

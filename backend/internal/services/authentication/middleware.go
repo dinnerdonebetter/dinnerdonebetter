@@ -3,7 +3,6 @@ package authentication
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
@@ -65,10 +64,6 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 
 		timing := servertiming.FromContext(ctx)
 		logger := s.logger.WithRequest(req).WithSpan(span)
-		for _, cookie := range req.Cookies() {
-			logger = logger.WithValue(fmt.Sprintf("cookie.%s", cookie.Name), cookie.Value)
-		}
-
 		responseDetails := types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		}
@@ -81,7 +76,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 				res.WriteHeader(http.StatusTeapot)
 				return
 			} else {
-				logger.Error(err, "determining user ID")
+				logger.Error("determining user ID", err)
 			}
 		}
 		tokenTimer.Stop()
@@ -129,7 +124,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 // AuthorizationMiddleware checks to see if a user is associated with the request, and then determines whether said request can proceed.
 func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		_, span := s.tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
 		logger := s.logger.WithRequest(req).WithSpan(span)
@@ -141,6 +136,7 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 
 			if sessionCtxData.Requester.AccountStatus == string(types.BannedUserAccountStatus) || sessionCtxData.Requester.AccountStatus == string(types.TerminatedUserAccountStatus) {
 				logger.Info("banned user attempted to make request")
+				s.rejectedRequestCounter.Add(ctx, 1)
 				http.Redirect(res, req, "/", http.StatusForbidden)
 				return
 			}
@@ -149,6 +145,7 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 
 			if _, authorizedForHousehold := sessionCtxData.HouseholdPermissions[sessionCtxData.ActiveHouseholdID]; !authorizedForHousehold && !canImpersonateUsers {
 				logger.Info("user trying to access household they are not authorized for")
+				s.rejectedRequestCounter.Add(ctx, 1)
 				http.Redirect(res, req, "/", http.StatusUnauthorized)
 				return
 			}
@@ -186,8 +183,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			isServiceAdmin := sessionContextData.Requester.ServicePermissions.IsServiceAdmin()
 			logger = logger.WithValue("is_service_admin", isServiceAdmin)
 
-			_, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]
-			if !allowed && !isServiceAdmin {
+			if _, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]; !allowed && !isServiceAdmin {
 				permissionCheckTimer.Stop()
 				logger.Info("not authorized for household")
 				s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)

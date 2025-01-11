@@ -1,13 +1,13 @@
 package validmeasurementunitconversions
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
@@ -36,16 +36,19 @@ type (
 
 // ProvideService builds a new ValidMeasurementUnitConversionsService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
-	cfg *Config,
 	validMeasurementUnitConversionDataManager types.ValidMeasurementUnitConversionDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
+	queueConfig *msgconfig.QueuesConfig,
 ) (types.ValidMeasurementUnitConversionDataService, error) {
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
+	if queueConfig == nil {
+		return nil, fmt.Errorf("nil queue config provided")
+	}
+
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}

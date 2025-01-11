@@ -18,7 +18,7 @@ import (
 const here = "github.com/dinnerdonebetter/backend/"
 
 func init() {
-	loc, err := time.LoadLocation("America/Chicago")
+	location, err := time.LoadLocation("America/Chicago")
 	if err != nil {
 		panic(err)
 	}
@@ -27,7 +27,7 @@ func init() {
 	zerolog.DisableSampling(true)
 	zerolog.TimeFieldFormat = time.RFC3339Nano
 	zerolog.TimestampFunc = func() time.Time {
-		return time.Now().In(loc)
+		return time.Now().In(location)
 	}
 	zerolog.CallerMarshalFunc = func(_ uintptr, file string, line int) string {
 		return strings.TrimPrefix(file, here) + ", line " + strconv.Itoa(line)
@@ -95,7 +95,7 @@ func (l *zerologLogger) Debug(input string) {
 }
 
 // Error satisfies our contract for the logging.Logger Error method.
-func (l *zerologLogger) Error(err error, whatWasHappeningWhenErrorOccurred string) {
+func (l *zerologLogger) Error(whatWasHappeningWhenErrorOccurred string, err error) {
 	if err != nil {
 		l.logger.Error().Stack().Caller().Msg(fmt.Sprintf("error %s: %s", whatWasHappeningWhenErrorOccurred, err.Error()))
 	}

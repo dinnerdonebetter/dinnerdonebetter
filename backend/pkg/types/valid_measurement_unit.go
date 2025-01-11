@@ -190,7 +190,7 @@ var _ validation.ValidatableWithContext = (*ValidMeasurementUnitCreationRequestI
 
 // ValidateWithContext validates a ValidMeasurementUnitCreationRequestInput.
 func (x *ValidMeasurementUnitCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	var result *multierror.Error
+	result := &multierror.Error{}
 
 	if (x.Metric && x.Imperial) || (!x.Metric && !x.Imperial) {
 		result = multierror.Append(result, errMustBeEitherMetricOrImperial)
@@ -211,7 +211,7 @@ var _ validation.ValidatableWithContext = (*ValidMeasurementUnitDatabaseCreation
 
 // ValidateWithContext validates a ValidMeasurementUnitDatabaseCreationInput.
 func (x *ValidMeasurementUnitDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
-	var result *multierror.Error
+	result := &multierror.Error{}
 
 	if (x.Metric && x.Imperial) || (!x.Metric && !x.Imperial) {
 		result = multierror.Append(result, errMustBeEitherMetricOrImperial)

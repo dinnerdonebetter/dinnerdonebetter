@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -73,9 +73,8 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 
 	c := &Querier{
 		db: fakeDB,
-		config: &config.Config{
-			ConnectionDetails: t.Name(),
-			LogQueries:        false,
+		config: &databasecfg.Config{
+			LogQueries: false,
 		},
 		logger:                  logging.NewNoopLogger(),
 		generatedQuerier:        generated.New(),
@@ -127,7 +126,7 @@ func splitReverseConcat(input string) string {
 }
 
 const (
-	defaultImage = "postgres:17"
+	defaultPostgresImage = "postgres:17"
 )
 
 func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *postgres.PostgresContainer) {
@@ -139,9 +138,9 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	var container *postgres.PostgresContainer
 	err := try.Do(func(attempt int) (bool, error) {
 		var containerErr error
-		container, containerErr = postgres.RunContainer(
+		container, containerErr = postgres.Run(
 			ctx,
-			testcontainers.WithImage(defaultImage),
+			defaultPostgresImage,
 			postgres.WithDatabase(splitReverseConcat(dbUsername)),
 			postgres.WithUsername(dbUsername),
 			postgres.WithPassword(reverseString(dbUsername)),
@@ -156,7 +155,13 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
 	require.NoError(t, err)
 
-	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &config.Config{ConnectionDetails: connStr, RunMigrations: true, OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah"})
+	dbConfig := &databasecfg.Config{
+		RunMigrations:            true,
+		OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
+	}
+	require.NoError(t, dbConfig.LoadConnectionDetailsFromURL(connStr))
+
+	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), dbConfig)
 	require.NoError(t, err)
 	require.NotNil(t, dbc)
 
@@ -173,7 +178,7 @@ func TestQuerier_IsReady(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		c.config = &config.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
+		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
 		db.ExpectPing().WillDelayFor(0)
 
@@ -185,7 +190,7 @@ func TestQuerier_IsReady(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		c.config = &config.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
+		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
 		db.ExpectPing().WillReturnError(errors.New("blah"))
 
@@ -199,7 +204,7 @@ func TestQuerier_IsReady(T *testing.T) {
 		defer cancel()
 
 		c, db := buildTestClient(t)
-		c.config = &config.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
+		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
 		db.ExpectPing().WillReturnError(errors.New("blah"))
 
@@ -215,7 +220,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleConfig := &config.Config{
+		exampleConfig := &databasecfg.Config{
 			Debug:                    true,
 			OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
 			RunMigrations:            false,

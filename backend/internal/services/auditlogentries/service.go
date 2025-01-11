@@ -1,7 +1,6 @@
 package auditlogentries
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
@@ -32,7 +31,6 @@ type (
 
 // ProvideService builds a new AuditLogEntriesService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
 	auditLogEntryDataManager types.AuditLogEntryDataManager,
 	encoder encoding.ServerEncoderDecoder,

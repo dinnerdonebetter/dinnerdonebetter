@@ -1,4 +1,4 @@
-package config
+package analyticscfg
 
 import (
 	"context"
@@ -27,11 +27,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Segment              *segment.Config         `json:"segment"              toml:"segment,omitempty"`
-		Posthog              *posthog.Config         `json:"posthog"              toml:"posthog,omitempty"`
-		Rudderstack          *rudderstack.Config     `json:"rudderstack"          toml:"rudderstack,omitempty"`
-		CircuitBreakerConfig *circuitbreaking.Config `json:"circuitBreakerConfig" toml:"circuit_breaker_config"`
-		Provider             string                  `json:"provider"             toml:"provider,omitempty"`
+		Segment              *segment.Config         `envPrefix:"SEGMENT_"         json:"segment"`
+		Posthog              *posthog.Config         `envPrefix:"POSTHOG_"         json:"posthog"`
+		Rudderstack          *rudderstack.Config     `envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
+		CircuitBreakerConfig *circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
+		Provider             string                  `env:"PROVIDER"               json:"provider"`
 	}
 )
 

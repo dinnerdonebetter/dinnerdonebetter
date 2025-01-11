@@ -17,26 +17,26 @@ type UserIngredientPreferenceDataManagerMock struct {
 
 // UserIngredientPreferenceExists is a mock function.
 func (m *UserIngredientPreferenceDataManagerMock) UserIngredientPreferenceExists(ctx context.Context, userIngredientPreferenceID, userID string) (bool, error) {
-	args := m.Called(ctx, userIngredientPreferenceID, userID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, userIngredientPreferenceID, userID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetUserIngredientPreference is a mock function.
 func (m *UserIngredientPreferenceDataManagerMock) GetUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) (*types.UserIngredientPreference, error) {
-	args := m.Called(ctx, userIngredientPreferenceID, userID)
-	return args.Get(0).(*types.UserIngredientPreference), args.Error(1)
+	returnValues := m.Called(ctx, userIngredientPreferenceID, userID)
+	return returnValues.Get(0).(*types.UserIngredientPreference), returnValues.Error(1)
 }
 
 // GetUserIngredientPreferences is a mock function.
 func (m *UserIngredientPreferenceDataManagerMock) GetUserIngredientPreferences(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.UserIngredientPreference], error) {
-	args := m.Called(ctx, userID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.UserIngredientPreference]), args.Error(1)
+	returnValues := m.Called(ctx, userID, filter)
+	return returnValues.Get(0).(*types.QueryFilteredResult[types.UserIngredientPreference]), returnValues.Error(1)
 }
 
 // CreateUserIngredientPreference is a mock function.
 func (m *UserIngredientPreferenceDataManagerMock) CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceDatabaseCreationInput) ([]*types.UserIngredientPreference, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).([]*types.UserIngredientPreference), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).([]*types.UserIngredientPreference), returnValues.Error(1)
 }
 
 // UpdateUserIngredientPreference is a mock function.

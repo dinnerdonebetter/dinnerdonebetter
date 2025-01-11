@@ -22,32 +22,32 @@ func (m *MealPlanTaskDataManagerMock) MarkMealPlanAsHavingTasksCreated(ctx conte
 
 // MealPlanTaskExists is a mock function.
 func (m *MealPlanTaskDataManagerMock) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error) {
-	args := m.Called(ctx, mealPlanID, mealPlanTaskID)
-	return args.Bool(0), args.Error(1)
+	returnValues := m.Called(ctx, mealPlanID, mealPlanTaskID)
+	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetMealPlanTask is a mock function.
 func (m *MealPlanTaskDataManagerMock) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTask, error) {
-	args := m.Called(ctx, mealPlanTaskID)
-	return args.Get(0).(*types.MealPlanTask), args.Error(1)
+	returnValues := m.Called(ctx, mealPlanTaskID)
+	return returnValues.Get(0).(*types.MealPlanTask), returnValues.Error(1)
 }
 
 // CreateMealPlanTask is a mock function.
 func (m *MealPlanTaskDataManagerMock) CreateMealPlanTask(ctx context.Context, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
-	args := m.Called(ctx, input)
-	return args.Get(0).(*types.MealPlanTask), args.Error(1)
+	returnValues := m.Called(ctx, input)
+	return returnValues.Get(0).(*types.MealPlanTask), returnValues.Error(1)
 }
 
 // GetMealPlanTasksForMealPlan is a mock function.
 func (m *MealPlanTaskDataManagerMock) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) ([]*types.MealPlanTask, error) {
-	args := m.Called(ctx, mealPlanID)
-	return args.Get(0).([]*types.MealPlanTask), args.Error(1)
+	returnValues := m.Called(ctx, mealPlanID)
+	return returnValues.Get(0).([]*types.MealPlanTask), returnValues.Error(1)
 }
 
 // CreateMealPlanTasksForMealPlanOption is a mock function.
 func (m *MealPlanTaskDataManagerMock) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
-	args := m.Called(ctx, inputs)
-	return args.Get(0).([]*types.MealPlanTask), args.Error(1)
+	returnValues := m.Called(ctx, inputs)
+	return returnValues.Get(0).([]*types.MealPlanTask), returnValues.Error(1)
 }
 
 // ChangeMealPlanTaskStatus is a mock function.

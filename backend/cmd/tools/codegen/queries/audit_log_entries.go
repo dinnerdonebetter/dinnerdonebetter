@@ -13,6 +13,10 @@ const (
 	eventTypeColumn    = "event_type"
 )
 
+func init() {
+	registerTableName(auditLogsTableName)
+}
+
 var (
 	auditLogsColumns = []string{
 		idColumn,
@@ -86,13 +90,7 @@ WHERE %s
 					buildFilterCountSelect(auditLogsTableName, false, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToUserColumn, belongsToUserColumn)),
 					buildTotalCountSelect(auditLogsTableName, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToUserColumn, belongsToUserColumn)),
 					auditLogsTableName,
-					strings.TrimPrefix(buildFilterConditions(
-						auditLogsTableName,
-						false,
-						false,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToUserColumn, belongsToUserColumn),
-					), "AND "),
+					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToUserColumn, belongsToUserColumn)), "AND "),
 					offsetLimitAddendum,
 				)),
 			},
@@ -125,14 +123,7 @@ WHERE %s
 						fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources"),
 					),
 					auditLogsTableName,
-					strings.TrimPrefix(buildFilterConditions(
-						auditLogsTableName,
-						false,
-						false,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToUserColumn, belongsToUserColumn),
-						fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources"),
-					), "AND "),
+					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToUserColumn, belongsToUserColumn), fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources")), "AND "),
 					offsetLimitAddendum,
 				)),
 			},
@@ -158,13 +149,7 @@ WHERE %s
 					),
 					buildTotalCountSelect(auditLogsTableName, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)),
 					auditLogsTableName,
-					strings.TrimPrefix(buildFilterConditions(
-						auditLogsTableName,
-						false,
-						false,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn),
-					), "AND "),
+					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)), "AND "),
 					offsetLimitAddendum,
 				)),
 			},
@@ -197,14 +182,7 @@ WHERE %s
 						fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources"),
 					),
 					auditLogsTableName,
-					strings.TrimPrefix(buildFilterConditions(
-						auditLogsTableName,
-						false,
-						false,
-						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn),
-						fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources"),
-					), "AND "),
+					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn), fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources")), "AND "),
 					offsetLimitAddendum,
 				)),
 			},

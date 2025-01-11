@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -27,7 +28,7 @@ func ProvideOAuth2ServerImplementation(
 	cfg *OAuth2Config,
 	dataManager database.DataManager,
 	authenticator authentication.Authenticator,
-	jwtSigner authentication.JWTSigner,
+	jwtSigner tokens.Issuer,
 ) *server.Server {
 	manager := manage.NewManager()
 
@@ -126,10 +127,10 @@ func buildPasswordAuthorizationHandler(logger logging.Logger, authenticator auth
 			user.HashedPassword,
 			password,
 			"",
-			"", // TODO: allow (require?) users to provide TOTP code
+			"",
 		)
 		if err != nil {
-			l.Error(err, "validating credentials")
+			l.Error("validating credentials", err)
 			return "", errors.New("invalid username or password")
 		}
 
@@ -142,7 +143,7 @@ func buildPasswordAuthorizationHandler(logger logging.Logger, authenticator auth
 	}
 }
 
-func buildUserAuthorizationHandler(tracer tracing.Tracer, logger logging.Logger, jwtSigner authentication.JWTSigner) func(http.ResponseWriter, *http.Request) (string, error) {
+func buildUserAuthorizationHandler(tracer tracing.Tracer, logger logging.Logger, tokenIssuer tokens.Issuer) func(http.ResponseWriter, *http.Request) (string, error) {
 	return func(res http.ResponseWriter, req *http.Request) (userID string, err error) {
 		ctx, span := tracer.StartCustomSpan(req.Context(), "oauth2_server.UserAuthorizationHandler")
 		defer span.End()
@@ -153,15 +154,9 @@ func buildUserAuthorizationHandler(tracer tracing.Tracer, logger logging.Logger,
 		rawToken := req.Header.Get("Authorization")
 		token := strings.TrimPrefix(rawToken, "Bearer ")
 
-		parsedToken, err := jwtSigner.ParseJWT(ctx, token)
+		subject, err := tokenIssuer.ParseUserIDFromToken(ctx, token)
 		if err != nil {
-			l.Error(err, "parsing JWT in UserAuthorizationHandler")
-			return "", errors.ErrAccessDenied
-		}
-
-		subject, err := parsedToken.Claims.GetSubject()
-		if err != nil {
-			l.Error(err, "getting JWT subject in UserAuthorizationHandler")
+			l.Error("parsing token in UserAuthorizationHandler", err)
 			return "", errors.ErrAccessDenied
 		}
 

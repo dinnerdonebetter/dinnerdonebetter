@@ -84,7 +84,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 
 			responseCode := http.StatusOK
 			if err := s.dataManager.DB().PingContext(reqCtx); err != nil {
-				logger.Error(err, "database not responding to ping")
+				logger.Error("database not responding to ping", err)
 				responseCode = http.StatusInternalServerError
 			}
 
@@ -831,9 +831,6 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 					Get(root, s.recipesService.ReadRecipeHandler)
-				singleRecipeRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
-					Get("/dag", s.recipesService.RecipeDAGHandler)
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 					Get("/mermaid", s.recipesService.RecipeMermaidHandler)

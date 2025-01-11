@@ -229,7 +229,7 @@ func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.R
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
+	useDB := !s.useSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
 	logger = logger.WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{
@@ -240,7 +240,7 @@ func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.R
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		logger.Error(err, "retrieving session context data")
+		logger.Error("retrieving session context data", err)
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
@@ -328,7 +328,7 @@ func (s *service) UpdateValidVesselHandler(res http.ResponseWriter, req *http.Re
 	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	input := new(types.ValidVesselUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
-		logger.Error(err, "error encountered decoding request body")
+		logger.Error("error encountered decoding request body", err)
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
@@ -336,7 +336,7 @@ func (s *service) UpdateValidVesselHandler(res http.ResponseWriter, req *http.Re
 	decodeTimer.Stop()
 
 	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.Error(err, "provided input was invalid")
+		logger.Error("provided input was invalid", err)
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return

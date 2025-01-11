@@ -11,6 +11,10 @@ const (
 	householdInstrumentOwnershipsTableName = "household_instrument_ownerships"
 )
 
+func init() {
+	registerTableName(householdInstrumentOwnershipsTableName)
+}
+
 var householdInstrumentOwnershipsColumns = []string{
 	idColumn,
 	notesColumn,
@@ -119,13 +123,7 @@ ORDER BY
 					householdInstrumentOwnershipsTableName,
 					validInstrumentsTableName, householdInstrumentOwnershipsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
 					householdInstrumentOwnershipsTableName, archivedAtColumn,
-					buildFilterConditions(
-						householdInstrumentOwnershipsTableName,
-						true,
-						true,
-						nil,
-						"household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)",
-					),
+					buildFilterConditions(householdInstrumentOwnershipsTableName, true, true, "household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)"),
 					householdInstrumentOwnershipsTableName, idColumn,
 					validInstrumentsTableName, idColumn,
 					householdInstrumentOwnershipsTableName, idColumn,

@@ -1,0 +1,82 @@
+---
+apiVersion: skaffold/v4beta11
+kind: Config
+
+metadata:
+  name: dinner-done-better-frontend
+
+profiles:
+  - name: localdev
+    activation:
+      - kubeContext: docker-desktop
+    build:
+      tagPolicy:
+        sha256: {}
+      artifacts:
+        # frontend artifacts
+        - image: dinner-done-better-webapp
+          docker:
+            dockerfile: ./apps/web/Dockerfile
+            buildArgs:
+              NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
+
+        - image: dinner-done-better-admin-app
+          docker:
+            dockerfile: ./apps/admin/Dockerfile
+            buildArgs:
+              NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
+
+        - image: dinner-done-better-landing
+          docker:
+            dockerfile: ./apps/landing/Dockerfile
+
+    manifests:
+      kustomize:
+        paths:
+          - deploy/environments/localdev/kustomize
+
+    deploy:
+      kubeContext: docker-desktop
+      kubectl:
+        defaultNamespace: localdev
+
+    portForward:
+      - resourceType: Service
+        resourceName: dinner-done-better-admin-app-svc
+        namespace: localdev
+        port: 7000
+      - resourceType: Service
+        resourceName: dinner-done-better-webapp-svc
+        namespace: localdev
+        port: 9000
+      - resourceType: Service
+        resourceName: dinner-done-better-landing-svc
+        namespace: localdev
+        port: 10000
+
+  - name: dev
+    build:
+      tagPolicy:
+        sha256: {}
+      artifacts:
+        # frontend artifacts
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-webapp
+          docker:
+            dockerfile: ./apps/web/Dockerfile
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-app
+          docker:
+            dockerfile: ./apps/admin/Dockerfile
+
+        - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-landing
+          docker:
+            dockerfile: ./apps/landing/Dockerfile
+
+    manifests:
+      kustomize:
+        paths:
+          - deploy/environments/dev/kustomize
+
+    deploy:
+      kubectl:
+        defaultNamespace: dev
