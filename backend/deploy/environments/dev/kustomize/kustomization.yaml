@@ -318,6 +318,11 @@ patches:
             configMapKeyRef:
               name: pubsub-topic-names
               key: webhook_execution_requests
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: DINNER_DONE_BETTER_SERVICE_ENVIRONMENT
+          value: dev
     target:
       version: v1
       kind: Deployment
