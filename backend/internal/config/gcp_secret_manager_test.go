@@ -17,9 +17,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
-	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
-	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
+	recipesservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipes"
+	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipesteps"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

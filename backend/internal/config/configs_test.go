@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
