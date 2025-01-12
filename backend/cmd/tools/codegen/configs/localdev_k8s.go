@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"time"
 
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -133,9 +134,12 @@ func buildLocaldevKubernetesConfig() *config.APIServiceConfig {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
-				JWTAudience:           "localhost",
-				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
-				JWTLifetime:           5 * time.Minute,
+				TokenLifetime:         5 * time.Minute,
+				Tokens: tokenscfg.Config{
+					Provider:                tokenscfg.ProviderPASETO,
+					Audience:                "https://api.dinnerdonebetter.dev",
+					Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+				},
 			},
 			DataPrivacy: dataprivacyservice.Config{
 				Uploads: uploads.Config{

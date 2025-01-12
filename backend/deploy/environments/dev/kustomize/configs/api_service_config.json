@@ -221,10 +221,14 @@
 			"searchFromDatabase": true
 		},
 		"auth": {
+			"tokens": {
+				"provider": "paseto",
+				"audience": "https://api.dinnerdonebetter.dev",
+				"base64EncodedSigningKey": ""
+			},
 			"sso": {
 				"google": {}
 			},
-			"jwtAudience": "https://api.dinnerdonebetter.dev",
 			"jwtSigningKey": "",
 			"oauth2": {
 				"domain": "https://dinnerdonebetter.dev",

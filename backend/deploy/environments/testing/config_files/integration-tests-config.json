@@ -191,10 +191,14 @@
 			"searchFromDatabase": false
 		},
 		"auth": {
+			"tokens": {
+				"provider": "paseto",
+				"audience": "https://api.dinnerdonebetter.dev",
+				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA="
+			},
 			"sso": {
 				"google": {}
 			},
-			"jwtAudience": "localhost",
 			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
 			"oauth2": {
 				"domain": "http://localhost:9000",

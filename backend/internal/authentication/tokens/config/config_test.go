@@ -2,6 +2,7 @@ package tokenscfg
 
 import (
 	"context"
+	"encoding/base64"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -20,9 +21,9 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			Provider:   ProviderJWT,
-			Audience:   t.Name(),
-			SigningKey: random.MustGenerateRawBytes(ctx, 32),
+			Provider:                ProviderJWT,
+			Audience:                t.Name(),
+			Base64EncodedSigningKey: base64.URLEncoding.EncodeToString(random.MustGenerateRawBytes(ctx, 32)),
 		}
 
 		require.NoError(t, cfg.ValidateWithContext(ctx))
@@ -49,9 +50,9 @@ func TestConfig_ProvideTokenIssuer(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{
-			Provider:   ProviderJWT,
-			Audience:   t.Name(),
-			SigningKey: random.MustGenerateRawBytes(ctx, 32),
+			Provider:                ProviderJWT,
+			Audience:                t.Name(),
+			Base64EncodedSigningKey: base64.URLEncoding.EncodeToString(random.MustGenerateRawBytes(ctx, 32)),
 		}
 
 		actual, err := cfg.ProvideTokenIssuer(logger, tracing.NewNoopTracerProvider())

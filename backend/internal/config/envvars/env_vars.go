@@ -311,7 +311,7 @@ const (
 	// ServiceAuthJwtAudienceEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.JWTAudience`.
 	ServiceAuthJwtAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_AUDIENCE"
 
-	// ServiceAuthJwtLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.JWTLifetime`.
+	// ServiceAuthJwtLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.TokenLifetime`.
 	ServiceAuthJwtLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_LIFETIME"
 
 	// ServiceAuthJwtSigningKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.JWTSigningKey`.

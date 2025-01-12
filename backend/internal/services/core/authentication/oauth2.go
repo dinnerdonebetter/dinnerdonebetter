@@ -22,13 +22,12 @@ import (
 )
 
 func ProvideOAuth2ServerImplementation(
-	_ context.Context,
 	logger logging.Logger,
 	tracer tracing.Tracer,
 	cfg *OAuth2Config,
 	dataManager database.DataManager,
 	authenticator authentication.Authenticator,
-	jwtSigner tokens.Issuer,
+	tokenIssuer tokens.Issuer,
 ) *server.Server {
 	manager := manage.NewManager()
 
@@ -64,7 +63,7 @@ func ProvideOAuth2ServerImplementation(
 	oauth2Server.AuthorizeScopeHandler = AuthorizeScopeHandler(logger)
 	oauth2Server.AccessTokenExpHandler = AccessTokenExpHandler(logger)
 	oauth2Server.ClientScopeHandler = ClientScopeHandler(logger)
-	oauth2Server.UserAuthorizationHandler = buildUserAuthorizationHandler(tracer, logger, jwtSigner)
+	oauth2Server.UserAuthorizationHandler = buildUserAuthorizationHandler(tracer, logger, tokenIssuer)
 	oauth2Server.PasswordAuthorizationHandler = buildPasswordAuthorizationHandler(logger, authenticator, dataManager)
 	// this allows GET requests to retrieve tokens
 	oauth2Server.SetAllowGetAccessRequest(true)

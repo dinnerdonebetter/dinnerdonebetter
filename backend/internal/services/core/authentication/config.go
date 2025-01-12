@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -28,15 +30,15 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		SSO                   SSOConfigs    `envPrefix:"SSO_CONFIG_"       json:"sso,omitempty"`
-		JWTAudience           string        `env:"JWT_AUDIENCE"            json:"jwtAudience,omitempty"`
-		JWTSigningKey         string        `env:"JWT_SIGNING_KEY"         json:"jwtSigningKey"`
-		OAuth2                OAuth2Config  `envPrefix:"OAUTH2"            json:"oauth2,omitempty"`
-		JWTLifetime           time.Duration `env:"JWT_LIFETIME"            json:"jwtLifetime"`
-		Debug                 bool          `env:"DEBUG"                   json:"debug,omitempty"`
-		EnableUserSignup      bool          `env:"ENABLE_USER_SIGNUP"      json:"enableUserSignup,omitempty"`
-		MinimumUsernameLength uint8         `env:"MINIMUM_USERNAME_LENGTH" json:"minimumUsernameLength,omitempty"`
-		MinimumPasswordLength uint8         `env:"MINIMUM_PASSWORD_LENGTH" json:"minimumPasswordLength,omitempty"`
+		Tokens                tokenscfg.Config `envPrefix:"TOKEN_"            json:"tokens"`
+		SSO                   SSOConfigs       `envPrefix:"SSO_CONFIG_"       json:"sso,omitempty"`
+		JWTSigningKey         string           `env:"JWT_SIGNING_KEY"         json:"jwtSigningKey"`
+		OAuth2                OAuth2Config     `envPrefix:"OAUTH2"            json:"oauth2,omitempty"`
+		TokenLifetime         time.Duration    `env:"JWT_LIFETIME"            json:"jwtLifetime"`
+		Debug                 bool             `env:"DEBUG"                   json:"debug,omitempty"`
+		EnableUserSignup      bool             `env:"ENABLE_USER_SIGNUP"      json:"enableUserSignup,omitempty"`
+		MinimumUsernameLength uint8            `env:"MINIMUM_USERNAME_LENGTH" json:"minimumUsernameLength,omitempty"`
+		MinimumPasswordLength uint8            `env:"MINIMUM_PASSWORD_LENGTH" json:"minimumPasswordLength,omitempty"`
 	}
 )
 
@@ -47,6 +49,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
 		validation.Field(&cfg.MinimumUsernameLength, validation.Required),
 		validation.Field(&cfg.MinimumPasswordLength, validation.Required),
+		validation.Field(&cfg.Tokens, validation.Required),
 	)
 }
 

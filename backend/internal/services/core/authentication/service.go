@@ -1,8 +1,6 @@
 package authentication
 
 import (
-	"context"
-	"encoding/base64"
 	"fmt"
 	"net/http"
 	"sync"
@@ -10,7 +8,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
-	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/jwt"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
@@ -60,7 +57,6 @@ type (
 
 // ProvideService builds a new AuthDataService.
 func ProvideService(
-	ctx context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	authenticator authentication.Authenticator,
@@ -84,12 +80,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, publisherProviderErr)
 	}
 
-	decryptedJWTSigningKey, err := base64.URLEncoding.DecodeString(cfg.JWTSigningKey)
-	if err != nil {
-		return nil, fmt.Errorf("decoding json web token signing key: %w", err)
-	}
-
-	signer, err := jwt.NewJWTSigner(logger, tracerProvider, cfg.JWTAudience, decryptedJWTSigningKey)
+	signer, err := cfg.Tokens.ProvideTokenIssuer(logger, tracerProvider)
 	if err != nil {
 		metrics.NewNoopMetricsProvider()
 		return nil, fmt.Errorf("creating json web token signer: %w", err)
@@ -117,7 +108,7 @@ func ProvideService(
 		tokenIssuer:                signer,
 		rejectedRequestCounter:     rejectedRequestCounter,
 		authProviderFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
-		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
+		oauth2Server:               ProvideOAuth2ServerImplementation(logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
 	}
 
 	useProvidersMutex.Lock()

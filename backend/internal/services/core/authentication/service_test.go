@@ -1,7 +1,6 @@
 package authentication
 
 import (
-	"context"
 	"encoding/base64"
 	"net/http"
 	"testing"
@@ -52,7 +51,6 @@ func buildTestService(t *testing.T) *service {
 	)
 
 	s, err := ProvideService(
-		context.Background(),
 		logger,
 		cfg,
 		&mockauthn.Authenticator{},
@@ -97,7 +95,6 @@ func TestProvideService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		s, err := ProvideService(
-			context.Background(),
 			logger,
 			cfg,
 			&mockauthn.Authenticator{},

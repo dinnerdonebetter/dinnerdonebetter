@@ -5,6 +5,7 @@ import (
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
@@ -139,8 +140,12 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
-				JWTAudience:           "https://api.dinnerdonebetter.dev",
-				JWTLifetime:           5 * time.Minute,
+				Tokens: tokenscfg.Config{
+					Provider:                tokenscfg.ProviderPASETO,
+					Audience:                "https://api.dinnerdonebetter.dev",
+					Base64EncodedSigningKey: "",
+				},
+				TokenLifetime: 5 * time.Minute,
 			},
 			DataPrivacy: dataprivacyservice.Config{
 				Uploads: uploads.Config{
