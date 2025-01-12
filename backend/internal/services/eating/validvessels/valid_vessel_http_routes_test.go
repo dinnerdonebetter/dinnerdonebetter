@@ -60,6 +60,7 @@ func TestValidVesselsService_CreateValidVesselHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateValidVesselHandler(helper.res, helper.req)
+		<-helper.service.dataChangesPublisherChannel
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidVessel]

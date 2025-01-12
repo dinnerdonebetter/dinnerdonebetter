@@ -89,9 +89,16 @@ func (s *service) CreateValidVesselHandler(res http.ResponseWriter, req *http.Re
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go func() {
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
+
+		// notify for tests
+		if s.dataChangesPublisherChannel != nil {
+			s.dataChangesPublisherChannel <- true
+		}
+	}()
 
 	responseValue := &types.APIResponse[*types.ValidVessel]{
 		Details: responseDetails,

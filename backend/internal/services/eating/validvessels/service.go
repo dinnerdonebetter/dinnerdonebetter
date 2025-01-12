@@ -28,15 +28,16 @@ var _ types.ValidVesselDataService = (*service)(nil)
 type (
 	// service handles valid vessels.
 	service struct {
-		logger                    logging.Logger
-		validVesselDataManager    types.ValidVesselDataManager
-		dataChangesPublisher      messagequeue.Publisher
-		encoderDecoder            encoding.ServerEncoderDecoder
-		tracer                    tracing.Tracer
-		validVesselsSearchIndex   textsearch.IndexSearcher[types.ValidVesselSearchSubset]
-		validVesselIDFetcher      func(*http.Request) string
-		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		useSearchService          bool
+		logger                      logging.Logger
+		validVesselDataManager      types.ValidVesselDataManager
+		dataChangesPublisher        messagequeue.Publisher
+		encoderDecoder              encoding.ServerEncoderDecoder
+		tracer                      tracing.Tracer
+		validVesselsSearchIndex     textsearch.IndexSearcher[types.ValidVesselSearchSubset]
+		validVesselIDFetcher        func(*http.Request) string
+		sessionContextDataFetcher   func(*http.Request) (*types.SessionContextData, error)
+		dataChangesPublisherChannel chan bool
+		useSearchService            bool
 	}
 )
 

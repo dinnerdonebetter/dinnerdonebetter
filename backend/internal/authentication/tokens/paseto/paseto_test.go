@@ -1,4 +1,4 @@
-package jwt
+package paseto
 
 import (
 	"context"
@@ -23,13 +23,13 @@ const (
 	exampleExpiry     = time.Minute * 10
 )
 
-func Test_signer_IssueJWT(T *testing.T) {
+func Test_signer_IssueToken(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := context.Background()
@@ -44,13 +44,13 @@ func Test_signer_IssueJWT(T *testing.T) {
 	})
 }
 
-func Test_signer_ParseJWT(T *testing.T) {
+func Test_signer_ParseUserIDFromToken(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := context.Background()
@@ -75,7 +75,7 @@ func Test_signer_ParseJWT(T *testing.T) {
 
 		ctx := context.Background()
 
-		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		actual, err := s.ParseUserIDFromToken(ctx, tokenString)
@@ -86,7 +86,7 @@ func Test_signer_ParseJWT(T *testing.T) {
 	T.Run("with invalid key", func(t *testing.T) {
 		t.Parallel()
 
-		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		s.(*signer).signingKey = nil

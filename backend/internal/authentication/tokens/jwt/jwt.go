@@ -19,7 +19,7 @@ const (
 )
 
 type (
-	jwtSigner struct {
+	signer struct {
 		tracer     tracing.Tracer
 		logger     logging.Logger
 		audience   string
@@ -28,7 +28,7 @@ type (
 )
 
 func NewJWTSigner(logger logging.Logger, tracerProvider tracing.TracerProvider, audience string, signingKey []byte) (tokens.Issuer, error) {
-	s := &jwtSigner{
+	s := &signer{
 		audience:   audience,
 		signingKey: signingKey,
 		logger:     logging.EnsureLogger(logger),
@@ -39,7 +39,7 @@ func NewJWTSigner(logger logging.Logger, tracerProvider tracing.TracerProvider, 
 }
 
 // IssueToken issues a new JSON web token.
-func (s *jwtSigner) IssueToken(ctx context.Context, user *types.User, expiry time.Duration) (string, error) {
+func (s *signer) IssueToken(ctx context.Context, user *types.User, expiry time.Duration) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -67,7 +67,7 @@ func (s *jwtSigner) IssueToken(ctx context.Context, user *types.User, expiry tim
 }
 
 // ParseUserIDFromToken parses a Token and returns the associated user ID.
-func (s *jwtSigner) ParseUserIDFromToken(ctx context.Context, token string) (string, error) {
+func (s *signer) ParseUserIDFromToken(ctx context.Context, token string) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

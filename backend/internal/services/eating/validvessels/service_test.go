@@ -22,11 +22,12 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                 logging.NewNoopLogger(),
-		validVesselDataManager: &mocktypes.ValidVesselDataManagerMock{},
-		validVesselIDFetcher:   func(req *http.Request) string { return "" },
-		encoderDecoder:         encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		tracer:                 tracing.NewTracerForTest("test"),
+		logger:                      logging.NewNoopLogger(),
+		validVesselDataManager:      &mocktypes.ValidVesselDataManagerMock{},
+		validVesselIDFetcher:        func(req *http.Request) string { return "" },
+		encoderDecoder:              encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
+		tracer:                      tracing.NewTracerForTest("test"),
+		dataChangesPublisherChannel: make(chan bool),
 	}
 }
 
