@@ -308,9 +308,6 @@ const (
 	// ServiceAuthEnableUserSignupEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.EnableUserSignup`.
 	ServiceAuthEnableUserSignupEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_ENABLE_USER_SIGNUP"
 
-	// ServiceAuthJwtAudienceEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.JWTAudience`.
-	ServiceAuthJwtAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_AUDIENCE"
-
 	// ServiceAuthJwtLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.TokenLifetime`.
 	ServiceAuthJwtLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_LIFETIME"
 
@@ -343,6 +340,15 @@ const (
 
 	// ServiceAuthSsoConfigGoogleClientSecretEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.SSO.Google.ClientSecret`.
 	ServiceAuthSsoConfigGoogleClientSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET"
+
+	// ServiceAuthTokenAudienceEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Audience`.
+	ServiceAuthTokenAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_AUDIENCE"
+
+	// ServiceAuthTokenProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Provider`.
+	ServiceAuthTokenProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_PROVIDER"
+
+	// ServiceAuthTokenSigningKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Base64EncodedSigningKey`.
+	ServiceAuthTokenSigningKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_SIGNING_KEY"
 
 	// ServiceDataPrivacyUploadsDebugEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Debug`.
 	ServiceDataPrivacyUploadsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_DEBUG"
