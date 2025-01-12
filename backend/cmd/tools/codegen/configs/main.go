@@ -47,9 +47,6 @@ func main() {
 	devOutputPath := "deploy/environments/dev/kustomize/configs"
 
 	envConfigs := map[string]*config.EnvironmentConfigSet{
-		"deploy/kustomize/environments/localdev/configs": {
-			RootConfig: buildLocaldevKubernetesConfig(),
-		},
 		devOutputPath: {
 			RootConfig: buildDevEnvironmentServerConfig(),
 		},

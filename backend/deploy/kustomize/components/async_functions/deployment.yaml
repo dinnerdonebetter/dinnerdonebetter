@@ -27,6 +27,10 @@ spec:
               value: "/etc/service-config.json"
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"
+            - name: "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME"
+              value: "dinner_done_better_async_function_handler"
+            - name: "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME"
+              value: "dinner_done_better_async_function_handler"
           volumeMounts:
             - name: "config"
               mountPath: "/etc/service-config.json"

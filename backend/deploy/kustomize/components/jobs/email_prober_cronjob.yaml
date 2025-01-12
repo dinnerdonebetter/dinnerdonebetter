@@ -40,6 +40,10 @@ spec:
               env:
                 - name: "CONFIGURATION_FILEPATH"
                   value: "/etc/service-config.json"
+                - name: "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME"
+                  value: "dinner_done_better_job_email_probe"
+                - name: "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME"
+                  value: "dinner_done_better_job_email_probe"
               volumeMounts:
                 - name: "config"
                   mountPath: "/etc/service-config.json"

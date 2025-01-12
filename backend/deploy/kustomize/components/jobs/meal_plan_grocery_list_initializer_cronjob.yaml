@@ -43,6 +43,10 @@ spec:
                   value: "/etc/service-config.json"
                 - name: "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC_NAME"
                   value: "data_changes"
+                - name: "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME"
+                  value: "dinner_done_better_job_meal_plan_grocery_list_init"
+                - name: "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME"
+                  value: "dinner_done_better_job_meal_plan_grocery_list_init"
               volumeMounts:
                 - name: "config"
                   mountPath: "/etc/service-config.json"

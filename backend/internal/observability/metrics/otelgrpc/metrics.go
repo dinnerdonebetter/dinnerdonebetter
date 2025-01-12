@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -99,10 +100,12 @@ func setupMetricsProvider(ctx context.Context, cfg *Config) (metric.MeterProvide
 	if err = runtime.Start(runtime.WithMeterProvider(meterProvider)); err != nil {
 		return nil, nil, fmt.Errorf("starting runtime metrics: %w", err)
 	}
+	log.Println("started runtime metrics")
 
 	if err = host.Start(host.WithMeterProvider(meterProvider)); err != nil {
 		return nil, nil, fmt.Errorf("starting host metrics: %w", err)
 	}
+	log.Println("started host metrics")
 
 	return meterProvider, meterProvider.Shutdown, nil
 }
