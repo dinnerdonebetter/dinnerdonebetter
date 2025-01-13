@@ -88,9 +88,7 @@ func (s *service) CreateValidMeasurementUnitConversionHandler(res http.ResponseW
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidMeasurementUnitConversion]{
 		Details: responseDetails,
@@ -235,9 +233,7 @@ func (s *service) UpdateValidMeasurementUnitConversionHandler(res http.ResponseW
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidMeasurementUnitConversion]{
 		Details: responseDetails,
@@ -309,9 +305,7 @@ func (s *service) ArchiveValidMeasurementUnitConversionHandler(res http.Response
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidMeasurementUnitConversion]{
 		Details: responseDetails,

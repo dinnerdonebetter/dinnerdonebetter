@@ -89,9 +89,7 @@ func (s *service) CreateValidIngredientStateIngredientHandler(res http.ResponseW
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientStateIngredient]{
 		Details: responseDetails,
@@ -289,9 +287,7 @@ func (s *service) UpdateValidIngredientStateIngredientHandler(res http.ResponseW
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientStateIngredient]{
 		Details: responseDetails,
@@ -363,9 +359,7 @@ func (s *service) ArchiveValidIngredientStateIngredientHandler(res http.Response
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientStateIngredient]{
 		Details: responseDetails,

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -54,10 +55,10 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 
 		dbManager.MealPlanOptionDataManagerMock.On(
 			"FinalizeMealPlanOption",
@@ -69,10 +70,10 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 
 		dbManager.MealPlanDataManagerMock.On(
 			"AttemptToFinalizeMealPlan",
@@ -83,10 +84,10 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		helper.service.dataManager = dbManager
 
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateMealPlanOptionVoteHandler(helper.res, helper.req)
@@ -97,7 +98,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -253,82 +254,6 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
 
-	T.Run("with error publishing first event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManagerMock.On(
-			"MealPlanEventIsEligibleForVoting",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanEvent.ID,
-		).Return(true, nil)
-
-		dbManager.MealPlanOptionVoteDataManagerMock.On(
-			"CreateMealPlanOptionVote",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleMealPlanOptionVotes, nil)
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-
-		dbManager.MealPlanOptionDataManagerMock.On(
-			"FinalizeMealPlanOption",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanEvent.ID,
-			helper.exampleMealPlanOption.ID,
-			helper.exampleHousehold.ID,
-		).Return(true, nil)
-
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(nil)
-
-		dbManager.MealPlanDataManagerMock.On(
-			"AttemptToFinalizeMealPlan",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
-		).Return(true, nil)
-		helper.service.dataManager = dbManager
-
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateMealPlanOptionVoteHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[[]*types.MealPlanOptionVote]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NotEmpty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
-
 	T.Run("with error finalizing meal plan option", func(t *testing.T) {
 		t.Parallel()
 
@@ -359,10 +284,10 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 
 		dbManager.MealPlanOptionDataManagerMock.On(
 			"FinalizeMealPlanOption",
@@ -384,83 +309,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
-
-	T.Run("with error publishing second event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManagerMock.On(
-			"MealPlanEventIsEligibleForVoting",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanEvent.ID,
-		).Return(true, nil)
-
-		dbManager.MealPlanOptionVoteDataManagerMock.On(
-			"CreateMealPlanOptionVote",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleMealPlanOptionVotes, nil)
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(nil)
-
-		dbManager.MealPlanOptionDataManagerMock.On(
-			"FinalizeMealPlanOption",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanEvent.ID,
-			helper.exampleMealPlanOption.ID,
-			helper.exampleHousehold.ID,
-		).Return(true, nil)
-
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-
-		dbManager.MealPlanDataManagerMock.On(
-			"AttemptToFinalizeMealPlan",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
-		).Return(true, nil)
-		helper.service.dataManager = dbManager
-
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateMealPlanOptionVoteHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[[]*types.MealPlanOptionVote]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NotEmpty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error attempting to finalize complete meal plan", func(t *testing.T) {
@@ -493,10 +342,10 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 
 		dbManager.MealPlanOptionDataManagerMock.On(
 			"FinalizeMealPlanOption",
@@ -508,10 +357,10 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		dbManager.MealPlanDataManagerMock.On(
@@ -530,83 +379,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
-
-	T.Run("with error publishing final event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManagerMock.On(
-			"MealPlanEventIsEligibleForVoting",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanEvent.ID,
-		).Return(true, nil)
-
-		dbManager.MealPlanOptionVoteDataManagerMock.On(
-			"CreateMealPlanOptionVote",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleMealPlanOptionVotes, nil)
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(nil)
-
-		dbManager.MealPlanOptionDataManagerMock.On(
-			"FinalizeMealPlanOption",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanEvent.ID,
-			helper.exampleMealPlanOption.ID,
-			helper.exampleHousehold.ID,
-		).Return(true, nil)
-
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(nil)
-
-		dbManager.MealPlanDataManagerMock.On(
-			"AttemptToFinalizeMealPlan",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
-		).Return(true, nil)
-		helper.service.dataManager = dbManager
-
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateMealPlanOptionVoteHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[[]*types.MealPlanOptionVote]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NotEmpty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 }
 
@@ -848,10 +621,10 @@ func TestMealPlanOptionVotesService_UpdateMealPlanOptionVoteHandler(T *testing.T
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateMealPlanOptionVoteHandler(helper.res, helper.req)
@@ -862,7 +635,7 @@ func TestMealPlanOptionVotesService_UpdateMealPlanOptionVoteHandler(T *testing.T
 		assert.Equal(t, actual.Data, helper.exampleMealPlanOptionVote)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -1036,56 +809,6 @@ func TestMealPlanOptionVotesService_UpdateMealPlanOptionVoteHandler(T *testing.T
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManagerMock.On(
-			"GetMealPlanOptionVote",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanEvent.ID,
-			helper.exampleMealPlanOption.ID,
-			helper.exampleMealPlanOptionVote.ID,
-		).Return(helper.exampleMealPlanOptionVote, nil)
-
-		dbManager.MealPlanOptionVoteDataManagerMock.On(
-			"UpdateMealPlanOptionVote",
-			testutils.ContextMatcher,
-			helper.exampleMealPlanOptionVote,
-		).Return(nil)
-		helper.service.dataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.UpdateMealPlanOptionVoteHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.MealPlanOptionVote]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleMealPlanOptionVote)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 }
 
 func TestMealPlanOptionVotesService_ArchiveMealPlanOptionVoteHandler(T *testing.T) {
@@ -1118,10 +841,10 @@ func TestMealPlanOptionVotesService_ArchiveMealPlanOptionVoteHandler(T *testing.
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveMealPlanOptionVoteHandler(helper.res, helper.req)
@@ -1131,7 +854,7 @@ func TestMealPlanOptionVotesService_ArchiveMealPlanOptionVoteHandler(T *testing.
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1237,48 +960,5 @@ func TestMealPlanOptionVotesService_ArchiveMealPlanOptionVoteHandler(T *testing.
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManagerMock.On(
-			"MealPlanOptionVoteExists",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanEvent.ID,
-			helper.exampleMealPlanOption.ID,
-			helper.exampleMealPlanOptionVote.ID,
-		).Return(true, nil)
-
-		dbManager.MealPlanOptionVoteDataManagerMock.On(
-			"ArchiveMealPlanOptionVote",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanEvent.ID,
-			helper.exampleMealPlanOption.ID,
-			helper.exampleMealPlanOptionVote.ID,
-		).Return(nil)
-		helper.service.dataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.ArchiveMealPlanOptionVoteHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.MealPlanOptionVote]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

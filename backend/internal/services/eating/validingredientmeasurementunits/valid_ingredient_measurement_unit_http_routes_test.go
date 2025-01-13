@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -49,17 +50,17 @@ func TestValidIngredientMeasurementUnitsService_CreateValidIngredientMeasurement
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -161,43 +162,6 @@ func TestValidIngredientMeasurementUnitsService_CreateValidIngredientMeasurement
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientMeasurementUnitCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
-			"CreateValidIngredientMeasurementUnit",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidIngredientMeasurementUnitDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidIngredientMeasurementUnit, nil)
-		helper.service.validIngredientMeasurementUnitDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -419,17 +383,17 @@ func TestValidIngredientMeasurementUnitsService_UpdateValidIngredientMeasurement
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -594,49 +558,6 @@ func TestValidIngredientMeasurementUnitsService_UpdateValidIngredientMeasurement
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientMeasurementUnitUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
-			"GetValidIngredientMeasurementUnit",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientMeasurementUnit.ID,
-		).Return(helper.exampleValidIngredientMeasurementUnit, nil)
-
-		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
-			"UpdateValidIngredientMeasurementUnit",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientMeasurementUnit,
-		).Return(nil)
-		helper.service.validIngredientMeasurementUnitDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.UpdateValidIngredientMeasurementUnitHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 }
 
 func TestValValidIngredientMeasurementUnitidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
@@ -663,17 +584,17 @@ func TestValValidIngredientMeasurementUnitidIngredientMeasurementUnitsService_Ar
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveValidIngredientMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -767,40 +688,6 @@ func TestValValidIngredientMeasurementUnitidIngredientMeasurementUnitsService_Ar
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
-			"ValidIngredientMeasurementUnitExists",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientMeasurementUnit.ID,
-		).Return(true, nil)
-
-		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
-			"ArchiveValidIngredientMeasurementUnit",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientMeasurementUnit.ID,
-		).Return(nil)
-		helper.service.validIngredientMeasurementUnitDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.ArchiveValidIngredientMeasurementUnitHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 

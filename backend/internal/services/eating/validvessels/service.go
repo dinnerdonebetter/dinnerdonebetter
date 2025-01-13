@@ -14,7 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	"github.com/dinnerdonebetter/backend/internal/search/text"
+	textsearch "github.com/dinnerdonebetter/backend/internal/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -28,16 +28,15 @@ var _ types.ValidVesselDataService = (*service)(nil)
 type (
 	// service handles valid vessels.
 	service struct {
-		logger                      logging.Logger
-		validVesselDataManager      types.ValidVesselDataManager
-		dataChangesPublisher        messagequeue.Publisher
-		encoderDecoder              encoding.ServerEncoderDecoder
-		tracer                      tracing.Tracer
-		validVesselsSearchIndex     textsearch.IndexSearcher[types.ValidVesselSearchSubset]
-		validVesselIDFetcher        func(*http.Request) string
-		sessionContextDataFetcher   func(*http.Request) (*types.SessionContextData, error)
-		dataChangesPublisherChannel chan bool
-		useSearchService            bool
+		logger                    logging.Logger
+		validVesselDataManager    types.ValidVesselDataManager
+		dataChangesPublisher      messagequeue.Publisher
+		encoderDecoder            encoding.ServerEncoderDecoder
+		tracer                    tracing.Tracer
+		validVesselsSearchIndex   textsearch.IndexSearcher[types.ValidVesselSearchSubset]
+		validVesselIDFetcher      func(*http.Request) string
+		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
+		useSearchService          bool
 	}
 )
 

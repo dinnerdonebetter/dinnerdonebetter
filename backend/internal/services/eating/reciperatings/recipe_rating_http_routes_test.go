@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -49,10 +50,10 @@ func TestRecipeRatingsService_CreateRecipeRatingHandler(T *testing.T) {
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateRecipeRatingHandler(helper.res, helper.req)
@@ -63,7 +64,7 @@ func TestRecipeRatingsService_CreateRecipeRatingHandler(T *testing.T) {
 		assert.Equal(t, actual.Data, helper.exampleRecipeRating)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -165,47 +166,6 @@ func TestRecipeRatingsService_CreateRecipeRatingHandler(T *testing.T) {
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeRecipeRatingCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.RecipeRatingDataManagerMock.On(
-			"CreateRecipeRating",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.RecipeRatingDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleRecipeRating, nil)
-		helper.service.recipeRatingDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateRecipeRatingHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.RecipeRating]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleRecipeRating)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -433,10 +393,10 @@ func TestRecipeRatingsService_UpdateRecipeRatingHandler(T *testing.T) {
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateRecipeRatingHandler(helper.res, helper.req)
@@ -447,7 +407,7 @@ func TestRecipeRatingsService_UpdateRecipeRatingHandler(T *testing.T) {
 		assert.Equal(t, actual.Data, helper.exampleRecipeRating)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -615,54 +575,6 @@ func TestRecipeRatingsService_UpdateRecipeRatingHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeRecipeRatingUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.RecipeRatingDataManagerMock.On(
-			"GetRecipeRating",
-			testutils.ContextMatcher,
-			helper.exampleRecipe.ID,
-			helper.exampleRecipeRating.ID,
-		).Return(helper.exampleRecipeRating, nil)
-
-		dbManager.RecipeRatingDataManagerMock.On(
-			"UpdateRecipeRating",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.RecipeRating) bool { return true }),
-		).Return(nil)
-		helper.service.recipeRatingDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.UpdateRecipeRatingHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.RecipeRating]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleRecipeRating)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 }
 
 func TestRecipeRatingsService_ArchiveRecipeRatingHandler(T *testing.T) {
@@ -691,10 +603,10 @@ func TestRecipeRatingsService_ArchiveRecipeRatingHandler(T *testing.T) {
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveRecipeRatingHandler(helper.res, helper.req)
@@ -704,7 +616,9 @@ func TestRecipeRatingsService_ArchiveRecipeRatingHandler(T *testing.T) {
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool {
+			return mock.AssertExpectationsForObjects(t, recipeRatingDataManager, dataChangesPublisher)
+		}, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -802,44 +716,5 @@ func TestRecipeRatingsService_ArchiveRecipeRatingHandler(T *testing.T) {
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, recipeRatingDataManager)
-	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		recipeRatingDataManager := &mocktypes.RecipeRatingDataManagerMock{}
-		recipeRatingDataManager.On(
-			"RecipeRatingExists",
-			testutils.ContextMatcher,
-			helper.exampleRecipe.ID,
-			helper.exampleRecipeRating.ID,
-		).Return(true, nil)
-
-		recipeRatingDataManager.On(
-			"ArchiveRecipeRating",
-			testutils.ContextMatcher,
-			helper.exampleRecipe.ID,
-			helper.exampleRecipeRating.ID,
-		).Return(nil)
-		helper.service.recipeRatingDataManager = recipeRatingDataManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.ArchiveRecipeRatingHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.RecipeRating]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, dataChangesPublisher)
 	})
 }

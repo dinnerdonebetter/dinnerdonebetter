@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"

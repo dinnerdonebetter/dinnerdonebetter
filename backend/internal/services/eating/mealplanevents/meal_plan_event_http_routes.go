@@ -94,9 +94,7 @@ func (s *service) CreateMealPlanEventHandler(res http.ResponseWriter, req *http.
 		UserID:        sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanEvent]{
 		Details: responseDetails,
@@ -310,9 +308,7 @@ func (s *service) UpdateMealPlanEventHandler(res http.ResponseWriter, req *http.
 		UserID:        sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanEvent]{
 		Details: responseDetails,
@@ -391,9 +387,7 @@ func (s *service) ArchiveMealPlanEventHandler(res http.ResponseWriter, req *http
 		UserID:          sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanEvent]{
 		Details: responseDetails,

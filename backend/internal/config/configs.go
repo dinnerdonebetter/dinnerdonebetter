@@ -58,8 +58,6 @@ type (
 			AsyncMessageHandlerConfig
 	}
 
-	genericCloudConfigFetcher[T configurations] func(context.Context) (*T, error)
-
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
 		_ struct{} `json:"-"`

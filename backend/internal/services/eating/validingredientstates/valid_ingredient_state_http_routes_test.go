@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -15,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
-	"github.com/dinnerdonebetter/backend/internal/search/text/mock"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/text/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -53,10 +54,10 @@ func TestValidIngredientStatesService_CreateValidIngredientStateHandler(T *testi
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateValidIngredientStateHandler(helper.res, helper.req)
@@ -67,7 +68,7 @@ func TestValidIngredientStatesService_CreateValidIngredientStateHandler(T *testi
 		assert.Equal(t, actual.Data, helper.exampleValidIngredientState)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -169,43 +170,6 @@ func TestValidIngredientStatesService_CreateValidIngredientStateHandler(T *testi
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientStateCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientStateDataManagerMock.On(
-			"CreateValidIngredientState",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidIngredientStateDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidIngredientState, nil)
-		helper.service.validIngredientStateDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateValidIngredientStateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -576,10 +540,10 @@ func TestValidIngredientStatesService_UpdateValidIngredientStateHandler(T *testi
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateValidIngredientStateHandler(helper.res, helper.req)
@@ -590,7 +554,7 @@ func TestValidIngredientStatesService_UpdateValidIngredientStateHandler(T *testi
 		assert.Equal(t, actual.Data, helper.exampleValidIngredientState)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -755,49 +719,6 @@ func TestValidIngredientStatesService_UpdateValidIngredientStateHandler(T *testi
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientStateUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientStateDataManagerMock.On(
-			"GetValidIngredientState",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientState.ID,
-		).Return(helper.exampleValidIngredientState, nil)
-
-		dbManager.ValidIngredientStateDataManagerMock.On(
-			"UpdateValidIngredientState",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidIngredientState) bool { return true }),
-		).Return(nil)
-		helper.service.validIngredientStateDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.UpdateValidIngredientStateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 }
 
 func TestValidIngredientStatesService_ArchiveValidIngredientStateHandler(T *testing.T) {
@@ -824,17 +745,17 @@ func TestValidIngredientStatesService_ArchiveValidIngredientStateHandler(T *test
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveValidIngredientStateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -928,39 +849,5 @@ func TestValidIngredientStatesService_ArchiveValidIngredientStateHandler(T *test
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientStateDataManagerMock.On(
-			"ValidIngredientStateExists",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientState.ID,
-		).Return(true, nil)
-
-		dbManager.ValidIngredientStateDataManagerMock.On(
-			"ArchiveValidIngredientState",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientState.ID,
-		).Return(nil)
-		helper.service.validIngredientStateDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.ArchiveValidIngredientStateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

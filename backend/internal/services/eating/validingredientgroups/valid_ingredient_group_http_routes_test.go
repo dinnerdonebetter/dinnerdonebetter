@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -51,10 +52,10 @@ func TestValidIngredientGroupsService_CreateValidIngredientGroupHandler(T *testi
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateValidIngredientGroupHandler(helper.res, helper.req)
@@ -65,7 +66,7 @@ func TestValidIngredientGroupsService_CreateValidIngredientGroupHandler(T *testi
 		assert.Equal(t, actual.Data, helper.exampleValidIngredientGroup)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -167,47 +168,6 @@ func TestValidIngredientGroupsService_CreateValidIngredientGroupHandler(T *testi
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientGroupCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManagerMock.On(
-			"CreateValidIngredientGroup",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidIngredientGroupDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidIngredientGroup, nil)
-		helper.service.validIngredientGroupDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateValidIngredientGroupHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidIngredientGroup]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidIngredientGroup)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -524,17 +484,17 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -699,49 +659,6 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientGroupUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManagerMock.On(
-			"GetValidIngredientGroup",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientGroup.ID,
-		).Return(helper.exampleValidIngredientGroup, nil)
-
-		dbManager.ValidIngredientGroupDataManagerMock.On(
-			"UpdateValidIngredientGroup",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientGroup,
-		).Return(nil)
-		helper.service.validIngredientGroupDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.UpdateValidIngredientGroupHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 }
 
 func TestValidIngredientGroupsService_ArchiveValidIngredientGroupHandler(T *testing.T) {
@@ -768,17 +685,17 @@ func TestValidIngredientGroupsService_ArchiveValidIngredientGroupHandler(T *test
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveValidIngredientGroupHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -872,39 +789,5 @@ func TestValidIngredientGroupsService_ArchiveValidIngredientGroupHandler(T *test
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManagerMock.On(
-			"ValidIngredientGroupExists",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientGroup.ID,
-		).Return(true, nil)
-
-		dbManager.ValidIngredientGroupDataManagerMock.On(
-			"ArchiveValidIngredientGroup",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredientGroup.ID,
-		).Return(nil)
-		helper.service.validIngredientGroupDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.ArchiveValidIngredientGroupHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

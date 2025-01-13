@@ -115,9 +115,7 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 			UserID:               sessionCtxData.Requester.UserID,
 		}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message about meal plan option vote")
-		}
+		go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 	}
 
 	if len(mealPlanOptionVotes) > 0 {
@@ -146,9 +144,7 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 				UserID:               sessionCtxData.Requester.UserID,
 			}
 
-			if dataChangePublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataChangePublishErr != nil {
-				observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message about meal plan option finalization")
-			}
+			go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 			mealPlanFinalized, finalizationErr := s.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
 			if finalizationErr != nil {
@@ -170,9 +166,8 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 					HouseholdID:          sessionCtxData.ActiveHouseholdID,
 					UserID:               sessionCtxData.Requester.UserID,
 				}
-				if dataChangePublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataChangePublishErr != nil {
-					observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message about meal plan finalization")
-				}
+
+				go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 			}
 		}
 	}
@@ -420,9 +415,7 @@ func (s *service) UpdateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanOptionVote]{
 		Details: responseDetails,
@@ -509,9 +502,7 @@ func (s *service) ArchiveMealPlanOptionVoteHandler(res http.ResponseWriter, req 
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanOptionVote]{
 		Details: responseDetails,

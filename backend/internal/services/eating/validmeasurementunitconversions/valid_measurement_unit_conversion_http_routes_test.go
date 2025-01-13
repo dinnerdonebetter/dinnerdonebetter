@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -49,10 +50,10 @@ func TestValidMeasurementUnitConversionsService_CreateValidMeasurementUnitConver
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateValidMeasurementUnitConversionHandler(helper.res, helper.req)
@@ -63,7 +64,7 @@ func TestValidMeasurementUnitConversionsService_CreateValidMeasurementUnitConver
 		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnitConversion)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -165,43 +166,6 @@ func TestValidMeasurementUnitConversionsService_CreateValidMeasurementUnitConver
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
-			"CreateValidMeasurementUnitConversion",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidMeasurementUnitConversionDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidMeasurementUnitConversion, nil)
-		helper.service.validMeasurementUnitConversionDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateValidMeasurementUnitConversionHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -329,10 +293,10 @@ func TestValidMeasurementUnitConversionsService_UpdateValidMeasurementUnitConver
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
@@ -343,7 +307,7 @@ func TestValidMeasurementUnitConversionsService_UpdateValidMeasurementUnitConver
 		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnitConversion)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -508,53 +472,6 @@ func TestValidMeasurementUnitConversionsService_UpdateValidMeasurementUnitConver
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionUnitUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
-			"GetValidMeasurementUnitConversion",
-			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnitConversion.ID,
-		).Return(helper.exampleValidMeasurementUnitConversion, nil)
-
-		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
-			"UpdateValidMeasurementUnitConversion",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidMeasurementUnitConversion) bool { return true }),
-		).Return(nil)
-		helper.service.validMeasurementUnitConversionDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.UpdateValidMeasurementUnitConversionHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnitConversion)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 }
 
 func TestValidMeasurementUnitConversionsService_ArchiveValidMeasurementUnitConversionHandler(T *testing.T) {
@@ -581,17 +498,17 @@ func TestValidMeasurementUnitConversionsService_ArchiveValidMeasurementUnitConve
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveValidMeasurementUnitConversionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -685,40 +602,6 @@ func TestValidMeasurementUnitConversionsService_ArchiveValidMeasurementUnitConve
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
-			"ValidMeasurementUnitConversionExists",
-			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnitConversion.ID,
-		).Return(true, nil)
-
-		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
-			"ArchiveValidMeasurementUnitConversion",
-			testutils.ContextMatcher,
-			helper.exampleValidMeasurementUnitConversion.ID,
-		).Return(nil)
-		helper.service.validMeasurementUnitConversionDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.ArchiveValidMeasurementUnitConversionHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 

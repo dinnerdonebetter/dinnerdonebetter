@@ -92,9 +92,7 @@ func (s *service) CreateRecipeStepInstrumentHandler(res http.ResponseWriter, req
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepInstrument]{
 		Details: responseDetails,
@@ -331,9 +329,7 @@ func (s *service) UpdateRecipeStepInstrumentHandler(res http.ResponseWriter, req
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepInstrument]{
 		Details: responseDetails,
@@ -416,9 +412,7 @@ func (s *service) ArchiveRecipeStepInstrumentHandler(res http.ResponseWriter, re
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepInstrument]{
 		Details: responseDetails,

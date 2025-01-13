@@ -87,9 +87,7 @@ func (s *service) CreateValidPreparationHandler(res http.ResponseWriter, req *ht
 		UserID:           sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparation]{
 		Details: responseDetails,
@@ -372,9 +370,7 @@ func (s *service) UpdateValidPreparationHandler(res http.ResponseWriter, req *ht
 		UserID:           sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparation]{
 		Details: responseDetails,
@@ -446,9 +442,7 @@ func (s *service) ArchiveValidPreparationHandler(res http.ResponseWriter, req *h
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparation]{
 		Details: responseDetails,

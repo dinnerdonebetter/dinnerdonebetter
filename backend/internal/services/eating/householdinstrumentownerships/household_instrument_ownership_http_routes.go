@@ -86,9 +86,7 @@ func (s *service) CreateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 		UserID:                       sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
 		Details: responseDetails,
@@ -286,9 +284,7 @@ func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 		UserID:                       sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
 		Details: responseDetails,
@@ -360,9 +356,7 @@ func (s *service) ArchiveHouseholdInstrumentOwnershipHandler(res http.ResponseWr
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
 		Details: responseDetails,

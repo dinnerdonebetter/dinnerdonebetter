@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
@@ -245,10 +246,10 @@ func TestMealPlanGroceryListItemsService_UpdateMealPlanGroceryListItemHandler(T 
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateMealPlanGroceryListItemHandler(helper.res, helper.req)
@@ -259,7 +260,7 @@ func TestMealPlanGroceryListItemsService_UpdateMealPlanGroceryListItemHandler(T 
 		assert.Equal(t, actual.Data, helper.exampleMealPlanGroceryListItem)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -316,58 +317,6 @@ func TestMealPlanGroceryListItemsService_UpdateMealPlanGroceryListItemHandler(T 
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		mealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(mealPlanGroceryListItem)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		expectedPrepStep := helper.exampleMealPlanGroceryListItem
-		expectedPrepStep.Status = *exampleInput.Status
-		expectedPrepStep.StatusExplanation = *exampleInput.StatusExplanation
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPut, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanGroceryListItemDataManagerMock.On(
-			"GetMealPlanGroceryListItem",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleMealPlanGroceryListItem.ID,
-		).Return(expectedPrepStep, nil)
-
-		dbManager.MealPlanGroceryListItemDataManagerMock.On(
-			"UpdateMealPlanGroceryListItem",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(input *types.MealPlanGroceryListItem) bool { return true }),
-		).Return(nil)
-		helper.service.mealPlanGroceryListItemDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.UpdateMealPlanGroceryListItemHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.MealPlanGroceryListItem]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleMealPlanGroceryListItem)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 }
 
 func TestMealPlanGroceryListItemsService_ArchiveMealPlanGroceryListItemHandler(T *testing.T) {
@@ -395,10 +344,10 @@ func TestMealPlanGroceryListItemsService_ArchiveMealPlanGroceryListItemHandler(T
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveMealPlanGroceryListItemHandler(helper.res, helper.req)

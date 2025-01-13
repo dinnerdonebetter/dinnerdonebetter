@@ -41,23 +41,34 @@ type (
 )
 
 // Stop implements the Publisher interface.
-func (r *redisPublisher) Stop() {
-	if err := r.publisher.Close(); err != nil && !errors.Is(err, redis.ErrClosed) {
-		r.logger.Error("closing redis publisher", err)
+func (p *redisPublisher) Stop() {
+	if err := p.publisher.Close(); err != nil && !errors.Is(err, redis.ErrClosed) {
+		p.logger.Error("closing redis publisher", err)
 	}
 }
 
 // Publish implements the Publisher interface.
-func (r *redisPublisher) Publish(ctx context.Context, data any) error {
-	_, span := r.tracer.StartSpan(ctx)
+func (p *redisPublisher) Publish(ctx context.Context, data any) error {
+	_, span := p.tracer.StartSpan(ctx)
 	defer span.End()
 
 	var b bytes.Buffer
-	if err := r.encoder.Encode(ctx, &b, data); err != nil {
-		return observability.PrepareAndLogError(err, r.logger, span, "encoding topic message")
+	if err := p.encoder.Encode(ctx, &b, data); err != nil {
+		return observability.PrepareAndLogError(err, p.logger, span, "encoding topic message")
 	}
 
-	return r.publisher.Publish(ctx, r.topic, b.Bytes()).Err()
+	return p.publisher.Publish(ctx, p.topic, b.Bytes()).Err()
+}
+
+// PublishAsync implements the Publisher interface.
+func (p *redisPublisher) PublishAsync(ctx context.Context, data any) {
+	_, span := p.tracer.StartSpan(ctx)
+	defer span.End()
+
+	var b bytes.Buffer
+	if err := p.encoder.Encode(ctx, &b, data); err != nil {
+		observability.AcknowledgeError(err, p.logger, span, "encoding topic message")
+	}
 }
 
 // provideRedisPublisher provides a redis-backed Publisher.

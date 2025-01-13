@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -22,12 +22,11 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                      logging.NewNoopLogger(),
-		validVesselDataManager:      &mocktypes.ValidVesselDataManagerMock{},
-		validVesselIDFetcher:        func(req *http.Request) string { return "" },
-		encoderDecoder:              encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		tracer:                      tracing.NewTracerForTest("test"),
-		dataChangesPublisherChannel: make(chan bool),
+		logger:                 logging.NewNoopLogger(),
+		validVesselDataManager: &mocktypes.ValidVesselDataManagerMock{},
+		validVesselIDFetcher:   func(req *http.Request) string { return "" },
+		encoderDecoder:         encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
+		tracer:                 tracing.NewTracerForTest("test"),
 	}
 }
 

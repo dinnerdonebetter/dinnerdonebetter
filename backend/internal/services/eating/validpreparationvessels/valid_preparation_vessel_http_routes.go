@@ -89,9 +89,7 @@ func (s *service) CreateValidPreparationVesselHandler(res http.ResponseWriter, r
 		UserID:                 sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
 		Details: responseDetails,
@@ -289,9 +287,7 @@ func (s *service) UpdateValidPreparationVesselHandler(res http.ResponseWriter, r
 		UserID:                 sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
 		Details: responseDetails,
@@ -362,9 +358,7 @@ func (s *service) ArchiveValidPreparationVesselHandler(res http.ResponseWriter, 
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
 		Details: responseDetails,

@@ -95,9 +95,7 @@ func (s *service) CreateMealPlanGroceryListItemHandler(res http.ResponseWriter, 
 		UserID:                  sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanGroceryListItem]{
 		Details: responseDetails,
@@ -310,9 +308,7 @@ func (s *service) UpdateMealPlanGroceryListItemHandler(res http.ResponseWriter, 
 		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanGroceryListItem]{
 		Details: responseDetails,
@@ -393,9 +389,7 @@ func (s *service) ArchiveMealPlanGroceryListItemHandler(res http.ResponseWriter,
 		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanGroceryListItem]{
 		Details: responseDetails,

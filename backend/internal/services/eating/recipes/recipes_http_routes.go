@@ -96,9 +96,7 @@ func (s *service) CreateRecipeHandler(res http.ResponseWriter, req *http.Request
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Recipe]{
 		Details: responseDetails,
@@ -399,9 +397,7 @@ func (s *service) UpdateRecipeHandler(res http.ResponseWriter, req *http.Request
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Recipe]{
 		Details: responseDetails,
@@ -475,9 +471,7 @@ func (s *service) ArchiveRecipeHandler(res http.ResponseWriter, req *http.Reques
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Recipe]{
 		Details: responseDetails,
@@ -647,9 +641,7 @@ func (s *service) RecipeImageUploadHandler(res http.ResponseWriter, req *http.Re
 			UserID:        sessionCtxData.Requester.UserID,
 		}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+		go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 		logger.Info("image info saved in database")
 	}
@@ -864,9 +856,7 @@ func (s *service) CloneRecipeHandler(res http.ResponseWriter, req *http.Request)
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Recipe]{
 		Details: responseDetails,

@@ -90,9 +90,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Meal]{
 		Details: responseDetails,
@@ -364,9 +362,7 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Meal]{
 		Details: responseDetails,

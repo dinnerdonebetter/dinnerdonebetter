@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -49,10 +50,10 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
@@ -63,7 +64,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		assert.Equal(t, actual.Data, helper.exampleHouseholdInstrumentOwnership)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -165,47 +166,6 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeHouseholdInstrumentOwnershipCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"CreateHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInstrumentOwnershipDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
-		helper.service.householdInstrumentOwnershipDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInstrumentOwnership)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -433,10 +393,10 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
@@ -447,7 +407,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		assert.Equal(t, actual.Data, helper.exampleHouseholdInstrumentOwnership)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -615,54 +575,6 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
-
-		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"UpdateHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInstrumentOwnership) bool { return true }),
-		).Return(nil)
-		helper.service.householdInstrumentOwnershipDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInstrumentOwnership)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 }
 
 func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershipHandler(T *testing.T) {
@@ -691,10 +603,10 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
@@ -704,7 +616,9 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool {
+			return mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager, dataChangesPublisher)
+		}, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -802,44 +716,5 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
-	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
-		householdInstrumentOwnershipDataManager.On(
-			"HouseholdInstrumentOwnershipExists",
-			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return(true, nil)
-
-		householdInstrumentOwnershipDataManager.On(
-			"ArchiveHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return(nil)
-		helper.service.householdInstrumentOwnershipDataManager = householdInstrumentOwnershipDataManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager, dataChangesPublisher)
 	})
 }

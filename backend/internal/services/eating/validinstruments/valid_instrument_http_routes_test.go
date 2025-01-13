@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -15,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
-	"github.com/dinnerdonebetter/backend/internal/search/text/mock"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/text/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -53,10 +54,10 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
@@ -67,7 +68,7 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -169,43 +170,6 @@ func TestValidInstrumentsService_CreateValidInstrumentHandler(T *testing.T) {
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing event", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"CreateValidInstrument",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidInstrument, nil)
-		helper.service.validInstrumentDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateValidInstrumentHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -577,10 +541,10 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
@@ -591,7 +555,7 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -756,49 +720,6 @@ func TestValidInstrumentsService_UpdateValidInstrumentHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"GetValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(helper.exampleValidInstrument, nil)
-
-		dbManager.ValidInstrumentDataManagerMock.On(
-			"UpdateValidInstrument",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
-		).Return(nil)
-		helper.service.validInstrumentDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.UpdateValidInstrumentHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 }
 
 func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
@@ -825,17 +746,19 @@ func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool {
+			return mock.AssertExpectationsForObjects(t, validInstrumentDataManager, dataChangesPublisher)
+		}, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -929,40 +852,6 @@ func TestValidInstrumentsService_ArchiveValidInstrumentHandler(T *testing.T) {
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
-	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
-		validInstrumentDataManager.On(
-			"ValidInstrumentExists",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(true, nil)
-
-		validInstrumentDataManager.On(
-			"ArchiveValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.ArchiveValidInstrumentHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, dataChangesPublisher)
 	})
 }
 

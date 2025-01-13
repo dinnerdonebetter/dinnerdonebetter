@@ -89,16 +89,7 @@ func (s *service) CreateValidVesselHandler(res http.ResponseWriter, req *http.Re
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	go func() {
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-		}
-
-		// notify for tests
-		if s.dataChangesPublisherChannel != nil {
-			s.dataChangesPublisherChannel <- true
-		}
-	}()
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidVessel]{
 		Details: responseDetails,
@@ -387,9 +378,7 @@ func (s *service) UpdateValidVesselHandler(res http.ResponseWriter, req *http.Re
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidVessel]{
 		Details: responseDetails,
@@ -461,9 +450,7 @@ func (s *service) ArchiveValidVesselHandler(res http.ResponseWriter, req *http.R
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidVessel]{
 		Details: responseDetails,

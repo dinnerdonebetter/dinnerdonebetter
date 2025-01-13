@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
@@ -240,10 +241,10 @@ func TestMealPlanTasksService_MealPlanTaskStatusChangeHandler(T *testing.T) {
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
-			"Publish",
+			"PublishAsync",
 			testutils.ContextMatcher,
 			testutils.DataChangeMessageMatcher,
-		).Return(nil)
+		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.MealPlanTaskStatusChangeHandler(helper.res, helper.req)
@@ -254,7 +255,7 @@ func TestMealPlanTasksService_MealPlanTaskStatusChangeHandler(T *testing.T) {
 		assert.Equal(t, actual.Data, helper.exampleMealPlanTask)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -309,56 +310,5 @@ func TestMealPlanTasksService_MealPlanTaskStatusChangeHandler(T *testing.T) {
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error publishing to message queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		exampleCreationInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
-		exampleCreationInput.ID = helper.exampleMealPlanTask.ID
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		expectedPrepStep := helper.exampleMealPlanTask
-		expectedPrepStep.Status = *exampleCreationInput.Status
-		expectedPrepStep.StatusExplanation = exampleCreationInput.StatusExplanation
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanTaskDataManagerMock.On(
-			"GetMealPlanTask",
-			testutils.ContextMatcher,
-			helper.exampleMealPlanTask.ID,
-		).Return(expectedPrepStep, nil)
-
-		dbManager.MealPlanTaskDataManagerMock.On(
-			"ChangeMealPlanTaskStatus",
-			testutils.ContextMatcher,
-			exampleCreationInput,
-		).Return(nil)
-		helper.service.mealPlanTaskDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
-		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.MealPlanTaskStatusChangeHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.MealPlanTask]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleMealPlanTask)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
