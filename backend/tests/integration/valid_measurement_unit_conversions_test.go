@@ -26,7 +26,7 @@ func checkValidMeasurementUnitConversionEquality(t *testing.T, expected, actual 
 }
 
 func (s *TestSuite) TestValidMeasurementUnitConversions_CompleteLifecycle() {
-	s.runTest("should be creatable and readable and updatable and deletable without ingredient", func(testClients *testClientWrapper) func() {
+	s.runTest("should CRUD without ingredient", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

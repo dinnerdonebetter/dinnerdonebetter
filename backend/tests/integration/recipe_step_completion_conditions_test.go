@@ -24,7 +24,7 @@ func checkRecipeStepCompletionConditionEquality(t *testing.T, expected, actual *
 }
 
 func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
-	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

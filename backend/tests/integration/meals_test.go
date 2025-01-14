@@ -62,7 +62,7 @@ func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *a
 }
 
 func (s *TestSuite) TestMeals_CompleteLifecycle() {
-	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

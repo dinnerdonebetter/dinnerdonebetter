@@ -44,29 +44,9 @@ import (
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplans"
 	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplantasks"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/eating/meals"
-	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipepreptasks"
-	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/eating/reciperatings"
-	recipesservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipes"
-	recipestepcompletionconditionsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipestepcompletionconditions"
-	recipestepingredientsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipestepingredients"
-	recipestepinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipestepinstruments"
-	recipestepproductsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipestepproducts"
-	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipesteps"
-	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipestepvessels"
+	recipemanagementservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/eating/useringredientpreferences"
-	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validingredientgroups"
-	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validingredientmeasurementunits"
-	validingredientpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validingredientpreparations"
-	validingredientsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validingredients"
-	validingredientstateingredientsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validingredientstateingredients"
-	validingredientstatesservice "github.com/dinnerdonebetter/backend/internal/services/eating/validingredientstates"
-	validinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validinstruments"
-	validmeasurementconversionsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validmeasurementunitconversions"
-	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validmeasurementunits"
-	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validpreparationinstruments"
-	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validpreparations"
-	validpreparationvesselsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validpreparationvessels"
-	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validvessels"
+	validenumerationsservice "github.com/dinnerdonebetter/backend/internal/services/eating/valid_enumerations"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 
 	"github.com/google/wire"
@@ -99,40 +79,20 @@ func Build(
 		householdinvitationssservice.Providers,
 		webhooksservice.Providers,
 		adminservice.Providers,
-		validinstrumentsservice.Providers,
-		validingredientsservice.Providers,
-		validingredientgroupsservice.Providers,
-		validpreparationsservice.Providers,
-		validingredientpreparationsservice.Providers,
+		validenumerationsservice.Providers,
 		mealsservice.Providers,
-		recipesservice.Providers,
-		recipestepsservice.Providers,
-		recipestepproductsservice.Providers,
-		recipestepinstrumentsservice.Providers,
-		recipestepvesselsservice.Providers,
-		recipestepingredientsservice.Providers,
+		recipemanagementservice.Providers,
 		mealplansservice.Providers,
 		mealplaneventsservice.Providers,
 		mealplanoptionsservice.Providers,
 		mealplanoptionvotesservice.Providers,
-		validmeasurementunitsservice.Providers,
-		validpreparationinstrumentsservice.Providers,
-		validingredientstateingredientsservice.Providers,
-		validingredientmeasurementunitsservice.Providers,
 		mealplantasksservice.Providers,
-		recipepreptasksservice.Providers,
 		mealplangrocerylistitemsservice.Providers,
-		validmeasurementconversionsservice.Providers,
-		validingredientstatesservice.Providers,
-		recipestepcompletionconditionsservice.Providers,
 		servicesettingsservice.Providers,
 		servicesettingconfigurationsservice.Providers,
 		useringredientpreferencesservice.Providers,
 		householdinstrumentownershipsservice.Providers,
-		reciperatingsservice.Providers,
 		oauth2clientsservice.Providers,
-		validvesselsservice.Providers,
-		validpreparationvesselsservice.Providers,
 		analyticscfg.ProvidersAnalytics,
 		workersservice.Providers,
 		usernotificationsservice.Providers,

@@ -9,10 +9,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/paseto"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -73,10 +75,14 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
+		signingKey := random.MustGenerateRawBytes(helper.ctx, 32)
+		helper.service.tokenIssuer, err = paseto.NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), signingKey)
+		require.NoError(t, err)
+
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.JWTResponse]
+		var actual *types.APIResponse[*types.TokenResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
@@ -139,7 +145,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper.service.BuildLoginHandler(true)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.JWTResponse]
+		var actual *types.APIResponse[*types.TokenResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
@@ -573,7 +579,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.JWTResponse]
+		var actual *types.APIResponse[*types.TokenResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotNil(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())

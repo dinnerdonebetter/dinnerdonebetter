@@ -26,8 +26,7 @@ import (
 	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
-	recipesservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipes"
-	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipesteps"
+	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 )
@@ -160,21 +159,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			Recipes: recipesservice.Config{
-				PublicMediaURLPrefix: "https://example.website.lol",
-				Uploads: uploads.Config{
-					Debug: true,
-					Storage: objectstorage.Config{
-						UploadFilenameKey: "recipe_media",
-						Provider:          objectstorage.FilesystemProvider,
-						BucketName:        "recipe_media",
-						FilesystemConfig: &objectstorage.FilesystemConfig{
-							RootDirectory: "/uploads",
-						},
-					},
-				},
-			},
-			RecipeSteps: recipestepsservice.Config{
+			Recipes: recipemanagement.Config{
 				PublicMediaURLPrefix: "https://example.website.lol",
 				Uploads: uploads.Config{
 					Debug: true,

@@ -29,14 +29,8 @@ import (
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/eating/meals"
-	recipesservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipes"
-	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipesteps"
-	validingredientsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validingredients"
-	validingredientstatesservice "github.com/dinnerdonebetter/backend/internal/services/eating/validingredientstates"
-	validinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validinstruments"
-	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validmeasurementunits"
-	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validpreparations"
-	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/eating/validvessels"
+	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
+	validenumerations "github.com/dinnerdonebetter/backend/internal/services/eating/valid_enumerations"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 )
@@ -172,7 +166,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			Recipes: recipesservice.Config{
+			Recipes: recipemanagement.Config{
 				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
 				UseSearchService:     true,
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
@@ -189,40 +183,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			RecipeSteps: recipestepsservice.Config{
-				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
-				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
-				Uploads: uploads.Config{
-					Debug: true,
-					Storage: objectstorage.Config{
-						UploadFilenameKey: "recipe_media",
-						Provider:          objectstorage.GCPCloudStorageProvider,
-						BucketName:        "media.dinnerdonebetter.dev",
-						BucketPrefix:      "recipe_media/",
-						GCPConfig: &objectstorage.GCPConfig{
-							BucketName: "media.dinnerdonebetter.dev",
-						},
-					},
-				},
-			},
-			ValidIngredients: validingredientsservice.Config{
-				UseSearchService: true,
-			},
-			ValidIngredientStates: validingredientstatesservice.Config{
-				UseSearchService: true,
-			},
-			ValidInstruments: validinstrumentsservice.Config{
-				UseSearchService: true,
-			},
-			ValidVessels: validvesselsservice.Config{
-				UseSearchService: true,
-			},
-			ValidMeasurementUnits: validmeasurementunitsservice.Config{
-				UseSearchService: true,
-			},
-			ValidPreparations: validpreparationsservice.Config{
-				UseSearchService: true,
-			},
+			ValidEnumerations: validenumerations.Config{},
 			Meals: mealsservice.Config{
 				UseSearchService: true,
 			},

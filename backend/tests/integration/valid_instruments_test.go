@@ -46,7 +46,7 @@ func createValidInstrumentForTest(t *testing.T, ctx context.Context, adminClient
 }
 
 func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
-	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

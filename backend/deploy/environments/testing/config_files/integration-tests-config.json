@@ -119,44 +119,20 @@
 		"pingWaitPeriod": 1500000000
 	},
 	"services": {
-		"mealPlanEvents": {},
-		"validInstrumentMeasurementUnits": {},
+		"auditLogEntries": {},
+		"mealPlans": {},
 		"mealPlanGroceryListItems": {},
-		"validIngredientStateIngredients": {},
 		"serviceSettingConfigurations": {},
-		"recipeRatings": {},
-		"validMeasurementUnitConversions": {},
-		"validIngredientGroups": {},
-		"serviceSettings": {},
 		"mealPlanTasks": {},
-		"recipeStepProducts": {},
-		"recipeStepIngredients": {},
-		"recipePrepTasks": {},
-		"recipeStepCompletionConditions": {},
+		"userNotifications": {},
 		"userIngredientPreferences": {},
 		"households": {},
-		"mealPlans": {},
-		"validPreparationInstruments": {},
-		"validIngredientPreparations": {},
-		"recipeStepInstruments": {},
-		"auditLogEntries": {},
+		"mealPlanEvents": {},
+		"serviceSettings": {},
 		"householdInstrumentOwnerships": {},
 		"mealPlanOptionVotes": {},
-		"recipeStepVessels": {},
-		"validPreparationVessels": {},
 		"mealPlanOptions": {},
-		"userNotifications": {},
 		"workers": {},
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://media.example.website/lol",
-			"uploads": {
-				"storageConfig": {
-					"bucketName": "recipes",
-					"provider": "memory"
-				},
-				"debug": false
-			}
-		},
 		"users": {
 			"publicMediaURLPrefix": "",
 			"uploads": {
@@ -211,35 +187,20 @@
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
 		},
-		"validInstruments": {
-			"useSearchService": false
+		"oauth2Clients": {
+			"creationEnabled": false
 		},
 		"meals": {
 			"searchFromDatabase": false
 		},
-		"validMeasurementUnits": {
-			"useSearchService": false
-		},
-		"oauth2Clients": {
-			"creationEnabled": false
-		},
-		"validVessels": {
-			"useSearchService": false
+		"webhooks": {
+			"debug": false
 		},
 		"householdInvitations": {
 			"debug": false
 		},
-		"validPreparations": {
+		"validEnumerations": {
 			"useSearchService": false
-		},
-		"validIngredientStates": {
-			"useSearchService": false
-		},
-		"validIngredients": {
-			"useSearchService": false
-		},
-		"webhooks": {
-			"debug": false
 		}
 	}
 }

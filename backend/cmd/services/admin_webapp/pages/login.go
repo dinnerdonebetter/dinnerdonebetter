@@ -13,7 +13,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-func (b *PageBuilder) AdminLoginSubmit(req *http.Request) (*types.JWTResponse, error) {
+func (b *PageBuilder) AdminLoginSubmit(req *http.Request) (*types.TokenResponse, error) {
 	ctx, span := b.tracer.StartSpan(req.Context())
 	defer span.End()
 

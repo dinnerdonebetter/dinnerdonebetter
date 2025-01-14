@@ -1732,12 +1732,12 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"POST /users/login/jwt": {
 		ID:           "LoginForJWT",
-		ResponseType: &types.JWTResponse{},
+		ResponseType: &types.TokenResponse{},
 		InputType:    &types.UserLoginInput{},
 	},
 	"POST /users/login/jwt/admin": {
 		ID:           "AdminLoginForJWT",
-		ResponseType: &types.JWTResponse{},
+		ResponseType: &types.TokenResponse{},
 		InputType:    &types.UserLoginInput{},
 	},
 	"POST /users/logout": {

@@ -134,48 +134,20 @@
 		"pingWaitPeriod": 1000000000
 	},
 	"services": {
-		"mealPlanEvents": {},
-		"validInstrumentMeasurementUnits": {},
+		"auditLogEntries": {},
+		"mealPlans": {},
 		"mealPlanGroceryListItems": {},
-		"validIngredientStateIngredients": {},
 		"serviceSettingConfigurations": {},
-		"recipeRatings": {},
-		"validMeasurementUnitConversions": {},
-		"validIngredientGroups": {},
-		"serviceSettings": {},
 		"mealPlanTasks": {},
-		"recipeStepProducts": {},
-		"recipeStepIngredients": {},
-		"recipePrepTasks": {},
-		"recipeStepCompletionConditions": {},
+		"userNotifications": {},
 		"userIngredientPreferences": {},
 		"households": {},
-		"mealPlans": {},
-		"validPreparationInstruments": {},
-		"validIngredientPreparations": {},
-		"recipeStepInstruments": {},
-		"auditLogEntries": {},
+		"mealPlanEvents": {},
+		"serviceSettings": {},
 		"householdInstrumentOwnerships": {},
 		"mealPlanOptionVotes": {},
-		"recipeStepVessels": {},
-		"validPreparationVessels": {},
 		"mealPlanOptions": {},
-		"userNotifications": {},
 		"workers": {},
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://example.website.lol",
-			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/uploads"
-					},
-					"bucketName": "recipe_media",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "filesystem"
-				},
-				"debug": true
-			}
-		},
 		"users": {
 			"publicMediaURLPrefix": "",
 			"uploads": {
@@ -241,35 +213,20 @@
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
 		},
-		"validInstruments": {
-			"useSearchService": false
+		"oauth2Clients": {
+			"creationEnabled": false
 		},
 		"meals": {
 			"searchFromDatabase": false
 		},
-		"validMeasurementUnits": {
-			"useSearchService": false
-		},
-		"oauth2Clients": {
-			"creationEnabled": false
-		},
-		"validVessels": {
-			"useSearchService": false
+		"webhooks": {
+			"debug": false
 		},
 		"householdInvitations": {
 			"debug": false
 		},
-		"validPreparations": {
+		"validEnumerations": {
 			"useSearchService": false
-		},
-		"validIngredientStates": {
-			"useSearchService": false
-		},
-		"validIngredients": {
-			"useSearchService": false
-		},
-		"webhooks": {
-			"debug": false
 		}
 	}
 }

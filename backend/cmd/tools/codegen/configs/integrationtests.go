@@ -22,8 +22,7 @@ import (
 	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
-	recipesservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipes"
-	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipesteps"
+	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 )
@@ -134,18 +133,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			Recipes: recipesservice.Config{
-				PublicMediaURLPrefix: "https://media.example.website/lol",
-				Uploads: uploads.Config{
-					Debug: false,
-					Storage: objectstorage.Config{
-						Provider:   "memory",
-						BucketName: "recipes",
-						S3Config:   nil,
-					},
-				},
-			},
-			RecipeSteps: recipestepsservice.Config{
+			Recipes: recipemanagement.Config{
 				PublicMediaURLPrefix: "https://media.example.website/lol",
 				Uploads: uploads.Config{
 					Debug: false,

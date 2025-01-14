@@ -149,9 +149,9 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
-		responseValue := &types.APIResponse[*types.JWTResponse]{
+		responseValue := &types.APIResponse[*types.TokenResponse]{
 			Details: responseDetails,
-			Data: &types.JWTResponse{
+			Data: &types.TokenResponse{
 				HouseholdID: defaultHouseholdID,
 				UserID:      user.ID,
 				Token:       token,
@@ -331,9 +331,9 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 		return
 	}
 
-	responseValue := &types.APIResponse[*types.JWTResponse]{
+	responseValue := &types.APIResponse[*types.TokenResponse]{
 		Details: responseDetails,
-		Data: &types.JWTResponse{
+		Data: &types.TokenResponse{
 			HouseholdID: defaultHouseholdID,
 			UserID:      user.ID,
 			Token:       token,
