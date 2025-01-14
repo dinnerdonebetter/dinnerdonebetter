@@ -6,7 +6,7 @@ import { TokenResponse } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockLoginForJWTResponseConfig extends ResponseConfig<TokenResponse> {
+export class MockLoginForTokenResponseConfig extends ResponseConfig<TokenResponse> {
   constructor(status: number = 201, body?: TokenResponse) {
     super();
 
@@ -17,7 +17,7 @@ export class MockLoginForJWTResponseConfig extends ResponseConfig<TokenResponse>
   }
 }
 
-export const mockLoginForJWT = (resCfg: MockLoginForJWTResponseConfig) => {
+export const mockLoginForJWT = (resCfg: MockLoginForTokenResponseConfig) => {
   return (page: Page) =>
     page.route(
       `**/users/login/jwt`,

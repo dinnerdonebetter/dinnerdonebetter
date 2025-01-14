@@ -14,11 +14,6 @@ import (
 	servertiming "github.com/mitchellh/go-server-timing"
 )
 
-const (
-	// UserIngredientPreferenceIDURIParamKey is a standard string that we'll use to refer to user ingredient preference IDs with.
-	UserIngredientPreferenceIDURIParamKey = "userIngredientPreferenceID"
-)
-
 // CreateUserIngredientPreferenceHandler is our user ingredient preference creation route.
 func (s *service) CreateUserIngredientPreferenceHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())

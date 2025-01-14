@@ -3,7 +3,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { AccessToken, AuthorizationCode } from 'simple-oauth2';
 
-import { IAPIError, UserLoginInput, JWTResponse, APIResponse } from '@dinnerdonebetter/models';
+import { IAPIError, UserLoginInput, TokenResponse, APIResponse } from '@dinnerdonebetter/models';
 import { buildCookielessServerSideClient } from '@dinnerdonebetter/api-client';
 import { TracerType } from '@dinnerdonebetter/tracing';
 import { parseUserSessionDetailsFromCookie } from './api_proxy';
@@ -110,7 +110,7 @@ export function buildLoginRoute(config: {
       const loginPromise = config.admin ? apiClient.adminLoginForJWT(input) : apiClient.loginForJWT(input);
 
       await loginPromise
-        .then(async (result: AxiosResponse<APIResponse<JWTResponse>>) => {
+        .then(async (result: AxiosResponse<APIResponse<TokenResponse>>) => {
           span.addEvent('response received');
           if (result.status === 205) {
             console.log('login returned 205');

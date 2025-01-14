@@ -15,11 +15,6 @@ import (
 	servertiming "github.com/mitchellh/go-server-timing"
 )
 
-const (
-	// HouseholdInstrumentOwnershipIDURIParamKey is a standard string that we'll use to refer to household instrument ownership IDs with.
-	HouseholdInstrumentOwnershipIDURIParamKey = "householdInstrumentOwnershipID"
-)
-
 // CreateHouseholdInstrumentOwnershipHandler is our household instrument ownership creation route.
 func (s *service) CreateHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
