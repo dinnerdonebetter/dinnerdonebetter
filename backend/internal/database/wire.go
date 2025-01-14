@@ -9,20 +9,13 @@ import (
 var (
 	// DBProviders represents what we provide to dependency injectors.
 	DBProviders = wire.NewSet(
-		ProvideMealPlanTaskDataManager,
 		ProvideHouseholdDataManager,
 		ProvideHouseholdInvitationDataManager,
 		ProvideHouseholdUserMembershipDataManager,
-		ProvideMealDataManager,
-		ProvideMealPlanDataManager,
-		ProvideMealPlanEventDataManager,
-		ProvideMealPlanOptionDataManager,
-		ProvideMealPlanOptionVoteDataManager,
 		ProvideUserDataManager,
 		ProvideAdminUserDataManager,
 		ProvidePasswordResetTokenDataManager,
 		ProvideWebhookDataManager,
-		ProvideMealPlanGroceryListItemDataManager,
 		ProvideServiceSettingDataManager,
 		ProvideServiceSettingConfigurationDataManager,
 		ProvideUserIngredientPreferenceDataManager,
@@ -34,6 +27,7 @@ var (
 		ProvideDataPrivacyDataManager,
 		ProvideValidEnumerationDataManager,
 		ProvideRecipeManagementDataManager,
+		ProvideMealPlanningDataManager,
 	)
 )
 
@@ -57,31 +51,6 @@ func ProvideHouseholdUserMembershipDataManager(db DataManager) types.HouseholdUs
 	return db
 }
 
-// ProvideRecipeDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipeDataManager(db DataManager) types.RecipeDataManager {
-	return db
-}
-
-// ProvideRecipeStepDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipeStepDataManager(db DataManager) types.RecipeStepDataManager {
-	return db
-}
-
-// ProvideRecipeStepInstrumentDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipeStepInstrumentDataManager(db DataManager) types.RecipeStepInstrumentDataManager {
-	return db
-}
-
-// ProvideRecipeStepProductDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipeStepProductDataManager(db DataManager) types.RecipeStepProductDataManager {
-	return db
-}
-
-// ProvideRecipeStepIngredientDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipeStepIngredientDataManager(db DataManager) types.RecipeStepIngredientDataManager {
-	return db
-}
-
 // ProvideMealDataManager is an arbitrary function for dependency injection's sake.
 func ProvideMealDataManager(db DataManager) types.MealDataManager {
 	return db
@@ -99,11 +68,6 @@ func ProvideMealPlanEventDataManager(db DataManager) types.MealPlanEventDataMana
 
 // ProvideMealPlanOptionDataManager is an arbitrary function for dependency injection's sake.
 func ProvideMealPlanOptionDataManager(db DataManager) types.MealPlanOptionDataManager {
-	return db
-}
-
-// ProvideMealPlanOptionVoteDataManager is an arbitrary function for dependency injection's sake.
-func ProvideMealPlanOptionVoteDataManager(db DataManager) types.MealPlanOptionVoteDataManager {
 	return db
 }
 
@@ -127,28 +91,8 @@ func ProvideWebhookDataManager(db DataManager) types.WebhookDataManager {
 	return db
 }
 
-// ProvideRecipePrepTaskDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipePrepTaskDataManager(db DataManager) types.RecipePrepTaskDataManager {
-	return db
-}
-
 // ProvideMealPlanGroceryListItemDataManager is an arbitrary function for dependency injection's sake.
 func ProvideMealPlanGroceryListItemDataManager(db DataManager) types.MealPlanGroceryListItemDataManager {
-	return db
-}
-
-// ProvideRecipeMediaDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipeMediaDataManager(db DataManager) types.RecipeMediaDataManager {
-	return db
-}
-
-// ProvideRecipeStepCompletionConditionDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipeStepCompletionConditionDataManager(db DataManager) types.RecipeStepCompletionConditionDataManager {
-	return db
-}
-
-// ProvideRecipeStepVesselDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipeStepVesselDataManager(db DataManager) types.RecipeStepVesselDataManager {
 	return db
 }
 
@@ -164,11 +108,6 @@ func ProvideServiceSettingConfigurationDataManager(db DataManager) types.Service
 
 // ProvideUserIngredientPreferenceDataManager is an arbitrary function for dependency injection's sake.
 func ProvideUserIngredientPreferenceDataManager(db DataManager) types.UserIngredientPreferenceDataManager {
-	return db
-}
-
-// ProvideRecipeRatingDataManager is an arbitrary function for dependency injection's sake.
-func ProvideRecipeRatingDataManager(db DataManager) types.RecipeRatingDataManager {
 	return db
 }
 
@@ -209,5 +148,10 @@ func ProvideValidEnumerationDataManager(db DataManager) types.ValidEnumerationDa
 
 // ProvideRecipeManagementDataManager is an arbitrary function for dependency injection's sake.
 func ProvideRecipeManagementDataManager(db DataManager) types.RecipeManagementDataManager {
+	return db
+}
+
+// ProvideMealPlanningDataManager is an arbitrary function for dependency injection's sake.
+func ProvideMealPlanningDataManager(db DataManager) types.MealPlanningDataManager {
 	return db
 }

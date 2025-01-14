@@ -135,18 +135,10 @@
 	},
 	"services": {
 		"auditLogEntries": {},
-		"mealPlans": {},
-		"mealPlanGroceryListItems": {},
 		"serviceSettingConfigurations": {},
-		"mealPlanTasks": {},
 		"userNotifications": {},
-		"userIngredientPreferences": {},
 		"households": {},
-		"mealPlanEvents": {},
 		"serviceSettings": {},
-		"householdInstrumentOwnerships": {},
-		"mealPlanOptionVotes": {},
-		"mealPlanOptions": {},
 		"workers": {},
 		"users": {
 			"publicMediaURLPrefix": "",

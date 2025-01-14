@@ -24,7 +24,7 @@ const (
 	// ValidPreparationVesselIDURIParamKey is a standard string that we'll use to refer to valid preparation vessel IDs with.
 	ValidPreparationVesselIDURIParamKey = "validPreparationVesselID"
 	// ValidVesselIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
-	ValidVesselIDURIParamKey = "ValidVesselID"
+	ValidVesselIDURIParamKey = "validVesselID"
 	// ValidPreparationInstrumentIDURIParamKey is a standard string that we'll use to refer to valid preparation instrument IDs with.
 	ValidPreparationInstrumentIDURIParamKey = "validPreparationInstrumentID"
 )

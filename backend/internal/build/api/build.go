@@ -36,16 +36,8 @@ import (
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/core/webhooks"
 	workersservice "github.com/dinnerdonebetter/backend/internal/services/core/workers"
-	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/eating/householdinstrumentownerships"
-	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplanevents"
-	mealplangrocerylistitemsservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplangrocerylistitems"
-	mealplanoptionsservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplanoptions"
-	mealplanoptionvotesservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplanoptionvotes"
-	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplans"
-	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplantasks"
-	mealsservice "github.com/dinnerdonebetter/backend/internal/services/eating/meals"
+	mealplanningservice "github.com/dinnerdonebetter/backend/internal/services/eating/meal_planning"
 	recipemanagementservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
-	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/eating/useringredientpreferences"
 	validenumerationsservice "github.com/dinnerdonebetter/backend/internal/services/eating/valid_enumerations"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 
@@ -80,18 +72,9 @@ func Build(
 		webhooksservice.Providers,
 		adminservice.Providers,
 		validenumerationsservice.Providers,
-		mealsservice.Providers,
 		recipemanagementservice.Providers,
-		mealplansservice.Providers,
-		mealplaneventsservice.Providers,
-		mealplanoptionsservice.Providers,
-		mealplanoptionvotesservice.Providers,
-		mealplantasksservice.Providers,
-		mealplangrocerylistitemsservice.Providers,
 		servicesettingsservice.Providers,
 		servicesettingconfigurationsservice.Providers,
-		useringredientpreferencesservice.Providers,
-		householdinstrumentownershipsservice.Providers,
 		oauth2clientsservice.Providers,
 		analyticscfg.ProvidersAnalytics,
 		workersservice.Providers,
@@ -100,6 +83,7 @@ func Build(
 		dataprivacyservice.Providers,
 		metricscfg.ProvidersMetrics,
 		routingcfg.RoutingConfigProviders,
+		mealplanningservice.Providers,
 	)
 
 	return nil, nil

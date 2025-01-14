@@ -59,6 +59,23 @@ resource "google_container_node_pool" "primary_nodes" {
     local.gcp_main_zone,
   ]
 
+  autoscaling {
+    min_node_count = 1
+    max_node_count = 1
+    total_min_node_count = 1
+    total_max_node_count = 1
+    location_policy = "BALANCED"
+  }
+
+  management {
+    auto_repair = true
+    auto_upgrade = true
+  }
+
+  network_config {
+    
+  }
+
   node_config {
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -69,7 +86,7 @@ resource "google_container_node_pool" "primary_nodes" {
     }
 
     preemptible  = true
-    machine_type = "n2d-standard-2"
+    machine_type = "e2-medium"
     tags         = ["gke-node", local.environment]
     metadata = {
       disable-legacy-endpoints = "true"

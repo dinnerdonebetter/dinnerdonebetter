@@ -41,17 +41,8 @@ type (
 		usersService                        types.UserDataService
 		adminService                        types.AdminDataService
 		webhooksService                     types.WebhookDataService
-		mealsService                        types.MealDataService
-		mealPlansService                    types.MealPlanDataService
-		mealPlanOptionsService              types.MealPlanOptionDataService
-		mealPlanOptionVotesService          types.MealPlanOptionVoteDataService
-		mealPlanEventsService               types.MealPlanEventDataService
-		mealPlanTasksService                types.MealPlanTaskDataService
-		mealPlanGroceryListItemsService     types.MealPlanGroceryListItemDataService
 		serviceSettingsService              types.ServiceSettingDataService
 		serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService
-		userIngredientPreferencesService    types.UserIngredientPreferenceDataService
-		householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService
 		oauth2ClientsService                types.OAuth2ClientDataService
 		userNotificationsService            types.UserNotificationDataService
 		workerService                       types.WorkerService
@@ -59,6 +50,7 @@ type (
 		auditLogEntriesService              types.AuditLogEntryDataService
 		dataPrivacyService                  types.DataPrivacyService
 		recipeManagementService             types.RecipeManagementDataService
+		mealPlanningService                 types.MealPlanningDataService
 		logger                              logging.Logger
 		router                              routing.Router
 		tracer                              tracing.Tracer
@@ -82,19 +74,10 @@ func ProvideHTTPServer(
 	usersService types.UserDataService,
 	householdsService types.HouseholdDataService,
 	householdInvitationsService types.HouseholdInvitationDataService,
-	mealsService types.MealDataService,
-	mealPlansService types.MealPlanDataService,
-	mealPlanOptionsService types.MealPlanOptionDataService,
-	mealPlanOptionVotesService types.MealPlanOptionVoteDataService,
-	mealPlanEventsService types.MealPlanEventDataService,
-	mealPlanTasksService types.MealPlanTaskDataService,
-	mealPlanGroceryListItemsService types.MealPlanGroceryListItemDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminDataService,
 	serviceSettingDataService types.ServiceSettingDataService,
 	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
-	userIngredientPreferencesService types.UserIngredientPreferenceDataService,
-	householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService,
 	oauth2ClientDataService types.OAuth2ClientDataService,
 	workerService types.WorkerService,
 	userNotificationsService types.UserNotificationDataService,
@@ -102,6 +85,7 @@ func ProvideHTTPServer(
 	dataPrivacyService types.DataPrivacyService,
 	validEnumerationsService types.ValidEnumerationDataService,
 	recipeManagementService types.RecipeManagementDataService,
+	mealPlanningService types.MealPlanningDataService,
 	_ metrics.Provider, // TODO: instrument later for something
 ) (Server, error) {
 	srv := &server{
@@ -131,17 +115,9 @@ func ProvideHTTPServer(
 		dataPrivacyService:                  dataPrivacyService,
 
 		// data services
-		validEnumerationsService:            validEnumerationsService,
-		recipeManagementService:             recipeManagementService,
-		mealsService:                        mealsService,
-		mealPlansService:                    mealPlansService,
-		mealPlanOptionsService:              mealPlanOptionsService,
-		mealPlanOptionVotesService:          mealPlanOptionVotesService,
-		mealPlanEventsService:               mealPlanEventsService,
-		mealPlanTasksService:                mealPlanTasksService,
-		mealPlanGroceryListItemsService:     mealPlanGroceryListItemsService,
-		userIngredientPreferencesService:    userIngredientPreferencesService,
-		householdInstrumentOwnershipService: householdInstrumentOwnershipService,
+		mealPlanningService:      mealPlanningService,
+		validEnumerationsService: validEnumerationsService,
+		recipeManagementService:  recipeManagementService,
 	}
 
 	srv.setupRouter(ctx, router)

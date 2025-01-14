@@ -15,7 +15,7 @@ import (
 
 func (c *Client) GetValidPreparationVesselsByVessel(
 	ctx context.Context,
-	ValidVesselID string,
+	validVesselID string,
 	filter *types.QueryFilter,
 	reqMods ...RequestModifier,
 ) (*types.QueryFilteredResult[types.ValidPreparationVessel], error) {
@@ -30,15 +30,15 @@ func (c *Client) GetValidPreparationVesselsByVessel(
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if ValidVesselID == "" {
-		return nil, buildInvalidIDError("ValidVessel")
+	if validVesselID == "" {
+		return nil, buildInvalidIDError("validVessel")
 	}
-	logger = logger.WithValue(keys.ValidVesselIDKey, ValidVesselID)
-	tracing.AttachToSpan(span, keys.ValidVesselIDKey, ValidVesselID)
+	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
 	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/valid_preparation_vessels/by_vessel/%s", ValidVesselID))
+	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/valid_preparation_vessels/by_vessel/%s", validVesselID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of ValidPreparationVessel")

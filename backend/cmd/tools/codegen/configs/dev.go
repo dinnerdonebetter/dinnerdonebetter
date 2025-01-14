@@ -28,7 +28,7 @@ import (
 	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
-	mealsservice "github.com/dinnerdonebetter/backend/internal/services/eating/meals"
+	mealplanningservice "github.com/dinnerdonebetter/backend/internal/services/eating/meal_planning"
 	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
 	validenumerations "github.com/dinnerdonebetter/backend/internal/services/eating/valid_enumerations"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
@@ -184,7 +184,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				},
 			},
 			ValidEnumerations: validenumerations.Config{},
-			Meals: mealsservice.Config{
+			MealPlanning: mealplanningservice.Config{
 				UseSearchService: true,
 			},
 		},

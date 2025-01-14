@@ -38,16 +38,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/core/users"
 	"github.com/dinnerdonebetter/backend/internal/services/core/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/services/core/workers"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/householdinstrumentownerships"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/mealplanevents"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/mealplangrocerylistitems"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/mealplanoptions"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/mealplanoptionvotes"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/mealplans"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/mealplantasks"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/meals"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/meal_planning"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/useringredientpreferences"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/valid_enumerations"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 )
@@ -129,42 +121,6 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	mealsConfig := &servicesConfig.Meals
-	textsearchcfgConfig := &cfg.Search
-	mealDataManager := database.ProvideMealDataManager(dataManager)
-	mealDataService, err := meals.ProvideService(ctx, logger, mealsConfig, textsearchcfgConfig, mealDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	mealPlanDataManager := database.ProvideMealPlanDataManager(dataManager)
-	mealPlanDataService, err := mealplans.ProvideService(logger, mealPlanDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	mealPlanOptionDataManager := database.ProvideMealPlanOptionDataManager(dataManager)
-	mealPlanOptionDataService, err := mealplanoptions.ProvideService(logger, mealPlanOptionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	mealPlanOptionVoteDataService, err := mealplanoptionvotes.ProvideService(logger, dataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	mealPlanEventDataManager := database.ProvideMealPlanEventDataManager(dataManager)
-	mealPlanEventDataService, err := mealplanevents.ProvideService(logger, mealPlanEventDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	mealPlanTaskDataManager := database.ProvideMealPlanTaskDataManager(dataManager)
-	mealPlanTaskDataService, err := mealplantasks.ProvideService(logger, mealPlanTaskDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	mealPlanGroceryListItemDataManager := database.ProvideMealPlanGroceryListItemDataManager(dataManager)
-	mealPlanGroceryListItemDataService, err := mealplangrocerylistitems.ProvideService(logger, mealPlanGroceryListItemDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
 	webhookDataManager := database.ProvideWebhookDataManager(dataManager)
 	webhookDataService, err := webhooks.ProvideWebhooksService(logger, webhookDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
@@ -182,16 +138,6 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	}
 	serviceSettingConfigurationDataManager := database.ProvideServiceSettingConfigurationDataManager(dataManager)
 	serviceSettingConfigurationDataService, err := servicesettingconfigurations.ProvideService(logger, serviceSettingConfigurationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	userIngredientPreferenceDataManager := database.ProvideUserIngredientPreferenceDataManager(dataManager)
-	userIngredientPreferenceDataService, err := useringredientpreferences.ProvideService(logger, userIngredientPreferenceDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	householdInstrumentOwnershipDataManager := database.ProvideHouseholdInstrumentOwnershipDataManager(dataManager)
-	householdInstrumentOwnershipDataService, err := householdinstrumentownerships.ProvideService(logger, householdInstrumentOwnershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -229,13 +175,20 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	recipemanagementConfig := &servicesConfig.Recipes
+	textsearchcfgConfig := &cfg.Search
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	recipeManagementDataManager := database.ProvideRecipeManagementDataManager(dataManager)
 	recipeManagementDataService, err := recipemanagement.ProvideService(ctx, logger, recipemanagementConfig, textsearchcfgConfig, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider, queuesConfig, recipeManagementDataManager)
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, router, tracerProvider, authDataService, userDataService, householdDataService, householdInvitationDataService, mealDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, mealPlanEventDataService, mealPlanTaskDataService, mealPlanGroceryListItemDataService, webhookDataService, adminDataService, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService, workerService, userNotificationDataService, auditLogEntryDataService, dataPrivacyService, validEnumerationDataService, recipeManagementDataService, provider)
+	mealplanningConfig := &servicesConfig.MealPlanning
+	mealPlanningDataManager := database.ProvideMealPlanningDataManager(dataManager)
+	mealPlanningDataService, err := mealplanning.ProvideService(ctx, logger, mealplanningConfig, textsearchcfgConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig, mealPlanningDataManager)
+	if err != nil {
+		return nil, err
+	}
+	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, router, tracerProvider, authDataService, userDataService, householdDataService, householdInvitationDataService, webhookDataService, adminDataService, serviceSettingDataService, serviceSettingConfigurationDataService, oAuth2ClientDataService, workerService, userNotificationDataService, auditLogEntryDataService, dataPrivacyService, validEnumerationDataService, recipeManagementDataService, mealPlanningDataService, provider)
 	if err != nil {
 		return nil, err
 	}

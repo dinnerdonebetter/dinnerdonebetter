@@ -30,7 +30,6 @@ import {
   HouseholdUserMembership,
   InitializeMealPlanGroceryListRequest,
   InitializeMealPlanGroceryListResponse,
-  JWTResponse,
   Meal,
   MealCreationRequestInput,
   MealPlan,
@@ -98,6 +97,7 @@ import {
   TOTPSecretRefreshInput,
   TOTPSecretRefreshResponse,
   TOTPSecretVerificationInput,
+  TokenResponse,
   User,
   UserAccountStatusUpdateInput,
   UserCreationResponse,
@@ -515,84 +515,6 @@ describe('basic', () => {
     expect(client.finalizeMealPlan(mealPlanID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should Operation for creating JWTResponse', () => {
-    const exampleInput = new UserLoginInput();
-
-    const exampleResponse = new APIResponse<JWTResponse>();
-    mock.onPost(`${baseURL}/users/login/jwt/admin`).reply(201, exampleResponse);
-
-    client
-      .adminLoginForJWT(exampleInput)
-      .then((response: AxiosResponse<APIResponse<JWTResponse>>) => {
-        expect(response.data).toEqual(exampleResponse);
-      })
-      .then(() => {
-        expect(mock.history.post.length).toBe(1);
-        expect(mock.history.post[0].data).toBe(JSON.stringify(exampleInput));
-        expect(mock.history.post[0].headers).toHaveProperty('Authorization');
-        expect((mock.history.post[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
-      });
-  });
-
-  it('should appropriately raise errors when they occur during Operation for creating JWTResponse', () => {
-    const exampleInput = new UserLoginInput();
-
-    const expectedError = buildObligatoryError('adminLoginForJWT user error');
-    const exampleResponse = new APIResponse<JWTResponse>(expectedError);
-    mock.onPost(`${baseURL}/users/login/jwt/admin`).reply(201, exampleResponse);
-
-    expect(client.adminLoginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
-  });
-
-  it('should appropriately raise service errors when they occur during Operation for creating JWTResponse', () => {
-    const exampleInput = new UserLoginInput();
-
-    const expectedError = buildObligatoryError('adminLoginForJWT service error');
-    const exampleResponse = new APIResponse<JWTResponse>(expectedError);
-    mock.onPost(`${baseURL}/users/login/jwt/admin`).reply(500, exampleResponse);
-
-    expect(client.adminLoginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
-  });
-
-  it('should Operation for creating JWTResponse', () => {
-    const exampleInput = new UserLoginInput();
-
-    const exampleResponse = new APIResponse<JWTResponse>();
-    mock.onPost(`${baseURL}/users/login/jwt`).reply(201, exampleResponse);
-
-    client
-      .loginForJWT(exampleInput)
-      .then((response: AxiosResponse<APIResponse<JWTResponse>>) => {
-        expect(response.data).toEqual(exampleResponse);
-      })
-      .then(() => {
-        expect(mock.history.post.length).toBe(1);
-        expect(mock.history.post[0].data).toBe(JSON.stringify(exampleInput));
-        expect(mock.history.post[0].headers).toHaveProperty('Authorization');
-        expect((mock.history.post[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
-      });
-  });
-
-  it('should appropriately raise errors when they occur during Operation for creating JWTResponse', () => {
-    const exampleInput = new UserLoginInput();
-
-    const expectedError = buildObligatoryError('loginForJWT user error');
-    const exampleResponse = new APIResponse<JWTResponse>(expectedError);
-    mock.onPost(`${baseURL}/users/login/jwt`).reply(201, exampleResponse);
-
-    expect(client.loginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
-  });
-
-  it('should appropriately raise service errors when they occur during Operation for creating JWTResponse', () => {
-    const exampleInput = new UserLoginInput();
-
-    const expectedError = buildObligatoryError('loginForJWT service error');
-    const exampleResponse = new APIResponse<JWTResponse>(expectedError);
-    mock.onPost(`${baseURL}/users/login/jwt`).reply(500, exampleResponse);
-
-    expect(client.loginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
-  });
-
   it('should Operation for creating PasswordResetToken', () => {
     const exampleInput = new PasswordResetTokenCreationRequestInput();
 
@@ -630,6 +552,84 @@ describe('basic', () => {
     mock.onPost(`${baseURL}/users/password/reset`).reply(500, exampleResponse);
 
     expect(client.requestPasswordResetToken(exampleInput)).rejects.toEqual(expectedError.error);
+  });
+
+  it('should Operation for creating TokenResponse', () => {
+    const exampleInput = new UserLoginInput();
+
+    const exampleResponse = new APIResponse<TokenResponse>();
+    mock.onPost(`${baseURL}/users/login/jwt/admin`).reply(201, exampleResponse);
+
+    client
+      .adminLoginForJWT(exampleInput)
+      .then((response: AxiosResponse<APIResponse<TokenResponse>>) => {
+        expect(response.data).toEqual(exampleResponse);
+      })
+      .then(() => {
+        expect(mock.history.post.length).toBe(1);
+        expect(mock.history.post[0].data).toBe(JSON.stringify(exampleInput));
+        expect(mock.history.post[0].headers).toHaveProperty('Authorization');
+        expect((mock.history.post[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
+      });
+  });
+
+  it('should appropriately raise errors when they occur during Operation for creating TokenResponse', () => {
+    const exampleInput = new UserLoginInput();
+
+    const expectedError = buildObligatoryError('adminLoginForJWT user error');
+    const exampleResponse = new APIResponse<TokenResponse>(expectedError);
+    mock.onPost(`${baseURL}/users/login/jwt/admin`).reply(201, exampleResponse);
+
+    expect(client.adminLoginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
+  });
+
+  it('should appropriately raise service errors when they occur during Operation for creating TokenResponse', () => {
+    const exampleInput = new UserLoginInput();
+
+    const expectedError = buildObligatoryError('adminLoginForJWT service error');
+    const exampleResponse = new APIResponse<TokenResponse>(expectedError);
+    mock.onPost(`${baseURL}/users/login/jwt/admin`).reply(500, exampleResponse);
+
+    expect(client.adminLoginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
+  });
+
+  it('should Operation for creating TokenResponse', () => {
+    const exampleInput = new UserLoginInput();
+
+    const exampleResponse = new APIResponse<TokenResponse>();
+    mock.onPost(`${baseURL}/users/login/jwt`).reply(201, exampleResponse);
+
+    client
+      .loginForJWT(exampleInput)
+      .then((response: AxiosResponse<APIResponse<TokenResponse>>) => {
+        expect(response.data).toEqual(exampleResponse);
+      })
+      .then(() => {
+        expect(mock.history.post.length).toBe(1);
+        expect(mock.history.post[0].data).toBe(JSON.stringify(exampleInput));
+        expect(mock.history.post[0].headers).toHaveProperty('Authorization');
+        expect((mock.history.post[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
+      });
+  });
+
+  it('should appropriately raise errors when they occur during Operation for creating TokenResponse', () => {
+    const exampleInput = new UserLoginInput();
+
+    const expectedError = buildObligatoryError('loginForJWT user error');
+    const exampleResponse = new APIResponse<TokenResponse>(expectedError);
+    mock.onPost(`${baseURL}/users/login/jwt`).reply(201, exampleResponse);
+
+    expect(client.loginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
+  });
+
+  it('should appropriately raise service errors when they occur during Operation for creating TokenResponse', () => {
+    const exampleInput = new UserLoginInput();
+
+    const expectedError = buildObligatoryError('loginForJWT service error');
+    const exampleResponse = new APIResponse<TokenResponse>(expectedError);
+    mock.onPost(`${baseURL}/users/login/jwt`).reply(500, exampleResponse);
+
+    expect(client.loginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should Operation for creating User', () => {
@@ -1174,7 +1174,7 @@ describe('basic', () => {
     expect(client.runMealPlanTaskCreatorWorker(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should Searches for Meals', () => {
+  it('should Searches for MealPlanning', () => {
     let q = fakeID();
 
     const exampleResponse = new APIResponse<Array<Meal>>({
@@ -1201,7 +1201,7 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to Searches for Meals', () => {
+  it('should raise errors appropriately when trying to Searches for MealPlanning', () => {
     let q = fakeID();
 
     const expectedError = buildObligatoryError('searchForMeals user error');
@@ -1211,7 +1211,7 @@ describe('basic', () => {
     expect(client.searchForMeals(q)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to Searches for Meals', () => {
+  it('should raise service errors appropriately when trying to Searches for MealPlanning', () => {
     let q = fakeID();
 
     const expectedError = buildObligatoryError('searchForMeals service error');
@@ -3221,15 +3221,15 @@ describe('basic', () => {
   });
 
   it('should archive a ValidPreparationInstrument', () => {
-    let validPreparationVesselID = fakeID();
+    let validPreparationInstrumentID = fakeID();
 
     const exampleResponse = new APIResponse<ValidPreparationInstrument>();
     mock
-      .onDelete(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationVesselID}`)
+      .onDelete(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`)
       .reply(202, exampleResponse);
 
     client
-      .archiveValidPreparationInstrument(validPreparationVesselID)
+      .archiveValidPreparationInstrument(validPreparationInstrumentID)
       .then((response: APIResponse<ValidPreparationInstrument>) => {
         expect(response).toEqual(exampleResponse);
       })
@@ -3241,27 +3241,27 @@ describe('basic', () => {
   });
 
   it('should raise errors appropriately when trying to archive a ValidPreparationInstrument', () => {
-    let validPreparationVesselID = fakeID();
+    let validPreparationInstrumentID = fakeID();
 
     const expectedError = buildObligatoryError('archiveValidPreparationInstrument user error');
     const exampleResponse = new APIResponse<ValidPreparationInstrument>(expectedError);
     mock
-      .onDelete(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationVesselID}`)
+      .onDelete(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`)
       .reply(202, exampleResponse);
 
-    expect(client.archiveValidPreparationInstrument(validPreparationVesselID)).rejects.toEqual(expectedError.error);
+    expect(client.archiveValidPreparationInstrument(validPreparationInstrumentID)).rejects.toEqual(expectedError.error);
   });
 
   it('should raise service errors appropriately when trying to archive a ValidPreparationInstrument', () => {
-    let validPreparationVesselID = fakeID();
+    let validPreparationInstrumentID = fakeID();
 
     const expectedError = buildObligatoryError('archiveValidPreparationInstrument service error');
     const exampleResponse = new APIResponse<ValidPreparationInstrument>(expectedError);
     mock
-      .onDelete(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationVesselID}`)
+      .onDelete(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`)
       .reply(500, exampleResponse);
 
-    expect(client.archiveValidPreparationInstrument(validPreparationVesselID)).rejects.toEqual(expectedError.error);
+    expect(client.archiveValidPreparationInstrument(validPreparationInstrumentID)).rejects.toEqual(expectedError.error);
   });
 
   it('should archive a ValidPreparationVessel', () => {
@@ -5708,6 +5708,47 @@ describe('basic', () => {
     expect(client.getMealPlanTasks(mealPlanID)).rejects.toEqual(expectedError.error);
   });
 
+  it('should fetch a MealPlanning', () => {
+    const exampleResponse = new APIResponse<Array<Meal>>({
+      details: {
+        currentHouseholdID: 'test',
+        traceID: 'test',
+      },
+      pagination: QueryFilter.Default().toPagination(),
+      data: [new Meal()],
+    });
+    mock.onGet(`${baseURL}/api/v1/meals`).reply(200, exampleResponse);
+
+    client
+      .getMeals()
+      .then((response: QueryFilteredResult<Meal>) => {
+        expect(response.data).toEqual(exampleResponse.data);
+        expect(response.page).toEqual(exampleResponse.pagination?.page);
+        expect(response.limit).toEqual(exampleResponse.pagination?.limit);
+      })
+      .then(() => {
+        expect(mock.history.get.length).toBe(1);
+        expect(mock.history.get[0].headers).toHaveProperty('Authorization');
+        expect((mock.history.get[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
+      });
+  });
+
+  it('should raise errors appropriately when trying to fetch a MealPlanning', () => {
+    const expectedError = buildObligatoryError('getMeals user error');
+    const exampleResponse = new APIResponse<Array<Meal>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/meals`).reply(200, exampleResponse);
+
+    expect(client.getMeals()).rejects.toEqual(expectedError.error);
+  });
+
+  it('should raise service errors appropriately when trying to fetch a MealPlanning', () => {
+    const expectedError = buildObligatoryError('getMeals service error');
+    const exampleResponse = new APIResponse<Array<Meal>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/meals`).reply(500, exampleResponse);
+
+    expect(client.getMeals()).rejects.toEqual(expectedError.error);
+  });
+
   it('should fetch a MealPlans', () => {
     const exampleResponse = new APIResponse<Array<MealPlan>>({
       details: {
@@ -5747,47 +5788,6 @@ describe('basic', () => {
     mock.onGet(`${baseURL}/api/v1/meal_plans`).reply(500, exampleResponse);
 
     expect(client.getMealPlansForHousehold()).rejects.toEqual(expectedError.error);
-  });
-
-  it('should fetch a Meals', () => {
-    const exampleResponse = new APIResponse<Array<Meal>>({
-      details: {
-        currentHouseholdID: 'test',
-        traceID: 'test',
-      },
-      pagination: QueryFilter.Default().toPagination(),
-      data: [new Meal()],
-    });
-    mock.onGet(`${baseURL}/api/v1/meals`).reply(200, exampleResponse);
-
-    client
-      .getMeals()
-      .then((response: QueryFilteredResult<Meal>) => {
-        expect(response.data).toEqual(exampleResponse.data);
-        expect(response.page).toEqual(exampleResponse.pagination?.page);
-        expect(response.limit).toEqual(exampleResponse.pagination?.limit);
-      })
-      .then(() => {
-        expect(mock.history.get.length).toBe(1);
-        expect(mock.history.get[0].headers).toHaveProperty('Authorization');
-        expect((mock.history.get[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
-      });
-  });
-
-  it('should raise errors appropriately when trying to fetch a Meals', () => {
-    const expectedError = buildObligatoryError('getMeals user error');
-    const exampleResponse = new APIResponse<Array<Meal>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/meals`).reply(200, exampleResponse);
-
-    expect(client.getMeals()).rejects.toEqual(expectedError.error);
-  });
-
-  it('should raise service errors appropriately when trying to fetch a Meals', () => {
-    const expectedError = buildObligatoryError('getMeals service error');
-    const exampleResponse = new APIResponse<Array<Meal>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/meals`).reply(500, exampleResponse);
-
-    expect(client.getMeals()).rejects.toEqual(expectedError.error);
   });
 
   it('should fetch a MermaidDiagramForRecipe', () => {
@@ -8586,15 +8586,15 @@ describe('basic', () => {
   });
 
   it('should fetch a ValidPreparationInstrument', () => {
-    let validPreparationVesselID = fakeID();
+    let validPreparationInstrumentID = fakeID();
 
     const exampleResponse = new APIResponse<ValidPreparationInstrument>();
     mock
-      .onGet(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationVesselID}`)
+      .onGet(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`)
       .reply(200, exampleResponse);
 
     client
-      .getValidPreparationInstrument(validPreparationVesselID)
+      .getValidPreparationInstrument(validPreparationInstrumentID)
       .then((response: APIResponse<ValidPreparationInstrument>) => {
         expect(response).toEqual(exampleResponse);
       })
@@ -8606,27 +8606,27 @@ describe('basic', () => {
   });
 
   it('should raise errors appropriately when trying to fetch a ValidPreparationInstrument', () => {
-    let validPreparationVesselID = fakeID();
+    let validPreparationInstrumentID = fakeID();
 
     const expectedError = buildObligatoryError('getValidPreparationInstrument user error');
     const exampleResponse = new APIResponse<ValidPreparationInstrument>(expectedError);
     mock
-      .onGet(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationVesselID}`)
+      .onGet(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`)
       .reply(200, exampleResponse);
 
-    expect(client.getValidPreparationInstrument(validPreparationVesselID)).rejects.toEqual(expectedError.error);
+    expect(client.getValidPreparationInstrument(validPreparationInstrumentID)).rejects.toEqual(expectedError.error);
   });
 
   it('should raise service errors appropriately when trying to fetch a ValidPreparationInstrument', () => {
-    let validPreparationVesselID = fakeID();
+    let validPreparationInstrumentID = fakeID();
 
     const expectedError = buildObligatoryError('getValidPreparationInstrument service error');
     const exampleResponse = new APIResponse<ValidPreparationInstrument>(expectedError);
     mock
-      .onGet(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationVesselID}`)
+      .onGet(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`)
       .reply(500, exampleResponse);
 
-    expect(client.getValidPreparationInstrument(validPreparationVesselID)).rejects.toEqual(expectedError.error);
+    expect(client.getValidPreparationInstrument(validPreparationInstrumentID)).rejects.toEqual(expectedError.error);
   });
 
   it('should fetch a ValidPreparationInstruments', () => {
@@ -8909,7 +8909,7 @@ describe('basic', () => {
   });
 
   it('should fetch a ValidPreparationVesselsByVessel', () => {
-    let ValidVesselID = fakeID();
+    let validVesselID = fakeID();
 
     const exampleResponse = new APIResponse<Array<ValidPreparationVessel>>({
       details: {
@@ -8919,10 +8919,10 @@ describe('basic', () => {
       pagination: QueryFilter.Default().toPagination(),
       data: [new ValidPreparationVessel()],
     });
-    mock.onGet(`${baseURL}/api/v1/valid_preparation_vessels/by_vessel/${ValidVesselID}`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/valid_preparation_vessels/by_vessel/${validVesselID}`).reply(200, exampleResponse);
 
     client
-      .getValidPreparationVesselsByVessel(ValidVesselID)
+      .getValidPreparationVesselsByVessel(validVesselID)
       .then((response: QueryFilteredResult<ValidPreparationVessel>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
@@ -8936,23 +8936,23 @@ describe('basic', () => {
   });
 
   it('should raise errors appropriately when trying to fetch a ValidPreparationVesselsByVessel', () => {
-    let ValidVesselID = fakeID();
+    let validVesselID = fakeID();
 
     const expectedError = buildObligatoryError('getValidPreparationVesselsByVessel user error');
     const exampleResponse = new APIResponse<Array<ValidPreparationVessel>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/valid_preparation_vessels/by_vessel/${ValidVesselID}`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/valid_preparation_vessels/by_vessel/${validVesselID}`).reply(200, exampleResponse);
 
-    expect(client.getValidPreparationVesselsByVessel(ValidVesselID)).rejects.toEqual(expectedError.error);
+    expect(client.getValidPreparationVesselsByVessel(validVesselID)).rejects.toEqual(expectedError.error);
   });
 
   it('should raise service errors appropriately when trying to fetch a ValidPreparationVesselsByVessel', () => {
-    let ValidVesselID = fakeID();
+    let validVesselID = fakeID();
 
     const expectedError = buildObligatoryError('getValidPreparationVesselsByVessel service error');
     const exampleResponse = new APIResponse<Array<ValidPreparationVessel>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/valid_preparation_vessels/by_vessel/${ValidVesselID}`).reply(500, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/valid_preparation_vessels/by_vessel/${validVesselID}`).reply(500, exampleResponse);
 
-    expect(client.getValidPreparationVesselsByVessel(ValidVesselID)).rejects.toEqual(expectedError.error);
+    expect(client.getValidPreparationVesselsByVessel(validVesselID)).rejects.toEqual(expectedError.error);
   });
 
   it('should fetch a ValidPreparations', () => {
@@ -11274,17 +11274,17 @@ describe('basic', () => {
   });
 
   it('should update a ValidPreparationInstrument', () => {
-    let validPreparationVesselID = fakeID();
+    let validPreparationInstrumentID = fakeID();
 
     const exampleInput = new ValidPreparationInstrumentUpdateRequestInput();
 
     const exampleResponse = new APIResponse<ValidPreparationInstrument>();
     mock
-      .onPut(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationVesselID}`)
+      .onPut(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`)
       .reply(200, exampleResponse);
 
     client
-      .updateValidPreparationInstrument(validPreparationVesselID, exampleInput)
+      .updateValidPreparationInstrument(validPreparationInstrumentID, exampleInput)
       .then((response: APIResponse<ValidPreparationInstrument>) => {
         expect(response).toEqual(exampleResponse);
       })
@@ -11297,33 +11297,33 @@ describe('basic', () => {
   });
 
   it('should appropriately raise errors when they occur during update a ValidPreparationInstrument', () => {
-    let validPreparationVesselID = fakeID();
+    let validPreparationInstrumentID = fakeID();
 
     const exampleInput = new ValidPreparationInstrumentUpdateRequestInput();
 
     const expectedError = buildObligatoryError('updateValidPreparationInstrument user error');
     const exampleResponse = new APIResponse<ValidPreparationInstrument>(expectedError);
     mock
-      .onPut(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationVesselID}`)
+      .onPut(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`)
       .reply(200, exampleResponse);
 
-    expect(client.updateValidPreparationInstrument(validPreparationVesselID, exampleInput)).rejects.toEqual(
+    expect(client.updateValidPreparationInstrument(validPreparationInstrumentID, exampleInput)).rejects.toEqual(
       expectedError.error,
     );
   });
 
   it('should appropriately raise service errors when they occur during update a ValidPreparationInstrument', () => {
-    let validPreparationVesselID = fakeID();
+    let validPreparationInstrumentID = fakeID();
 
     const exampleInput = new ValidPreparationInstrumentUpdateRequestInput();
 
     const expectedError = buildObligatoryError('updateValidPreparationInstrument service error');
     const exampleResponse = new APIResponse<ValidPreparationInstrument>(expectedError);
     mock
-      .onPut(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationVesselID}`)
+      .onPut(`${baseURL}/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`)
       .reply(500, exampleResponse);
 
-    expect(client.updateValidPreparationInstrument(validPreparationVesselID, exampleInput)).rejects.toEqual(
+    expect(client.updateValidPreparationInstrument(validPreparationInstrumentID, exampleInput)).rejects.toEqual(
       expectedError.error,
     );
   });

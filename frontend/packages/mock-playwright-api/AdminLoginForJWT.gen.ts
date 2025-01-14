@@ -2,12 +2,12 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { JWTResponse } from '@dinnerdonebetter/models';
+import { TokenResponse } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockAdminLoginForJWTResponseConfig extends ResponseConfig<JWTResponse> {
-  constructor(status: number = 201, body?: JWTResponse) {
+export class MockAdminLoginForJWTResponseConfig extends ResponseConfig<TokenResponse> {
+  constructor(status: number = 201, body?: TokenResponse) {
     super();
 
     this.status = status;

@@ -19,16 +19,8 @@ import (
 	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/core/usernotifications"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/core/webhooks"
-	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/eating/householdinstrumentownerships"
-	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplanevents"
-	mealplangrocerylistitemssservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplangrocerylistitems"
-	mealplanoptionsservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplanoptions"
-	mealplanoptionvotesservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplanoptionvotes"
-	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplans"
-	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/eating/mealplantasks"
-	mealsservice "github.com/dinnerdonebetter/backend/internal/services/eating/meals"
+	mealplanningservice "github.com/dinnerdonebetter/backend/internal/services/eating/meal_planning"
 	recipemanagementservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
-	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/eating/useringredientpreferences"
 	validenumerationsservice "github.com/dinnerdonebetter/backend/internal/services/eating/valid_enumerations"
 )
 
@@ -199,25 +191,25 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 
 			// HouseholdInstrumentOwnerships
 			householdInstrumentOwnershipsRouteWithPrefix := "/instruments"
-			householdInstrumentOwnershipIDRouteParam := buildURLVarChunk(householdinstrumentownershipsservice.HouseholdInstrumentOwnershipIDURIParamKey, "")
+			householdInstrumentOwnershipIDRouteParam := buildURLVarChunk(mealplanningservice.HouseholdInstrumentOwnershipIDURIParamKey, "")
 			householdsRouter.Route(householdInstrumentOwnershipsRouteWithPrefix, func(householdInstrumentOwnershipsRouter routing.Router) {
 				householdInstrumentOwnershipsRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateHouseholdInstrumentOwnershipsPermission)).
-					Post(root, s.householdInstrumentOwnershipService.CreateHouseholdInstrumentOwnershipHandler)
+					Post(root, s.mealPlanningService.CreateHouseholdInstrumentOwnershipHandler)
 				householdInstrumentOwnershipsRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadHouseholdInstrumentOwnershipsPermission)).
-					Get(root, s.householdInstrumentOwnershipService.ListHouseholdInstrumentOwnershipHandler)
+					Get(root, s.mealPlanningService.ListHouseholdInstrumentOwnershipHandler)
 
 				householdInstrumentOwnershipsRouter.Route(householdInstrumentOwnershipIDRouteParam, func(singleHouseholdInstrumentOwnershipRouter routing.Router) {
 					singleHouseholdInstrumentOwnershipRouter.
 						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadHouseholdInstrumentOwnershipsPermission)).
-						Get(root, s.householdInstrumentOwnershipService.ReadHouseholdInstrumentOwnershipHandler)
+						Get(root, s.mealPlanningService.ReadHouseholdInstrumentOwnershipHandler)
 					singleHouseholdInstrumentOwnershipRouter.
 						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateHouseholdInstrumentOwnershipsPermission)).
-						Put(root, s.householdInstrumentOwnershipService.UpdateHouseholdInstrumentOwnershipHandler)
+						Put(root, s.mealPlanningService.UpdateHouseholdInstrumentOwnershipHandler)
 					singleHouseholdInstrumentOwnershipRouter.
 						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveHouseholdInstrumentOwnershipsPermission)).
-						Delete(root, s.householdInstrumentOwnershipService.ArchiveHouseholdInstrumentOwnershipHandler)
+						Delete(root, s.mealPlanningService.ArchiveHouseholdInstrumentOwnershipHandler)
 				})
 			})
 		})
@@ -462,22 +454,22 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 		// UserIngredientPreferences
 		userIngredientPreferencesPath := "user_ingredient_preferences"
 		userIngredientPreferencesRouteWithPrefix := fmt.Sprintf("/%s", userIngredientPreferencesPath)
-		userIngredientPreferencesIDRouteParam := buildURLVarChunk(useringredientpreferencesservice.UserIngredientPreferenceIDURIParamKey, "")
+		userIngredientPreferencesIDRouteParam := buildURLVarChunk(mealplanningservice.UserIngredientPreferenceIDURIParamKey, "")
 		v1Router.Route(userIngredientPreferencesRouteWithPrefix, func(userIngredientPreferencesRouter routing.Router) {
 			userIngredientPreferencesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateUserIngredientPreferencesPermission)).
-				Post(root, s.userIngredientPreferencesService.CreateUserIngredientPreferenceHandler)
+				Post(root, s.mealPlanningService.CreateUserIngredientPreferenceHandler)
 			userIngredientPreferencesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadUserIngredientPreferencesPermission)).
-				Get(root, s.userIngredientPreferencesService.ListUserIngredientPreferencesHandler)
+				Get(root, s.mealPlanningService.ListUserIngredientPreferencesHandler)
 
 			userIngredientPreferencesRouter.Route(userIngredientPreferencesIDRouteParam, func(singleUserIngredientPreferenceRouter routing.Router) {
 				singleUserIngredientPreferenceRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateUserIngredientPreferencesPermission)).
-					Put(root, s.userIngredientPreferencesService.UpdateUserIngredientPreferenceHandler)
+					Put(root, s.mealPlanningService.UpdateUserIngredientPreferenceHandler)
 				singleUserIngredientPreferenceRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveUserIngredientPreferencesPermission)).
-					Delete(root, s.userIngredientPreferencesService.ArchiveUserIngredientPreferenceHandler)
+					Delete(root, s.mealPlanningService.ArchiveUserIngredientPreferenceHandler)
 			})
 		})
 
@@ -767,28 +759,28 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			})
 		})
 
-		// Meals
+		// MealPlanning
 		mealPath := "meals"
 		mealsRouteWithPrefix := fmt.Sprintf("/%s", mealPath)
-		mealIDRouteParam := buildURLVarChunk(mealsservice.MealIDURIParamKey, "")
+		mealIDRouteParam := buildURLVarChunk(mealplanningservice.MealIDURIParamKey, "")
 		v1Router.Route(mealsRouteWithPrefix, func(mealsRouter routing.Router) {
 			mealsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealsPermission)).
-				Post(root, s.mealsService.CreateMealHandler)
+				Post(root, s.mealPlanningService.CreateMealHandler)
 			mealsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
-				Get(root, s.mealsService.ListMealsHandler)
+				Get(root, s.mealPlanningService.ListMealsHandler)
 			mealsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
-				Get(searchRoot, s.mealsService.SearchMealsHandler)
+				Get(searchRoot, s.mealPlanningService.SearchMealsHandler)
 
 			mealsRouter.Route(mealIDRouteParam, func(singleMealRouter routing.Router) {
 				singleMealRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
-					Get(root, s.mealsService.ReadMealHandler)
+					Get(root, s.mealPlanningService.ReadMealHandler)
 				singleMealRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealsPermission)).
-					Delete(root, s.mealsService.ArchiveMealHandler)
+					Delete(root, s.mealPlanningService.ArchiveMealHandler)
 			})
 		})
 
@@ -1082,28 +1074,28 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 		// MealPlans
 		mealPlanPath := "meal_plans"
 		mealPlansRouteWithPrefix := fmt.Sprintf("/%s", mealPlanPath)
-		mealPlanIDRouteParam := buildURLVarChunk(mealplansservice.MealPlanIDURIParamKey, "")
+		mealPlanIDRouteParam := buildURLVarChunk(mealplanningservice.MealPlanIDURIParamKey, "")
 		v1Router.Route(mealPlansRouteWithPrefix, func(mealPlansRouter routing.Router) {
 			mealPlansRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlansPermission)).
-				Post(root, s.mealPlansService.CreateMealPlanHandler)
+				Post(root, s.mealPlanningService.CreateMealPlanHandler)
 			mealPlansRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlansPermission)).
-				Get(root, s.mealPlansService.ListMealPlanHandler)
+				Get(root, s.mealPlanningService.ListMealPlanHandler)
 
 			mealPlansRouter.Route(mealPlanIDRouteParam, func(singleMealPlanRouter routing.Router) {
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlansPermission)).
-					Get(root, s.mealPlansService.ReadMealPlanHandler)
+					Get(root, s.mealPlanningService.ReadMealPlanHandler)
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlansPermission)).
-					Put(root, s.mealPlansService.UpdateMealPlanHandler)
+					Put(root, s.mealPlanningService.UpdateMealPlanHandler)
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlansPermission)).
-					Delete(root, s.mealPlansService.ArchiveMealPlanHandler)
+					Delete(root, s.mealPlanningService.ArchiveMealPlanHandler)
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlansPermission)).
-					Post("/finalize", s.mealPlansService.FinalizeMealPlanHandler)
+					Post("/finalize", s.mealPlanningService.FinalizeMealPlanHandler)
 			})
 		})
 
@@ -1115,23 +1107,23 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			mealPlanTaskPath,
 		)
 		mealPlanTasksRouteWithPrefix := fmt.Sprintf("/%s", mealPlanTasksRoute)
-		mealPlanTaskIDRouteParam := buildURLVarChunk(mealplantasksservice.MealPlanTaskIDURIParamKey, "")
+		mealPlanTaskIDRouteParam := buildURLVarChunk(mealplanningservice.MealPlanTaskIDURIParamKey, "")
 		v1Router.Route(mealPlanTasksRouteWithPrefix, func(mealPlanTasksRouter routing.Router) {
 			mealPlanTasksRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanTasksPermission)).
-				Get(root, s.mealPlanTasksService.ListMealPlanTasksByMealPlanHandler)
+				Get(root, s.mealPlanningService.ListMealPlanTasksByMealPlanHandler)
 			mealPlanTasksRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanTasksPermission)).
-				Post(root, s.mealPlanTasksService.CreateMealPlanTaskHandler)
+				Post(root, s.mealPlanningService.CreateMealPlanTaskHandler)
 
 			mealPlanTasksRouter.Route(mealPlanTaskIDRouteParam, func(singleMealPlanTaskRouter routing.Router) {
 				singleMealPlanTaskRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanTasksPermission)).
-					Get(root, s.mealPlanTasksService.ReadMealPlanTaskHandler)
+					Get(root, s.mealPlanningService.ReadMealPlanTaskHandler)
 
 				singleMealPlanTaskRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanTasksPermission)).
-					Patch(root, s.mealPlanTasksService.MealPlanTaskStatusChangeHandler)
+					Patch(root, s.mealPlanningService.MealPlanTaskStatusChangeHandler)
 			})
 		})
 
@@ -1143,28 +1135,28 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			mealPlanEventPath,
 		)
 		mealPlanEventsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanEventsRoute)
-		mealPlanEventIDRouteParam := buildURLVarChunk(mealplaneventsservice.MealPlanEventIDURIParamKey, "")
+		mealPlanEventIDRouteParam := buildURLVarChunk(mealplanningservice.MealPlanEventIDURIParamKey, "")
 		v1Router.Route(mealPlanEventsRouteWithPrefix, func(mealPlanEventsRouter routing.Router) {
 			mealPlanEventsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanEventsPermission)).
-				Post(root, s.mealPlanEventsService.CreateMealPlanEventHandler)
+				Post(root, s.mealPlanningService.CreateMealPlanEventHandler)
 			mealPlanEventsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
-				Get(root, s.mealPlanEventsService.ListMealPlanEventHandler)
+				Get(root, s.mealPlanningService.ListMealPlanEventHandler)
 
 			mealPlanEventsRouter.Route(mealPlanEventIDRouteParam, func(singleMealPlanEventRouter routing.Router) {
 				singleMealPlanEventRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
-					Get(root, s.mealPlanEventsService.ReadMealPlanEventHandler)
+					Get(root, s.mealPlanningService.ReadMealPlanEventHandler)
 				singleMealPlanEventRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanEventsPermission)).
-					Put(root, s.mealPlanEventsService.UpdateMealPlanEventHandler)
+					Put(root, s.mealPlanningService.UpdateMealPlanEventHandler)
 				singleMealPlanEventRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionVotesPermission)).
-					Post("/vote", s.mealPlanOptionVotesService.CreateMealPlanOptionVoteHandler)
+					Post("/vote", s.mealPlanningService.CreateMealPlanOptionVoteHandler)
 				singleMealPlanEventRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanEventsPermission)).
-					Delete(root, s.mealPlanEventsService.ArchiveMealPlanEventHandler)
+					Delete(root, s.mealPlanningService.ArchiveMealPlanEventHandler)
 			})
 		})
 
@@ -1176,25 +1168,25 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			mealPlanGroceryListItemPath,
 		)
 		mealPlanGroceryListItemsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanGroceryListItemsRoute)
-		mealPlanGroceryListItemIDRouteParam := buildURLVarChunk(mealplangrocerylistitemssservice.MealPlanGroceryListItemIDURIParamKey, "")
+		mealPlanGroceryListItemIDRouteParam := buildURLVarChunk(mealplanningservice.MealPlanGroceryListItemIDURIParamKey, "")
 		v1Router.Route(mealPlanGroceryListItemsRouteWithPrefix, func(mealPlanGroceryListItemsRouter routing.Router) {
 			mealPlanGroceryListItemsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanGroceryListItemsPermission)).
-				Post(root, s.mealPlanGroceryListItemsService.CreateMealPlanGroceryListItemHandler)
+				Post(root, s.mealPlanningService.CreateMealPlanGroceryListItemHandler)
 			mealPlanGroceryListItemsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanGroceryListItemsPermission)).
-				Get(root, s.mealPlanGroceryListItemsService.ListMealPlanGroceryListItemsByMealPlanHandler)
+				Get(root, s.mealPlanningService.ListMealPlanGroceryListItemsByMealPlanHandler)
 
 			mealPlanGroceryListItemsRouter.Route(mealPlanGroceryListItemIDRouteParam, func(singleMealPlanGroceryListItemRouter routing.Router) {
 				singleMealPlanGroceryListItemRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanGroceryListItemsPermission)).
-					Get(root, s.mealPlanGroceryListItemsService.ReadMealPlanGroceryListItemHandler)
+					Get(root, s.mealPlanningService.ReadMealPlanGroceryListItemHandler)
 				singleMealPlanGroceryListItemRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanGroceryListItemsPermission)).
-					Put(root, s.mealPlanGroceryListItemsService.UpdateMealPlanGroceryListItemHandler)
+					Put(root, s.mealPlanningService.UpdateMealPlanGroceryListItemHandler)
 				singleMealPlanGroceryListItemRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanGroceryListItemsPermission)).
-					Delete(root, s.mealPlanGroceryListItemsService.ArchiveMealPlanGroceryListItemHandler)
+					Delete(root, s.mealPlanningService.ArchiveMealPlanGroceryListItemHandler)
 			})
 		})
 
@@ -1208,25 +1200,25 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			mealPlanOptionPath,
 		)
 		mealPlanOptionsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionsRoute)
-		mealPlanOptionIDRouteParam := buildURLVarChunk(mealplanoptionsservice.MealPlanOptionIDURIParamKey, "")
+		mealPlanOptionIDRouteParam := buildURLVarChunk(mealplanningservice.MealPlanOptionIDURIParamKey, "")
 		v1Router.Route(mealPlanOptionsRouteWithPrefix, func(mealPlanOptionsRouter routing.Router) {
 			mealPlanOptionsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionsPermission)).
-				Post(root, s.mealPlanOptionsService.CreateMealPlanOptionHandler)
+				Post(root, s.mealPlanningService.CreateMealPlanOptionHandler)
 			mealPlanOptionsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionsPermission)).
-				Get(root, s.mealPlanOptionsService.ListMealPlanOptionHandler)
+				Get(root, s.mealPlanningService.ListMealPlanOptionHandler)
 
 			mealPlanOptionsRouter.Route(mealPlanOptionIDRouteParam, func(singleMealPlanOptionRouter routing.Router) {
 				singleMealPlanOptionRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionsPermission)).
-					Get(root, s.mealPlanOptionsService.ReadMealPlanOptionHandler)
+					Get(root, s.mealPlanningService.ReadMealPlanOptionHandler)
 				singleMealPlanOptionRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanOptionsPermission)).
-					Put(root, s.mealPlanOptionsService.UpdateMealPlanOptionHandler)
+					Put(root, s.mealPlanningService.UpdateMealPlanOptionHandler)
 				singleMealPlanOptionRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanOptionsPermission)).
-					Delete(root, s.mealPlanOptionsService.ArchiveMealPlanOptionHandler)
+					Delete(root, s.mealPlanningService.ArchiveMealPlanOptionHandler)
 			})
 		})
 
@@ -1242,22 +1234,22 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			mealPlanOptionVotePath,
 		)
 		mealPlanOptionVotesRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionVotesRoute)
-		mealPlanOptionVoteIDRouteParam := buildURLVarChunk(mealplanoptionvotesservice.MealPlanOptionVoteIDURIParamKey, "")
+		mealPlanOptionVoteIDRouteParam := buildURLVarChunk(mealplanningservice.MealPlanOptionVoteIDURIParamKey, "")
 		v1Router.Route(mealPlanOptionVotesRouteWithPrefix, func(mealPlanOptionVotesRouter routing.Router) {
 			mealPlanOptionVotesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionVotesPermission)).
-				Get(root, s.mealPlanOptionVotesService.ListMealPlanOptionVoteHandler)
+				Get(root, s.mealPlanningService.ListMealPlanOptionVoteHandler)
 
 			mealPlanOptionVotesRouter.Route(mealPlanOptionVoteIDRouteParam, func(singleMealPlanOptionVoteRouter routing.Router) {
 				singleMealPlanOptionVoteRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionVotesPermission)).
-					Get(root, s.mealPlanOptionVotesService.ReadMealPlanOptionVoteHandler)
+					Get(root, s.mealPlanningService.ReadMealPlanOptionVoteHandler)
 				singleMealPlanOptionVoteRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanOptionVotesPermission)).
-					Put(root, s.mealPlanOptionVotesService.UpdateMealPlanOptionVoteHandler)
+					Put(root, s.mealPlanningService.UpdateMealPlanOptionVoteHandler)
 				singleMealPlanOptionVoteRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanOptionVotesPermission)).
-					Delete(root, s.mealPlanOptionVotesService.ArchiveMealPlanOptionVoteHandler)
+					Delete(root, s.mealPlanningService.ArchiveMealPlanOptionVoteHandler)
 			})
 		})
 

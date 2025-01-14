@@ -40,16 +40,8 @@ var (
 			"OAuth2Clients",
 			// Data
 			"ValidEnumerations",
-			"MealPlanEvents",
-			"MealPlanOptionVotes",
-			"Meals",
+			"MealPlanning",
 			"Recipes",
-			"MealPlans",
-			"MealPlanOptions",
-			"MealPlanTasks",
-			"MealPlanGroceryListItems",
-			"UserIngredientPreferences",
-			"HouseholdInstrumentOwnerships",
 		),
 	)
 )

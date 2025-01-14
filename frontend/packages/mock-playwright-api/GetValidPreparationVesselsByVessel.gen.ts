@@ -9,12 +9,12 @@ import { assertClient, assertMethod, ResponseConfig } from './helpers';
 export class MockGetValidPreparationVesselsByVesselResponseConfig extends ResponseConfig<
   QueryFilteredResult<ValidPreparationVessel>
 > {
-  ValidVesselID: string;
+  validVesselID: string;
 
-  constructor(ValidVesselID: string, status: number = 200, body: ValidPreparationVessel[] = []) {
+  constructor(validVesselID: string, status: number = 200, body: ValidPreparationVessel[] = []) {
     super();
 
-    this.ValidVesselID = ValidVesselID;
+    this.validVesselID = validVesselID;
 
     this.status = status;
     if (this.body) {
@@ -28,7 +28,7 @@ export const mockGetValidPreparationVesselsByVessels = (
 ) => {
   return (page: Page) =>
     page.route(
-      `**/api/v1/valid_preparation_vessels/by_vessel/${resCfg.ValidVesselID}`,
+      `**/api/v1/valid_preparation_vessels/by_vessel/${resCfg.validVesselID}`,
       (route: Route) => {
         const req = route.request();
 
