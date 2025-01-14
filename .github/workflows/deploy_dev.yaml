@@ -112,7 +112,7 @@ jobs:
       - baseline-infra
     timeout-minutes: 90
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.backend == 'true' }}
+    # if: ${{ needs.changes.outputs.backend == 'true' }}
     strategy:
       matrix:
         go-version: ['1.23.x']
@@ -181,7 +181,7 @@ jobs:
       - changes
       - baseline-infra
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.frontend_admin == 'true' }}
+    # if: ${{ needs.changes.outputs.frontend_admin == 'true' }}
     strategy:
       matrix:
         configs:
@@ -245,7 +245,7 @@ jobs:
       - changes
       - baseline-infra
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.frontend_landing == 'true' }}
+    # if: ${{ needs.changes.outputs.frontend_landing == 'true' }}
     strategy:
       matrix:
         configs:
@@ -295,7 +295,7 @@ jobs:
       - changes
       - baseline-infra
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.frontend_webapp == 'true' }}
+    # if: ${{ needs.changes.outputs.frontend_webapp == 'true' }}
     strategy:
       matrix:
         configs:
@@ -353,7 +353,7 @@ jobs:
         working-directory: frontend/deploy/environments/dev/webapp/terraform
 
   applications:
-    if: ${{ success() || cancelled() }}
+    # if: ${{ success() || cancelled() }}
     needs:
       - backend-infra
       - webapp-infra
