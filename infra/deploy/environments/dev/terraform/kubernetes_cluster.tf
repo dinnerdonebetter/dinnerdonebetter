@@ -60,9 +60,6 @@ resource "google_container_node_pool" "primary_nodes" {
   ]
 
   autoscaling {
-    min_node_count = 1
-    max_node_count = 1
-    total_min_node_count = 1
     total_max_node_count = 1
     location_policy = "BALANCED"
   }
