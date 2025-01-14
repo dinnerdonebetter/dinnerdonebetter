@@ -19,47 +19,47 @@ import (
 const (
 	exampleSigningKey = testutils.Example32ByteKey
 	ed25519SigningKey = testutils.Example64ByteKey
-	exampleJWT        = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJUZXN0X2p3dFNpZ25lcl9Jc3N1ZUpXVC9zdGFuZGFyZCIsImV4cCI6MTcyNzU3MDU0OCwiaWF0IjoxNzI3NTY5OTQ4LCJpc3MiOiJkaW5uZXJkb25lYmV0dGVyIiwianRpIjoiY3JzYTA3NnRnM3FkdG1jY3E5MTAiLCJuYmYiOjE3Mjc1Njk4ODgsInN1YiI6ImNyc2EwNzZ0ZzNxZHRtY2NxOTBnIn0.tMASrQBoYAq4n1iwOElLqUQsYOARX5T1qxo8RKhvaAg"
+	exampleToken      = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJUZXN0X2p3dFNpZ25lcl9Jc3N1ZUpXVC9zdGFuZGFyZCIsImV4cCI6MTcyNzU3MDU0OCwiaWF0IjoxNzI3NTY5OTQ4LCJpc3MiOiJkaW5uZXJkb25lYmV0dGVyIiwianRpIjoiY3JzYTA3NnRnM3FkdG1jY3E5MTAiLCJuYmYiOjE3Mjc1Njk4ODgsInN1YiI6ImNyc2EwNzZ0ZzNxZHRtY2NxOTBnIn0.tMASrQBoYAq4n1iwOElLqUQsYOARX5T1qxo8RKhvaAg"
 	exampleExpiry     = time.Minute * 10
 )
 
-func Test_jwtSigner_IssueJWT(T *testing.T) {
+func Test_signer_IssueJWT(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		signer, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := context.Background()
 		user := fakes.BuildFakeUser()
 
-		actual, err := signer.IssueToken(ctx, user, exampleExpiry)
+		actual, err := s.IssueToken(ctx, user, exampleExpiry)
 		assert.NoError(t, err)
 
-		parsed, err := signer.ParseUserIDFromToken(ctx, actual)
+		parsed, err := s.ParseUserIDFromToken(ctx, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, parsed, user.ID)
 	})
 }
 
-func Test_jwtSigner_ParseJWT(T *testing.T) {
+func Test_signer_ParseJWT(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		signer, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
 		ctx := context.Background()
 		user := fakes.BuildFakeUser()
 
-		exampleToken, err := signer.IssueToken(ctx, user, exampleExpiry)
+		issuedToken, err := s.IssueToken(ctx, user, exampleExpiry)
 		assert.NoError(t, err)
 
-		actual, err := signer.ParseUserIDFromToken(ctx, exampleToken)
+		actual, err := s.ParseUserIDFromToken(ctx, issuedToken)
 		assert.NoError(t, err)
 		assert.Equal(t, actual, user.ID)
 	})
@@ -75,10 +75,10 @@ func Test_jwtSigner_ParseJWT(T *testing.T) {
 
 		ctx := context.Background()
 
-		signer, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
-		actual, err := signer.ParseUserIDFromToken(ctx, tokenString)
+		actual, err := s.ParseUserIDFromToken(ctx, tokenString)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 	})
@@ -86,15 +86,14 @@ func Test_jwtSigner_ParseJWT(T *testing.T) {
 	T.Run("with invalid key", func(t *testing.T) {
 		t.Parallel()
 
-		exampleToken := exampleJWT
-		signer, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
+		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
-		signer.(*jwtSigner).signingKey = nil
+		s.(*signer).signingKey = nil
 
 		ctx := context.Background()
 
-		actual, err := signer.ParseUserIDFromToken(ctx, exampleToken)
+		actual, err := s.ParseUserIDFromToken(ctx, exampleToken)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 	})

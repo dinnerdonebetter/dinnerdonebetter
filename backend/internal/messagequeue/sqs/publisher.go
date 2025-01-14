@@ -33,34 +33,58 @@ type (
 )
 
 // Stop does nothing.
-func (r *sqsPublisher) Stop() {}
+func (p *sqsPublisher) Stop() {}
 
 // Publish publishes a message onto an SQS event queue.
-func (r *sqsPublisher) Publish(ctx context.Context, data any) error {
-	_, span := r.tracer.StartSpan(ctx)
+func (p *sqsPublisher) Publish(ctx context.Context, data any) error {
+	_, span := p.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger
+	logger := p.logger
 
 	logger.Debug("publishing message")
 
 	var b bytes.Buffer
-	if err := r.encoder.Encode(ctx, &b, data); err != nil {
+	if err := p.encoder.Encode(ctx, &b, data); err != nil {
 		return observability.PrepareError(err, span, "encoding topic message")
 	}
 
 	input := &sqs.SendMessageInput{
 		MessageAttributes: nil,
 		MessageBody:       aws.String(b.String()),
-		QueueUrl:          aws.String(r.topic),
+		QueueUrl:          aws.String(p.topic),
 	}
 
-	_, err := r.publisher.SendMessageWithContext(ctx, input)
-	if err != nil {
+	if _, err := p.publisher.SendMessageWithContext(ctx, input); err != nil {
 		return observability.PrepareError(err, span, "publishing message")
 	}
 
 	return nil
+}
+
+// PublishAsync publishes a message onto an SQS event queue.
+func (p *sqsPublisher) PublishAsync(ctx context.Context, data any) {
+	ctx, span := p.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := p.logger
+
+	logger.Debug("publishing message")
+
+	var b bytes.Buffer
+	if err := p.encoder.Encode(ctx, &b, data); err != nil {
+		observability.AcknowledgeError(err, logger, span, "encoding topic message")
+	}
+
+	input := &sqs.SendMessageInput{
+		MessageAttributes: nil,
+		MessageBody:       aws.String(b.String()),
+		QueueUrl:          aws.String(p.topic),
+	}
+
+	if _, err := p.publisher.SendMessageWithContext(ctx, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing message")
+	}
 }
 
 // provideSQSPublisher provides a sqs-backed Publisher.

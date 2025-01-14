@@ -14,7 +14,7 @@ func (c *Client) LoginForJWT(
 	ctx context.Context,
 	input *types.UserLoginInput,
 	reqMods ...RequestModifier,
-) (*types.JWTResponse, error) {
+) (*types.TokenResponse, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -31,16 +31,16 @@ func (c *Client) LoginForJWT(
 	u := c.BuildURL(ctx, nil, "/users/login/jwt")
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a JWTResponse")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a TokenResponse")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *types.APIResponse[*types.JWTResponse]
+	var apiResponse *types.APIResponse[*types.TokenResponse]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading JWTResponse creation response")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading TokenResponse creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

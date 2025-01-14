@@ -63,7 +63,7 @@ func createValidVesselForTest(t *testing.T, ctx context.Context, vessel *types.V
 // TODO: handle creating and reading a vessel that doesn't have a CapacityUnit
 
 func (s *TestSuite) TestValidVessels_CompleteLifecycle() {
-	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

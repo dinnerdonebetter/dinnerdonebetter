@@ -8,8 +8,12 @@ import (
 type (
 	// Publisher produces events onto a queue.
 	Publisher interface {
+		// Stop halts all publishing.
 		Stop()
+		// Publish writes a message onto a message queue.
 		Publish(ctx context.Context, data any) error
+		// PublishAsync writes a message onto a message queue, but logs any encountered errors instead of returning them.
+		PublishAsync(ctx context.Context, data any)
 	}
 
 	// PublisherProvider is a function that provides a Publisher for a given topic.
@@ -27,7 +31,10 @@ var (
 type noopPublisher struct{}
 
 // Publish does nothing.
-func (n *noopPublisher) Publish(_ context.Context, _ any) error { return nil }
+func (n *noopPublisher) Publish(context.Context, any) error { return nil }
+
+// PublishAsync does nothing.
+func (n *noopPublisher) PublishAsync(context.Context, any) {}
 
 // Stop does nothing.
 func (n *noopPublisher) Stop() {}

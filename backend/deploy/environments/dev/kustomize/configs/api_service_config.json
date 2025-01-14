@@ -134,49 +134,12 @@
 		"pingWaitPeriod": 1000000000
 	},
 	"services": {
-		"mealPlanEvents": {},
-		"validInstrumentMeasurementUnits": {},
-		"mealPlanGroceryListItems": {},
-		"validIngredientStateIngredients": {},
-		"serviceSettingConfigurations": {},
-		"recipeRatings": {},
-		"validMeasurementUnitConversions": {},
-		"validIngredientGroups": {},
-		"serviceSettings": {},
-		"mealPlanTasks": {},
-		"recipeStepProducts": {},
-		"recipeStepIngredients": {},
-		"recipePrepTasks": {},
-		"recipeStepCompletionConditions": {},
-		"userIngredientPreferences": {},
-		"households": {},
-		"mealPlans": {},
-		"validPreparationInstruments": {},
-		"validIngredientPreparations": {},
-		"recipeStepInstruments": {},
 		"auditLogEntries": {},
-		"householdInstrumentOwnerships": {},
-		"mealPlanOptionVotes": {},
-		"recipeStepVessels": {},
-		"validPreparationVessels": {},
-		"mealPlanOptions": {},
+		"serviceSettingConfigurations": {},
 		"userNotifications": {},
+		"households": {},
+		"serviceSettings": {},
 		"workers": {},
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://media.dinnerdonebetter.dev/recipe_media",
-			"uploads": {
-				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "media.dinnerdonebetter.dev"
-					},
-					"bucketPrefix": "recipe_media/",
-					"bucketName": "media.dinnerdonebetter.dev",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "gcp"
-				},
-				"debug": true
-			}
-		},
 		"users": {
 			"publicMediaURLPrefix": "https://media.dinnerdonebetter.dev/avatars",
 			"uploads": {
@@ -221,10 +184,14 @@
 			"searchFromDatabase": true
 		},
 		"auth": {
+			"tokens": {
+				"provider": "paseto",
+				"audience": "https://api.dinnerdonebetter.dev",
+				"base64EncodedSigningKey": ""
+			},
 			"sso": {
 				"google": {}
 			},
-			"jwtAudience": "https://api.dinnerdonebetter.dev",
 			"jwtSigningKey": "",
 			"oauth2": {
 				"domain": "https://dinnerdonebetter.dev",
@@ -238,35 +205,20 @@
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
 		},
-		"validInstruments": {
-			"useSearchService": true
+		"oauth2Clients": {
+			"creationEnabled": false
 		},
 		"meals": {
 			"searchFromDatabase": true
 		},
-		"validMeasurementUnits": {
-			"useSearchService": true
-		},
-		"oauth2Clients": {
-			"creationEnabled": false
-		},
-		"validVessels": {
-			"useSearchService": true
+		"webhooks": {
+			"debug": false
 		},
 		"householdInvitations": {
 			"debug": false
 		},
-		"validPreparations": {
-			"useSearchService": true
-		},
-		"validIngredientStates": {
-			"useSearchService": true
-		},
-		"validIngredients": {
-			"useSearchService": true
-		},
-		"webhooks": {
-			"debug": false
+		"validEnumerations": {
+			"useSearchService": false
 		}
 	}
 }

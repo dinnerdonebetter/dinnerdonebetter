@@ -34,6 +34,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/wire v0.6.0
 	github.com/googleapis/gax-go/v2 v2.14.0
+	github.com/gorilla/securecookie v1.1.2
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.7
@@ -55,6 +56,7 @@ require (
 	github.com/moul/http2curl v1.0.0
 	github.com/mssola/useragent v1.0.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
+	github.com/o1egl/paseto/v2 v2.1.1
 	github.com/posthog/posthog-go v1.2.24
 	github.com/pquerna/otp v1.4.0
 	github.com/riandyrn/otelchi v0.11.0
@@ -185,7 +187,6 @@ require (
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/sessions v1.1.1 // indirect
 	github.com/gregjones/httpcache v0.0.0-20171119193500-2bcd89a1743f // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.24.0 // indirect
@@ -218,6 +219,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mikespook/gorbac v2.3.0+incompatible // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/patternmatcher v0.6.0 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect

@@ -24,8 +24,8 @@ func TestClient_AdminLoginForJWT(T *testing.T) {
 
 		ctx := context.Background()
 
-		data := fakes.BuildFakeJWTResponse()
-		expected := &types.APIResponse[*types.JWTResponse]{
+		data := fakes.BuildFakeTokenResponse()
+		expected := &types.APIResponse[*types.TokenResponse]{
 			Data: data,
 		}
 

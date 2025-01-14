@@ -58,9 +58,9 @@ func BuildFakeUserStatusResponse() *types.UserStatusResponse {
 	}
 }
 
-// BuildFakeJWTResponse builds a faked JWTResponse.
-func BuildFakeJWTResponse() *types.JWTResponse {
-	return &types.JWTResponse{
+// BuildFakeTokenResponse builds a faked TokenResponse.
+func BuildFakeTokenResponse() *types.TokenResponse {
+	return &types.TokenResponse{
 		UserID:      BuildFakeID(),
 		HouseholdID: BuildFakeID(),
 		Token:       fake.UUID(),

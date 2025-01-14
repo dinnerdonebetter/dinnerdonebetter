@@ -94,8 +94,8 @@ type (
 		UserIsAuthenticated      bool   `json:"isAuthenticated"`
 	}
 
-	// JWTResponse is used to return a JWT to a user.
-	JWTResponse struct {
+	// TokenResponse is used to return a JWT to a user.
+	TokenResponse struct {
 		_ struct{} `json:"-"`
 
 		UserID      string `json:"userID"`

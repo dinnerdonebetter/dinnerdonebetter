@@ -24,7 +24,7 @@ func checkValidIngredientPreparationEquality(t *testing.T, expected, actual *typ
 }
 
 func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
-	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

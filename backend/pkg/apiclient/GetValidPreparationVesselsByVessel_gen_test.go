@@ -23,7 +23,7 @@ func TestClient_GetValidPreparationVesselsByVessel(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		ValidVesselID := fakes.BuildFakeID()
+		validVesselID := fakes.BuildFakeID()
 
 		list := fakes.BuildFakeValidPreparationVesselsList()
 
@@ -32,16 +32,16 @@ func TestClient_GetValidPreparationVesselsByVessel(T *testing.T) {
 			Data:       list.Data,
 		}
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, ValidVesselID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, validVesselID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.GetValidPreparationVesselsByVessel(ctx, ValidVesselID, nil)
+		actual, err := c.GetValidPreparationVesselsByVessel(ctx, validVesselID, nil)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, list, actual)
 	})
 
-	T.Run("with empty ValidVessel ID", func(t *testing.T) {
+	T.Run("with empty validVessel ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -56,10 +56,10 @@ func TestClient_GetValidPreparationVesselsByVessel(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		ValidVesselID := fakes.BuildFakeID()
+		validVesselID := fakes.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetValidPreparationVesselsByVessel(ctx, ValidVesselID, nil)
+		actual, err := c.GetValidPreparationVesselsByVessel(ctx, validVesselID, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -69,11 +69,11 @@ func TestClient_GetValidPreparationVesselsByVessel(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		ValidVesselID := fakes.BuildFakeID()
+		validVesselID := fakes.BuildFakeID()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, ValidVesselID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, validVesselID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetValidPreparationVesselsByVessel(ctx, ValidVesselID, nil)
+		actual, err := c.GetValidPreparationVesselsByVessel(ctx, validVesselID, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

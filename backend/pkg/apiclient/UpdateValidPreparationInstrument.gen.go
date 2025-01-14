@@ -15,7 +15,7 @@ import (
 
 func (c *Client) UpdateValidPreparationInstrument(
 	ctx context.Context,
-	validPreparationVesselID string,
+	validPreparationInstrumentID string,
 	input *types.ValidPreparationInstrumentUpdateRequestInput,
 	reqMods ...RequestModifier,
 ) error {
@@ -24,13 +24,13 @@ func (c *Client) UpdateValidPreparationInstrument(
 
 	logger := c.logger.Clone()
 
-	if validPreparationVesselID == "" {
+	if validPreparationInstrumentID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
-	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_preparation_instruments/%s", validPreparationVesselID))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_preparation_instruments/%s", validPreparationInstrumentID))
 	req, err := c.buildDataRequest(ctx, http.MethodPut, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a ValidPreparationInstrument")

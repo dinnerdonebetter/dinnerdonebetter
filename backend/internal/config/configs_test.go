@@ -1,7 +1,6 @@
 package config
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"os"
@@ -13,7 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -79,10 +78,8 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 }
 
 //nolint:paralleltest // because we set env vars for this, we can't
-func TestFetchForApplication(T *testing.T) {
+func TestLoadConfigFromEnvironment(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
-		ctx := context.Background()
-
 		cfg := &APIServiceConfig{
 			Database: databasecfg.Config{
 				Debug: true,
@@ -96,7 +93,7 @@ func TestFetchForApplication(T *testing.T) {
 
 		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
 
-		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)
+		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 
@@ -105,8 +102,6 @@ func TestFetchForApplication(T *testing.T) {
 
 	// prior TODOs count here too
 	T.Run("overrides meta", func(t *testing.T) {
-		ctx := context.Background()
-
 		cfg := &APIServiceConfig{
 			Database: databasecfg.Config{
 				Debug: true,
@@ -121,7 +116,7 @@ func TestFetchForApplication(T *testing.T) {
 		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
 		t.Setenv(envvars.MetaDebugEnvVarKey, "false")
 
-		actual, err := FetchForApplication(ctx, GetAPIServiceConfigFromGoogleCloudRunEnvironment)
+		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 

@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -37,7 +36,7 @@ type (
 		Index               uint16     `json:"index"`
 	}
 
-	// RecipeMediaCreationRequestInput represents what a user could set as input for creating valid preparations.
+	// RecipeMediaCreationRequestInput represents what a user could set as input for creating recipe media.
 	RecipeMediaCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
@@ -49,7 +48,7 @@ type (
 		Index               uint16  `json:"index"`
 	}
 
-	// RecipeMediaDatabaseCreationInput represents what a user could set as input for creating valid preparations.
+	// RecipeMediaDatabaseCreationInput represents what a user could set as input for creating recipe media.
 	RecipeMediaDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
@@ -62,7 +61,7 @@ type (
 		Index               uint16  `json:"-"`
 	}
 
-	// RecipeMediaUpdateRequestInput represents what a user could set as input for updating valid preparations.
+	// RecipeMediaUpdateRequestInput represents what a user could set as input for updating recipe media.
 	RecipeMediaUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
@@ -74,24 +73,13 @@ type (
 		Index               *uint16 `json:"index,omitempty"`
 	}
 
-	// RecipeMediaDataManager describes a structure capable of storing valid preparations permanently.
+	// RecipeMediaDataManager describes a structure capable of storing recipe media permanently.
 	RecipeMediaDataManager interface {
 		RecipeMediaExists(ctx context.Context, recipeMediaID string) (bool, error)
 		GetRecipeMedia(ctx context.Context, recipeMediaID string) (*RecipeMedia, error)
 		CreateRecipeMedia(ctx context.Context, input *RecipeMediaDatabaseCreationInput) (*RecipeMedia, error)
 		UpdateRecipeMedia(ctx context.Context, updated *RecipeMedia) error
 		ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) error
-	}
-
-	// RecipeMediaDataService describes a structure capable of serving traffic related to valid preparations.
-	RecipeMediaDataService interface {
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		RandomHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

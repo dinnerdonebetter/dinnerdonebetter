@@ -7,12 +7,12 @@ import { ValidPreparationInstrument } from '@dinnerdonebetter/models';
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
 export class MockUpdateValidPreparationInstrumentResponseConfig extends ResponseConfig<ValidPreparationInstrument> {
-  validPreparationVesselID: string;
+  validPreparationInstrumentID: string;
 
-  constructor(validPreparationVesselID: string, status: number = 200, body?: ValidPreparationInstrument) {
+  constructor(validPreparationInstrumentID: string, status: number = 200, body?: ValidPreparationInstrument) {
     super();
 
-    this.validPreparationVesselID = validPreparationVesselID;
+    this.validPreparationInstrumentID = validPreparationInstrumentID;
 
     this.status = status;
     if (this.body) {
@@ -24,7 +24,7 @@ export class MockUpdateValidPreparationInstrumentResponseConfig extends Response
 export const mockUpdateValidPreparationInstrument = (resCfg: MockUpdateValidPreparationInstrumentResponseConfig) => {
   return (page: Page) =>
     page.route(
-      `**/api/v1/valid_preparation_instruments/${resCfg.validPreparationVesselID}`,
+      `**/api/v1/valid_preparation_instruments/${resCfg.validPreparationInstrumentID}`,
       (route: Route) => {
         const req = route.request();
 

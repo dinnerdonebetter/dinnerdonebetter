@@ -36,7 +36,6 @@ import {
   HouseholdUserMembership,
   InitializeMealPlanGroceryListRequest,
   InitializeMealPlanGroceryListResponse,
-  JWTResponse,
   Meal,
   MealCreationRequestInput,
   MealPlan,
@@ -104,6 +103,7 @@ import {
   TOTPSecretRefreshInput,
   TOTPSecretRefreshResponse,
   TOTPSecretVerificationInput,
+  TokenResponse,
   User,
   UserAccountStatusUpdateInput,
   UserCreationResponse,
@@ -335,19 +335,19 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
+  async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<TokenResponse>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .post<APIResponse<JWTResponse>>(`/users/login/jwt/admin`, input)
-        .then((res: AxiosResponse<APIResponse<JWTResponse>>) => {
+        .post<APIResponse<TokenResponse>>(`/users/login/jwt/admin`, input)
+        .then((res: AxiosResponse<APIResponse<TokenResponse>>) => {
           if (res.data.error && res.data.error.message.toLowerCase() != 'totp required') {
             reject(res.data.error);
           } else {
             resolve(res);
           }
         })
-        .catch((error: AxiosError<APIResponse<JWTResponse>>) => {
+        .catch((error: AxiosError<APIResponse<TokenResponse>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -1420,17 +1420,17 @@ export class DinnerDoneBetterAPIClient {
   }
 
   async archiveValidPreparationInstrument(
-    validPreparationVesselID: string,
+    validPreparationInstrumentID: string,
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (validPreparationVesselID.trim() === '') {
-        throw new Error('validPreparationVesselID is required');
+      if (validPreparationInstrumentID.trim() === '') {
+        throw new Error('validPreparationInstrumentID is required');
       }
 
       self.client
         .delete<APIResponse<ValidPreparationInstrument>>(
-          `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
+          `/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`,
         )
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
@@ -5731,17 +5731,17 @@ export class DinnerDoneBetterAPIClient {
   }
 
   async getValidPreparationInstrument(
-    validPreparationVesselID: string,
+    validPreparationInstrumentID: string,
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (validPreparationVesselID.trim() === '') {
-        throw new Error('validPreparationVesselID is required');
+      if (validPreparationInstrumentID.trim() === '') {
+        throw new Error('validPreparationInstrumentID is required');
       }
 
       self.client
         .get<APIResponse<ValidPreparationInstrument>>(
-          `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
+          `/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`,
         )
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {
           if (res.data.error) {
@@ -5976,18 +5976,18 @@ export class DinnerDoneBetterAPIClient {
   }
 
   async getValidPreparationVesselsByVessel(
-    ValidVesselID: string,
+    validVesselID: string,
     filter: QueryFilter = QueryFilter.Default(),
   ): Promise<QueryFilteredResult<ValidPreparationVessel>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (ValidVesselID.trim() === '') {
-        throw new Error('ValidVesselID is required');
+      if (validVesselID.trim() === '') {
+        throw new Error('validVesselID is required');
       }
 
       self.client
         .get<APIResponse<Array<ValidPreparationVessel>>>(
-          `/api/v1/valid_preparation_vessels/by_vessel/${ValidVesselID}`,
+          `/api/v1/valid_preparation_vessels/by_vessel/${validVesselID}`,
           {
             params: filter.asRecord(),
           },
@@ -6163,19 +6163,19 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async loginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<JWTResponse>>> {
+  async loginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<TokenResponse>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .post<APIResponse<JWTResponse>>(`/users/login/jwt`, input)
-        .then((res: AxiosResponse<APIResponse<JWTResponse>>) => {
+        .post<APIResponse<TokenResponse>>(`/users/login/jwt`, input)
+        .then((res: AxiosResponse<APIResponse<TokenResponse>>) => {
           if (res.data.error && res.data.error.message.toLowerCase() != 'totp required') {
             reject(res.data.error);
           } else {
             resolve(res);
           }
         })
-        .catch((error: AxiosError<APIResponse<JWTResponse>>) => {
+        .catch((error: AxiosError<APIResponse<TokenResponse>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -8110,18 +8110,18 @@ export class DinnerDoneBetterAPIClient {
   }
 
   async updateValidPreparationInstrument(
-    validPreparationVesselID: string,
+    validPreparationInstrumentID: string,
     input: ValidPreparationInstrumentUpdateRequestInput,
   ): Promise<APIResponse<ValidPreparationInstrument>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (validPreparationVesselID.trim() === '') {
-        throw new Error('validPreparationVesselID is required');
+      if (validPreparationInstrumentID.trim() === '') {
+        throw new Error('validPreparationInstrumentID is required');
       }
 
       self.client
         .put<APIResponse<ValidPreparationInstrument>>(
-          `/api/v1/valid_preparation_instruments/${validPreparationVesselID}`,
+          `/api/v1/valid_preparation_instruments/${validPreparationInstrumentID}`,
           input,
         )
         .then((res: AxiosResponse<APIResponse<ValidPreparationInstrument>>) => {

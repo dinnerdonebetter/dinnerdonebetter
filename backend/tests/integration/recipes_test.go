@@ -395,7 +395,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 }
 
 func (s *TestSuite) TestRecipes_Updating() {
-	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -790,7 +790,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 }
 
 func (s *TestSuite) TestRecipes_Cloning() {
-	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -812,7 +812,7 @@ func (s *TestSuite) TestRecipes_Cloning() {
 
 // TODO: uncomment me
 //func (s *TestSuite) TestRecipes_DAGGeneration() {
-//	s.runTest("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+//	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 //		return func() {
 //			t := s.T()
 //

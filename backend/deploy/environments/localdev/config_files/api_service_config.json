@@ -134,48 +134,12 @@
 		"pingWaitPeriod": 1000000000
 	},
 	"services": {
-		"mealPlanEvents": {},
-		"validInstrumentMeasurementUnits": {},
-		"mealPlanGroceryListItems": {},
-		"validIngredientStateIngredients": {},
-		"serviceSettingConfigurations": {},
-		"recipeRatings": {},
-		"validMeasurementUnitConversions": {},
-		"validIngredientGroups": {},
-		"serviceSettings": {},
-		"mealPlanTasks": {},
-		"recipeStepProducts": {},
-		"recipeStepIngredients": {},
-		"recipePrepTasks": {},
-		"recipeStepCompletionConditions": {},
-		"userIngredientPreferences": {},
-		"households": {},
-		"mealPlans": {},
-		"validPreparationInstruments": {},
-		"validIngredientPreparations": {},
-		"recipeStepInstruments": {},
 		"auditLogEntries": {},
-		"householdInstrumentOwnerships": {},
-		"mealPlanOptionVotes": {},
-		"recipeStepVessels": {},
-		"validPreparationVessels": {},
-		"mealPlanOptions": {},
+		"serviceSettingConfigurations": {},
 		"userNotifications": {},
+		"households": {},
+		"serviceSettings": {},
 		"workers": {},
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://example.website.lol",
-			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/uploads"
-					},
-					"bucketName": "recipe_media",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "filesystem"
-				},
-				"debug": true
-			}
-		},
 		"users": {
 			"publicMediaURLPrefix": "",
 			"uploads": {
@@ -218,13 +182,17 @@
 			"searchFromDatabase": false
 		},
 		"auth": {
+			"tokens": {
+				"provider": "paseto",
+				"audience": "https://api.dinnerdonebetter.dev",
+				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA="
+			},
 			"sso": {
 				"google": {
 					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
 				}
 			},
-			"jwtAudience": "localhost",
-			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+			"jwtSigningKey": "",
 			"oauth2": {
 				"domain": "http://localhost:9000",
 				"accessTokenLifespan": 3600000000000,
@@ -237,35 +205,20 @@
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
 		},
-		"validInstruments": {
-			"useSearchService": false
+		"oauth2Clients": {
+			"creationEnabled": false
 		},
 		"meals": {
 			"searchFromDatabase": false
 		},
-		"validMeasurementUnits": {
-			"useSearchService": false
-		},
-		"oauth2Clients": {
-			"creationEnabled": false
-		},
-		"validVessels": {
-			"useSearchService": false
+		"webhooks": {
+			"debug": false
 		},
 		"householdInvitations": {
 			"debug": false
 		},
-		"validPreparations": {
+		"validEnumerations": {
 			"useSearchService": false
-		},
-		"validIngredientStates": {
-			"useSearchService": false
-		},
-		"validIngredients": {
-			"useSearchService": false
-		},
-		"webhooks": {
-			"debug": false
 		}
 	}
 }

@@ -15,7 +15,7 @@ import (
 
 func (c *Client) GetValidPreparationInstrument(
 	ctx context.Context,
-	validPreparationVesselID string,
+	validPreparationInstrumentID string,
 	reqMods ...RequestModifier,
 ) (*types.ValidPreparationInstrument, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
@@ -23,13 +23,13 @@ func (c *Client) GetValidPreparationInstrument(
 
 	logger := c.logger.Clone()
 
-	if validPreparationVesselID == "" {
-		return nil, buildInvalidIDError("validPreparationVessel")
+	if validPreparationInstrumentID == "" {
+		return nil, buildInvalidIDError("validPreparationInstrument")
 	}
-	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
-	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_preparation_instruments/%s", validPreparationVesselID))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/valid_preparation_instruments/%s", validPreparationInstrumentID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a ValidPreparationInstrument")

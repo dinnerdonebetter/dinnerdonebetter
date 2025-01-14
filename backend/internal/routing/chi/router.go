@@ -73,7 +73,10 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, metricProvider me
 		MaxAge:           maxCORSAge,
 	})
 
-	baseCfg := otelchimetric.NewBaseConfig(cfg.ServiceName, otelchimetric.WithMeterProvider(metricProvider.MeterProvider()))
+	baseCfg := otelchimetric.NewBaseConfig(
+		cfg.ServiceName,
+		otelchimetric.WithMeterProvider(metricProvider.MeterProvider()),
+	)
 
 	mux := chi.NewRouter()
 	mux.Use(

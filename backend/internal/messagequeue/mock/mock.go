@@ -20,6 +20,11 @@ func (m *Publisher) Publish(ctx context.Context, data any) error {
 	return m.Called(ctx, data).Error(0)
 }
 
+// PublishAsync implements our interface.
+func (m *Publisher) PublishAsync(ctx context.Context, data any) {
+	m.Called(ctx, data)
+}
+
 // Stop implements our interface.
 func (m *Publisher) Stop() {
 	m.Called()

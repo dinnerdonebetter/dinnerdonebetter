@@ -23,23 +23,23 @@ func TestClient_GetValidPreparationInstrument(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		validPreparationVesselID := fakes.BuildFakeID()
+		validPreparationInstrumentID := fakes.BuildFakeID()
 
 		data := fakes.BuildFakeValidPreparationInstrument()
 		expected := &types.APIResponse[*types.ValidPreparationInstrument]{
 			Data: data,
 		}
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, validPreparationVesselID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, validPreparationInstrumentID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.GetValidPreparationInstrument(ctx, validPreparationVesselID)
+		actual, err := c.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, data, actual)
 	})
 
-	T.Run("with invalid validPreparationVessel ID", func(t *testing.T) {
+	T.Run("with invalid validPreparationInstrument ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -54,10 +54,10 @@ func TestClient_GetValidPreparationInstrument(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		validPreparationVesselID := fakes.BuildFakeID()
+		validPreparationInstrumentID := fakes.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetValidPreparationInstrument(ctx, validPreparationVesselID)
+		actual, err := c.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -67,11 +67,11 @@ func TestClient_GetValidPreparationInstrument(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		validPreparationVesselID := fakes.BuildFakeID()
+		validPreparationInstrumentID := fakes.BuildFakeID()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, validPreparationVesselID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, validPreparationInstrumentID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetValidPreparationInstrument(ctx, validPreparationVesselID)
+		actual, err := c.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

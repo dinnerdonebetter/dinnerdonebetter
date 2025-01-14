@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"time"
 
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -22,11 +23,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
-	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
-	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
-	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
-	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
+	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
+	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
+	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 )
@@ -129,9 +129,12 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
-				JWTAudience:           "localhost",
-				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
-				JWTLifetime:           5 * time.Minute,
+				TokenLifetime:         5 * time.Minute,
+				Tokens: tokenscfg.Config{
+					Provider:                tokenscfg.ProviderPASETO,
+					Audience:                "https://api.dinnerdonebetter.dev",
+					Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+				},
 			},
 			DataPrivacy: dataprivacyservice.Config{
 				Uploads: uploads.Config{
@@ -156,21 +159,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			Recipes: recipesservice.Config{
-				PublicMediaURLPrefix: "https://example.website.lol",
-				Uploads: uploads.Config{
-					Debug: true,
-					Storage: objectstorage.Config{
-						UploadFilenameKey: "recipe_media",
-						Provider:          objectstorage.FilesystemProvider,
-						BucketName:        "recipe_media",
-						FilesystemConfig: &objectstorage.FilesystemConfig{
-							RootDirectory: "/uploads",
-						},
-					},
-				},
-			},
-			RecipeSteps: recipestepsservice.Config{
+			Recipes: recipemanagement.Config{
 				PublicMediaURLPrefix: "https://example.website.lol",
 				Uploads: uploads.Config{
 					Debug: true,

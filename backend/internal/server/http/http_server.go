@@ -35,58 +35,30 @@ type (
 
 	// server is our API http server.
 	server struct {
-		authService                            types.AuthDataService
-		validVesselsService                    types.ValidVesselDataService
-		householdsService                      types.HouseholdDataService
-		householdInvitationsService            types.HouseholdInvitationDataService
-		usersService                           types.UserDataService
-		adminService                           types.AdminDataService
-		webhooksService                        types.WebhookDataService
-		validInstrumentsService                types.ValidInstrumentDataService
-		validIngredientsService                types.ValidIngredientDataService
-		validIngredientGroupsService           types.ValidIngredientGroupDataService
-		validPreparationsService               types.ValidPreparationDataService
-		validIngredientPreparationsService     types.ValidIngredientPreparationDataService
-		recipesService                         types.RecipeDataService
-		recipeStepsService                     types.RecipeStepDataService
-		recipeStepProductsService              types.RecipeStepProductDataService
-		recipeStepInstrumentsService           types.RecipeStepInstrumentDataService
-		recipeStepIngredientsService           types.RecipeStepIngredientDataService
-		mealsService                           types.MealDataService
-		mealPlansService                       types.MealPlanDataService
-		mealPlanOptionsService                 types.MealPlanOptionDataService
-		mealPlanOptionVotesService             types.MealPlanOptionVoteDataService
-		validMeasurementUnitsService           types.ValidMeasurementUnitDataService
-		validIngredientStatesService           types.ValidIngredientStateDataService
-		validPreparationInstrumentsService     types.ValidPreparationInstrumentDataService
-		validIngredientMeasurementUnitsService types.ValidIngredientMeasurementUnitDataService
-		mealPlanEventsService                  types.MealPlanEventDataService
-		mealPlanTasksService                   types.MealPlanTaskDataService
-		recipePrepTasksService                 types.RecipePrepTaskDataService
-		mealPlanGroceryListItemsService        types.MealPlanGroceryListItemDataService
-		validMeasurementUnitConversionsService types.ValidMeasurementUnitConversionDataService
-		recipeStepCompletionConditionsService  types.RecipeStepCompletionConditionDataService
-		validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService
-		recipeStepVesselsService               types.RecipeStepVesselDataService
-		serviceSettingsService                 types.ServiceSettingDataService
-		serviceSettingConfigurationsService    types.ServiceSettingConfigurationDataService
-		userIngredientPreferencesService       types.UserIngredientPreferenceDataService
-		recipeRatingsService                   types.RecipeRatingDataService
-		householdInstrumentOwnershipService    types.HouseholdInstrumentOwnershipDataService
-		oauth2ClientsService                   types.OAuth2ClientDataService
-		validPreparationVesselsService         types.ValidPreparationVesselDataService
-		userNotificationsService               types.UserNotificationDataService
-		workerService                          types.WorkerService
-		auditLogEntriesService                 types.AuditLogEntryDataService
-		dataPrivacyService                     types.DataPrivacyService
-		logger                                 logging.Logger
-		router                                 routing.Router
-		tracer                                 tracing.Tracer
-		panicker                               panicking.Panicker
-		httpServer                             *http.Server
-		dataManager                            database.DataManager
-		tracerProvider                         tracing.TracerProvider
-		config                                 Config
+		authService                         types.AuthDataService
+		householdsService                   types.HouseholdDataService
+		householdInvitationsService         types.HouseholdInvitationDataService
+		usersService                        types.UserDataService
+		adminService                        types.AdminDataService
+		webhooksService                     types.WebhookDataService
+		serviceSettingsService              types.ServiceSettingDataService
+		serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService
+		oauth2ClientsService                types.OAuth2ClientDataService
+		userNotificationsService            types.UserNotificationDataService
+		workerService                       types.WorkerService
+		validEnumerationsService            types.ValidEnumerationDataService
+		auditLogEntriesService              types.AuditLogEntryDataService
+		dataPrivacyService                  types.DataPrivacyService
+		recipeManagementService             types.RecipeManagementDataService
+		mealPlanningService                 types.MealPlanningDataService
+		logger                              logging.Logger
+		router                              routing.Router
+		tracer                              tracing.Tracer
+		panicker                            panicking.Panicker
+		httpServer                          *http.Server
+		dataManager                         database.DataManager
+		tracerProvider                      tracing.TracerProvider
+		config                              Config
 	}
 )
 
@@ -102,47 +74,19 @@ func ProvideHTTPServer(
 	usersService types.UserDataService,
 	householdsService types.HouseholdDataService,
 	householdInvitationsService types.HouseholdInvitationDataService,
-	validInstrumentsService types.ValidInstrumentDataService,
-	validIngredientsService types.ValidIngredientDataService,
-	validIngredientGroupsService types.ValidIngredientGroupDataService,
-	validPreparationsService types.ValidPreparationDataService,
-	validIngredientPreparationsService types.ValidIngredientPreparationDataService,
-	mealsService types.MealDataService,
-	recipesService types.RecipeDataService,
-	recipeStepsService types.RecipeStepDataService,
-	recipeStepProductsService types.RecipeStepProductDataService,
-	recipeStepInstrumentsService types.RecipeStepInstrumentDataService,
-	recipeStepIngredientsService types.RecipeStepIngredientDataService,
-	mealPlansService types.MealPlanDataService,
-	mealPlanOptionsService types.MealPlanOptionDataService,
-	mealPlanOptionVotesService types.MealPlanOptionVoteDataService,
-	validMeasurementUnitsService types.ValidMeasurementUnitDataService,
-	validIngredientStatesService types.ValidIngredientStateDataService,
-	validPreparationInstrumentsService types.ValidPreparationInstrumentDataService,
-	validIngredientMeasurementUnitsService types.ValidIngredientMeasurementUnitDataService,
-	mealPlanEventsService types.MealPlanEventDataService,
-	mealPlanTasksService types.MealPlanTaskDataService,
-	recipePrepTasksService types.RecipePrepTaskDataService,
-	mealPlanGroceryListItemsService types.MealPlanGroceryListItemDataService,
-	validMeasurementUnitConversionsService types.ValidMeasurementUnitConversionDataService,
-	recipeStepCompletionConditionsService types.RecipeStepCompletionConditionDataService,
-	validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService,
-	recipeStepVesselsService types.RecipeStepVesselDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminDataService,
 	serviceSettingDataService types.ServiceSettingDataService,
 	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
-	userIngredientPreferencesService types.UserIngredientPreferenceDataService,
-	recipeRatingsService types.RecipeRatingDataService,
-	householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService,
 	oauth2ClientDataService types.OAuth2ClientDataService,
-	validVesselsService types.ValidVesselDataService,
-	validPreparationVesselsService types.ValidPreparationVesselDataService,
 	workerService types.WorkerService,
 	userNotificationsService types.UserNotificationDataService,
 	auditLogService types.AuditLogEntryDataService,
 	dataPrivacyService types.DataPrivacyService,
-	mp metrics.Provider, // TODO: instrument later for something
+	validEnumerationsService types.ValidEnumerationDataService,
+	recipeManagementService types.RecipeManagementDataService,
+	mealPlanningService types.MealPlanningDataService,
+	_ metrics.Provider, // TODO: instrument later for something
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,
@@ -171,37 +115,9 @@ func ProvideHTTPServer(
 		dataPrivacyService:                  dataPrivacyService,
 
 		// data services
-		validInstrumentsService:                validInstrumentsService,
-		validIngredientsService:                validIngredientsService,
-		validIngredientGroupsService:           validIngredientGroupsService,
-		validPreparationsService:               validPreparationsService,
-		validIngredientPreparationsService:     validIngredientPreparationsService,
-		mealsService:                           mealsService,
-		recipesService:                         recipesService,
-		recipeStepsService:                     recipeStepsService,
-		recipeStepProductsService:              recipeStepProductsService,
-		recipeStepInstrumentsService:           recipeStepInstrumentsService,
-		recipeStepIngredientsService:           recipeStepIngredientsService,
-		mealPlansService:                       mealPlansService,
-		mealPlanOptionsService:                 mealPlanOptionsService,
-		mealPlanOptionVotesService:             mealPlanOptionVotesService,
-		validMeasurementUnitsService:           validMeasurementUnitsService,
-		validPreparationInstrumentsService:     validPreparationInstrumentsService,
-		validIngredientMeasurementUnitsService: validIngredientMeasurementUnitsService,
-		mealPlanEventsService:                  mealPlanEventsService,
-		mealPlanTasksService:                   mealPlanTasksService,
-		recipePrepTasksService:                 recipePrepTasksService,
-		mealPlanGroceryListItemsService:        mealPlanGroceryListItemsService,
-		validMeasurementUnitConversionsService: validMeasurementUnitConversionsService,
-		validIngredientStatesService:           validIngredientStatesService,
-		recipeStepCompletionConditionsService:  recipeStepCompletionConditionsService,
-		validIngredientStateIngredientsService: validIngredientStateIngredientsService,
-		recipeStepVesselsService:               recipeStepVesselsService,
-		userIngredientPreferencesService:       userIngredientPreferencesService,
-		recipeRatingsService:                   recipeRatingsService,
-		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
-		validVesselsService:                    validVesselsService,
-		validPreparationVesselsService:         validPreparationVesselsService,
+		mealPlanningService:      mealPlanningService,
+		validEnumerationsService: validEnumerationsService,
+		recipeManagementService:  recipeManagementService,
 	}
 
 	srv.setupRouter(ctx, router)

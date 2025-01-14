@@ -23,50 +23,22 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	adminservice "github.com/dinnerdonebetter/backend/internal/services/admin"
-	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
-	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/dataprivacy"
-	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
-	householdinvitationssservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
-	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
-	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanevents"
-	mealplangrocerylistitemsservice "github.com/dinnerdonebetter/backend/internal/services/mealplangrocerylistitems"
-	mealplanoptionsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptions"
-	mealplanoptionvotesservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptionvotes"
-	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
-	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
-	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
-	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/oauth2clients"
-	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
-	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
-	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
-	recipestepcompletionconditionsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
-	recipestepingredientsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepingredients"
-	recipestepinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepinstruments"
-	recipestepproductsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepproducts"
-	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
-	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
-	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
-	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
-	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
-	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/usernotifications"
-	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
-	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
-	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
-	validingredientpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientpreparations"
-	validingredientsservice "github.com/dinnerdonebetter/backend/internal/services/validingredients"
-	validingredientstateingredientsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientstateingredients"
-	validingredientstatesservice "github.com/dinnerdonebetter/backend/internal/services/validingredientstates"
-	validinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validinstruments"
-	validmeasurementconversionsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunitconversions"
-	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
-	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
-	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
-	validpreparationvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationvessels"
-	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
-	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
-	workersservice "github.com/dinnerdonebetter/backend/internal/services/workers"
+	adminservice "github.com/dinnerdonebetter/backend/internal/services/core/admin"
+	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/core/auditlogentries"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
+	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
+	householdinvitationssservice "github.com/dinnerdonebetter/backend/internal/services/core/householdinvitations"
+	householdsservice "github.com/dinnerdonebetter/backend/internal/services/core/households"
+	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/core/oauth2clients"
+	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/core/servicesettingconfigurations"
+	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/core/servicesettings"
+	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/core/usernotifications"
+	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
+	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/core/webhooks"
+	workersservice "github.com/dinnerdonebetter/backend/internal/services/core/workers"
+	mealplanningservice "github.com/dinnerdonebetter/backend/internal/services/eating/meal_planning"
+	recipemanagementservice "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
+	validenumerationsservice "github.com/dinnerdonebetter/backend/internal/services/eating/valid_enumerations"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 
 	"github.com/google/wire"
@@ -99,40 +71,11 @@ func Build(
 		householdinvitationssservice.Providers,
 		webhooksservice.Providers,
 		adminservice.Providers,
-		validinstrumentsservice.Providers,
-		validingredientsservice.Providers,
-		validingredientgroupsservice.Providers,
-		validpreparationsservice.Providers,
-		validingredientpreparationsservice.Providers,
-		mealsservice.Providers,
-		recipesservice.Providers,
-		recipestepsservice.Providers,
-		recipestepproductsservice.Providers,
-		recipestepinstrumentsservice.Providers,
-		recipestepvesselsservice.Providers,
-		recipestepingredientsservice.Providers,
-		mealplansservice.Providers,
-		mealplaneventsservice.Providers,
-		mealplanoptionsservice.Providers,
-		mealplanoptionvotesservice.Providers,
-		validmeasurementunitsservice.Providers,
-		validpreparationinstrumentsservice.Providers,
-		validingredientstateingredientsservice.Providers,
-		validingredientmeasurementunitsservice.Providers,
-		mealplantasksservice.Providers,
-		recipepreptasksservice.Providers,
-		mealplangrocerylistitemsservice.Providers,
-		validmeasurementconversionsservice.Providers,
-		validingredientstatesservice.Providers,
-		recipestepcompletionconditionsservice.Providers,
+		validenumerationsservice.Providers,
+		recipemanagementservice.Providers,
 		servicesettingsservice.Providers,
 		servicesettingconfigurationsservice.Providers,
-		useringredientpreferencesservice.Providers,
-		householdinstrumentownershipsservice.Providers,
-		reciperatingsservice.Providers,
 		oauth2clientsservice.Providers,
-		validvesselsservice.Providers,
-		validpreparationvesselsservice.Providers,
 		analyticscfg.ProvidersAnalytics,
 		workersservice.Providers,
 		usernotificationsservice.Providers,
@@ -140,6 +83,7 @@ func Build(
 		dataprivacyservice.Providers,
 		metricscfg.ProvidersMetrics,
 		routingcfg.RoutingConfigProviders,
+		mealplanningservice.Providers,
 	)
 
 	return nil, nil

@@ -286,9 +286,6 @@ func neutralizeConfig(cfg *config.APIServiceConfig) {
 	cfg.Services.Recipes.Uploads.Storage.GCPConfig = nil
 	cfg.Services.Recipes.Uploads.Storage.Provider = objectstorage.FilesystemProvider
 	cfg.Services.Recipes.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
-	cfg.Services.RecipeSteps.Uploads.Storage.GCPConfig = nil
-	cfg.Services.RecipeSteps.Uploads.Storage.Provider = objectstorage.FilesystemProvider
-	cfg.Services.RecipeSteps.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
 	cfg.Services.DataPrivacy.Uploads.Storage.GCPConfig = nil
 	cfg.Services.DataPrivacy.Uploads.Storage.Provider = objectstorage.FilesystemProvider
 	cfg.Services.DataPrivacy.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}

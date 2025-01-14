@@ -18,18 +18,6 @@ func TestShouldCeaseOperation(T *testing.T) {
 	})
 }
 
-func TestRunningInTheCloud(T *testing.T) {
-	T.Run("unset", func(t *testing.T) {
-		assert.False(t, RunningInTheCloud())
-	})
-
-	T.Run("set", func(t *testing.T) {
-		t.Setenv(RunningInGCPEnvVarKey, "true")
-
-		assert.True(t, RunningInTheCloud())
-	})
-}
-
 func TestRunningInKubernetes(T *testing.T) {
 	T.Run("unset", func(t *testing.T) {
 		assert.False(t, RunningInKubernetes())

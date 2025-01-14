@@ -110,11 +110,34 @@ func (p *pubSubPublisher) Publish(ctx context.Context, data any) error {
 	<-result.Ready()
 
 	// The Get method blocks until a server-generated ID or an error is returned for the published message.
-	if _, resultCheckErr := result.Get(ctx); resultCheckErr != nil {
-		observability.AcknowledgeError(resultCheckErr, logger, span, "publishing pubsub message")
+	if _, err := result.Get(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
 	}
 
 	logger.Debug("published message")
 
 	return nil
+}
+
+func (p *pubSubPublisher) PublishAsync(ctx context.Context, data any) {
+	_, span := p.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := p.logger.Clone()
+
+	var b bytes.Buffer
+	if err := p.encoder.Encode(ctx, &b, data); err != nil {
+		observability.AcknowledgeError(err, logger, span, "encoding topic message")
+	}
+
+	msg := &pubsub.Message{Data: b.Bytes()}
+	result := p.publisher.Publish(ctx, msg)
+	<-result.Ready()
+
+	// The Get method blocks until a server-generated ID or an error is returned for the published message.
+	if _, err := result.Get(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
+	}
+
+	logger.Debug("published message")
 }

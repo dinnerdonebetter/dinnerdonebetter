@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"log/slog"
 	"os"
 	"runtime/debug"
@@ -58,8 +57,6 @@ type (
 			SearchDataIndexSchedulerConfig |
 			AsyncMessageHandlerConfig
 	}
-
-	genericCloudConfigFetcher[T configurations] func(context.Context) (*T, error)
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
@@ -379,23 +376,16 @@ func LoadConfigFromEnvironment[T configurations]() (*T, error) {
 	return cfg, nil
 }
 
-func FetchForApplication[T configurations](ctx context.Context, f genericCloudConfigFetcher[T]) (*T, error) {
+func FetchForApplication[T configurations]() (*T, error) {
 	var cfg *T
-	if RunningInTheCloud() && f != nil {
-		c, err := f(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("fetching config from GCP: %w", err)
-		}
 
-		cfg = c
-	} else if configFilepath := os.Getenv(ConfigurationFilePathEnvVarKey); configFilepath != "" {
+	if configFilepath := os.Getenv(ConfigurationFilePathEnvVarKey); configFilepath != "" {
 		var err error
 		cfg, err = LoadConfigFromEnvironment[T]()
 		if err != nil {
 			return nil, fmt.Errorf("loading config from environment variable: %w", err)
 		}
 	} else {
-		log.Println("f == nil: ", f == nil)
 		return nil, errors.New("not running in the cloud, and no config filepath provided")
 	}
 

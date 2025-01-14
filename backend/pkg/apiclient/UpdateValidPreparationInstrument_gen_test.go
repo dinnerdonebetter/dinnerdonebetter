@@ -22,7 +22,7 @@ func TestClient_UpdateValidPreparationInstrument(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		validPreparationVesselID := fakes.BuildFakeID()
+		validPreparationInstrumentID := fakes.BuildFakeID()
 
 		data := fakes.BuildFakeValidPreparationInstrument()
 		expected := &types.APIResponse[*types.ValidPreparationInstrument]{
@@ -31,15 +31,15 @@ func TestClient_UpdateValidPreparationInstrument(T *testing.T) {
 
 		exampleInput := fakes.BuildFakeValidPreparationInstrumentUpdateRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, validPreparationVesselID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, validPreparationInstrumentID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		err := c.UpdateValidPreparationInstrument(ctx, validPreparationVesselID, exampleInput)
+		err := c.UpdateValidPreparationInstrument(ctx, validPreparationInstrumentID, exampleInput)
 
 		assert.NoError(t, err)
 
 	})
 
-	T.Run("with invalid validPreparationVessel ID", func(t *testing.T) {
+	T.Run("with invalid validPreparationInstrument ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleInput := fakes.BuildFakeValidPreparationInstrumentUpdateRequestInput()
@@ -55,12 +55,12 @@ func TestClient_UpdateValidPreparationInstrument(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		validPreparationVesselID := fakes.BuildFakeID()
+		validPreparationInstrumentID := fakes.BuildFakeID()
 
 		exampleInput := fakes.BuildFakeValidPreparationInstrumentUpdateRequestInput()
 
 		c := buildTestClientWithInvalidURL(t)
-		err := c.UpdateValidPreparationInstrument(ctx, validPreparationVesselID, exampleInput)
+		err := c.UpdateValidPreparationInstrument(ctx, validPreparationInstrumentID, exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -69,13 +69,13 @@ func TestClient_UpdateValidPreparationInstrument(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		validPreparationVesselID := fakes.BuildFakeID()
+		validPreparationInstrumentID := fakes.BuildFakeID()
 
 		exampleInput := fakes.BuildFakeValidPreparationInstrumentUpdateRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, validPreparationVesselID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, validPreparationInstrumentID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		err := c.UpdateValidPreparationInstrument(ctx, validPreparationVesselID, exampleInput)
+		err := c.UpdateValidPreparationInstrument(ctx, validPreparationInstrumentID, exampleInput)
 
 		assert.Error(t, err)
 	})

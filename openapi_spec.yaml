@@ -4909,7 +4909,7 @@ paths:
         - meal plan tasks
   /api/v1/meals:
     get:
-      description: Fetches a Meals
+      description: Fetches a MealPlanning
       operationId: GetMeals
       parameters:
         - description: How many results should appear in output, max is 250.
@@ -5217,7 +5217,7 @@ paths:
         - meals
   /api/v1/meals/search:
     get:
-      description: Searches for Meals
+      description: Searches for MealPlanning
       operationId: SearchForMeals
       parameters:
         - description: the search query parameter
@@ -17769,13 +17769,13 @@ paths:
             - service_admin
       tags:
         - valid preparation instruments
-  /api/v1/valid_preparation_instruments/{validPreparationVesselID}:
+  /api/v1/valid_preparation_instruments/{validPreparationInstrumentID}:
     delete:
       description: Archives a ValidPreparationInstrument
       operationId: ArchiveValidPreparationInstrument
       parameters:
         - in: path
-          name: validPreparationVesselID
+          name: validPreparationInstrumentID
           required: true
           schema:
             type: string
@@ -17838,7 +17838,7 @@ paths:
       operationId: GetValidPreparationInstrument
       parameters:
         - in: path
-          name: validPreparationVesselID
+          name: validPreparationInstrumentID
           required: true
           schema:
             type: string
@@ -17901,7 +17901,7 @@ paths:
       operationId: UpdateValidPreparationInstrument
       parameters:
         - in: path
-          name: validPreparationVesselID
+          name: validPreparationInstrumentID
           required: true
           schema:
             type: string
@@ -18708,7 +18708,7 @@ paths:
             - household_member
       tags:
         - valid preparation vessels
-  /api/v1/valid_preparation_vessels/by_vessel/{ValidVesselID}:
+  /api/v1/valid_preparation_vessels/by_vessel/{validVesselID}:
     get:
       description: Fetches a ValidPreparationVesselsByVessel
       operationId: GetValidPreparationVesselsByVessel
@@ -18768,7 +18768,7 @@ paths:
               - desc
             type: string
         - in: path
-          name: ValidVesselID
+          name: validVesselID
           required: true
           schema:
             type: string
@@ -20787,7 +20787,7 @@ paths:
         - email address
   /users/login/jwt:
     post:
-      description: Operation for creating JWTResponse
+      description: Operation for creating TokenResponse
       operationId: LoginForJWT
       requestBody:
         content:
@@ -20807,7 +20807,7 @@ paths:
                   - $ref: '#/components/schemas/APIResponse'
                   - properties:
                       data:
-                        $ref: '#/components/schemas/JWTResponse'
+                        $ref: '#/components/schemas/TokenResponse'
                         type: object
                     type: object
             application/xml:
@@ -20816,7 +20816,7 @@ paths:
                   - $ref: '#/components/schemas/APIResponse'
                   - properties:
                       data:
-                        $ref: '#/components/schemas/JWTResponse'
+                        $ref: '#/components/schemas/TokenResponse'
                         type: object
                     type: object
           description: ""
@@ -20851,7 +20851,7 @@ paths:
         - users
   /users/login/jwt/admin:
     post:
-      description: Operation for creating JWTResponse
+      description: Operation for creating TokenResponse
       operationId: AdminLoginForJWT
       requestBody:
         content:
@@ -20871,7 +20871,7 @@ paths:
                   - $ref: '#/components/schemas/APIResponse'
                   - properties:
                       data:
-                        $ref: '#/components/schemas/JWTResponse'
+                        $ref: '#/components/schemas/TokenResponse'
                         type: object
                     type: object
             application/xml:
@@ -20880,7 +20880,7 @@ paths:
                   - $ref: '#/components/schemas/APIResponse'
                   - properties:
                       data:
-                        $ref: '#/components/schemas/JWTResponse'
+                        $ref: '#/components/schemas/TokenResponse'
                         type: object
                     type: object
           description: ""
@@ -21623,15 +21623,6 @@ components:
       properties:
         success:
           type: boolean
-      type: object
-    JWTResponse:
-      properties:
-        householdID:
-          type: string
-        token:
-          type: string
-        userID:
-          type: string
       type: object
     Meal:
       properties:
@@ -23715,6 +23706,15 @@ components:
     TOTPSecretVerificationInput:
       properties:
         totpToken:
+          type: string
+        userID:
+          type: string
+      type: object
+    TokenResponse:
+      properties:
+        householdID:
+          type: string
+        token:
           type: string
         userID:
           type: string

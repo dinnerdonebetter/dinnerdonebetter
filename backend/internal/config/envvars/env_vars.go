@@ -308,10 +308,7 @@ const (
 	// ServiceAuthEnableUserSignupEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.EnableUserSignup`.
 	ServiceAuthEnableUserSignupEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_ENABLE_USER_SIGNUP"
 
-	// ServiceAuthJwtAudienceEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.JWTAudience`.
-	ServiceAuthJwtAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_AUDIENCE"
-
-	// ServiceAuthJwtLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.JWTLifetime`.
+	// ServiceAuthJwtLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.TokenLifetime`.
 	ServiceAuthJwtLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_LIFETIME"
 
 	// ServiceAuthJwtSigningKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.JWTSigningKey`.
@@ -344,6 +341,15 @@ const (
 	// ServiceAuthSsoConfigGoogleClientSecretEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.SSO.Google.ClientSecret`.
 	ServiceAuthSsoConfigGoogleClientSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET"
 
+	// ServiceAuthTokenAudienceEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Audience`.
+	ServiceAuthTokenAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_AUDIENCE"
+
+	// ServiceAuthTokenProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Provider`.
+	ServiceAuthTokenProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_PROVIDER"
+
+	// ServiceAuthTokenSigningKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Base64EncodedSigningKey`.
+	ServiceAuthTokenSigningKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_SIGNING_KEY"
+
 	// ServiceDataPrivacyUploadsDebugEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Debug`.
 	ServiceDataPrivacyUploadsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_DEBUG"
 
@@ -371,38 +377,11 @@ const (
 	// ServiceHouseholdInvitationsDebugEnvVarKey is the environment variable name to set in order to override `config.Services.HouseholdInvitations.Debug`.
 	ServiceHouseholdInvitationsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_HOUSEHOLD_INVITATIONS_DEBUG"
 
-	// ServiceMealsUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.Meals.UseSearchService`.
-	ServiceMealsUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEALS_USE_SEARCH_SERVICE"
+	// ServiceMealPlanningUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.UseSearchService`.
+	ServiceMealPlanningUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_MEAL_PLANNING_USE_SEARCH_SERVICE"
 
 	// ServiceOauth2ClientsCreationDisabledEnvVarKey is the environment variable name to set in order to override `config.Services.OAuth2Clients.OAuth2ClientCreationDisabled`.
 	ServiceOauth2ClientsCreationDisabledEnvVarKey = "DINNER_DONE_BETTER_SERVICE_OAUTH2_CLIENTS_CREATION_DISABLED"
-
-	// ServiceRecipeStepsPublicMediaURLPrefixEnvVarKey is the environment variable name to set in order to override `config.Services.RecipeSteps.PublicMediaURLPrefix`.
-	ServiceRecipeStepsPublicMediaURLPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPE_STEPS_PUBLIC_MEDIA_URL_PREFIX"
-
-	// ServiceRecipeStepsUploadsDebugEnvVarKey is the environment variable name to set in order to override `config.Services.RecipeSteps.Uploads.Debug`.
-	ServiceRecipeStepsUploadsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPE_STEPS_UPLOADS_DEBUG"
-
-	// ServiceRecipeStepsUploadsStorageBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.RecipeSteps.Uploads.Storage.BucketName`.
-	ServiceRecipeStepsUploadsStorageBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPE_STEPS_UPLOADS_STORAGE_BUCKET_NAME"
-
-	// ServiceRecipeStepsUploadsStorageBucketPrefixEnvVarKey is the environment variable name to set in order to override `config.Services.RecipeSteps.Uploads.Storage.BucketPrefix`.
-	ServiceRecipeStepsUploadsStorageBucketPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPE_STEPS_UPLOADS_STORAGE_BUCKET_PREFIX"
-
-	// ServiceRecipeStepsUploadsStorageFilesystemRootDirectoryEnvVarKey is the environment variable name to set in order to override `config.Services.RecipeSteps.Uploads.Storage.FilesystemConfig.RootDirectory`.
-	ServiceRecipeStepsUploadsStorageFilesystemRootDirectoryEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPE_STEPS_UPLOADS_STORAGE_FILESYSTEM_ROOT_DIRECTORY"
-
-	// ServiceRecipeStepsUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.RecipeSteps.Uploads.Storage.GCPConfig.BucketName`.
-	ServiceRecipeStepsUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPE_STEPS_UPLOADS_STORAGE_GCP_BUCKET_NAME"
-
-	// ServiceRecipeStepsUploadsStorageProviderEnvVarKey is the environment variable name to set in order to override `config.Services.RecipeSteps.Uploads.Storage.Provider`.
-	ServiceRecipeStepsUploadsStorageProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPE_STEPS_UPLOADS_STORAGE_PROVIDER"
-
-	// ServiceRecipeStepsUploadsStorageS3BucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.RecipeSteps.Uploads.Storage.S3Config.BucketName`.
-	ServiceRecipeStepsUploadsStorageS3BucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPE_STEPS_UPLOADS_STORAGE_S3_BUCKET_NAME"
-
-	// ServiceRecipeStepsUploadsStorageUploadFilenameKeyEnvVarKey is the environment variable name to set in order to override `config.Services.RecipeSteps.Uploads.Storage.UploadFilenameKey`.
-	ServiceRecipeStepsUploadsStorageUploadFilenameKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPE_STEPS_UPLOADS_STORAGE_UPLOAD_FILENAME_KEY"
 
 	// ServiceRecipesPublicMediaURLPrefixEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.PublicMediaURLPrefix`.
 	ServiceRecipesPublicMediaURLPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_PUBLIC_MEDIA_URL_PREFIX"
@@ -461,23 +440,8 @@ const (
 	// ServiceUsersUploadsStorageUploadFilenameKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.UploadFilenameKey`.
 	ServiceUsersUploadsStorageUploadFilenameKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_UPLOADS_STORAGE_UPLOAD_FILENAME_KEY"
 
-	// ServiceValidIngredientStatesUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.ValidIngredientStates.UseSearchService`.
-	ServiceValidIngredientStatesUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_VALID_INGREDIENT_STATES_USE_SEARCH_SERVICE"
-
-	// ServiceValidIngredientsUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.ValidIngredients.UseSearchService`.
-	ServiceValidIngredientsUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_VALID_INGREDIENTS_USE_SEARCH_SERVICE"
-
-	// ServiceValidInstrumentsUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.ValidInstruments.UseSearchService`.
-	ServiceValidInstrumentsUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_VALID_INSTRUMENTS_USE_SEARCH_SERVICE"
-
-	// ServiceValidMeasurementUnitsUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.ValidMeasurementUnits.UseSearchService`.
-	ServiceValidMeasurementUnitsUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_VALID_MEASUREMENT_UNITS_USE_SEARCH_SERVICE"
-
-	// ServiceValidPreparationsUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.ValidPreparations.UseSearchService`.
-	ServiceValidPreparationsUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_VALID_PREPARATIONS_USE_SEARCH_SERVICE"
-
-	// ServiceValidVesselsUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.ValidVessels.UseSearchService`.
-	ServiceValidVesselsUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_VALID_VESSELS_USE_SEARCH_SERVICE"
+	// ServiceValidEnumerationsUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.ValidEnumerations.UseSearchService`.
+	ServiceValidEnumerationsUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_VALID_ENUMERATIONS_USE_SEARCH_SERVICE"
 
 	// ServiceWebhooksDebugEnvVarKey is the environment variable name to set in order to override `config.Services.Webhooks.Debug`.
 	ServiceWebhooksDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_WEBHOOKS_DEBUG"

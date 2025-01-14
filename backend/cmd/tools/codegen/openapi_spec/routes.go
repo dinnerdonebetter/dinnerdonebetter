@@ -446,14 +446,14 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"GET /api/v1/meals/": {
 		ID:           "GetMeals",
-		Description:  "Fetches a Meals",
+		Description:  "Fetches a MealPlanning",
 		ResponseType: &types.Meal{},
 		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
 	"GET /api/v1/meals/search": {
 		ID:           "SearchForMeals",
-		Description:  "Searches for Meals",
+		Description:  "Searches for MealPlanning",
 		SearchRoute:  true,
 		ResponseType: &types.Meal{},
 		OAuth2Scopes: []string{householdMember},
@@ -1472,19 +1472,19 @@ var routeInfoMap = map[string]routeDetails{
 		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
-	"DELETE /api/v1/valid_preparation_instruments/{validPreparationVesselID}/": {
+	"DELETE /api/v1/valid_preparation_instruments/{validPreparationInstrumentID}/": {
 		ID:           "ArchiveValidPreparationInstrument",
 		Description:  "Archives a ValidPreparationInstrument",
 		ResponseType: &types.ValidPreparationInstrument{},
 		OAuth2Scopes: []string{serviceAdmin},
 	},
-	"GET /api/v1/valid_preparation_instruments/{validPreparationVesselID}/": {
+	"GET /api/v1/valid_preparation_instruments/{validPreparationInstrumentID}/": {
 		ID:           "GetValidPreparationInstrument",
 		Description:  "Fetches a ValidPreparationInstrument",
 		ResponseType: &types.ValidPreparationInstrument{},
 		OAuth2Scopes: []string{householdMember},
 	},
-	"PUT /api/v1/valid_preparation_instruments/{validPreparationVesselID}/": {
+	"PUT /api/v1/valid_preparation_instruments/{validPreparationInstrumentID}/": {
 		ID:           "UpdateValidPreparationInstrument",
 		Description:  "Updates a ValidPreparationInstrument",
 		ResponseType: &types.ValidPreparationInstrument{},
@@ -1512,7 +1512,7 @@ var routeInfoMap = map[string]routeDetails{
 		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},
 	},
-	"GET /api/v1/valid_preparation_vessels/by_vessel/{ValidVesselID}/": {
+	"GET /api/v1/valid_preparation_vessels/by_vessel/{validVesselID}/": {
 		ID:           "GetValidPreparationVesselsByVessel",
 		Description:  "Fetches a ValidPreparationVesselsByVessel",
 		ResponseType: &types.ValidPreparationVessel{},
@@ -1732,12 +1732,12 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"POST /users/login/jwt": {
 		ID:           "LoginForJWT",
-		ResponseType: &types.JWTResponse{},
+		ResponseType: &types.TokenResponse{},
 		InputType:    &types.UserLoginInput{},
 	},
 	"POST /users/login/jwt/admin": {
 		ID:           "AdminLoginForJWT",
-		ResponseType: &types.JWTResponse{},
+		ResponseType: &types.TokenResponse{},
 		InputType:    &types.UserLoginInput{},
 	},
 	"POST /users/logout": {
